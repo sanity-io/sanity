@@ -104,7 +104,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.release.delete',
-        releaseId: getBundleIdFromReleaseDocumentId(releaseId),
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
 
