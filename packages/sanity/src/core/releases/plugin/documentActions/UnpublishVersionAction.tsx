@@ -1,12 +1,16 @@
 import {TrashIcon, UnpublishIcon} from '@sanity/icons'
 import {useCallback, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionDescription,
   type DocumentActionProps,
-  InsufficientPermissionsMessage,
-  useCurrentUser,
-  useDocumentPairPermissions,
-} from 'sanity'
+} from '../../../config/document/actions'
+import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
+import {releasesLocaleNamespace} from '../../i18n'
 
 /**
  * @internal
@@ -17,6 +21,7 @@ export const UnpublishVersionAction = (
   const {id, type, bundleId, version, published} = props
   const currentUser = useCurrentUser()
   const isPublished = published !== null
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -27,7 +32,6 @@ export const UnpublishVersionAction = (
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  // Callbacks
   const handleDialogOpen = useCallback(() => {
     setDialogOpen(true)
   }, [])
@@ -46,17 +50,23 @@ export const UnpublishVersionAction = (
   }
 
   return {
-    /*dialog: dialogOpen &&
+    dialog: dialogOpen &&
       version && {
         type: 'custom',
-        component: () => 'add unpublish dialog here',
-      },*/
-    /** @todo translate */
-    label: 'Unpublish',
+        component: (
+          <UnpublishVersionDialog
+            documentVersionId={version._id}
+            documentType={type}
+            onClose={() => setDialogOpen(false)}
+          />
+        ),
+      },
+    /** @todo should be switched once we have the document actions updated */
+    label: t('action.unpublish-doc-actions'),
     icon: UnpublishIcon,
     onHandle: handleDialogOpen,
     disabled: !isPublished,
-    /** @todo translate */
-    title: 'Unpublish',
+    /** @todo should be switched once we have the document actions updated */
+    title: t('action.unpublish-doc-actions'),
   }
 }

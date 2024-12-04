@@ -22,6 +22,10 @@ const releasesLocaleStrings = {
   'action.open': 'Open',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule for publishing...',
+  /** Action text for unpublishing a document in a release in the context menu */
+  'action.unpublish': 'Unpublish',
+  /** Action message for scheduling an unpublished of a document  */
+  'action.unpublish-doc-actions': 'Unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule for publishing',
   /** Action text for publishing all documents in a release (and the release itself) */
@@ -115,6 +119,8 @@ const releasesLocaleStrings = {
   'menu.label': 'Release menu',
   /** Tooltip for the release menu */
   'menu.tooltip': 'Actions',
+  /** Label for title of actions for "when releasing" */
+  'menu.group.when-releasing': 'When releasing',
 
   /** Text for when no archived releases are found */
   'no-archived-release': 'No archived releases',
@@ -240,8 +246,21 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been unschedule */
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
-
+  /** Text for tooltip when a release has been scheduled */
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
+
+  /** Title for the dialog confirming the unpublish of a release */
+  'unpublish-dialog.header': 'Are you sure you want to unpublish this document when releasing?',
+  /** Text action in unpublish dialog to cancel */
+  'unpublish-dialog.action.cancel': 'Cancel',
+  /** Text action in unpublish dialog to unpublish */
+  'unpublish-dialog.action.unpublish': 'Yes, unpublish when releasing',
+  /** Description for the unpublish dialog, explaining that it will create a draft if no draft exists at time of release */
+  'unpublish-dialog.description.to-draft':
+    'This will unpublish the document as part of the <strong>{{title}}</strong> release, and create a draft if no draft exists at the time of release.',
+  /** Description for unpublish dialog, explaining that all changes made to this document will be lost */
+  'unpublish-dialog.description.lost-changes':
+    'Any changes made to this document version will be lost.',
 }
 
 /**
