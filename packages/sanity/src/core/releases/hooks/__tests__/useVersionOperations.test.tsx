@@ -48,4 +48,17 @@ describe('useVersionOperations', () => {
       'documentId',
     )
   })
+
+  it('should unpublish a version successfully', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useVersionOperations(), {wrapper})
+
+    await act(async () => {
+      await result.current.unpublishVersion('versions.release.documentId')
+    })
+
+    expect(useReleaseOperationsMockReturn.unpublishVersion).toHaveBeenCalledWith(
+      'versions.release.documentId',
+    )
+  })
 })
