@@ -3,7 +3,11 @@ import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {activeScheduledRelease} from '../../../../__fixtures__/release.fixture'
+import {
+  activeScheduledRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+} from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../index'
 import {
@@ -54,14 +58,38 @@ describe('ReleaseMenuButton', () => {
       })
 
       fireEvent.click(screen.getByTestId('release-menu-button'))
-      screen.getByTestId('archive-release')
+      screen.getByTestId('archive-release-menu-item')
 
       await act(() => {
-        fireEvent.click(screen.getByTestId('archive-release'))
+        fireEvent.click(screen.getByTestId('archive-release-menu-item'))
       })
 
       screen.getByTestId('confirm-archive-dialog')
     }
+
+    test('does not allow for archiving of archived releases', async () => {
+      await renderTest({release: archivedScheduledRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
+    })
+
+    test('does not allow for published of archived releases', async () => {
+      await renderTest({release: publishedASAPRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.queryByTestId('archive-release-menu-item-menu-item')).not.toBeInTheDocument()
+    })
 
     test('does not require confirmation when no documents in release', async () => {
       mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
@@ -73,10 +101,10 @@ describe('ReleaseMenuButton', () => {
       })
 
       fireEvent.click(screen.getByTestId('release-menu-button'))
-      screen.getByTestId('archive-release')
+      screen.getByTestId('archive-release-menu-item')
 
       await act(() => {
-        fireEvent.click(screen.getByTestId('archive-release'))
+        fireEvent.click(screen.getByTestId('archive-release-menu-item'))
       })
 
       expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
@@ -129,6 +157,107 @@ describe('ReleaseMenuButton', () => {
     })
   })
 
+  describe('delete release', () => {
+    const openConfirmDeleteDialog = async () => {
+      await renderTest({release: archivedScheduledRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('delete-release-menu-item')
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('delete-release-menu-item'))
+      })
+
+      screen.getByTestId('confirm-delete-dialog')
+    }
+
+    test('does not allow for deleting an active release', async () => {
+      await renderTest({release: activeScheduledRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.queryByTestId('delete-release-menu-item')).not.toBeInTheDocument()
+    })
+
+    test('does not require confirmation when no documents in release', async () => {
+      mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
+
+      // verifying that delete supported for published releases too
+      await renderTest({release: publishedASAPRelease})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      screen.getByTestId('delete-release-menu-item')
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('delete-release-menu-item'))
+      })
+
+      expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
+      expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(publishedASAPRelease._id)
+    })
+
+    test('can reject deleting', async () => {
+      await openConfirmDeleteDialog()
+
+      await act(() => {
+        fireEvent.click(screen.getByTestId('cancel-button'))
+      })
+
+      expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
+    })
+
+    describe('when deleting is successful', () => {
+      beforeEach(async () => {
+        await openConfirmDeleteDialog()
+      })
+
+      test('will delete an active release', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTestId('confirm-button'))
+        })
+
+        expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(
+          archivedScheduledRelease._id,
+        )
+        expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when deleting fails', () => {
+      beforeEach(async () => {
+        mockUseReleaseOperations.mockReturnValue({
+          ...useReleaseOperationsMockReturn,
+          deleteRelease: vi.fn().mockRejectedValue(new Error('some rejection reason')),
+        })
+
+        await openConfirmDeleteDialog()
+      })
+
+      test('will not delete the release', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTestId('confirm-button'))
+        })
+
+        expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(
+          archivedScheduledRelease._id,
+        )
+        expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
+      })
+    })
+  })
+
   test.todo('will unarchive an archived release', async () => {
     /** @todo update once unarchive has been implemented */
     const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
@@ -138,7 +267,7 @@ describe('ReleaseMenuButton', () => {
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
     await act(() => {
-      fireEvent.click(screen.getByTestId('archive-release'))
+      fireEvent.click(screen.getByTestId('archive-release-menu-item'))
     })
 
     expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
@@ -156,6 +285,6 @@ describe('ReleaseMenuButton', () => {
 
     fireEvent.click(actionsButton)
 
-    expect(screen.queryByTestId('archive-release')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
   })
 })

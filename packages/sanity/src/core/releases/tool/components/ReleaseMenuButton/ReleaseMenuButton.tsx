@@ -19,8 +19,6 @@ export type ReleaseMenuButtonProps = {
   release: ReleaseDocument
 }
 
-const ARCHIVABLE_STATES = ['active', 'published']
-
 type ReleaseAction = 'archive' | 'delete'
 
 interface ReleaseActionMap {
@@ -204,7 +202,9 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
   )
 
   const archiveUnarchiveMenuItem = useMemo(() => {
-    if (!release?.state || release.state === 'archived')
+    if (release.state === 'published') return null
+
+    if (release.state === 'archived')
       return (
         <MenuItem
           onClick={handleUnarchive}
@@ -212,27 +212,27 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
           disabled
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
-          data-testid="unarchive-release"
+          data-testid="unarchive-release-menu-item"
         />
       )
 
     return (
       <MenuItem
         tooltipProps={{
-          disabled: ARCHIVABLE_STATES.includes(release.state) || isPerformingOperation,
+          disabled: ['scheduled', 'scheduling'].includes(release.state) || isPerformingOperation,
           content: t('action.archive.tooltip'),
         }}
         onClick={() => handleOnInitiateAction('archive')}
         icon={ArchiveIcon}
         text={t('action.archive')}
-        data-testid="archive-release"
-        disabled={!ARCHIVABLE_STATES.includes(release.state)}
+        data-testid="archive-release-menu-item"
+        disabled={['scheduled', 'scheduling'].includes(release.state)}
       />
     )
   }, [handleOnInitiateAction, isPerformingOperation, release.state, t])
 
   const deleteMenuItem = useMemo(() => {
-    if (release.state !== 'archived') return null
+    if (release.state !== 'archived' && release.state !== 'published') return null
 
     return (
       <MenuItem
@@ -240,8 +240,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         disabled={releaseMenuDisabled || isPerformingOperation}
         icon={TrashIcon}
         text={t('action.delete-release')}
-        data-testid="delete-release-button"
-        tone="default"
+        data-testid="delete-release-menu-item"
       />
     )
   }, [handleOnInitiateAction, isPerformingOperation, release.state, releaseMenuDisabled, t])

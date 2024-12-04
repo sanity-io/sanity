@@ -13,6 +13,7 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   schedule: vi.fn(),
   unschedule: vi.fn(),
   updateRelease: vi.fn(),
+  deleteRelease: vi.fn(),
 }
 
 export const mockUseReleaseOperations = useReleaseOperations as Mock<typeof useReleaseOperations>
