@@ -2,7 +2,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import glob from 'glob'
+import {globSync} from 'glob'
 
 interface LernaConfig {
   packages: string[]
@@ -22,7 +22,7 @@ const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
  * @internal
  */
 export function getManifestPaths(): string[] {
-  return patterns.flatMap((pattern) => glob.sync(pattern))
+  return patterns.flatMap((pattern) => globSync(pattern))
 }
 
 /**
