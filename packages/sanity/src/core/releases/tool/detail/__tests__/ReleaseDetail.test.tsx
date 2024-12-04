@@ -160,7 +160,7 @@ describe('after releases have loaded', () => {
     const loadedReleaseAndDocumentsTests = () => {
       it('should allow for the release to be archived', () => {
         fireEvent.click(screen.getByTestId('release-menu-button'))
-        screen.getByTestId('archive-release')
+        screen.getByTestId('archive-release-menu-item')
       })
 
       // eslint-disable-next-line no-warning-comments
@@ -302,55 +302,18 @@ describe('after releases have loaded', () => {
       expect(screen.queryByText('Publish all')).toBeNull()
     })
 
-    it('should allow for the release to be unarchived', () => {
+    it('should not allow for the release to be unarchived', () => {
       fireEvent.click(screen.getByTestId('release-menu-button'))
-      screen.getByTestId('archive-release')
+      expect(screen.queryByTestId('unarchive-release-menu-item')).not.toBeInTheDocument()
+    })
+
+    it('should not allow for the release to be archived', () => {
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+      expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
     })
 
     it('should not show the review changes button', () => {
       expect(screen.queryByText('Review changes')).toBeNull()
-    })
-
-    it('should disable Release menu', () => {
-      act(() => {
-        fireEvent.click(screen.getByTestId('release-menu-button'))
-      })
-
-      expect(screen.getByTestId('archive-release')).toBeEnabled()
-    })
-  })
-
-  describe('with a published release', () => {
-    beforeEach(async () => {
-      mockUseReleases.mockReset()
-      mockUseBundleDocuments.mockReset()
-
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
-        archivedReleases: [publishedASAPRelease],
-      })
-
-      mockUseRouterReturn.state = {
-        releaseId: getReleaseIdFromReleaseDocumentId(publishedASAPRelease._id),
-      }
-
-      mockUseBundleDocuments.mockReturnValue({
-        ...useBundleDocumentsMockReturn,
-        results: [
-          {
-            ...documentsInRelease,
-            document: {...documentsInRelease.document, publishedDocumentExists: true},
-          },
-        ],
-      })
-
-      await renderTest()
-    })
-
-    publishAgnosticTests(publishedASAPRelease.metadata.title)
-
-    it('should not show publish button', () => {
-      expect(screen.queryByText('Publish all')).toBeNull()
     })
   })
 
