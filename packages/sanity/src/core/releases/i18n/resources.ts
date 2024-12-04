@@ -15,11 +15,7 @@ const releasesLocaleStrings = {
   /** Action text for comparing document versions */
   'action.compare-versions': 'Compare versions',
   /** Action text for deleting a release */
-  'action.delete': 'Delete',
-  /** Description for toast when release deletion failed */
-  'action.delete.failure': 'Failed to delete release',
-  /** Description for toast when release is successfully deleted */
-  'action.delete.success': '<strong>{{title}}</strong> release was successfully deleted',
+  'action.delete-release': 'Delete release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
@@ -36,12 +32,12 @@ const releasesLocaleStrings = {
   'actions.summary': 'Summary',
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
-  /** Title for the dialog confirming the archive of a release */
-  'archive-dialog.confirm-archive-title':
+  /** Header for the dialog confirming the archive of a release */
+  'archive-dialog.confirm-archive-header':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
   /** Description for the dialog confirming the archive of a release with one document */
   'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
-  /** Description for the dialog confirming the publish of a release with more than one document */
+  /** Description for the dialog confirming the archive of a release with more than one document */
   'archive-dialog.confirm-archive-description_other':
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
@@ -60,12 +56,16 @@ const releasesLocaleStrings = {
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
-  /** Warning for deleting a release that it will delete one document version */
-  'delete.warning_one': 'This will also delete one document version.',
-  /** Warning for deleting a release that it will delete multiple document version */
-  'delete.warning_other': 'This will also delete {{count}} document versions.',
+
   /** Header for deleting a release dialog */
-  'delete-dialog.header': "Are you sure you want to delete the release '{{title}}'?",
+  'delete-dialog.confirm-delete.header': "Are you sure you want to delete the '{{title}}' release?",
+  /** Description for the dialog confirming the deleting of a release with one document */
+  'delete-dialog.confirm-delete-description_one': 'This will delete 1 document version.',
+  /** Description for the dialog confirming the deleting of a release with more than one document */
+  'delete-dialog.confirm-delete-description_other': 'This will delete {{count}} document versions.',
+  /** Label for the button to proceed deleting a release */
+  'delete-dialog.confirm-delete-button': 'Delete',
+
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
   /** Text for when there's no changes in a release diff */
@@ -77,6 +77,7 @@ const releasesLocaleStrings = {
   'discard-version-dialog.header': 'Are you sure you want to discard the document version?',
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Discard version',
+
   /** Label for the count of added documents in to a release */
   'document-count.added': '{{count}} added documents',
   /** Label for the count of added documents in to a release when only 1 document added*/
@@ -85,6 +86,7 @@ const releasesLocaleStrings = {
   'document-count.changed': '{{count}} changed documents',
   /** Label for the count of changed documents in a release when only 1 document changed */
   'document-count.changed-singular': '{{count}} changed document',
+
   /** Text for when documents of a release are loading */
   'document-loading': 'Loading documents',
   /** Label for when a document in a release has multiple validation warnings */
@@ -215,10 +217,15 @@ const releasesLocaleStrings = {
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+
   /** Text for toast when release has been archived */
   'toast.archive.success': "The '<strong>{{title}}</strong>' release was archived.",
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
+  /** Description for toast when release deletion failed */
+  'toast.delete.error': "Failed to delete '<strong>{{title}}</strong>': {{error}}",
+  /** Description for toast when release is successfully deleted */
+  'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been published */

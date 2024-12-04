@@ -1,11 +1,12 @@
-import {ArchiveIcon, EllipsisHorizontalIcon, UnarchiveIcon} from '@sanity/icons'
+import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
+import {useRouter} from '../../../../../router/useRouter'
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
-import {ArchivedRelease} from '../../../__telemetry__/releases.telemetry'
+import {ArchivedRelease, DeletedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -21,12 +22,13 @@ const ARCHIVABLE_STATES = ['active', 'published']
 
 export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
   const toast = useToast()
-  const {archive} = useReleaseOperations()
+  const router = useRouter()
+  const {archive, deleteRelease} = useReleaseOperations()
   const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
     getReleaseIdFromReleaseDocumentId(release._id),
   )
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<'edit' | 'confirm-archive'>()
+  const [selectedAction, setSelectedAction] = useState<'confirm-delete' | 'confirm-archive'>()
 
   const releaseMenuDisabled = !release || isLoadingReleaseDocuments || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -74,6 +76,48 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     }
   }, [archive, release._id, release.metadata.title, releaseMenuDisabled, t, telemetry, toast])
 
+  const handleDelete = useCallback(async () => {
+    if (!release) return
+
+    try {
+      setIsPerformingOperation(true)
+      await deleteRelease(release._id)
+      telemetry.log(DeletedRelease)
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: (
+          <Text muted size={1}>
+            <Translate
+              t={t}
+              i18nKey="toast.delete.success"
+              values={{title: release.metadata.title}}
+            />
+          </Text>
+        ),
+      })
+      // return to release overview list now that release is deleted
+      router.navigate({})
+    } catch (publishingError) {
+      toast.push({
+        status: 'error',
+        title: (
+          <Text muted size={1}>
+            <Translate
+              t={t}
+              i18nKey="toast.delete.error"
+              values={{title: release.metadata.title}}
+            />
+          </Text>
+        ),
+      })
+      console.error(publishingError)
+    } finally {
+      setIsPerformingOperation(false)
+      setSelectedAction(undefined)
+    }
+  }, [release, deleteRelease, telemetry, toast, t, router])
+
   const handleUnarchive = async () => {
     // noop
     // TODO: similar to handleArchive - complete once server action exists
@@ -94,7 +138,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         header={
           <Translate
             t={t}
-            i18nKey={'archive-dialog.confirm-archive-title'}
+            i18nKey={'archive-dialog.confirm-archive-header'}
             values={{
               title: release.metadata.title,
             }}
@@ -131,6 +175,51 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     t,
   ])
 
+  const confirmDeleteDialog = useMemo(() => {
+    if (selectedAction !== 'confirm-delete') return null
+
+    const dialogDescription =
+      releaseDocuments.length === 1
+        ? 'delete-dialog.confirm-delete-description_one'
+        : 'delete-dialog.confirm-delete-description_other'
+
+    return (
+      <Dialog
+        id="confirm-delete-dialog"
+        header={t('delete-dialog.confirm-delete.header', {title: release.metadata.title})}
+        onClose={() => setSelectedAction(undefined)}
+        footer={{
+          confirmButton: {
+            text: t('delete-dialog.confirm-delete-button'),
+            tone: 'positive',
+            onClick: handleDelete,
+            loading: isPerformingOperation,
+            disabled: isPerformingOperation,
+          },
+        }}
+      >
+        <Text muted size={1}>
+          {
+            <Translate
+              t={t}
+              i18nKey={dialogDescription}
+              values={{
+                count: releaseDocuments.length,
+              }}
+            />
+          }
+        </Text>
+      </Dialog>
+    )
+  }, [
+    selectedAction,
+    releaseDocuments.length,
+    t,
+    release.metadata.title,
+    handleDelete,
+    isPerformingOperation,
+  ])
+
   const handleOnInitiateArchive = useCallback(() => {
     if (releaseDocuments.length > 0) {
       setSelectedAction('confirm-archive')
@@ -138,6 +227,57 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
       handleArchive()
     }
   }, [handleArchive, releaseDocuments.length])
+
+  const handleOnInitiateDelete = useCallback(() => {
+    if (releaseDocuments.length > 0) {
+      setSelectedAction('confirm-delete')
+    } else {
+      handleDelete()
+    }
+  }, [handleDelete, releaseDocuments.length])
+
+  const archiveUnarchiveMenuItem = useMemo(() => {
+    if (!release?.state || release.state === 'archived')
+      return (
+        <MenuItem
+          onClick={handleUnarchive}
+          // TODO: disabled as CL action not yet impl
+          disabled
+          icon={UnarchiveIcon}
+          text={t('action.unarchive')}
+          data-testid="unarchive-release"
+        />
+      )
+
+    return (
+      <MenuItem
+        tooltipProps={{
+          disabled: ARCHIVABLE_STATES.includes(release.state) || isPerformingOperation,
+          content: t('action.archive.tooltip'),
+        }}
+        onClick={handleOnInitiateArchive}
+        icon={ArchiveIcon}
+        text={t('action.archive')}
+        data-testid="archive-release"
+        disabled={!ARCHIVABLE_STATES.includes(release.state)}
+      />
+    )
+  }, [handleOnInitiateArchive, isPerformingOperation, release.state, t])
+
+  const deleteMenuItem = useMemo(() => {
+    if (release.state !== 'archived') return null
+
+    return (
+      <MenuItem
+        onClick={handleOnInitiateDelete}
+        disabled={releaseMenuDisabled || isPerformingOperation}
+        icon={TrashIcon}
+        text={t('action.delete-release')}
+        data-testid="delete-release-button"
+        tone="default"
+      />
+    )
+  }, [handleOnInitiateDelete, isPerformingOperation, release.state, releaseMenuDisabled, t])
 
   return (
     <>
@@ -155,28 +295,8 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         id="release-menu"
         menu={
           <Menu>
-            {!release?.state || release.state === 'archived' ? (
-              <MenuItem
-                onClick={handleUnarchive}
-                // TODO: disabled as CL action not yet impl
-                disabled
-                icon={UnarchiveIcon}
-                text={t('action.unarchive')}
-                data-testid="unarchive-release"
-              />
-            ) : (
-              <MenuItem
-                tooltipProps={{
-                  disabled: ARCHIVABLE_STATES.includes(release.state) || isPerformingOperation,
-                  content: t('action.archive.tooltip'),
-                }}
-                onClick={handleOnInitiateArchive}
-                icon={ArchiveIcon}
-                text={t('action.archive')}
-                data-testid="archive-release"
-                disabled={!ARCHIVABLE_STATES.includes(release.state)}
-              />
-            )}
+            {archiveUnarchiveMenuItem}
+            {deleteMenuItem}
           </Menu>
         }
         popover={{
@@ -188,6 +308,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         }}
       />
       {confirmArchiveDialog}
+      {confirmDeleteDialog}
     </>
   )
 }
