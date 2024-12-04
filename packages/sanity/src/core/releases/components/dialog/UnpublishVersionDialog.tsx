@@ -1,6 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {usePerspective, useVersionOperations} from 'sanity'
+import {type CSSProperties, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -8,7 +7,13 @@ import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {Preview} from '../../../preview/components/Preview'
+import {getVersionFromId} from '../../../util/draftUtils'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
+import {type ReleaseDocument} from '../../store/types'
+import {useReleases} from '../../store/useReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../util/getReleaseTone'
 
 export function UnpublishVersionDialog(props: {
   onClose: () => void
@@ -18,10 +23,19 @@ export function UnpublishVersionDialog(props: {
   const {onClose, documentVersionId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const schema = useSchema()
-  const {selectedPerspective} = usePerspective()
   const {unpublishVersion} = useVersionOperations()
   const [isUnpublishing, setIsUnpublishing] = useState(false)
 
+  const {data, archivedReleases} = useReleases()
+
+  const releaseInDetail = data
+    .concat(archivedReleases)
+    .find(
+      (candidate) =>
+        getReleaseIdFromReleaseDocumentId(candidate._id) === getVersionFromId(documentVersionId),
+    )
+
+  const tone = getReleaseTone(releaseInDetail as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
   const handleUnpublish = useCallback(async () => {
@@ -67,10 +81,27 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title:
-                typeof selectedPerspective === 'string'
-                  ? selectedPerspective
-                  : selectedPerspective.metadata.title,
+              title: releaseInDetail?.metadata.title,
+            }}
+            components={{
+              Label: ({children}) => {
+                return (
+                  <span
+                    style={
+                      {
+                        color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
+                        backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
+                        borderRadius: 3,
+                        textDecoration: 'none',
+                        padding: '0px 2px',
+                        fontWeight: 500,
+                      } as CSSProperties
+                    }
+                  >
+                    {children}
+                  </span>
+                )
+              },
             }}
           />
         </Text>

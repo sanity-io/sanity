@@ -257,7 +257,7 @@ const releasesLocaleStrings = {
   'unpublish-dialog.action.unpublish': 'Yes, unpublish when releasing',
   /** Description for the unpublish dialog, explaining that it will create a draft if no draft exists at time of release */
   'unpublish-dialog.description.to-draft':
-    'This will unpublish the document as part of the <strong>{{title}}</strong> release, and create a draft if no draft exists at the time of release.',
+    'This will unpublish the document as part of the <Label>{{title}}</Label> release, and create a draft if no draft exists at the time of release.',
   /** Description for unpublish dialog, explaining that all changes made to this document will be lost */
   'unpublish-dialog.description.lost-changes':
     'Any changes made to this document version will be lost.',
