@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {diffInput, wrap} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
@@ -12,7 +13,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs'
-import {type SanityClient} from 'sanity'
 
 import {type Annotation, type ObjectDiff} from '../../field'
 import {wrapValue} from '../_legacy/history/history/diffValue'
@@ -64,7 +64,6 @@ function extractAnnotationForFromInput(
   meta: EventMeta,
 ): Annotation {
   if (meta) {
-    // The next transaction is where it disappeared:
     return annotationForTransactionIndex(transactions, meta.transactionIndex + 1, meta.event)
   }
 
@@ -204,6 +203,8 @@ export function getDocumentChanges({
 
       return remoteTransactions$.pipe(
         switchMap((remoteTx) => {
+          // When the user doesn't have a revision selected, so he is viewing the latest version of the document in the form.
+          // For this case, we can use the remote transactions to calculate the diff.
           const viewingLatest = !to?._rev
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
             if (viewingLatest && lastResolvedSince === sinceDoc._rev) {

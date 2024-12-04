@@ -43,6 +43,7 @@ export {
   useVersionOperations,
   VersionChip,
   versionDocumentExists,
+  VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'
 export * from './schema'

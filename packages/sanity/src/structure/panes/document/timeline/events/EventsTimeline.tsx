@@ -169,7 +169,7 @@ export const EventsTimeline = ({
             transition={{duration: 0.2, delay: 0.2}}
           >
             {/* We need this item to match the same height as the rest of the list items, which is 57px */}
-            <Flex align={'center'} justify={'center'} style={{height: `${ITEM_HEIGHT}px`}}>
+            <Flex align="center" justify="center" style={{height: ITEM_HEIGHT}}>
               <Spinner />
             </Flex>
           </TimelineItemWrapper>

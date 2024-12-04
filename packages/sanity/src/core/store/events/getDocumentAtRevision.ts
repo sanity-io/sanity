@@ -1,6 +1,6 @@
+import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith, tap} from 'rxjs/operators'
-import {type SanityClient, type SanityDocument} from 'sanity'
 
 import {type EventsStoreRevision} from './types'
 
