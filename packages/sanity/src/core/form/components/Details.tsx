@@ -1,5 +1,5 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
-import {Box, Flex, Inline, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -37,9 +37,10 @@ const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
 
 const Header = styled(Flex)`
   cursor: default;
+  line-height: 0;
 `
 
-const IconBox = styled(Box)`
+const IconBox = styled(Flex)`
   & > div > svg {
     transform: rotate(0);
     transition: transform 100ms;
@@ -61,8 +62,8 @@ export function Details(props: DetailsProps) {
   return (
     <Box {...restProps}>
       <HeaderButton type="button" onClick={handleToggle}>
-        <Header align="center">
-          <Inline>
+        <Header>
+          <Flex align="center">
             <IconBox data-open={open ? '' : undefined}>
               <Text size={1}>
                 <ToggleArrow open={open} />
@@ -70,11 +71,11 @@ export function Details(props: DetailsProps) {
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
             <Box flex={1} marginLeft={1}>
-              <Text size={1} weight="medium">
+              <Text textOverflow="ellipsis" size={1} weight="medium">
                 {title}
               </Text>
             </Box>
-          </Inline>
+          </Flex>
         </Header>
       </HeaderButton>
 

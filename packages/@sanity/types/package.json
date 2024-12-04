@@ -49,13 +49,13 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.22.5",
+    "@sanity/client": "^6.24.1",
     "@types/react": "^18.3.5"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "1.0.15",
+    "@sanity/insert-menu": "1.0.16",
     "@vitejs/plugin-react": "^4.3.3",
     "react": "^18.3.1",
     "rimraf": "^3.0.2",
