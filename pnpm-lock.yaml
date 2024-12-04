@@ -46,8 +46,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.7.2)
       '@sanity/mutate':
-        specifier: ^0.10.2
-        version: 0.10.2(debug@4.3.7)
+        specifier: ^0.11.1
+        version: 0.11.1(debug@4.3.7)
       '@sanity/pkg-utils':
         specifier: 6.11.14
         version: 6.11.14(@types/babel__core@7.20.5)(@types/node@22.10.0)(babel-plugin-react-compiler@19.0.0-beta-df7b47d-20241124)(typescript@5.7.2)
@@ -1101,8 +1101,8 @@ importers:
         specifier: ^6.24.1
         version: 6.24.1(debug@4.3.7)
       '@sanity/mutate':
-        specifier: ^0.10.2
-        version: 0.10.2(debug@4.3.7)
+        specifier: ^0.11.1
+        version: 0.11.1(debug@4.3.7)
       '@sanity/types':
         specifier: 3.65.1
         version: link:../types
@@ -4556,10 +4556,6 @@ packages:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/mutate@0.10.2':
-    resolution: {integrity: sha512-ZkaB3Xkn3H0nBXcWKtyygUmTW/1aRI/XV0+wcfANtBWHQRWAwFQh5Xh6j5bYDduOA31N+XJdYaLcZsv1u5n3uw==}
-    engines: {node: '>=18'}
-
   '@sanity/mutate@0.11.0-canary.3':
     resolution: {integrity: sha512-zZQo3rsjsTZBlRi+D3S90MebvzWNtdRzb6A0s07gEO2PtCtc5LEUSyPCLvIZiv6e2YMjBmMmuref4IB8VixKnw==}
     engines: {node: '>=18'}
@@ -4568,6 +4564,10 @@ packages:
     peerDependenciesMeta:
       xstate:
         optional: true
+
+  '@sanity/mutate@0.11.1':
+    resolution: {integrity: sha512-72chdEK8s9h1BLE/n7tOkCOGnrfFV/cH1fpvH/PpcxhpUY7wg6vvL7/durpXLEchWCO1ToS5DcFrCfmy1iKOrw==}
+    engines: {node: '>=18'}
 
   '@sanity/mutator@3.37.2':
     resolution: {integrity: sha512-F0MvseVtgPBaPxNZtSidF6BQeygviYThgmhRbjZ89AhlRhWiLODvLakdogFmwD1NEQ0tpKn+8m0pQIOHgt2C3w==}
@@ -14542,18 +14542,6 @@ snapshots:
       '@sanity/color': 3.0.6
       react: 18.3.1
 
-  '@sanity/mutate@0.10.2(debug@4.3.7)':
-    dependencies:
-      '@sanity/client': 6.24.1(debug@4.3.7)
-      '@sanity/diff-match-patch': 3.1.1
-      hotscript: 1.0.13
-      lodash: 4.17.21
-      mendoza: 3.0.7
-      nanoid: 5.0.7
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - debug
-
   '@sanity/mutate@0.11.0-canary.3(xstate@5.19.0)':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.3.7)
@@ -14564,6 +14552,18 @@ snapshots:
       rxjs: 7.8.1
     optionalDependencies:
       xstate: 5.19.0
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/mutate@0.11.1(debug@4.3.7)':
+    dependencies:
+      '@sanity/client': 6.24.1(debug@4.3.7)
+      '@sanity/diff-match-patch': 3.1.1
+      hotscript: 1.0.13
+      lodash: 4.17.21
+      mendoza: 3.0.7
+      nanoid: 5.0.7
+      rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
 
