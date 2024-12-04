@@ -57,7 +57,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
-
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.

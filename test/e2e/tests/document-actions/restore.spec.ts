@@ -1,25 +1,22 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`documents can be restored to an earlier revision`, async ({
-  page,
-  createDraftDocument,
-}) => {
+test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-Publish')
-  const restoreButton = page.getByTestId('action-Restore')
+  const publishButton = page.getByTestId('action-publish')
+  const restoreButton = page.getByTestId('action-reverttorevision')
   const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
-  const timelineMenuOpenButton = page.getByTestId('timeline-menu-open-button')
+  const contextMenuButton = page
+    .getByTestId('document-pane')
+    .getByTestId('pane-context-menu-button')
+  const historyMenuButton = page.getByTestId('action-history')
+  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
+
   const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(2)
-  const title = page.getByTestId('document-panel-document-title')
+  const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/book')
@@ -32,7 +29,7 @@ test.skip(`documents can be restored to an earlier revision`, async ({
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)
@@ -40,8 +37,11 @@ test.skip(`documents can be restored to an earlier revision`, async ({
   await expect(documentStatus).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await timelineMenuOpenButton.click()
-  await expect(previousRevisionButton).toBeVisible()
+  await contextMenuButton.click()
+  await expect(contextMenuButton).toBeVisible()
+  await historyMenuButton.click()
+  await expect(historyPane).toBeVisible()
+
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -49,25 +49,28 @@ test.skip(`documents can be restored to an earlier revision`, async ({
   // Wait for the revision to be restored.
   await restoreButton.click()
   await confirmButton.click()
-  await expect(title).toHaveText(titleA)
+  await expect(titleInput).toHaveValue(titleA)
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`respects overridden restore action`, async ({page, createDraftDocument}) => {
+test(`respects overridden restore action`, async ({page, createDraftDocument}) => {
+  // trying to avoid flaky test based on shorter timeout
+  test.slow()
   const titleA = 'Title A'
   const titleB = 'Title B'
 
   const publishKeypress = () => page.locator('body').press('Control+Alt+p')
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const restoreButton = page.getByTestId('action-Restore')
+  const restoreButton = page.getByTestId('action-reverttorevision')
   const customRestoreButton = page.getByRole('button').getByText('Custom restore')
   const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
-  const timelineMenuOpenButton = page.getByTestId('timeline-menu-open-button')
+  const contextMenuButton = page
+    .getByTestId('document-pane')
+    .getByTestId('pane-context-menu-button')
+  const historyMenuButton = page.getByTestId('action-history')
+  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
+
   const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(2)
+  const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;documentActionsTest')
@@ -77,7 +80,6 @@ test.skip(`respects overridden restore action`, async ({page, createDraftDocumen
     state: 'visible',
   })
 
-  const title = page.getByTestId('document-panel-document-title')
   await titleInput.fill(titleA)
 
   // Wait for the document to be published.
@@ -91,7 +93,7 @@ test.skip(`respects overridden restore action`, async ({page, createDraftDocumen
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)
@@ -99,8 +101,10 @@ test.skip(`respects overridden restore action`, async ({page, createDraftDocumen
   await expect(documentStatus).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await timelineMenuOpenButton.click()
-  await expect(previousRevisionButton).toBeVisible()
+  await contextMenuButton.click()
+  await expect(contextMenuButton).toBeVisible()
+  await historyMenuButton.click()
+  await expect(historyPane).toBeVisible()
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -122,24 +126,24 @@ test.skip(`respects overridden restore action`, async ({page, createDraftDocumen
     {selector: '[data-testid="document-panel-document-title"]', testTitle: titleB},
   )
 
-  await expect(title).toHaveText(titleA)
+  await expect(titleInput).toHaveValue(titleA)
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`respects removed restore action`, async ({page, createDraftDocument}) => {
+test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-Publish')
-  const restoreButton = page.getByTestId('action-Restore')
-  const timelineMenuOpenButton = page.getByTestId('timeline-menu-open-button')
+  const publishButton = page.getByTestId('action-publish')
+  const restoreButton = page.getByTestId('action-reverttorevision')
+  const contextMenuButton = page
+    .getByTestId('document-pane')
+    .getByTestId('pane-context-menu-button')
+  const historyMenuButton = page.getByTestId('action-history')
+  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
+
   const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(2)
-  const title = page.getByTestId('document-panel-document-title')
+  const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
@@ -152,7 +156,7 @@ test.skip(`respects removed restore action`, async ({page, createDraftDocument})
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)
@@ -160,8 +164,10 @@ test.skip(`respects removed restore action`, async ({page, createDraftDocument})
   await expect(documentStatus).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await timelineMenuOpenButton.click()
-  await expect(previousRevisionButton).toBeVisible()
+  await contextMenuButton.click()
+  await expect(contextMenuButton).toBeVisible()
+  await historyMenuButton.click()
+  await expect(historyPane).toBeVisible()
   await previousRevisionButton.click({force: true})
 
   await expect(titleInput).toHaveValue(titleA)
@@ -170,11 +176,7 @@ test.skip(`respects removed restore action`, async ({page, createDraftDocument})
   await expect(restoreButton).not.toBeVisible()
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`user defined restore actions should not appear in any other document action group UI`, async ({
+test(`user defined restore actions should not appear in any other document action group UI`, async ({
   page,
   createDraftDocument,
 }) => {

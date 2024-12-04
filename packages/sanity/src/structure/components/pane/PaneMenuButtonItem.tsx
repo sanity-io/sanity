@@ -6,6 +6,7 @@ import {useIntentLink} from 'sanity/router'
 
 import {MenuGroup, MenuItem, type PopoverProps} from '../../../ui-components'
 import {type Intent} from '../../structureBuilder'
+import {toLowerCaseNoSpaces} from '../../util/toLowerCaseNoSpaces'
 import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 
 const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
@@ -108,6 +109,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
         pressed={node.selected}
         text={title}
         tone={node.tone}
+        data-testid={`action-${toLowerCaseNoSpaces(node.title)}`}
       />
     </TooltipOfDisabled>
   )

@@ -40,6 +40,9 @@ const DEFAULT_DECORATORS = [
 test.describe('Portable Text Input', () => {
   test.describe('Decorators', () => {
     test('Render default decorators with keyboard shortcuts', async ({mount, page}) => {
+      // avoid flakiness to make sure the test has the best chance despite being slow
+      test.slow()
+
       const {
         getModifierKey,
         getFocusedPortableTextEditor,

@@ -24,7 +24,7 @@ test(`published documents can be deleted`, async ({page, createDraftDocument}) =
   await page.waitForTimeout(1000)
 
   // Wait for the document to be published.
-  await page.getByTestId('action-Publish').click()
+  await page.getByTestId('action-publish').click()
   expect(await paneFooter.textContent()).toMatch(/published/i)
 
   await page.getByTestId('action-menu-button').click()
