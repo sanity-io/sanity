@@ -88,7 +88,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 )}
                 {!loading && (
                   <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    <Box flex={1} overflow="auto" padding={2}>
+                    <Box flex={1} overflow="auto">
                       {title}
                     </Box>
                   </TitleText>
@@ -96,7 +96,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               </TitleCard>
 
               {actions && (
-                <Box hidden={collapsed} padding={3}>
+                <Box hidden={collapsed}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}
