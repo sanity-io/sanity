@@ -345,6 +345,11 @@ export default defineConfig([
     title: 'Presentation Studio',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {
+      // TODO: Switched off because Actions API doesn't support versions (yet).
+      enabled: false,
+    },
     plugins: [
       debugSecrets(),
       presentationTool({
