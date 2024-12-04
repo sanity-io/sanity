@@ -2,6 +2,7 @@ import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {releasesUsEnglishLocaleBundle} from '../../i18n'
 import {useReleaseOperationsMockReturn} from '../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useVersionOperations} from '../useVersionOperations'
 import {usePerspectiveMockReturn} from './__mocks__/usePerspective.mock'
@@ -20,7 +21,9 @@ describe('useVersionOperations', () => {
   })
 
   it('should create a version successfully', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
     const {result} = renderHook(() => useVersionOperations(), {wrapper})
 
     await act(async () => {
@@ -36,7 +39,9 @@ describe('useVersionOperations', () => {
   })
 
   it('should discard a version successfully', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
     const {result} = renderHook(() => useVersionOperations(), {wrapper})
 
     await act(async () => {

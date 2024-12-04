@@ -43,14 +43,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const renderRowActions: ({datum}: {datum: BundleDocumentRow | unknown}) => JSX.Element =
-    useCallback(
-      ({datum}) => {
-        const document = datum as BundleDocumentRow
+    useCallback(({datum}) => {
+      const document = datum as BundleDocumentRow
 
-        return <DocumentActions document={document} releaseTitle={release.metadata.title} />
-      },
-      [release.metadata.title],
-    )
+      return <DocumentActions document={document} />
+    }, [])
 
   const documentTableColumnDefs = useMemo(
     () => getDocumentTableColumnDefs(release._id, t),

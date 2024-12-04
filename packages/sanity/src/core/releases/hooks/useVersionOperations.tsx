@@ -4,6 +4,7 @@ import {useToast} from '@sanity/ui'
 import {Translate, useTranslation} from '../../i18n'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
+import {releasesLocaleNamespace} from '../i18n'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {usePerspective} from './usePerspective'
 
@@ -23,7 +24,7 @@ export function useVersionOperations(): VersionOperationsValue {
 
   const {setPerspectiveFromReleaseId} = usePerspective()
   const toast = useToast()
-  const {t} = useTranslation()
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const handleCreateVersion = async (
     releaseId: string,
@@ -57,7 +58,7 @@ export function useVersionOperations(): VersionOperationsValue {
         description: (
           <Translate
             t={t}
-            i18nKey={'release.action.discard-version.success'}
+            i18nKey={'action.discard-version.success'}
             values={{title: document.title as string}}
           />
         ),
@@ -66,7 +67,7 @@ export function useVersionOperations(): VersionOperationsValue {
       toast.push({
         closable: true,
         status: 'error',
-        title: t('release.action.discard-version.failure'),
+        title: t('action.discard-version.failure'),
         description: err.message,
       })
     }

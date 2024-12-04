@@ -3,6 +3,7 @@ import * as sanity from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {VersionContextMenu} from '../VersionContextMenu'
 
 vi.mock('sanity/router', () => ({
@@ -55,7 +56,9 @@ describe('VersionContextMenu', () => {
   }
 
   it('renders the menu items correctly', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
@@ -69,7 +72,9 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateRelease when "New release" is clicked', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
@@ -81,7 +86,9 @@ describe('VersionContextMenu', () => {
   })
 
   it('hides discard version on published chip', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
     const publishedProps = {
       ...defaultProps,
       documentId: 'testid',
@@ -97,7 +104,9 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onDiscard when "Discard version" is clicked', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
@@ -108,7 +117,9 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateRelease when a "new release" is clicked', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
@@ -120,7 +131,9 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateVersion when a release is clicked and sets the perspective to the release', async () => {
-    const wrapper = await createTestProvider()
+    const wrapper = await createTestProvider({
+      resources: [releasesUsEnglishLocaleBundle],
+    })
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 

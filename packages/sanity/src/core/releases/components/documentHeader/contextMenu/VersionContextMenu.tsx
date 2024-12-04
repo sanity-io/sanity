@@ -8,6 +8,7 @@ import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
@@ -42,7 +43,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     disabled,
     locked,
   } = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(releasesLocaleNamespace)
   const isPublished = isPublishedId(documentId) && !isVersion
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -99,7 +100,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             <MenuItem
               icon={TrashIcon}
               onClick={onDiscard}
-              text={t('release.action.discard-version')}
+              text={t('action.discard-version')}
               disabled={disabled || locked}
             />
           </>

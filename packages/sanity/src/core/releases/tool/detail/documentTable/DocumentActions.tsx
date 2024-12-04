@@ -6,18 +6,13 @@ import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {DiscardVersionDialog} from '../../../components'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export const DocumentActions = memo(
-  function DocumentActions({
-    document,
-    releaseTitle,
-  }: {
-    document: BundleDocumentRow
-    releaseTitle: string
-  }) {
+  function DocumentActions({document}: {document: BundleDocumentRow}) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
-    const {t: coreT} = useTranslation()
+    const {t} = useTranslation(releasesLocaleNamespace)
 
     return (
       <>
@@ -28,7 +23,7 @@ export const DocumentActions = memo(
             menu={
               <Menu>
                 <MenuItem
-                  text={coreT('release.action.discard-version')}
+                  text={t('action.discard-version')}
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                 />
@@ -46,6 +41,5 @@ export const DocumentActions = memo(
       </>
     )
   },
-  (prev, next) =>
-    prev.document.memoKey === next.document.memoKey && prev.releaseTitle === next.releaseTitle,
+  (prev, next) => prev.document.memoKey === next.document.memoKey,
 )
