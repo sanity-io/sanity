@@ -8,6 +8,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
+import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
@@ -57,26 +58,39 @@ export const getDocumentTableColumnDefs: (
         <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
-    cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          {datum.document.publishedDocumentExists ? (
-            <Badge radius={2} tone={'caution'}>
-              {t('table-body.action.change')}
-            </Badge>
-          ) : (
-            <Badge radius={2} tone={'positive'}>
-              {t('table-body.action.add')}
-            </Badge>
-          )}
-          {datum.document && (
+    cell: ({cellProps, datum}) => {
+      const willBeUnpublished = isGoingToUnpublish(datum.document)
+      const BadgeToRender = () => {
+        if (willBeUnpublished) {
+          return (
             <Badge radius={2} tone={'critical'}>
               {t('table-body.action.unpublish')}
             </Badge>
-          )}
-        </Box>
-      </Flex>
-    ),
+          )
+        }
+        if (datum.document.publishedDocumentExists) {
+          return (
+            <Badge radius={2} tone={'caution'}>
+              {t('table-body.action.change')}
+            </Badge>
+          )
+        }
+
+        return (
+          <Badge radius={2} tone={'positive'}>
+            {t('table-body.action.add')}
+          </Badge>
+        )
+      }
+
+      return (
+        <Flex align="center" {...cellProps}>
+          <Box paddingX={2}>
+            <BadgeToRender />
+          </Box>
+        </Flex>
+      )
+    },
   },
   {
     id: 'document._type',
