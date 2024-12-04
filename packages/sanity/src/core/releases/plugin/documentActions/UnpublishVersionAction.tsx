@@ -19,7 +19,7 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const UnpublishVersionAction = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, bundleId, version, published} = props
+  const {id, type, release, published, version} = props
   const currentUser = useCurrentUser()
   const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -28,7 +28,7 @@ export const UnpublishVersionAction = (
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: bundleId,
+    version: release,
     permission: 'unpublish',
   })
 

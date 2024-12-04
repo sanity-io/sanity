@@ -19,7 +19,7 @@ export function UnpublishVersionDialog(props: {
   const {onClose, documentVersionId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const schema = useSchema()
-  const {currentGlobalBundle} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const {unpublishVersion} = useVersionOperations()
   const [isUnpublishing, setIsUnpublishing] = useState(false)
 
@@ -68,9 +68,9 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: isString(currentGlobalBundle)
-                ? currentGlobalBundle
-                : currentGlobalBundle.metadata.title,
+              title: isString(selectedPerspective)
+                ? selectedPerspective
+                : selectedPerspective.metadata.title,
             }}
           />
         </Text>
