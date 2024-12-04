@@ -1,10 +1,9 @@
 import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {type DefinedTelemetryLog} from '@sanity/telemetry'
-import {useTelemetry} from '@sanity/telemetry/react'
+import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
-import {useRouter} from '../../../../../router/useRouter'
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {ArchivedRelease, DeletedRelease} from '../../../__telemetry__/releases.telemetry'
@@ -22,7 +21,6 @@ export type ReleaseMenuButtonProps = {
 type ReleaseAction = 'archive' | 'delete'
 
 interface ReleaseActionMap {
-  actionId: string
   dialogId: string
   dialogHeaderI18nKey: string
   dialogDescriptionSingularI18nKey: string
@@ -35,7 +33,6 @@ interface ReleaseActionMap {
 
 const RELEASE_ACTION_MAP: Record<ReleaseAction, ReleaseActionMap> = {
   delete: {
-    actionId: 'confirm-delete',
     dialogId: 'confirm-delete-dialog',
     dialogHeaderI18nKey: 'delete-dialog.confirm-delete.header',
     dialogDescriptionSingularI18nKey: 'delete-dialog.confirm-delete-description_one',
@@ -46,7 +43,6 @@ const RELEASE_ACTION_MAP: Record<ReleaseAction, ReleaseActionMap> = {
     telemetry: DeletedRelease,
   },
   archive: {
-    actionId: 'confirm-archive',
     dialogId: 'confirm-archive-dialog',
     dialogHeaderI18nKey: 'archive-dialog.confirm-archive-header',
     dialogDescriptionSingularI18nKey: 'archive-dialog.confirm-archive-description_one',
