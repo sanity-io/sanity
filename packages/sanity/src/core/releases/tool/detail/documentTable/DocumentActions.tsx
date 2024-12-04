@@ -8,6 +8,7 @@ import {useTranslation} from '../../../../i18n'
 import {DiscardVersionDialog} from '../../../components'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 export const DocumentActions = memo(
@@ -22,6 +23,7 @@ export const DocumentActions = memo(
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
     const {t: coreT} = useTranslation()
     const {t} = useTranslation(releasesLocaleNamespace)
+    const isAlreadyUnpublished = isGoingToUnpublish(document.document)
 
     return (
       <>
@@ -43,7 +45,7 @@ export const DocumentActions = memo(
                 <MenuItem
                   text={t('action.unpublish')}
                   icon={UnpublishIcon}
-                  disabled={!document.document.publishedDocumentExists}
+                  disabled={!document.document.publishedDocumentExists || isAlreadyUnpublished}
                   onClick={() => setShowUnpublishDialog(true)}
                 />
               </Menu>

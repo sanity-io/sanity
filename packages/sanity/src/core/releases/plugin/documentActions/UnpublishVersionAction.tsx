@@ -11,6 +11,7 @@ import {useDocumentPairPermissions} from '../../../store/_legacy/grants/document
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../i18n'
+import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
 /**
  * @internal
@@ -22,6 +23,7 @@ export const UnpublishVersionAction = (
   const currentUser = useCurrentUser()
   const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
+  const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -65,7 +67,7 @@ export const UnpublishVersionAction = (
     label: t('action.unpublish-doc-actions'),
     icon: UnpublishIcon,
     onHandle: handleDialogOpen,
-    disabled: !isPublished,
+    disabled: !isPublished || isAlreadyUnpublished,
     /** @todo should be switched once we have the document actions updated */
     title: t('action.unpublish-doc-actions'),
   }
