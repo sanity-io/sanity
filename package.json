@@ -185,8 +185,6 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/insert-menu": "1.0.11-release.4",
-      "@sanity/presentation": "1.17.8-release.4",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
