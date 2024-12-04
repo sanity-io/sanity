@@ -17,7 +17,6 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
 
   const timelineItemButton = page.getByTestId('timeline-item-button')
   const previousRevisionButton = timelineItemButton.nth(1)
-  const title = page.getByTestId('document-panel-document-title')
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/book')
@@ -30,7 +29,7 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)
@@ -50,10 +49,12 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   // Wait for the revision to be restored.
   await restoreButton.click()
   await confirmButton.click()
-  await expect(title).toHaveText(titleA)
+  await expect(titleInput).toHaveValue(titleA)
 })
 
 test(`respects overridden restore action`, async ({page, createDraftDocument}) => {
+  // trying to avoid flaky test based on shorter timeout
+  test.slow()
   const titleA = 'Title A'
   const titleB = 'Title B'
 
@@ -79,7 +80,6 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
     state: 'visible',
   })
 
-  const title = page.getByTestId('document-panel-document-title')
   await titleInput.fill(titleA)
 
   // Wait for the document to be published.
@@ -93,7 +93,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)
@@ -126,7 +126,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
     {selector: '[data-testid="document-panel-document-title"]', testTitle: titleB},
   )
 
-  await expect(title).toHaveText(titleA)
+  await expect(titleInput).toHaveValue(titleA)
 })
 
 test(`respects removed restore action`, async ({page, createDraftDocument}) => {
@@ -144,7 +144,6 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
 
   const timelineItemButton = page.getByTestId('timeline-item-button')
   const previousRevisionButton = timelineItemButton.nth(1)
-  const title = page.getByTestId('document-panel-document-title')
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
@@ -157,7 +156,7 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
 
   // Change the title.
   await titleInput.fill(titleB)
-  await expect(title).toHaveText(titleB)
+  await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(1_000)

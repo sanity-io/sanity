@@ -56,9 +56,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
-  const currentTitle = useDocumentTitle()
-  const {title} = value ?? currentTitle
-
+  const {title} = useDocumentTitle()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -185,11 +183,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
             </Box>
           ) : (
             <>
-              <FormHeader
-                documentId={documentId}
-                schemaType={formState.schemaType}
-                title={title as string}
-              />
+              <FormHeader documentId={documentId} schemaType={formState.schemaType} title={title} />
               <FormBuilder
                 __internal_fieldActions={fieldActions}
                 __internal_patchChannel={patchChannel}
