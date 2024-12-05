@@ -136,7 +136,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     return (
       <EventsTimeline
         events={events}
-        onExpand={expandEvent}
+        fetchEventChildren={expandEvent}
         hasMoreEvents={Boolean(nextCursor)}
         selectedEventId={event?.id}
         onLoadMore={handleLoadMore}

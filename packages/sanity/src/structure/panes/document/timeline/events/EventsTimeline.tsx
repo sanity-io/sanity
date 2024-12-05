@@ -23,7 +23,7 @@ interface TimelineProps {
   selectedEventId?: string
   onLoadMore: () => void
   onSelect: (event: DocumentGroupEvent) => void
-  onExpand: (event: DocumentGroupEvent) => Promise<void>
+  fetchEventChildren: (event: DocumentGroupEvent) => Promise<void>
   /**
    * The list needs a predefined max height for the scroller to work.
    */
@@ -54,7 +54,7 @@ export const EventsTimeline = ({
   onLoadMore,
   onSelect,
   listMaxHeight = 'calc(100vh - 280px)',
-  onExpand,
+  fetchEventChildren,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
@@ -107,7 +107,7 @@ export const EventsTimeline = ({
           next.add(parentId)
           return next
         })
-        await onExpand(event)
+        await fetchEventChildren(event)
         setExpandingParents((prev) => {
           const next = new Set(prev)
           next.delete(parentId)
@@ -115,7 +115,7 @@ export const EventsTimeline = ({
         })
       }
     },
-    [onExpand, setExpandingParents],
+    [fetchEventChildren, setExpandingParents],
   )
 
   const handleSelectChunk = useCallback(

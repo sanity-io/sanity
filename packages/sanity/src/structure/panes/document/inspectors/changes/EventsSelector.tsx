@@ -94,7 +94,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
               !initialLoad ? (
                 <EventsTimeline
                   events={events}
-                  onExpand={expandEvent}
+                  fetchEventChildren={expandEvent}
                   hasMoreEvents={Boolean(nextCursor)}
                   // If we have a revision, we select it, otherwise we select the first event
                   selectedEventId={revision?.revisionId || events[0]?.id}
