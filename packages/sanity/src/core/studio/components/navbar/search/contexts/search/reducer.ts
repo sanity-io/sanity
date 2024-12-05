@@ -179,6 +179,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         ordering: getOrderings({searchStrategy: state.strategy}).relevance,
         terms: stripRecent(state.terms),
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           hasLocal: false,
@@ -189,6 +191,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         ordering: action.ordering,
         terms: stripRecent(state.terms),
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           hasLocal: false,
@@ -262,6 +266,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         }),
         filters,
         lastAddedFilter: newFilter,
+        cursor: null,
+        nextCursor: null,
         terms: {
           ...state.terms,
           filter: generateFilterQuery({
@@ -288,6 +294,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           types: state.terms.types,
         }),
         filters,
+        cursor: null,
+        nextCursor: null,
         terms: {
           ...state.terms,
           filter: generateFilterQuery({
@@ -319,6 +327,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           types: state.terms.types,
         }),
         filters,
+        cursor: null,
+        nextCursor: null,
         terms: {
           ...state.terms,
           filter: generateFilterQuery({
@@ -362,6 +372,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         filters,
+        cursor: null,
+        nextCursor: null,
         terms: {
           ...state.terms,
           filter: generateFilterQuery({
@@ -391,6 +403,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         filters,
+        cursor: null,
+        nextCursor: null,
         terms: {
           ...state.terms,
           filter: generateFilterQuery({
