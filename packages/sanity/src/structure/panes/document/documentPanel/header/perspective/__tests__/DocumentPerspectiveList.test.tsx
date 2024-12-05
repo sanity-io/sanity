@@ -1,19 +1,17 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {useReleases} from 'sanity'
+import {type ReleaseDocument, useReleases} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease} from '../../../../../../../core/releases/__fixtures__/release.fixture'
-import {useReleasesMockReturn} from '../../../../../../../core/releases/store/__tests__/__mocks/useReleases.mock'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useReleases: vi.fn(() => useReleasesMockReturn),
+  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   SANITY_VERSION: '0.0.0',
 }))
 
@@ -45,11 +43,24 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockCurrent: ReleaseDocument = {
+  _updatedAt: '2024-07-12T10:39:32Z',
+  createdBy: 'pzAhBTkNX',
+  _id: '_.releases.spring-drop',
+  _type: 'system.release',
+  metadata: {
+    description: 'What a spring drop, allergies galore 🌸',
+    releaseType: 'asap',
+    title: 'Spring Drop',
+  },
+  _createdAt: '2024-07-02T11:37:51Z',
+  name: 'spring-drop',
+  state: 'scheduled',
+}
 
 describe('DocumentPerspectiveList', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseReleases.mockReturnValue(useReleasesMockReturn)
 
     /** @todo create a useDocumentPane fixture */
     mockUseDocumentPane.mockReturnValue({
@@ -68,27 +79,29 @@ describe('DocumentPerspectiveList', () => {
 
   it('should render the release chip when it has a release version', async () => {
     mockUseReleases.mockReturnValue({
-      ...useReleasesMockReturn,
-      data: [activeASAPRelease],
+      loading: false,
+      data: [mockCurrent],
       archivedReleases: [],
+      dispatch: vi.fn(),
+      releasesIds: [],
     })
     mockUseDocumentPane.mockReturnValue({
-      documentVersions: [activeASAPRelease],
+      documentVersions: [mockCurrent],
       displayed: {
-        _id: activeASAPRelease._id,
+        _id: 'versions.spring-drop.KJAiOpAH5r6P3dWt1df9ql',
       },
     })
 
     const wrapper = await createTestProvider()
     render(<DocumentPerspectiveList />, {wrapper})
 
-    expect(screen.getByRole('button', {name: activeASAPRelease.metadata.title})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Spring Drop'})).toBeInTheDocument()
   })
 
   describe('disabled chips', () => {
     it('should disable the "Published" chip when there is no published document', async () => {
       mockUseDocumentPane.mockReturnValue({
-        documentVersions: [activeASAPRelease],
+        documentVersions: [mockCurrent],
         editState: {
           id: 'document-id',
           type: 'document-type',
