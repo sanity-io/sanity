@@ -127,12 +127,12 @@ export function ImageToolInput(props: ImageToolInputProps) {
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
             <Stack space={4}>
-              <Text size={1}>{t('inputs.imagetool.svg-warning.title')}</Text>
-              <Details title={t('inputs.imagetool.svg-warning.expand-developer-info')}>
+              <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
+              <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
                 <Text size={1}>
                   <Translate
                     t={t}
-                    i18nKey="inputs.imagetool.svg-warning.developer-info"
+                    i18nKey="inputs.imagetool.vector-warning.developer-info"
                     components={{
                       ImageUrlDocumentationLink: ({children}) => (
                         <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">

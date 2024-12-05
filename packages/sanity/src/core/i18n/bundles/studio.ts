@@ -653,15 +653,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
   /** Error: `{{errorMessage}}` */
   'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
-  /** SVG images are not adjusted for hotspot and crop when served from the Sanity image. If you want the below hotspot and crop settings to apply, make sure to append `fp=jpg` to the image url, or call `format('jpg')` if using `@sanity/image-url` */
-  'inputs.imagetool.svg-warning.developer-info': `The Asset Pipeline does not support hotspot and crop for SVG as an output image format. To enable hotspot & crop, output this image to any of the supported bitmap formats. For example: <code>fm=jpg</code> to the <ImageUrlDocumentationLink>Image URL</ImageUrlDocumentationLink> or call <code>.format('png')</code> with <ImageUrlPackageDocumentationLink>@sanity/image-url</ImageUrlPackageDocumentationLink>.`,
-  /** See developer info */
-  'inputs.imagetool.svg-warning.expand-developer-info': 'See developer info',
-  /** Gotcha: Serving SVGs with hotspot and crop from the Sanity Image API */
-  'inputs.imagetool.svg-warning.title':
-    "Warning: Hotspot and crop might not be applied to this image where it's presented.",
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
+  /** Warnings displayed to developers when using the crop/hotspot tool on vector images, notifying them that crops/hotspot are not respected when serving the image in vector format. For the crop/hotspot to apply, images must be served in a raster format such as JPG or PNG, by appending eg `fm=jpg` to the image url, or calling `format('jpg')` if using `@sanity/image-url` */
+  'inputs.imagetool.vector-warning.developer-info': `The Asset Pipeline does not support hotspot and crop for vector formats. To enable hotspot & crop, output this image to any of the supported raster formats. For example: <code>fm=jpg</code> to the <ImageUrlDocumentationLink>image URL</ImageUrlDocumentationLink> or call <code>.format('png')</code> with <ImageUrlPackageDocumentationLink>@sanity/image-url</ImageUrlPackageDocumentationLink>.`,
+  /** See developer info */
+  'inputs.imagetool.vector-warning.expand-developer-info': 'See developer info',
+  /** Gotcha: Serving vector images with hotspot and crop from the Sanity Image API */
+  'inputs.imagetool.vector-warning.title':
+    "Warning: Hotspot and crop might not be applied to this image where it's presented.",
   /** Convert to `{{targetType}}` */
   'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */
