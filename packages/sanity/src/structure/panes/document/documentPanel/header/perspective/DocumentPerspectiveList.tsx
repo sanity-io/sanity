@@ -114,7 +114,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             )}
           </Text>
         }
-        disabled={editState?.liveEdit ? false : !editState?.published}
+        disabled={editState?.liveEdit || !editState?.published}
         onClick={handleBundleChange('published')}
         selected={
           /** the publish is selected when:
