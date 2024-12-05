@@ -629,10 +629,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     // there is a risk of data loss, so we disable editing in this case
     const isLiveEditAndDraftPerspective = liveEdit && !selectedPerspectiveName
     const isLiveEditAndPublishedPerspective = liveEdit && selectedPerspectiveName === 'published'
-
     const isSystemPerspectiveApplied =
-      isLiveEditAndPublishedPerspective ||
-      (selectedPerspectiveName ? selectedPerspectiveName && selectedReleaseId : true)
+      isLiveEditAndPublishedPerspective || (selectedPerspectiveName ? existsInBundle : true)
 
     const isReleaseLocked =
       typeof selectedPerspective === 'object' && 'state' in selectedPerspective
@@ -640,7 +638,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         : false
 
     return (
-      (selectedPerspectiveName && !existsInBundle) ||
       !isSystemPerspectiveApplied ||
       !ready ||
       revisionId !== null ||
@@ -664,7 +661,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.transactionSyncLock?.enabled,
     liveEdit,
     selectedPerspectiveName,
-    selectedReleaseId,
     selectedPerspective,
     existsInBundle,
     ready,
