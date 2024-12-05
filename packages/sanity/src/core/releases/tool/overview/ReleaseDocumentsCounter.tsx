@@ -1,4 +1,4 @@
-import {AddIcon, EditIcon, RemoveIcon} from '@sanity/icons'
+import {AddIcon, EditIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
 
@@ -12,7 +12,7 @@ type Props = {
 }
 
 interface CategoryChange {
-  type: 'added' | 'changed' | 'removed'
+  type: 'added' | 'changed'
   tone: React.ComponentProps<typeof ToneIcon>['tone']
   count: number
 }
@@ -20,7 +20,6 @@ interface CategoryChange {
 const CHANGE_ICON_MAP: Record<CategoryChange['type'], React.FC> = {
   added: AddIcon,
   changed: EditIcon,
-  removed: RemoveIcon,
 }
 
 export const ReleaseDocumentsCounter = ({releaseDocumentMetadata}: Props) => {
@@ -33,8 +32,6 @@ export const ReleaseDocumentsCounter = ({releaseDocumentMetadata}: Props) => {
   const documentCountGroups: CategoryChange[] = [
     {type: 'added', tone: 'primary', count: newDocumentCount},
     {type: 'changed', tone: 'caution', count: changedExistingDocumentCount},
-    {type: 'removed', tone: 'critical', count: 0},
-    // @todo
   ]
 
   return (
