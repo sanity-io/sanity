@@ -137,13 +137,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {actions, connectionState, editState, revisionId} = useDocumentPane()
+  const {actions, connectionState, editState, revisionId: revision} = useDocumentPane()
 
-  const disabled = (editState?.draft || editState?.published || {})._rev === revisionId
-  const actionProps = useMemo(
-    () => ({...(editState || {}), revision: revisionId}),
-    [editState, revisionId],
-  )
+  const disabled = (editState?.draft || editState?.published || {})._rev === revision
+  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
 
   // If multiple `restore` actions are defined, ensure only the final one is used.
   const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])

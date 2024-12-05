@@ -31,7 +31,6 @@ import {
   type PatchEvent,
   setAtPath,
   type StateTree,
-  type TimelineStore,
   toMutationPatches,
   useConnectionState,
   useCopyPaste,
@@ -65,32 +64,11 @@ import {
 } from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps} from './types'
+import {
+  type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
+  type HistoryStoreProps,
+} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
-
-interface HistoryStoreProps {
-  store?: TimelineStore
-  error: Error | null
-
-  // TODO: Consider removing this and using the revisionId as the indicator for it
-  onOlderRevision: boolean
-  revisionId: string | null
-  revisionDocument: SanityDocument | null
-
-  sinceDocument: SanityDocument | null
-
-  ready: boolean
-  /**
-   * Whether this timeline is fully loaded and completely empty (true for new documents)
-   * It can be `null` when the chunks hasn't loaded / is not known
-   */
-  isPristine: boolean
-
-  /**
-   * The id of the _rev of the last non-deleted document. TODO: Consider fetching it when necessary in  packages/sanity/src/structure/panes/document/documentPanel/banners/DeletedDocumentBanners.tsx
-   */
-  lastNonDeletedRevId: string | null
-}
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
   historyStore: HistoryStoreProps
@@ -328,9 +306,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = useMemo(() => {
-    return changesOpen ? sinceDocument : editState?.published || null
-  }, [changesOpen, editState?.published, sinceDocument])
+  const compareValue: Partial<SanityDocument> | null = changesOpen
+    ? sinceDocument
+    : editState?.published || null
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
@@ -354,12 +332,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.ready &&
     (!params.rev || timelineReady || !!timelineError)
 
-  const displayed: Partial<SanityDocument> | undefined = useMemo(() => {
-    if (onOlderRevision) {
-      return revisionDocument || {_id: value._id, _type: value._type}
-    }
-    return value
-  }, [onOlderRevision, revisionDocument, value])
+  const displayed: Partial<SanityDocument> | undefined = useMemo(
+    () => (onOlderRevision ? revisionDocument || {_id: value._id, _type: value._type} : value),
+    [onOlderRevision, revisionDocument, value],
+  )
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -808,7 +784,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
-      selectedVersionName: selectedReleaseId,
+      selectedVersionName: selectedPerspectiveName,
       selectedReleaseId,
       views,
       formState,
@@ -819,18 +795,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       lastNonDeletedRevId,
     }),
     [
-      __internal_tasks,
       actions,
       activeViewId,
       badges,
-      selectedReleaseId,
       changesOpen,
       closeInspector,
       collapsedFieldSets,
       collapsedPaths,
       compareValue,
       connectionState,
-      currentInspector,
       displayed,
       documentId,
       documentIdRaw,
@@ -840,44 +813,48 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       existsInBundle,
       fieldActions,
       focusPath,
-      formState,
-      revisionId,
+      currentInspector,
+      inspectors,
+      __internal_tasks,
       handleBlur,
       handleChange,
       handleFocus,
+      setOpenPath,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
       handleMenuAction,
-      handleOnSetCollapsedFieldSet,
-      handleOnSetCollapsedPath,
       handlePaneClose,
       handlePaneSplit,
       handleSetActiveFieldGroup,
-      index,
-      inspectOpen,
-      inspectors,
-      isDeleted,
-      isDeleting,
-      isPermissionsLoading,
-      languageFilter,
-      menuItemGroups,
+      handleOnSetCollapsedPath,
+      handleOnSetCollapsedFieldSet,
       openInspector,
       openPath,
+      index,
+      inspectOpen,
+      validation,
+      menuItemGroups,
       paneKey,
-      permissions,
       previewUrl,
       ready,
       schemaType,
-      setOpenPath,
+      isPermissionsLoading,
+      permissions,
       setTimelineRange,
+      isDeleting,
+      isDeleted,
       timelineError,
       timelineMode,
       timelineStore,
       title,
-      validation,
       value,
+      selectedPerspectiveName,
+      selectedReleaseId,
       views,
+      formState,
+      languageFilter,
+      revisionId,
       lastNonDeletedRevId,
     ],
   )

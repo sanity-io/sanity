@@ -16,7 +16,7 @@ import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
 
-export const DocumentPaneEvents = (props: DocumentPaneProviderProps) => {
+export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS, setParams} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
 

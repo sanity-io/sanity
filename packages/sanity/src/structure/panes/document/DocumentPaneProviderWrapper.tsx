@@ -1,7 +1,7 @@
 import {memo} from 'react'
 import {useSource} from 'sanity'
 
-import {DocumentPaneEvents} from './DocumentEventsPane'
+import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
 import {type DocumentPaneProviderProps} from './types'
 
@@ -11,7 +11,7 @@ import {type DocumentPaneProviderProps} from './types'
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   const source = useSource()
   if (source.beta?.eventsAPI?.enabled) {
-    return <DocumentPaneEvents {...props} />
+    return <DocumentEventsPane {...props} />
   }
   return <DocumentPaneWithLegacyTimelineStore {...props} />
 })

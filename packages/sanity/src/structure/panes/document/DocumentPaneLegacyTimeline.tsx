@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
 import {getPublishedId, usePerspective, useTimelineSelector, useTimelineStore} from 'sanity'
