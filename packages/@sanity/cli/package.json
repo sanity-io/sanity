@@ -62,6 +62,7 @@
     "@sanity/telemetry": "^0.7.7",
     "@sanity/util": "3.65.1",
     "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
     "esbuild": "0.21.5",
