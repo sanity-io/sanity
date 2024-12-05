@@ -1,35 +1,35 @@
-export interface CachedAppId {
-  appId: string | undefined
-}
+import {type CompatibleStudioAppId} from './fetchCreateCompatibleAppId'
 
 export interface AppIdCache {
-  get: (args: {projectId: string; appIdFetcher: AppIdFetcher}) => Promise<CachedAppId | undefined>
+  get: (args: {
+    projectId: string
+    appIdFetcher: AppIdFetcher
+  }) => Promise<CompatibleStudioAppId | undefined>
 }
-export type AppIdFetcher = (projectId: string) => Promise<string | undefined>
+export type AppIdFetcher = (projectId: string) => Promise<CompatibleStudioAppId>
 
 export function createAppIdCache(): AppIdCache {
-  const cache: {[key: string]: CachedAppId | Promise<CachedAppId | undefined> | undefined} = {}
+  const appIdCache: {
+    [key: string]: CompatibleStudioAppId | Promise<CompatibleStudioAppId | undefined> | undefined
+  } = {}
 
   return {
     get: async (args) => {
       const {projectId, appIdFetcher} = args
-      let cacheElement = cache[projectId]
+      let cacheElement = appIdCache[projectId]
       if (!cacheElement) {
         cacheElement = (async () => {
           try {
-            const appId = await appIdFetcher(projectId)
-            const entry = {
-              appId,
-            }
-            cache[projectId] = entry
-            return entry
+            const result = await appIdFetcher(projectId)
+            appIdCache[projectId] = result
+            return result
           } catch (error) {
             console.error(error)
-            cache[projectId] = undefined
+            appIdCache[projectId] = undefined
             return undefined
           }
         })()
-        cache[projectId] = cacheElement
+        appIdCache[projectId] = cacheElement
         return cacheElement
       }
 

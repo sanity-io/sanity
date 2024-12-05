@@ -6,22 +6,17 @@ import {defineLocalesResources} from '../../i18n'
  * @internal
  */
 const createLocaleStrings = defineLocalesResources('create', {
-  /** "Start in Sanity Create" action button text */
-  'start-in-create-action.label': 'Start in Sanity Create',
+  /** "Start in Sanity Create" link button text */
+  'start-in-create-link.label': 'Start in Create',
 
-  /** Header of the "Start writing in Create" dialog */
-  'start-in-create-dialog.header': 'Write naturally, publish structured',
-  /** The lede text in the "Start writing in Create" dialog */
-  'start-in-create-dialog.lede':
-    'Create content your way in an AI-powered editor. Your writing automatically maps to the right fields in Sanity Studio as you type.',
-  /** The details on what "Start writing in Create" implies */
-  'start-in-create-dialog.details': 'This opens in a new window, linked directly to this document.',
-  /** CTA in "Start writing in Create" dialog: Continue to create */
-  'start-in-create-dialog.cta.continue': 'Continue',
+  /** Header of the "Start writing in Create" banner */
+  'start-in-create-banner.title': 'Get started with Sanity Create',
+  /** Subtitle of the "Start writing in Create" banner */
+  'start-in-create-banner.subtitle':
+    'A free-form, AI-powered editor that syncs directly with your Studio Documents.',
+
   /** CTA in "Start writing in Create" dialog: Learn more */
-  'start-in-create-dialog.cta.learn-more': 'Learn more',
-  /** Text for checkbox in "Start writing in Create" dialog for disabling the dialog in the future */
-  'start-in-create-dialog.dont-remind-me-checkbox': 'Don’t remind me again',
+  'start-in-create-dialog.cta.learn-more': 'Learn more.',
   /** Toast error message when we dont have a resolved Sanity Create url*/
   'start-in-create-dialog.error-toast.unresolved-url': 'Unable to determine Sanity Create URL.',
 

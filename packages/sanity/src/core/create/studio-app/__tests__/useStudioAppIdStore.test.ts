@@ -3,7 +3,7 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {createAppIdCache} from '../appIdCache'
-import {useStudioAppIdStoreInner} from '../useStudioAppIdStore'
+import {type ResolvedStudioApp, useStudioAppIdStoreInner} from '../useStudioAppIdStore'
 
 describe('useStudioAppIdStore', () => {
   it('should return appId when promise resolves', async () => {
@@ -12,19 +12,25 @@ describe('useStudioAppIdStore', () => {
         cache: createAppIdCache(),
         enabled: true,
         projectId: 'projectId',
-        appIdFetcher: async (projectId) => `${projectId}-appId`,
+        appIdFetcher: async (projectId) => ({
+          appId: `${projectId}-appId`,
+          studioApps: [],
+        }),
       } satisfies Parameters<typeof useStudioAppIdStoreInner>[0],
     })
 
     expect(result.current).toEqual({
       loading: true,
-      appId: undefined,
-    })
+      studioApp: undefined,
+    } satisfies ResolvedStudioApp)
     await waitFor(() =>
       expect(result.current).toEqual({
         loading: false,
-        appId: 'projectId-appId',
-      }),
+        studioApp: {
+          appId: 'projectId-appId',
+          studioApps: [],
+        },
+      } satisfies ResolvedStudioApp),
     )
   })
 
@@ -34,19 +40,22 @@ describe('useStudioAppIdStore', () => {
         cache: createAppIdCache(),
         enabled: false,
         projectId: 'projectId',
-        appIdFetcher: async (projectId) => `${projectId}-appId`,
+        appIdFetcher: async (projectId) => ({
+          appId: `${projectId}-appId`,
+          studioApps: [],
+        }),
       } satisfies Parameters<typeof useStudioAppIdStoreInner>[0],
     })
 
     expect(result.current).toEqual({
       loading: false,
-      appId: undefined,
-    })
+      studioApp: undefined,
+    } satisfies ResolvedStudioApp)
     await waitFor(() =>
       expect(result.current).toEqual({
         loading: false,
-        appId: undefined,
-      }),
+        studioApp: undefined,
+      } satisfies ResolvedStudioApp),
     )
   })
 })

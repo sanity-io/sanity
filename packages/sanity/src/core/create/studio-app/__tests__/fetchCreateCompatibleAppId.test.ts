@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {fetchCreateCompatibleAppId, type StudioAppResponse} from '../fetchCreateCompatibleAppId'
-import {type StudioManifest} from '../manifestTypes'
 
 describe('fetchCreateCompatibleAppId', () => {
   it(`should return internal app matching origin`, async () => {
@@ -16,17 +15,12 @@ describe('fetchCreateCompatibleAppId', () => {
       },
     ]
     const client = mockRequestClient(apps)
-    const fetchStudioManifest = async (): Promise<StudioManifest | undefined> => ({
-      version: 1,
-      createdAt: new Date().toISOString(),
-      workspaces: [], // doesnt matter for this test
-    })
 
     const appId = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
-      fetchStudioManifest,
+      checkStudioManifest: async () => true,
       origin: 'https://my-studio.sanity.studio',
     })
 
@@ -44,17 +38,12 @@ describe('fetchCreateCompatibleAppId', () => {
       },
     ]
     const client = mockRequestClient(apps)
-    const fetchStudioManifest = async (): Promise<StudioManifest | undefined> => ({
-      version: 1,
-      createdAt: new Date().toISOString(),
-      workspaces: [], // doesnt matter for this test
-    })
 
     const appId = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
-      fetchStudioManifest,
+      checkStudioManifest: async () => true,
       origin: 'https://custom-deploy.com',
     })
 
@@ -72,22 +61,41 @@ describe('fetchCreateCompatibleAppId', () => {
       },
     ]
     const client = mockRequestClient(apps)
-    const fetchStudioManifest = async (): Promise<StudioManifest | undefined> => ({
-      version: 1,
-      createdAt: new Date().toISOString(),
-      workspaces: [], // doesnt matter for this test
-    })
 
     const appId = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
-      fetchStudioManifest,
+      checkStudioManifest: async () => true,
       fallbackOrigin: 'my-studio.sanity.studio',
       origin: 'http://localhost:3333',
     })
 
     expect(appId).toEqual('app1')
+  })
+
+  it(`should return undefined appId when app does not have manifest`, async () => {
+    const apps: StudioAppResponse[] = [
+      {
+        id: 'app1',
+        appHost: 'my-studio',
+        type: 'studio',
+        title: 'My studio',
+        urlType: 'internal',
+      },
+    ]
+    const client = mockRequestClient(apps)
+
+    const appId = await fetchCreateCompatibleAppId({
+      projectId: 'projectId',
+      internalSuffix: 'sanity.studio',
+      client,
+      checkStudioManifest: async () => false,
+      fallbackOrigin: 'my-studio.sanity.studio',
+      origin: 'http://localhost:3333',
+    })
+
+    expect(appId).toBeUndefined()
   })
 })
 

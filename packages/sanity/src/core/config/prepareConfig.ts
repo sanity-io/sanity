@@ -49,7 +49,6 @@ import {
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
-import {getStartInCreateSortedActions} from './create/startInCreateSortedActions'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
@@ -500,16 +499,14 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) => {
-        const actions = resolveConfigProperty({
+      actions: (partialContext) =>
+        resolveConfigProperty({
           config,
           context: {...context, ...partialContext},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        })
-        return getStartInCreateSortedActions(actions)
-      },
+        }),
       badges: (partialContext) =>
         resolveConfigProperty({
           config,

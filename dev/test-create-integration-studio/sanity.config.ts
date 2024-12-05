@@ -5,18 +5,47 @@ import {structureTool} from 'sanity/structure'
 
 import {schemaTypes} from './schema'
 
-export default defineConfig({
+const baseConfig = defineConfig({
   plugins: [structureTool(), codeInput()],
-  title: 'Strict',
-  name: 'default',
   projectId: 'ppsg7ml5',
   dataset: 'test',
   schema: {types: schemaTypes},
+})
 
-  beta: {
-    create: {
-      startInCreateEnabled: true,
-      fallbackStudioOrigin: 'create-integration-test.sanity.studio',
+export default defineConfig([
+  {
+    ...baseConfig,
+    title: 'Fallback origin',
+    name: 'fallback',
+    basePath: '/fallback',
+    beta: {
+      create: {
+        startInCreateEnabled: true,
+        fallbackStudioOrigin: 'create-integration-test.sanity.studio',
+      },
     },
   },
-})
+  {
+    ...baseConfig,
+    title: 'No fallback origin',
+    name: 'no-fallback',
+    basePath: '/no-fallback',
+    beta: {
+      create: {
+        startInCreateEnabled: true,
+      },
+    },
+  },
+  {
+    ...baseConfig,
+    title: 'Invalid fallback origin',
+    name: 'invalid-fallback',
+    basePath: '/invalid-fallback',
+    beta: {
+      create: {
+        startInCreateEnabled: true,
+        fallbackStudioOrigin: 'does-not-exist',
+      },
+    },
+  },
+])
