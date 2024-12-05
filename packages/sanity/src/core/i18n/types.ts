@@ -164,9 +164,10 @@ export interface Locale {
  */
 export interface LocaleWeekInfo {
   /**
-   * An integer indicating the first day of the week for the locale. Can be either 1 (Monday) or 7 (Sunday).
+   * An integer indicating the first day of the week for the locale.
+   * Can be either 1 (Monday), 6 (Saturday) or 7 (Sunday).
    */
-  firstDay: 1 | 7
+  firstDay: 1 | 6 | 7
 
   /**
    * An array of integers indicating the weekend days for the locale, where 1 is Monday and 7 is Sunday.
