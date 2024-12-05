@@ -78,6 +78,7 @@ describe('DocumentPerspectiveList', () => {
       toggleExcludedPerspective: vi.fn(),
       setPerspectiveFromReleaseDocumentId: vi.fn(),
       setPerspectiveFromReleaseId: vi.fn(),
+      selectedReleaseId: undefined,
     })
 
     mockUseDocumentPane.mockReturnValue({
