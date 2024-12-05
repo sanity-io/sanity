@@ -1,7 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {fetchCreateCompatibleAppId, type StudioAppResponse} from '../fetchCreateCompatibleAppId'
+import {
+  type CompatibleStudioAppId,
+  fetchCreateCompatibleAppId,
+  type StudioAppResponse,
+} from '../fetchCreateCompatibleAppId'
 
 describe('fetchCreateCompatibleAppId', () => {
   it(`should return internal app matching origin`, async () => {
@@ -16,7 +20,7 @@ describe('fetchCreateCompatibleAppId', () => {
     ]
     const client = mockRequestClient(apps)
 
-    const appId = await fetchCreateCompatibleAppId({
+    const result = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
@@ -24,7 +28,16 @@ describe('fetchCreateCompatibleAppId', () => {
       origin: 'https://my-studio.sanity.studio',
     })
 
-    expect(appId).toEqual('app1')
+    const expected: CompatibleStudioAppId = {
+      appId: 'app1',
+      studioApps: [
+        {
+          ...apps[0],
+          studioUrl: 'https://my-studio.sanity.studio',
+        },
+      ],
+    }
+    expect(result).toEqual(expected)
   })
 
   it(`should return external app matching origin`, async () => {
@@ -39,7 +52,7 @@ describe('fetchCreateCompatibleAppId', () => {
     ]
     const client = mockRequestClient(apps)
 
-    const appId = await fetchCreateCompatibleAppId({
+    const result = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
@@ -47,7 +60,16 @@ describe('fetchCreateCompatibleAppId', () => {
       origin: 'https://custom-deploy.com',
     })
 
-    expect(appId).toEqual('app1')
+    const expected: CompatibleStudioAppId = {
+      appId: 'app1',
+      studioApps: [
+        {
+          ...apps[0],
+          studioUrl: 'https://custom-deploy.com',
+        },
+      ],
+    }
+    expect(result).toEqual(expected)
   })
 
   it(`should return internal app matching fallback origin`, async () => {
@@ -62,7 +84,7 @@ describe('fetchCreateCompatibleAppId', () => {
     ]
     const client = mockRequestClient(apps)
 
-    const appId = await fetchCreateCompatibleAppId({
+    const result = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
@@ -71,7 +93,17 @@ describe('fetchCreateCompatibleAppId', () => {
       origin: 'http://localhost:3333',
     })
 
-    expect(appId).toEqual('app1')
+    const expected: CompatibleStudioAppId = {
+      appId: 'app1',
+      studioApps: [
+        {
+          ...apps[0],
+          studioUrl: 'https://my-studio.sanity.studio',
+        },
+      ],
+    }
+
+    expect(result).toEqual(expected)
   })
 
   it(`should return undefined appId when app does not have manifest`, async () => {
@@ -86,7 +118,7 @@ describe('fetchCreateCompatibleAppId', () => {
     ]
     const client = mockRequestClient(apps)
 
-    const appId = await fetchCreateCompatibleAppId({
+    const result = await fetchCreateCompatibleAppId({
       projectId: 'projectId',
       internalSuffix: 'sanity.studio',
       client,
@@ -95,7 +127,17 @@ describe('fetchCreateCompatibleAppId', () => {
       origin: 'http://localhost:3333',
     })
 
-    expect(appId).toBeUndefined()
+    const expected: CompatibleStudioAppId = {
+      appId: 'app1',
+      studioApps: [
+        {
+          ...apps[0],
+          studioUrl: 'https://my-studio.sanity.studio',
+        },
+      ],
+    }
+
+    expect(result).toEqual(expected)
   })
 })
 

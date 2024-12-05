@@ -15,13 +15,6 @@ const WrapperCard = styled(Card)`
   overflow-y: auto;
 `
 
-const InfoButton = styled(Button)`
-  background: #e5edff;
-  &:hover {
-    background: #f8fbff;
-  }
-`
-
 export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioAppId}) {
   const {studioApp} = props
 
@@ -126,7 +119,7 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
         </WrapperCard>
       }
     >
-      <InfoButton
+      <Button
         ref={infoButtonRef}
         icon={invalidFallbackOrigin ? WarningOutlineIcon : InfoOutlineIcon}
         mode={invalidFallbackOrigin ? 'default' : 'bleed'}
