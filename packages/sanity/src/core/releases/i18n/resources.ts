@@ -39,6 +39,32 @@ const releasesLocaleStrings = {
   /** Header for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-header':
     "Are you sure you want to archive the '{{title}}' release?",
+
+  /* The text for the activity event when a document is added to a release */
+  'activity.event.add-document': 'added a document version',
+  /* The text for the activity event when the release is archived */
+  'activity.event.archive': 'archived the <strong>{{releaseTitle}}</strong> release',
+  /* The text for the activity event when the release is created */
+  'activity.event.create':
+    'created the <strong>{{releaseTitle}}</strong> release <ScheduleTarget>targeting </ScheduleTarget>',
+  /* The text for the activity event when a document is removed from a release */
+  'activity.event.discard-document': 'discarded a document version',
+  /* The text for the activity event when the release is published */
+  'activity.event.publish': 'published the <strong>{{releaseTitle}}</strong> release',
+  /* The text for the activity event when the release is scheduled */
+  'activity.event.schedule': 'marked as scheduled',
+  /** The text for the activity event when the release is unarchived */
+  'activity.event.unarchive': 'unarchived the <strong>{{releaseTitle}}</strong> release',
+  /** The text for the activity event when the release is unscheduled */
+  'activity.event.unschedule': 'marked as unscheduled',
+  /** The loading text for when releases are loading */
+  'activity.panel.loading': 'Loading release activity',
+  /** The title for the activity panel shown in the releases detail screen */
+  'activity.panel.title': 'Activity',
+
+  /** Title for the dialog confirming the archive of a release */
+  'archive-dialog.confirm-archive-title':
+    "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
   /** Description for the dialog confirming the archive of a release with one document */
   'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
   /** Description for the dialog confirming the archive of a release with more than one document */
@@ -111,7 +137,8 @@ const releasesLocaleStrings = {
   'footer.status.edited': 'Edited',
   /**The text that will be shown in the footer to indicate the time the release was published */
   'footer.status.published': 'Published',
-
+  /**The text that will be shown in the footer to indicate the time the release was unarchived */
+  'footer.status.unarchived': 'Unarchived',
   /** Label text for the loading state whilst release is being loaded */
   'loading-release': 'Loading release',
 

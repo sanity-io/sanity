@@ -1,52 +1,68 @@
 import {Flex} from '@sanity/ui'
 
-import {RelativeTime, UserAvatar} from '../../../components'
+import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
 import {StatusItem} from '../components/StatusItem'
+import {
+  isArchiveReleaseEvent,
+  isCreateReleaseEvent,
+  isPublishReleaseEvent,
+  isUnarchiveReleaseEvent,
+  type ReleaseEvent,
+} from './activity/types'
 
-interface LastEdit {
-  author: string
-  date: string
+const STATUS_TITLE_I18N = {
+  CreateRelease: 'footer.status.created',
+  PublishRelease: 'footer.status.published',
+  ArchiveRelease: 'footer.status.archived',
+  UnarchiveRelease: 'footer.status.unarchived',
 }
-
-function getLastEdit(): LastEdit | null {
-  /* TODO: Hold until release activity is ready, we will need to use that data to show the last edit done to the release. */
-  return null
-}
-
-export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
+export function ReleaseStatusItems({
+  events,
+  release,
+}: {
+  events: ReleaseEvent[]
+  release: ReleaseDocument
+}) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const lastEdit = getLastEdit()
-  return (
-    <Flex flex={1} gap={1}>
-      {/* Created */}
-      {release.state !== 'archived' && !release.publishAt && !lastEdit && (
+  const footerEvent = events.find((event) => {
+    return (
+      isCreateReleaseEvent(event) ||
+      isPublishReleaseEvent(event) ||
+      isArchiveReleaseEvent(event) ||
+      isUnarchiveReleaseEvent(event)
+    )
+  })
+
+  if (!footerEvent) {
+    return (
+      <Flex flex={1} gap={1}>
         <StatusItem
-          avatar={<UserAvatar size={0} user={release.createdBy} />}
+          avatar={<AvatarSkeleton size={0} />}
           text={
             <>
-              {t('footer.status.created')}{' '}
+              {t(STATUS_TITLE_I18N.CreateRelease)}{' '}
               <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
             </>
           }
         />
-      )}
-
-      {/* Edited */}
-      {lastEdit && !release.publishAt && release.state === 'archived' && (
-        <StatusItem
-          avatar={lastEdit ? <UserAvatar size={0} user={lastEdit.author} /> : null}
-          text={
-            <>
-              {t('footer.status.edited')}{' '}
-              <RelativeTime time={lastEdit.date} minimal useTemporalPhrase />
-            </>
-          }
-        />
-      )}
+      </Flex>
+    )
+  }
+  return (
+    <Flex flex={1} gap={1}>
+      <StatusItem
+        avatar={footerEvent.author && <UserAvatar size={0} user={footerEvent.author} />}
+        text={
+          <>
+            {t(STATUS_TITLE_I18N[footerEvent.type])}{' '}
+            <RelativeTime time={footerEvent.timestamp} useTemporalPhrase minimal />
+          </>
+        }
+      />
     </Flex>
   )
 }

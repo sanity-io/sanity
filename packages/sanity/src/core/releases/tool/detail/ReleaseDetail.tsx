@@ -8,6 +8,7 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {useReleaseActivity} from './activity/useReleaseActivity'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -48,6 +49,12 @@ export const ReleaseDetail = () => {
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
+
+  const activity = useReleaseActivity({
+    release: releaseInDetail,
+    releaseDocumentsCount: results.length,
+    releaseDocumentsLoading: documentsLoading,
+  })
 
   const navigateToReview = useCallback(() => {
     router.navigate({
@@ -131,14 +138,18 @@ export const ReleaseDetail = () => {
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter documents={results} release={releaseInDetail} />
+            <ReleaseDashboardFooter
+              documents={results}
+              release={releaseInDetail}
+              events={activity.events}
+            />
           </Flex>
 
           {inspector === 'activity' && (
             <>
               <Card flex="none" borderLeft marginY={2} style={{opacity: 0.6}} />
               <Card flex="none" style={{width: 320}}>
-                <ReleaseDashboardActivityPanel />
+                <ReleaseDashboardActivityPanel activity={activity} release={releaseInDetail} />
               </Card>
             </>
           )}

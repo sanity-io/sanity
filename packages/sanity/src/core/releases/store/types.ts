@@ -35,6 +35,7 @@ export interface ReleaseDocument {
   _type: typeof RELEASE_DOCUMENT_TYPE
   _createdAt: string
   _updatedAt: string
+  _rev: string
   /**
    * The same as the last path segment of the _id, added by the backend.
    */
