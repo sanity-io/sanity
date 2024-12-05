@@ -24,6 +24,7 @@ import {
   type RenderPreviewCallback,
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
@@ -51,6 +52,7 @@ interface InlineObjectProps {
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean
+  setElementRef: SetPortableTextMemberItemElementRef
   value: PortableTextChild
 }
 
@@ -75,11 +77,13 @@ export const InlineObject = (props: InlineObjectProps) => {
     renderPreview,
     schemaType,
     selected,
+    setElementRef,
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
   const markers = usePortableTextMarkers(path)
+  const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasInfo, hasWarning} = useMemberValidation(memberItem?.node)
   const parentSchemaType = editor.schemaTypes.block
@@ -114,7 +118,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
-  const referenceElement = memberItem?.elementRef?.current
+  const referenceElement = divElement
 
   const presence = useChildPresence(path, true)
   const rootPresence = useMemo(
@@ -126,7 +130,7 @@ export const InlineObject = (props: InlineObjectProps) => {
     () => ({
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
-      __unstable_referenceElement: referenceElement as HTMLElement | null,
+      __unstable_referenceElement: referenceElement,
       children: input,
       focused,
       onClose,
@@ -201,9 +205,19 @@ export const InlineObject = (props: InlineObjectProps) => {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
+  const setRef = useCallback(
+    (elm: HTMLDivElement) => {
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
+      }
+      setDivElement(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem, setElementRef, setDivElement],
+  )
+
   return useMemo(
     () => (
-      <span ref={memberItem?.elementRef} contentEditable={false}>
+      <span ref={setRef} contentEditable={false}>
         <Tooltip
           placement="bottom"
           portal="editor"
@@ -218,14 +232,7 @@ export const InlineObject = (props: InlineObjectProps) => {
         </Tooltip>
       </span>
     ),
-    [
-      componentProps,
-      memberItem?.elementRef,
-      renderInlineBlock,
-      toolTipContent,
-      tooltipEnabled,
-      isOpen,
-    ],
+    [componentProps, renderInlineBlock, setRef, toolTipContent, tooltipEnabled, isOpen],
   )
 }
 

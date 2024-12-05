@@ -8,6 +8,7 @@ import {isEqual} from '@sanity/util/paths'
 import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
+import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
@@ -21,6 +22,7 @@ export function useTrackFocusPath(props: Props): void {
   const {focusPath, boundaryElement, onItemClose} = props
 
   const portableTextMemberItems = usePortableTextMemberItems()
+  const elementRefs = usePortableTextMemberItemElementRefs()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
@@ -46,8 +48,9 @@ export function useTrackFocusPath(props: Props): void {
 
     // The related editor member to scroll to, or focus, according to the given focusPath
     const relatedEditorItem = focusedItem || openItem
+    const elementRef = relatedEditorItem ? elementRefs[relatedEditorItem.member.key] : undefined
 
-    if (relatedEditorItem && relatedEditorItem.elementRef?.current) {
+    if (relatedEditorItem && elementRef) {
       if (boundaryElement) {
         // Scroll the boundary element into view (the scrollable element itself)
         scrollIntoView(boundaryElement, {
@@ -56,7 +59,7 @@ export function useTrackFocusPath(props: Props): void {
           inline: 'start',
         })
         // Scroll the member into view (the member within the scroll-boundary)
-        scrollIntoView(relatedEditorItem.elementRef.current, {
+        scrollIntoView(elementRef, {
           scrollMode: 'if-needed',
           boundary: boundaryElement,
           block: 'nearest',
@@ -126,6 +129,7 @@ export function useTrackFocusPath(props: Props): void {
   }, [
     boundaryElement,
     editor,
+    elementRefs,
     focusPath,
     onItemClose,
     portableTextMemberItems,
