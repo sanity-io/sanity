@@ -420,6 +420,22 @@ export async function isNextJsTemplate(root: string): Promise<boolean> {
   }
 }
 
+export async function checkNeedsReadToken(root: string): Promise<boolean> {
+  try {
+    const templatePath = await Promise.any(
+      ENV_TEMPLATE_FILES.map(async (file) => {
+        await access(join(root, file))
+        return file
+      }),
+    )
+
+    const templateContent = await readFile(join(root, templatePath), 'utf8')
+    return templateContent.includes(ENV_VAR.READ_TOKEN)
+  } catch {
+    return false
+  }
+}
+
 export async function applyEnvVariables(
   root: string,
   envData: EnvData,

@@ -1127,7 +1127,6 @@ export default async function initSanity(
           repoInfo: remoteTemplateInfo,
           bearerToken: cliFlags['template-token'],
           variables: bootstrapVariables,
-          isCI,
         },
         context,
       )

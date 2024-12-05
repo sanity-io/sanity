@@ -5,6 +5,7 @@ import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
 import {
   applyEnvVariables,
+  checkNeedsReadToken,
   downloadAndExtractRepo,
   generateSanityApiReadToken,
   getMonoRepo,
@@ -23,7 +24,6 @@ export interface BootstrapRemoteOptions {
   bearerToken?: string
   packageName: string
   variables: GenerateConfigOptions['variables']
-  isCI?: boolean
 }
 
 const INITIAL_COMMIT_MESSAGE = 'Initial commit from Sanity CLI'
@@ -32,7 +32,7 @@ export async function bootstrapRemoteTemplate(
   opts: BootstrapRemoteOptions,
   context: CliCommandContext,
 ): Promise<void> {
-  const {outputPath, repoInfo, bearerToken, variables, packageName, isCI} = opts
+  const {outputPath, repoInfo, bearerToken, variables, packageName} = opts
   const {output, apiClient} = context
   const name = [repoInfo.username, repoInfo.name, repoInfo.filePath].filter(Boolean).join('/')
   const spinner = output.spinner(`Bootstrapping files from template "${name}"`).start()
@@ -47,12 +47,15 @@ export async function bootstrapRemoteTemplate(
   debug('Downloading and extracting repo to %s', outputPath)
   await downloadAndExtractRepo(outputPath, repoInfo, bearerToken)
 
+  debug('Checking if template needs read token')
+  const needsReadToken = await Promise.all(
+    (packages ?? ['']).map((pkg) => checkNeedsReadToken(join(outputPath, pkg))),
+  ).then((results) => results.some(Boolean))
+
   debug('Applying environment variables')
-  const readToken = await generateSanityApiReadToken(
-    isCI ? 'ci-remote-template-test-token-please-add-email-filter' : 'API Read Token',
-    variables.projectId,
-    apiClient,
-  )
+  const readToken = needsReadToken
+    ? await generateSanityApiReadToken('API Read Token', variables.projectId, apiClient)
+    : undefined
   const isNext = await isNextJsTemplate(outputPath)
   const envName = isNext ? '.env.local' : '.env'
 
