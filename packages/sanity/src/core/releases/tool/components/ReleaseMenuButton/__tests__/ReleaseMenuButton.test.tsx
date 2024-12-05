@@ -7,9 +7,10 @@ import {
   activeScheduledRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
+  scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {type ReleaseDocument} from '../../../../index'
+import {type ReleaseDocument, type ReleaseState} from '../../../../index'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
@@ -35,11 +36,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({release, disabled = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({release, ignoreCTA = false}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(<ReleaseMenuButton disabled={disabled} release={release} />, {wrapper})
+  return render(<ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} />, {wrapper})
 }
 
 describe('ReleaseMenuButton', () => {
@@ -258,6 +259,41 @@ describe('ReleaseMenuButton', () => {
     })
   })
 
+  describe('unschedule release', () => {
+    test.each([
+      {state: 'archived', fixture: archivedScheduledRelease},
+      {state: 'active', fixture: activeScheduledRelease},
+      {state: 'published', fixture: publishedASAPRelease},
+    ])('will not allow for unscheduling of $state releases', async ({fixture}) => {
+      await renderTest({release: fixture})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.queryByTestId('unschedule-release-menu-item')).not.toBeInTheDocument()
+    })
+
+    test.each([
+      {state: 'scheduled', fixture: scheduledRelease},
+      {state: 'scheduling', fixture: {...scheduledRelease, state: 'scheduling' as ReleaseState}},
+    ])('will unschedule a $state release', async ({fixture}) => {
+      await renderTest({release: fixture})
+
+      await waitFor(() => {
+        screen.getByTestId('release-menu-button')
+      })
+
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      fireEvent.click(screen.getByTestId('unschedule-release-menu-item'))
+
+      // does not require confirmation
+      expect(useReleaseOperations().unschedule).toHaveBeenCalledWith(fixture._id)
+    })
+  })
+
   test.todo('will unarchive an archived release', async () => {
     /** @todo update once unarchive has been implemented */
     const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
@@ -276,15 +312,15 @@ describe('ReleaseMenuButton', () => {
     })
   })
 
-  test('will be disabled', async () => {
-    await renderTest({release: activeScheduledRelease, disabled: true})
+  test('will hide CTAs when ignoreCTA is true', async () => {
+    await renderTest({release: scheduledRelease, ignoreCTA: true})
 
-    const actionsButton = screen.getByTestId('release-menu-button')
+    await waitFor(() => {
+      screen.getByTestId('release-menu-button')
+    })
 
-    expect(actionsButton).toBeDisabled()
+    fireEvent.click(screen.getByTestId('release-menu-button'))
 
-    fireEvent.click(actionsButton)
-
-    expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('unschedule-release-menu-item')).not.toBeInTheDocument()
   })
 })
