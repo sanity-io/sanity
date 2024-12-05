@@ -46,7 +46,7 @@ const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
-  state: 'loaded' as const,
+  state: 'initialising' as const,
   releaseStack: [],
 }
 

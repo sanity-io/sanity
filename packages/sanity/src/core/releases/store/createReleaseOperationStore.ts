@@ -18,6 +18,7 @@ export interface ReleaseOperationsStore {
   unarchive: (releaseId: string) => Promise<void>
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
+  deleteRelease: (releaseId: string) => Promise<void>
   createVersion: (
     releaseId: string,
     documentId: string,
@@ -27,7 +28,6 @@ export interface ReleaseOperationsStore {
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
-// todo: change to `metadata` once the relevant PR has been deployed
 const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
@@ -100,6 +100,14 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
+  const handleDeleteRelease = (releaseId: string) =>
+    requestAction(client, [
+      {
+        actionType: 'sanity.action.release.delete',
+        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+      },
+    ])
+
   const handleCreateVersion = async (
     releaseId: string,
     documentId: string,
@@ -147,6 +155,7 @@ export function createReleaseOperationsStore(options: {
     createRelease: handleCreateRelease,
     updateRelease: handleUpdateRelease,
     publishRelease: handlePublishRelease,
+    deleteRelease: handleDeleteRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
   }
@@ -196,6 +205,11 @@ interface EditReleaseApiAction {
   patch: EditAction['patch']
 }
 
+interface DeleteApiAction {
+  actionType: 'sanity.action.release.delete'
+  releaseId: string
+}
+
 type ReleaseAction =
   | Action
   | ScheduleApiAction
@@ -205,6 +219,7 @@ type ReleaseAction =
   | UnscheduleApiAction
   | ArchiveApiAction
   | UnarchiveApiAction
+  | DeleteApiAction
   | CreateVersionReleaseApiAction
 
 export function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
