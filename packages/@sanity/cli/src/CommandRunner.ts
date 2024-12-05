@@ -4,7 +4,7 @@ import {cloneDeep, sortBy} from 'lodash'
 import {baseCommands} from './commands'
 import {debug} from './debug'
 import cliOutputter from './outputters/cliOutputter'
-import {cliPackageManager, getYarnStub} from './packageManager'
+import {cliPackageManager} from './packageManager'
 import {prompt as cliPrompter} from './prompters/cliPrompter'
 import {
   type CliCommandArguments,
@@ -96,7 +96,6 @@ export class CommandRunner {
       cliPackageManager,
       ...commandOptions,
       commandRunner: this,
-      yarn: getYarnStub({output, workDir: commandOptions.workDir}),
       ...getVersionedContextParams(cliConfig),
     }
 
