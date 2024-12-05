@@ -48,4 +48,15 @@ export default defineConfig([
       },
     },
   },
+  {
+    ...baseConfig,
+    title: 'Opt out',
+    name: 'opt-out',
+    basePath: '/opt-out',
+    beta: {
+      create: {
+        startInCreateEnabled: false,
+      },
+    },
+  },
 ])
