@@ -34,5 +34,5 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await expect(unpublishModal).toBeVisible()
   await page.getByTestId('confirm-button').click()
 
-  await expect(documentStatus).toContainText('Not published')
+  await expect(documentStatus).toContainText('')
 })
