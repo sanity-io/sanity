@@ -253,15 +253,15 @@ export function DocumentLayout() {
             __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
           >
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-              {StartInCreateBanner && (
-                <StartInCreateBanner
-                  document={value}
-                  documentId={documentId}
-                  documentType={schemaType}
-                  isInitialValueLoading={!!isInitialValueLoading}
-                />
-              )}
               <PaneFooter ref={setFooterElement}>
+                {StartInCreateBanner && (
+                  <StartInCreateBanner
+                    document={value}
+                    documentId={documentId}
+                    documentType={schemaType}
+                    isInitialValueLoading={!!isInitialValueLoading}
+                  />
+                )}
                 <TooltipDelayGroupProvider>
                   <DocumentStatusBar
                     actionsBoxRef={setActionsBoxElement}
