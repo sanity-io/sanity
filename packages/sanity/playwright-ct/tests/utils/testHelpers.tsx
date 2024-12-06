@@ -1,12 +1,13 @@
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
-import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
+import test, {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
 export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   const activatePTInputOverlay = async ($pteField: Locator) => {
+    test.slow()
     const $overlay = $pteField.getByTestId('activate-overlay')
     if (await $overlay.isVisible()) {
       await $overlay.focus()
