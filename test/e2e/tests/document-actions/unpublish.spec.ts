@@ -6,7 +6,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   const titleA = 'Title A'
 
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-Publish')
+  const publishButton = page.getByTestId('action-publish')
   const contextFooterMenu = page.getByTestId('action-menu-button')
   const unpublishButton = page.getByTestId('action-Unpublish')
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')

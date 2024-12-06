@@ -79,7 +79,7 @@ test.describe('inputs: text', () => {
 
     const titleInput = page.getByTestId('field-title').getByTestId('string-input')
     const paneFooter = page.getByTestId('pane-footer-document-status')
-    const publishButton = page.getByTestId('action-Publish')
+    const publishButton = page.getByTestId('action-publish')
 
     // wait for form to be attached
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()

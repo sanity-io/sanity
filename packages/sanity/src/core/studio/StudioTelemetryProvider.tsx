@@ -27,10 +27,12 @@ const WELL_KNOWN_NAMES = [
   'test',
 ]
 
-const DEBUG_TELEMETRY = process.env.SANITY_STUDIO_DEBUG_TELEMETRY
+const DEBUG_TELEMETRY = !!(
+  typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
+)
 
 /* eslint-disable no-console */
-const debugLoggingStore: CreateBatchedStoreOptions = {
+export const debugLoggingStore: CreateBatchedStoreOptions = {
   // submit any pending events every <n> ms
   flushInterval: 1000,
 
@@ -39,13 +41,11 @@ const debugLoggingStore: CreateBatchedStoreOptions = {
 
   // implements sending events to backend
   sendEvents: async (batch) => {
-    console.log('--- telemetry ---')
-    console.log(batch)
+    console.log('[telemetry] submit events (noop): %O', batch)
   },
   // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
   sendBeacon: (batch) => {
-    console.log('--- telemetry ---')
-    console.log(batch)
+    console.log('[telemetry] submit events (noop): %O', batch)
     return true
   },
 }

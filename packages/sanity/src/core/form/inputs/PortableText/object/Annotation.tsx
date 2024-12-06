@@ -28,13 +28,13 @@ import {
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
+import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {Root, TooltipBox} from './Annotation.styles'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
-import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface AnnotationProps {
   children: ReactElement
@@ -56,6 +56,7 @@ interface AnnotationProps {
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
   selected: boolean
+  setElementRef: SetPortableTextMemberItemElementRef
   schemaType: ObjectSchemaType
   value: PortableTextObject
 }
@@ -82,6 +83,7 @@ export function Annotation(props: AnnotationProps): ReactNode {
     renderPreview,
     schemaType,
     selected,
+    setElementRef,
     value,
   } = props
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
@@ -224,12 +226,12 @@ export function Annotation(props: AnnotationProps): ReactNode {
 
   const setRef = useCallback(
     (elm: HTMLSpanElement) => {
-      if (memberItem?.elementRef) {
-        memberItem.elementRef.current = elm
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
       }
       setSpanElement(elm) // update state here so the reference element is available on first render
     },
-    [memberItem],
+    [memberItem, setElementRef, setSpanElement],
   )
 
   return useMemo(
@@ -252,9 +254,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     __unstable_referenceBoundary: referenceBoundary,
     __unstable_referenceElement: referenceElement,
     children,
-    focused,
     markers,
-    onClose,
     onOpen,
     onRemove,
     open,
@@ -312,19 +312,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
               : schemaType.title || schemaType.name
           }
         />
-      )}
-      {open && (
-        <ObjectEditModal
-          defaultType="popover"
-          floatingBoundary={floatingBoundary}
-          onClose={onClose}
-          autoFocus={focused}
-          referenceBoundary={referenceBoundary}
-          referenceElement={referenceElement}
-          schemaType={schemaType}
-        >
-          {children}
-        </ObjectEditModal>
       )}
     </Root>
   )

@@ -16,7 +16,6 @@ import {Box, Flex, Text, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {sortBy} from 'lodash'
 import {
-  type MutableRefObject,
   type ReactNode,
   startTransition,
   useCallback,
@@ -39,7 +38,7 @@ import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
-import {Compositor, type PortableTextEditorElement} from './Compositor'
+import {Compositor} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
@@ -66,7 +65,6 @@ export interface PortableTextMemberItem {
   key: string
   member: ArrayOfObjectsItemMember
   node: ObjectFormNode
-  elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
 /** @public */

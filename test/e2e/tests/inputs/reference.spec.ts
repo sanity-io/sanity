@@ -32,7 +32,7 @@ withDefaultClient((context) => {
     // at the moment e.g. `page.getByTestId('field-author')`.
     const referenceInput = page.getByTestId('reference-input')
     const paneFooter = page.getByTestId('pane-footer')
-    const publishButton = page.getByTestId('action-Publish')
+    const publishButton = page.getByTestId('action-publish')
     const authorListbox = page.locator('#author-listbox')
 
     // Open the Author reference input.
