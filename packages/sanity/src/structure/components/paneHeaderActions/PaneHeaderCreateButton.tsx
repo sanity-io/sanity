@@ -3,20 +3,19 @@ import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
-  isDraftPerspective,
   isPublishedPerspective,
   LATEST,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
   usePerspective,
-  useSchema,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
+import {useIsReleaseActive} from '../../../core/releases/hooks/useIsReleaseActive'
 import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {IntentButton} from '../IntentButton'
@@ -58,13 +57,9 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
-  const schema = useSchema()
   const templates = useTemplates()
-  const {selectedReleaseId, selectedPerspective} = usePerspective()
-
-  const isReleaseActive =
-    !isPublishedPerspective(selectedPerspective) &&
-    (isDraftPerspective(selectedPerspective) || selectedPerspective.state === 'active')
+  const {selectedReleaseId} = usePerspective()
+  const isReleaseActive = useIsReleaseActive()
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()

@@ -11,13 +11,12 @@ import {
 } from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {usePerspective} from 'sanity'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
-import {isDraftPerspective, isPublishedPerspective} from '../../../../releases'
+import {useIsReleaseActive} from '../../../../releases/hooks/useIsReleaseActive'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
@@ -48,7 +47,7 @@ interface NewDocumentButtonProps {
 export function NewDocumentButton(props: NewDocumentButtonProps) {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
-  const {currentGlobalBundle} = usePerspective()
+  const isReleaseActive = useIsReleaseActive()
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -61,10 +60,6 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const scheme = useColorSchemeValue()
   const currentUser = useCurrentUser()
   const schema = useSchema()
-
-  const isReleaseActive =
-    !isPublishedPerspective(currentGlobalBundle) &&
-    (isDraftPerspective(currentGlobalBundle) || currentGlobalBundle.state === 'active')
 
   const hasNewDocumentOptions = options.length > 0
   const disabled = !canCreateDocument || !hasNewDocumentOptions || !isReleaseActive
