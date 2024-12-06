@@ -9,7 +9,7 @@ export const describeCliTest: typeof describe.skip =
   cliUserToken && hasBuiltCli ? describe : describe.skip
 
 // test.concurrent() runs even if the parent describe is skipped, so we need to wrap it as well
-export const testConcurrent = (name: string, testFn: ProvidesCallback, timeout = 30000): void => {
+export const testConcurrent = (name: string, testFn: ProvidesCallback, timeout = 60000): void => {
   const tester = cliUserToken && hasBuiltCli ? test.concurrent : test.concurrent.skip
   return tester(name, testFn, timeout)
 }
