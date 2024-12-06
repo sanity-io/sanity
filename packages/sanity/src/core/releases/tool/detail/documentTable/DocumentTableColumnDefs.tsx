@@ -8,6 +8,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
+import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column} from '../../components/Table/types'
@@ -57,21 +58,41 @@ export const getDocumentTableColumnDefs: (
         <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
-    cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          {datum.document.publishedDocumentExists ? (
-            <Badge radius={2} tone={'caution'}>
+    cell: ({cellProps, datum}) => {
+      const willBeUnpublished = isGoingToUnpublish(datum.document)
+      const actionBadge = () => {
+        if (willBeUnpublished) {
+          return (
+            <Badge
+              radius={2}
+              tone={'critical'}
+              data-testid={`unpublish-badge-${datum.document._id}`}
+            >
+              {t('table-body.action.unpublish')}
+            </Badge>
+          )
+        }
+        if (datum.document.publishedDocumentExists) {
+          return (
+            <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
               {t('table-body.action.change')}
             </Badge>
-          ) : (
-            <Badge radius={2} tone={'positive'}>
-              {t('table-body.action.add')}
-            </Badge>
-          )}
-        </Box>
-      </Flex>
-    ),
+          )
+        }
+
+        return (
+          <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
+            {t('table-body.action.add')}
+          </Badge>
+        )
+      }
+
+      return (
+        <Flex align="center" {...cellProps}>
+          <Box paddingX={2}>{actionBadge()}</Box>
+        </Flex>
+      )
+    },
   },
   {
     id: 'document._type',

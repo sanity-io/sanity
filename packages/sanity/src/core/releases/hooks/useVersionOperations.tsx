@@ -14,12 +14,13 @@ export interface VersionOperationsValue {
     initialValue?: Record<string, unknown>,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
+  unpublishVersion: (documentId: string) => Promise<void>
 }
 
 /** @internal */
 export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
-  const {createVersion, discardVersion} = useReleaseOperations()
+  const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
 
   const {setPerspectiveFromReleaseId} = usePerspective()
   const toast = useToast()
@@ -71,8 +72,34 @@ export function useVersionOperations(): VersionOperationsValue {
       })
     }
   }
+
+  const handleUnpublishVersion = async (documentId: string) => {
+    try {
+      await unpublishVersion(documentId)
+
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey={'release.action.unpublish-version.success'}
+            values={{title: document.title as string}}
+          />
+        ),
+      })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('release.action.unpublish-version.failure'),
+        description: err.message,
+      })
+    }
+  }
   return {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
+    unpublishVersion: handleUnpublishVersion,
   }
 }
