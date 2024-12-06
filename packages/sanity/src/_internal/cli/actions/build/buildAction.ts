@@ -1,11 +1,10 @@
 import path from 'node:path'
-import {promisify} from 'node:util'
 
 import chalk from 'chalk'
 import {info} from 'log-symbols'
 import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
-import rimrafCallback from 'rimraf'
+import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
@@ -17,8 +16,6 @@ import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-
-const rimraf = promisify(rimrafCallback)
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean

@@ -1,13 +1,13 @@
-import rimraf from 'rimraf'
+import {rimraf} from 'rimraf'
 
 import debug from './debug'
 
-function cleanupTmpDir(tmpDir: string): void {
-  rimraf(tmpDir, (err) => {
-    if (err) {
-      debug(`Error cleaning up temporary files: ${err.message}`)
-    }
-  })
+async function cleanupTmpDir(tmpDir: string): Promise<void> {
+  try {
+    await rimraf(tmpDir)
+  } catch (err) {
+    debug(`Error cleaning up temporary files: ${err.message}`)
+  }
 }
 
 export default cleanupTmpDir

@@ -199,8 +199,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -888,9 +888,6 @@ importers:
       '@types/node':
         specifier: ^22.10.0
         version: 22.10.0
-      '@types/rimraf':
-        specifier: ^3.0.2
-        version: 3.0.2
       '@types/semver':
         specifier: ^7.5.6
         version: 7.5.8
@@ -985,8 +982,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       semver-compare:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1076,8 +1073,8 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1092,8 +1089,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
 
   packages/@sanity/migrate:
     dependencies:
@@ -1138,8 +1135,8 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1175,8 +1172,8 @@ importers:
         specifier: ^4.17.7
         version: 4.17.13
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1230,8 +1227,8 @@ importers:
         specifier: ^18.3.12
         version: 18.3.13
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1261,8 +1258,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1292,8 +1289,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/test-config
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1737,8 +1734,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^5.0.10
+        version: 5.0.10
       rxjs:
         specifier: ^7.8.0
         version: 7.8.1
@@ -1866,9 +1863,6 @@ importers:
       '@types/resolve-from':
         specifier: ^4.0.0
         version: 4.0.0
-      '@types/rimraf':
-        specifier: ^3.0.2
-        version: 3.0.2
       '@types/semver':
         specifier: ^6.2.3
         version: 6.2.7
@@ -5109,9 +5103,6 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
-
-  '@types/rimraf@3.0.2':
-    resolution: {integrity: sha512-F3OznnSLAUxFrCEu/L5PY8+ny8DtcFRjx7fZZ9bycvXRi3KPTRS9HOitGZwvPg0juRhXFWIeKX58cnX5YqLohQ==}
 
   '@types/semver-compare@1.0.3':
     resolution: {integrity: sha512-mVZkB2QjXmZhh+MrtwMlJ8BqUnmbiSkpd88uOWskfwB8yitBT0tBRAKt+41VRgZD9zr9Sc+Xs02qGgvzd1Rq/Q==}
@@ -15555,11 +15546,6 @@ snapshots:
   '@types/resolve-from@4.0.0': {}
 
   '@types/resolve@1.20.2': {}
-
-  '@types/rimraf@3.0.2':
-    dependencies:
-      '@types/glob': 7.2.0
-      '@types/node': 22.10.0
 
   '@types/semver-compare@1.0.3': {}
 
