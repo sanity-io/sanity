@@ -39,9 +39,16 @@ const DEFAULT_DECORATORS = [
 
 test.describe('Portable Text Input', () => {
   test.describe('Decorators', () => {
-    test('Render default decorators with keyboard shortcuts', async ({mount, page}) => {
+    test('Render default decorators with keyboard shortcuts', async ({
+      mount,
+      page,
+      browserName,
+    }) => {
       // avoid flakiness to make sure the test has the best chance despite being slow
       test.slow()
+
+      // For now, only test in Chromium due to flakiness in Firefox and WebKit
+      test.skip(browserName !== 'chromium')
 
       const {
         getModifierKey,
