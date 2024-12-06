@@ -1506,8 +1506,8 @@ importers:
         specifier: 3.66.0
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.19.5
-        version: 1.19.5(@sanity/color@3.0.6)(debug@4.3.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.19.7
+        version: 1.19.7(@sanity/color@3.0.6)(debug@4.3.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.66.0
         version: link:../@sanity/schema
@@ -4583,8 +4583,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.19.5':
-    resolution: {integrity: sha512-UY/WJDcQU4858VQrJZP3pqobbbno8EZAlizDKYj4/MOfXsU8Mib2+wUMQXGUSpuGr3OsHo32I+kl5v+CcR5ldA==}
+  '@sanity/presentation@1.19.7':
+    resolution: {integrity: sha512-dOLfGlfRf6VS655kZw4346lkJXVLNYyEtehwahVc5q4gJBdud5N9CfvYYud06whg18IeytFZ6iCntn0QoEkdRQ==}
     engines: {node: '>=16.14'}
 
   '@sanity/prettier-config@1.0.3':
@@ -14669,7 +14669,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.19.5(@sanity/color@3.0.6)(debug@4.3.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.19.7(@sanity/color@3.0.6)(debug@4.3.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.3.7)
       '@sanity/comlink': 2.0.1
