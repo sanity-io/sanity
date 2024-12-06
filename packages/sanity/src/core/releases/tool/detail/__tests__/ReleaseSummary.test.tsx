@@ -264,4 +264,64 @@ describe('ReleaseSummary', () => {
       expect(screen.queryByText('Add document')).toBeNull()
     })
   })
+
+  describe('Release Badges in the Table component', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
+    })
+
+    it('should show `unpublish` if a document is scheduled for unpublishing', async () => {
+      await renderTest({
+        release: scheduledRelease,
+        documents: [
+          {
+            ...releaseDocuments[0],
+            document: {...releaseDocuments[0].document, willBeUnpublished: true},
+          },
+        ],
+      })
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+    })
+
+    it('should show `change` if a document is published', async () => {
+      await renderTest({
+        release: scheduledRelease,
+        documents: [
+          {
+            ...releaseDocuments[0],
+            document: {
+              ...releaseDocuments[0].document,
+              publishedDocumentExists: true,
+            },
+          },
+        ],
+      })
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+
+      expect(within(firstDocumentRow).getByTestId('change-badge-123')).toBeInTheDocument()
+    })
+
+    it('should show `add` if a document is not published and is not scheduled for unpublishing', async () => {
+      await renderTest({
+        release: scheduledRelease,
+        documents: [
+          {
+            ...releaseDocuments[0],
+            document: {
+              ...releaseDocuments[0].document,
+              publishedDocumentExists: false, // enforce these as false for the test purpose
+              willBeUnpublished: false, // enforce these as false for the test purpose
+            },
+          },
+        ],
+      })
+      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+
+      expect(within(firstDocumentRow).getByTestId('add-badge-123')).toBeInTheDocument()
+    })
+  })
 })

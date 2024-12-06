@@ -63,21 +63,25 @@ export const getDocumentTableColumnDefs: (
       const actionBadge = () => {
         if (willBeUnpublished) {
           return (
-            <Badge radius={2} tone={'critical'}>
+            <Badge
+              radius={2}
+              tone={'critical'}
+              data-testid={`unpublish-badge-${datum.document._id}`}
+            >
               {t('table-body.action.unpublish')}
             </Badge>
           )
         }
         if (datum.document.publishedDocumentExists) {
           return (
-            <Badge radius={2} tone={'caution'}>
+            <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
               {t('table-body.action.change')}
             </Badge>
           )
         }
 
         return (
-          <Badge radius={2} tone={'positive'}>
+          <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
             {t('table-body.action.add')}
           </Badge>
         )
