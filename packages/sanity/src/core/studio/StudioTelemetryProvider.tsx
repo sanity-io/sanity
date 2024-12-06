@@ -27,7 +27,9 @@ const WELL_KNOWN_NAMES = [
   'test',
 ]
 
-const DEBUG_TELEMETRY = process.env.SANITY_STUDIO_DEBUG_TELEMETRY
+const DEBUG_TELEMETRY = !!(
+  typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
+)
 
 /* eslint-disable no-console */
 export const debugLoggingStore: CreateBatchedStoreOptions = {
