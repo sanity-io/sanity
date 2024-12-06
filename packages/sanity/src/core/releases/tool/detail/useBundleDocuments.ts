@@ -67,27 +67,6 @@ export function useBundleDocuments(release: string): {
                 ),
               ),
           ),
-          switchMap((doc) =>
-            observableClient
-              .fetch(
-                `*[_id in path("${doc._id}")]{_system}`,
-                {},
-                {tag: 'release-documents.check-delete'},
-              )
-              .pipe(
-                // eslint-disable-next-line max-nested-callbacks
-                switchMap((document) => {
-                  if (!document._system) {
-                    return of(doc)
-                  }
-
-                  return of({
-                    ...doc,
-                    _system: document._system,
-                  })
-                }),
-              ),
-          ),
         )
         const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
           map((validationStatus) => ({
