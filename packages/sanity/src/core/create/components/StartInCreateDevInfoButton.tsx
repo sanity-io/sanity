@@ -1,7 +1,7 @@
 //these texts dont need to be translated – dev only
 /* eslint-disable i18next/no-literal-string */
 import {InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Card, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -57,24 +57,23 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
       open={open}
       placement="top"
       fallbackPlacements={['top-start', 'top-end', 'left', 'right']}
+      tone="default"
       content={
-        <WrapperCard tone="default">
-          <Stack space={4} padding={4}>
-            <Text muted size={0}>
+        <WrapperCard radius={3} tone="default">
+          <Stack padding={4} space={4}>
+            <Text muted size={1}>
               This info button is only visible in development mode.
             </Text>
 
-            <Text size={1}>
-              The Create banner is shown for new documents without initial values in Studios
-              deployed with a Create manifest.
-            </Text>
-
             {noFallbackOrigin && (
-              <Card tone="primary" padding={2} border>
+              <Card border padding={3} radius={3}>
                 <Stack space={4}>
-                  <Text size={1}>
-                    The Start in Create button is disabled for development because{' '}
-                    <code>beta.create.fallbackStudioOrigin</code> has not been set in{' '}
+                  <div>
+                    <Badge tone="caution">No fallback origin defined</Badge>
+                  </div>
+                  <Text muted size={1}>
+                    The Start in Create button has been disabled in development as{' '}
+                    <code>beta.create.fallbackStudioOrigin</code> is not defined in{' '}
                     <code>sanity.config</code>.
                   </Text>
                   <DeployedApps studioApps={studioApp?.studioApps} />
@@ -84,18 +83,25 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
 
             {activeFallbackOrigin && (
               <>
-                <Text size={1}>
-                  For development Create will use the schema from a fallback origin deployment:
-                </Text>
-                <Text size={1}>
-                  <code>{fallbackStudioOrigin}</code>
-                </Text>
+                <Card border padding={3} radius={3}>
+                  <Stack space={2}>
+                    <div>
+                      <Badge tone="positive">Fallback studio origin</Badge>
+                    </div>
+                    <Text size={1} weight="medium">
+                      <code>{fallbackStudioOrigin}</code>
+                    </Text>
+                  </Stack>
+                </Card>
               </>
             )}
 
             {invalidFallbackOrigin && (
-              <Card tone="critical" padding={2} border>
+              <Card border padding={3} radius={3}>
                 <Stack space={4}>
+                  <div>
+                    <Badge tone="critical">Invalid fallback origin</Badge>
+                  </div>
                   <Text size={1}>
                     Fallback origin <code>{fallbackStudioOrigin}</code> set in{' '}
                     <code>beta.create.fallbackStudioOrigin</code> is invalid.
@@ -105,15 +111,21 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
               </Card>
             )}
 
-            <Text size={1}>
+            <Text muted size={1}>
+              This banner is displayed in new documents on Studios deployed with a manifest.
+              Documents containing initial values are ignored.
+            </Text>
+
+            <Text size={1} weight="medium">
+              For more details, please refer to{' '}
               <a
                 href={'https://www.sanity.io/docs/create-content-mapping'}
                 target="_blank"
                 rel="noreferrer"
               >
-                Content mapping for Sanity Create
-              </a>{' '}
-              describes configuration details and when the banner will appear in deployed studios.
+                our configuration guide
+              </a>
+              .
             </Text>
           </Stack>
         </WrapperCard>
@@ -141,19 +153,22 @@ function DeployedApps(props: {studioApps?: StudioApp[]}) {
 
   return (
     <Stack space={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         Available studio origin{studioApps.length > 1 ? 's' : ''}
       </Text>
       <Stack space={2}>
         {studioApps.map((app) => {
           return (
             <Text key={app.id} size={1}>
-              • {app.studioUrl?.replace(`https://`, '')}
+              <code>• {app.studioUrl?.replace(`https://`, '')}</code>
             </Text>
           )
         })}
       </Stack>
-      <Text size={1}>To integrate with Create, a deployed studio must have a Create manifest.</Text>
+      <Text muted size={1}>
+        To enable integration with Sanity Create, a deployed studio must have an accessible
+        manifest.
+      </Text>
     </Stack>
   )
 }

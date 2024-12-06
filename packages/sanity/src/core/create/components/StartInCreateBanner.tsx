@@ -1,9 +1,17 @@
 import {LaunchIcon, SparklesIcon} from '@sanity/icons'
-import {Card, Flex, Inline, Stack, Text, useToast} from '@sanity/ui'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  Card,
+  Flex,
+  Inline,
+  Stack,
+  Text,
+  useToast,
+} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {styled} from 'styled-components'
+import {TextWithTone} from 'sanity'
 
-import {Button} from '../../../ui-components'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'
@@ -19,17 +27,6 @@ import {type StartInCreateBannerProps} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {createUserDocumentationUrl} from './constants'
 import {StartInCreateDevInfoButton} from './StartInCreateDevInfoButton'
-
-const WrapperCard = styled(Card)`
-  background: #e5edff;
-`
-
-const AIColoredText = styled(Text)`
-  color: #4043e7;
-  && [data-sanity-icon] {
-    color: #4043e7;
-  }
-`
 
 export function StartInCreateBanner(props: StartInCreateBannerProps) {
   const {document, isInitialValueLoading} = props
@@ -111,16 +108,18 @@ function StartInCreateBannerStudioApp(
 
   return (
     <Flex>
-      <WrapperCard padding={4} flex={1} borderTop>
+      <Card padding={3} flex={1} borderTop tone="primary">
         <Flex justify="space-between" align="center" gap={4}>
-          <Flex gap={3} align="center" flex={1}>
-            <AIColoredText>
+          <Flex gap={3} align="center" flex={1} paddingY={1}>
+            <Text size={1}>
               <SparklesIcon />
-            </AIColoredText>
+            </Text>
             <Stack space={3}>
-              <AIColoredText weight="semibold">{t('start-in-create-banner.title')}</AIColoredText>
+              <TextWithTone size={1} weight="semibold" tone="primary">
+                {t('start-in-create-banner.title')}
+              </TextWithTone>
               <Inline>
-                <Text muted>
+                <Text size={1} weight="medium">
                   {t('start-in-create-banner.subtitle')}{' '}
                   <a target="_blank" href={createUserDocumentationUrl} rel="noreferrer">
                     {t('start-in-create-dialog.cta.learn-more')}
@@ -133,15 +132,15 @@ function StartInCreateBannerStudioApp(
             {isDev && <StartInCreateDevInfoButton studioApp={studioApp} />}
             <Button
               disabled={!appId}
-              text={t('start-in-create-link.label')}
               iconRight={LaunchIcon}
-              paddingY={3}
-              tone="primary"
               onClick={startLinking}
+              space={3}
+              text={t('start-in-create-link.label')}
+              tone="primary"
             />
           </Flex>
         </Flex>
-      </WrapperCard>
+      </Card>
     </Flex>
   )
 }
