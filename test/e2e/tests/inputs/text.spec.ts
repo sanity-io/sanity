@@ -92,8 +92,9 @@ test.describe('inputs: text', () => {
     await page.waitForTimeout(1000)
 
     // Wait for the document to be published.
-    publishButton.click()
-    expect(await paneFooter.textContent()).toMatch(/published/i)
+    await page.waitForTimeout(1_000)
+    await publishButton.click()
+    await expect(paneFooter).toContainText('Published just now')
 
     // Change the title.
     await titleInput.fill('Title B')
