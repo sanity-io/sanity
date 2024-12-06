@@ -1,4 +1,10 @@
-import {ArchiveIcon, EllipsisHorizontalIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {
+  ArchiveIcon,
+  CloseCircleIcon,
+  EllipsisHorizontalIcon,
+  TrashIcon,
+  UnarchiveIcon,
+} from '@sanity/icons'
 import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
@@ -6,7 +12,11 @@ import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
-import {ArchivedRelease, DeletedRelease} from '../../../__telemetry__/releases.telemetry'
+import {
+  ArchivedRelease,
+  DeletedRelease,
+  UnscheduledRelease,
+} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -14,59 +24,83 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromR
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
 
 export type ReleaseMenuButtonProps = {
-  disabled?: boolean
+  /** defaults to false
+   * set true if release primary CTA options should not
+   * be shown in the menu eg. unschedule, publish
+   */
+  ignoreCTA?: boolean
   release: ReleaseDocument
 }
 
-type ReleaseAction = 'archive' | 'delete'
+type ReleaseAction = 'archive' | 'delete' | 'unschedule'
 
-interface ReleaseActionMap {
-  dialogId: string
-  dialogHeaderI18nKey: string
-  dialogDescriptionSingularI18nKey: string
-  dialogDescriptionMultipleI18nKey: string
-  dialogConfirmButtonI18nKey: string
+interface BaseReleaseActionsMap {
   toastSuccessI18nKey: string
   toastFailureI18nKey: string
   telemetry: DefinedTelemetryLog<void>
 }
 
-const RELEASE_ACTION_MAP: Record<ReleaseAction, ReleaseActionMap> = {
+interface DialogActionsMap extends BaseReleaseActionsMap {
+  confirmDialog: {
+    dialogId: string
+    dialogHeaderI18nKey: string
+    dialogDescriptionSingularI18nKey: string
+    dialogDescriptionMultipleI18nKey: string
+    dialogConfirmButtonI18nKey: string
+  }
+}
+
+const RELEASE_ACTION_MAP: Record<
+  ReleaseAction,
+  DialogActionsMap | (BaseReleaseActionsMap & {confirmDialog: false})
+> = {
   delete: {
-    dialogId: 'confirm-delete-dialog',
-    dialogHeaderI18nKey: 'delete-dialog.confirm-delete.header',
-    dialogDescriptionSingularI18nKey: 'delete-dialog.confirm-delete-description_one',
-    dialogDescriptionMultipleI18nKey: 'delete-dialog.confirm-delete-description_other',
-    dialogConfirmButtonI18nKey: 'delete-dialog.confirm-delete-button',
+    confirmDialog: {
+      dialogId: 'confirm-delete-dialog',
+      dialogHeaderI18nKey: 'delete-dialog.confirm-delete.header',
+      dialogDescriptionSingularI18nKey: 'delete-dialog.confirm-delete-description_one',
+      dialogDescriptionMultipleI18nKey: 'delete-dialog.confirm-delete-description_other',
+      dialogConfirmButtonI18nKey: 'delete-dialog.confirm-delete-button',
+    },
     toastSuccessI18nKey: 'toast.delete.success',
     toastFailureI18nKey: 'toast.delete.error',
     telemetry: DeletedRelease,
   },
   archive: {
-    dialogId: 'confirm-archive-dialog',
-    dialogHeaderI18nKey: 'archive-dialog.confirm-archive-header',
-    dialogDescriptionSingularI18nKey: 'archive-dialog.confirm-archive-description_one',
-    dialogDescriptionMultipleI18nKey: 'archive-dialog.confirm-archive-description_other',
-    dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
+    confirmDialog: {
+      dialogId: 'confirm-archive-dialog',
+      dialogHeaderI18nKey: 'archive-dialog.confirm-archive-header',
+      dialogDescriptionSingularI18nKey: 'archive-dialog.confirm-archive-description_one',
+      dialogDescriptionMultipleI18nKey: 'archive-dialog.confirm-archive-description_other',
+      dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
+    },
     toastSuccessI18nKey: 'toast.archive.success',
     toastFailureI18nKey: 'toast.archive.error',
     telemetry: ArchivedRelease,
   },
+  unschedule: {
+    confirmDialog: false,
+    toastSuccessI18nKey: 'toast.unschedule.success',
+    toastFailureI18nKey: 'toast.unschedule.error',
+    telemetry: UnscheduledRelease,
+  },
 }
 
-export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) => {
+export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
-  const {archive, deleteRelease} = useReleaseOperations()
+  const {archive, deleteRelease, unschedule} = useReleaseOperations()
   const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
     getReleaseIdFromReleaseDocumentId(release._id),
   )
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
 
-  const releaseMenuDisabled = !release || isLoadingReleaseDocuments || disabled
+  const releaseMenuDisabled = !release || isLoadingReleaseDocuments
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
+  const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   const handleDelete = useCallback(async () => {
     await deleteRelease(release._id)
@@ -81,7 +115,8 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
 
       const actionLookup = {
         delete: handleDelete,
-        archive: archive,
+        archive,
+        unschedule,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
@@ -97,7 +132,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               <Translate
                 t={t}
                 i18nKey={actionValues.toastSuccessI18nKey}
-                values={{title: release.metadata.title}}
+                values={{title: releaseTitle}}
               />
             </Text>
           ),
@@ -110,7 +145,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
               <Translate
                 t={t}
                 i18nKey={actionValues.toastFailureI18nKey}
-                values={{title: release.metadata.title, error: actionError.toString()}}
+                values={{title: releaseTitle, error: actionError.toString()}}
               />
             </Text>
           ),
@@ -122,14 +157,15 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
       }
     },
     [
-      archive,
-      handleDelete,
-      release._id,
-      release.metadata.title,
       releaseMenuDisabled,
-      t,
+      handleDelete,
+      archive,
+      unschedule,
+      release._id,
       telemetry,
       toast,
+      t,
+      releaseTitle,
     ],
   )
 
@@ -141,22 +177,24 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
   const confirmActionDialog = useMemo(() => {
     if (!selectedAction) return null
 
-    const actionValues = RELEASE_ACTION_MAP[selectedAction]
+    const {confirmDialog, ...actionValues} = RELEASE_ACTION_MAP[selectedAction]
+
+    if (!confirmDialog) return null
 
     const dialogDescription =
       releaseDocuments.length === 1
-        ? actionValues.dialogDescriptionSingularI18nKey
-        : actionValues.dialogDescriptionMultipleI18nKey
+        ? confirmDialog.dialogDescriptionSingularI18nKey
+        : confirmDialog.dialogDescriptionMultipleI18nKey
 
     return (
       <Dialog
-        id={actionValues.dialogId}
-        data-testid={actionValues.dialogId}
-        header={t(actionValues.dialogHeaderI18nKey, {title: release.metadata.title})}
+        id={confirmDialog.dialogId}
+        data-testid={confirmDialog.dialogId}
+        header={t(confirmDialog.dialogHeaderI18nKey, {title: releaseTitle})}
         onClose={() => setSelectedAction(undefined)}
         footer={{
           confirmButton: {
-            text: t(actionValues.dialogConfirmButtonI18nKey),
+            text: t(confirmDialog.dialogConfirmButtonI18nKey),
             tone: 'positive',
             onClick: () => handleAction(selectedAction),
             loading: isPerformingOperation,
@@ -180,7 +218,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
   }, [
     handleAction,
     isPerformingOperation,
-    release.metadata.title,
+    releaseTitle,
     releaseDocuments.length,
     selectedAction,
     t,
@@ -188,7 +226,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
 
   const handleOnInitiateAction = useCallback(
     (action: ReleaseAction) => {
-      if (releaseDocuments.length > 0) {
+      if (releaseDocuments.length > 0 && RELEASE_ACTION_MAP[action].confirmDialog) {
         setSelectedAction(action)
       } else {
         handleAction(action)
@@ -215,7 +253,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     return (
       <MenuItem
         tooltipProps={{
-          disabled: ['scheduled', 'scheduling'].includes(release.state) || isPerformingOperation,
+          disabled: !['scheduled', 'scheduling'].includes(release.state) || isPerformingOperation,
           content: t('action.archive.tooltip'),
         }}
         onClick={() => handleOnInitiateAction('archive')}
@@ -241,6 +279,27 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
     )
   }, [handleOnInitiateAction, isPerformingOperation, release.state, releaseMenuDisabled, t])
 
+  const unscheduleMenuItem = useMemo(() => {
+    if (ignoreCTA || (release.state !== 'scheduled' && release.state !== 'scheduling')) return null
+
+    return (
+      <MenuItem
+        onClick={() => handleOnInitiateAction('unschedule')}
+        disabled={releaseMenuDisabled || isPerformingOperation}
+        icon={CloseCircleIcon}
+        text={t('action.unschedule')}
+        data-testid="unschedule-release-menu-item"
+      />
+    )
+  }, [
+    handleOnInitiateAction,
+    ignoreCTA,
+    isPerformingOperation,
+    release.state,
+    releaseMenuDisabled,
+    t,
+  ])
+
   return (
     <>
       <MenuButton
@@ -257,6 +316,7 @@ export const ReleaseMenuButton = ({disabled, release}: ReleaseMenuButtonProps) =
         id="release-menu"
         menu={
           <Menu>
+            {unscheduleMenuItem}
             {archiveUnarchiveMenuItem}
             {deleteMenuItem}
           </Menu>
