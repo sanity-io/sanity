@@ -67,6 +67,7 @@ export type EditableReleaseDocument = Omit<
   PartialExcept<ReleaseDocument, '_id'>,
   'metadata' | '_type'
 > & {
+  _id: string
   metadata: Partial<ReleaseDocument['metadata']>
 }
 

@@ -49,6 +49,7 @@ const releasesLocaleStrings = {
     'created the <strong>{{releaseTitle}}</strong> release <ScheduleTarget>targeting </ScheduleTarget>',
   /* The text for the activity event when a document is removed from a release */
   'activity.event.discard-document': 'discarded a document version',
+  'activity.event.edit': 'set release time to <ScheduleTarget></ScheduleTarget>',
   /* The text for the activity event when the release is published */
   'activity.event.publish': 'published the <strong>{{releaseTitle}}</strong> release',
   /* The text for the activity event when the release is scheduled */

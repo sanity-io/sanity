@@ -1,3 +1,5 @@
+import {type ReleaseType} from '../../../store'
+
 export type ReleaseEvent =
   | CreateReleaseEvent
   | ScheduleReleaseEvent
@@ -7,11 +9,11 @@ export type ReleaseEvent =
   | UnarchiveReleaseEvent
   | AddDocumentToReleaseEvent
   | DiscardDocumentFromReleaseEvent
+  | EditReleaseEvent
 
-type EventType = ReleaseEvent['type']
+export type EventType = ReleaseEvent['type']
 
 export interface BaseEvent {
-  type: EventType
   timestamp: string
   author: string
   releaseName: string
@@ -20,13 +22,12 @@ export interface BaseEvent {
 
 export interface CreateReleaseEvent extends BaseEvent {
   type: 'CreateRelease'
-  // TODO: Can we add this from the API?
-  publishAt?: string
+  change?: Change
 }
 
 export interface ScheduleReleaseEvent extends BaseEvent {
   type: 'ScheduleRelease'
-  publishAt: Date
+  publishAt: string
 }
 
 export interface UnscheduleReleaseEvent extends BaseEvent {
@@ -60,6 +61,16 @@ export interface DiscardDocumentFromReleaseEvent extends BaseEvent {
   versionRevisionId: string
 }
 
+interface Change {
+  intendedPublishDate?: string
+  releaseType?: ReleaseType
+}
+export interface EditReleaseEvent extends BaseEvent {
+  type: 'releaseEditEvent'
+  isCreationEvent?: boolean
+  change: Change
+}
+
 // Type guards
 export const isCreateReleaseEvent = (event: ReleaseEvent): event is CreateReleaseEvent =>
   event.type === 'CreateRelease'
@@ -79,3 +90,5 @@ export const isAddDocumentToReleaseEvent = (
 export const isDiscardDocumentFromReleaseEvent = (
   event: ReleaseEvent,
 ): event is DiscardDocumentFromReleaseEvent => event.type === 'DiscardDocumentFromRelease'
+export const isEditReleaseEvent = (event: ReleaseEvent): event is EditReleaseEvent =>
+  event.type === 'releaseEditEvent'

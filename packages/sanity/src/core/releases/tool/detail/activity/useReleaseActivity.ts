@@ -2,9 +2,11 @@ import {useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, type ReleaseDocument, useClient} from 'sanity'
 
+import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseActivityEvents, RELEASE_ACTIVITY_INITIAL_VALUE} from './getReleaseActivityEvents'
-import {type ReleaseEvent} from './types'
+import {EDITS_EVENTS_INITIAL_VALUE, getReleaseEditEvents} from './getReleaseEditEvents'
+import {isCreateReleaseEvent, type ReleaseEvent} from './types'
 
 export interface ReleaseActivity {
   events: ReleaseEvent[]
@@ -24,15 +26,26 @@ export function useReleaseActivity({
 }): ReleaseActivity {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentsCount = useRef<null | number>(null)
+  const {state$: releasesState$} = useReleasesStore()
+  const releaseId = release?._id
+
   const releaseRev = useRef<string | null>(release?._rev || null)
   const {events$, reloadEvents, loadMore} = useMemo(
     () =>
       getReleaseActivityEvents({
         client,
-        releaseId: release?._id ? getReleaseIdFromReleaseDocumentId(release._id) : undefined,
+        releaseId: releaseId ? getReleaseIdFromReleaseDocumentId(releaseId) : undefined,
       }),
-    [client, release?._id],
+    [client, releaseId],
   )
+
+  const {events, loading, error} = useObservable(events$, RELEASE_ACTIVITY_INITIAL_VALUE)
+  const {editEvents$} = useMemo(
+    () => getReleaseEditEvents({client, releaseId, releasesState$}),
+    [releaseId, client, releasesState$],
+  )
+  const {editEvents} = useObservable(editEvents$, EDITS_EVENTS_INITIAL_VALUE)
+
   useEffect(() => {
     // Wait until the documents are loaded
     if (releaseDocumentsLoading) return
@@ -51,6 +64,7 @@ export function useReleaseActivity({
     }
   }, [releaseDocumentsCount, releaseDocumentsLoading, reloadEvents])
 
+  // TODO: Move this to the observable by using the releasesState$
   useEffect(() => {
     // Wait until the release exists
     if (!release?._rev) return
@@ -68,7 +82,27 @@ export function useReleaseActivity({
     }
   }, [release?._rev, reloadEvents])
 
-  const {events, loading, error} = useObservable(events$, RELEASE_ACTIVITY_INITIAL_VALUE)
+  const allEvents = useMemo(() => {
+    return [...events, ...editEvents]
+      .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+      .reduce((acc: ReleaseEvent[], event) => {
+        if (isCreateReleaseEvent(event)) {
+          // Check if the creation event exists, we want to show only one, prefer the one that has the "changes" object
+          const creationEvent = acc.find(isCreateReleaseEvent)
+          // The creation event with the "change" will come from the edit events, we want that one as it has more info.
+          if (!creationEvent) acc.push(event)
+          else if (!creationEvent.change && event.change) {
+            acc[acc.indexOf(creationEvent)] = event
+          }
+        } else acc.push(event)
+        return acc
+      }, [])
+  }, [editEvents, events])
 
-  return {events, loadMore, loading, error}
+  return {
+    events: allEvents,
+    loadMore,
+    loading,
+    error,
+  }
 }

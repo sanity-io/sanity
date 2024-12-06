@@ -83,7 +83,7 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
         as="tr"
         style={{
           paddingInline: `max(
-          calc((100vw - var(--maxInlineSize)) / 2),
+          calc((100% - var(--maxInlineSize)) / 2),
           var(--paddingInline)
         )`,
         }}

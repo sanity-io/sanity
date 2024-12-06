@@ -122,7 +122,7 @@ export const ReleaseDetail = () => {
 
   if (releaseInDetail) {
     return (
-      <Flex direction="column" flex={1} height="fill">
+      <Flex direction="column" flex={1} height="fill" overflow="hidden">
         <Card flex="none" padding={3}>
           <ReleaseDashboardHeader
             release={releaseInDetail}
@@ -145,14 +145,11 @@ export const ReleaseDetail = () => {
             />
           </Flex>
 
-          {inspector === 'activity' && (
-            <>
-              <Card flex="none" borderLeft marginY={2} style={{opacity: 0.6}} />
-              <Card flex="none" style={{width: 320}}>
-                <ReleaseDashboardActivityPanel activity={activity} release={releaseInDetail} />
-              </Card>
-            </>
-          )}
+          <ReleaseDashboardActivityPanel
+            activity={activity}
+            release={releaseInDetail}
+            show={inspector === 'activity'}
+          />
         </Flex>
       </Flex>
     )
