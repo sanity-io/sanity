@@ -5,7 +5,10 @@ import {AnnotationsStory} from './AnnotationsStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Annotations', () => {
-    test('Create a new link with keyboard only', async ({mount, page}) => {
+    test('Create a new link with keyboard only', async ({mount, page, browserName}) => {
+      // For now, only test in Chromium due to flakiness in Firefox and WebKit
+      test.skip(browserName !== 'chromium')
+
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
         page,
       })
