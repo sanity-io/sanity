@@ -1,3 +1,4 @@
+import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
@@ -26,7 +27,7 @@ export type ReleaseFinalDocumentState = {
  * TODO: When made `beta`, update the PublishDocumentVersionEvent to use this type
  * @internal
  */
-export interface ReleaseDocument {
+export interface ReleaseDocument extends SanityDocument {
   /**
    * typically
    * _.releases.<name>
@@ -39,7 +40,9 @@ export interface ReleaseDocument {
   /**
    * The same as the last path segment of the _id, added by the backend.
    */
+  // TODO: Remove this, we want to force the use of `getReleaseIdFromReleaseDocumentId`
   name: string
+  // TODO: Remove this is not part of the API response
   createdBy: string
   state: ReleaseState
   finalDocumentStates?: ReleaseFinalDocumentState[]
