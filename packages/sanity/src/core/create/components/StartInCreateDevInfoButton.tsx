@@ -139,6 +139,7 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
         onClick={toggleOpen}
         tooltipProps={{
           content: 'Developer info',
+          placement: 'top',
         }}
       />
     </Popover>
