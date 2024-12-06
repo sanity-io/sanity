@@ -108,7 +108,7 @@ function StartInCreateBannerStudioApp(
 
   return (
     <Flex>
-      <Card padding={3} flex={1} tone="primary">
+      <Card borderTop padding={3} flex={1} tone="primary">
         <Flex justify="space-between" align="center" gap={4}>
           <Flex gap={3} align="flex-start" flex={1} paddingY={1}>
             <Text size={1}>
