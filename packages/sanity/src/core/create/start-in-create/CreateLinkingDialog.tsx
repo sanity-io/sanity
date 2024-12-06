@@ -10,7 +10,6 @@ import {
 } from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../structure/constants'
 import {Dialog} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
@@ -26,12 +25,7 @@ export function CreateLinkingDialog() {
   }, [])
 
   return (
-    <Dialog
-      header={t('linking-in-progress-dialog.header')}
-      id={id}
-      portal={DOCUMENT_PANEL_PORTAL_ELEMENT}
-      width={0}
-    >
+    <Dialog header={t('linking-in-progress-dialog.header')} id={id} width={0}>
       <Stack space={4}>
         <Text size={1} weight="semibold">
           {t('linking-in-progress-dialog.lede')}

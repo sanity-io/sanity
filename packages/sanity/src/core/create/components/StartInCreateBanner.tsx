@@ -26,6 +26,7 @@ import {useStudioAppIdStore} from '../studio-app/useStudioAppIdStore'
 import {type StartInCreateBannerProps} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {createUserDocumentationUrl} from './constants'
+import {DialogPortalProvider} from './DialogPortalProvider'
 import {StartInCreateDevInfoButton} from './StartInCreateDevInfoButton'
 
 export function StartInCreateBanner(props: StartInCreateBannerProps) {
@@ -64,7 +65,7 @@ function StartInCreateBannerStudioApp(
     studioApp: CompatibleStudioAppId
   },
 ) {
-  const {documentId, documentType, studioApp} = props
+  const {documentId, documentType, panelPortalElementId, studioApp} = props
   const appId = studioApp.appId
 
   const {t} = useTranslation(createLocaleNamespace)
@@ -103,7 +104,11 @@ function StartInCreateBannerStudioApp(
   }, [pushToast, t, telemetry, appId, workspace, documentType, documentId])
 
   if (isLinking) {
-    return <CreateLinkingDialog />
+    return (
+      <DialogPortalProvider portalElementId={panelPortalElementId}>
+        <CreateLinkingDialog />
+      </DialogPortalProvider>
+    )
   }
 
   return (

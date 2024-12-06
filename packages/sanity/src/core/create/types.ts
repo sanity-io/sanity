@@ -38,4 +38,5 @@ export interface StartInCreateBannerProps {
   documentType: ObjectSchemaType
   document: SanityDocumentLike
   isInitialValueLoading: boolean
+  panelPortalElementId: string
 }

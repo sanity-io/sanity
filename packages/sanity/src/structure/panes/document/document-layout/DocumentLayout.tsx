@@ -260,6 +260,7 @@ export function DocumentLayout() {
                     documentId={documentId}
                     documentType={schemaType}
                     isInitialValueLoading={!!isInitialValueLoading}
+                    panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
                   />
                 </ShowWhenPaneOpen>
               )}
