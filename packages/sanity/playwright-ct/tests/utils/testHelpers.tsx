@@ -9,7 +9,6 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   const activatePTInputOverlay = async ($pteField: Locator) => {
     const $overlay = $pteField.getByTestId('activate-overlay')
     if (await $overlay.isVisible()) {
-      await $overlay.focus({timeout: 50000})
       await $overlay.press('Space')
     }
 
