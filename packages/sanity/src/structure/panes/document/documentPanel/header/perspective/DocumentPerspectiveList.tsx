@@ -98,6 +98,21 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     [setPerspective],
   )
 
+  const isPublishedChipDisabled = useMemo(() => {
+    if (editState?.liveEdit) {
+      if (!editState?.published) {
+        return true
+      }
+
+      return false
+    }
+
+    if (!editState?.published) {
+      return true
+    }
+    return false
+  }, [editState?.liveEdit, editState?.published])
+
   return (
     <>
       <VersionChip
@@ -114,7 +129,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             )}
           </Text>
         }
-        disabled={editState?.liveEdit || !editState?.published}
+        disabled={isPublishedChipDisabled}
         onClick={handleBundleChange('published')}
         selected={
           /** the publish is selected when:

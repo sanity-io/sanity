@@ -99,26 +99,40 @@ describe('DocumentPerspectiveList', () => {
   })
 
   describe('disabled chips', () => {
-    it('should disable the "Published" chip when there is no published document', async () => {
-      mockUseDocumentPane.mockReturnValue({
-        documentVersions: [mockCurrent],
-        editState: {
-          id: 'document-id',
-          type: 'document-type',
-          transactionSyncLock: {enabled: false},
-          draft: null,
-          published: null, // make sure that there is no published doc in the mock
-          liveEdit: false,
-          ready: true,
-          version: {
-            _id: 'versions.release.document-id',
-            _type: 'document-type',
-            _createdAt: '2023-01-01T00:00:00Z',
-            _updatedAt: '2023-01-01T00:00:00Z',
-            _rev: '1',
-          },
-          liveEditSchemaType: false,
+    const mockUsePane = {
+      documentVersions: [mockCurrent],
+      editState: {
+        id: 'document-id',
+        type: 'document-type',
+        transactionSyncLock: {enabled: false},
+        draft: null,
+        published: null, // make sure that there is no published doc in the mock
+        liveEdit: false,
+        ready: true,
+        version: {
+          _id: 'versions.release.document-id',
+          _type: 'document-type',
+          _createdAt: '2023-01-01T00:00:00Z',
+          _updatedAt: '2023-01-01T00:00:00Z',
+          _rev: '1',
         },
+        liveEditSchemaType: false,
+      },
+    }
+
+    it('should disable the "Published" chip when there is no published document and not live edit', async () => {
+      mockUseDocumentPane.mockReturnValue(mockUsePane)
+
+      const wrapper = await createTestProvider()
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Published'})).toBeDisabled()
+    })
+
+    it('should disable the "Published" chip when there is no published document and IS live edit', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        ...mockUsePane,
+        editState: {...mockUsePane.editState, liveEdit: true},
       })
 
       const wrapper = await createTestProvider()
@@ -126,5 +140,35 @@ describe('DocumentPerspectiveList', () => {
 
       expect(screen.getByRole('button', {name: 'Published'})).toBeDisabled()
     })
+
+    it('should enable the "Published" chip when the document is "liveEdit"', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        ...mockUsePane,
+        editState: {
+          ...mockUsePane.editState,
+          published: {
+            _id: 'published-document-id',
+            _type: 'document-type',
+            _createdAt: '2023-01-01T00:00:00Z',
+            _updatedAt: '2023-01-01T00:00:00Z',
+            _rev: '1',
+          },
+        },
+      })
+
+      const wrapper = await createTestProvider()
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Published'})).toBeEnabled()
+    })
+  })
+
+  describe('selected chips', () => {
+    it.todo('the draft is selected when the document displayed is a draft')
+    it.todo('the draft is selected when the perspective is null')
+    it.todo(
+      'the draft is selected when when the document is not published and the displayed version is draft,',
+    )
+    it.todo('when there is no draft (new document)')
   })
 })
