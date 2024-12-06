@@ -13,7 +13,7 @@ export const cliApiHost = 'https://api.sanity.work'
 
 export const hasBuiltCli = existsSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'))
 export const fixturesPath = path.join(__dirname, '..', '__fixtures__')
-export const studioVersions = ['v2', 'v3'] as const
+export const studioVersions = ['v3'] as const
 export const doCleanup = false
 export const baseTestPath = path.join(tmpdir(), 'sanity-cli-test')
 export const testIdPath = path.join(baseTestPath, 'test-id.txt')
@@ -82,10 +82,6 @@ const getTestId = () => {
  * once for node current.
  */
 function getPort(version: string): number {
-  if (version === 'v2') {
-    return 3334
-  }
-
   if (process.release.lts) {
     return 4333
   }
