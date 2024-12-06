@@ -60,7 +60,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => {
       const willBeUnpublished = isGoingToUnpublish(datum.document)
-      const BadgeToRender = () => {
+      const actionBadge = () => {
         if (willBeUnpublished) {
           return (
             <Badge radius={2} tone={'critical'}>
@@ -85,9 +85,7 @@ export const getDocumentTableColumnDefs: (
 
       return (
         <Flex align="center" {...cellProps}>
-          <Box paddingX={2}>
-            <BadgeToRender />
-          </Box>
+          <Box paddingX={2}>{actionBadge()}</Box>
         </Flex>
       )
     },
