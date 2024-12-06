@@ -1171,7 +1171,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
   'release.action.unpublish-version.success':
-    'Successfully set version to be unpublished on release',
+    'Successfully set <strong>{{title}}</strong> to be unpublished on release',
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
   /** Label for banner when release is scheduled */
