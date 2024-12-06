@@ -135,6 +135,7 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
         ref={infoButtonRef}
         icon={invalidFallbackOrigin ? WarningOutlineIcon : InfoOutlineIcon}
         mode={invalidFallbackOrigin ? 'default' : 'bleed'}
+        selected={open}
         tone={invalidFallbackOrigin ? 'critical' : 'default'}
         onClick={toggleOpen}
         tooltipProps={{
