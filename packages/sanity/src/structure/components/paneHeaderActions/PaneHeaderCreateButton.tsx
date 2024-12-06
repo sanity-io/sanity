@@ -8,6 +8,7 @@ import {
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
+  useIsReleaseActive,
   usePerspective,
   useTemplatePermissions,
   useTemplates,
@@ -15,7 +16,6 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {useIsReleaseActive} from '../../../core/releases/hooks/useIsReleaseActive'
 import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {IntentButton} from '../IntentButton'
