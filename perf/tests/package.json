@@ -20,7 +20,7 @@
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
     "execa": "^2.0.0",
-    "globby": "^10.0.0",
+    "globby": "^11.1.0",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.0",
     "sanity": "workspace:*"
