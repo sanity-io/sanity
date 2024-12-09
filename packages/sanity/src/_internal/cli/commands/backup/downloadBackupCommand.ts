@@ -189,7 +189,7 @@ const downloadBackupCommand: CliCommandDefinition = {
     progressSpinner.set({
       step: `Cleaning up temporary files at ${chalk.cyan(`${tmpOutDir}`)}`,
     })
-    cleanupTmpDir(tmpOutDir)
+    await cleanupTmpDir(tmpOutDir)
 
     progressSpinner.set({
       step: `Backup download complete [${prettyMs(Date.now() - start)}]`,
