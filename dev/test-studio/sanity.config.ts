@@ -14,6 +14,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
@@ -144,6 +145,7 @@ const sharedSettings = definePlugin({
     errorReportingTestPlugin(),
     tsdoc(),
     media(),
+    markdownSchema(),
   ],
 })
 
