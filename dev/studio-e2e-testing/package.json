@@ -17,8 +17,8 @@
   "dependencies": {
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
-    "@sanity/icons": "^3.5.0",
-    "@sanity/ui": "^2.9.1",
+    "@sanity/icons": "^3.5.2",
+    "@sanity/ui": "^2.10.5",
     "@sanity/vision": "3.66.1",
     "babel-plugin-react-compiler": "19.0.0-beta-37ed2a7-20241206",
     "react": "^18.3.1",
