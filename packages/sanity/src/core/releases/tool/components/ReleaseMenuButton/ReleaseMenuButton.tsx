@@ -177,7 +177,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
   const confirmActionDialog = useMemo(() => {
     if (!selectedAction) return null
 
-    const {confirmDialog, ...actionValues} = RELEASE_ACTION_MAP[selectedAction]
+    const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
     if (!confirmDialog) return null
 
