@@ -81,6 +81,7 @@ export function DocumentLayout() {
     paneKey,
     schemaType,
     value,
+    isInitialValueLoading,
   } = useDocumentPane()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
@@ -91,7 +92,10 @@ export function DocumentLayout() {
   const previewUrl = usePreviewUrl(value)
 
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
-  const CreateLinkedBannerContent = useSanityCreateConfig().components?.documentLinkedBannerContent
+  const {
+    documentLinkedBannerContent: CreateLinkedBannerContent,
+    startInCreateBanner: StartInCreateBanner,
+  } = useSanityCreateConfig().components ?? {}
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -249,6 +253,17 @@ export function DocumentLayout() {
             __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
           >
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+              {StartInCreateBanner && (
+                <ShowWhenPaneOpen>
+                  <StartInCreateBanner
+                    document={value}
+                    documentId={documentId}
+                    documentType={schemaType}
+                    isInitialValueLoading={!!isInitialValueLoading}
+                    panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
+                  />
+                </ShowWhenPaneOpen>
+              )}
               <PaneFooter ref={setFooterElement}>
                 <TooltipDelayGroupProvider>
                   <DocumentStatusBar

@@ -115,6 +115,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateParams,
   })
   const initialValue = useUnique(initialValueRaw)
+  const isInitialValueLoading = initialValue.loading
+
   const {patch} = useDocumentOperation(documentId, documentType)
   const editState = useEditState(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
@@ -679,6 +681,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       ready,
       schemaType: schemaType!,
       isPermissionsLoading,
+      isInitialValueLoading,
       permissions,
       setTimelineMode,
       setTimelineRange,
@@ -732,6 +735,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleted,
       isDeleting,
       isPermissionsLoading,
+      isInitialValueLoading,
       languageFilter,
       menuItemGroups,
       openInspector,

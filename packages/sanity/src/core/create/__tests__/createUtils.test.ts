@@ -1,8 +1,8 @@
-import {defineType, type ObjectSchemaType} from '@sanity/types'
+import {defineType, type ObjectSchemaType, type SanityDocumentLike} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {createSchema} from '../../schema'
-import {isSanityCreateExcludedType} from '../createUtils'
+import {isSanityCreateExcludedType, isSanityCreateStartCompatibleDoc} from '../createUtils'
 
 const basicDoc = defineType({
   type: 'document',
@@ -67,6 +67,36 @@ describe('createUtils', () => {
         basicDoc.name,
       )
       expect(isSanityCreateExcludedType(documentType)).toEqual(false)
+    })
+  })
+
+  describe('isSanityCreateStartCompatibleDoc', () => {
+    it(`should allow documents with values in underscore-prefixed fields`, () => {
+      const doc: SanityDocumentLike = {
+        _id: '123',
+        _type: 'yolo',
+        _createdAt: 'whenever',
+      }
+      expect(isSanityCreateStartCompatibleDoc(doc)).toEqual(true)
+    })
+
+    it(`should allow documents with null or undefined values in underscore-prefixed fields`, () => {
+      const doc: SanityDocumentLike = {
+        _id: '123',
+        _type: 'yolo',
+        someField: undefined,
+        other: null,
+      }
+      expect(isSanityCreateStartCompatibleDoc(doc)).toEqual(true)
+    })
+
+    it(`should not allow documents with values in regular fields`, () => {
+      expect(isSanityCreateStartCompatibleDoc({_id: '1', _type: '2', someArray: []})).toEqual(false)
+      expect(isSanityCreateStartCompatibleDoc({_id: '1', _type: '2', string: ''})).toEqual(false)
+      expect(isSanityCreateStartCompatibleDoc({_id: '1', _type: '2', number: 0})).toEqual(false)
+      expect(isSanityCreateStartCompatibleDoc({_id: '1', _type: '2', boolean: false})).toEqual(
+        false,
+      )
     })
   })
 })
