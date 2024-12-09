@@ -4,7 +4,6 @@ import path from 'node:path'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
-import {build} from 'vite'
 
 import {debug as serverDebug} from './debug'
 import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
@@ -74,7 +73,7 @@ export async function buildStaticFiles(
       viteConfig,
       extendViteConfig,
     )
-    viteConfig = finalizeViteConfig(viteConfig)
+    viteConfig = await finalizeViteConfig(viteConfig)
   }
 
   // Copy files placed in /static to the built /static
@@ -88,6 +87,7 @@ export async function buildStaticFiles(
   await writeFavicons(faviconBasePath, staticPath)
 
   debug('Bundling using vite')
+  const {build} = await import('vite')
   const bundle = await build(viteConfig)
   debug('Bundling complete')
 

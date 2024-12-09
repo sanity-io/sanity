@@ -189,7 +189,7 @@
     "@types/speakingurl": "^13.0.3",
     "@types/tar-stream": "^3.1.3",
     "@types/use-sync-external-store": "^0.0.6",
-    "@vitejs/plugin-react": "^4.3.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "archiver": "^7.0.0",
     "arrify": "^1.0.1",
     "async-mutex": "^0.4.1",
@@ -198,7 +198,6 @@
     "classnames": "^2.2.5",
     "color2k": "^2.0.0",
     "configstore": "^5.0.1",
-    "connect-history-api-fallback": "^1.6.0",
     "console-table-printer": "^2.11.1",
     "dataloader": "^2.1.0",
     "date-fns": "^2.26.1",
@@ -263,7 +262,7 @@
     "use-device-pixel-ratio": "^1.1.0",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.2.0",
-    "vite": "^4.5.1",
+    "vite": "^5.4.11",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
@@ -284,7 +283,6 @@
     "@types/archiver": "^6.0.2",
     "@types/arrify": "^1.0.4",
     "@types/configstore": "^5.0.1",
-    "@types/connect-history-api-fallback": "^1.5.2",
     "@types/debug": "^4.1.12",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",

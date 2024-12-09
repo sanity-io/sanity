@@ -1,6 +1,5 @@
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
-import {createServer} from 'vite'
 
 import {debug} from './debug'
 import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
@@ -59,6 +58,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   }
 
   debug('Creating vite server')
+  const {createServer} = await import('vite')
   const server = await createServer(viteConfig)
   const info = server.config.logger.info
 
