@@ -831,8 +831,8 @@ importers:
         specifier: ^8.6.5
         version: 8.6.5(debug@4.4.0)
       groq-js:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.2
+        version: 1.14.2
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1051,8 +1051,8 @@ importers:
         specifier: workspace:*
         version: link:../../groq
       groq-js:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.2
+        version: 1.14.2
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1128,8 +1128,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2
       groq-js:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.2
+        version: 1.14.2
       p-map:
         specifier: ^7.0.1
         version: 7.0.2
@@ -1202,8 +1202,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.2
+        version: 1.14.2
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1629,8 +1629,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: ^1.14.1
-        version: 1.14.1
+        specifier: ^1.14.2
+        version: 1.14.2
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -7676,8 +7676,8 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
-  groq-js@1.14.1:
-    resolution: {integrity: sha512-tUbxLKA2wDlcMGjTK/M3XizkvqPKIBL/Go+nbPVdw71zQtgWgftPXYi2CbmQ3TYvG+BDLIenlXn/xZDjVqbojw==}
+  groq-js@1.14.2:
+    resolution: {integrity: sha512-1CtOqgATOhmB6jRKL6zvojb2Vt8aP2y6m/7ZN4JlpFhyB/d8WRW3/kZgapIUHys6/Vrkk1oTbjjDbxNL8QxHSQ==}
     engines: {node: '>= 14'}
 
   growly@1.3.0:
@@ -14922,7 +14922,7 @@ snapshots:
       express: 4.21.1
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 1.14.1
+      groq-js: 1.14.2
       history: 5.3.0
       jsonc-parser: 3.3.1
       mkdirp: 1.0.4
@@ -14980,7 +14980,7 @@ snapshots:
       express: 4.21.1
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 1.14.1
+      groq-js: 1.14.2
       history: 5.3.0
       jsonc-parser: 3.3.1
       mkdirp: 1.0.4
@@ -15038,7 +15038,7 @@ snapshots:
       express: 4.21.1
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 1.14.1
+      groq-js: 1.14.2
       history: 5.3.0
       jsonc-parser: 3.3.1
       mkdirp: 1.0.4
@@ -19028,7 +19028,7 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  groq-js@1.14.1:
+  groq-js@1.14.2:
     dependencies:
       debug: 4.4.0(supports-color@9.4.0)
     transitivePeerDependencies:

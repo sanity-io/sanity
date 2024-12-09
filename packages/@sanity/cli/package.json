@@ -67,7 +67,7 @@
     "esbuild": "0.21.5",
     "esbuild-register": "^3.5.0",
     "get-it": "^8.6.5",
-    "groq-js": "^1.14.1",
+    "groq-js": "^1.14.2",
     "pkg-dir": "^5.0.0",
     "prettier": "^3.3.0",
     "semver": "^7.3.5",

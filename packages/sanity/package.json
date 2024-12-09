@@ -211,7 +211,7 @@
     "framer-motion": "11.0.8",
     "get-it": "^8.6.5",
     "get-random-values-esm": "1.0.2",
-    "groq-js": "^1.14.1",
+    "groq-js": "^1.14.2",
     "history": "^5.3.0",
     "i18next": "^23.2.7",
     "import-fresh": "^3.3.0",
