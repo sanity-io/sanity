@@ -1,7 +1,6 @@
 import {type Framework, frameworks} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 
-import initPlugin from '../../actions/init-plugin/initPlugin'
 import initProject from '../../actions/init-project/initProject'
 import {
   allowedPackageManagersString,
@@ -27,6 +26,7 @@ Options
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
+  --no-auto-updates Disable auto updates of studio versions
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -57,9 +57,15 @@ export interface InitFlags {
   'project'?: string
   'dataset'?: string
   'template'?: string
+  /**
+   * Used for accessing private GitHub repo templates
+   * @beta
+   */
+  'template-token'?: string
 
   'visibility'?: string
   'typescript'?: boolean
+  'auto-updates'?: boolean
   /**
    * Used for initializing a project from a server schema that is saved in the Journey API
    * Overrides `project` option.
@@ -95,87 +101,23 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
   description: 'Initializes a new Sanity Studio and/or project',
   helpText,
   action: async (args, context) => {
-    const {output, chalk, prompt} = context
+    const {output, chalk} = context
     const [type] = args.argsWithoutOptions
-    const unattended = args.extOptions.y || args.extOptions.yes
-
-    const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
-
-    // `sanity init plugin`
-    if (type === 'plugin') {
-      return context.sanityMajorVersion === 2
-        ? // don't bother with telemetry here, as it's not supported in v3
-          initPlugin(args, context)
-        : Promise.reject(new Error(`'sanity init plugin' is not available in modern studios`))
-    }
 
     // `sanity init whatever`
     if (type) {
       return Promise.reject(new Error(`Unknown init type "${type}"`))
     }
 
-    // `npm create sanity` (regular v3 init)
-
     const detectedFramework: Framework | null = await detectFrameworkRecord({
       fs: new LocalFileSystemDetector(process.cwd()),
       frameworkList: frameworks as readonly Framework[],
     })
 
-    if (
-      args.argv.includes('--from-create') ||
-      args.argv.includes('--env') ||
-      args.argv.includes('--bare') ||
-      detectedFramework?.slug === 'nextjs'
-    ) {
-      return initProject(args, {
-        ...context,
-        detectedFramework,
-      })
-    }
-
-    // `sanity init` (v2 style)
-    warn('╭────────────────────────────────────────────────────────────╮')
-    warn('│                                                            │')
-    warn("│  Welcome to Sanity! It looks like you're following         │")
-    warn('│  instructions for Sanity Studio v2, but the version you    │')
-    warn('│  have installed is the latest - Sanity Studio v3.          │')
-    warn('│                                                            │')
-    warn('│  In Sanity Studio v3, new projects are created by running  │')
-    warn('│  [npm create sanity@latest]. For more information, see     │')
-    warn('│   https://www.sanity.io/help/studio-v2-vs-v3               │')
-    warn('│                                                            │')
-    warn('╰────────────────────────────────────────────────────────────╯')
-    warn('') // Newline to separate from other output
-    const continueV3Init = unattended
-      ? true
-      : await prompt.single({
-          message: 'Continue creating a Sanity Studio v3 project?',
-          type: 'confirm',
-        })
-
-    // Fall back
-    if (!continueV3Init) {
-      // Indicate that the operation did not succeed as expected
-      // eslint-disable-next-line no-process-exit
-      process.exit(1)
-    }
-
-    const returnVal = await initProject(args, {
+    return initProject(args, {
       ...context,
       detectedFramework,
-    }).catch((err) => {
-      return Promise.reject(err)
     })
-
-    warn('╭────────────────────────────────────────────────────────────╮')
-    warn('│                                                            │')
-    warn('│  To learn how commands have changed from Studio v2 to v3,  │')
-    warn('│  see https://www.sanity.io/help/studio-v2-vs-v3            │')
-    warn('│                                                            │')
-    warn('╰────────────────────────────────────────────────────────────╯')
-    warn('') // Newline to separate from other output
-
-    return returnVal
   },
 }
 

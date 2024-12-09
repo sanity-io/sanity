@@ -143,41 +143,102 @@ export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaTy
 /** @internal */
 export const DEFAULT_MAX_RECURSION_DEPTH = 10
 
+type ResolveInitialValueForType = <TParams extends Record<string, unknown>>(
+  /**
+   * This is the name of the document.
+   */ type: SchemaType,
+  /**
+   * Params is a sanity context object passed to every initial value function.
+   */
+  params: TParams,
+  /**
+   * Maximum recursion depth (default 9).
+   */
+  maxDepth: number,
+  context: InitialValueResolverContext,
+  options?: Options,
+) => Promise<any>
+
+const memoizeResolveInitialValueForType: (
+  fn: ResolveInitialValueForType,
+) => ResolveInitialValueForType = (fn) => {
+  const resolveInitialValueForTypeCache = new WeakMap<SchemaType, Map<string, Promise<any>>>()
+
+  const stableStringify = (obj: any): string => {
+    if (obj !== null && typeof obj === 'object') {
+      if (Array.isArray(obj)) {
+        return `[${obj.map(stableStringify).join(',')}]`
+      }
+      const keys = Object.keys(obj).sort()
+      return `{${keys
+        .map((key) => `${JSON.stringify(key)}:${stableStringify(obj[key])}`)
+        .join(',')}}`
+    }
+    return JSON.stringify(obj)
+  }
+
+  const hashParameters = (
+    params: Record<string, unknown>,
+    context: InitialValueResolverContext,
+  ): string => {
+    return stableStringify({
+      params,
+      context: {
+        schemaName: context.schema.name,
+        projectId: context.projectId,
+        dataset: context.dataset,
+        currentUser: context.currentUser?.id,
+      },
+    })
+  }
+
+  return async function resolveInitialValueForType(type, params, maxDepth, context, options) {
+    if (!options?.useCache) return fn(type, params, maxDepth, context, options)
+
+    let typeCache = resolveInitialValueForTypeCache.get(type)
+
+    if (!typeCache) {
+      typeCache = new Map<string, Promise<any>>()
+      resolveInitialValueForTypeCache.set(type, typeCache)
+    }
+
+    const hash = hashParameters(params, context)
+
+    const cachedResult = typeCache.get(hash)
+    if (cachedResult) return cachedResult
+
+    const result = await fn(type, params, maxDepth, context, options)
+
+    // double check after the await
+    if (!typeCache.has(hash)) {
+      typeCache.set(hash, result)
+    }
+    return result
+  }
+}
+
 /**
  * Resolve initial value for the given schema type (recursively)
  *
  * @internal
  */
-export function resolveInitialValueForType<Params extends Record<string, unknown>>(
-  /**
-   * This is the name of the document.
-   */
-  type: SchemaType,
-  /**
-   * Params is a sanity context object passed to every initial value function.
-   */
-  params: Params,
-  /**
-   * Maximum recursion depth (default 9).
-   */
-  maxDepth = DEFAULT_MAX_RECURSION_DEPTH,
-  context: InitialValueResolverContext,
-  options?: Options,
-): Promise<any> {
-  if (maxDepth <= 0) {
-    return Promise.resolve(undefined)
-  }
+export const resolveInitialValueForType = memoizeResolveInitialValueForType(
+  (type, params, maxDepth = DEFAULT_MAX_RECURSION_DEPTH, context, options): Promise<any> => {
+    if (maxDepth <= 0) {
+      return Promise.resolve(undefined)
+    }
 
-  if (isObjectSchemaType(type)) {
-    return resolveInitialObjectValue(type, params, maxDepth, context, options)
-  }
+    if (isObjectSchemaType(type)) {
+      return resolveInitialObjectValue(type, params, maxDepth, context, options)
+    }
 
-  if (isArraySchemaType(type)) {
-    return resolveInitialArrayValue(type, params, maxDepth, context, options)
-  }
+    if (isArraySchemaType(type)) {
+      return resolveInitialArrayValue(type, params, maxDepth, context, options)
+    }
 
-  return resolveValue(type.initialValue, params, context, options)
-}
+    return resolveValue(type.initialValue, params, context, options)
+  },
+)
 
 async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   type: SchemaType,

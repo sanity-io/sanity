@@ -1,12 +1,12 @@
-import {describe, expect, it, jest} from '@jest/globals'
+import {describe, expect, it, vi} from 'vitest'
 
 import {hasSanityPackageInImportMap} from './hasSanityPackageInImportMap'
 
-const querySelectorAllSpy = jest.spyOn(document, 'querySelectorAll')
+const querySelectorAllSpy = vi.spyOn(document, 'querySelectorAll')
 
 describe('hasSanityPackageInImportMap', () => {
   it('should return false if document is undefined', () => {
-    const documentSpy = jest.spyOn(global, 'document', 'get')
+    const documentSpy = vi.spyOn(global, 'document', 'get')
     documentSpy.mockReturnValueOnce(undefined as any)
     expect(hasSanityPackageInImportMap()).toBe(false)
   })

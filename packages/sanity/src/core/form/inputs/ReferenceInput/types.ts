@@ -11,13 +11,19 @@ import {type Observable} from 'rxjs'
 import {type DocumentAvailability} from '../../../preview'
 import {type ObjectInputProps} from '../../types'
 
+export type PreviewDocumentValue = PreviewValue & {
+  _id: string
+  _createdAt?: string
+  _updatedAt?: string
+}
+
 export interface ReferenceInfo {
   id: string
   type: string | undefined
   availability: DocumentAvailability
   preview: {
-    draft: (PreviewValue & {_id: string; _createdAt?: string; _updatedAt?: string}) | undefined
-    published: (PreviewValue & {_id: string; _createdAt?: string; _updatedAt?: string}) | undefined
+    draft: PreviewDocumentValue | undefined
+    published: PreviewDocumentValue | undefined
   }
 }
 

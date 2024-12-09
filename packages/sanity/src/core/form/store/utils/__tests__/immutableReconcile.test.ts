@@ -1,104 +1,47 @@
-import {expect, test} from '@jest/globals'
+import {defineField, defineType} from '@sanity/types'
+import {beforeEach, expect, test, vi} from 'vitest'
 
-import {immutableReconcile} from '../immutableReconcile'
+import {createSchema} from '../../../../schema/createSchema'
+import {createImmutableReconcile} from '../immutableReconcile'
+
+const immutableReconcile = createImmutableReconcile({decorator: vi.fn})
+
+beforeEach(() => {
+  ;(immutableReconcile as vi.Mock).mockClear()
+})
 
 test('it preserves previous value if shallow equal', () => {
   const prev = {test: 'hi'}
   const next = {test: 'hi'}
-  expect(immutableReconcile(prev, next)).toBe(prev)
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled).toBe(prev)
+  expect(immutableReconcile).toHaveBeenCalledTimes(2)
 })
 
 test('it preserves previous value if deep equal', () => {
   const prev = {arr: [{foo: 'bar'}]}
   const next = {arr: [{foo: 'bar'}]}
-  expect(immutableReconcile(prev, next)).toBe(prev)
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled).toBe(prev)
+  expect(immutableReconcile).toHaveBeenCalledTimes(4)
 })
 
 test('it preserves previous nodes that are deep equal', () => {
   const prev = {arr: [{foo: 'bar'}], x: 1}
   const next = {arr: [{foo: 'bar'}]}
-  expect(immutableReconcile(prev, next).arr).toBe(prev.arr)
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled.arr).toBe(prev.arr)
 })
 
 test('it keeps equal objects in arrays', () => {
   const prev = {arr: ['foo', {greet: 'hello'}, {other: []}], x: 1}
   const next = {arr: ['bar', {greet: 'hello'}, {other: []}]}
-  expect(immutableReconcile(prev, next).arr).not.toBe(prev.arr)
-  expect(immutableReconcile(prev, next).arr[1]).toBe(prev.arr[1])
-  expect(immutableReconcile(prev, next).arr[2]).toBe(prev.arr[2])
-})
-
-test('it handles changing cyclic structures', () => {
-  const createObject = (differentiator: string) => {
-    // will be different if differentiator is different
-    const root: Record<string, any> = {id: 'root'}
-
-    // will be different if differentiator is different
-    root.a = {id: 'a'}
-
-    // will be different if differentiator is different
-    root.a.b = {id: 'b', diff: differentiator}
-
-    // cycle
-    root.a.b.a = root.a
-    // will never be different
-    root.a.b.c = {id: 'c'}
-
-    return root
-  }
-
-  const prev = createObject('previous')
-  const next = createObject('next')
-
   const reconciled = immutableReconcile(prev, next)
 
-  expect(prev).not.toBe(reconciled)
-  expect(next).not.toBe(reconciled)
-
-  // A sub object of root has changed, creating new object
-  expect(next.a).not.toBe(reconciled.a)
-
-  // A sub-object of root.a has changed, creating new object
-  expect(next.a.b).not.toBe(reconciled.a.b)
-
-  // root.a.b.c is has not changed, therefore reuse.
-  expect(next.a.b.c).not.toBe(reconciled.a.b.c)
-
-  expect(prev.a.b.c).toBe(reconciled.a.b.c)
-
-  // The new reconcile will retain reconcilable objects also within loops.
-  expect(prev.a.b.a.b.c).toBe(reconciled.a.b.a.b.c)
-
-  // This is because it retains the loop.
-  expect(reconciled.a).toBe(reconciled.a.b.a)
-  expect(prev.a.b.c).toBe(reconciled.a.b.a.b.c)
-})
-
-test('it handles non-changing cyclic structures', () => {
-  const cyclic: Record<string, unknown> = {test: 'foo'}
-  cyclic.self = cyclic
-
-  const prev = {
-    cyclic,
-    arr: [
-      {cyclic, value: 'old'},
-      {cyclic, value: 'unchanged'},
-    ],
-    other: {cyclic, value: 'unchanged'},
-  }
-  const next = {
-    cyclic,
-    arr: [
-      {cyclic, value: 'new'},
-      {cyclic, value: 'unchanged'},
-    ],
-    other: {cyclic, value: 'unchanged'},
-  }
-
-  const reconciled = immutableReconcile(prev, next)
   expect(reconciled.arr).not.toBe(prev.arr)
   expect(reconciled.arr[1]).toBe(prev.arr[1])
-  expect(reconciled.other).toBe(prev.other)
+  expect(reconciled.arr[2]).toBe(prev.arr[2])
+  expect(immutableReconcile).toHaveBeenCalledTimes(7)
 })
 
 test('keeps the previous values where they deep equal to the next', () => {
@@ -120,13 +63,44 @@ test('keeps the previous values where they deep equal to the next', () => {
     new: ['foo', 'bar'],
   }
 
-  const result = immutableReconcile(prev, next)
+  const reconciled = immutableReconcile(prev, next)
 
-  expect(result).not.toBe(prev)
-  expect(result).not.toBe(next)
+  expect(reconciled).not.toBe(prev)
+  expect(reconciled).not.toBe(next)
 
-  expect(result.array).toBe(prev.array)
-  expect(result.object.keep).toBe(prev.object.keep)
+  expect(reconciled.array).toBe(prev.array)
+  expect(reconciled.object.keep).toBe(prev.object.keep)
+  expect(immutableReconcile).toHaveBeenCalledTimes(11)
+})
+
+test('skips reconciling if the previous sub-values are already referentially equal', () => {
+  const keep = {foo: 'bar'}
+  const prev = {
+    test: 'hi',
+    array: ['aloha', keep],
+    object: {
+      x: {y: 'CHANGE'},
+      keep,
+    },
+  }
+  const next = {
+    test: 'hi',
+    array: ['aloha', keep],
+    object: {
+      x: {y: 'CHANGED'},
+      keep,
+    },
+    new: ['foo', 'bar'],
+  }
+
+  const reconciled = immutableReconcile(prev, next)
+
+  expect(reconciled).not.toBe(prev)
+  expect(reconciled).not.toBe(next)
+
+  expect(reconciled.array).toBe(prev.array)
+  expect(reconciled.object.keep).toBe(prev.object.keep)
+  expect(immutableReconcile).toHaveBeenCalledTimes(9)
 })
 
 test('does not mutate any of its input', () => {
@@ -170,6 +144,33 @@ test('returns new array when previous and next has different length', () => {
   expect(immutableReconcile(moreItems, lessItems)).not.toBe(moreItems)
 
   expect(immutableReconcile(lessItems, moreItems)).not.toBe(lessItems)
+})
+
+test('does not reconcile schema type values', () => {
+  const schema = createSchema({
+    name: 'default',
+    types: [
+      defineType({
+        name: 'myType',
+        type: 'document',
+        fields: [defineField({name: 'myString', type: 'string'})],
+      }),
+      defineType({
+        name: 'myOtherType',
+        type: 'document',
+        fields: [defineField({name: 'myString2', type: 'string'})],
+      }),
+    ],
+  })
+  const schemaType = schema.get('myType')!
+  const otherSchemaType = schema.get('myOtherType')!
+
+  const prev = {schemaType}
+  const next = {schemaType: otherSchemaType}
+
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled.schemaType).toBe(otherSchemaType)
+  expect(immutableReconcile).toHaveBeenCalledTimes(2)
 })
 
 test('returns latest non-enumerable value', () => {

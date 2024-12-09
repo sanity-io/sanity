@@ -95,7 +95,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
     & > .pt-list-item-bullet + .pt-list-item-number,
     & > .pt-list-item-number + .pt-list-item-bullet {
       margin-top: ${({theme}) => theme.sanity.space[3]}px;
-      counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
     & > :not(.pt-list-item) + .pt-list-item {
@@ -107,13 +106,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
-    ${TEXT_LEVELS.slice(1).map((l) => {
-      return css`
-        & > .pt-list-item-level-${l} + .pt-list-item-level-${l - 1} {
-          counter-reset: ${createListName(l)};
-        }
-      `
-    })}
+    /* Reset the list count all the sub-list items */
+    & > .pt-list-item-number.pt-list-item-level-${TEXT_LEVELS[0]} {
+      counter-set: ${TEXT_LEVELS.slice(1)
+        .map((l) => createListName(l))
+        .join(' ')};
+    }
 
     & > .pt-list-item + :not(.pt-list-item) {
       margin-top: ${({theme}) => theme.sanity.space[3]}px;
@@ -143,16 +141,19 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} - 1px
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          1px
       );
       width: calc(
         100% -
           ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} + 2px
+            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
+          2px
       ) !important;
     }
   }

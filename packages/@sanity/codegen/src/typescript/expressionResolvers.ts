@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import {type TransformOptions} from '@babel/core'
-import traverse, {type Scope} from '@babel/traverse'
+import traverse, {Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
 
@@ -125,12 +125,13 @@ export function resolveExpression({
   }
 
   if (babelTypes.isVariableDeclarator(node)) {
-    if (!node.init) {
+    const init = node.init ?? (babelTypes.isAssignmentPattern(node.id) && node.id.right)
+    if (!init) {
       throw new Error(`Unsupported variable declarator`)
     }
 
     return resolveExpression({
-      node: node.init,
+      node: init,
       fnArguments,
       scope,
       filename,
@@ -174,11 +175,20 @@ export function resolveExpression({
     babelTypes.isFunctionDeclaration(node) ||
     babelTypes.isFunctionExpression(node)
   ) {
+    const newScope = new Scope(scope.path, scope)
+
+    params.forEach((param, i) => {
+      newScope.push({
+        id: param as babelTypes.LVal,
+        init: fnArguments[i] as babelTypes.Expression | undefined,
+      })
+    })
+
     return resolveExpression({
       node: node.body,
       params: node.params,
       fnArguments,
-      scope,
+      scope: newScope,
       filename,
       file,
       babelConfig,
@@ -198,7 +208,7 @@ export function resolveExpression({
   }
 
   if (babelTypes.isImportDefaultSpecifier(node) || babelTypes.isImportSpecifier(node)) {
-    return resolveImportSpecifier({node, file, scope, filename, resolver, babelConfig})
+    return resolveImportSpecifier({node, file, scope, filename, fnArguments, resolver, babelConfig})
   }
 
   if (babelTypes.isAssignmentPattern(node)) {
@@ -245,7 +255,10 @@ function resolveIdentifier({
         babelTypes.isIdentifier(param.left) &&
         node.name === param.left.name),
   )
-  const argument = fnArguments[paramIndex]
+  let argument = fnArguments[paramIndex]
+  if (!argument && paramIndex >= 0 && babelTypes.isAssignmentPattern(params[paramIndex])) {
+    argument = params[paramIndex].right
+  }
   if (argument && babelTypes.isLiteral(argument)) {
     return resolveExpression({
       node: argument,
@@ -320,6 +333,7 @@ function resolveImportSpecifier({
   node,
   file,
   filename,
+  fnArguments,
   resolver,
   babelConfig,
 }: {
@@ -327,6 +341,7 @@ function resolveImportSpecifier({
   file: babelTypes.File
   scope: Scope
   filename: string
+  fnArguments: babelTypes.Node[]
   resolver: NodeJS.RequireResolve
   babelConfig: TransformOptions
 }): resolveExpressionReturnType {
@@ -382,6 +397,7 @@ function resolveImportSpecifier({
       node: binding.path.node,
       file: tree,
       scope: newScope,
+      fnArguments,
       babelConfig,
       filename: resolvedFile,
       resolver,
@@ -413,10 +429,32 @@ function resolveImportSpecifier({
       node: namedExport,
       importName: newImportName,
       filename: resolvedFile,
+      fnArguments,
       resolver,
       babelConfig,
     })
   }
+
+  let result: resolveExpressionReturnType | undefined
+  traverse(tree, {
+    ExportDeclaration(p) {
+      if (p.node.type === 'ExportAllDeclaration') {
+        try {
+          result = resolveExportSpecifier({
+            node: p.node,
+            importName,
+            filename: resolvedFile,
+            fnArguments,
+            resolver,
+            babelConfig,
+          })
+        } catch (e) {
+          if (e.cause !== `noBinding:${importName}`) throw e
+        }
+      }
+    },
+  })
+  if (result) return result
 
   throw new Error(`Could not find binding for import "${importName}" in ${importFileName}`)
 }
@@ -425,12 +463,14 @@ function resolveExportSpecifier({
   node,
   importName,
   filename,
+  fnArguments,
   babelConfig,
   resolver,
 }: {
-  node: babelTypes.ExportNamedDeclaration
+  node: babelTypes.ExportNamedDeclaration | babelTypes.ExportAllDeclaration
   importName: string
   filename: string
+  fnArguments: babelTypes.Node[]
   babelConfig: TransformOptions
   resolver: NodeJS.RequireResolve
 }): resolveExpressionReturnType {
@@ -463,8 +503,11 @@ function resolveExportSpecifier({
       filename: importFileName,
       babelConfig,
       resolver,
+      fnArguments,
     })
   }
 
-  throw new Error(`Could not find binding for export "${importName}" in ${importFileName}`)
+  throw new Error(`Could not find binding for export "${importName}" in ${importFileName}`, {
+    cause: `noBinding:${importName}`,
+  })
 }

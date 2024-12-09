@@ -1,10 +1,11 @@
-import {afterEach, describe, expect, jest, test} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {createSchema, type Workspace} from '../../src/core'
+import {type Workspace} from '../../src/core/config'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
+import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
@@ -257,7 +258,7 @@ describe('schema validation inference', () => {
     })
 
     test('referenced document must exist (unless weak)', async () => {
-      const mockGetDocumentExists = jest.fn(() => Promise.resolve(false))
+      const mockGetDocumentExists = vi.fn(() => Promise.resolve(false))
       await expect(
         validateDocument({
           document: {
@@ -295,7 +296,7 @@ describe('schema validation inference', () => {
     })
 
     test('reference is valid if schema type is strong and document does exists', async () => {
-      const mockGetDocumentExists = jest.fn(() => Promise.resolve(true))
+      const mockGetDocumentExists = vi.fn(() => Promise.resolve(true))
       await expect(
         validateDocument({
           getClient,

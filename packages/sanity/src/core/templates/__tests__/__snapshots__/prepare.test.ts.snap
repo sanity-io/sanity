@@ -1,33 +1,33 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getTemplates returns defaults if part is not implemented 1`] = `
-Array [
-  Object {
+exports[`getTemplates > returns defaults if part is not implemented 1`] = `
+[
+  {
     "icon": [Function],
     "id": "author",
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
-  Object {
+  {
     "icon": [Function],
     "id": "person",
     "schemaType": "person",
     "title": "Person",
-    "value": Object {
+    "value": {
       "_type": "person",
     },
   },
-  Object {
+  {
     "icon": [Function],
     "id": "post",
     "schemaType": "post",
     "title": "Post",
-    "value": Object {
+    "value": {
       "_type": "post",
     },
   },
-  Object {
+  {
     "icon": undefined,
     "id": "developer",
     "schemaType": "developer",
@@ -37,21 +37,21 @@ Array [
 ]
 `;
 
-exports[`getTemplates returns defined templates if part implemented 1`] = `
-Array [
-  Object {
+exports[`getTemplates > returns defined templates if part implemented 1`] = `
+[
+  {
     "id": "author",
     "schemaType": "author",
     "title": "Author",
-    "value": Object {
+    "value": {
       "title": "here",
     },
   },
-  Object {
+  {
     "id": "developer",
     "schemaType": "developer",
     "title": "Developer",
-    "value": Object {
+    "value": {
       "title": "Foo",
     },
   },

@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import {describe, expect} from '@jest/globals'
+import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
@@ -38,7 +38,7 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('projects list', async () => {
       const result = await runSanityCmdCommand(version, ['projects', 'list'])
-      expect(result.stdout).toContain('.sanity.studio')
+      expect(result.stdout).toContain('https://www.sanity.io/manage/project/')
       expect(result.code).toBe(0)
     })
 

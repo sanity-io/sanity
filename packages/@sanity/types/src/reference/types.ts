@@ -2,6 +2,8 @@ import {type SanityClient} from '@sanity/client'
 
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
+import {type BaseSchemaTypeOptions} from '../schema'
+import {type SearchStrategy} from '../search/types'
 
 /** @public */
 export interface Reference {
@@ -27,7 +29,7 @@ export type ReferenceFilterSearchOptions = {
   params?: Record<string, unknown>
   tag?: string
   maxFieldDepth?: number
-  enableLegacySearch?: boolean
+  strategy?: SearchStrategy
 }
 
 /** @public */
@@ -56,7 +58,7 @@ export interface ReferenceFilterQueryOptions {
 }
 
 /** @public */
-export interface ReferenceBaseOptions {
+export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
   disableNew?: boolean
 }
 

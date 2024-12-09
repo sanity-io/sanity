@@ -43,6 +43,8 @@ export interface ValidateDocumentsWorkerData {
   ndjsonFilePath?: string
   level?: ValidationMarker['level']
   maxCustomValidationConcurrency?: number
+  maxFetchConcurrency?: number
+  studioHost?: string
 }
 
 /** @internal */
@@ -51,7 +53,6 @@ export type ValidationWorkerChannel = WorkerChannel<{
     name: string
     projectId: string
     dataset: string
-    studioHost: string | null
     basePath: string
   }>
   loadedDocumentCount: WorkerChannelEvent<{documentCount: number}>
@@ -79,6 +80,8 @@ const {
   projectId,
   level,
   maxCustomValidationConcurrency,
+  maxFetchConcurrency,
+  studioHost,
 } = _workerData as ValidateDocumentsWorkerData
 
 if (isMainThread || !parentPort) {
@@ -158,24 +161,14 @@ async function loadWorkspace() {
     requestTagPrefix: 'sanity.cli.validate',
   }).config({apiVersion: 'v2021-03-25'})
 
-  let studioHost
-  try {
-    const project = await client.projects.getById(projectId || workspace.projectId)
-    studioHost = project.metadata.externalStudioHost || project.studioHost
-  } catch {
-    // no big deal if we fail to get the studio host
-    studioHost = null
-  }
-
   report.event.loadedWorkspace({
     projectId: workspace.projectId,
     dataset: workspace.dataset,
     name: workspace.name,
-    studioHost,
     basePath: workspace.basePath,
   })
 
-  return {workspace, client, studioHost}
+  return {workspace, client}
 }
 
 async function downloadFromExport(client: SanityClient) {
@@ -319,7 +312,7 @@ async function validateDocuments() {
   let cleanupDownloadedDocuments: (() => Promise<void>) | undefined
 
   try {
-    const {client, workspace, studioHost} = await loadWorkspace()
+    const {client, workspace} = await loadWorkspace()
     const {documentIds, referencedIds, getDocuments, cleanup} = ndjsonFilePath
       ? await downloadFromFile(ndjsonFilePath)
       : await downloadFromExport(client)
@@ -359,6 +352,7 @@ async function validateDocuments() {
             getDocumentExists,
             environment: 'cli',
             maxCustomValidationConcurrency,
+            maxFetchConcurrency,
           }),
           new Promise<typeof timeout>((resolve) =>
             setTimeout(() => resolve(timeout), DOCUMENT_VALIDATION_TIMEOUT),

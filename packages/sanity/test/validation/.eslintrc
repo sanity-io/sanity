@@ -1,7 +1,6 @@
 {
   "env": {
-    "node": true,
-    "jest": true
+    "node": true
   },
   "rules": {
     "no-sync": 0,

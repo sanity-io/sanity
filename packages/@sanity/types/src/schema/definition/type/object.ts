@@ -4,12 +4,13 @@ import {type InitialValueProperty} from '../../types'
 import {type FieldDefinition} from '../schemaDefinition'
 import {
   type BaseSchemaDefinition,
+  type BaseSchemaTypeOptions,
   type FieldGroupDefinition,
   type FieldsetDefinition,
 } from './common'
 
 /** @public */
-export interface ObjectOptions {
+export interface ObjectOptions extends BaseSchemaTypeOptions {
   collapsible?: boolean
   collapsed?: boolean
   columns?: number

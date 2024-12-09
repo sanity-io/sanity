@@ -19,7 +19,7 @@ test(`date input shows validation on selecting date from datepicker`, async ({
     page.getByTestId('field-requiredDate').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  await expect(page.getByTestId('action-publish')).toBeDisabled()
 })
 
 test.skip(`date input shows validation on entering date in the text field`, async ({
@@ -36,7 +36,7 @@ test.skip(`date input shows validation on entering date in the text field`, asyn
     page.getByTestId('field-requiredDate').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  await expect(page.getByTestId('action-publish')).toBeDisabled()
 })
 
 test(`publish button is disabled when invalid date is entered in the field`, async ({
@@ -51,7 +51,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
   // TODO: Remove this after fixing the blur test
   await page.getByTestId('field-requiredDate').getByTestId('date-input').blur()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  await expect(page.getByTestId('action-publish')).toBeDisabled()
 })
 
 test(`date input shows validation on entering date in the textfield and onBlur`, async ({
@@ -69,5 +69,5 @@ test(`date input shows validation on entering date in the textfield and onBlur`,
     page.getByTestId('field-requiredDate').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  await expect(page.getByTestId('action-publish')).toBeDisabled()
 })

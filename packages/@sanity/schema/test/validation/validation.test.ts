@@ -1,6 +1,6 @@
-import {describe, expect, test} from '@jest/globals'
 import {SquareIcon} from '@sanity/icons'
 import {flatten} from 'lodash'
+import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'
 

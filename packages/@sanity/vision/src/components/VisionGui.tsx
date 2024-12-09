@@ -1,11 +1,6 @@
 /* eslint-disable complexity */
 import SplitPane from '@rexxars/react-split-pane'
-import {
-  type ClientPerspective,
-  type ListenEvent,
-  type MutationEvent,
-  type SanityClient,
-} from '@sanity/client'
+import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
 import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
   Box,
@@ -28,7 +23,12 @@ import {type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
+import {
+  DEFAULT_PERSPECTIVE,
+  isSupportedPerspective,
+  SUPPORTED_PERSPECTIVES,
+  type SupportedPerspective,
+} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
@@ -116,7 +116,7 @@ interface VisionGuiState {
   dataset: string
   apiVersion: string
   customApiVersion: string | false
-  perspective: ClientPerspective
+  perspective: SupportedPerspective
 
   // Selected options validation state
   isValidApiVersion: boolean
@@ -187,7 +187,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       apiVersion = DEFAULT_API_VERSION
     }
 
-    if (!PERSPECTIVES.includes(perspective)) {
+    if (!SUPPORTED_PERSPECTIVES.includes(perspective)) {
       perspective = DEFAULT_PERSPECTIVE
     }
 
@@ -336,9 +336,18 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       }
     }
 
-    const perspective = PERSPECTIVES.includes(parts.options.perspective as ClientPerspective)
-      ? (parts.options.perspective as ClientPerspective)
+    const perspective = isSupportedPerspective(parts.options.perspective)
+      ? parts.options.perspective
       : undefined
+
+    if (!isSupportedPerspective(parts.options.perspective)) {
+      this.props.toast.push({
+        closable: true,
+        id: 'vision-paste-unsupported-perspective',
+        status: 'warning',
+        title: 'Perspective in pasted url is currently not supported. Falling back to "raw"',
+      })
+    }
 
     evt.preventDefault()
     this.setState(
@@ -447,7 +456,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
   handleChangePerspective(evt: ChangeEvent<HTMLSelectElement>) {
     const perspective = evt.target.value
-    if (!isPerspective(perspective)) {
+    if (!isSupportedPerspective(perspective)) {
       return
     }
 
@@ -759,7 +768,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 </Card>
 
                 <Select value={perspective} onChange={this.handleChangePerspective}>
-                  {PERSPECTIVES.map((p) => (
+                  {SUPPORTED_PERSPECTIVES.map((p) => (
                     <option key={p}>{p}</option>
                   ))}
                 </Select>
@@ -945,9 +954,9 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         </Box>
                       )}
                       {error && <QueryErrorDialog error={error} />}
-                      {hasResult && <ResultView data={queryResult} />}
+                      {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
                       {listenInProgress && listenMutations.length > 0 && (
-                        <ResultView data={listenMutations} />
+                        <ResultView data={listenMutations} datasetName={dataset} />
                       )}
                     </Box>
                   </Result>

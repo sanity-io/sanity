@@ -1,45 +1,11 @@
-# By default, assign the studio developer experience team.
+# By default, assign the Studio team.
 # Later matching rules will take precedence.
-* @sanity-io/studio-dx
+* @sanity-io/studio
 
 # For areas of responsibility, assign the specific team
 # that is responsible. It is possible to assign to individuals,
 # however it is preferable that a team is responsible for large
 # areas to improve maintainablitly and availability
-
-# -- CLI --
-/packages/@sanity/cli/ @sanity-io/studio-dx
-
-# -- Form --
-/packages/sanity/src/core/form/ @sanity-io/studio-dx
-
-# -- Preview --
-/packages/sanity/src/core/preview/ @sanity-io/studio-dx
-
-# -- PTE --
-/packages/sanity/src/core/field/types/portableText/ @sanity-io/studio-ex
-/packages/sanity/src/core/form/inputs/PortableText/ @sanity-io/studio-ex
-/packages/sanity/src/core/form/types/blockProps.ts @sanity-io/studio-ex
-/packages/@sanity/types/src/schema/definition/type/block.ts @sanity-io/studio-ex
-
-# -- Block tools --
-/packages/@sanity/block-tools/ @sanity-io/studio-ex
-
-# -- Playwright Component tests --
-/packages/sanity/playwright-ct @sanity-io/studio-ex
-
-# -- Search --
-/packages/sanity/src/core/search/ @sanity-io/studio-ex
-
-# -- DocumentList --
-packages/sanity/src/structure/panes/documentList/sheetList @sanity-io/studio-ex
-
-# -- Theming (legacy) --
-/packages/sanity/src/core/theme/ @sanity-io/studio-ex
-
-# -- Visual components --
-/packages/sanity/src/core/studio/components/ @sanity-io/studio-ex
-/packages/sanity/src/ui-components/ @sanity-io/studio-ex
 
 # -- Others --
 
@@ -48,22 +14,7 @@ packages/sanity/src/structure/panes/documentList/sheetList @sanity-io/studio-ex
 /packages/@sanity/cli/templates/shopify* @thebiggianthead
 
 # Telemetry definitions
-*.telemetry.ts @sanity-io/growth
-
-# -- Plugins --
-
-# -- Tasks --
-/packages/sanity/src/core/tasks/ @sanity-io/studio-ex
-
-# -- Comments --
-/packages/sanity/src/core/comments/ @sanity-io/studio-ex
-
-# -- Scheduled Publishing --
-/packages/sanity/src/core/scheduledPublishing/ @sanity-io/studio-ex
-
-# -- Upsell UI  --
-packages/sanity/src/core/studio/upsell/ @sanity-io/studio-ex
-
+*.telemetry.ts @sanity-io/data-eng
 
 # Code and typegeneration
 /packages/@sanity/codegen/ @sanity-io/content-lake-dx
@@ -73,28 +24,28 @@ packages/sanity/src/core/studio/upsell/ @sanity-io/studio-ex
 
 # Internals used by @sanity/presentation
 # See https://github.com/sanity-io/visual-editing/blob/main/packages/presentation/src/internals.ts for exactly which exports
-/packages/sanity/src/_singletons/structure/components/paneRouter/PaneRouterContext.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/comments/context/intent/CommentsIntentProvider.tsx @sanity-io/ecosystem @sanity-io/studio-ex
-/packages/sanity/src/core/comments/types.ts @sanity-io/ecosystem @sanity-io/studio-ex
-/packages/sanity/src/core/config/document/fieldActions/define.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/config/document/fieldActions/types.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/field/paths/helpers.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/hooks/useEditState.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/preview/components/Preview.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/store/_legacy/datastores.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/store/_legacy/document/document-store.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/studio/activeWorkspaceMatcher/useActiveWorkspace.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/studio/workspace.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/util/draftUtils.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/util/isRecord.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/core/util/useUnique.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/router/utils/jsonParamsEncoding.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/components/pane/PaneLayout.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/components/paneRouter/types.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/panes/document/DocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/panes/document/useDocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/panes/documentList/index.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/panes/documentList/pane.ts @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/panes/documentList/PaneContainer.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/StructureToolProvider.tsx @sanity-io/ecosystem @sanity-io/studio-dx
-/packages/sanity/src/structure/types.ts @sanity-io/ecosystem @sanity-io/studio-dx
+/packages/sanity/src/_singletons/structure/components/paneRouter/PaneRouterContext.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/comments/context/intent/CommentsIntentProvider.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/comments/types.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/config/document/fieldActions/define.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/config/document/fieldActions/types.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/field/paths/helpers.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/hooks/useEditState.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/preview/components/Preview.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/store/_legacy/datastores.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/store/_legacy/document/document-store.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/studio/activeWorkspaceMatcher/useActiveWorkspace.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/studio/workspace.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/util/draftUtils.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/util/isRecord.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/core/util/useUnique.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/router/utils/jsonParamsEncoding.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/components/pane/PaneLayout.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/components/paneRouter/types.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/panes/document/DocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/panes/document/useDocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/panes/documentList/index.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/panes/documentList/pane.ts @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/panes/documentList/PaneContainer.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/StructureToolProvider.tsx @sanity-io/ecosystem @sanity-io/studio
+/packages/sanity/src/structure/types.ts @sanity-io/ecosystem @sanity-io/studio

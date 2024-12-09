@@ -1,26 +1,26 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateSchemaTypes Adds a comment when missing referenced inline type 1`] = `
-"export type MyObject = unknown // Unable to locate the referenced type \\"test\\" in schema
+exports[`generateSchemaTypes > Adds a comment when missing referenced inline type 1`] = `
+"export type MyObject = unknown // Unable to locate the referenced type "test" in schema
 ;"
 `;
 
-exports[`generateSchemaTypes can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
+exports[`generateSchemaTypes > can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type Test_2 = boolean;"`;
+exports[`generateSchemaTypes > generateTypeNodeTypes > should be able to generate types for type nodes: boolean 1`] = `"export type Test_2 = boolean;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `"export type Test_5 = null;"`;
+exports[`generateSchemaTypes > generateTypeNodeTypes > should be able to generate types for type nodes: null 1`] = `"export type Test_5 = null;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: number 1`] = `"export type Test_3 = number;"`;
+exports[`generateSchemaTypes > generateTypeNodeTypes > should be able to generate types for type nodes: number 1`] = `"export type Test_3 = number;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: string 1`] = `"export type Test = string;"`;
+exports[`generateSchemaTypes > generateTypeNodeTypes > should be able to generate types for type nodes: string 1`] = `"export type Test = string;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: unknown 1`] = `"export type Test_4 = unknown;"`;
+exports[`generateSchemaTypes > generateTypeNodeTypes > should be able to generate types for type nodes: unknown 1`] = `"export type Test_4 = unknown;"`;
 
-exports[`generateSchemaTypes should generate TypeScript type declarations for a schema 1`] = `
+exports[`generateSchemaTypes > should generate TypeScript type declarations for a schema 1`] = `
 "export type Author = {
   _id: string;
-  _type: \\"author\\";
+  _type: "author";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -29,7 +29,7 @@ exports[`generateSchemaTypes should generate TypeScript type declarations for a 
 
 export type Post = {
   _id: string;
-  _type: \\"post\\";
+  _type: "post";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -37,32 +37,32 @@ export type Post = {
   author?: {
     _ref: string;
     _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: \\"author\\";
+    [internalGroqTypeReferenceTo]?: "author";
   } | {
     _ref: string;
     _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: \\"ghost\\";
+    [internalGroqTypeReferenceTo]?: "ghost";
   };
   slug?: Slug;
   excerpt?: string;
   mainImage?: {
-    _type: \\"image\\";
+    _type: "image";
     asset: {
       _ref: string;
       _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: \\"sanity.imageAsset\\";
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
     caption?: string;
     attribution?: string;
     hotspot?: {
-      _type: \\"sanity.imageHotspot\\";
+      _type: "sanity.imageHotspot";
       x: number;
       y: number;
       height: number;
       width: number;
     };
     crop?: {
-      _type: \\"sanity.imageCrop\\";
+      _type: "sanity.imageCrop";
       top: number;
       bottom: number;
       left: number;
@@ -74,7 +74,7 @@ export type Post = {
 
 export type Ghost = {
   _id: string;
-  _type: \\"ghost\\";
+  _type: "ghost";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -84,12 +84,12 @@ export type Ghost = {
 export type BlockContent = Array<{
   _key: string;
   level?: number;
-  style?: \\"normal\\" | \\"h1\\" | \\"h2\\" | \\"h3\\" | \\"h4\\" | \\"blockquote\\";
-  listItem?: \\"bullet\\";
+  style?: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
+  listItem?: "bullet";
   children: Array<{
     _key: string;
     text: string;
-    marks: Array<string | \\"strong\\" | \\"em\\">;
+    marks: Array<string | "strong" | "em">;
   }>;
   markDefs: Array<{
     href?: string;
@@ -101,25 +101,25 @@ export type SanityAssetSourceData = {
   name?: string;
   id?: string;
   url?: string;
-  _type: \\"sanity.assetSourceData\\";
+  _type: "sanity.assetSourceData";
 };
 
 export type Slug = {
   current?: string;
   source?: string;
-  _type: \\"slug\\";
+  _type: "slug";
 };
 
 export type Geopoint = {
   lat?: number;
   lng?: number;
   alt?: number;
-  _type: \\"geopoint\\";
+  _type: "geopoint";
 };
 
 export type SanityImageAsset = {
   _id: string;
-  _type: \\"sanity.imageAsset\\";
+  _type: "sanity.imageAsset";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -142,7 +142,7 @@ export type SanityImageAsset = {
 
 export type SanityFileAsset = {
   _id: string;
-  _type: \\"sanity.fileAsset\\";
+  _type: "sanity.fileAsset";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -167,7 +167,7 @@ export type SanityImageCrop = {
   bottom?: number;
   left?: number;
   right?: number;
-  _type: \\"sanity.imageCrop\\";
+  _type: "sanity.imageCrop";
 };
 
 export type SanityImageHotspot = {
@@ -175,7 +175,7 @@ export type SanityImageHotspot = {
   y?: number;
   height?: number;
   width?: number;
-  _type: \\"sanity.imageHotspot\\";
+  _type: "sanity.imageHotspot";
 };
 
 export type SanityImageMetadata = {
@@ -186,14 +186,14 @@ export type SanityImageMetadata = {
   blurHash?: string;
   hasAlpha?: boolean;
   isOpaque?: boolean;
-  _type: \\"sanity.imageMetadata\\";
+  _type: "sanity.imageMetadata";
 };
 
 export type SanityImageDimensions = {
   height?: number;
   width?: number;
   aspectRatio?: number;
-  _type: \\"sanity.imageDimensions\\";
+  _type: "sanity.imageDimensions";
 };
 
 export type SanityImagePalette = {
@@ -204,7 +204,7 @@ export type SanityImagePalette = {
   dominant?: SanityImagePaletteSwatch;
   lightMuted?: SanityImagePaletteSwatch;
   muted?: SanityImagePaletteSwatch;
-  _type: \\"sanity.imagePalette\\";
+  _type: "sanity.imagePalette";
 };
 
 export type SanityImagePaletteSwatch = {
@@ -212,13 +212,13 @@ export type SanityImagePaletteSwatch = {
   foreground?: string;
   population?: number;
   title?: string;
-  _type: \\"sanity.imagePaletteSwatch\\";
+  _type: "sanity.imagePaletteSwatch";
 };
 
 export type AllSanitySchemaTypes = Author | Post | Ghost | BlockContent | SanityAssetSourceData | Slug | Geopoint | SanityImageAsset | SanityFileAsset | SanityImageCrop | SanityImageHotspot | SanityImageMetadata | SanityImageDimensions | SanityImagePalette | SanityImagePaletteSwatch;"
 `;
 
-exports[`generateSchemaTypes should generate correct types for document schema with inline fields 1`] = `
+exports[`generateSchemaTypes > should generate correct types for document schema with inline fields 1`] = `
 "export type MyObject = {
   inlineField: {
     test: string;
@@ -231,4 +231,4 @@ exports[`generateSchemaTypes should generate correct types for document schema w
 };"
 `;
 
-exports[`generateSchemaTypes should generate correct types for document schema with inline fields 2`] = `"export type SomeOtherType = MyObject;"`;
+exports[`generateSchemaTypes > should generate correct types for document schema with inline fields 2`] = `"export type SomeOtherType = MyObject;"`;

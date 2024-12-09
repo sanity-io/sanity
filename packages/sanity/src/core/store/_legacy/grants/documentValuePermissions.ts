@@ -1,6 +1,8 @@
-import {type Observable} from 'rxjs'
+import {isEqual} from 'lodash'
+import {useEffect, useReducer, useRef} from 'react'
+import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
 
-import {createHookFromObservableFactory, type PartialExcept} from '../../../util'
+import {type LoadingTuple, type PartialExcept} from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -9,23 +11,6 @@ export interface DocumentValuePermissionsOptions {
   grantsStore: GrantsStore
   document: Record<string, unknown>
   permission: DocumentValuePermission
-}
-
-/**
- * The observable version of `useDocumentValuePermissions`
- *
- * @see useDocumentValuePermissions
- *
- * @internal
- */
-export function getDocumentValuePermissions({
-  grantsStore,
-  document,
-  permission,
-}: DocumentValuePermissionsOptions): Observable<PermissionCheckResult> {
-  const {checkDocumentPermission} = grantsStore
-
-  return checkDocumentPermission(permission, document)
 }
 
 /**
@@ -49,23 +34,83 @@ export function getDocumentValuePermissions({
  *
  * @internal
  */
-export const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
-  getDocumentValuePermissions,
-)
+export function getDocumentValuePermissions({
+  grantsStore,
+  document,
+  permission,
+}: DocumentValuePermissionsOptions): Observable<PermissionCheckResult> {
+  const {checkDocumentPermission} = grantsStore
+
+  return checkDocumentPermission(permission, document)
+}
+
+const INITIAL_STATE: LoadingTuple<PermissionCheckResult | undefined> = [undefined, true]
+
+function stateReducer(
+  prev: LoadingTuple<PermissionCheckResult | undefined>,
+  action:
+    | {type: 'loading'}
+    | {type: 'value'; value: PermissionCheckResult}
+    | {type: 'error'; error: unknown},
+): LoadingTuple<PermissionCheckResult | undefined> {
+  const [prevResult, prevIsLoading] = prev
+  switch (action.type) {
+    // Keep the old value around while loading a new one. Prevents "jittering" UIs, and permissions
+    // usually don't change _that_ rapidly (this hook runs on every single document change).
+    case 'loading':
+      return [prevResult, true]
+    case 'value':
+      // Signal "no update" to React if we've got the same value as before by returning old state
+      return !prevIsLoading && isEqual(action.value, prevResult) ? prev : [action.value, false]
+    case 'error':
+      throw action.error
+    default:
+      throw new Error(`Invalid action type: ${action}`)
+  }
+}
 
 /** @internal */
 export function useDocumentValuePermissions({
   document,
   permission,
-  ...rest
-}: PartialExcept<DocumentValuePermissionsOptions, 'permission' | 'document'>): ReturnType<
-  typeof useDocumentValuePermissionsFromHookFactory
+  grantsStore: specifiedGrantsStore,
+}: PartialExcept<DocumentValuePermissionsOptions, 'permission' | 'document'>): LoadingTuple<
+  PermissionCheckResult | undefined
 > {
-  const grantsStore = useGrantsStore()
+  const defaultGrantsStore = useGrantsStore()
+  const grantsStore = specifiedGrantsStore || defaultGrantsStore
 
-  return useDocumentValuePermissionsFromHookFactory({
-    grantsStore: rest.grantsStore || grantsStore,
-    document,
-    permission,
-  })
+  const [state, dispatch] = useReducer(stateReducer, INITIAL_STATE)
+  const subscriptionRef = useRef<Subscription | null>(null)
+
+  useEffect(() => {
+    dispatch({type: 'loading'})
+
+    // Unsubscribe from any previous subscription
+    if (subscriptionRef.current) {
+      subscriptionRef.current.unsubscribe()
+    }
+
+    const permissions$ = getDocumentValuePermissions({
+      grantsStore,
+      document,
+      permission,
+    })
+
+    subscriptionRef.current = permissions$
+      .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+      .subscribe({
+        next: (value) => dispatch({type: 'value', value}),
+        error: (error) => dispatch({type: 'error', error}),
+      })
+
+    return () => {
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe()
+        subscriptionRef.current = null
+      }
+    }
+  }, [grantsStore, document, permission])
+
+  return state
 }

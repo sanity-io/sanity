@@ -1,11 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`emits onChange on correct format if a valid value has been typed 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "patchType": Symbol(sanity.patch),
-      "path": Array [],
+      "path": [],
       "type": "set",
       "value": "2021-03-28T17:23:00.000Z",
     },

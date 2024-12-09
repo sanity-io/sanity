@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
+import {describe, expect, it} from 'vitest'
 
 import {LocaleProviderBase} from '../components/LocaleProvider'
 import {useTranslation} from '../hooks/useTranslation'

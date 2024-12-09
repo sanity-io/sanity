@@ -1,50 +1,33 @@
-import {Card, type CardTone, Flex, rgba, studioTheme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
-
-export const MAX_DEFAULT_HEIGHT = 30
+import {Card, Flex} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 export const RatioBox = styled(Card)`
   position: relative;
   width: 100%;
-  overflow: hidden;
-  overflow: clip;
   min-height: 3.75rem;
-  max-height: 20rem;
-
-  & > div[data-container] {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
+  max-height: min(calc(var(--image-height) * 1px), 30vh);
+  aspect-ratio: var(--image-width) / var(--image-height);
 
   & img {
-    max-width: 100%;
-    max-height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    object-position: center;
   }
 `
 
-export const Overlay = styled(Flex)<{
-  $drag: boolean
-  $tone: Exclude<CardTone, 'inherit'>
-}>(({$drag, $tone}) => {
-  const textColor = studioTheme.color.light[$tone].card.enabled.fg
-  const backgroundColor = rgba(studioTheme.color.light[$tone].card.enabled.bg, 0.8)
-
-  return css`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    backdrop-filter: ${$drag ? 'blur(10px)' : ''};
-    color: ${$tone ? textColor : ''};
-    background-color: ${$drag ? backgroundColor : 'transparent'};
-  `
-})
+export const Overlay = styled(Card)`
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(10px);
+  background-color: color-mix(in srgb, transparent, var(--card-bg-color) 80%);
+`
 
 export const FlexOverlay = styled(Flex)`
   position: absolute;

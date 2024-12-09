@@ -1,10 +1,10 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
+import {describe, expect, it, vi} from 'vitest'
 
 import {formatSchemaValidation} from '../formatSchemaValidation'
 
 // disables some terminal specific things that are typically auto detected
-jest.mock('node:tty', () => ({isatty: () => false}))
+vi.mock('node:tty', () => ({isatty: () => false}))
 
 describe('formatSchemaValidation', () => {
   it('formats incoming validation results', () => {

@@ -1,8 +1,8 @@
-import {beforeAll, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {act} from 'react'
+import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider} from '../context'
 import {useTasksStore} from '../store'
@@ -10,21 +10,20 @@ import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 
-jest.mock('../../hooks/useFeatureEnabled', () => ({
-  useFeatureEnabled: jest.fn().mockReturnValue({enabled: true, isLoading: false}),
+vi.mock('../../hooks/useFeatureEnabled', () => ({
+  useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))
-jest.mock('../../studio/workspace', () => ({
-  useWorkspace: jest.fn().mockReturnValue({tasks: {enabled: true}}),
+vi.mock('../../studio/workspace', () => ({
+  useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
-jest.mock('../store', () => ({useTasksStore: jest.fn()}))
-jest.mock('../context/isLastPane/useIsLastPane', () => ({
-  useIsLastPane: jest.fn().mockReturnValue(true),
+vi.mock('../store', () => ({useTasksStore: vi.fn()}))
+vi.mock('../context/isLastPane/useIsLastPane', () => ({
+  useIsLastPane: vi.fn().mockReturnValue(true),
 }))
-jest.mock('@sanity/ui', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('@sanity/ui') = jest.requireActual('@sanity/ui')
-  const useToastMock = jest.fn()
-  const useMediaIndexMock = jest.fn()
+vi.mock('@sanity/ui', async () => {
+  const actual = await vi.importActual('@sanity/ui')
+  const useToastMock = vi.fn()
+  const useMediaIndexMock = vi.fn()
   return new Proxy(actual, {
     get: (target, property: keyof typeof actual) => {
       if (property === 'useToast') return useToastMock
@@ -33,10 +32,9 @@ jest.mock('@sanity/ui', () => {
     },
   })
 })
-jest.mock('sanity/router', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('sanity/router') = jest.requireActual('sanity/router')
-  const mock = jest.fn().mockReturnValue({asPath: '/', state: {}})
+vi.mock('sanity/router', async () => {
+  const actual = await vi.importActual('sanity/router')
+  const mock = vi.fn().mockReturnValue({asPath: '/', state: {}})
   return new Proxy(actual, {
     get: (target, property: keyof typeof actual) => {
       if (property === 'useRouter') return mock
@@ -45,8 +43,8 @@ jest.mock('sanity/router', () => {
   })
 })
 
-const mockUseMediaIndex = useMediaIndex as jest.Mock
-const mockUseTasksStore = useTasksStore as jest.Mock<typeof useTasksStore>
+const mockUseMediaIndex = useMediaIndex as ReturnType<typeof vi.fn>
+const mockUseTasksStore = useTasksStore as ReturnType<typeof vi.fn>
 
 const createTaskMock = ({
   targetDocumentId,
@@ -106,15 +104,15 @@ describe('TasksFooterOpenTasks', () => {
       data: tasks,
       error: null,
       isLoading: false,
-      dispatch: jest.fn(),
+      dispatch: vi.fn(),
     })
     mockUseMediaIndex.mockReturnValue(mediaIndex)
   }
   beforeAll(() => {
-    jest.useFakeTimers()
+    vi.useFakeTimers()
   })
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('renders null if there are no pending tasks', () => {
@@ -133,18 +131,16 @@ describe('TasksFooterOpenTasks', () => {
     )
 
     act(() => {
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
     })
-    await waitFor(() => {
-      expect(screen.getByRole('button')).toBeInTheDocument()
-    })
+    expect(screen.getByRole('button')).toBeInTheDocument()
   })
   it('should not render the button if it has tasks and no active document', async () => {
     setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
     const {container} = render(<TasksFooterOpenTasks />, {wrapper})
 
     act(() => {
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
     })
     expect(container).toBeEmptyDOMElement()
   })
@@ -160,11 +156,10 @@ describe('TasksFooterOpenTasks', () => {
     )
 
     act(() => {
-      jest.advanceTimersByTime(1000)
+      vi.advanceTimersByTime(1000)
     })
-    await waitFor(() => {
-      expect(screen.getByRole('button')).toBeInTheDocument()
-      expect(screen.getByText('1')).toBeInTheDocument()
-    })
+
+    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByTestId('tasks-badge')).toBeInTheDocument()
   })
 })

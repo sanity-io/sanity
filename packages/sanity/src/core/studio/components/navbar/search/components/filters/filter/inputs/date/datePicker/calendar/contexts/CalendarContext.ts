@@ -7,7 +7,7 @@ export interface CalendarContextValue {
 
   /**
    * An integer indicating the first day of the week.
-   * Can be either 1 (Monday) or 7 (Sunday).
+   * Can be either 1 (Monday), 6 (Saturday) or 7 (Sunday).
    */
-  firstWeekDay: 1 | 7
+  firstWeekDay: 1 | 6 | 7
 }

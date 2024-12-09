@@ -1,6 +1,14 @@
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test, vi} from 'vitest'
 
 import {findQueriesInSource} from '../findQueriesInSource'
+
+// Mock require since it's not supported in vitest
+vi.mock('node:module', () => ({
+  createRequire: vi.fn().mockReturnValue({
+    // Add the extension to the path
+    resolve: vi.fn((path) => `${path}.ts`),
+  }),
+}))
 
 describe('findQueries with the groq template', () => {
   describe('should find queries in source', () => {
@@ -53,6 +61,21 @@ describe('findQueries with the groq template', () => {
       const queryResult = queries[0]
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
+    })
+
+    test('with function with literal parameters', () => {
+      const source = `
+      import { groq } from "groq";
+      const getType = (type, x = '2') => () =>  \`\${type}\${x}\`;
+      const query = groq\`*[_type == "\${getType("author")()}"]\`
+      const res = sanity.fetch(query);
+    `
+
+      const queries = findQueriesInSource(source, 'test.ts')
+
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual('*[_type == "author2"]')
     })
 
     test('with block comment', () => {
@@ -114,6 +137,18 @@ describe('findQueries with the groq template', () => {
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
+  })
+
+  test('can import from export *', () => {
+    const source = `
+      import { groq } from "groq";
+      import {foo}  from "./fixtures/exportStar";
+      const postQuery = groq\`*[_type == "\${foo}"]\`
+      const res = sanity.fetch(postQueryResult);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
   })
 
   test('will ignore declarations with ignore tag', () => {
@@ -361,6 +396,31 @@ describe('findQueries with defineQuery', () => {
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
     const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('can import from next-sanity', () => {
+    const source = `
+    import { defineQuery } from "next-sanity";
+    const postQuery = defineQuery("*[_type == 'author']");
+    const res = sanity.fetch(postQuery);
+  `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(1)
+    const queryResult = queries[0]
+
+    expect(queryResult?.result).toEqual("*[_type == 'author']")
+  })
+
+  test('wont import from other package names', () => {
+    const source = `
+    import { defineQuery } from "other";
+    const postQuery = defineQuery("*[_type == 'author']");
+    const res = sanity.fetch(postQuery);
+  `
+
+    const queries = findQueriesInSource(source, 'test.ts')
     expect(queries.length).toBe(0)
   })
 })

@@ -1,4 +1,3 @@
-'use strict'
 // Integration test for the Node.js CJS runtime
 
 const {strict: assert} = require('node:assert')

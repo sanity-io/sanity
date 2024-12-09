@@ -1,4 +1,4 @@
-import {describe, it} from '@jest/globals'
+import {describe, it} from 'vitest'
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
@@ -29,6 +29,9 @@ describe('boolean types', () => {
         hidden: () => false,
         options: {
           layout: 'checkbox',
+          sanityCreate: {
+            exclude: true,
+          },
         },
       })
 

@@ -4,6 +4,7 @@ import {concat, EMPTY, merge, type Observable, of} from 'rxjs'
 import {map, mergeMap, shareReplay} from 'rxjs/operators'
 
 import {type HistoryStore} from '../../history'
+import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -19,6 +20,7 @@ export const editOperations = memoize(
       historyStore: HistoryStore
       schema: Schema
       serverActionsEnabled: Observable<boolean>
+      pairListenerOptions?: PairListenerOptions
     },
     idPair: IdPair,
     typeName: string,

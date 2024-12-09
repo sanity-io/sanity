@@ -13,6 +13,7 @@ export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'
 export * from './config'
+export * from './create'
 export * from './environment'
 export * from './field'
 export * from './FIXME'
@@ -33,5 +34,9 @@ export * from './templates'
 export * from './theme'
 export * from './user-color'
 export * from './util'
-export {validateDocument, type ValidateDocumentOptions} from './validation'
+export {
+  Rule as ConcreteRuleClass,
+  validateDocument,
+  type ValidateDocumentOptions,
+} from './validation'
 export * from './version'

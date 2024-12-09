@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
+import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {type SearchTerms} from '../../../../../search'
@@ -14,8 +14,9 @@ import * as useStoredSearchModule from './useStoredSearch'
 import {RECENT_SEARCH_VERSION, type StoredSearch} from './useStoredSearch'
 
 // Mock useStoredSearch
-jest.mock('./useStoredSearch', () => ({
-  useStoredSearch: jest.fn(),
+vi.mock('./useStoredSearch', async () => ({
+  ...((await vi.importActual('./useStoredSearch')) || {}),
+  useStoredSearch: vi.fn(),
 }))
 
 const mockSchemaTypes = [
@@ -78,19 +79,20 @@ afterEach(() => {
 
 describe('search-store', () => {
   let mockStoredSearch: StoredSearch
-  let mockSetStoredSearch: jest.MockedFunction<(newValue: StoredSearch) => void>
+  let mockSetStoredSearch: MockedFunction<(newValue: StoredSearch) => void>
 
   beforeEach(() => {
     mockStoredSearch = {
       version: RECENT_SEARCH_VERSION,
       recentSearches: [],
     }
-    mockSetStoredSearch = jest.fn((newValue: StoredSearch) => {
+    mockSetStoredSearch = vi.fn((newValue: StoredSearch) => {
       mockStoredSearch = newValue
     })
-    jest
-      .spyOn(useStoredSearchModule, 'useStoredSearch')
-      .mockImplementation(() => [mockStoredSearch, mockSetStoredSearch])
+    vi.spyOn(useStoredSearchModule, 'useStoredSearch').mockImplementation(() => [
+      mockStoredSearch,
+      mockSetStoredSearch,
+    ])
   })
 
   describe('getRecentSearchTerms', () => {

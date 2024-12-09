@@ -8,10 +8,10 @@
  **/
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const minimist = require('minimist')
-const rimraf = require('rimraf')
+const {rimrafSync} = require('rimraf')
 
 const argv = minimist(process.argv.slice(2), {boolean: ['all']})
 
@@ -71,7 +71,7 @@ const removeFolders = sharedPackages
 console.log('Removing dependencies from node_modules:')
 console.log(`\n  ${sharedPackages.join('\n  ')}\n`)
 
-removeFolders.forEach((dir) => rimraf.sync(dir))
+removeFolders.forEach((dir) => rimrafSync(dir))
 
 // Secondly, symlink into node_modules, but only the dependencies declared in package.json
 console.log('Symlinking dependencies to node_modules:\n')

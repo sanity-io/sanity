@@ -192,6 +192,7 @@ const config = {
                   'ButtonProps',
                   'Dialog',
                   'DialogProps',
+                  'ErrorBoundary',
                   'MenuButton',
                   'MenuButtonProps',
                   'MenuGroup',

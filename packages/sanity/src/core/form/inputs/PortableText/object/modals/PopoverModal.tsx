@@ -3,11 +3,11 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {type PortableTextEditorElement} from 'sanity/_singletons'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {type PortableTextEditorElement} from '../../Compositor'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'
 
@@ -79,6 +79,13 @@ function Content(props: PopoverEditDialogProps) {
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    // When rendered, focus on the first input element in the content
+    if (contentElement) {
+      contentElement.querySelector('input')?.focus()
+    }
+  }, [contentElement])
 
   return (
     <VirtualizerScrollInstanceProvider

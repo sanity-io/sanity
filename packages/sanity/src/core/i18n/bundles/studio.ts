@@ -10,6 +10,16 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** The text used in the tooltip shown in the dialog close button */
+  'announcement.dialog.close': 'Close',
+  /** Aria label to be used in the dialog close button */
+  'announcement.dialog.close-label': 'Close dialog',
+  /**Text to be used in the tooltip in the button in the studio announcement card */
+  'announcement.floating-button.dismiss': 'Close',
+  /**Aria label to be used in the floating button in the studio announcement card, to dismiss the card */
+  'announcement.floating-button.dismiss-label': 'Dismiss announcements',
+  /**Aria label to be used in the floating button in the studio announcement card */
+  'announcement.floating-button.open-label': 'Open announcements',
   /** Menu item for deleting the asset */
   'asset-source.asset-list.menu.delete': 'Delete',
   /** Menu item for showing where a particular asset is used */
@@ -187,7 +197,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.weekday-names.short.wednesday': 'Wed',
 
   /** Label for the close button label in Review Changes pane */
-  'changes.action.close-label': 'Close review changes',
+  'changes.action.close-label': 'Close history',
   /** Cancel label for revert button prompt action */
   'changes.action.revert-all-cancel': 'Cancel',
   /** Revert all confirm label for revert button action - used on prompt button + review changes pane */
@@ -303,7 +313,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
-  'changes.title': 'Review changes',
+  'changes.title': 'History',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -349,6 +359,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Published {{date}}',
+  /** Label to show in the document footer indicating the revision from date of the document */
+  'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -643,6 +655,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
+  /** Warnings displayed to developers when using the crop/hotspot tool on vector images, notifying them that crops/hotspot are not respected when serving the image in vector format. For the crop/hotspot to apply, images must be served in a raster format such as JPG or PNG, by appending eg `fm=jpg` to the image url, or calling `format('jpg')` if using `@sanity/image-url` */
+  'inputs.imagetool.vector-warning.developer-info': `The Asset Pipeline does not support hotspot and crop for vector formats. To enable hotspot & crop, output this image to any of the supported raster formats. For example: <code>fm=jpg</code> to the <ImageUrlDocumentationLink>image URL</ImageUrlDocumentationLink> or call <code>.format('png')</code> with <ImageUrlPackageDocumentationLink>@sanity/image-url</ImageUrlPackageDocumentationLink>.`,
+  /** See developer info */
+  'inputs.imagetool.vector-warning.expand-developer-info': 'See developer info',
+  /** Gotcha: Serving vector images with hotspot and crop from the Sanity Image API */
+  'inputs.imagetool.vector-warning.title':
+    "Warning: Hotspot and crop might not be applied to this image where it's presented.",
   /** Convert to `{{targetType}}` */
   'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */
@@ -1099,8 +1118,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'package-version.new-package-available.reload-button': 'Push to reload',
   /** Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
-  /** Label for action to manage members of the current studio project */
-  'presence.action.manage-members': 'Manage members',
+  /** Label for action to invite members to the current studio project */
+  'presence.action.manage-members': 'Invite members',
   /** Accessibility label for presence menu button */
   'presence.aria-label': 'Global presence',
   /** Message description for when no one else is currently present */
@@ -1582,7 +1601,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
-
+  /** Title for the changes tooltip in the history inspector*/
+  'timeline.changes.title': 'Changes by',
   /** Description for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-description':
     'Document history transactions have not been affected.',
@@ -1646,7 +1666,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).
    */
-  'timeline.since': 'Since: {{timestamp, datetime}}',
+  'timeline.since': '{{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
   /** Aria label for the action buttons in the PTE toolbar */

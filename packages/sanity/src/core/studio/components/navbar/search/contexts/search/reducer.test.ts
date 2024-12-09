@@ -1,7 +1,7 @@
-import {describe, expect, it} from '@jest/globals'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
 import {useReducer} from 'react'
+import {describe, expect, it} from 'vitest'
 
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
@@ -129,7 +129,7 @@ describe('searchReducer', () => {
         searchReducer,
         initialSearchState({
           ...initialStateContext,
-          enableLegacySearch: false,
+          strategy: 'textSearch',
         }),
       ),
     )
@@ -137,11 +137,11 @@ describe('searchReducer', () => {
     const [state] = result.current
 
     expect(state.ordering).toMatchInlineSnapshot(`
-Object {
-  "customMeasurementLabel": "relevance",
-  "titleKey": "search.ordering.best-match-label",
-}
-`)
+      {
+        "customMeasurementLabel": "relevance",
+        "titleKey": "search.ordering.best-match-label",
+      }
+    `)
   })
 
   it('should order by `_updatedAt` when using GROQ Query API strategy and ordering by relevance', () => {
@@ -150,7 +150,7 @@ Object {
         searchReducer,
         initialSearchState({
           ...initialStateContext,
-          enableLegacySearch: true,
+          strategy: 'groqLegacy',
         }),
       ),
     )
@@ -158,15 +158,15 @@ Object {
     const [state] = result.current
 
     expect(state.ordering).toMatchInlineSnapshot(`
-Object {
-  "customMeasurementLabel": "relevance",
-  "sort": Object {
-    "direction": "desc",
-    "field": "_updatedAt",
-  },
-  "titleKey": "search.ordering.best-match-label",
-}
-`)
+      {
+        "customMeasurementLabel": "relevance",
+        "sort": {
+          "direction": "desc",
+          "field": "_updatedAt",
+        },
+        "titleKey": "search.ordering.best-match-label",
+      }
+    `)
   })
 
   it('should merge results after fetching an additional page', () => {
@@ -218,27 +218,134 @@ Object {
     const [state] = result.current
 
     expect(state.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
+      [
+        {
+          "hit": {
+            "_id": "personA",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personB",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personC",
+            "_type": "person",
+          },
+        },
+      ]
+    `)
+  })
+
+  it.each<SearchAction>([
+    {
+      type: 'SEARCH_CLEAR',
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
+    {
+      type: 'TERMS_QUERY_SET',
+      query: 'test query b',
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personC",
-      "_type": "person",
+    {
+      type: 'TERMS_SET',
+      terms: {
+        query: 'test',
+        types: [],
+      },
     },
-  },
-]
-`)
+    {
+      type: 'ORDERING_SET',
+      ordering: {
+        titleKey: 'search.ordering.test-label',
+        sort: {
+          field: '_createdAt',
+          direction: 'desc',
+        },
+      },
+    },
+    {
+      type: 'ORDERING_RESET',
+    },
+    {
+      type: 'TERMS_FILTERS_ADD',
+      filter: {
+        filterName: 'test',
+        operatorType: 'test',
+      },
+    },
+    {
+      type: 'TERMS_FILTERS_REMOVE',
+      filterKey: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_SET_OPERATOR',
+      filterKey: 'test',
+      operatorType: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_SET_VALUE',
+      filterKey: 'test',
+    },
+    {
+      type: 'TERMS_FILTERS_CLEAR',
+    },
+    {
+      type: 'TERMS_TYPE_ADD',
+      schemaType: mockSearchableType,
+    },
+    {
+      type: 'TERMS_TYPE_REMOVE',
+      schemaType: mockSearchableType,
+    },
+    {
+      type: 'TERMS_TYPES_CLEAR',
+    },
+  ])('should reset cursor state when any parameter changes ($type)', async (action) => {
+    const {result} = renderHook(() => useReducer(searchReducer, initialState))
+    const [, dispatch] = result.current
+
+    act(() =>
+      dispatch({
+        type: 'TERMS_QUERY_SET',
+        query: 'test query a',
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorA',
+        hits: [],
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'PAGE_INCREMENT',
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorB',
+        hits: [],
+      }),
+    )
+
+    const [stateA] = result.current
+
+    expect(stateA.cursor).toBe('cursorA')
+    expect(stateA.nextCursor).toBe('cursorB')
+    act(() => dispatch(action))
+
+    const [stateB] = result.current
+
+    expect(stateB.cursor).toBeNull()
+    expect(stateB.nextCursor).toBeNull()
   })
 })
 
@@ -327,23 +434,20 @@ it.each<SearchAction>([
 
   const [stateA] = result.current
 
-  expect(stateA.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
+  expect(stateA.result.hits).toEqual([
+    {
+      hit: {
+        _id: 'personA',
+        _type: 'person',
+      },
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
+    {
+      hit: {
+        _id: 'personB',
+        _type: 'person',
+      },
     },
-  },
-]
-`)
-
+  ])
   act(() => dispatch(action))
 
   act(() =>
@@ -369,20 +473,18 @@ Array [
 
   const [stateB] = result.current
 
-  expect(stateB.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
+  expect(stateB.result.hits).toEqual([
+    {
+      hit: {
+        _id: 'personB',
+        _type: 'person',
+      },
     },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personC",
-      "_type": "person",
+    {
+      hit: {
+        _id: 'personC',
+        _type: 'person',
+      },
     },
-  },
-]
-`)
+  ])
 })

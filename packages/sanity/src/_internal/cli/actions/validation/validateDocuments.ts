@@ -11,8 +11,6 @@ import {
 } from '../../threads/validateDocuments'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 
-const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
-
 export interface ValidateDocumentsOptions<TReturn = unknown> {
   level?: 'error' | 'warning' | 'info'
   workspace?: string
@@ -23,7 +21,9 @@ export interface ValidateDocumentsOptions<TReturn = unknown> {
   dataset?: string // override
   ndjsonFilePath?: string
   maxCustomValidationConcurrency?: number
+  maxFetchConcurrency?: number
   reporter?: (worker: WorkerChannelReceiver<ValidationWorkerChannel>) => TReturn
+  studioHost?: string
 }
 
 export interface DocumentValidationResult {
@@ -72,6 +72,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
     reporter = defaultReporter,
     level,
     maxCustomValidationConcurrency,
+    maxFetchConcurrency,
     ndjsonFilePath,
   } = options
 
@@ -100,8 +101,9 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       projectId,
       level,
       ndjsonFilePath,
-      maxCustomValidationConcurrency:
-        maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
+      maxCustomValidationConcurrency,
+      maxFetchConcurrency,
+      studioHost: options.studioHost,
     } satisfies ValidateDocumentsWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

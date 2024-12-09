@@ -4,6 +4,7 @@ import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider}
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
+import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
@@ -11,9 +12,10 @@ import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanner,
   DeprecatedDocumentTypeBanner,
-  PermissionCheckBanner,
+  InsufficientPermissionBanner,
   ReferenceChangedBanner,
 } from './banners'
+import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {FormView} from './documentViews'
 
 interface DocumentPanelProps {
@@ -49,7 +51,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     activeViewId,
     displayed,
     documentId,
-    documentType,
     editState,
     inspector,
     value,
@@ -61,7 +62,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isDeleting,
     isDeleted,
     timelineStore,
-    onChange,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -117,6 +117,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     (state) => state.lastNonDeletedRevId,
   )
 
+  const isLiveEdit = isLiveEditEnabled(schemaType)
+
   // Scroll to top as `documentId` changes
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
@@ -150,12 +152,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
+                  {activeView.type === 'form' && isLiveEdit && ready && (
+                    <DraftLiveEditBanner
+                      displayed={displayed}
+                      documentId={documentId}
+                      schemaType={schemaType}
+                    />
+                  )}
+
                   {activeView.type === 'form' && !isPermissionsLoading && ready && (
                     <>
-                      <PermissionCheckBanner
-                        granted={Boolean(permissions?.granted)}
-                        requiredPermission={requiredPermission}
-                      />
+                      {!permissions?.granted && (
+                        <InsufficientPermissionBanner requiredPermission={requiredPermission} />
+                      )}
                       {!isDeleting && isDeleted && (
                         <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
                       )}
@@ -171,7 +180,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   >
                     <FormView
                       hidden={formViewHidden}
-                      key={documentId + (ready ? '_ready' : '_pending')}
                       margins={margins}
                       ref={formContainerElement}
                     />

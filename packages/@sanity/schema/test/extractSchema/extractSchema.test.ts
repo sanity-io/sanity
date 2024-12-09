@@ -1,8 +1,8 @@
 import assert, {strictEqual} from 'node:assert'
 
-import {describe, expect, test} from '@jest/globals'
 import {defineField, defineType} from '@sanity/types'
 import {type DocumentSchemaType} from 'groq-js'
+import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
 import {extractSchema} from '../../src/sanity/extractSchema'
@@ -521,7 +521,7 @@ describe('Extract schema test', () => {
     expect(book.attributes.assetRequiredFileRuleSpec.value.attributes.asset.optional).toBe(false) // with assetRequired defined in _rules, it should be required
   })
 
-  describe('can handle `list` option that is not an array', () => {
+  test('can handle `list` option that is not an array', () => {
     const schema = createSchema(schemaFixtures.listObjectOption)
     const extracted = extractSchema(schema)
 

@@ -34,7 +34,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
-    search: {operators, filters, enableLegacySearch},
+    search: {operators, filters, strategy},
   } = useSource()
 
   // Create field, filter and operator dictionaries
@@ -60,16 +60,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           cursor: null,
           nextCursor: null,
         },
-        enableLegacySearch,
+        strategy,
       }),
-    [
-      currentUser,
-      fieldDefinitions,
-      filterDefinitions,
-      fullscreen,
-      operatorDefinitions,
-      enableLegacySearch,
-    ],
+    [currentUser, fullscreen, fieldDefinitions, operatorDefinitions, filterDefinitions, strategy],
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 

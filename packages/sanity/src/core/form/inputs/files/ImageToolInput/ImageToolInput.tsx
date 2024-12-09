@@ -1,12 +1,13 @@
 import {type Image, type ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Grid, Heading, Text} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
+import {Translate, useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
+import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {set} from '../../../patch'
@@ -111,6 +112,8 @@ export function ImageToolInput(props: ImageToolInputProps) {
     [onChange, readOnly, schemaType.fields],
   )
 
+  const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
+
   const {t} = useTranslation()
   return (
     <FormField
@@ -120,6 +123,36 @@ export function ImageToolInput(props: ImageToolInputProps) {
       deprecated={schemaType.deprecated}
       __unstable_presence={presence}
     >
+      {isSvg ? (
+        <>
+          <Card padding={3} marginY={3} tone="caution" radius={2}>
+            <Stack space={4}>
+              <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
+              <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
+                <Text size={1}>
+                  <Translate
+                    t={t}
+                    i18nKey="inputs.imagetool.vector-warning.developer-info"
+                    components={{
+                      ImageUrlDocumentationLink: ({children}) => (
+                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
+                          {children}
+                        </a>
+                      ),
+                      ImageUrlPackageDocumentationLink: ({children}) => (
+                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
+                          <code>{children}</code>
+                        </a>
+                      ),
+                    }}
+                  />
+                </Text>
+              </Details>
+            </Stack>
+          </Card>
+        </>
+      ) : null}
+
       <div>
         <Card
           __unstable_checkered

@@ -1,4 +1,4 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, it} from 'vitest'
 
 import {validateBasePaths, validateNames} from '../validateWorkspaces'
 
@@ -13,13 +13,13 @@ describe('validateBasePaths', () => {
     expect(() => {
       validateBasePaths([{name: 'first'}, {name: 'second', basePath: '/2nd'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`first\` is missing a \`basePath\`"`,
+      `[WorkspaceValidationError: If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`first\` is missing a \`basePath\`]`,
     )
 
     expect(() => {
       validateBasePaths([{name: 'first', basePath: '/1st'}, {name: 'second'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` is missing a \`basePath\`"`,
+      `[WorkspaceValidationError: If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` is missing a \`basePath\`]`,
     )
 
     expect(() => {
@@ -28,7 +28,7 @@ describe('validateBasePaths', () => {
         {name: 'second', basePath: ''},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` has an invalid \`basePath\` (must be a non-empty string)"`,
+      `[WorkspaceValidationError: If more than one workspace is defined, every workspace must have a \`basePath\` defined. Workspace \`second\` has an invalid \`basePath\` (must be a non-empty string)]`,
     )
   })
 
@@ -36,7 +36,7 @@ describe('validateBasePaths', () => {
     expect(() => {
       validateBasePaths([{name: 'foo', basePath: '\tinvalid.characters%everywhere  '}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`	invalid.characters%everywhere  \`"`,
+      `[WorkspaceValidationError: All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`	invalid.characters%everywhere  \`]`,
     )
   })
 
@@ -44,7 +44,7 @@ describe('validateBasePaths', () => {
     expect(() => {
       validateBasePaths([{name: 'foo', basePath: 'no-leading-slash'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`no-leading-slash\`"`,
+      `[WorkspaceValidationError: All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`no-leading-slash\`]`,
     )
   })
 
@@ -52,7 +52,7 @@ describe('validateBasePaths', () => {
     expect(() => {
       validateBasePaths([{name: 'foo', basePath: '/has-trailing-slash/'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`/has-trailing-slash/\`"`,
+      `[WorkspaceValidationError: All workspace \`basePath\`s must start with a leading \`/\`, consist of only URL safe characters, and cannot end with a trailing \`/\`. Workspace \`foo\`'s basePath is \`/has-trailing-slash/\`]`,
     )
   })
 
@@ -71,7 +71,7 @@ describe('validateBasePaths', () => {
         {name: 'threeSegments', basePath: '/one/two/three'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`basePath\`s must have the same amount of segments. Workspace \`twoSegments\` had 2 segments \`/one/two\` but workspace \`threeSegments\` had 3 segments \`/one/two/three\`"`,
+      `[WorkspaceValidationError: All workspace \`basePath\`s must have the same amount of segments. Workspace \`twoSegments\` had 2 segments \`/one/two\` but workspace \`threeSegments\` had 3 segments \`/one/two/three\`]`,
     )
 
     expect(() => {
@@ -80,7 +80,7 @@ describe('validateBasePaths', () => {
         {name: 'oneSegment', basePath: '/one'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`basePath\`s must have the same amount of segments. Workspace \`noSegments\` had 0 segments \`/\` but workspace \`oneSegment\` had 1 segment \`/one\`"`,
+      `[WorkspaceValidationError: All workspace \`basePath\`s must have the same amount of segments. Workspace \`noSegments\` had 0 segments \`/\` but workspace \`oneSegment\` had 1 segment \`/one\`]`,
     )
   })
 
@@ -92,7 +92,7 @@ describe('validateBasePaths', () => {
         {name: 'fooAgain', basePath: '/OnE/TwO'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"\`basePath\`s must be unique. Workspaces \`foo\` and \`fooAgain\` both have the \`basePath\` \`/one/two\`"`,
+      `[WorkspaceValidationError: \`basePath\`s must be unique. Workspaces \`foo\` and \`fooAgain\` both have the \`basePath\` \`/one/two\`]`,
     )
   })
 })
@@ -107,7 +107,7 @@ describe('validateNames', () => {
     expect(() => {
       validateNames([{basePath: '/first'}, {name: 'second', basePath: '/2nd'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 0 did not define a \`name\`."`,
+      `[WorkspaceValidationError: All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 0 did not define a \`name\`.]`,
     )
 
     expect(() => {
@@ -116,13 +116,13 @@ describe('validateNames', () => {
         {name: 'second', basePath: '/2nd'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 0 (titled \\"First\\") did not define a \`name\`."`,
+      `[WorkspaceValidationError: All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 0 (titled "First") did not define a \`name\`.]`,
     )
 
     expect(() => {
       validateNames([{name: 'first', basePath: '/1st'}, {basePath: '/second'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 did not define a \`name\`."`,
+      `[WorkspaceValidationError: All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 did not define a \`name\`.]`,
     )
 
     expect(() => {
@@ -131,7 +131,7 @@ describe('validateNames', () => {
         {basePath: '/second', title: 'Second'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 (titled \\"Second\\") did not define a \`name\`."`,
+      `[WorkspaceValidationError: All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 (titled "Second") did not define a \`name\`.]`,
     )
 
     expect(() => {
@@ -140,7 +140,7 @@ describe('validateNames', () => {
         {name: '', basePath: '/2nd'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 did not define a \`name\`."`,
+      `[WorkspaceValidationError: All workspaces must have a \`name\`, unless only a single workspace is defined. Workspace at index 1 did not define a \`name\`.]`,
     )
   })
 
@@ -148,13 +148,13 @@ describe('validateNames', () => {
     expect(() => {
       validateNames([{name: '/nope', basePath: '/niet'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`/nope\`"`,
+      `[WorkspaceValidationError: All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`/nope\`]`,
     )
 
     expect(() => {
       validateNames([{name: '/nope', basePath: '/niet', title: 'Nei'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 (titled \\"Nei\\") has the invalid name \`/nope\`"`,
+      `[WorkspaceValidationError: All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 (titled "Nei") has the invalid name \`/nope\`]`,
     )
   })
 
@@ -162,13 +162,13 @@ describe('validateNames', () => {
     expect(() => {
       validateNames([{name: '-no-leading-dash', basePath: '/okay'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`-no-leading-dash\`"`,
+      `[WorkspaceValidationError: All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`-no-leading-dash\`]`,
     )
 
     expect(() => {
       validateNames([{name: '_no_leading_underscore', basePath: '/okay'}])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`_no_leading_underscore\`"`,
+      `[WorkspaceValidationError: All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 has the invalid name \`_no_leading_underscore\`]`,
     )
 
     expect(() => {
@@ -176,7 +176,7 @@ describe('validateNames', () => {
         {name: '_no_leading_underscore', basePath: '/okay', title: 'The Leading Underscore'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 (titled \\"The Leading Underscore\\") has the invalid name \`_no_leading_underscore\`"`,
+      `[WorkspaceValidationError: All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, and cannot begin with an underscore or dash. Workspace at index 0 (titled "The Leading Underscore") has the invalid name \`_no_leading_underscore\`]`,
     )
   })
 
@@ -197,7 +197,7 @@ describe('validateNames', () => {
         {name: 'foO', basePath: '/3rd'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"\`name\`s must be unique. Workspace at index 0 and workspace at index 2 both have the \`name\` \`foO\`"`,
+      `[WorkspaceValidationError: \`name\`s must be unique. Workspace at index 0 and workspace at index 2 both have the \`name\` \`foO\`]`,
     )
 
     expect(() => {
@@ -207,7 +207,7 @@ describe('validateNames', () => {
         {name: 'foO', basePath: '/3rd', title: 'Third'},
       ])
     }).toThrowErrorMatchingInlineSnapshot(
-      `"\`name\`s must be unique. Workspace at index 0 (titled \\"First\\") and workspace at index 1 (titled \\"Second\\") both have the \`name\` \`bar\`"`,
+      `[WorkspaceValidationError: \`name\`s must be unique. Workspace at index 0 (titled "First") and workspace at index 1 (titled "Second") both have the \`name\` \`bar\`]`,
     )
   })
 })

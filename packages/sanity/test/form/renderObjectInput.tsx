@@ -1,6 +1,6 @@
-import {jest} from '@jest/globals'
 import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
 import {type ReactElement} from 'react'
+import {vi} from 'vitest'
 
 import {
   type ComplexElementProps,
@@ -32,13 +32,13 @@ export async function renderObjectInput(options: {
 }) {
   const {fieldDefinition, props, render: initialRender} = options
 
-  const onFieldClose = jest.fn()
-  const onFieldCollapse = jest.fn()
-  const onFieldSetCollapse = jest.fn()
-  const onFieldExpand = jest.fn()
-  const onFieldSetExpand = jest.fn()
-  const onFieldOpen = jest.fn()
-  const onFieldGroupSelect = jest.fn()
+  const onFieldClose = vi.fn()
+  const onFieldCollapse = vi.fn()
+  const onFieldSetCollapse = vi.fn()
+  const onFieldExpand = vi.fn()
+  const onFieldSetExpand = vi.fn()
+  const onFieldOpen = vi.fn()
+  const onFieldGroupSelect = vi.fn()
 
   function transformProps(
     inputProps: TestRenderInputProps<ComplexElementProps>,

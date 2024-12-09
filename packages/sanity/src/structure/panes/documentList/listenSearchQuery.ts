@@ -15,11 +15,16 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
+import {
+  createSearch,
+  createSWR,
+  getSearchableTypes,
+  type SanityDocumentLike,
+  type Schema,
+  type SearchStrategy,
+} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
-// FIXME
-// eslint-disable-next-line boundaries/element-types
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -32,10 +37,17 @@ interface ListenQueryOptions {
   sort: SortOrder
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
-  enableLegacySearch?: boolean
+  searchStrategy?: SearchStrategy
 }
 
-export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocumentLike[]> {
+export interface SearchQueryResult {
+  fromCache: boolean
+  documents: SanityDocumentLike[]
+}
+
+const swr = createSWR<SanityDocumentLike[]>({maxSize: 100})
+
+export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryResult> {
   const {
     client,
     schema,
@@ -46,7 +58,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
     searchQuery,
     staticTypeNames,
     maxFieldDepth,
-    enableLegacySearch,
+    searchStrategy,
   } = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
@@ -82,6 +94,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
 
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
+  const swrKey = JSON.stringify({filter, limit, params, searchQuery, sort, staticTypeNames})
+
   return merge(
     welcome$.pipe(take(1)),
     mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
@@ -110,7 +124,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
           const search = createSearch(types, client, {
             filter,
             params,
-            enableLegacySearch,
+            strategy: searchStrategy,
             maxDepth: maxFieldDepth,
           })
 
@@ -146,5 +160,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
         }),
       )
     }),
+    swr(swrKey),
+    map(({fromCache, value}) => ({fromCache, documents: value})),
   )
 }

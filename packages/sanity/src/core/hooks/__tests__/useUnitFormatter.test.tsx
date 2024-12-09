@@ -1,7 +1,7 @@
-import {beforeAll, beforeEach, describe, expect, it} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
 import {type ReactElement} from 'react'
+import {beforeAll, beforeEach, describe, expect, it} from 'vitest'
 
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
 import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'

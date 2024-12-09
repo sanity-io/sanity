@@ -8,12 +8,17 @@ import {
   type IntrinsicTypeName,
   type TypeAliasDefinition,
 } from '../schemaDefinition'
-import {type BaseSchemaDefinition, type SearchConfiguration, type TitledListValue} from './common'
+import {
+  type BaseSchemaDefinition,
+  type BaseSchemaTypeOptions,
+  type SearchConfiguration,
+  type TitledListValue,
+} from './common'
 
 export type {InsertMenuOptions}
 
 /** @public */
-export interface ArrayOptions<V = unknown> extends SearchConfiguration {
+export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSchemaTypeOptions {
   list?: TitledListValue<V>[] | V[]
   // inferring the array.of value for ArrayDefinition cause too much code-noise and was removed.
   // Since we don't have the type-info needed here, we allow values
@@ -27,6 +32,7 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   /**
    * A boolean flag to enable or disable tree editing for the array.
    * If there are any nested arrays, they will inherit this value.
+   * @deprecated tree editing beta feature has been disabled
    */
   treeEditing?: boolean
 }

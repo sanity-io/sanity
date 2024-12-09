@@ -1,4 +1,3 @@
-import {describe, expect, jest, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
@@ -7,6 +6,7 @@ import {noop} from 'lodash'
 import {forwardRef, useImperativeHandle} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
+import {describe, expect, test, vi} from 'vitest'
 
 import {ReferenceInput} from '../ReferenceInput'
 import {type ReferenceInfo, type ReferenceInputProps} from '../types'
@@ -41,8 +41,8 @@ type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 function ReferenceInputTester(
   props: PartialExcept<ReferenceInputProps, 'schemaType' | 'getReferenceInfo'>,
 ) {
-  const onFocus = jest.fn()
-  const onChange = jest.fn()
+  const onFocus = vi.fn()
+  const onChange = vi.fn()
 
   return (
     <RouterProvider router={route.intents('/intents')} state={{}} onNavigate={noop}>

@@ -1,6 +1,7 @@
 export * from './button'
 export * from './conditionalWrapper'
 export * from './dialog'
+export * from './errorBoundary'
 export * from './menuButton'
 export * from './menuGroup'
 export * from './menuItem'

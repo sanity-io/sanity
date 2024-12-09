@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test} from 'vitest'
 
 // Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
 import {arrayToJSONMatchPath} from '../src/jsonpath/arrayToJSONMatchPath'

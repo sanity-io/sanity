@@ -1,3 +1,5 @@
+import {type SearchStrategy} from '@sanity/types'
+
 import {
   type SearchStrategyFactory,
   type TextSearchResults,
@@ -6,12 +8,19 @@ import {
 import {createTextSearch} from './text-search'
 import {createWeightedSearch} from './weighted'
 
+const searchStrategies = {
+  groqLegacy: createWeightedSearch,
+  textSearch: createTextSearch,
+} satisfies Record<SearchStrategy, SearchStrategyFactory<TextSearchResults | WeightedSearchResults>>
+
+const DEFAULT_SEARCH_STRATEGY: SearchStrategy = 'groqLegacy'
+
 /** @internal */
 export const createSearch: SearchStrategyFactory<TextSearchResults | WeightedSearchResults> = (
   searchableTypes,
   client,
   options,
 ) => {
-  const factory = options.enableLegacySearch ? createWeightedSearch : createTextSearch
+  const factory = searchStrategies[options.strategy ?? DEFAULT_SEARCH_STRATEGY]
   return factory(searchableTypes, client, options)
 }

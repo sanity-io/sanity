@@ -1,8 +1,8 @@
-import {expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ConditionalProperty} from '@sanity/types'
+import {beforeEach, expect, test} from 'vitest'
 
-import {prepareFormState} from '../formState'
+import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {DEFAULT_PROPS} from './shared'
 
 function getBookType(properties: {
@@ -73,20 +73,26 @@ function getBookType(properties: {
   }).get('book')
 }
 
+let prepareFormState!: PrepareFormState
+
+beforeEach(() => {
+  prepareFormState = createPrepareFormState()
+})
+
 test('it doesnt return new object equalities given the same input', () => {
-  const document = {_id: 'test', _type: 'foo'}
+  const documentValue = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
   const state1 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    document,
+    documentValue,
   })
 
   const state2 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
-    document,
+    documentValue,
   })
   expect(state1).not.toBe(null)
   expect(state2).not.toBe(null)

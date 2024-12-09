@@ -1,8 +1,11 @@
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
+
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type SanityDocument} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ColumnsControl} from '../ColumnsControl'
 
@@ -56,7 +59,7 @@ describe('ColumnsControl', () => {
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should set default column visibilities', () => {

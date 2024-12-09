@@ -51,7 +51,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
   // TODO: Remove this after fixing the blur test
   await page.getByTestId('field-requiredDatetime').getByTestId('date-input').blur()
 
-  await expect(page.getByTestId('action-Publish')).toBeDisabled()
+  await expect(page.getByTestId('action-publish')).toBeDisabled()
 })
 
 test(`datetime inputs shows validation on entering date in the textfield and onBlur`, async ({

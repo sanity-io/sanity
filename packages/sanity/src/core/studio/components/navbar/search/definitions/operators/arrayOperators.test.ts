@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {type ReferenceValue} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {arrayOperators} from './arrayOperators'
 import {type OperatorNumberRangeValue} from './common'

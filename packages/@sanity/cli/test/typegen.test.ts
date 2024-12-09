@@ -1,6 +1,6 @@
 import {readFile, writeFile} from 'node:fs/promises'
 
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand, studiosPath} from './shared/environment'
@@ -70,7 +70,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
     expect(types.toString()).toMatchSnapshot()
   })
 
-  test('sanity typegen generate: with overloadClientMethods', async () => {
+  test('sanity typegen generate: with overloadClientMethods false', async () => {
     // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
     await writeFile(`${studiosPath}/v3/out/.prettierrc`, '{\n  "singleQuote": true\n}\n')
     const result = await runSanityCmdCommand('v3', [
@@ -86,7 +86,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
     )
 
     const types = await readFile(`${studiosPath}/v3/out/types.ts`)
-    expect(types.toString()).toContain(`'person'`)
+    expect(types.toString()).not.toContain(`Query TypeMap`)
     expect(types.toString()).toMatchSnapshot()
   })
 })

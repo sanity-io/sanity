@@ -1,8 +1,8 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
 
-import {describe, expect} from '@jest/globals'
 import tar from 'tar'
+import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {

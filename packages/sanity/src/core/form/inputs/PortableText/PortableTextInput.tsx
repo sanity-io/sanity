@@ -13,9 +13,9 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {randomKey} from '@sanity/util/content'
 import {sortBy} from 'lodash'
 import {
-  type MutableRefObject,
   type ReactNode,
   startTransition,
   useCallback,
@@ -38,7 +38,7 @@ import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
-import {Compositor, type PortableTextEditorElement} from './Compositor'
+import {Compositor} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
@@ -55,13 +55,16 @@ interface UploadTask {
   uploaderCandidates: ResolvedUploader[]
 }
 
+function keyGenerator() {
+  return randomKey(12)
+}
+
 /** @internal */
 export interface PortableTextMemberItem {
   kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
   key: string
   member: ArrayOfObjectsItemMember
   node: ObjectFormNode
-  elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
 /** @public */
@@ -128,7 +131,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? false)
-  const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const telemetry = useTelemetry()
 
@@ -178,35 +180,35 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [hasFocusWithin])
 
-  const setFocusPathFromEditorSelection = useCallback(() => {
-    const selection = nextSelectionRef.current
-    const focusPath = selection?.focus.path
-    if (!focusPath) return
+  const setFocusPathFromEditorSelection = useCallback(
+    (nextSelection: EditorSelection) => {
+      const focusPath = nextSelection?.focus.path
+      if (!focusPath) return
 
-    // Report focus on spans with `.text` appended to the reported focusPath.
-    // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-    // The PT-input already supports these paths the other way around.
-    // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-    // having to change the PTE's internals.
-    const isSpanPath =
-      focusPath.length === 3 && // A span path is always 3 segments long
-      focusPath[1] === 'children' && // Is a child of a block
-      isKeySegment(focusPath[2]) && // Contains the key of the child
-      !portableTextMemberItems.some(
-        (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-      )
-    const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+      // Report focus on spans with `.text` appended to the reported focusPath.
+      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+      // The PT-input already supports these paths the other way around.
+      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+      // having to change the PTE's internals.
+      const isSpanPath =
+        focusPath.length === 3 && // A span path is always 3 segments long
+        focusPath[1] === 'children' && // Is a child of a block
+        isKeySegment(focusPath[2]) && // Contains the key of the child
+        !portableTextMemberItems.some(
+          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+        )
+      const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
 
-    // Must called in a transition useTrackFocusPath hook
-    // will try to effectuate a focusPath that is different from what currently is the editor focusPath
-    startTransition(() => {
-      onPathFocus(nextFocusPath, {
-        selection,
+      // Must called in a transition useTrackFocusPath hook
+      // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+      startTransition(() => {
+        onPathFocus(nextFocusPath, {
+          selection: nextSelection,
+        })
       })
-    })
-  }, [onPathFocus, portableTextMemberItems])
-
-  const nextSelectionRef = useRef<EditorSelection | null>(null)
+    },
+    [onPathFocus, portableTextMemberItems],
+  )
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -215,16 +217,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'mutation':
           onChange(toFormPatches(change.patches))
           break
-        case 'connection':
-          if (change.value === 'offline') {
-            setIsOffline(true)
-          } else if (change.value === 'online') {
-            setIsOffline(false)
-          }
-          break
         case 'selection':
-          nextSelectionRef.current = change.selection
-          setFocusPathFromEditorSelection()
+          setFocusPathFromEditorSelection(change.selection)
           break
         case 'focus':
           setIsActive(true)
@@ -233,10 +227,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'blur':
           onBlur(change.event)
           setHasFocusWithin(false)
-          break
-        case 'undo':
-        case 'redo':
-          onChange(toFormPatches(change.patches))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -272,13 +262,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             onChange={handleEditorChange}
             onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
-            readOnly={isOffline || readOnly}
+            readOnly={readOnly}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, isOffline, readOnly])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
   const handleActivate = useCallback((): void => {
     if (!isActive) {
@@ -385,10 +375,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <PortableTextEditor
               patches$={patches$}
+              keyGenerator={keyGenerator}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               ref={editorRef}
-              readOnly={isOffline || readOnly}
+              readOnly={readOnly}
               schemaType={schemaType}
               value={value}
             >

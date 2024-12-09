@@ -1,7 +1,7 @@
 {
   // Until what's in dev/, scripts. and test/ is in workspaces it's necessary to type check them from the root
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./dev/aliases.cjs", "./scripts", "./test"],
+  "include": ["./scripts", "./test"],
   "files": [],
   "compilerOptions": {
     "rootDir": "."

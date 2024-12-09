@@ -19,26 +19,23 @@ test(`isn't possible to discard changes if a changed document has no published v
   await expect(discardChangesButton).toBeHidden()
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`is possible to discard changes if a changed document has a published version`, async ({
+test(`is possible to discard changes if a changed document has a published version`, async ({
   page,
   createDraftDocument,
 }) => {
   await createDraftDocument('/test/content/book')
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-  const paneFooter = page.getByTestId('pane-footer')
-  const publishButton = page.getByTestId('action-Publish')
+  const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
 
   await titleInput.fill('This is a book')
 
-  publishButton.click()
-  await expect(paneFooter).toContainText('Published just now', {timeout: 50000})
+  // Wait for the document to be published.
+  await page.waitForTimeout(1_000)
+  await publishButton.click()
+  await expect(page.getByTestId('pane-footer-document-status')).toContainText('Published just now')
 
   await titleInput.fill('This is not a book')
 
@@ -46,27 +43,24 @@ test.skip(`is possible to discard changes if a changed document has a published 
   await expect(discardChangesButton).toBeEnabled()
 })
 
-/* 
-  Test skipped due to on going developments around server actions that make them flaky 
-  Re-enable this test when the server actions are stable 
-  */
-test.skip(`displays the published document state after discarding changes`, async ({
+test(`displays the published document state after discarding changes`, async ({
   page,
   createDraftDocument,
 }) => {
   await createDraftDocument('/test/content/book')
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-  const paneFooter = page.getByTestId('pane-footer')
-  const publishButton = page.getByTestId('action-Publish')
+  const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
   const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
 
   await titleInput.fill('This is a book')
 
-  publishButton.click()
-  await expect(paneFooter).toContainText('Published just now', {timeout: 50000})
+  // Wait for the document to be published.
+  await page.waitForTimeout(1_000)
+  await publishButton.click()
+  await expect(page.getByTestId('pane-footer-document-status')).toContainText('Published just now')
 
   // Change the title.
   await titleInput.fill('This is not a book')

@@ -44,9 +44,9 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
@@ -64,7 +64,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: playwright-browsers-${{ vars.PLAYWRIGHT_VERSION }}
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
@@ -80,8 +80,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
         run: pnpm e2e:setup && pnpm e2e:build
 
       - name: Build E2E test studio on PR
@@ -91,7 +91,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm e2e:setup && pnpm e2e:build
 
@@ -106,7 +106,7 @@ jobs:
             ./*
             !**/node_modules/**
           # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
 
   playwright-test:
     timeout-minutes: 30
@@ -148,9 +148,9 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
@@ -168,7 +168,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: playwright-browsers-${{ vars.PLAYWRIGHT_VERSION }}
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
@@ -183,7 +183,7 @@ jobs:
           path: |
             ./*
             !**/node_modules/**
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
           fail-on-cache-miss: true
 
@@ -197,8 +197,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
@@ -211,7 +211,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
@@ -250,9 +250,9 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
@@ -302,7 +302,7 @@ jobs:
 
       # Delete the cache so it is only used once
       - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
         env:
           cache-name: cache-e2e-build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

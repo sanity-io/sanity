@@ -57,7 +57,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
-
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
@@ -67,13 +66,19 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const isLocked = editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)
 
-  useConditionalToast({
-    id: `sync-lock-${documentId}`,
-    status: 'warning',
-    enabled: isLocked,
-    title: t('document-view.form-view.sync-lock-toast.title'),
-    description: t('document-view.form-view.sync-lock-toast.description'),
-  })
+  const conditionalToastParams = useMemo(
+    () => ({
+      id: `sync-lock`,
+      status: 'warning' as const,
+      enabled: isLocked,
+      title: t('document-view.form-view.sync-lock-toast.title'),
+      description: t('document-view.form-view.sync-lock-toast.description'),
+      closable: true,
+    }),
+    [isLocked, t],
+  )
+
+  useConditionalToast(conditionalToastParams)
 
   useEffect(() => {
     const sub = documentStore.pair
@@ -160,7 +165,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {connectionState === 'connecting' ? (
+          {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
               <Flex align="center" direction="column" height="fill" justify="center">
@@ -199,7 +204,9 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 presence={presence}
-                readOnly={connectionState === 'reconnecting' || formState.readOnly}
+                readOnly={
+                  connectionState === 'reconnecting' || formState.readOnly || !editState?.ready
+                }
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={

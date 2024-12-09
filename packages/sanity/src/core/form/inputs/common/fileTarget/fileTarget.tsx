@@ -4,7 +4,10 @@ import {
   type DragEvent,
   type ForwardedRef,
   forwardRef,
+  type ForwardRefExoticComponent,
   type KeyboardEvent,
+  type PropsWithoutRef,
+  type RefAttributes,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -68,13 +71,17 @@ const PASTE_INPUT_STYLE = {opacity: 0, position: 'absolute'} as const
  * Higher order component that creates a file target from a given component.
  * Returns a component that acts both as a drop target and a paste target, emitting a list of Files upon drop or paste
  */
-export function fileTarget<ComponentProps>(Component: ComponentType<ComponentProps>) {
+export function fileTarget<ComponentProps>(
+  Component: ComponentType<ComponentProps>,
+): ForwardRefExoticComponent<
+  PropsWithoutRef<Omit<ComponentProps, ManagedProps> & Props> & RefAttributes<HTMLElement>
+> {
+  // @ts-expect-error TODO fix PropsWithoutRef related union typings
   return forwardRef(function FileTarget(
     props: Omit<ComponentProps, ManagedProps> & Props,
     forwardedRef: ForwardedRef<HTMLElement>,
   ) {
     const {onFiles, onFilesOver, onFilesOut, disabled, ...rest} = props
-
     const [showPasteInput, setShowPasteInput] = useState(false)
 
     const pasteInput = useRef<HTMLDivElement | null>(null)

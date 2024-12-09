@@ -1,45 +1,39 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
+import {useWorkspace} from 'sanity'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {useFeatureEnabled} from '../../../hooks'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
 
-jest.mock('../../../hooks', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('../../../hooks') = jest.requireActual('../../../hooks')
-  const mock = jest.fn()
+vi.mock('../../../hooks/useFeatureEnabled', () => ({
+  ...(vi.importActual('sanity') || {}),
+  useFeatureEnabled: vi.fn().mockReturnValue({}),
+}))
 
-  return new Proxy(actual, {
-    get: (target, property: keyof typeof actual) => {
-      if (property === 'useFeatureEnabled') return mock
-      return target[property]
-    },
-  })
-})
+vi.mock('../../../studio/workspace', () => ({
+  ...(vi.importActual('sanity') || {}),
+  useWorkspace: vi.fn().mockReturnValue({}),
+}))
 
-jest.mock('../../../studio', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('../../../studio') = jest.requireActual('../../../studio')
-  const mock = jest.fn()
-
-  return new Proxy(actual, {
-    get: (target, property: keyof typeof actual) => {
-      if (property === 'useWorkspace') return mock
-      return target[property]
-    },
-  })
-})
+const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
+const useWorkspaceMock = useWorkspace as ReturnType<typeof vi.fn>
 
 describe('ScheduledPublishingEnabledProvider', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
-  it('should not show scheduled publishing if user opt out and the feature is not enabled (any plan)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: false}})
+  it('should not show scheduled publishing if user opt out and the feature is not enabled (any plan)', async () => {
+    useFeatureEnabledMock.mockReturnValue({
+      enabled: false,
+      isLoading: false,
+    })
+    useWorkspaceMock.mockReturnValue({
+      scheduledPublishing: {enabled: false},
+    })
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
@@ -48,8 +42,8 @@ describe('ScheduledPublishingEnabledProvider', () => {
     expect(value.result.current).toEqual({enabled: false, mode: null})
   })
   it('should not show scheduled publishing  if user opt out and the feature is enabled (any plan)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: true, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: false}})
+    useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: false}})
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
@@ -59,8 +53,8 @@ describe('ScheduledPublishingEnabledProvider', () => {
   })
 
   it('should show default mode if user hasnt opted out and the feature is enabled (growth or above)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: true, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
@@ -70,8 +64,8 @@ describe('ScheduledPublishingEnabledProvider', () => {
   })
 
   it('should show upsell mode if user has not opt out and the feature is not enabled (free plans)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
@@ -81,8 +75,23 @@ describe('ScheduledPublishingEnabledProvider', () => {
   })
 
   it('should not show tasks if it is loading the feature', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: true})
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: true})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
+
+    const value = renderHook(useScheduledPublishingEnabled, {
+      wrapper: ScheduledPublishingEnabledProvider,
+    })
+
+    expect(value.result.current).toEqual({enabled: false, mode: null})
+  })
+
+  it('should not show the plugin if useFeatureEnabled has an error', () => {
+    useFeatureEnabledMock.mockReturnValue({
+      enabled: false,
+      isLoading: true,
+      error: new Error('Something went wrong'),
+    })
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: true}})
 
     const value = renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,
@@ -92,10 +101,8 @@ describe('ScheduledPublishingEnabledProvider', () => {
   })
 
   it('should call "useFeatureEnabled" with "scheduledPublishing"', () => {
-    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: false}})
-
-    const useFeatureEnabled = require('../../../hooks').useFeatureEnabled
-    useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
+    useWorkspaceMock.mockReturnValue({scheduledPublishing: {enabled: false}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
 
     renderHook(useScheduledPublishingEnabled, {
       wrapper: ScheduledPublishingEnabledProvider,

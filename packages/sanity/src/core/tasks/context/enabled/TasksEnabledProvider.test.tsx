@@ -1,51 +1,39 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {renderHook} from '@testing-library/react'
+import {useFeatureEnabled, useWorkspace} from 'sanity'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {TasksEnabledProvider} from './TasksEnabledProvider'
 import {useTasksEnabled} from './useTasksEnabled'
 
-jest.mock('../../../hooks', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('../../../hooks') = jest.requireActual('../../../hooks')
-  const mock = jest.fn()
+vi.mock('../../../hooks/useFeatureEnabled', () => ({
+  ...(vi.importActual('sanity') || {}),
+  useFeatureEnabled: vi.fn().mockReturnValue({}),
+}))
 
-  return new Proxy(actual, {
-    get: (target, property: keyof typeof actual) => {
-      if (property === 'useFeatureEnabled') return mock
-      return target[property]
-    },
-  })
-})
+vi.mock('../../../studio/workspace', () => ({
+  ...(vi.importActual('sanity') || {}),
+  useWorkspace: vi.fn().mockReturnValue({}),
+}))
 
-jest.mock('../../../studio', () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual: typeof import('../../../studio') = jest.requireActual('../../../studio')
-  const mock = jest.fn()
-
-  return new Proxy(actual, {
-    get: (target, property: keyof typeof actual) => {
-      if (property === 'useWorkspace') return mock
-      return target[property]
-    },
-  })
-})
+const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
+const useWorkspaceMock = useWorkspace as ReturnType<typeof vi.fn>
 
 describe('TasksEnabledProvider', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should not show tasks if user opt out and the feature is not enabled (any plan)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: false}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: false}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
     expect(value.result.current).toEqual({enabled: false, mode: null})
   })
   it('should not show tasks if user opt out and the feature is enabled (any plan)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: true, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: false}})
+    useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: false}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
@@ -53,8 +41,8 @@ describe('TasksEnabledProvider', () => {
   })
 
   it('should show default mode if user hasnt opted out and the feature is enabled (growth or above)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: true, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
@@ -62,8 +50,8 @@ describe('TasksEnabledProvider', () => {
   })
 
   it('should show upsell mode if user has not opt out and the feature is not enabled (free plans)', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
@@ -71,8 +59,21 @@ describe('TasksEnabledProvider', () => {
   })
 
   it('should not show tasks if it is loading the feature', () => {
-    require('../../../hooks').useFeatureEnabled.mockReturnValue({enabled: false, isLoading: true})
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: true}})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: true})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
+
+    const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
+
+    expect(value.result.current).toEqual({enabled: false, mode: null})
+  })
+
+  it('should not show the plugin if useFeatureEnabled has an error', () => {
+    useFeatureEnabledMock.mockReturnValue({
+      enabled: false,
+      isLoading: true,
+      error: new Error('Something went wrong'),
+    })
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: true}})
 
     const value = renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
@@ -80,10 +81,9 @@ describe('TasksEnabledProvider', () => {
   })
 
   it('should call "useFeatureEnabled" with "sanityTasks"', () => {
-    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: false}})
+    useWorkspaceMock.mockReturnValue({tasks: {enabled: false}})
 
-    const useFeatureEnabled = require('../../../hooks').useFeatureEnabled
-    useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
+    useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
     renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
 
     expect(useFeatureEnabled).toHaveBeenCalledWith('sanityTasks')

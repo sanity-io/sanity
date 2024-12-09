@@ -1,16 +1,16 @@
 import path from 'node:path'
 
-import {type UserViteConfig} from '@sanity/cli'
+import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 
-import {getAliases} from './aliases'
 import {createExternalFromImportMap} from './createExternalFromImportMap'
+import {getSanityPkgExportAliases} from './getBrowserAliases'
 import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
-import {loadSanityMonorepo} from './sanityMonorepo'
+import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
@@ -54,6 +54,7 @@ export interface ViteOptions {
   mode: 'development' | 'production'
 
   importMap?: {imports?: Record<string, string>}
+  reactCompiler: ReactCompilerConfig | undefined
 }
 
 /**
@@ -72,6 +73,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     minify,
     basePath: rawBasePath = '/',
     importMap,
+    reactCompiler,
   } = options
 
   const monorepo = await loadSanityMonorepo(cwd)
@@ -104,7 +106,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
-      viteReact(),
+      viteReact(
+        reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
+      ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
@@ -113,13 +117,25 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: getAliases({monorepo, sanityPkgPath}),
+      alias: monorepo?.path
+        ? await getMonorepoAliases(monorepo.path)
+        : getSanityPkgExportAliases(sanityPkgPath),
       dedupe: ['styled-components'],
     },
     define: {
       // eslint-disable-next-line no-process-env
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
+      /**
+       * Yes, double negatives are confusing.
+       * The default value of `SC_DISABLE_SPEEDY` is `process.env.NODE_ENV === 'production'`: https://github.com/styled-components/styled-components/blob/99c02f52d69e8e509c0bf012cadee7f8e819a6dd/packages/styled-components/src/constants.ts#L34
+       * Which means that in production, use the much faster way of inserting CSS rules, based on the CSSStyleSheet API (https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule)
+       * while in dev mode, use the slower way of inserting CSS rules, which appends text nodes to the `<style>` tag: https://github.com/styled-components/styled-components/blob/99c02f52d69e8e509c0bf012cadee7f8e819a6dd/packages/styled-components/src/sheet/Tag.ts#L74-L76
+       * There are historical reasons for this, primarily that browsers initially did not support editing CSS rules in the DevTools inspector if `CSSStyleSheet.insetRule` were used.
+       * However, that's no longer the case (since Chrome 81 back in April 2020: https://developer.chrome.com/docs/css-ui/css-in-js), the latest version of FireFox also supports it,
+       * and there is no longer any reason to use the much slower method in dev mode.
+       */
+      'process.env.SC_DISABLE_SPEEDY': JSON.stringify('false'),
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
     },
   }

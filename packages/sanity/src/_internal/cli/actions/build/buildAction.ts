@@ -1,11 +1,10 @@
 import path from 'node:path'
-import {promisify} from 'node:util'
 
 import chalk from 'chalk'
 import {info} from 'log-symbols'
 import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
-import rimrafCallback from 'rimraf'
+import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
@@ -16,8 +15,7 @@ import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
-
-const rimraf = promisify(rimrafCallback)
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -58,9 +56,7 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const autoUpdatesEnabled =
-    flags['auto-updates'] ||
-    (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
+  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
@@ -177,6 +173,8 @@ export default async function buildSanityStudio(
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
       importMap,
+      reactCompiler:
+        cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
     })
 
     trace.log({
@@ -188,6 +186,7 @@ export default async function buildSanityStudio(
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
+
     trace.complete()
     if (flags.stats) {
       output.print('\nLargest module files:')

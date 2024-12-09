@@ -1,9 +1,9 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {useMemo} from 'react'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -30,13 +30,13 @@ const schemaTypes = [
   }),
 ]
 
-jest.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
+vi.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
 
 describe('FormBuilder', () => {
-  const mockedUseTreeEditingEnabled = useTreeEditingEnabled as jest.Mock
+  const mockedUseTreeEditingEnabled = useTreeEditingEnabled as Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should render a studio form (without tree editing dialog)', async () => {
@@ -54,16 +54,16 @@ describe('FormBuilder', () => {
 
     const focusPath: Path = []
     const openPath: Path = []
-    const value = {_id: 'test', _type: 'test'}
+    const documentValue = {_id: 'test', _type: 'test'}
 
-    const onChange = jest.fn()
-    const onFieldGroupSelect = jest.fn()
-    const onPathBlur = jest.fn()
-    const onPathFocus = jest.fn()
-    const onPathOpen = jest.fn()
-    const onSelectFieldGroup = jest.fn()
-    const onSetFieldSetCollapsed = jest.fn()
-    const onSetPathCollapsed = jest.fn()
+    const onChange = vi.fn()
+    const onFieldGroupSelect = vi.fn()
+    const onPathBlur = vi.fn()
+    const onPathFocus = vi.fn()
+    const onPathOpen = vi.fn()
+    const onSelectFieldGroup = vi.fn()
+    const onSetFieldSetCollapsed = vi.fn()
+    const onSetPathCollapsed = vi.fn()
 
     function TestForm() {
       const {schema} = useWorkspace()
@@ -79,9 +79,10 @@ describe('FormBuilder', () => {
 
       const patchChannel = useMemo(() => createPatchChannel(), [])
 
-      const formState = useFormState(schemaType, {
-        value,
-        comparisonValue: value,
+      const formState = useFormState({
+        schemaType,
+        documentValue,
+        comparisonValue: documentValue,
         focusPath,
         collapsedPaths: undefined,
         collapsedFieldSets: undefined,
@@ -150,16 +151,16 @@ describe('FormBuilder', () => {
 
     const focusPath: Path = []
     const openPath: Path = []
-    const value = {_id: 'test', _type: 'test'}
+    const documentValue = {_id: 'test', _type: 'test'}
 
-    const onChange = jest.fn()
-    const onFieldGroupSelect = jest.fn()
-    const onPathBlur = jest.fn()
-    const onPathFocus = jest.fn()
-    const onPathOpen = jest.fn()
-    const onSelectFieldGroup = jest.fn()
-    const onSetFieldSetCollapsed = jest.fn()
-    const onSetPathCollapsed = jest.fn()
+    const onChange = vi.fn()
+    const onFieldGroupSelect = vi.fn()
+    const onPathBlur = vi.fn()
+    const onPathFocus = vi.fn()
+    const onPathOpen = vi.fn()
+    const onSelectFieldGroup = vi.fn()
+    const onSetFieldSetCollapsed = vi.fn()
+    const onSetPathCollapsed = vi.fn()
 
     function TestForm() {
       const {schema} = useWorkspace()
@@ -175,9 +176,10 @@ describe('FormBuilder', () => {
 
       const patchChannel = useMemo(() => createPatchChannel(), [])
 
-      const formState = useFormState(schemaType, {
-        value,
-        comparisonValue: value,
+      const formState = useFormState({
+        schemaType,
+        documentValue,
+        comparisonValue: documentValue,
         focusPath,
         collapsedPaths: undefined,
         collapsedFieldSets: undefined,

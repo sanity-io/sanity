@@ -17,6 +17,7 @@ import {
   set,
   setIfMissing,
   useClient,
+  useCurrentUser,
   useSchema,
   useTranslation,
 } from '../..'
@@ -41,6 +42,7 @@ export const CopyPasteProvider: React.FC<{
   const toast = useToast()
   const telemetry = useTelemetry()
   const schema = useSchema()
+  const currentUser = useCurrentUser()
 
   const {t} = useTranslation('copy-paste')
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -235,6 +237,7 @@ export const CopyPasteProvider: React.FC<{
 
       const targetSchemaTypeTitle = targetSchemaType.title || targetSchemaType.name
       const transferValueOptions = {
+        targetDocumentSchemaType: targetDocumentSchemaType,
         sourceRootSchemaType: sourceSchemaType,
         sourcePath: [],
         sourceRootPath: clipboardItem.valuePath,
@@ -245,6 +248,7 @@ export const CopyPasteProvider: React.FC<{
         // needs the document and absolute path to the field
         targetRootPath: targetPath,
         targetRootValue: value,
+        currentUser,
         options: {
           validateAssets: true,
           validateReferences: true,
@@ -356,7 +360,7 @@ export const CopyPasteProvider: React.FC<{
         // TODO: missing case with multiple updated items?
       }
     },
-    [documentMeta, schema, telemetry, toast, client, t],
+    [documentMeta, schema, currentUser, client, telemetry, toast, t],
   )
 
   const contextValue = useMemo(

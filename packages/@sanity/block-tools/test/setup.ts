@@ -1,12 +1,10 @@
-import {beforeEach, jest} from '@jest/globals'
-
-export {}
+import {beforeEach, vi} from 'vitest'
 
 let mockTestKey = 0
 
-jest.mock('../src/util/randomKey', () => {
+vi.mock('../src/util/randomKey', () => {
   return {
-    randomKey: jest.fn().mockImplementation(() => {
+    randomKey: vi.fn().mockImplementation(() => {
       return `randomKey${mockTestKey++}`
     }),
   }

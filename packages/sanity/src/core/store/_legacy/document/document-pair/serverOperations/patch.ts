@@ -44,7 +44,11 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       return
     }
     const ensureDraft = snapshots.draft
-      ? []
+      ? draft.patch([
+          {
+            unset: ['_empty_action_guard_pseudo_field_'],
+          },
+        ])
       : [
           draft.create({
             ...initialDocument,

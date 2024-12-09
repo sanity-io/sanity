@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test.describe('basic - open and close', () => {
+test.skip('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
@@ -40,7 +40,7 @@ test.describe('basic - open and close', () => {
   })
 })
 
-test.describe('basic - main document action', () => {
+test.skip('basic - main document action', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
     await createDraftDocument('/test/content/input-debug;objectsDebug')
@@ -55,7 +55,7 @@ test.describe('basic - main document action', () => {
   })
 
   test(`actions - blocked main document action when modal is open`, async ({page}) => {
-    await expect(page.getByTestId('action-Publish')).toBeDisabled()
+    await expect(page.getByTestId('action-publish')).toBeDisabled()
   })
 
   test(`actions - main document action when modal is closed will be enabled`, async ({
@@ -68,6 +68,6 @@ test.describe('basic - main document action', () => {
     await page.getByTestId('tree-editing-done').click()
 
     await expect(page.getByTestId('tree-editing-dialog')).not.toBeVisible()
-    await expect(page.getByTestId('action-Publish')).not.toBeDisabled()
+    await expect(page.getByTestId('action-publish')).not.toBeDisabled()
   })
 })

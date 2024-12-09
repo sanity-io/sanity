@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
   type Path,
@@ -7,7 +8,7 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
+import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
@@ -19,6 +20,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  isSanityCreateLinkedDocument,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -47,6 +49,7 @@ import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {CreatedDraft, DocumentURLCopied} from './__telemetry__'
 import {
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
@@ -250,7 +253,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
-    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
+    connectionState === 'connected' &&
+    editState.ready &&
+    (!params.rev || timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
@@ -292,6 +297,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   patchRef.current = (event: PatchEvent) => {
+    // when creating a new draft
+    if (!editState.draft && !editState.published) {
+      telemetry.log(CreatedDraft)
+    }
     patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
@@ -381,7 +390,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     if (resolvedChangesInspector) {
-      openInspector(resolvedChangesInspector.name)
+      openInspector(resolvedChangesInspector.name, {changesInspectorTab: 'review'})
     }
   }, [features.reviewChanges, openInspector, resolvedChangesInspector])
 
@@ -400,10 +409,27 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [inspectOpen, params, setPaneParams],
   )
 
+  const telemetry = useTelemetry()
+
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
         window.open(previewUrl)
+        return true
+      }
+
+      if (item.action === 'copy-document-url' && navigator) {
+        telemetry.log(DocumentURLCopied)
+        // Chose to copy the user's current URL instead of
+        // the document's edit intent link because
+        // of bugs when resolving a document that has
+        // multiple access paths within Structure
+        navigator.clipboard.writeText(window.location.toString())
+        pushToast({
+          id: 'copy-document-url',
+          status: 'info',
+          title: t('panes.document-operation-results.operation-success_copy-url'),
+        })
         return true
       }
 
@@ -434,6 +460,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return false
     },
     [
+      t,
       closeInspector,
       handleHistoryOpen,
       inspectorName,
@@ -441,6 +468,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openInspector,
       previewUrl,
       toggleLegacyInspect,
+      pushToast,
+      telemetry,
     ],
   )
 
@@ -483,6 +512,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permission: requiredPermission,
   })
 
+  const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
 
   const readOnly = useMemo(() => {
@@ -491,6 +521,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    // in cases where the document has drafts but the schema is live edit,
+    // there is a risk of data loss, so we disable editing in this case
+    const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
 
     return (
       !ready ||
@@ -501,23 +534,29 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       reconnecting ||
       isLocked ||
       isDeleting ||
-      isDeleted
+      isDeleted ||
+      isLiveEditAndDraft ||
+      isCreateLinked
     )
   }, [
-    connectionState,
-    editState.transactionSyncLock,
-    isNonExistent,
-    isDeleted,
-    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
+    schemaType,
+    isNonExistent,
+    connectionState,
+    editState.transactionSyncLock?.enabled,
+    editState.draft,
+    liveEdit,
     ready,
     revTime,
-    schemaType,
+    isDeleting,
+    isDeleted,
+    isCreateLinked,
   ])
 
-  const formState = useFormState(schemaType!, {
-    value: displayed,
+  const formState = useFormState({
+    schemaType: schemaType!,
+    documentValue: displayed,
     readOnly,
     comparisonValue: compareValue,
     focusPath,
@@ -582,10 +621,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      setFocusPath(nextFocusPath)
-      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
-        setOpenPath(nextFocusPath.slice(0, -1))
+    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      const nextFocusPath = pathFor(_nextFocusPath)
+      if (nextFocusPath !== focusPathRef.current) {
+        setFocusPath(pathFor(nextFocusPath))
+        setOpenPath(pathFor(nextFocusPath.slice(0, -1)))
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }
@@ -714,12 +754,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>
     if (connectionState === 'reconnecting') {
-      pushToast({
-        id: 'sanity/structure/reconnecting',
-        status: 'warning',
-        title: t('panes.document-pane-provider.reconnecting.title'),
-      })
+      timeout = setTimeout(() => {
+        pushToast({
+          id: 'sanity/structure/reconnecting',
+          status: 'warning',
+          title: t('panes.document-pane-provider.reconnecting.title'),
+        })
+      }, 2000) // 2 seconds, we can iterate on the value
+    }
+    return () => {
+      if (timeout) clearTimeout(timeout)
     }
   }, [connectionState, pushToast, t])
 

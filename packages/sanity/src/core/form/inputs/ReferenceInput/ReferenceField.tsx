@@ -17,6 +17,7 @@ import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-co
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormField} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
@@ -29,7 +30,8 @@ import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailure'
 import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
-import {useReferenceInfo} from './useReferenceInfo'
+import {type ReferenceInfo} from './types'
+import {type Loadable, useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
@@ -87,7 +89,10 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const hasErrors = props.validation.some((v) => v.level === 'error')
   const hasWarnings = props.validation.some((v) => v.level === 'warning')
 
-  const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
+  const loadableReferenceInfo: Loadable<ReferenceInfo> = useReferenceInfo(
+    value?._ref,
+    getReferenceInfo,
+  )
 
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
 
@@ -223,10 +228,13 @@ export function ReferenceField(props: ReferenceFieldProps) {
     [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
   )
 
-  const handleFocus = useCallback(() => inputProps.onPathFocus([]), [inputProps])
-  const handleBlur = useCallback(
-    (event: FocusEvent) => inputProps.elementProps.onBlur(event),
-    [inputProps.elementProps],
+  const handleFocus = useCallback(
+    (event: FocusEvent) => {
+      if (event.target === elementRef.current) {
+        inputProps.onPathFocus(EMPTY_ARRAY)
+      }
+    },
+    [inputProps],
   )
 
   return (
@@ -279,7 +287,6 @@ export function ReferenceField(props: ReferenceFieldProps) {
                       selected={selected}
                       tone="inherit"
                       onFocus={handleFocus}
-                      onBlur={handleBlur}
                     >
                       <PreviewReferenceValue
                         value={value}

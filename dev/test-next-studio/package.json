@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.54.0",
+  "version": "3.66.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
-    "next": "15.0.0-rc.0",
-    "react": "19.0.0-rc-a7d1240c-20240731",
-    "react-dom": "19.0.0-rc-a7d1240c-20240731",
-    "react-is": "19.0.0-rc-a7d1240c-20240731",
+    "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
+    "next": "15.0.3",
+    "react": "rc",
+    "react-dom": "rc",
+    "react-is": "rc",
     "sanity": "workspace:*",
     "sanity-test-studio": "workspace:*",
     "styled-components": "^6.1.12",
-    "typescript": "5.5.4"
+    "typescript": "5.7.2"
   }
 }

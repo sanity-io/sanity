@@ -11,10 +11,4 @@ export type SortOrder = {
   extendedProjection?: string
 }
 
-export interface QueryResult {
-  error: {message: string} | null
-  onRetry?: (event: unknown) => void
-  result: {documents: SanityDocumentLike[]} | null
-}
-
-export type LoadingVariant = 'spinner' | 'initial'
+export type LoadingVariant = 'spinner' | 'initial' | 'subtle'

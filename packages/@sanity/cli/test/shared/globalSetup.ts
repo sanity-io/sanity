@@ -1,6 +1,6 @@
 /* eslint-disable no-process-exit */
 import {execFileSync, spawnSync} from 'node:child_process'
-import {copyFile, mkdir, readFile, rename, stat, writeFile} from 'node:fs/promises'
+import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
 import {hostname} from 'node:os'
 import path from 'node:path'
 
@@ -8,6 +8,7 @@ import {createClient} from '@sanity/client'
 import Configstore from 'configstore'
 import {copy as copyCb} from 'cpx'
 
+import {cleanupDangling} from './cleanupDangling'
 import {
   baseTestPath,
   cliApiHost,
@@ -25,12 +26,13 @@ import {
   packPath,
   studiosPath,
   studioVersions,
+  testClient,
   testIdPath,
 } from './environment'
 
 const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
 
-export default async function globalSetup(): Promise<void> {
+export async function setup(): Promise<void> {
   // Write a file with the test id, so it can be shared across workers
   const localHost = hostname().toLowerCase().split('.')[0]
   const testId = `${localHost}-${process.ppid || process.pid}`
@@ -229,5 +231,85 @@ async function packCli(): Promise<string> {
 function copy(src: string, dest: string, options: {dereference?: boolean}): Promise<void> {
   return new Promise((resolve, reject) =>
     copyCb(src, dest, options, (err) => (err ? reject(err) : resolve())),
+  )
+}
+
+export async function teardown(): Promise<void> {
+  if (!cliUserToken || !hasBuiltCli) {
+    return
+  }
+
+  for (const version of studioVersions) {
+    const args = getTestRunArgs(version)
+    await deleteCorsOrigins(args.corsOrigin)
+    await deleteAliases(args.alias)
+    await deleteGraphQLAPIs(args.graphqlDataset)
+    await deleteDatasets(args)
+  }
+
+  await rm(baseTestPath, {recursive: true, force: true})
+
+  // Very hacky, but good enough for now:
+  // Force a cleanup of dangling entities left over from previous test runs
+  await cleanupDangling()
+}
+
+function getErrorWarner(entity: string, id: string) {
+  return (err: unknown) => {
+    if (err instanceof Error) {
+      console.warn(`WARN: ${entity} "${id}" cleanup failed: ${err.message}`)
+    } else {
+      console.warn(`WARN: ${entity} "${id}" cleanup failed: ${err}`)
+    }
+  }
+}
+
+async function deleteAliases(baseAlias: string) {
+  const aliases = await testClient.request<{name: string}[]>({url: '/aliases'})
+  const created = aliases.filter(({name}) => name.startsWith(baseAlias))
+  await Promise.all(
+    created.map((alias) =>
+      testClient
+        .request({method: 'DELETE', uri: `/aliases/${alias.name}`})
+        .catch(getErrorWarner('dataset alias', alias.name)),
+    ),
+  )
+}
+
+async function deleteGraphQLAPIs(graphqlDataset: string) {
+  const apis = await testClient.request<{dataset: string; tag: string}[]>({url: '/apis/graphql'})
+  const created = apis.filter(({dataset}) => dataset === graphqlDataset)
+  await Promise.all(
+    created.map(({dataset, tag}) =>
+      testClient
+        .request({url: `/apis/graphql/${dataset}/${tag}`, method: 'DELETE'})
+        .catch(getErrorWarner('graphql api', `${dataset}/${tag}`)),
+    ),
+  )
+}
+
+async function deleteCorsOrigins(baseOrigin: string) {
+  const origins = await testClient.request<{id: number; origin: string}[]>({url: '/cors'})
+  const created = origins.filter(({origin}) => origin.startsWith(baseOrigin))
+  await Promise.all(
+    created.map((origin) =>
+      testClient
+        .request({method: 'DELETE', uri: `/cors/${origin.id}`})
+        .catch(getErrorWarner('cors origin', origin.origin)),
+    ),
+  )
+}
+
+async function deleteDatasets(args: ReturnType<typeof getTestRunArgs>) {
+  const datasets = [
+    args.dataset,
+    args.datasetCopy,
+    args.documentsDataset,
+    args.graphqlDataset,
+    args.aclDataset,
+  ]
+
+  await Promise.all(
+    datasets.map((ds) => testClient.datasets.delete(ds).catch(getErrorWarner('dataset', ds))),
   )
 }

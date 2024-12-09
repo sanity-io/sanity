@@ -1,6 +1,6 @@
-import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render, waitFor} from '@testing-library/react'
 import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -22,24 +22,24 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
-jest.mock('../../useDocumentPane')
-jest.mock('sanity', () => {
+vi.mock('../../useDocumentPane')
+vi.mock('sanity', async () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = jest.requireActual<typeof import('sanity')>('sanity')
+  const actual = await vi.importActual<typeof import('sanity')>('sanity')
   return {
     ...actual,
-    unstable_useValuePreview: jest.fn(),
+    unstable_useValuePreview: vi.fn(),
   }
 })
 
 describe('DocumentHeaderTitle', () => {
-  const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
-  const mockUseValuePreview = useValuePreview as jest.MockedFunction<typeof useValuePreview>
+  const mockUseDocumentPane = useDocumentPane as vi.MockedFunction<typeof useDocumentPane>
+  const mockUseValuePreview = useValuePreview as vi.MockedFunction<typeof useValuePreview>
 
   const defaultProps = {
     connectionState: 'connected',
     schemaType: {title: 'Test Schema', name: 'testSchema'},
-    value: {title: 'Test Value'},
+    editState: {draft: {title: 'Test Value'}},
   }
 
   const defaultValue = {
@@ -52,7 +52,7 @@ describe('DocumentHeaderTitle', () => {
   })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should render without crashing', async () => {
@@ -63,14 +63,31 @@ describe('DocumentHeaderTitle', () => {
     await waitFor(() => expect(getByText('Untitled')).toBeInTheDocument())
   })
 
-  it('should return an empty fragment when connectionState is not "connected"', async () => {
+  it('should return an empty fragment when connectionState is not "connected" and editState is empty', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultProps,
+      connectionState: 'connecting',
+      editState: null,
+    } as unknown as DocumentPaneContextValue)
+
+    const {container} = render(<DocumentHeaderTitle />)
+    await waitFor(() => expect(container.firstChild).toBeNull())
+  })
+
+  it('should render the header title when connectionState is not "connected" and editState has values', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultProps,
       connectionState: 'connecting',
     } as unknown as DocumentPaneContextValue)
 
-    const {container} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(container.firstChild).toBeNull())
+    mockUseValuePreview.mockReturnValue({
+      ...defaultValue,
+      error: undefined,
+      value: {title: 'Test Value'},
+    })
+
+    const {getByText} = render(<DocumentHeaderTitle />)
+    await waitFor(() => expect(getByText('Test Value')).toBeInTheDocument())
   })
 
   it('should return the title if it is provided', async () => {
@@ -89,7 +106,7 @@ describe('DocumentHeaderTitle', () => {
   it('should return "New {schemaType?.title || schemaType?.name}" if documentValue is not provided', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultProps,
-      value: null,
+      editState: null,
     } as unknown as DocumentPaneContextValue)
 
     const client = createMockSanityClient()
@@ -146,7 +163,7 @@ describe('DocumentHeaderTitle', () => {
       expect(mockUseValuePreview).toHaveBeenCalledWith({
         enabled: true,
         schemaType: defaultProps.schemaType,
-        value: defaultProps.value,
+        value: defaultProps.editState.draft,
       }),
     )
   })

@@ -2,8 +2,10 @@ import {Box, MenuDivider, Text} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
+import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
+import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -15,6 +17,7 @@ interface ResourcesMenuItemProps {
 export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
+  const isAutoUpdating = hasSanityPackageInImportMap()
   const {t} = useTranslation()
 
   if (isLoading) {
@@ -61,7 +64,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
         <Text size={1} muted weight="medium" textOverflow="ellipsis">
           {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
         </Text>
-        {!error && latestStudioVersion && (
+        {!error && latestStudioVersion && !isAutoUpdating && (
           <Box paddingTop={2}>
             <Text size={1} muted textOverflow="ellipsis">
               {t('help-resources.latest-sanity-version', {
@@ -95,6 +98,8 @@ function SubSection({subSection}: {subSection: Section}) {
             )
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
+            if (item.type === 'studio-announcements-modal')
+              return <StudioAnnouncementsMenuItem key={item._key} text={item.title} />
             return (
               item.type === 'show-welcome-modal' && <MenuItem key={item._key} text={item.title} />
             )

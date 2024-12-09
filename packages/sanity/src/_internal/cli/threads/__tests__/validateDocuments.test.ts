@@ -2,11 +2,11 @@ import {createServer, type Server} from 'node:http'
 import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
-import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
-import {type SanityDocument, type SanityProject} from '@sanity/client'
+import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
-import {getAliases} from '../../server/aliases'
+import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
@@ -73,7 +73,7 @@ const documents: SanityDocument[] = [
 ]
 
 describe('validateDocuments', () => {
-  jest.setTimeout(30000)
+  vi.setConfig({testTimeout: 30000})
 
   let server!: Server
   let receiver!: WorkerChannelReceiver<ValidationWorkerChannel>
@@ -125,14 +125,6 @@ describe('validateDocuments', () => {
       }
 
       switch (resource) {
-        case 'projects': {
-          json({
-            studioHost: 'https://example.sanity.studio',
-            metadata: {externalStudioHost: localhost},
-          } satisfies Partial<SanityProject>)
-          return
-        }
-
         case 'data': {
           const [method] = rest
           switch (method) {
@@ -195,16 +187,17 @@ describe('validateDocuments', () => {
         useCdn: true,
         useProjectHostname: false,
       },
+      studioHost: localhost,
     }
 
-    const filepath = require.resolve('../validateDocuments')
+    const filepath = new URL('../validateDocuments.ts', import.meta.url).pathname
 
     const worker = new Worker(
       `
         const moduleAlias = require('module-alias')
         const { register } = require('esbuild-register/dist/node')
 
-        moduleAlias.addAliases(${JSON.stringify(getAliases({monorepo: {path: path.resolve(__dirname, '../../../../../../..')}}))})
+        moduleAlias.addAliases(${JSON.stringify(await getMonorepoAliases(path.resolve(__dirname, '../../../../../../..')))})
 
         const { unregister } = register({
           target: 'node18',

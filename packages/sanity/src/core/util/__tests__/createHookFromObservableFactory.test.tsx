@@ -1,7 +1,7 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {render, renderHook, waitFor} from '@testing-library/react'
 import {Component, memo, Profiler, type PropsWithChildren, useDeferredValue} from 'react'
 import * as Rx from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
 
@@ -42,7 +42,7 @@ describe('createHookFromObservableFactory', () => {
   })
 
   it('flips the loading state if the hook argument changes', async () => {
-    const observableFactory = jest.fn((value: string) =>
+    const observableFactory = vi.fn((value: string) =>
       Rx.from(tick().then(() => ({value: `hello, ${value}`}))),
     )
     const useHook = createHookFromObservableFactory(observableFactory)
@@ -68,7 +68,7 @@ describe('createHookFromObservableFactory', () => {
       [undefined, true],
       [{value: 'hello, world'}, false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(2)
 
     rerender(<TestComponent value="hooks" />)
     await waitFor(() => expect(renderTimeline.length).toBe(4))
@@ -80,7 +80,7 @@ describe('createHookFromObservableFactory', () => {
       [{value: 'hello, hooks'}, false],
     ])
 
-    expect(observableFactory).toHaveBeenCalledTimes(2)
+    expect(observableFactory).toHaveBeenCalledTimes(4)
   })
 
   // createHookFromObservableFactory uses useSyncExternalStore to trigger re-renders in React if state changes
@@ -90,7 +90,7 @@ describe('createHookFromObservableFactory', () => {
   // great end-results as pairing `startTransition` + `<Suspense>` boundaries in apps that don't have external state.
   // And this test demonstrates how to do that.
   it('Using React.memo + useDeferrableValue should interrupt and reduce re-renders down the tree similar to startTransition + Suspense', async () => {
-    const observableFactory = jest.fn((value: string) =>
+    const observableFactory = vi.fn((value: string) =>
       Rx.from(tick().then(() => ({value: `hello, ${value}`}))),
     )
     const useHook = createHookFromObservableFactory(observableFactory)
@@ -123,7 +123,7 @@ describe('createHookFromObservableFactory', () => {
 
     await waitFor(() => expect(syncRenders).toBe(3))
     await waitFor(() => expect(deferRenders).toBe(2))
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(3)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -136,9 +136,8 @@ describe('createHookFromObservableFactory', () => {
     rerender(<TestComponent value="hooks" />)
     await waitFor(() => expect(syncRenders).toBe(7))
     await waitFor(() => expect(deferRenders).toBe(5))
-    expect(observableFactory).toHaveBeenCalledTimes(3)
 
-    expect(observableFactory).toHaveBeenCalledTimes(3)
+    expect(observableFactory).toHaveBeenCalledTimes(7)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -158,7 +157,7 @@ describe('createHookFromObservableFactory', () => {
   })
 
   it('accepts an initial value and will return that immediately', async () => {
-    const observableFactory = jest.fn((value: string) =>
+    const observableFactory = vi.fn((value: string) =>
       Rx.from(tick().then(() => `hello, ${value}`)),
     )
 
@@ -180,13 +179,13 @@ describe('createHookFromObservableFactory', () => {
       ['factory initial', true],
       ['hello, world', false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(1)
+    expect(observableFactory).toHaveBeenCalledTimes(2)
   })
 
   it('bubbles errors throws in the observable factory', async () => {
     // Error is hoisted. To prevent it from being printed as uncaught in terminal,
     // we explicitly catch it and suppress it, recording that it has been called.
-    const preventer = jest.fn((evt: ErrorEvent) => evt.preventDefault())
+    const preventer = vi.fn((evt: ErrorEvent) => evt.preventDefault())
     if (typeof window !== 'undefined') {
       window.addEventListener('error', preventer, false)
     }

@@ -51,8 +51,8 @@ export function NotAuthenticatedScreen() {
       >
         <Stack space={4}>
           <Text>
-            You are not authorized to access this studio. Maybe you could ask someone to invite you
-            to collaborate on this project?
+            You are not authorized to access this studio. Please contact someone with access to
+            invite you to this project.
           </Text>
 
           <Text>

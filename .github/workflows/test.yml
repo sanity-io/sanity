@@ -71,8 +71,6 @@ jobs:
       - name: Test
         id: test
         run: |
-          node -v
-          npm -v
-          pnpm test -- --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
+          pnpm test:vitest --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}

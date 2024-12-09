@@ -1,5 +1,5 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {defineType} from '@sanity/types'
+import {describe, expect, it, vi} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
 import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
@@ -38,13 +38,13 @@ describe('ObjectInput', () => {
   })
 
   it('calls renderField and renderInput for each member', async () => {
-    const renderField = jest
+    const renderField = vi
       .fn<RenderFieldCallback>()
       .mockImplementationOnce((props) => (
         <div data-testid={`field-${props.inputId}`}>{props.children}</div>
       ))
 
-    const renderInput = jest
+    const renderInput = vi
       .fn<RenderInputCallback>()
       .mockImplementationOnce((props) => <div data-testid={`input-${props.id}`} />)
 

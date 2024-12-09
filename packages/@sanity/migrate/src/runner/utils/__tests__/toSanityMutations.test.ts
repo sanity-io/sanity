@@ -1,6 +1,6 @@
 /* eslint-disable simple-import-sort/imports */
 // Note: for some reason, this needs to be imported before the mocked module
-import {afterEach, describe, expect, it, jest} from '@jest/globals'
+import {afterEach, describe, expect, it, vitest} from 'vitest'
 /* eslint-enable simple-import-sort/imports */
 
 import {SanityEncoder} from '@sanity/mutate'
@@ -8,22 +8,20 @@ import {SanityEncoder} from '@sanity/mutate'
 import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
-jest.mock('@sanity/mutate', () => {
+vitest.mock('@sanity/mutate', async () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = jest.requireActual<typeof import('@sanity/mutate')>('@sanity/mutate')
+  const actual = await vitest.importActual<typeof import('@sanity/mutate')>('@sanity/mutate')
   return {
     ...actual,
     SanityEncoder: {
       ...actual.SanityEncoder,
-      encodeAll: jest
-        .fn<typeof actual.SanityEncoder.encodeAll>()
-        .mockImplementation(actual.SanityEncoder.encodeAll),
+      encodeAll: vitest.fn().mockImplementation(actual.SanityEncoder.encodeAll),
     },
   }
 })
 
 afterEach(() => {
-  jest.clearAllMocks()
+  vitest.clearAllMocks()
 })
 
 describe('#toSanityMutations', () => {

@@ -1,9 +1,9 @@
-import {describe, expect, it} from '@jest/globals'
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
 // import {EMPTY, of} from 'rxjs'
 import {type ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {renderImageInput} from '../../../../../../../test/form'
 // import {UploadOptions} from '../../../../studio/uploads/types'

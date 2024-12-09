@@ -2,9 +2,7 @@ function requireResolve(id) {
   return import.meta.resolve(id).replace('file://', '')
 }
 
-const reactCompiler = process.env.REACT_COMPILER === 'true'
 const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
-const productionBrowserSourceMaps = reactCompiler || reactProductionProfiling
 
 // eslint-disable-next-line tsdoc/syntax
 /** @type {import('next').NextConfig} */
@@ -21,6 +19,8 @@ const config = {
   env: {
     // Support the ability to debug log the studio, for example `DEBUG="sanity:pte:* pnpm dev:next-studio"`
     DEBUG: process.env.DEBUG,
+    // Matches the behavior of `sanity dev` which sets styled-components to use the fastest way of inserting CSS rules in both dev and production. It's default behavior is to disable it in dev mode.
+    SC_DISABLE_SPEEDY: 'false',
   },
   transpilePackages: [
     '@sanity/block-tools',
@@ -84,10 +84,10 @@ const config = {
   },
   // Makes it much easier to see which component got memoized by the react compiler
   // when testing on https://test-next-studio.sanity.build
-  productionBrowserSourceMaps,
+  productionBrowserSourceMaps: reactProductionProfiling,
   reactProductionProfiling,
   experimental: {
-    reactCompiler,
+    reactCompiler: true,
     turbo: {
       resolveAlias: {
         '@sanity/block-tools': '@sanity/block-tools/src/index.ts',

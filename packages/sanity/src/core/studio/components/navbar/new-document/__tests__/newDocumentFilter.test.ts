@@ -1,5 +1,5 @@
-import {describe, expect, it} from '@jest/globals'
 import {startCase} from 'lodash'
+import {describe, expect, it} from 'vitest'
 
 import {filterOptions} from '../filter'
 import {type NewDocumentOption} from '../types'

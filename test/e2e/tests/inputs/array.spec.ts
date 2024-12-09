@@ -42,17 +42,17 @@ test(`file drop event should not propagate to dialog parent`, async ({
 
   // Open the dialog.
   await page.getByRole('button', {name: fileName}).click()
-  await expect(page.locator('#tree-editing-dialog')).toBeVisible()
+  await expect(page.getByRole('dialog')).toBeVisible()
 
   // Drop the file again; this time, while the dialog is open.
   //
   // - The drop event should not propagate to the parent.
   // - Therefore, the drop event should not cause the image to be added to the list again.
-  await page.locator('#tree-editing-dialog').dispatchEvent('drop', {dataTransfer})
+  await page.getByRole('dialog').dispatchEvent('drop', {dataTransfer})
 
   // Close the dialog.
-  await page.getByTestId('tree-editing-done').click()
-  await expect(await page.locator('#tree-editing-dialog')).not.toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).not.toBeVisible()
 
   // Ensure the list still contains one item.
   expect(item).toHaveCount(1)
@@ -93,8 +93,9 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   await expect(titleInput).toHaveValue('Book title')
 
   // And the dialog is closed
-  await page.keyboard.press('Escape')
-  await expect(await insertDialog).not.toBeVisible()
+  const closeDialogButton = insertDialog.getByLabel('Close dialog')
+  await closeDialogButton.click()
+  await expect(insertDialog).not.toBeVisible()
 
   // Then a new item is inserted in the array
   const bookItem = field.getByText('Book title')
@@ -217,9 +218,9 @@ function createArrayFieldLocators(page: Page) {
   const popover = page.getByTestId('document-panel-portal')
   const popoverMenu = popover.getByRole('menu')
   const popoverMenuItem = (name: string) => popoverMenu.getByRole('menuitem', {name})
-  const insertDialog = page.locator('#tree-editing-dialog')
+  const insertDialog = page.getByRole('dialog')
   const input = (label: string) => insertDialog.getByLabel(label)
-  const closeDialogButton = page.getByTestId('tree-editing-done')
+  const closeDialogButton = insertDialog.getByLabel('Close dialog')
 
   return {
     items,

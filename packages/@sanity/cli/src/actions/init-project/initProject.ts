@@ -4,11 +4,13 @@ import path from 'node:path'
 
 import {type DatasetAclMode, type SanityProject} from '@sanity/client'
 import {type Framework} from '@vercel/frameworks'
+import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 import {evaluate, patch} from 'silver-fleece'
 import which from 'which'
 
@@ -33,17 +35,21 @@ import {
   type CliCommandDefinition,
   type SanityCore,
   type SanityModuleInternal,
+  type SanityUser,
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
 import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDefaults'
+import {getProviderName} from '../../util/getProviderName'
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
 import {fetchJourneyConfig} from '../../util/journeyConfig'
+import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
-import {type BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
+import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
+import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
@@ -55,7 +61,7 @@ import {
   promptForNextTemplate,
   promptForStudioPath,
 } from './prompts/nextjs'
-import {reconfigureV2Project} from './reconfigureV2Project'
+import {readPackageJson} from './readPackageJson'
 import templates from './templates'
 import {
   sanityCliTemplate,
@@ -65,19 +71,13 @@ import {
 } from './templates/nextjs'
 
 // eslint-disable-next-line no-process-env
-const isCI = process.env.CI
+const isCI = Boolean(process.env.CI)
 
 /**
  * @deprecated - No longer used
  */
 export interface InitOptions {
   template: string
-  // /**
-  //  * Used for initializing a project from a server schema that is saved in the Journey API
-  //  * This will override the `template` option.
-  //  * @beta
-  //  */
-  // journeyProjectId?: string
   outputDir: string
   name: string
   displayName: string
@@ -110,24 +110,19 @@ export interface ProjectOrganization {
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext & {detectedFramework: Framework | null},
+  context: CliCommandContext & {
+    detectedFramework: Awaited<ReturnType<typeof detectFrameworkRecord>>
+  },
 ): Promise<void> {
-  const {
-    output,
-    prompt,
-    workDir,
-    apiClient,
-    chalk,
-    sanityMajorVersion,
-    telemetry,
-    detectedFramework,
-  } = context
+  const {output, prompt, workDir, apiClient, chalk, telemetry, detectedFramework} = context
 
   const trace = telemetry.trace(CLIInitStepCompleted)
 
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
+  const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
+
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
@@ -136,6 +131,11 @@ export default async function initSanity(
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
   const packageManager = cliFlags['package-manager']
+
+  let remoteTemplateInfo: RepoInfo | undefined
+  if (cliFlags.template && checkIsRemoteTemplate(cliFlags.template)) {
+    remoteTemplateInfo = await getGitHubRepoInfo(cliFlags.template, cliFlags['template-token'])
+  }
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -155,9 +155,10 @@ export default async function initSanity(
     },
   })
 
-  if (sanityMajorVersion === 2) {
-    await reconfigureV2Project(args, context)
-    return
+  if (detectedFramework && detectedFramework.slug !== 'sanity' && remoteTemplateInfo) {
+    throw new Error(
+      `A remote template cannot be used with a detected framework. Detected: ${detectedFramework.name}`,
+    )
   }
 
   // Only allow either --project-plan or --coupon
@@ -240,26 +241,14 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
-  const envFilename = typeof env === 'string' ? env : '.env'
+  let envFilenameDefault = '.env'
+  if (detectedFramework && detectedFramework.slug === 'nextjs') {
+    envFilenameDefault = '.env.local'
+  }
+  const envFilename = typeof env === 'string' ? env : envFilenameDefault
   if (!envFilename.startsWith('.env')) {
-    throw new Error(`Env filename must start with .env`)
+    throw new Error('Env filename must start with .env')
   }
-
-  const usingBareOrEnv = cliFlags.bare || cliFlags.env
-  print(
-    cliFlags.quickstart
-      ? "You're ejecting a remote Sanity project!"
-      : `You're setting up a new project!`,
-  )
-  print(`We'll make sure you have an account with Sanity.io. ${usingBareOrEnv ? '' : `Then we'll`}`)
-  if (!usingBareOrEnv) {
-    print('install an open-source JS content editor that connects to')
-    print('the real-time hosted API on Sanity.io. Hang on.\n')
-  }
-  print('Press ctrl + C at any time to quit.\n')
-  print('Prefer web interfaces to terminals?')
-  print('You can also set up best practice Sanity projects with')
-  print('your favorite frontends on https://www.sanity.io/templates\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
@@ -268,11 +257,27 @@ export default async function initSanity(
   debug(hasToken ? 'User already has a token' : 'User has no token')
   if (hasToken) {
     trace.log({step: 'login', alreadyLoggedIn: true})
-    print('Looks like you already have a Sanity-account. Sweet!\n')
+    const user = await getUserData(apiClient)
+    print('')
+    print(
+      `${chalk.gray("  👤 You're logged in as %s using %s")}`,
+      user.name,
+      getProviderName(user.provider),
+    )
+    print('')
   } else if (!unattended) {
     trace.log({step: 'login'})
     await getOrCreateUser()
   }
+
+  let introMessage = "Let's get you started with a new project"
+  if (cliFlags.quickstart) {
+    introMessage = "Let's get you started with remote Sanity project"
+  } else if (remoteTemplateInfo) {
+    introMessage = "Let's get you started with a remote Sanity template"
+  }
+  print(`  ➡️ ${chalk.gray(introMessage)}`)
+  print('')
 
   const flags = await prepareFlags()
   // We're authenticated, now lets select or create a project
@@ -294,7 +299,8 @@ export default async function initSanity(
   }
 
   let initNext = false
-  if (detectedFramework?.slug === 'nextjs') {
+  const isNextJs = detectedFramework?.slug === 'nextjs'
+  if (isNextJs) {
     initNext = await prompt.single({
       type: 'confirm',
       message:
@@ -322,6 +328,26 @@ export default async function initSanity(
 
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
+
+  if (isNextJs) {
+    const packageJson = readPackageJson(`${outputPath}/package.json`)
+    const reactVersion = packageJson?.dependencies?.react
+
+    if (reactVersion) {
+      const isUsingReact19 = semver.coerce(reactVersion)?.major === 19
+      const isUsingNextJs15 = semver.coerce(detectedFramework?.detectedVersion)?.major === 15
+
+      if (isUsingNextJs15 && isUsingReact19) {
+        warn('╭────────────────────────────────────────────────────────────╮')
+        warn('│                                                            │')
+        warn('│ It looks like you are using Next.js 15 and React 19        │')
+        warn('│ Please read our compatibility guide.                       │')
+        warn('│ https://www.sanity.io/help/react-19                        │')
+        warn('│                                                            │')
+        warn('╰────────────────────────────────────────────────────────────╯')
+      }
+    }
+  }
 
   if (initNext) {
     const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
@@ -433,10 +459,39 @@ export default async function initSanity(
     const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
 
     if (appendEnv) {
-      await createOrAppendEnvVars(envFilename, detectedFramework, {
-        log: true,
-      })
+      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true})
     }
+
+    if (embeddedStudio) {
+      const nextjsLocalDevOrigin = 'http://localhost:3000'
+      const existingCorsOrigins = await apiClient({api: {projectId}}).request({
+        method: 'GET',
+        uri: '/cors',
+      })
+      const hasExistingCorsOrigin = existingCorsOrigins.some(
+        (item: {origin: string}) => item.origin === nextjsLocalDevOrigin,
+      )
+      if (!hasExistingCorsOrigin) {
+        await apiClient({api: {projectId}})
+          .request({
+            method: 'POST',
+            url: '/cors',
+            body: {origin: nextjsLocalDevOrigin, allowCredentials: true},
+            maxRedirects: 0,
+          })
+          .then((res) => {
+            print(
+              res.id
+                ? `Added ${nextjsLocalDevOrigin} to CORS origins`
+                : `Failed to add ${nextjsLocalDevOrigin} to CORS origins`,
+            )
+          })
+          .catch((error) => {
+            print(`Failed to add ${nextjsLocalDevOrigin} to CORS origins`, error)
+          })
+      }
+    }
+
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
     const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
@@ -463,7 +518,7 @@ export default async function initSanity(
     }
 
     if (chosen === 'npm') {
-      await execa('npm', ['install', 'next-sanity@9'], execOptions)
+      await execa('npm', ['install', '--legacy-peer-deps', 'next-sanity@9'], execOptions)
     } else if (chosen === 'yarn') {
       await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@9'], execOptions)
     } else if (chosen === 'pnpm') {
@@ -520,60 +575,42 @@ export default async function initSanity(
   const templateName = await selectProjectTemplate()
   trace.log({step: 'selectProjectTemplate', selectedOption: templateName})
   const template = templates[templateName]
-  if (!template) {
+  if (!remoteTemplateInfo && !template) {
     throw new Error(`Template "${templateName}" not found`)
   }
 
   // Use typescript?
-  const typescriptOnly = template.typescriptOnly === true
   let useTypeScript = true
-  if (!typescriptOnly && typeof cliFlags.typescript === 'boolean') {
-    useTypeScript = cliFlags.typescript
-  } else if (!typescriptOnly && !unattended) {
-    useTypeScript = await promptForTypeScript(prompt)
-    trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
+  if (!remoteTemplateInfo && template) {
+    const typescriptOnly = template.typescriptOnly === true
+    if (!typescriptOnly && typeof cliFlags.typescript === 'boolean') {
+      useTypeScript = cliFlags.typescript
+    } else if (!typescriptOnly && !unattended) {
+      useTypeScript = await promptForTypeScript(prompt)
+      trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
+    }
   }
 
-  // Build a full set of resolved options
-  const templateOptions: BootstrapOptions = {
-    outputPath,
-    packageName: sluggedName,
-    templateName,
-    schemaUrl,
-    useTypeScript,
-    variables: {
-      dataset: datasetName,
-      projectId,
-      projectName: displayName || answers.projectName,
-    },
+  // we enable auto-updates by default, but allow users to specify otherwise
+  let autoUpdates = true
+  if (typeof cliFlags['auto-updates'] === 'boolean') {
+    autoUpdates = cliFlags['auto-updates']
   }
 
   // If the template has a sample dataset, prompt the user whether or not we should import it
   const shouldImport =
-    !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
+    !unattended && template?.datasetUrl && (await promptForDatasetImport(template.importPrompt))
 
   trace.log({step: 'importTemplateDataset', selectedOption: shouldImport ? 'yes' : 'no'})
 
-  // Bootstrap Sanity, creating required project files, manifests etc
-  await bootstrapTemplate(templateOptions, context)
+  const [_, bootstrapPromise] = await Promise.allSettled([
+    updateProjectCliInitializedMetadata(),
+    bootstrapTemplate(),
+  ])
 
-  // update that files were initialized locally; do not halt flow for request
-  apiClient({api: {projectId: projectId}})
-    .request<SanityProject>({uri: `/projects/${projectId}`})
-    .then((project: SanityProject) => {
-      if (!project?.metadata?.cliInitializedAt) {
-        return apiClient({api: {projectId}}).request({
-          method: 'PATCH',
-          uri: `/projects/${projectId}`,
-          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-        })
-      }
-      return Promise.resolve()
-    })
-    .catch(() => {
-      // Non-critical update
-      debug('Failed to update cliInitializedAt metadata')
-    })
+  if (bootstrapPromise.status === 'rejected' && bootstrapPromise.reason instanceof Error) {
+    throw bootstrapPromise.reason
+  }
 
   let pkgManager: PackageManager
 
@@ -750,21 +787,19 @@ export default async function initSanity(
     isFirstProject: boolean
     userAction: 'create' | 'select'
   }> {
-    const spinner = context.output.spinner('Fetching existing projects').start()
+    const client = apiClient({requireUser: true, requireProject: false})
     let projects
     let organizations: ProjectOrganization[]
+
     try {
-      const client = apiClient({requireUser: true, requireProject: false})
       const [allProjects, allOrgs] = await Promise.all([
         client.projects.list({includeMembers: false}),
         client.request({uri: '/organizations'}),
       ])
       projects = allProjects.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       organizations = allOrgs
-      spinner.succeed()
     } catch (err) {
       if (unattended && flags.project) {
-        spinner.succeed()
         return {
           projectId: flags.project,
           displayName: 'Unknown project',
@@ -772,7 +807,6 @@ export default async function initSanity(
           userAction: 'select',
         }
       }
-      spinner.fail()
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
     }
 
@@ -1042,6 +1076,58 @@ export default async function initSanity(
         },
       ],
     })
+  }
+
+  async function updateProjectCliInitializedMetadata() {
+    try {
+      const client = apiClient({api: {projectId}})
+      const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
+
+      if (!project?.metadata?.cliInitializedAt) {
+        await client.request({
+          method: 'PATCH',
+          uri: `/projects/${projectId}`,
+          body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+        })
+      }
+    } catch (err) {
+      // Non-critical update
+      debug('Failed to update cliInitializedAt metadata')
+    }
+  }
+
+  async function bootstrapTemplate() {
+    const bootstrapVariables: GenerateConfigOptions['variables'] = {
+      autoUpdates,
+      dataset: datasetName,
+      projectId,
+      projectName: displayName || answers.projectName,
+    }
+
+    if (remoteTemplateInfo) {
+      return bootstrapRemoteTemplate(
+        {
+          outputPath,
+          packageName: sluggedName,
+          repoInfo: remoteTemplateInfo,
+          bearerToken: cliFlags['template-token'],
+          variables: bootstrapVariables,
+        },
+        context,
+      )
+    }
+
+    return bootstrapLocalTemplate(
+      {
+        outputPath,
+        packageName: sluggedName,
+        templateName,
+        schemaUrl,
+        useTypeScript,
+        variables: bootstrapVariables,
+      },
+      context,
+    )
   }
 
   async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
@@ -1404,6 +1490,16 @@ async function getPlanFromCoupon(apiClient: CliApiClient, couponCode: string): P
     throw new Error('Unable to find a plan from coupon code')
   }
   return planId
+}
+
+async function getUserData(apiClient: CliApiClient): Promise<SanityUser> {
+  return await apiClient({
+    requireUser: true,
+    requireProject: false,
+  }).request({
+    method: 'GET',
+    uri: 'users/me',
+  })
 }
 
 async function getPlanFromId(apiClient: CliApiClient, planId: string): Promise<string> {

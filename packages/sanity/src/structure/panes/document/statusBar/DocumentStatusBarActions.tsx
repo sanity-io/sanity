@@ -5,14 +5,13 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   Hotkeys,
-  shouldArrayDialogOpen,
-  useSource,
   useTimelineSelector,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
+import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -27,17 +26,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
+  const {__internal_tasks} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const isTreeArrayEditingEnabled = useSource().beta?.treeArrayEditing?.enabled
-
-  // Disable the main document action if the array dialog is open
-  const isTreeArrayEditingEnabledOpen = useMemo(() => {
-    if (!isTreeArrayEditingEnabled) return false
-
-    return shouldArrayDialogOpen(schemaType, openPath)
-  }, [isTreeArrayEditingEnabled, openPath, schemaType])
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -68,10 +59,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
               <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={
-                  disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
-                }
+                data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
+                disabled={disabled || Boolean(firstActionState.disabled)}
                 icon={firstActionState.icon}
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}

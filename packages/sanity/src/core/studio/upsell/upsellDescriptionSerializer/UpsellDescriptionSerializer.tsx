@@ -1,7 +1,13 @@
-import {PortableText, type PortableTextComponents} from '@portabletext/react'
+import {
+  PortableText,
+  type PortableTextComponents,
+  type PortableTextTypeComponentProps,
+} from '@portabletext/react'
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -62,16 +68,22 @@ const InlineIcon = styled(Icon)<InlineIconProps>`
   }
 `
 
-const Link = styled.a<{useTextColor: boolean}>`
+const Link = styled.a<{$useTextColor: boolean}>`
   font-weight: 600;
-  color: ${(props) => (props.useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
+  color: ${(props) => (props.$useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
 `
 
-const DynamicIconContainer = styled.span`
+const DynamicIconContainer = styled.span<{$inline: boolean}>`
+  display: ${({$inline}) => ($inline ? 'inline-block' : 'inline')};
+  font-size: calc(21 / 16 * 1rem) !important;
+  min-width: calc(21 / 16 * 1rem - 0.375rem);
+  line-height: 0;
   > svg {
+    height: 1em;
+    width: 1em;
     display: inline;
-    font-size: calc(21 / 16 * 1rem) !important;
-    margin: -0.375rem 0 !important;
+    font-size: 1em !important;
+    margin: -0.375rem !important;
     *[stroke] {
       stroke: currentColor;
     }
@@ -80,7 +92,7 @@ const DynamicIconContainer = styled.span`
 
 const accentSpanWrapper = (children: ReactNode) => <AccentSpan>{children}</AccentSpan>
 
-const DynamicIcon = (props: {icon: {url: string}}) => {
+const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
   const [__html, setHtml] = useState('')
   useEffect(() => {
     const controller = new AbortController()
@@ -105,7 +117,7 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
     }
   }, [props.icon.url])
 
-  return <DynamicIconContainer dangerouslySetInnerHTML={{__html}} />
+  return <DynamicIconContainer $inline={!!props.inline} dangerouslySetInnerHTML={{__html}} />
 }
 
 function NormalBlock(props: {children: ReactNode}) {
@@ -120,7 +132,7 @@ function NormalBlock(props: {children: ReactNode}) {
   )
 }
 
-function HeadingBlock(props: {children: ReactNode}) {
+function H2Block(props: {children: ReactNode}) {
   const {children} = props
   return (
     <Box paddingX={2} marginY={4}>
@@ -131,20 +143,82 @@ function HeadingBlock(props: {children: ReactNode}) {
   )
 }
 
-const components: PortableTextComponents = {
+function H3Block(props: {children: ReactNode}) {
+  const {children} = props
+  return (
+    <Box paddingX={2} marginY={4}>
+      <Heading size={1} as="h3">
+        {children}
+      </Heading>
+    </Box>
+  )
+}
+
+const Image = styled.img((props) => {
+  const theme = getTheme_v2(props.theme)
+
+  return css`
+    object-fit: cover;
+    width: 100%;
+    border-radius: ${theme.radius[3]}px;
+  `
+})
+
+function ImageBlock(
+  props: PortableTextTypeComponentProps<{
+    image?: {url: string}
+  }>,
+) {
+  return (
+    <Box paddingX={2} marginY={4}>
+      <Image src={props.value.image?.url} />
+    </Box>
+  )
+}
+
+const createComponents = ({
+  onLinkClick,
+}: {
+  onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
+}): PortableTextComponents => ({
   block: {
     normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h2: ({children}) => <HeadingBlock>{children}</HeadingBlock>,
+    h2: ({children}) => <H2Block>{children}</H2Block>,
+    h3: ({children}) => <H3Block>{children}</H3Block>,
   },
   list: {
-    bullet: ({children}) => children,
-    number: ({children}) => <>{children}</>,
+    bullet: ({children}) => <ul>{children}</ul>,
+    number: ({children}) => <ol>{children}</ol>,
     checkmarks: ({children}) => <>{children}</>,
   },
   listItem: {
-    bullet: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    number: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    checkmarks: ({children}) => <NormalBlock>{children}</NormalBlock>,
+    bullet: ({children}) => (
+      <Text
+        as="li"
+        size={1}
+        muted
+        style={{
+          display: 'list-item',
+          padding: '0.5rem 0',
+        }}
+      >
+        {children}
+      </Text>
+    ),
+    number: ({children}) => (
+      <Text
+        as="li"
+        size={1}
+        muted
+        style={{
+          display: 'list-item',
+          padding: '0.5rem 0',
+        }}
+      >
+        {children}
+      </Text>
+    ),
+    checkmarks: ({children}) => <Text>{children}</Text>,
   },
 
   marks: {
@@ -155,7 +229,17 @@ const components: PortableTextComponents = {
         href={props.value.href}
         rel="noopener noreferrer"
         target="_blank"
-        useTextColor={props.value.useTextColor}
+        $useTextColor={props.value.useTextColor}
+        // eslint-disable-next-line react/jsx-no-bind
+        onClick={
+          onLinkClick
+            ? () =>
+                onLinkClick({
+                  url: props.value.href,
+                  linkTitle: props.text,
+                })
+            : undefined
+        }
       >
         {props.children}
         {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
@@ -174,7 +258,7 @@ const components: PortableTextComponents = {
               $hasTextRight={props.value.hasTextRight}
             />
           ) : (
-            <DynamicIcon icon={props.value.icon} />
+            <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
           )}
         </ConditionalWrapper>
       )
@@ -193,7 +277,7 @@ const components: PortableTextComponents = {
             {props.value.sanityIcon ? (
               <Icon symbol={props.value.sanityIcon} />
             ) : (
-              <DynamicIcon icon={props.value.icon} />
+              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
             )}
           </IconTextContainer>
           <Text size={1} weight="semibold" accent={props.value.accent}>
@@ -206,11 +290,13 @@ const components: PortableTextComponents = {
         </Text>
       </Flex>
     ),
+    imageBlock: (props) => <ImageBlock {...props} />,
   },
-}
+})
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
+  onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
 }
 
 /**
@@ -219,7 +305,11 @@ interface DescriptionSerializerProps {
  * @internal
  */
 export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
-  const value = useMemo(() => transformBlocks(props.blocks), [props.blocks])
+  const {blocks, onLinkClick} = props
+
+  const value = useMemo(() => transformBlocks(blocks), [blocks])
+  const components = useMemo(() => createComponents({onLinkClick: onLinkClick}), [onLinkClick])
+
   return (
     <Card tone="default">
       <SerializerContainer>

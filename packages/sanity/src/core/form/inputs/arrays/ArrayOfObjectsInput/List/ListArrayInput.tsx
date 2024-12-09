@@ -1,3 +1,6 @@
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
+
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
 import {Card, Stack, Text, useTheme} from '@sanity/ui'
@@ -35,6 +38,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     onUpload,
     focusPath,
     readOnly,
+    onItemAppend,
+    onItemPrepend,
     renderAnnotation,
     renderBlock,
     renderField,
@@ -51,20 +56,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
   const {space} = useTheme().sanity
-
-  const handlePrepend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'before', referenceItem: 0})
-    },
-    [onInsert],
-  )
-
-  const handleAppend = useCallback(
-    (item: Item) => {
-      onInsert({items: [item], position: 'after', referenceItem: -1})
-    },
-    [onInsert],
-  )
 
   const memberKeys = useMemoCompare(
     useMemo(() => members.map((member) => member.key), [members]),
@@ -277,8 +268,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
       </UploadTargetCard>
       <ArrayFunctions
         onChange={onChange}
-        onItemAppend={handleAppend}
-        onItemPrepend={handlePrepend}
+        onItemAppend={onItemAppend}
+        onItemPrepend={onItemPrepend}
         onValueCreate={createProtoArrayValue}
         readOnly={readOnly}
         schemaType={schemaType}

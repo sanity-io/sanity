@@ -1,7 +1,7 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom} from 'rxjs'
 import {first} from 'rxjs/operators'
+import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {viewer} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
@@ -20,7 +20,7 @@ function createMockClient(data: {requests?: Record<string, any>} = {}): SanityCl
   const mockClient = {
     config: () => mockConfig,
     withConfig: () => mockClient,
-    request: jest.fn((opts: {uri: string; tag?: string; withCredentials: boolean}) => {
+    request: vi.fn((opts: {uri: string; tag?: string; withCredentials: boolean}) => {
       const path = opts.uri.slice(requestUriPrefix.length)
 
       if (data?.requests?.[path]) {
@@ -60,7 +60,7 @@ describe('checkDocumentPermission', () => {
       reason: 'Matching grant',
     })
 
-    expect((client.request as jest.Mock).mock.calls).toEqual([
+    expect((client.request as Mock).mock.calls).toEqual([
       [
         {
           tag: 'acl.get',

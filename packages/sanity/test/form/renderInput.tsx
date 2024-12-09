@@ -1,4 +1,3 @@
-import {jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {
   defineType,
@@ -10,6 +9,7 @@ import {
 } from '@sanity/types'
 import {render} from '@testing-library/react'
 import {type FocusEvent, type ReactElement, type RefObject} from 'react'
+import {type MockInstance, vi} from 'vitest'
 
 import {
   createPatchChannel,
@@ -59,14 +59,14 @@ export type TestRenderInputCallback<ElementProps> = (
 export type RenderInputResult = {
   container: Element
   focusRef: RefObject<HTMLElement>
-  onBlur: jest.Mock<(event: FocusEvent) => void>
-  onFocus: jest.Mock<(event: FocusEvent) => void>
-  onChange: jest.Mock<(path: PatchArg | PatchEvent) => void>
-  onNativeChange: jest.Mock<(event: FocusEvent) => void>
-  onPathBlur: jest.Mock<(path: Path) => void>
-  onPathFocus: jest.Mock<(path: Path) => void>
-  onFieldGroupSelect: jest.Mock<(field: string) => void>
-  onSetFieldSetCollapsed: jest.Mock<(field: string, collapsed: boolean) => void>
+  onBlur: MockInstance<(event: FocusEvent) => void>
+  onFocus: MockInstance<(event: FocusEvent) => void>
+  onChange: MockInstance<(path: PatchArg | PatchEvent) => void>
+  onNativeChange: MockInstance<(event: FocusEvent) => void>
+  onPathBlur: MockInstance<(path: Path) => void>
+  onPathFocus: MockInstance<(path: Path) => void>
+  onFieldGroupSelect: MockInstance<(field: string) => void>
+  onSetFieldSetCollapsed: MockInstance<(field: string, collapsed: boolean) => void>
   result: ReturnType<typeof render>
 }
 export async function renderInput<ElementProps>(props: {
@@ -98,17 +98,17 @@ export async function renderInput<ElementProps>(props: {
   })
 
   const focusRef = {current: null}
-  const onBlur = jest.fn()
-  const onChange = jest.fn()
-  const onFocus = jest.fn()
-  const onDOMChange = jest.fn((...args) => onChange(...args))
+  const onBlur = vi.fn()
+  const onChange = vi.fn()
+  const onFocus = vi.fn()
+  const onDOMChange = vi.fn((...args) => onChange(...args))
 
-  const onPathBlur = jest.fn()
-  const onPathFocus = jest.fn()
-  const onPathOpen = jest.fn()
-  const onFieldGroupSelect = jest.fn()
-  const onSetFieldSetCollapsed = jest.fn()
-  const onSetPathCollapsed = jest.fn()
+  const onPathBlur = vi.fn()
+  const onPathFocus = vi.fn()
+  const onPathOpen = vi.fn()
+  const onFieldGroupSelect = vi.fn()
+  const onSetFieldSetCollapsed = vi.fn()
+  const onSetPathCollapsed = vi.fn()
 
   function TestForm(renderProps: TestRenderProps & {render: TestRenderInputCallback<any>}) {
     const {
@@ -125,9 +125,10 @@ export async function renderInput<ElementProps>(props: {
 
     if (!docType) throw new Error(`no document type: test`)
 
-    const formState = useFormState(docType, {
-      comparisonValue: documentValue as any,
-      value: documentValue as any,
+    const formState = useFormState({
+      schemaType: docType,
+      comparisonValue: documentValue,
+      documentValue,
       focusPath,
       collapsedPaths: undefined,
       collapsedFieldSets: undefined,

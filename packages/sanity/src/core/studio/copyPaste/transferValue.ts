@@ -4,6 +4,8 @@ import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-ut
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
@@ -34,6 +36,7 @@ import {
   getIdPair,
   isRecord,
   type Path,
+  resolveConditionalProperty,
   type SanityClient,
   type SchemaType,
 } from 'sanity'
@@ -129,6 +132,39 @@ export interface TransferValueOptions {
   client?: ClientWithFetch
 }
 
+/**
+ * Takes the path and checks if any ancestor is read-only
+ * ["a", "b", "c"] - ["a"], ["a", "b"], ["a", "b", "c"],
+ */
+function resolveReadOnlyAncestor({
+  path,
+  value,
+  schemaType,
+  currentUser,
+}: {
+  path: Path
+  value?: unknown
+  schemaType: SchemaType
+  currentUser: CurrentUser | null
+}): boolean {
+  const isReadOnly = path.find((_, index) => {
+    // Iterates on each of the path segments and checks if the current path is read-only
+    const currentPath = path.slice(0, index + 1)
+    const schemaTypeAtPath = resolveSchemaTypeForPath(schemaType, currentPath, value)
+    if (!schemaTypeAtPath) {
+      throw new Error(`Could not find target schema type at path ${path.join('.')}`)
+    }
+    return resolveConditionalProperty(schemaTypeAtPath.readOnly, {
+      value,
+      parent: null,
+      document: value as ConditionalPropertyCallbackContext['document'],
+      currentUser,
+    })
+  })
+
+  return Boolean(isReadOnly)
+}
+
 // eslint-disable-next-line complexity, max-statements
 export async function transferValue({
   sourceRootSchemaType,
@@ -141,6 +177,8 @@ export async function transferValue({
   targetValue,
   targetPath,
   keyGenerator = defaultKeyGenerator,
+  targetDocumentSchemaType,
+  currentUser,
   options = {
     validateReferences: true,
     validateAssets: true,
@@ -157,7 +195,9 @@ export async function transferValue({
   targetRootPath: Path
   targetValue?: unknown
   keyGenerator?: () => string
+  currentUser: CurrentUser | null
   options?: TransferValueOptions
+  targetDocumentSchemaType: SchemaType
 }): Promise<{
   targetValue: unknown
   errors: TransferValueError[]
@@ -189,7 +229,30 @@ export async function transferValue({
     throw new Error('Could not find target schema type at path')
   }
 
-  if (targetRootSchemaType.readOnly || targetSchemaTypeAtPath.readOnly) {
+  const targetRootSchemaTypeReadOnly = resolveConditionalProperty(targetRootSchemaType.readOnly, {
+    value: targetRootValue,
+    parent: null,
+    document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+    currentUser,
+  })
+  const targetSchemaTypeAtPathReadOnly = resolveConditionalProperty(
+    targetSchemaTypeAtPath.readOnly,
+    {
+      value: targetValue,
+      parent: null,
+      document: targetRootValue as ConditionalPropertyCallbackContext['document'],
+      currentUser,
+    },
+  )
+
+  const isAncestorReadOnly = resolveReadOnlyAncestor({
+    path: targetRootPath,
+    value: targetRootValue,
+    schemaType: targetDocumentSchemaType,
+    currentUser,
+  })
+
+  if (targetRootSchemaTypeReadOnly || targetSchemaTypeAtPathReadOnly || isAncestorReadOnly) {
     return {
       targetValue: undefined,
       errors: [

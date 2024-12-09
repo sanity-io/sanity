@@ -1,6 +1,6 @@
-import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {render} from '@testing-library/react'
 import * as SANITY from 'sanity'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -10,13 +10,13 @@ import {type Panes} from '../../structureResolvers'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
 
-jest.mock('sanity', () => {
-  const actual: typeof SANITY = jest.requireActual('sanity')
+vi.mock('sanity', async () => {
+  const actual = await vi.importActual('sanity')
   return {
     ...actual,
-    useEditState: jest.fn(),
-    useSchema: jest.fn(),
-    unstable_useValuePreview: jest.fn(),
+    useEditState: vi.fn(),
+    useSchema: vi.fn(),
+    unstable_useValuePreview: vi.fn(),
   }
 })
 
@@ -36,7 +36,7 @@ function createWrapperComponent(client: SANITY.SanityClient) {
 describe('StructureTitle', () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore  it's a minimal mock implementation of useStructureTool
-  jest.spyOn(USE_STRUCTURE_TOOL, 'useStructureTool').mockImplementation(() => ({
+  vi.spyOn(USE_STRUCTURE_TOOL, 'useStructureTool').mockImplementation(() => ({
     structureContext: {title: 'My Structure Tool'} as StructureContext,
   }))
   describe('Non document panes', () => {
@@ -159,9 +159,9 @@ describe('StructureTitle', () => {
     it('should not update the when the document is still loading', async () => {
       const useEditStateMock = () => ({...editState, ready: false})
       const useValuePreviewMock = () => valuePreview
-      jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -174,9 +174,9 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document pane has a title', async () => {
       const useEditStateMock = () => editState
       const useValuePreviewMock = () => valuePreview
-      jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -188,9 +188,9 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document is new', async () => {
       const useEditStateMock = () => ({...editState, draft: null})
       const useValuePreviewMock = () => valuePreview
-      jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -205,9 +205,9 @@ describe('StructureTitle', () => {
         isLoading: false,
         value: {title: ''},
       })
-      jest.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
-      jest.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)

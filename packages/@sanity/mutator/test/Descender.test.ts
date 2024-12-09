@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {Descender} from '../src/jsonpath/Descender'
 import {Expression} from '../src/jsonpath/Expression'

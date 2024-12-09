@@ -21,7 +21,6 @@ import {
  * @param value - The value to set.
  * @returns A `set` operation.
  * {@link https://www.sanity.io/docs/http-patches#6TPENSW3}
- * @beta
  *
  * @example
  * ```ts
@@ -36,7 +35,6 @@ export const set = <const T>(value: T): SetOp<T> => ({type: 'set', value})
  * @param value - The value to set if missing.
  * @returns A `setIfMissing` operation.
  * {@link https://www.sanity.io/docs/http-patches#A80781bT}
- * @beta
  * @example
  * ```ts
  * const setFooIfMissing = setIfMissing('foo')
@@ -52,7 +50,6 @@ export const setIfMissing = <const T>(value: T): SetIfMissingOp<T> => ({
  * Creates an `unset` operation.
  * @returns An `unset` operation.
  * {@link https://www.sanity.io/docs/http-patches#xRtBjp8o}
- * @beta
  *
  * @example
  * ```ts
@@ -66,7 +63,6 @@ export const unset = (): UnsetOp => ({type: 'unset'})
  * @param amount - The amount to increment by.
  * @returns An incrementation operation for numeric values
  * {@link https://www.sanity.io/docs/http-patches#vIT8WWQo}
- * @beta
  *
  * @example
  * ```ts
@@ -84,7 +80,6 @@ export const inc = <const N extends number = 1>(amount: N = 1 as N): IncOp<N> =>
  * @param amount - The amount to decrement by.
  * @returns A `dec` operation.
  * {@link https://www.sanity.io/docs/http-patches#vIT8WWQo}
- * @beta
  *
  * @example
  * ```ts
@@ -116,7 +111,6 @@ export const diffMatchPatch = (value: string): DiffMatchPatchOp => ({
  * @param indexOrReferenceItem - The index or reference item to insert before or after.
  * @returns An `insert` operation for adding values to arrays
  * {@link https://www.sanity.io/docs/http-patches#febxf6Fk}
- * @beta
  *
  * @example
  * ```ts
@@ -147,7 +141,6 @@ export function insert<
  * @param items - The items to append.
  * @returns An `insert` operation for adding a value to the end of an array.
  * {@link https://www.sanity.io/docs/http-patches#Cw4vhD88}
- * @beta
  *
  * @example
  * ```ts
@@ -165,7 +158,6 @@ export function append<const Items extends AnyArray<unknown>>(items: Items | Arr
  * @param items - The items to prepend.
  * @returns An `insert` operation for adding a value to the start of an array.
  * {@link https://www.sanity.io/docs/http-patches#refAUsf0}
- * @beta
  *
  * @example
  * ```ts
@@ -205,7 +197,6 @@ export function insertBefore<
  * @param indexOrReferenceItem - The index or reference item to insert after.
  * @returns An `insert` operation after the provided index or reference item.
  * {@link https://www.sanity.io/docs/http-patches#0SQmPlb6}
- * @beta
  *
  * @example
  * ```ts
@@ -230,7 +221,6 @@ export const insertAfter = <
  * @returns A `truncate` operation.
  * @remarks - This will be converted to an `unset` patch when submitted to the API
  * {@link https://www.sanity.io/docs/http-patches#xRtBjp8o}
- * @beta
  *
  * @example
  * ```ts
@@ -254,7 +244,6 @@ export function truncate(startIndex: number, endIndex?: number): TruncateOp {
  * @returns A ReplaceOp operation.
  * @remarks This will be converted to an `insert`/`replace` patch when submitted to the API
  * {@link https://www.sanity.io/docs/http-patches#GnVSwcPa}
- * @beta
  *
  * @example
  * ```ts

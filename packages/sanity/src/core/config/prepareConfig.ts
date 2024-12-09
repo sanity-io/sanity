@@ -4,7 +4,13 @@ import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sani
 import {studioTheme} from '@sanity/ui'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
-import {type ComponentType, createElement, type ElementType, isValidElement} from 'react'
+import {
+  type ComponentType,
+  createElement,
+  type ElementType,
+  type ErrorInfo,
+  isValidElement,
+} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
@@ -19,7 +25,8 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
-  arrayEditingReducer,
+  announcementsEnabledReducer,
+  createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -33,12 +40,16 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   newDocumentOptionsResolver,
+  onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
+  searchStrategyReducer,
+  startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
+import {getStartInCreateSortedActions} from './create/startInCreateSortedActions'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
@@ -489,14 +500,16 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const actions = resolveConfigProperty({
           config,
           context: {...context, ...partialContext},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+        return getStartInCreateSortedActions(actions)
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -597,6 +610,10 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
+      strategy: searchStrategyReducer({
+        config,
+        initialValue: 'groqLegacy',
+      }),
       enableLegacySearch: resolveConfigProperty({
         config,
         context,
@@ -627,10 +644,29 @@ function resolveSource({
       staticInitialValueTemplateItems,
       options: config,
     },
+    onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
+      return onUncaughtErrorResolver({
+        config,
+        context: {
+          error: error,
+          errorInfo: errorInfo,
+        },
+      })
+    },
+
     beta: {
       treeArrayEditing: {
-        enabled: arrayEditingReducer({config, initialValue: false}),
+        // This beta feature is no longer available.
+        enabled: false,
       },
+      create: {
+        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: false}),
+        fallbackStudioOrigin: createFallbackOriginReducer(config),
+      },
+    },
+
+    announcements: {
+      enabled: announcementsEnabledReducer({config, initialValue: true}),
     },
   }
 
