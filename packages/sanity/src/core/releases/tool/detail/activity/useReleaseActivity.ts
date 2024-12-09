@@ -1,7 +1,9 @@
 import {useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type ReleaseDocument, useClient} from 'sanity'
 
+import {useClient} from '../../../../hooks/useClient'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {type ReleaseDocument} from '../../../store/types'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseActivityEvents, RELEASE_ACTIVITY_INITIAL_VALUE} from './getReleaseActivityEvents'
