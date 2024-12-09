@@ -1007,6 +1007,13 @@ export interface BetaFeatures {
      */
     fallbackStudioOrigin?: string
   }
+  /**
+   * Config for the history events API .
+   *
+   * If enabled, it will use the new events API to fetch document history.
+   *
+   * If it is not enabled, it will continue using the legacy Timeline.
+   */
   eventsAPI?: {
     enabled: boolean
   }

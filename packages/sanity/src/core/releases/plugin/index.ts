@@ -57,9 +57,4 @@ export const releases = definePlugin({
   document: {
     actions: (actions, context) => resolveDocumentActions(actions, context),
   },
-  beta: {
-    eventsAPI: {
-      enabled: true,
-    },
-  },
 })

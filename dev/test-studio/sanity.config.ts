@@ -174,6 +174,7 @@ const defaultWorkspace = {
   tasks: {
     enabled: true,
   },
+  beta: {eventsAPI: {enabled: true}},
 }
 
 export default defineConfig([
@@ -225,6 +226,7 @@ export default defineConfig([
       // TODO: Switched off because Actions API doesn't support versions (yet).
       enabled: false,
     },
+    beta: {eventsAPI: {enabled: true}},
   },
   {
     name: 'listener-events',
