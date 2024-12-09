@@ -8,6 +8,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
+import {type ReleaseState} from '../../../store'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
@@ -46,54 +47,59 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
-export const getDocumentTableColumnDefs: (
-  releaseId: string,
-  t: TFunction<'releases', undefined>,
-) => Column<BundleDocumentRow>[] = (releaseId, t) => [
-  {
-    id: 'action',
-    width: 100,
-    header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={t('table-header.action')} />
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => {
-      const willBeUnpublished = isGoingToUnpublish(datum.document)
-      const actionBadge = () => {
-        if (willBeUnpublished) {
-          return (
-            <Badge
-              radius={2}
-              tone={'critical'}
-              data-testid={`unpublish-badge-${datum.document._id}`}
-            >
-              {t('table-body.action.unpublish')}
-            </Badge>
-          )
-        }
-        if (datum.document.publishedDocumentExists) {
-          return (
-            <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
-              {t('table-body.action.change')}
-            </Badge>
-          )
-        }
-
+const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<BundleDocumentRow> = (
+  t,
+) => ({
+  id: 'action',
+  width: 100,
+  header: (props) => (
+    <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Headers.BasicHeader text={t('table-header.action')} />
+    </Flex>
+  ),
+  cell: ({cellProps, datum}) => {
+    const willBeUnpublished = isGoingToUnpublish(datum.document)
+    const actionBadge = () => {
+      if (willBeUnpublished) {
         return (
-          <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
-            {t('table-body.action.add')}
+          <Badge radius={2} tone={'critical'} data-testid={`unpublish-badge-${datum.document._id}`}>
+            {t('table-body.action.unpublish')}
+          </Badge>
+        )
+      }
+      if (datum.document.publishedDocumentExists) {
+        return (
+          <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
+            {t('table-body.action.change')}
           </Badge>
         )
       }
 
       return (
-        <Flex align="center" {...cellProps}>
-          <Box paddingX={2}>{actionBadge()}</Box>
-        </Flex>
+        <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
+          {t('table-body.action.add')}
+        </Badge>
       )
-    },
+    }
+
+    return (
+      <Flex align="center" {...cellProps}>
+        <Box paddingX={2}>{actionBadge()}</Box>
+      </Flex>
+    )
   },
+})
+
+export const getDocumentTableColumnDefs: (
+  releaseId: string,
+  releaseState: ReleaseState,
+  t: TFunction<'releases', undefined>,
+) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t) => [
+  /**
+   * Hiding action for archived and published releases of v1.0
+   * This will be added once Events API has reverse order lookup supported
+   */
+  ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
   {
     id: 'document._type',
     width: 100,

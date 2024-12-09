@@ -54,8 +54,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release._id, t),
-    [release._id, t],
+    () => getDocumentTableColumnDefs(release._id, release.state, t),
+    [release._id, release.state, t],
   )
 
   const filterRows = useCallback(
