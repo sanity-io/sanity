@@ -47,7 +47,6 @@ const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 const INITIAL_STATE: ReleasesReducerState = {
   releases: new Map(),
   state: 'initialising' as const,
-  releaseStack: [],
 }
 
 const RELEASE_METADATA_TMP_DOC_PATH = 'system-tmp-releases'

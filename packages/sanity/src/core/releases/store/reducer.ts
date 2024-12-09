@@ -41,12 +41,6 @@ export interface ReleasesReducerState {
   releases: Map<string, ReleaseDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
-
-  /**
-   * An array of release ids ordered chronologically to represent the state of documents at the
-   * given point in time.
-   */
-  releaseStack: string[]
 }
 
 function createReleasesSet(releases: ReleaseDocument[] | null) {
