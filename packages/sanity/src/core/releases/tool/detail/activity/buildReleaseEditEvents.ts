@@ -9,9 +9,8 @@ export function buildReleaseEditEvents(
   transactions: TransactionLogEventWithEffects[],
   release: ReleaseDocument,
 ): (EditReleaseEvent | CreateReleaseEvent)[] {
-  // Be sure we have all the events by checking the first transaction id and the release._rev
-
-  if (release._rev !== transactions[0].id) {
+  // Confirm we have all the events by checking the first transaction id and the release._rev, the should match.
+  if (release._rev !== transactions[0]?.id) {
     console.error('Some transactions are missing, cannot calculate the edit events')
     return []
   }

@@ -32,7 +32,7 @@ function removeDupes(prev: ReleaseEvent[], next: ReleaseEvent[]): ReleaseEvent[]
   return Array.from(noDupes.values())
 }
 
-function addId(event: Omit<ReleaseEvent, 'id'>): ReleaseEvent {
+export function addIdToEvent(event: Omit<ReleaseEvent, 'id'>): ReleaseEvent {
   return {...event, id: `${event.timestamp}-${event.type}`} as ReleaseEvent
 }
 
@@ -68,7 +68,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
       .pipe(
         map((response) => {
           return {
-            events: response.events.map(addId),
+            events: response.events.map(addIdToEvent),
             nextCursor: response.nextCursor,
             loading: false,
             error: null,

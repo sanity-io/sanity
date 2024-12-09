@@ -3,7 +3,11 @@ import {TestScheduler} from 'rxjs/testing'
 import {type SanityClient} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getReleaseActivityEvents, RELEASE_ACTIVITY_INITIAL_VALUE} from './getReleaseActivityEvents'
+import {
+  addIdToEvent,
+  getReleaseActivityEvents,
+  RELEASE_ACTIVITY_INITIAL_VALUE,
+} from './getReleaseActivityEvents'
 import {type ReleaseEvent} from './types'
 
 const mockObservableRequest = vi.fn()
@@ -34,18 +38,6 @@ const addSecondDocumentEvent: Omit<ReleaseEvent, 'id'> = {
   author: 'user-2',
 }
 
-const addIdToEvent = (event: Omit<ReleaseEvent, 'id'>) => ({
-  ...event,
-  id: `${event.timestamp}-${event.type}`,
-})
-
-const initialValue = {
-  events: [],
-  loading: true,
-  error: null,
-  nextCursor: '',
-}
-
 describe('getReleaseActivityEvents', () => {
   let testScheduler: TestScheduler
 
@@ -73,7 +65,7 @@ describe('getReleaseActivityEvents', () => {
     const {events$} = getReleaseActivityEvents({client: mockClient, releaseId: 'release123'})
     testScheduler.run(({expectObservable}) => {
       expectObservable(events$).toBe('(ab)', {
-        a: initialValue,
+        a: RELEASE_ACTIVITY_INITIAL_VALUE,
         b: {
           events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
           nextCursor: 'cursor1',
@@ -113,7 +105,7 @@ describe('getReleaseActivityEvents', () => {
       actions.subscribe((action) => action())
 
       expectObservable(events$).toBe('(ab)-(cd)', {
-        a: initialValue,
+        a: RELEASE_ACTIVITY_INITIAL_VALUE,
         b: {
           events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
           nextCursor: 'cursor1',
@@ -170,7 +162,7 @@ describe('getReleaseActivityEvents', () => {
 
       actions.subscribe((action) => action())
       expectObservable(events$).toBe('(ab)-(cd)', {
-        a: initialValue,
+        a: RELEASE_ACTIVITY_INITIAL_VALUE,
         b: {
           loading: false,
           nextCursor: 'cursor2',
