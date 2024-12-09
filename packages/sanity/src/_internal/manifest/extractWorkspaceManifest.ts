@@ -24,7 +24,7 @@ import {
   type Workspace,
 } from 'sanity'
 
-import {SchemaIcon} from './Icon'
+import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
   getCustomFields,
   isCrossDatasetReference,
@@ -83,13 +83,11 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
     basePath: workspace.basePath,
     projectId: workspace.projectId,
     dataset: workspace.dataset,
-    icon: renderToString(
-      createElement(SchemaIcon, {
-        icon: workspace.icon,
-        title: workspace.title,
-        subtitle: workspace.subtitle,
-      }),
-    ),
+    icon: resolveIcon({
+      icon: workspace.icon,
+      title: workspace.title,
+      subtitle: workspace.subtitle,
+    }),
     schema: serializedSchema,
     tools: serialisedTools,
   }
@@ -521,11 +519,17 @@ const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
       ({
         title,
         name,
-        icon: renderToString(
-          createElement(SchemaIcon, {
-            icon,
-            title,
-          }),
-        ),
+        icon: resolveIcon({
+          icon,
+          title,
+        }),
       }) satisfies ManifestTool,
   )
+
+const resolveIcon = (props: SchemaIconProps): string | null => {
+  try {
+    return renderToString(createElement(SchemaIcon, props))
+  } catch (error) {
+    return null
+  }
+}

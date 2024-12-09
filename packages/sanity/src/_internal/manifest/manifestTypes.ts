@@ -23,7 +23,10 @@ export interface CreateWorkspaceManifest
     Partial<Pick<Workspace, 'title' | 'subtitle'>> {
   schema: ManifestSchemaType[]
   tools: ManifestTool[]
-  icon: string
+  /**
+   * returns null in the case of the icon not being able to be stringified
+   */
+  icon: string | null
 }
 
 export interface ManifestSchemaType {
@@ -85,5 +88,8 @@ export type ManifestValidationRule = {
 }
 
 export interface ManifestTool extends Pick<Tool, 'name' | 'title'> {
-  icon: string
+  /**
+   * returns null in the case of the icon not being able to be stringified
+   */
+  icon: string | null
 }

@@ -7,7 +7,7 @@ import {ServerStyleSheet, StyleSheetManager} from 'styled-components'
 import {type Tool, type Workspace} from '../../core'
 import {createDefaultIcon} from '../../core/config/createDefaultIcon'
 
-interface SchemaIconProps {
+export interface SchemaIconProps {
   icon: Tool['icon'] | Workspace['icon']
   title: string
   subtitle?: string
