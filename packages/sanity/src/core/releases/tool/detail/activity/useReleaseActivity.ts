@@ -5,7 +5,6 @@ import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleasesStore} from '../../../store/useReleasesStore'
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseActivityEvents, RELEASE_ACTIVITY_INITIAL_VALUE} from './getReleaseActivityEvents'
 import {EDITS_EVENTS_INITIAL_VALUE, getReleaseEditEvents} from './getReleaseEditEvents'
 import {isCreateReleaseEvent, type ReleaseEvent} from './types'
@@ -32,16 +31,13 @@ export function useReleaseActivity({
   const releaseId = release?._id
 
   const releaseRev = useRef<string | null>(release?._rev || null)
+
   const {events$, reloadEvents, loadMore} = useMemo(
-    () =>
-      getReleaseActivityEvents({
-        client,
-        releaseId: releaseId ? getReleaseIdFromReleaseDocumentId(releaseId) : undefined,
-      }),
+    () => getReleaseActivityEvents({client, releaseId}),
     [client, releaseId],
   )
-
   const {events, loading, error} = useObservable(events$, RELEASE_ACTIVITY_INITIAL_VALUE)
+
   const {editEvents$} = useMemo(
     () => getReleaseEditEvents({client, releaseId, releasesState$}),
     [releaseId, client, releasesState$],
@@ -66,7 +62,6 @@ export function useReleaseActivity({
     }
   }, [releaseDocumentsCount, releaseDocumentsLoading, reloadEvents])
 
-  // TODO: Move this to the observable by using the releasesState$
   useEffect(() => {
     // Wait until the release exists
     if (!release?._rev) return

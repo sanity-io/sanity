@@ -1,6 +1,6 @@
+import {type SanityClient} from '@sanity/client'
 import {of} from 'rxjs'
 import {TestScheduler} from 'rxjs/testing'
-import {type SanityClient} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {
@@ -38,6 +38,7 @@ const addSecondDocumentEvent: Omit<ReleaseEvent, 'id'> = {
   author: 'user-2',
 }
 
+const releaseId = '_.releases.r123'
 describe('getReleaseActivityEvents', () => {
   let testScheduler: TestScheduler
 
@@ -62,7 +63,7 @@ describe('getReleaseActivityEvents', () => {
       }),
     )
 
-    const {events$} = getReleaseActivityEvents({client: mockClient, releaseId: 'release123'})
+    const {events$} = getReleaseActivityEvents({client: mockClient, releaseId})
     testScheduler.run(({expectObservable}) => {
       expectObservable(events$).toBe('(ab)', {
         a: RELEASE_ACTIVITY_INITIAL_VALUE,
@@ -92,10 +93,7 @@ describe('getReleaseActivityEvents', () => {
         }),
       )
 
-    const {events$, reloadEvents} = getReleaseActivityEvents({
-      client: mockClient,
-      releaseId: 'release123',
-    })
+    const {events$, reloadEvents} = getReleaseActivityEvents({client: mockClient, releaseId})
 
     testScheduler.run(({expectObservable, cold}) => {
       const actions = cold('5ms a', {
@@ -150,10 +148,7 @@ describe('getReleaseActivityEvents', () => {
         }),
       )
 
-    const {events$, loadMore} = getReleaseActivityEvents({
-      client: mockClient,
-      releaseId: 'release123',
-    })
+    const {events$, loadMore} = getReleaseActivityEvents({client: mockClient, releaseId})
 
     testScheduler.run(({expectObservable, cold}) => {
       const actions = cold('5ms a', {

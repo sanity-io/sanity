@@ -1,7 +1,8 @@
+import {type SanityClient} from '@sanity/client'
 import {BehaviorSubject, type Observable, of} from 'rxjs'
 import {map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-import {type SanityClient} from 'sanity'
 
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvent} from './types'
 
 export interface ReleaseEventsObservableValue {
@@ -15,11 +16,6 @@ export const RELEASE_ACTIVITY_INITIAL_VALUE: ReleaseEventsObservableValue = {
   nextCursor: '',
   loading: true,
   error: null,
-}
-
-interface InitialFetchEventsOptions {
-  client: SanityClient
-  releaseId?: string
 }
 
 function removeDupes(prev: ReleaseEvent[], next: ReleaseEvent[]): ReleaseEvent[] {
@@ -36,6 +32,10 @@ export function addIdToEvent(event: Omit<ReleaseEvent, 'id'>): ReleaseEvent {
   return {...event, id: `${event.timestamp}-${event.type}`} as ReleaseEvent
 }
 
+interface InitialFetchEventsOptions {
+  client: SanityClient
+  releaseId?: string
+}
 export function getReleaseActivityEvents({client, releaseId}: InitialFetchEventsOptions): {
   events$: Observable<ReleaseEventsObservableValue>
   reloadEvents: () => void
@@ -62,7 +62,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
         events: Omit<ReleaseEvent, 'id'>[]
         nextCursor: string
       }>({
-        url: `/data/events/${client.config().dataset}/releases/${releaseId}?${params.toString()}`,
+        url: `/data/events/${client.config().dataset}/releases/${getReleaseIdFromReleaseDocumentId(releaseId)}?${params.toString()}`,
         tag: 'get-release-events',
       })
       .pipe(
