@@ -20,9 +20,7 @@ export function createAppIdCache(): AppIdCache {
       if (!cacheElement) {
         cacheElement = (async () => {
           try {
-            const result = await appIdFetcher(projectId)
-            appIdCache[projectId] = result
-            return result
+            return await appIdFetcher(projectId)
           } catch (error) {
             console.error(error)
             appIdCache[projectId] = undefined
