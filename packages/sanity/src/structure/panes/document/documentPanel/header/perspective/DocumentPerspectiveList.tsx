@@ -14,6 +14,7 @@ import {
   VersionChip,
   versionDocumentExists,
 } from 'sanity'
+import {usePaneRouter} from 'sanity/structure'
 
 import {useDocumentPane} from '../../../useDocumentPane'
 
@@ -70,6 +71,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
+  const {setParams, params} = usePaneRouter()
   const {data: releases, loading} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()

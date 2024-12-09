@@ -241,6 +241,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.error-boundary.developer-info': 'Check the developer console for more information',
   /** Text shown when a diff component crashes during rendering, triggering the error boundary */
   'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+  /* Error description when changes could not be loaded */
+  'changes.error-description': "We're unable to load the changes for this document.",
+  /** Error title when changes could not be loaded */
+  'changes.error-title': 'Something went wrong',
   /** Error message shown when the value of a field is not the expected one */
   'changes.error.incorrect-type-message':
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
@@ -275,6 +279,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'There are no changes',
+  /* Label for the tooltip that shows when an action is not selectable*/
+  'changes.not-selectable': 'It is not possible to select this event',
   /** Portable Text diff: An annotation was added */
   'changes.portable-text.annotation_added': 'Added annotation',
   /** Portable Text diff: An annotation was changed */
@@ -318,6 +324,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
+  /**The title that will be shown in the badge inside the events when the item is a draft */
+  'changes.versions.draft': 'Draft',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -1723,6 +1731,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
   'timeline.loading-history': 'Loading history…',
+  /* Label for when no previous since events are available*/
+  'timeline.no-previous-events': 'No previous events',
   /** Label shown in review changes timeline when a document has been created */
   'timeline.operation.created': 'Created',
   /** Label shown in review changes timeline when a document was initially created */

@@ -364,6 +364,26 @@ export const internalTasksReducer = (opts: {
   return result
 }
 
+export const eventsAPIReducer = (opts: {config: PluginOptions; initialValue: boolean}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const enabled = innerConfig.beta?.eventsAPI?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`beta.eventsAPI.enabled\` to be an object with footerAction, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const partialIndexingEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

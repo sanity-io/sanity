@@ -45,8 +45,6 @@ import {
   useSchema,
   useSource,
   useTemplates,
-  useTimelineSelector,
-  useTimelineStore,
   useTranslation,
   useUnique,
   useValidationStatus,
@@ -66,8 +64,15 @@ import {
 } from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {type DocumentPaneProviderProps} from './types'
+import {
+  type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
+  type HistoryStoreProps,
+} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
+
+interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
+  historyStore: HistoryStoreProps
+}
 
 /**
  * @internal
@@ -104,7 +109,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {selectedPerspectiveName, selectedReleaseId, selectedPerspective} = usePerspective()
+  const {
+    selectedPerspectiveName,
+    selectedReleaseId: globalSelectedReleaseId,
+    selectedPerspective,
+  } = usePerspective()
+  const seeingHistoricVersion = Boolean(params.historyVersion)
+
+  const selectedReleaseId = seeingHistoricVersion ? params.historyVersion : globalSelectedReleaseId
 
   /* Version and the global perspective should match.
    * If user clicks on add document, and then switches to another version, he should click again on create document.
@@ -222,31 +234,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const focusPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
+  // TODO: Deprecate this, it could be replaced by an internal state in the HistorySelector inspector.
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
-
-  /**
-   * Create an intermediate store which handles document Timeline + TimelineController
-   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
-   * and made available to child components via DocumentPaneContext.
-   */
-  const timelineStore = useTimelineStore({
-    documentId,
-    documentType,
-    onError: setTimelineError,
-    rev: params.rev,
-    since: params.since,
-    version: selectedReleaseId,
-  })
-
-  // Subscribe to external timeline state changes
-  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
-  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
-  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
-  const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
-  const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
+  const {
+    store: timelineStore,
+    error: timelineError,
+    ready: timelineReady,
+    revisionId,
+    revisionDocument,
+    onOlderRevision,
+    sinceDocument,
+    isPristine,
+    lastNonDeletedRevId,
+  } = props.historyStore
 
   /**
    * Determine if the current document is deleted.
@@ -306,7 +307,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? sinceAttributes
+    ? sinceDocument
     : editState?.published || null
 
   const fieldActions: DocumentFieldAction[] = useMemo(
@@ -332,8 +333,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     (!params.rev || timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
-    [onOlderRevision, timelineDisplayed, value],
+    () => (onOlderRevision ? revisionDocument || {_id: value._id, _type: value._type} : value),
+    [onOlderRevision, revisionDocument, value],
   )
 
   const setTimelineRange = useCallback(
@@ -615,7 +616,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     return (
       !isSystemPerspectiveApplied ||
       !ready ||
-      revTime !== null ||
+      revisionId !== null ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -639,7 +640,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     selectedPerspective,
     existsInBundle,
     ready,
-    revTime,
+    revisionId,
     isDeleting,
     isDeleted,
     isCreateLinked,
@@ -788,6 +789,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       views,
       formState,
       unstable_languageFilter: languageFilter,
+
+      // History specific
+      revisionId,
+      lastNonDeletedRevId,
     }),
     [
       actions,
@@ -849,6 +854,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       views,
       formState,
       languageFilter,
+      revisionId,
+      lastNonDeletedRevId,
     ],
   )
 

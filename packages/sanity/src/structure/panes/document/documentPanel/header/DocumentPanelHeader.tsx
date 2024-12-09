@@ -1,5 +1,5 @@
-import {ArrowLeftIcon, CloseIcon, RestoreIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
+import {Flex} from '@sanity/ui'
 import {
   createElement,
   type ForwardedRef,
@@ -12,7 +12,7 @@ import {
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 
-import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -54,8 +54,6 @@ export const DocumentPanelHeader = memo(
       connectionState,
       views,
       unstable_languageFilter,
-      onHistoryOpen,
-      inspector,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -126,10 +124,6 @@ export const DocumentPanelHeader = memo(
       [contextMenuNodes, referenceElement],
     )
 
-    const handleHistoryOpen = useCallback(() => {
-      onHistoryOpen()
-    }, [onHistoryOpen])
-
     return (
       <TooltipDelayGroupProvider>
         <PaneHeader
@@ -167,19 +161,6 @@ export const DocumentPanelHeader = memo(
               {menuButtonNodes.map((item) => (
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
-
-              {/* todo update translation */}
-              {/*eslint-disable-next-line i18next/no-literal-string*/}
-              <Tooltip content={<Text size={1}>History</Text>} placement="bottom" portal>
-                <Button
-                  icon={RestoreIcon}
-                  mode="bleed"
-                  onClick={handleHistoryOpen}
-                  padding={2}
-                  selected={inspector?.name === 'sanity/structure/history'}
-                  tooltipProps={{content: t('buttons.history.tooltip')}}
-                />
-              </Tooltip>
               {editState && (
                 <>
                   <RenderActionCollectionState

@@ -1,6 +1,6 @@
 import {route} from 'sanity/router'
 
-import {definePlugin} from '../../config'
+import {definePlugin} from '../../config/definePlugin'
 import {releasesUsEnglishLocaleBundle} from '../i18n'
 import {ReleasesStudioNavbar} from '../navbar/ReleasesStudioNavbar'
 import {ReleasesTool} from '../tool/ReleasesTool'

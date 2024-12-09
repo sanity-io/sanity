@@ -8,7 +8,6 @@ import {
   Translate,
   useDocumentOperation,
   usePerspective,
-  useTimelineSelector,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -32,13 +31,10 @@ export function DeletedDocumentBanners() {
 }
 
 function DeletedDocumentBanner() {
-  const {documentId, documentType, timelineStore} = useDocumentPane()
+  const {documentId, documentType, lastNonDeletedRevId} = useDocumentPane()
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
-  const lastNonDeletedRevId = useTimelineSelector(
-    timelineStore,
-    (state) => state.lastNonDeletedRevId,
-  )
+
   const handleRestore = useCallback(() => {
     if (lastNonDeletedRevId) {
       restore.execute(lastNonDeletedRevId)

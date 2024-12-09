@@ -22,7 +22,7 @@ import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
@@ -129,7 +129,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <DocumentPaneProvider
+    <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
       key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
@@ -148,11 +148,14 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
           <DocumentLayout documentId={options.id} documentType={options.type} />
         </CommentsWrapper>
       </ReferenceInputOptionsProvider>
-    </DocumentPaneProvider>
+    </DocumentPaneProviderWrapper>
   )
 }
 
-function usePaneOptions(
+/**
+ * @internal
+ */
+export function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {},
 ): DocumentPaneOptions {

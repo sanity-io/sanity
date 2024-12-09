@@ -35,6 +35,7 @@ export {
   isReleaseScheduledOrScheduling,
   LATEST,
   type ReleaseDocument,
+  RELEASES_INTENT,
   useDocumentVersions,
   useIsReleaseActive,
   usePerspective,
@@ -42,6 +43,7 @@ export {
   useVersionOperations,
   VersionChip,
   versionDocumentExists,
+  VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'
 export * from './schema'
