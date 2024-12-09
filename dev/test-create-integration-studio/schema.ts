@@ -69,10 +69,6 @@ export const schemaTypes = [
         rows: 3,
         description: 'Lede and page summary.',
         group: [mainGroup.name],
-        /*    initialValue: 'Predefined description',
-        options: {
-          sanityCreate: {exclude: true},
-        },*/
       }),
       defineField({
         type: 'image',
