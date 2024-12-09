@@ -25,6 +25,7 @@ export interface SlugOptions extends SearchConfiguration, BaseSchemaTypeOptions 
   maxLength?: number
   slugify?: SlugifierFn
   isUnique?: SlugIsUniqueValidator
+  disableArrayWarning?: boolean
 }
 
 /** @public */
