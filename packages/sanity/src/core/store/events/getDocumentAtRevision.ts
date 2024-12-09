@@ -13,11 +13,8 @@ export function getDocumentAtRevision({
 }: {
   client: SanityClient
   documentId: string
-  revisionId: string | null | undefined
+  revisionId: string
 }): Observable<EventsStoreRevision | null> {
-  if (!revisionId) {
-    return of(null)
-  }
   const cacheKey = `${documentId}@${revisionId}`
   const dataset = client.config().dataset
   if (documentRevisionCache[cacheKey]) {

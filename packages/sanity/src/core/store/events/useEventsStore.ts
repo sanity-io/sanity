@@ -96,7 +96,8 @@ export function useEventsStore({
   }, [events, rev])
 
   const revision$ = useMemo(
-    () => getDocumentAtRevision({client, documentId, revisionId: revisionId}),
+    () =>
+      revisionId ? getDocumentAtRevision({client, documentId, revisionId: revisionId}) : of(null),
     [client, documentId, revisionId],
   )
   const revision = useObservable(revision$, null)
@@ -122,7 +123,7 @@ export function useEventsStore({
   }, [events, revisionId, since])
 
   const since$ = useMemo(
-    () => getDocumentAtRevision({client, documentId, revisionId: sinceId}),
+    () => (sinceId ? getDocumentAtRevision({client, documentId, revisionId: sinceId}) : of(null)),
     [sinceId, client, documentId],
   )
 
