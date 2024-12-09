@@ -6,6 +6,7 @@ import {
   getDocumentTypeConfiguration,
   getOrder,
   getQueryString,
+  isExactMatchToken,
   isNegationToken,
   isPrefixToken,
   prefixLast,
@@ -268,7 +269,7 @@ describe('prefixLast', () => {
     expect(prefixLast('a b')).toBe('a b*')
     expect(prefixLast('a -b')).toBe('a* -b')
     expect(prefixLast('a "bc" d')).toBe('a "bc" d*')
-    expect(prefixLast('ab "cd"')).toBe('ab "cd"*')
+    expect(prefixLast('ab "cd"')).toBe('ab* "cd"')
     expect(prefixLast('a --')).toBe('a* --')
   })
 
@@ -288,7 +289,19 @@ describe('prefixLast', () => {
 
   it('preserves quoted tokens', () => {
     expect(prefixLast('"a b" c d')).toBe('"a b" c d*')
-    expect(prefixLast('"a   b"   c d  "ef" "g  "')).toBe('"a   b" c d "ef" "g  "*')
+    expect(prefixLast('"a   b"   c d  "ef" "g  "')).toBe('"a   b" c d* "ef" "g  "')
     expect(prefixLast('"a " b" c d')).toBe('"a " b c d*')
+  })
+})
+
+describe('isExactMatchToken', () => {
+  it('recognises that a token is encased in quote marks', () => {
+    expect(isExactMatchToken(undefined)).toBe(false)
+    expect(isExactMatchToken('"a"')).toBe(true)
+    expect(isExactMatchToken('"a b"')).toBe(true)
+    expect(isExactMatchToken('"a')).toBe(false)
+    expect(isExactMatchToken('a"')).toBe(false)
+    expect(isExactMatchToken('"a b')).toBe(false)
+    expect(isExactMatchToken('a b"')).toBe(false)
   })
 })
