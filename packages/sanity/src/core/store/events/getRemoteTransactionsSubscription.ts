@@ -53,7 +53,7 @@ export function getRemoteTransactionsSubscription({
       apply: remoteMutation.effects.apply as MendozaPatch,
       revert: remoteMutation.effects.revert as MendozaPatch,
     })
-    if (effectState !== 'upsert' && effectState !== 'unedited') {
+    if (effectState === 'created' || effectState === 'deleted') {
       onRefetch()
       return
     }

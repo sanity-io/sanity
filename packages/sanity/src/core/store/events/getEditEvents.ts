@@ -14,7 +14,7 @@ import {isWithinMergeWindow} from './utils'
 
 export function getEffectState(
   effect?: MendozaEffectPair,
-): 'unedited' | 'deleted' | 'upsert' | 'created' {
+): 'noop' | 'deleted' | 'modified' | 'created' {
   const modified = Boolean(effect)
   const deleted = effect && isDeletePatch(effect?.apply)
   const created = effect && isDeletePatch(effect?.revert)
@@ -27,10 +27,10 @@ export function getEffectState(
   }
 
   if (modified) {
-    return 'upsert'
+    return 'modified'
   }
 
-  return 'unedited'
+  return 'noop'
 }
 
 function isDeletePatch(patch: MendozaPatch): boolean {
@@ -74,7 +74,7 @@ export function getEditEvents(
     .filter((tx) => {
       const effectState = getEffectState(tx.effects[documentId])
       // We only care about the transactions that have modified the document
-      return effectState === 'upsert'
+      return effectState === 'modified'
     })
     // We sort the transactions by timestamp, newest first
     .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
