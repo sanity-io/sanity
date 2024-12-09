@@ -1515,8 +1515,8 @@ importers:
         specifier: 3.66.1
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.19.7
-        version: 1.19.7(@emotion/is-prop-valid@1.2.2)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.19.8
+        version: 1.19.8(@emotion/is-prop-valid@1.2.2)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.66.1
         version: link:../@sanity/schema
@@ -1666,7 +1666,7 @@ importers:
         version: 2.2.0
       mendoza:
         specifier: ^3.0.0
-        version: 3.0.7
+        version: 3.0.8
       module-alias:
         specifier: ^2.2.2
         version: 2.2.3
@@ -4609,8 +4609,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.19.7':
-    resolution: {integrity: sha512-dOLfGlfRf6VS655kZw4346lkJXVLNYyEtehwahVc5q4gJBdud5N9CfvYYud06whg18IeytFZ6iCntn0QoEkdRQ==}
+  '@sanity/presentation@1.19.8':
+    resolution: {integrity: sha512-LlnkCaiDeYq9Zhm2KHNFHXfhpHSyUR8he1a1G9cVGObGzqA/St2XudMZfJUVanSyNKT3FkxkFOin1DNVlH1lqQ==}
     engines: {node: '>=16.14'}
 
   '@sanity/prettier-config@1.0.3':
@@ -8723,8 +8723,8 @@ packages:
     resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
     engines: {node: '>= 0.10.0'}
 
-  mendoza@3.0.7:
-    resolution: {integrity: sha512-KtLgsCl5dFjRPUVSVV9KxpUr2BfZgLv8uqxg/hCsI7JIWsesHABSbl0MQwxNHAg24KtzSQ6vrPsgeNnoq4UImg==}
+  mendoza@3.0.8:
+    resolution: {integrity: sha512-iwxgEpSOx9BDLJMD0JAzNicqo9xdrvzt6w/aVwBKMndlA6z/DH41+o60H2uHB0vCR1Xr37UOgu9xFWJHvYsuKw==}
     engines: {node: '>=14.18'}
 
   meow@8.1.2:
@@ -14696,7 +14696,7 @@ snapshots:
       '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
       lodash: 4.17.21
-      mendoza: 3.0.7
+      mendoza: 3.0.8
       rxjs: 7.8.1
     optionalDependencies:
       xstate: 5.19.0
@@ -14709,7 +14709,7 @@ snapshots:
       '@sanity/diff-match-patch': 3.1.1
       hotscript: 1.0.13
       lodash: 4.17.21
-      mendoza: 3.0.7
+      mendoza: 3.0.8
       nanoid: 5.0.7
       rxjs: 7.8.1
     transitivePeerDependencies:
@@ -14828,7 +14828,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.19.7(@emotion/is-prop-valid@1.2.2)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.19.8(@emotion/is-prop-valid@1.2.2)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
       '@sanity/comlink': 2.0.1
@@ -14840,10 +14840,10 @@ snapshots:
       fast-deep-equal: 3.1.3
       framer-motion: 11.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lodash: 4.17.21
-      mendoza: 3.0.7
+      mendoza: 3.0.8
       mnemonist: 0.39.8
       path-to-regexp: 6.3.0
-      react-compiler-runtime: 19.0.0-beta-df7b47d-20241124(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-37ed2a7-20241206(react@18.3.1)
       rxjs: 7.8.1
       suspend-react: 0.1.3(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
@@ -20158,7 +20158,7 @@ snapshots:
 
   memorystream@0.3.1: {}
 
-  mendoza@3.0.7: {}
+  mendoza@3.0.8: {}
 
   meow@8.1.2:
     dependencies:
