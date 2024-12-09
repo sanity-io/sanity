@@ -44,8 +44,8 @@ export default defineType({
       validation: (rule: Rule) => rule.required(),
     }),
     {
-      title: 'Best friend',
       name: 'bestFriend',
+      title: 'Best friend',
       type: 'reference',
       to: [{type: 'author'}],
     },

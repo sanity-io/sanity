@@ -375,7 +375,7 @@ export const eventsAPIReducer = (opts: {config: PluginOptions; initialValue: boo
     if (typeof enabled === 'boolean') return enabled
 
     throw new Error(
-      `Expected \`innerConfig.beta.eventsAPI.enabled\` to be an object with footerAction, but received ${getPrintableType(
+      `Expected \`beta.eventsAPI.enabled\` to be an object with footerAction, but received ${getPrintableType(
         enabled,
       )}`,
     )
