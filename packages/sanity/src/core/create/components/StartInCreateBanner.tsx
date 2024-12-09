@@ -1,5 +1,6 @@
 import {LaunchIcon, SparklesIcon} from '@sanity/icons'
 import {
+  Badge,
   // eslint-disable-next-line no-restricted-imports
   Button,
   Card,
@@ -120,9 +121,18 @@ function StartInCreateBannerStudioApp(
               <SparklesIcon />
             </Text>
             <Stack space={3}>
-              <TextWithTone size={1} weight="semibold" tone="primary">
-                {t('start-in-create-banner.title')}
-              </TextWithTone>
+              <Flex align="center" gap={2} wrap="wrap">
+                <TextWithTone size={1} weight="semibold" tone="primary">
+                  {t('start-in-create-banner.title')}
+                </TextWithTone>
+                <Badge
+                  fontSize={1}
+                  style={{marginTop: '-0.25em', marginBottom: '-0.25em'}}
+                  tone="default"
+                >
+                  {t('start-in-create-banner.title-badge')}
+                </Badge>
+              </Flex>
               <Inline>
                 <Text size={1} weight="medium">
                   {t('start-in-create-banner.subtitle')}{' '}

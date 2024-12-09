@@ -11,9 +11,11 @@ const createLocaleStrings = defineLocalesResources('create', {
 
   /** Header of the "Start writing in Create" banner */
   'start-in-create-banner.title': 'Get started with Sanity Create',
+  /** Header badge of the "Start writing in Create" banner */
+  'start-in-create-banner.title-badge': 'Early access',
   /** Subtitle of the "Start writing in Create" banner */
   'start-in-create-banner.subtitle':
-    'A free-form, AI-powered editor that syncs directly with your Studio Documents.',
+    'A free-form, AI-powered editor that syncs directly with your Studio documents.',
 
   /** CTA in "Start writing in Create" dialog: Learn more */
   'start-in-create-dialog.cta.learn-more': 'Learn more.',
