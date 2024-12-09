@@ -12,19 +12,18 @@ describeCliTest('CLI: `sanity dev`', () => {
   describe.each(studioVersions)('%s', (version) => {
     test('start', async () => {
       const testRunArgs = getTestRunArgs(version)
-      const expectedFiles =
-        version === 'v2' ? [] : ['static/favicon.ico', 'favicon.ico', 'static/favicon.svg']
+      const expectedFiles = ['static/favicon.ico', 'favicon.ico', 'static/favicon.svg']
 
       const {html: startHtml, fileHashes} = await testServerCommand({
-        command: version === 'v2' ? 'start' : 'dev',
+        command: 'dev',
         port: testRunArgs.port,
         args: ['--port', `${testRunArgs.port}`],
         cwd: path.join(studiosPath, version),
-        expectedTitle: version === 'v2' ? `${version} studio` : 'Sanity Studio',
+        expectedTitle: 'Sanity Studio',
         expectedFiles,
       })
 
-      expect(startHtml).toContain(version === 'v2' ? 'id="sanityBody"' : 'id="sanity"')
+      expect(startHtml).toContain('id="sanity"')
 
       for (const file of expectedFiles) {
         expect(fileHashes.get(file)).not.toBe(null)
@@ -39,10 +38,6 @@ describeCliTest('CLI: `sanity dev`', () => {
     })
 
     test('start with custom document component', async () => {
-      if (version === 'v2') {
-        return
-      }
-
       const testRunArgs = getTestRunArgs(version)
       const {html: startHtml} = await testServerCommand({
         command: 'dev',
@@ -59,10 +54,6 @@ describeCliTest('CLI: `sanity dev`', () => {
     })
 
     test('start with custom document component, in prod mode', async () => {
-      if (version === 'v2') {
-        return
-      }
-
       const testRunArgs = getTestRunArgs(version)
       const {html: startHtml} = await testServerCommand({
         command: 'dev',

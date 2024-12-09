@@ -89,12 +89,6 @@ function prepareStudios() {
 
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
-
-      if (version === 'v2') {
-        await exec(npmPath, ['install', '--no-package-lock', '--legacy-peer-deps'], {
-          cwd: destinationPath,
-        })
-      }
       if (version === 'v3') {
         // We'll want to test the actual integration with the monorepo packages,
         // instead of the versions that is available on npm, so we'll symlink them before running npm install

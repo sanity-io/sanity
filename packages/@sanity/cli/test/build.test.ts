@@ -27,23 +27,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(result.code).toBe(0)
 
         // These _could_ theoretically change, but is unlikely to with v2 being in support mode
-        if (version === 'v2') {
-          const builtHtml = await readFile(path.join(studioPath, 'out/index.html'), 'utf8')
-          const builtJs = await readFile(
-            path.join(studioPath, 'out/static/js/app.bundle.js'),
-            'utf8',
-          )
-          const builtCss = await readFile(path.join(studioPath, 'out/static/css/main.css'), 'utf8')
-          expect(builtHtml).toContain('id="sanityBody"')
-          expect(builtJs).toContain('Restoring Sanity Studio')
-          expect(builtCss).toContain('Spinner_sanity')
-
-          // `.env` behavior is different in v2 - only the environment file is used
-          // (`.env.development` / `.env.production`) - not `.env`. Also, it always
-          // defaults to `development` unless `SANITY_ACTIVE_ENV` or `NODE_ENV` is set
-          expect(builtJs).not.toContain('this-should-never-be-used')
-          expect(builtJs).toContain('this-should-be-development')
-        } else if (version === 'v3') {
+        if (version === 'v3') {
           const files = await readdir(path.join(studioPath, 'out', 'static'))
           const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
           const cssPath = files.find((file) => file.endsWith('.css'))

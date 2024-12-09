@@ -8,9 +8,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
   describeCliTest.each(studioVersions)('%s', (version) => {
     const testRunArgs = getTestRunArgs(version)
     const graphqlDataset = testRunArgs.graphqlDataset
-    const deployFlags = ['--force', '--dataset', graphqlDataset].concat(
-      version === 'v2' ? ['--no-playground'] : [],
-    )
+    const deployFlags = ['--force', '--dataset', graphqlDataset]
     const client = testClient.withConfig({dataset: graphqlDataset})
 
     testConcurrent('graphql deploy', async () => {
