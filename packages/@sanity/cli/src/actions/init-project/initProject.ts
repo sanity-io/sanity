@@ -131,6 +131,7 @@ export default async function initSanity(
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
   const packageManager = cliFlags['package-manager']
+  const check = chalk.green('✓')
 
   let remoteTemplateInfo: RepoInfo | undefined
   if (cliFlags.template && checkIsRemoteTemplate(cliFlags.template)) {
@@ -258,25 +259,17 @@ export default async function initSanity(
   if (hasToken) {
     trace.log({step: 'login', alreadyLoggedIn: true})
     const user = await getUserData(apiClient)
-    print('')
-    print(
-      `${chalk.gray("  👤 You're logged in as %s using %s")}`,
-      user.name,
-      getProviderName(user.provider),
-    )
-    print('')
+    print(`${check} You are logged in as %s using %s`, user.email, getProviderName(user.provider))
   } else if (!unattended) {
     trace.log({step: 'login'})
     await getOrCreateUser()
   }
 
-  let introMessage = "Let's get you started with a new project"
+  let introMessage = `${check} Fetching existing projects`
   if (cliFlags.quickstart) {
-    introMessage = "Let's get you started with remote Sanity project"
-  } else if (remoteTemplateInfo) {
-    introMessage = "Let's get you started with a remote Sanity template"
+    introMessage = `${check} Eject your existing project's Sanity configuration`
   }
-  print(`  ➡️ ${chalk.gray(introMessage)}`)
+  print(introMessage)
   print('')
 
   const flags = await prepareFlags()
@@ -880,13 +873,14 @@ export default async function initSanity(
     }))
 
     const selected = await prompt.single({
-      message: 'Select project to use',
+      message: 'Create a new project or select an existing one',
       type: 'list',
       choices: [
         {value: 'new', name: 'Create new project'},
         new prompt.Separator(),
         ...projectChoices,
       ],
+      suffix: 'Use ↑↓ to select, Enter to confirm',
     })
 
     if (selected === 'new') {
