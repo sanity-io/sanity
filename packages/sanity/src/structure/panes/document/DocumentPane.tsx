@@ -24,6 +24,7 @@ import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
+import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -49,7 +50,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
-
+  useResetHistoryParams()
   const DocumentLayout = useDocumentLayoutComponent()
 
   // The templates that should be creatable from inside this document pane.
