@@ -21,6 +21,10 @@ const SvgText = styled.text`
   transform: translateY(1px);
 `
 
+const POSSIBLE_TINTS = ['300', '400', '500', '600', '700'] as const
+
+const theme = buildTheme()
+
 /**
  * Creates an icon element based on the input title
  */
@@ -29,9 +33,8 @@ function createDefaultIcon(title: string, subtitle: string): JSX.Element {
 
   const huesWithoutGray = COLOR_HUES.filter((hue) => hue !== 'gray')
   const colorHue = huesWithoutGray[Math.floor(rng1 * huesWithoutGray.length)]
-  const possibleTints = ['300', '400', '500', '600', '700'] as const
   const rng2 = pseudoRandomNumber(rng1.toString())
-  const tint = possibleTints[Math.floor(rng2 * possibleTints.length)]
+  const tint = POSSIBLE_TINTS[Math.floor(rng2 * POSSIBLE_TINTS.length)]
   const color = hues[colorHue][tint].hex
 
   const letters = title
@@ -75,15 +78,13 @@ function createDefaultIcon(title: string, subtitle: string): JSX.Element {
   )
 }
 
-export interface SchemaIconProps {
-  icon: ComponentType | ReactNode
+interface SchemaIconProps {
+  icon?: ComponentType | ReactNode
   title: string
   subtitle?: string
 }
 
-const theme = buildTheme()
-
-export const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): JSX.Element => {
+const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): JSX.Element => {
   const sheet = new ServerStyleSheet()
 
   return (
@@ -102,3 +103,6 @@ function normalizeIcon(
   if (isValidElement(icon)) return icon
   return createDefaultIcon(title, subtitle)
 }
+
+export {SchemaIcon}
+export type {SchemaIconProps}

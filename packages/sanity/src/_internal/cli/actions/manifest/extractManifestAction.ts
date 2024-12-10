@@ -91,7 +91,7 @@ async function extractManifest(
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
 
     const manifest: CreateManifest = {
-      version: 1,
+      version: 2,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
     }
@@ -169,8 +169,10 @@ async function writeWorkspaceFile(
   workspace: CreateWorkspaceManifest,
   staticPath: string,
 ): Promise<ManifestWorkspaceFile> {
-  const schemaFilename = await createFile(staticPath, workspace.schema, SCHEMA_FILENAME_SUFFIX)
-  const toolsFilename = await createFile(staticPath, workspace.tools, TOOLS_FILENAME_SUFFIX)
+  const [schemaFilename, toolsFilename] = await Promise.all([
+    createFile(staticPath, workspace.schema, SCHEMA_FILENAME_SUFFIX),
+    createFile(staticPath, workspace.tools, TOOLS_FILENAME_SUFFIX),
+  ])
 
   return {
     ...workspace,

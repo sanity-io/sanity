@@ -6,7 +6,7 @@ export type ManifestSerializable =
   | ManifestSerializable[]
 
 export interface CreateManifest {
-  version: 1
+  version: number
   createdAt: string
   workspaces: ManifestWorkspaceFile[]
 }

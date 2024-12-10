@@ -74,7 +74,7 @@ const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
-  const serialisedTools = extractManifestTools(workspace.tools)
+  const serializedTools = extractManifestTools(workspace.tools)
 
   return {
     name: workspace.name,
@@ -89,7 +89,7 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
       subtitle: workspace.subtitle,
     }),
     schema: serializedSchema,
-    tools: serialisedTools,
+    tools: serializedTools,
   }
 }
 
