@@ -1,7 +1,8 @@
 import {mkdir} from 'node:fs/promises'
 import {join} from 'node:path'
-import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
+
 import {type Framework, frameworks} from '@vercel/frameworks'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 
 import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
