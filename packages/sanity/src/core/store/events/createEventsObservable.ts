@@ -1,16 +1,15 @@
 import {combineLatest, map, type Observable} from 'rxjs'
 
 import {type useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type EventsObservableValue} from './getInitialFetchEvents'
+import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 import {
-  type EditDocumentVersionEvent,
-  isPublishDocumentVersionEvent,
-  type UpdateLiveDocumentEvent,
-} from './types'
-import {addParentToEvents, squashLiveEditEvents} from './utils'
+  addParentToEvents,
+  squashLiveEditEvents,
+  updatePublishedEvents,
+  updateVersionEvents,
+} from './utils'
 
 interface CreateEventsObservableOptions {
   documentId: string
@@ -36,19 +35,8 @@ export function createEventsObservable({
       )
 
       if (documentVariantType === 'published') {
-        // We need to add the release information to the publish events
         return {
-          events: eventsWithRemoteEdits.map((event) => {
-            if (isPublishDocumentVersionEvent(event)) {
-              const releaseId = getVersionFromId(event.versionId)
-              if (releaseId) {
-                const release = releases.releases.get(getReleaseDocumentIdFromReleaseId(releaseId))
-                return {...event, release: release}
-              }
-              return event
-            }
-            return event
-          }),
+          events: updatePublishedEvents(eventsWithRemoteEdits, releases),
           nextCursor: nextCursor,
           loading: loading,
           error: error,
@@ -64,7 +52,7 @@ export function createEventsObservable({
         }
       }
       return {
-        events: eventsWithRemoteEdits,
+        events: updateVersionEvents(eventsWithRemoteEdits),
         nextCursor: nextCursor,
         loading: loading,
         error: error,
