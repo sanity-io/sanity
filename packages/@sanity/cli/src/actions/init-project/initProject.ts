@@ -1550,12 +1550,3 @@ function getImportCommand(
       !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset',
   )
 }
-
-async function hasGlobalCli(): Promise<boolean> {
-  try {
-    const globalCliPath = await which('sanity')
-    return Boolean(globalCliPath)
-  } catch (err) {
-    return false
-  }
-}
