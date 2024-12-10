@@ -129,7 +129,7 @@ describe('DocumentPerspectiveList', () => {
       expect(screen.getByRole('button', {name: 'Published'})).toBeDisabled()
     })
 
-    it('should disable the "Published" chip when there is no published document and IS live edit', async () => {
+    it('should enable the "Published" chip when there is no published document and IS live edit', async () => {
       mockUseDocumentPane.mockReturnValue({
         ...mockUsePane,
         editState: {...mockUsePane.editState, liveEdit: true},
@@ -138,7 +138,7 @@ describe('DocumentPerspectiveList', () => {
       const wrapper = await createTestProvider()
       render(<DocumentPerspectiveList />, {wrapper})
 
-      expect(screen.getByRole('button', {name: 'Published'})).toBeDisabled()
+      expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
     })
 
     it('should enable the "Published" chip when the document is "liveEdit"', async () => {

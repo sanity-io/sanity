@@ -14,7 +14,6 @@ import {
   VersionChip,
   versionDocumentExists,
 } from 'sanity'
-import {usePaneRouter} from 'sanity/structure'
 
 import {useDocumentPane} from '../../../useDocumentPane'
 
@@ -71,7 +70,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {setParams, params} = usePaneRouter()
   const {data: releases, loading} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
@@ -101,18 +99,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   )
 
   const isPublishedChipDisabled = useMemo(() => {
-    if (editState?.liveEdit) {
-      if (!editState?.published) {
-        return true
-      }
+    // If it's a live edit document the only option to edit it is through
+    // the published perspective, users should be able to select it.
+    if (editState?.liveEdit) return false
 
-      return false
-    }
-
-    if (!editState?.published) {
-      return true
-    }
-    return false
+    // If it's not live edit, we want to check for the existence of the published doc.
+    return !editState?.published
   }, [editState?.liveEdit, editState?.published])
 
   return (
