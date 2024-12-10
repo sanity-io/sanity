@@ -1,5 +1,8 @@
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
 
+import {type ReleasesReducerState} from '../../releases/store/reducer'
+import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getVersionFromId} from '../../util/draftUtils'
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../_legacy'
 import {
@@ -136,4 +139,39 @@ export function remoteMutationToTransaction(
       },
     },
   }
+}
+
+/**
+ * Updates the version publish document id.
+ */
+export function updateVersionEvents(events: DocumentGroupEvent[]) {
+  return events.map((event) => {
+    if (isPublishDocumentVersionEvent(event)) {
+      return {
+        ...event,
+        documentId: event.versionId,
+      }
+    }
+    return event
+  })
+}
+
+/**
+ * Adds the release information to the publish event.
+ */
+export function updatePublishedEvents(
+  events: DocumentGroupEvent[],
+  releases: ReleasesReducerState,
+) {
+  return events.map((event) => {
+    if (isPublishDocumentVersionEvent(event)) {
+      const releaseId = getVersionFromId(event.versionId)
+      if (releaseId) {
+        const release = releases.releases.get(getReleaseDocumentIdFromReleaseId(releaseId))
+        return {...event, release: release}
+      }
+      return event
+    }
+    return event
+  })
 }
