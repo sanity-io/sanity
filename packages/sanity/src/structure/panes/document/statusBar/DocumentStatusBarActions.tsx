@@ -7,6 +7,7 @@ import {type DocumentActionComponent, type DocumentActionDescription, Hotkeys} f
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
+import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -61,7 +62,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             <Stack>
               {!existsInBundle && (
                 <Button
-                  data-testid={`action-${firstActionState.label}`}
+                  data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
                   disabled={disabled || Boolean(firstActionState.disabled)}
                   icon={firstActionState.icon}
                   // eslint-disable-next-line react/jsx-handler-names
