@@ -127,7 +127,8 @@ export function createReleaseOperationsStore(options: {
     }
 
     const versionDocument = {
-      ...(document || initialValue || {}),
+      ...(document || {}),
+      ...(initialValue || {}),
       _id: getVersionId(documentId, releaseId),
     } as IdentifiedSanityDocumentStub
 
