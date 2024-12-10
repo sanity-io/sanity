@@ -63,7 +63,7 @@ export function ReleaseDocumentPreview({
   if (revision) return preview
 
   return (
-    <Card tone="default" as={LinkComponent} radius={2} data-as={'a'}>
+    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
       {preview}
     </Card>
   )
