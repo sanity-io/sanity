@@ -30,7 +30,13 @@
         "pinDigest",
         "replacement",
         "rollback"
-      ]
+      ],
+      "matchPackageNames": [
+        "!@portabletext/editor",
+        "!@sanity/client",
+        "!@sanity/tsdoc",
+        "!@sanity/ui"
+      ],
     },
     {
       "matchDepTypes": ["dependencies"],
