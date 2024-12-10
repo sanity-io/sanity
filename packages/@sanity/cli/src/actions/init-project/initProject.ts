@@ -652,13 +652,11 @@ export default async function initSanity(
       context,
     })
 
-    if (await hasGlobalCli()) {
-      print('')
-      print('If you want to delete the imported data, use')
-      print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
-      print('and create a new clean dataset with')
-      print(`  ${chalk.cyan(`sanity dataset create <name>`)}\n`)
-    }
+    print('')
+    print('If you want to delete the imported data, use')
+    print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print('and create a new clean dataset with')
+    print(`  ${chalk.cyan(`npx sanity dataset create <name>`)}\n`)
   }
 
   const devCommandMap: Record<PackageManager, string> = {
@@ -680,12 +678,10 @@ export default async function initSanity(
     print(`Then: ${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
   }
 
-  if (await hasGlobalCli()) {
-    print(`Other helpful commands`)
-    print(`sanity docs - to open the documentation in a browser`)
-    print(`sanity manage - to open the project settings in a browser`)
-    print(`sanity help - to explore the CLI manual`)
-  }
+  print(`Other helpful commands`)
+  print(`npx sanity docs - to open the documentation in a browser`)
+  print(`npx sanity manage - to open the project settings in a browser`)
+  print(`npx sanity help - to explore the CLI manual`)
 
   const sendInvite =
     isFirstProject &&
