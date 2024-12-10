@@ -147,8 +147,8 @@ export const ReleaseRevertButton = ({
       await createRelease({
         _id: revertReleaseId,
         metadata: {
-          title: `Reverting "${release.metadata.title}"`,
-          description: `This release reverts the changes made in "${release.metadata.title}"`,
+          title: t('revert-release.title', {title: release.metadata.title}),
+          description: t('revert-release.description', {title: release.metadata.title}),
           releaseType: 'asap',
         },
       })
@@ -180,7 +180,7 @@ export const ReleaseRevertButton = ({
                 }
                 style={{cursor: 'pointer'}}
               >
-                View revert release
+                {t('toast.revert-stage.success-link')}
               </a>
             </Text>
           ),
@@ -230,10 +230,15 @@ export const ReleaseRevertButton = ({
   const confirmReleaseDialog = useMemo(() => {
     if (revertReleaseStatus === 'idle') return null
 
+    const description =
+      documents.length > 1
+        ? 'revert-dialog.confirm-revert-description_other'
+        : 'revert-dialog.confirm-revert-description_one'
+
     return (
       <Dialog
         id="confirm-revert-dialog"
-        header={t('revert-dialog.confirm-revert.title')}
+        header={t('revert-dialog.confirm-revert.title', {title: release.metadata.title})}
         onClose={() => setRevertReleaseStatus('idle')}
         footer={{
           confirmButton: {
@@ -253,7 +258,7 @@ export const ReleaseRevertButton = ({
           {
             <Translate
               t={t}
-              i18nKey="revert-dialog.confirm-revert-description"
+              i18nKey={description}
               values={{
                 releaseDocumentsLength: documents.length,
               }}
@@ -269,15 +274,16 @@ export const ReleaseRevertButton = ({
           />
           <Box flex={1} paddingLeft={3}>
             <Text muted size={1}>
-              <label htmlFor="stage-release">Stage revert actions in a new release</label>
+              <label htmlFor="stage-release">
+                {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}
+              </label>
             </Text>
           </Box>
         </Flex>
         {hasPostPublishTransactions && !stageNewRevertRelease && (
           <Card marginTop={4} padding={3} radius={2} shadow={1} tone="critical">
             <Text muted size={1}>
-              Changes were made to documents in this release after they were published. Reverting
-              will revert all changes
+              {t('revert-dialog.confirm-revert.warning-card')}
             </Text>
           </Card>
         )}
@@ -285,10 +291,11 @@ export const ReleaseRevertButton = ({
     )
   }, [
     revertReleaseStatus,
+    documents.length,
     t,
+    release.metadata.title,
     stageNewRevertRelease,
     handleRevertRelease,
-    documents.length,
     hasPostPublishTransactions,
   ])
 
