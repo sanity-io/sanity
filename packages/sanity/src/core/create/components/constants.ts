@@ -1,1 +1,1 @@
-export const createUserDocumentationUrl = 'https://www.sanity.io/docs/create?ref=studio'
+export const createUserDocumentationUrl = 'https://snty.link/create-docs?ref=studio'
