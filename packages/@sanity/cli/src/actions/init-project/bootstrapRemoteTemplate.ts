@@ -1,5 +1,7 @@
 import {mkdir} from 'node:fs/promises'
 import {join} from 'node:path'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
+import {type Framework, frameworks} from '@vercel/frameworks'
 
 import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
@@ -9,7 +11,6 @@ import {
   downloadAndExtractRepo,
   generateSanityApiReadToken,
   getMonoRepo,
-  isNextJsTemplate,
   type RepoInfo,
   tryApplyPackageName,
   validateRemoteTemplate,
@@ -56,12 +57,16 @@ export async function bootstrapRemoteTemplate(
   const readToken = needsReadToken
     ? await generateSanityApiReadToken('API Read Token', variables.projectId, apiClient)
     : undefined
-  const isNext = await isNextJsTemplate(outputPath)
-  const envName = isNext ? '.env.local' : '.env'
 
-  for (const folder of packages ?? ['']) {
-    const path = join(outputPath, folder)
-    await applyEnvVariables(path, {...variables, readToken}, envName)
+  for (const pkg of packages ?? ['']) {
+    const packagePath = join(outputPath, pkg)
+    const packageFramework: Framework | null = await detectFrameworkRecord({
+      fs: new LocalFileSystemDetector(packagePath),
+      frameworkList: frameworks as readonly Framework[],
+    })
+    // Next.js uses `.env.local` for local environment variables
+    const envName = packageFramework?.slug === 'next' ? '.env.local' : '.env'
+    await applyEnvVariables(packagePath, {...variables, readToken}, envName)
   }
 
   debug('Setting package name to %s', packageName)
