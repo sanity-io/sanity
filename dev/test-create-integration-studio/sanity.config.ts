@@ -20,7 +20,6 @@ export default defineConfig([
     basePath: '/fallback',
     beta: {
       create: {
-        startInCreateEnabled: true,
         fallbackStudioOrigin: 'create-integration-test.sanity.studio',
       },
     },
@@ -30,11 +29,6 @@ export default defineConfig([
     title: 'No fallback origin',
     name: 'no-fallback',
     basePath: '/no-fallback',
-    beta: {
-      create: {
-        startInCreateEnabled: true,
-      },
-    },
   },
   {
     ...baseConfig,
@@ -43,7 +37,6 @@ export default defineConfig([
     basePath: '/invalid-fallback',
     beta: {
       create: {
-        startInCreateEnabled: true,
         fallbackStudioOrigin: 'does-not-exist',
       },
     },

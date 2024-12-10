@@ -119,7 +119,7 @@ export function StartInCreateDevInfoButton(props: {studioApp?: CompatibleStudioA
             <Text size={1} weight="medium">
               For more details, please refer to{' '}
               <a
-                href={'https://www.sanity.io/docs/create-content-mapping'}
+                href="https://snty.link/create-config-guide?ref=studio"
                 target="_blank"
                 rel="noreferrer"
               >
