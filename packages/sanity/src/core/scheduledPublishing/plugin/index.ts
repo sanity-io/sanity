@@ -2,7 +2,7 @@ import {CalendarIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config'
-import {TOOL_NAME, TOOL_TITLE} from '../constants'
+import {TOOL_NAME, TOOL_TITLE, TOOL_TYPE} from '../constants'
 import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
@@ -47,6 +47,7 @@ export const scheduledPublishing = definePlugin({
       {
         name: TOOL_NAME,
         title: TOOL_TITLE,
+        type: TOOL_TYPE,
         icon: CalendarIcon,
         component: Tool,
         router: route.create('/', [route.create('/state/:state'), route.create('/date/:date')]),

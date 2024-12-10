@@ -173,6 +173,11 @@ export interface Tool<Options = any> {
     params: Record<string, unknown>,
     payload: unknown,
   ) => boolean | {[key: string]: boolean}
+
+  /**
+   * The type of tool – used to group tools across multiple workspaces and have a constant identifier.
+   */
+  type?: string
 }
 
 /** @public */

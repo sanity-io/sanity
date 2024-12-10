@@ -96,4 +96,5 @@ export interface ManifestTool {
    * returns null in the case of the icon not being able to be stringified
    */
   icon: string | null
+  type: string | null
 }

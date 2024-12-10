@@ -105,6 +105,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
+        type: 'sanity/structure',
         component: lazy(() => import('./components/structureTool')),
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)

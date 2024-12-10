@@ -515,10 +515,11 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
 
 const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
   tools.map(
-    ({title, name, icon}) =>
+    ({title, name, icon, type}) =>
       ({
         title,
         name,
+        type: type || null,
         icon: resolveIcon({
           icon,
           title,
