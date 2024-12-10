@@ -66,7 +66,7 @@ export async function bootstrapRemoteTemplate(
       frameworkList: frameworks as readonly Framework[],
     })
     // Next.js uses `.env.local` for local environment variables
-    const envName = packageFramework?.slug === 'next' ? '.env.local' : '.env'
+    const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
     await applyEnvVariables(packagePath, {...variables, readToken}, envName)
   }
 
