@@ -34,6 +34,8 @@ const releasesLocaleStrings = {
   'action.publish-all-documents': 'Publish all documents',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
+  /** Action text for reverting a release */
+  'action.revert': 'Revert release',
   /** Text for the summary button in release tool */
   'actions.summary': 'Summary',
   /** Action text for reverting a release immediately without staging changes */

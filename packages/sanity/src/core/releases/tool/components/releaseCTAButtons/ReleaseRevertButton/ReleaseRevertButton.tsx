@@ -1,22 +1,18 @@
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {combineLatest, filter, forkJoin, from, map, of, switchMap} from 'rxjs'
 
-import {useRouter} from '../../../../../router'
-import {Button} from '../../../../../ui-components/button/Button'
-import {Dialog} from '../../../../../ui-components/dialog'
-import {useClient} from '../../../../hooks/useClient'
-import {Translate, useTranslation} from '../../../../i18n'
-import {getTransactionsLogs} from '../../../../store/translog/getTransactionLogs'
-import {API_VERSION} from '../../../../tasks/constants'
-import {releasesLocaleNamespace} from '../../../i18n'
-import {type ReleaseDocument} from '../../../store/types'
-import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {createReleaseId} from '../../../util/createReleaseId'
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {useRouter} from '../../../../../../router'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../../ui-components/dialog'
+import {Translate, useTranslation} from '../../../../../i18n'
+import {releasesLocaleNamespace} from '../../../../i18n'
+import {type ReleaseDocument} from '../../../../store/types'
+import {useReleaseOperations} from '../../../../store/useReleaseOperations'
+import {createReleaseId} from '../../../../util/createReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
+import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {useAdjacentTransactions} from './useAdjacentTransactions'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
@@ -24,110 +20,12 @@ interface ReleasePublishAllButtonProps {
   disabled?: boolean
 }
 
-const useGetAdjacentTransactions = (documents: DocumentInRelease[]) => {
-  const client = useClient({apiVersion: API_VERSION})
-  const observableClient = client.observable
-  const transactionId = documents[0]?.document._rev
-  const {dataset} = client.config()
-
-  const hasPostPublishTransactions$ = useMemo(
-    () =>
-      from(
-        getTransactionsLogs(
-          client,
-          documents.map(({document}) => document._id),
-          {
-            fromTransaction: transactionId,
-            // one transaction for every document plus the publish transaction
-            limit: 2,
-          },
-        ),
-      ).pipe(
-        // the transaction of published is also returned
-        // so post publish transactions will result in more than 1 transaction
-        map((transactions) => transactions.length > 1),
-      ),
-    [client, documents, transactionId],
-  )
-
-  const revertToDocuments$ = useMemo(
-    () =>
-      from(
-        getTransactionsLogs(
-          client,
-          documents.map(({document}) => document._id),
-          {
-            toTransaction: transactionId,
-            // one transaction for every document plus the publish transaction
-            limit: documents.length + 1,
-            // // reverse to find the transactions immediately before publish
-            reverse: true,
-          },
-        ),
-      ).pipe(
-        filter((transactions) => transactions.length > 0),
-        map(([publishTransaction, ...otherTransactions]) => otherTransactions),
-        map((transactions) =>
-          documents.map(({document}) => ({
-            docId: document._id,
-            // eslint-disable-next-line max-nested-callbacks
-            revisionId: transactions.find(({documentIDs}) => documentIDs.includes(document._id))
-              ?.id,
-          })),
-        ),
-        switchMap((docRevisionPairs) =>
-          forkJoin(
-            docRevisionPairs.map(({docId, revisionId}) => {
-              if (!revisionId) {
-                const {publishedDocumentExists, ...unpublishDocument} =
-                  // eslint-disable-next-line max-nested-callbacks
-                  documents.find(({document}) => document._id === docId)?.document || {}
-
-                return of({
-                  _id: docId,
-                  ...unpublishDocument,
-                  _system: {delete: true},
-                })
-              }
-
-              return (
-                observableClient
-                  .request<{documents: DocumentInRelease['document'][]}>({
-                    url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
-                  })
-                  // eslint-disable-next-line max-nested-callbacks
-                  .pipe(map((response) => response.documents[0]))
-              )
-            }),
-          ),
-        ),
-      ),
-    [client, dataset, documents, observableClient, transactionId],
-  )
-
-  const memoObservable = useMemo(
-    () =>
-      combineLatest([hasPostPublishTransactions$, revertToDocuments$]).pipe(
-        map(([hasPostPublishTransactions, revertToDocuments]) => ({
-          hasPostPublishTransactions,
-          revertToDocuments,
-        })),
-      ),
-    [hasPostPublishTransactions$, revertToDocuments$],
-  )
-
-  return useObservable(memoObservable, {
-    hasPostPublishTransactions: null,
-    revertToDocuments: null,
-  })
-}
-
 export const ReleaseRevertButton = ({
   release,
   documents,
   disabled,
 }: ReleasePublishAllButtonProps) => {
-  const {hasPostPublishTransactions, revertToDocuments} = useGetAdjacentTransactions(documents)
+  const {hasPostPublishTransactions, documentRevertStates} = useAdjacentTransactions(documents)
   const {t} = useTranslation(releasesLocaleNamespace)
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<'idle' | 'confirm' | 'reverting'>(
     'idle',
@@ -138,7 +36,7 @@ export const ReleaseRevertButton = ({
   const {createRelease, publishRelease, createVersion} = useReleaseOperations()
 
   const handleRevertRelease = useCallback(async () => {
-    if (!revertToDocuments) return
+    if (!documentRevertStates) return
 
     setRevertReleaseStatus('reverting')
     const revertReleaseId = createReleaseId()
@@ -154,7 +52,7 @@ export const ReleaseRevertButton = ({
       })
 
       await Promise.allSettled(
-        revertToDocuments.map((document) =>
+        documentRevertStates.map((document) =>
           createVersion(getReleaseIdFromReleaseDocumentId(revertReleaseId), document._id, document),
         ),
       )
@@ -220,7 +118,7 @@ export const ReleaseRevertButton = ({
     createVersion,
     publishRelease,
     release.metadata.title,
-    revertToDocuments,
+    documentRevertStates,
     router,
     stageNewRevertRelease,
     t,
@@ -304,7 +202,7 @@ export const ReleaseRevertButton = ({
       <Button
         icon={RestoreIcon}
         onClick={() => setRevertReleaseStatus('confirm')}
-        text="Revert release"
+        text={t('action.revert')}
         tone="critical"
         disabled={disabled}
       />
