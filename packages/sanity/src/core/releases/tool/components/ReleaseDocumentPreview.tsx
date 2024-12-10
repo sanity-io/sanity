@@ -15,6 +15,7 @@ interface ReleaseDocumentPreviewProps {
   releaseId: string
   previewValues: PreviewValue
   isLoading: boolean
+  revision?: string
   hasValidationError?: boolean
 }
 
@@ -24,6 +25,7 @@ export function ReleaseDocumentPreview({
   releaseId,
   previewValues,
   isLoading,
+  revision,
   hasValidationError,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
