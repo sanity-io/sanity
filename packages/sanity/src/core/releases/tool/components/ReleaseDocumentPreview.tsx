@@ -53,9 +53,16 @@ export function ReleaseDocumentPreview({
     [documentPresence],
   )
 
+  const preview = (
+    <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
+  )
+
+  /** @todo revision deeplink support for archived and published version docs */
+  if (revision) return preview
+
   return (
-    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
-      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
+    <Card tone="default" as={LinkComponent} radius={2} data-as={'a'}>
+      {preview}
     </Card>
   )
 }
