@@ -78,13 +78,18 @@ const useGetAdjacentTransactions = (documents: DocumentInRelease[]) => {
         switchMap((docRevisionPairs) =>
           forkJoin(
             docRevisionPairs.map(({docId, revisionId}) => {
-              if (!revisionId)
+              if (!revisionId) {
+                const {publishedDocumentExists, ...unpublishDocument} =
+                  // eslint-disable-next-line max-nested-callbacks
+                  documents.find(({document}) => document._id === docId)?.document || {}
+
                 return of({
                   _id: docId,
-                  // eslint-disable-next-line max-nested-callbacks
-                  ...documents.find(({document}) => document._id === docId),
+                  ...unpublishDocument,
                   _system: {delete: true},
                 })
+              }
+
               return (
                 observableClient
                   .request<{documents: DocumentInRelease['document'][]}>({
