@@ -2,7 +2,7 @@ import {RestoreIcon} from '@sanity/icons'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, filter, forkJoin, from, map, switchMap} from 'rxjs'
+import {combineLatest, filter, forkJoin, from, map, of, switchMap} from 'rxjs'
 
 import {useRouter} from '../../../../../router'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -38,6 +38,7 @@ const useGetAdjacentTransactions = (documents: DocumentInRelease[]) => {
           documents.map(({document}) => document._id),
           {
             fromTransaction: transactionId,
+            // one transaction for every document plus the publish transaction
             limit: 2,
           },
         ),
@@ -57,8 +58,9 @@ const useGetAdjacentTransactions = (documents: DocumentInRelease[]) => {
           documents.map(({document}) => document._id),
           {
             toTransaction: transactionId,
+            // one transaction for every document plus the publish transaction
             limit: documents.length + 1,
-            // // reverse to find the transaction before publish first
+            // // reverse to find the transactions immediately before publish
             reverse: true,
           },
         ),
@@ -75,14 +77,23 @@ const useGetAdjacentTransactions = (documents: DocumentInRelease[]) => {
         ),
         switchMap((docRevisionPairs) =>
           forkJoin(
-            docRevisionPairs.map(({docId, revisionId}) =>
-              observableClient
-                .request<{documents: DocumentInRelease['document'][]}>({
-                  url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
+            docRevisionPairs.map(({docId, revisionId}) => {
+              if (!revisionId)
+                return of({
+                  _id: docId,
+                  // eslint-disable-next-line max-nested-callbacks
+                  ...documents.find(({document}) => document._id === docId),
+                  _system: {delete: true},
                 })
-                // eslint-disable-next-line max-nested-callbacks
-                .pipe(map((response) => response.documents[0])),
-            ),
+              return (
+                observableClient
+                  .request<{documents: DocumentInRelease['document'][]}>({
+                    url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
+                  })
+                  // eslint-disable-next-line max-nested-callbacks
+                  .pipe(map((response) => response.documents[0]))
+              )
+            }),
           ),
         ),
       ),
@@ -157,7 +168,7 @@ export const ReleaseRevertButton = ({
             </Text>
           ),
           description: (
-            <Text size={1} weight="medium" as="a">
+            <Text size={1} weight="medium">
               <a
                 onClick={() =>
                   router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)})
@@ -205,6 +216,7 @@ export const ReleaseRevertButton = ({
     publishRelease,
     release.metadata.title,
     revertToDocuments,
+    router,
     stageNewRevertRelease,
     t,
     toast,
