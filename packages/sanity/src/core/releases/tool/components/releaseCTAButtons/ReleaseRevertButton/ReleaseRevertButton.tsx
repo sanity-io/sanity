@@ -27,8 +27,7 @@ export const ReleaseRevertButton = ({
   documents,
   disabled,
 }: ReleasePublishAllButtonProps) => {
-  const {result, trigger} = useAdjacentTransactions(documents)
-  const {documentRevertStates, hasPostPublishTransactions} = result || {}
+  const {hasPostPublishTransactions, getAdjacentTransactions} = useAdjacentTransactions(documents)
   const {t} = useTranslation(releasesLocaleNamespace)
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<'idle' | 'confirm' | 'reverting'>(
     'idle',
@@ -40,20 +39,26 @@ export const ReleaseRevertButton = ({
   const {createRelease, publishRelease, createVersion} = useReleaseOperations()
 
   useEffect(() => {
-    if (revertReleaseStatus === 'confirm') {
-      trigger()
-    }
-  }, [revertReleaseStatus, trigger])
+    if (revertReleaseStatus === 'confirm') getAdjacentTransactions()
+  }, [getAdjacentTransactions, revertReleaseStatus])
 
-  console.log({documentRevertStates, hasPostPublishTransactions})
+  const navigateToRevertRelease = useCallback(
+    (revertReleaseId: string) => () =>
+      router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)}),
+    [router],
+  )
 
   const handleRevertRelease = useCallback(async () => {
-    if (!documentRevertStates) return
-
     setRevertReleaseStatus('reverting')
+    const {documentRevertStates} = await getAdjacentTransactions()
+
     const revertReleaseId = createReleaseId()
 
     try {
+      if (!documentRevertStates) {
+        throw new Error('Unable to find documents to revert')
+      }
+
       await createRelease({
         _id: revertReleaseId,
         metadata: {
@@ -85,12 +90,7 @@ export const ReleaseRevertButton = ({
           ),
           description: (
             <Text size={1} weight="medium">
-              <a
-                onClick={() =>
-                  router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)})
-                }
-                style={{cursor: 'pointer'}}
-              >
+              <a onClick={navigateToRevertRelease(revertReleaseId)} style={{cursor: 'pointer'}}>
                 {t('toast.revert-stage.success-link')}
               </a>
             </Text>
@@ -129,7 +129,7 @@ export const ReleaseRevertButton = ({
       setRevertReleaseStatus('idle')
     }
   }, [
-    documentRevertStates,
+    getAdjacentTransactions,
     createRelease,
     t,
     release.metadata.title,
@@ -137,7 +137,7 @@ export const ReleaseRevertButton = ({
     createVersion,
     telemetry,
     toast,
-    router,
+    navigateToRevertRelease,
     publishRelease,
   ])
 

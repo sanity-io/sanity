@@ -208,7 +208,7 @@ const releasesLocaleStrings = {
     'Stage revert actions in a new release',
   /** Warning card text for when immediately revert a release with history */
   'revert-dialog.confirm-revert.warning-card':
-    'Changes were made to documents in this release after they were published. Reverting will revert all changes',
+    'Changes were made to documents in this release after they were published. Reverting will revert all changes.',
   /** Title of a reverted release */
   'revert-release.title': 'Reverting "{{title}}"',
   /** Description of a reverted release */

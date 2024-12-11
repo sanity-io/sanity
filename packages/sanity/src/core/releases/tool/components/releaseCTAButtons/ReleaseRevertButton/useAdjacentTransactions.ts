@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   combineLatest,
@@ -34,9 +34,9 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
   const transactionId = documents[0]?.document._rev
   const {dataset} = client.config()
   const [trigger, setTrigger] = useState(0)
-  const [resolvePromise, setResolvePromise] = useState<
-    ((result: AdjacentTransactionsResult) => void) | null
-  >(null)
+  const promiseRef = useRef<Promise<AdjacentTransactionsResult> | null>(null)
+  const resolvePromiseRef = useRef<((value: AdjacentTransactionsResult) => void) | null>(null)
+  const resolvedValueRef = useRef<AdjacentTransactionsResult | null>(null)
 
   const memoObservable = useMemo(() => {
     if (!trigger) {
@@ -119,31 +119,46 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
     )
 
     return combineLatest([hasPostPublishTransactions$, documentRevertStates$]).pipe(
-      map(([hasPostPublishTransactions, documentRevertStates]) => {
-        const result = {hasPostPublishTransactions, documentRevertStates}
-
-        if (resolvePromise) {
-          resolvePromise(result)
-          setResolvePromise(null)
-        }
-        return result
-      }),
+      map(([hasPostPublishTransactions, documentRevertStates]) => ({
+        hasPostPublishTransactions,
+        documentRevertStates,
+      })),
     )
-  }, [trigger, client, documents, transactionId, observableClient, dataset, resolvePromise])
+  }, [trigger, client, documents, transactionId, observableClient, dataset])
 
   const observableResult = useObservable(memoObservable, {
     hasPostPublishTransactions: null,
     documentRevertStates: null,
   })
 
-  const startObservables = useCallback(() => {
-    if (resolvePromise) return resolvePromise
+  useEffect(() => {
+    if (observableResult.hasPostPublishTransactions !== null) {
+      resolvedValueRef.current = observableResult
 
-    return new Promise((res) => {
-      setResolvePromise(() => res)
-      setTrigger((curTrigger) => curTrigger + 1)
-    })
-  }, [resolvePromise])
+      // Resolve the promise if it exists
+      if (resolvePromiseRef.current) {
+        resolvePromiseRef.current(observableResult)
+        resolvePromiseRef.current = null
+        promiseRef.current = null // Reset the promiseRef for future fetches
+      }
+    }
+  }, [observableResult])
+
+  const startObservables = useCallback(() => {
+    if (resolvedValueRef.current) {
+      // Return resolved value immediately if available
+      return Promise.resolve(resolvedValueRef.current)
+    }
+
+    if (!promiseRef.current) {
+      promiseRef.current = new Promise((res) => {
+        resolvePromiseRef.current = res
+        setTrigger((curTrigger) => curTrigger + 1)
+      })
+    }
+
+    return promiseRef.current
+  }, [])
 
   return {
     ...observableResult,
