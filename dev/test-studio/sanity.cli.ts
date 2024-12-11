@@ -4,11 +4,14 @@ import MillionLint from '@million/lint'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
+const millionLintEnabled = process.env.REACT_MILLION_LINT === 'true'
 const millionInclude: string[] = []
 try {
-  for (const report of require('./.react-compiler-bailout-report.json')) {
-    if (report.messages.length && report.filePath.includes('packages/sanity')) {
-      millionInclude.push(`**/sanity/src/${report.filePath.split('sanity/src/')[1]}`)
+  if (millionLintEnabled) {
+    for (const report of require('./.react-compiler-bailout-report.json')) {
+      if (report.messages.length && report.filePath.includes('packages/sanity')) {
+        millionInclude.push(`**/sanity/src/${report.filePath.split('sanity/src/')[1]}`)
+      }
     }
   }
 } catch (err) {
@@ -29,26 +32,30 @@ export default defineCliConfig({
   reactStrictMode: true,
   reactCompiler: {
     target: '18',
-    sources: (filename) => {
-      if (filename.includes('node_modules')) {
-        return false
-      }
-      return millionInclude.every((pattern) => !filename.endsWith(pattern.split('**/')[1]))
-    },
+    sources: millionLintEnabled
+      ? (filename) => {
+          if (filename.includes('node_modules')) {
+            return false
+          }
+          return millionInclude.every((pattern) => !filename.endsWith(pattern.split('**/')[1]))
+        }
+      : undefined,
   },
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     return {
       ...viteConfig,
-      plugins: [
-        MillionLint.vite({
-          filter: {
-            include: millionInclude,
-          },
-        }),
-        ...(viteConfig.plugins || []),
-      ],
+      plugins: millionLintEnabled
+        ? [
+            MillionLint.vite({
+              filter: {
+                include: millionInclude,
+              },
+            }),
+            ...(viteConfig.plugins || []),
+          ]
+        : viteConfig.plugins,
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],
