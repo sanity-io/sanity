@@ -31,9 +31,9 @@ export const ReleasePublishAllButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
   const telemetry = useTelemetry()
-  const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
-    'idle',
-  )
+  const [publishBundleStatus, setPublishBundleStatus] = useState<
+    'idle' | 'confirm' | 'confirm-2' | 'publishing'
+  >('idle')
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
@@ -44,8 +44,9 @@ export const ReleasePublishAllButton = ({
     if (!release) return
 
     try {
+      const useUnstableAction = publishBundleStatus === 'confirm-2'
       setPublishBundleStatus('publishing')
-      await publishRelease(release._id)
+      await publishRelease(release._id, useUnstableAction)
       telemetry.log(PublishedRelease)
       toast.push({
         closable: true,
@@ -85,7 +86,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [release, publishRelease, telemetry, toast, t, router, perspective])
+  }, [release, publishBundleStatus, publishRelease, telemetry, toast, t, router, perspective])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
@@ -150,6 +151,21 @@ export const ReleasePublishAllButton = ({
 
   return (
     <>
+      <Button
+        tooltipProps={{
+          disabled: !isPublishButtonDisabled,
+          content: publishTooltipContent,
+          placement: 'bottom',
+        }}
+        icon={PublishIcon}
+        disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        text={'Unstable Publish'}
+        onClick={() => setPublishBundleStatus('confirm-2')}
+        loading={publishBundleStatus === 'publishing'}
+        data-testid="publish-all-button"
+        tone="suggest"
+      />
       <Button
         tooltipProps={{
           disabled: !isPublishButtonDisabled,

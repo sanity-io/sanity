@@ -10,7 +10,7 @@ import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
-  publishRelease: (releaseId: string) => Promise<void>
+  publishRelease: (releaseId: string, useUnstableAction?: boolean) => Promise<void>
   schedule: (releaseId: string, date: Date) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string) => Promise<void>
@@ -60,10 +60,12 @@ export function createReleaseOperationsStore(options: {
     })
   }
 
-  const handlePublishRelease = (releaseId: string) =>
+  const handlePublishRelease = (releaseId: string, useUnstableAction?: boolean) =>
     requestAction(client, [
       {
-        actionType: 'sanity.action.release.publish',
+        actionType: useUnstableAction
+          ? 'sanity.action.release.publish2'
+          : 'sanity.action.release.publish',
         releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
       },
     ])
@@ -179,7 +181,7 @@ interface ScheduleApiAction {
 }
 
 interface PublishApiAction {
-  actionType: 'sanity.action.release.publish'
+  actionType: 'sanity.action.release.publish' | 'sanity.action.release.publish2'
   releaseId: string
 }
 
