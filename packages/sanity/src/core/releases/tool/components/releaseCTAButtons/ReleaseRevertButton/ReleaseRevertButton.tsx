@@ -1,7 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useRouter} from '../../../../../../router'
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -27,7 +27,8 @@ export const ReleaseRevertButton = ({
   documents,
   disabled,
 }: ReleasePublishAllButtonProps) => {
-  const {hasPostPublishTransactions, documentRevertStates} = useAdjacentTransactions(documents)
+  const {result, trigger} = useAdjacentTransactions(documents)
+  const {documentRevertStates, hasPostPublishTransactions} = result || {}
   const {t} = useTranslation(releasesLocaleNamespace)
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<'idle' | 'confirm' | 'reverting'>(
     'idle',
@@ -37,6 +38,14 @@ export const ReleaseRevertButton = ({
   const telemetry = useTelemetry()
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const {createRelease, publishRelease, createVersion} = useReleaseOperations()
+
+  useEffect(() => {
+    if (revertReleaseStatus === 'confirm') {
+      trigger()
+    }
+  }, [revertReleaseStatus, trigger])
+
+  console.log({documentRevertStates, hasPostPublishTransactions})
 
   const handleRevertRelease = useCallback(async () => {
     if (!documentRevertStates) return
