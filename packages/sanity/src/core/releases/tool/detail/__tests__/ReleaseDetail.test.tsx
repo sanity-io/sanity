@@ -242,6 +242,7 @@ describe('after releases have loaded', () => {
 
         expect(useReleaseOperationsMockReturn.publishRelease).toHaveBeenCalledWith(
           activeASAPRelease._id,
+          false,
         )
       })
     })
