@@ -42,7 +42,7 @@
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
-    "dev:test-studio-million-lint": "REACT_MILLION_LINT=true turbo run start --filter=sanity-test-studio",
+    "dev:test-studio-million-lint": "REACT_MILLION_LINT=true pnpm --filter sanity-test-studio dev",
     "dev:next-studio": "pnpm --filter sanity-test-next-studio dev",
     "dev:turbo-studio": "pnpm dev:next-studio --turbo",
     "docs:report": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReport",
