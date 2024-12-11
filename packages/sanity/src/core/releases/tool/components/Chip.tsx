@@ -1,7 +1,13 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
-export function Chip(props: {avatar?: ReactNode; text: ReactNode; icon?: ReactNode}) {
+interface Props {
+  avatar?: ReactNode
+  text: ReactNode
+  icon?: ReactNode
+}
+
+export const Chip: ComponentType<Props> = (props) => {
   const {avatar, text, icon} = props
 
   return (
