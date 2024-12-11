@@ -3,7 +3,7 @@ import {
   type ConditionalPropertyCallbackContext,
   type CurrentUser,
 } from '@sanity/types'
-import {Children, cloneElement, isValidElement, type ReactNode, useMemo} from 'react'
+import {useMemo} from 'react'
 
 export function isThenable(value: any) {
   return typeof value?.then === 'function'
@@ -67,21 +67,4 @@ export function useCheckCondition(
   return useMemo(() => {
     return isTrueIsh(checkProperty, checkPropertyName, context)
   }, [checkProperty, checkPropertyName, context])
-}
-
-type ChildrenWithPropsProps = {
-  children: ReactNode | ReactNode[]
-  childProps: Record<string, unknown>
-}
-
-export function mappedChildren({children, childProps}: ChildrenWithPropsProps) {
-  if (!Array.isArray(children)) {
-    children = [children]
-  }
-  return Children.map(children, (child) => {
-    if (isValidElement(child)) {
-      return cloneElement(child, childProps)
-    }
-    return child
-  })
 }

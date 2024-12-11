@@ -608,6 +608,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
               virtualIndex,
             }) as ReactElement
 
+            // @TODO can we avoid using cloneElement here?
             const clonedItem =
               isValidElement(itemToRender) && itemToRender.type != Fragment
                 ? cloneElement(itemToRender, {

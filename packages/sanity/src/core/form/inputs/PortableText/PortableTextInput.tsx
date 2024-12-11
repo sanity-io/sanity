@@ -202,6 +202,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
       // Must called in a transition useTrackFocusPath hook
       // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+      // @TODO seems like startTransition is used as a side-effect here
       startTransition(() => {
         onPathFocus(nextFocusPath, {
           selection: nextSelection,

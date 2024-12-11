@@ -93,6 +93,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
   const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
     props
 
+  // @TODO we should use react-is here
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
     () => menuButtonProps?.button || <ContextMenuButton />,
@@ -236,6 +237,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
         const modeProps = collapsedProps
         const text = collapseText ? undefined : optionElement.props.text
 
+        // @TODO can we avoid using cloneElement here?
         return cloneElement(optionElement, {
           ...modeProps,
           text: text,
@@ -292,6 +294,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                   {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
                   <Tooltip portal disabled={!tooltipText} content={tooltipText} {...tooltipProps}>
                     <Flex>
+                      {/* @TODO can we avoid using cloneElement here? */}
                       {cloneElement(optionElement, {
                         'disabled': optionElement.props.disabled || hidden,
                         'aria-hidden': hidden,
@@ -355,6 +358,7 @@ const RenderHidden = memo(function RenderHidden(props: {
               onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
             >
               <Flex>
+                {/* @TODO can we avoid using cloneElement here? */}
                 {cloneElement(element, {
                   'disabled': true,
                   'aria-hidden': true,

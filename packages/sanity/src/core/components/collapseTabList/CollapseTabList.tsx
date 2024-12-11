@@ -68,6 +68,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   const [hiddenElements, setHiddenElements] = useState<ReactElement[]>([])
   const [showChildren, setShowChildren] = useState(false)
 
+  // @TODO we should use react-is here
   const children = useMemo(
     () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
@@ -137,6 +138,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
       <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+        {/* @TODO can we avoid using cloneElement here? */}
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
@@ -148,6 +150,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
             // eslint-disable-next-line react/jsx-no-bind
             onIntersectionChange={(e) => handleIntersection(e[0], child)}
           >
+            {/* @TODO can we avoid using cloneElement here? */}
             {cloneElement(child, {
               'disabled': true,
               'aria-hidden': true,
