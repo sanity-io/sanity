@@ -49,8 +49,8 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(debug@4.4.0)
       '@sanity/pkg-utils':
-        specifier: 6.11.15
-        version: 6.11.15(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(typescript@5.7.2)
+        specifier: 6.12.0
+        version: 6.12.0(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(debug@4.4.0)(typescript@5.7.2)
       '@sanity/prettier-config':
         specifier: ^1.0.3
         version: 1.0.3(prettier@3.4.2)
@@ -1810,8 +1810,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/pkg-utils':
-        specifier: 6.11.15
-        version: 6.11.15(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(debug@4.4.0)(typescript@5.7.2)
+        specifier: 6.12.0
+        version: 6.12.0(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(debug@4.4.0)(typescript@5.7.2)
       '@sanity/tsdoc':
         specifier: 1.0.150
         version: 1.0.150(@emotion/is-prop-valid@1.3.1)(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.37.0)(yaml@2.6.1)
@@ -4563,6 +4563,17 @@ packages:
 
   '@sanity/pkg-utils@6.11.15':
     resolution: {integrity: sha512-f0Ykq9SP/wqHBDRmamOHfAtRoSxYkHKo9O7ZpFhY9P78XfT/E49C6Eo0wigB7N5cMeovysZdiP2/gZknjQaJDg==}
+    engines: {node: '>=18.17.0'}
+    hasBin: true
+    peerDependencies:
+      babel-plugin-react-compiler: '*'
+      typescript: 5.4.x || 5.5.x || 5.6.x || 5.7.x
+    peerDependenciesMeta:
+      babel-plugin-react-compiler:
+        optional: true
+
+  '@sanity/pkg-utils@6.12.0':
+    resolution: {integrity: sha512-vLSrOB1CkI/TPh+0arHjrzlAfT8gsR0kfrAYgFTVkWEZQI9ZCbptLpZbMFarrbVgzmaAJbwx3pZU2dItD9ufzw==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -14597,6 +14608,58 @@ snapshots:
       - supports-color
 
   '@sanity/pkg-utils@6.11.15(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(typescript@5.7.2)':
+    dependencies:
+      '@babel/core': 7.26.0
+      '@babel/preset-typescript': 7.26.0(@babel/core@7.26.0)
+      '@babel/types': 7.26.3
+      '@microsoft/api-extractor': 7.48.0(@types/node@22.10.1)
+      '@microsoft/tsdoc-config': 0.17.1
+      '@optimize-lodash/rollup-plugin': 5.0.0(rollup@4.28.1)
+      '@rollup/plugin-alias': 5.1.1(rollup@4.28.1)
+      '@rollup/plugin-babel': 6.0.4(@babel/core@7.26.0)(@types/babel__core@7.20.5)(rollup@4.28.1)
+      '@rollup/plugin-commonjs': 28.0.1(rollup@4.28.1)
+      '@rollup/plugin-json': 6.1.0(rollup@4.28.1)
+      '@rollup/plugin-node-resolve': 15.3.0(rollup@4.28.1)
+      '@rollup/plugin-replace': 6.0.1(rollup@4.28.1)
+      '@rollup/plugin-terser': 0.4.4(rollup@4.28.1)
+      '@sanity/browserslist-config': 1.0.3
+      browserslist: 4.24.2
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 4.0.1
+      esbuild: 0.24.0
+      esbuild-register: 3.6.0(esbuild@0.24.0)
+      find-config: 1.0.0
+      get-latest-version: 5.1.0(debug@4.4.0)
+      git-url-parse: 16.0.0
+      globby: 11.1.0
+      jsonc-parser: 3.3.1
+      mkdirp: 3.0.1
+      outdent: 0.8.0
+      parse-git-config: 3.0.0
+      pkg-up: 3.1.0
+      prettier: 3.4.2
+      pretty-bytes: 5.6.0
+      prompts: 2.4.2
+      recast: 0.23.9
+      rimraf: 4.4.1
+      rollup: 4.28.1
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.24.0)(rollup@4.28.1)
+      rxjs: 7.8.1
+      treeify: 1.1.0
+      typescript: 5.7.2
+      uuid: 11.0.3
+      zod: 3.23.8
+      zod-validation-error: 3.4.0(zod@3.23.8)
+    optionalDependencies:
+      babel-plugin-react-compiler: 19.0.0-beta-37ed2a7-20241206
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - supports-color
+
+  '@sanity/pkg-utils@6.12.0(@types/babel__core@7.20.5)(@types/node@22.10.1)(babel-plugin-react-compiler@19.0.0-beta-37ed2a7-20241206)(debug@4.4.0)(typescript@5.7.2)':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/preset-typescript': 7.26.0(@babel/core@7.26.0)
