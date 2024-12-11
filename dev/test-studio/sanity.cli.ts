@@ -1,14 +1,14 @@
 import path from 'node:path'
 
+import MillionLint from '@million/lint'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
-const millionLintEnabled = process.env.REACT_MILLION_LINT === 'true'
 const millionInclude: string[] = []
 try {
-  if (millionLintEnabled) {
-    for (const filePath of require('./.react-compiler-bailout-report.json')) {
-      millionInclude.push(`**/${filePath}`)
+  for (const report of require('./.react-compiler-bailout-report.json')) {
+    if (report.messages.length && report.filePath.includes('packages/sanity')) {
+      millionInclude.push(`**/sanity/src/${report.filePath.split('sanity/src/')[1]}`)
     }
   }
 } catch (err) {
@@ -27,42 +27,28 @@ export default defineCliConfig({
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
   reactStrictMode: true,
-  reactCompiler: millionLintEnabled
-    ? {
-        target: '18',
-        sources: (filename) => {
-          /**
-           * This is the default filter when `sources` is not defined.
-           * Since we're overriding it we have to ensure we don't accidentally try running the compiler on non-src files from npm.
-           */
-          if (filename.includes('node_modules')) {
-            return false
-          }
-          return millionInclude.every(
-            (pattern) => !filename.endsWith(`/${pattern.split('**/')[1]}`),
-          )
-        },
+  reactCompiler: {
+    target: '18',
+    sources: (filename) => {
+      if (filename.includes('node_modules')) {
+        return false
       }
-    : {target: '18'},
+      return millionInclude.every((pattern) => !filename.endsWith(pattern.split('**/')[1]))
+    },
+  },
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     return {
       ...viteConfig,
-      plugins: millionLintEnabled
-        ? [
-            /**
-             * We're doing a dynamic import here, instead of a static import, to avoid an issue where a WebSocket Server is created by Million for `vite dev` that isn't closed.
-             * Which leaves `sanity build` hanging, even if the plugin itself isn't actually used.
-             */
-            require('@million/lint').vite({
-              filter: {
-                include: millionInclude,
-              },
-            }),
-            ...(viteConfig.plugins || []),
-          ]
-        : viteConfig.plugins,
+      plugins: [
+        MillionLint.vite({
+          filter: {
+            include: millionInclude,
+          },
+        }),
+        ...(viteConfig.plugins || []),
+      ],
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],

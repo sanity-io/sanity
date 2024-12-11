@@ -50,6 +50,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
     }) => {
       const {dimensions} = options
+      const width = dimensions.width || 100
+      const height = dimensions.height || 100
 
       // Handle sanity image
       return (
@@ -61,8 +63,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
               .image(
                 mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/,
               )
-              .width(dimensions.width || 100)
-              .height(dimensions.height || 100)
+              .width(width)
+              .height(height)
               .fit(dimensions.fit)
               .dpr(dimensions.dpr || 1)
               .url() || ''
@@ -120,12 +122,11 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     [media, restProps, title],
   )
 
-  const layoutComponent = _previewComponents[layout || 'default']
+  const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
+    Omit<PreviewProps, 'renderDefault'>
+  >
 
-  const children = createElement(
-    layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-    previewProps,
-  )
+  const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
     return (

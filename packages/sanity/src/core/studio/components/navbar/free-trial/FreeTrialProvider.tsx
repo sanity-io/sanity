@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -86,25 +86,25 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     }
   }, [client, searchParamsAsString])
 
-  const toggleShowContent = useCallback(
-    (closeAndReOpen = false) => {
-      if (showOnLoad) {
-        setShowOnLoad(false)
-        // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
-        setShowDialog(closeAndReOpen)
-        if (data?.showOnLoad?.id) {
-          client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
-        }
-      } else {
-        setShowDialog((p) => !p)
-      }
-    },
-    [client, showOnLoad, data?.showOnLoad?.id],
-  )
-
   const value = useMemo(
-    () => ({data, showDialog, toggleShowContent, showOnLoad}),
-    [data, showDialog, showOnLoad, toggleShowContent],
+    () => ({
+      data,
+      showDialog,
+      toggleShowContent: (closeAndReOpen = false) => {
+        if (showOnLoad) {
+          setShowOnLoad(false)
+          // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
+          setShowDialog(closeAndReOpen)
+          if (data?.showOnLoad?.id) {
+            client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
+          }
+        } else {
+          setShowDialog((p) => !p)
+        }
+      },
+      showOnLoad,
+    }),
+    [client, data, showDialog, showOnLoad],
   )
 
   return <FreeTrialContext.Provider value={value}>{children}</FreeTrialContext.Provider>
