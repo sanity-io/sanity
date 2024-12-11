@@ -22,7 +22,7 @@ export function generateCommandsDocumentation(
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
-    `usage: sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
+    `usage: npx sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
     '',
     'Commands:',
   ]
@@ -50,7 +50,7 @@ export function generateCommandDocumentation(
 
   const cmdParts = [group || command.name, subCommand].filter(Boolean).join(' ')
   return [
-    `usage: sanity ${cmdParts} ${command.signature}`,
+    `usage: npx sanity ${cmdParts} ${command.signature}`,
     '',
     `   ${command.description}`,
     '',
