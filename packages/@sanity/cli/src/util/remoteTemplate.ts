@@ -318,3 +318,19 @@ export async function generateSanityApiReadToken(
     })
   return response.key
 }
+
+export async function setCorsOrigin(
+  origin: string,
+  projectId: string,
+  apiClient: CliApiClient,
+): Promise<void> {
+  try {
+    await apiClient({api: {projectId}}).request({
+      method: 'POST',
+      url: '/cors',
+      body: {origin: origin, allowCredentials: false},
+    })
+  } catch {
+    // Silent fail, it most likely means that the origin is already set
+  }
+}

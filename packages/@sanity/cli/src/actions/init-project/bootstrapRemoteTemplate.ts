@@ -13,12 +13,14 @@ import {
   generateSanityApiReadToken,
   getPackages,
   type RepoInfo,
+  setCorsOrigin,
   tryApplyPackageName,
   validateRemoteTemplate,
 } from '../../util/remoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {tryGitInit} from './git'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
+import {getDefaultPortForFramework} from '../../util/frameworkPort'
 
 export interface BootstrapRemoteOptions {
   outputPath: string
@@ -65,7 +67,12 @@ export async function bootstrapRemoteTemplate(
       fs: new LocalFileSystemDetector(packagePath),
       frameworkList: frameworks as readonly Framework[],
     })
-    // Next.js uses `.env.local` for local environment variables
+    const port = getDefaultPortForFramework(packageFramework?.slug)
+
+    debug('Setting CORS origin to http://localhost:%d', port)
+    await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+
+    debug('Applying environment variables to %s', pkg)
     const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
     await applyEnvVariables(packagePath, {...variables, readToken}, envName)
   }
