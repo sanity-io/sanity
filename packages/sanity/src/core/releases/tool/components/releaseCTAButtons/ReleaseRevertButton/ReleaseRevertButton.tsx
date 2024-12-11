@@ -1,4 +1,5 @@
 import {RestoreIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
@@ -6,6 +7,7 @@ import {useRouter} from '../../../../../../router'
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
+import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -32,6 +34,7 @@ export const ReleaseRevertButton = ({
   )
   const toast = useToast()
   const router = useRouter()
+  const telemetry = useTelemetry()
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const {createRelease, publishRelease, createVersion} = useReleaseOperations()
 
@@ -58,6 +61,7 @@ export const ReleaseRevertButton = ({
       )
 
       if (stageNewRevertRelease) {
+        telemetry.log(RevertRelease, {revertType: 'staged'})
         toast.push({
           closable: true,
           status: 'success',
@@ -85,6 +89,8 @@ export const ReleaseRevertButton = ({
         })
       } else {
         await publishRelease(revertReleaseId)
+
+        telemetry.log(RevertRelease, {revertType: 'immediately'})
 
         toast.push({
           closable: true,
@@ -114,15 +120,16 @@ export const ReleaseRevertButton = ({
       setRevertReleaseStatus('idle')
     }
   }, [
-    createRelease,
-    createVersion,
-    publishRelease,
-    release.metadata.title,
     documentRevertStates,
-    router,
-    stageNewRevertRelease,
+    createRelease,
     t,
+    release.metadata.title,
+    stageNewRevertRelease,
+    createVersion,
+    telemetry,
     toast,
+    router,
+    publishRelease,
   ])
 
   const confirmReleaseDialog = useMemo(() => {
