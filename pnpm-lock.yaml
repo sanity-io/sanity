@@ -1779,6 +1779,9 @@ importers:
         specifier: ^17.3.0
         version: 17.3.0
     devDependencies:
+      '@million/lint':
+        specifier: ^1.0.13
+        version: 1.0.13(encoding@0.1.13)(rollup@4.28.1)
       '@playwright/experimental-ct-react':
         specifier: 1.49.1
         version: 1.49.1(@types/node@22.10.2)(terser@5.37.0)(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))

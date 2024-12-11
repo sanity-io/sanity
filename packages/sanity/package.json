@@ -303,7 +303,8 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.13",
     "swr": "2.2.5",
-    "vitest": "2.1.1"
+    "vitest": "2.1.1",
+    "@million/lint": "^1.0.13"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
