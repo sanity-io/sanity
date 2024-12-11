@@ -6,7 +6,7 @@ import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {tasksLocaleNamespace} from '../../i18n'
-import {NoWrap, UpdatedTimeAgo} from './helpers'
+import {NoWrap, useUpdatedTimeAgo} from './helpers'
 import {ActivityItem} from './TasksActivityItem'
 
 const UserSkeleton = styled(TextSkeleton)`
@@ -23,7 +23,7 @@ export const TasksActivityCreatedAt = memo(
   function TasksActivityCreatedAt(props: TasksActivityCreatedAtProps) {
     const {createdAt, authorId} = props
     const [user, loading] = useUser(authorId)
-    const {timeAgo, formattedDate} = UpdatedTimeAgo(createdAt)
+    const {timeAgo, formattedDate} = useUpdatedTimeAgo(createdAt)
     const {t} = useTranslation(tasksLocaleNamespace)
     return (
       <ActivityItem userId={authorId}>

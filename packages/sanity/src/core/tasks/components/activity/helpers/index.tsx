@@ -37,7 +37,7 @@ export const NoWrap = styled.span`
   white-space: nowrap;
 `
 
-export function UpdatedTimeAgo(timestamp: string) {
+export function useUpdatedTimeAgo(timestamp: string) {
   const date = new Date(timestamp)
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
   const formattedDate = dateFormatter.format(date)

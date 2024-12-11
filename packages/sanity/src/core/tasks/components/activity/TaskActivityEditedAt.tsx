@@ -2,7 +2,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
-import {getChangeDetails, NoWrap, UpdatedTimeAgo, UserName} from './helpers'
+import {getChangeDetails, NoWrap, UserName, useUpdatedTimeAgo} from './helpers'
 import {type FieldChange} from './helpers/parseTransactions'
 
 interface EditedAtProps {
@@ -12,7 +12,7 @@ interface EditedAtProps {
 export const EditedAt = memo(
   function EditedAt(props: EditedAtProps) {
     const {activity} = props
-    const {formattedDate, timeAgo} = UpdatedTimeAgo(activity.timestamp)
+    const {formattedDate, timeAgo} = useUpdatedTimeAgo(activity.timestamp)
     const {icon, text, changeTo} = getChangeDetails(activity)
 
     return (
