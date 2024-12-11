@@ -42,6 +42,7 @@ export const ReleaseDetail = () => {
   const {data, archivedReleases, loading} = useReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
+  const activity = useReleaseActivity(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
@@ -49,12 +50,6 @@ export const ReleaseDetail = () => {
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
-
-  const activity = useReleaseActivity({
-    release: releaseInDetail,
-    releaseDocumentsCount: results.length,
-    releaseDocumentsLoading: documentsLoading,
-  })
 
   const navigateToReview = useCallback(() => {
     router.navigate({

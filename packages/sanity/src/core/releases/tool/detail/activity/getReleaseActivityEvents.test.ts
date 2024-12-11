@@ -3,11 +3,7 @@ import {of} from 'rxjs'
 import {TestScheduler} from 'rxjs/testing'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {
-  addIdToEvent,
-  getReleaseActivityEvents,
-  RELEASE_ACTIVITY_INITIAL_VALUE,
-} from './getReleaseActivityEvents'
+import {addIdToEvent, getReleaseActivityEvents, INITIAL_VALUE} from './getReleaseActivityEvents'
 import {type ReleaseEvent} from './types'
 
 const mockObservableRequest = vi.fn()
@@ -48,13 +44,6 @@ describe('getReleaseActivityEvents', () => {
     })
   })
 
-  it('should initialize with the default value if releaseId is not provided', () => {
-    const {events$} = getReleaseActivityEvents({client: mockClient, releaseId: undefined})
-    testScheduler.run(({expectObservable}) => {
-      expectObservable(events$).toBe('(a|)', {a: RELEASE_ACTIVITY_INITIAL_VALUE})
-    })
-  })
-
   it('should fetch initial events from the API', () => {
     mockObservableRequest.mockReturnValueOnce(
       of({
@@ -66,7 +55,7 @@ describe('getReleaseActivityEvents', () => {
     const {events$} = getReleaseActivityEvents({client: mockClient, releaseId})
     testScheduler.run(({expectObservable}) => {
       expectObservable(events$).toBe('(ab)', {
-        a: RELEASE_ACTIVITY_INITIAL_VALUE,
+        a: INITIAL_VALUE,
         b: {
           events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
           nextCursor: 'cursor1',
@@ -103,7 +92,7 @@ describe('getReleaseActivityEvents', () => {
       actions.subscribe((action) => action())
 
       expectObservable(events$).toBe('(ab)-(cd)', {
-        a: RELEASE_ACTIVITY_INITIAL_VALUE,
+        a: INITIAL_VALUE,
         b: {
           events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
           nextCursor: 'cursor1',
@@ -157,7 +146,7 @@ describe('getReleaseActivityEvents', () => {
 
       actions.subscribe((action) => action())
       expectObservable(events$).toBe('(ab)-(cd)', {
-        a: RELEASE_ACTIVITY_INITIAL_VALUE,
+        a: INITIAL_VALUE,
         b: {
           loading: false,
           nextCursor: 'cursor2',

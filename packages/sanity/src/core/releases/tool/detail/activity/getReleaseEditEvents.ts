@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {
+  distinctUntilChanged,
   expand,
   filter,
   from,
@@ -105,44 +106,35 @@ function getReleaseTransactions({
     )
 }
 
-interface getReleaseActivityEventsOpts {
-  client: SanityClient
-  releaseId?: string
-  releasesState$: Observable<ReleasesReducerState>
-}
-export const EDITS_EVENTS_INITIAL_VALUE: {
+interface EditEventsObservableValue {
   editEvents: (EditReleaseEvent | CreateReleaseEvent)[]
   loading: boolean
-} = {
+  error: null | Error
+}
+export const INITIAL_VALUE: EditEventsObservableValue = {
   editEvents: [],
   loading: true,
+  error: null,
+}
+
+interface getReleaseActivityEventsOpts {
+  client: SanityClient
+  releaseId: string
+  releasesState$: Observable<ReleasesReducerState>
 }
 export function getReleaseEditEvents({
   client,
   releaseId,
   releasesState$,
 }: getReleaseActivityEventsOpts): {
-  editEvents$: Observable<{
-    editEvents: (EditReleaseEvent | CreateReleaseEvent)[]
-    loading: boolean
-  }>
+  editEvents$: Observable<EditEventsObservableValue>
 } {
-  if (!releaseId) {
-    return {
-      editEvents$: of({editEvents: [], loading: true}),
-    }
-  }
-  let lastRevProcessed = ''
   return {
     editEvents$: releasesState$.pipe(
       map((releasesState) => releasesState.releases.get(releaseId)),
       // Don't emit if the release is not found
       filter(Boolean),
-      // ReleaseState$ is changing a lot and it could change because of other releases changing, we only need to update this if the `_rev` changes
-      filter((release) => lastRevProcessed !== release._rev),
-      tap((release) => {
-        lastRevProcessed = release._rev
-      }),
+      distinctUntilChanged((prev, next) => prev._rev === next._rev),
       switchMap((release) => {
         return getReleaseTransactions({
           client,
@@ -150,11 +142,15 @@ export function getReleaseEditEvents({
           toTransaction: release._rev,
         }).pipe(
           map((transactions) => {
-            return {editEvents: buildReleaseEditEvents(transactions, release), loading: false}
+            return {
+              editEvents: buildReleaseEditEvents(transactions, release),
+              loading: false,
+              error: null,
+            }
           }),
         )
       }),
-      startWith(EDITS_EVENTS_INITIAL_VALUE),
+      startWith(INITIAL_VALUE),
       scan((acc, current) => {
         // Accumulate edit events from previous state
         const editEvents = current.loading
@@ -162,7 +158,7 @@ export function getReleaseEditEvents({
           : current.editEvents // Update with new events when available
 
         return {...current, editEvents}
-      }, EDITS_EVENTS_INITIAL_VALUE),
+      }, INITIAL_VALUE),
       shareReplay(1),
     ),
   }

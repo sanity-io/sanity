@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {BehaviorSubject, type Observable, of} from 'rxjs'
+import {BehaviorSubject, type Observable} from 'rxjs'
 import {map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
@@ -11,7 +11,7 @@ export interface ReleaseEventsObservableValue {
   loading: boolean
   error: null | Error
 }
-export const RELEASE_ACTIVITY_INITIAL_VALUE: ReleaseEventsObservableValue = {
+export const INITIAL_VALUE: ReleaseEventsObservableValue = {
   events: [],
   nextCursor: '',
   loading: true,
@@ -34,16 +34,13 @@ export function addIdToEvent(event: Omit<ReleaseEvent, 'id'>): ReleaseEvent {
 
 interface InitialFetchEventsOptions {
   client: SanityClient
-  releaseId?: string
+  releaseId: string
 }
 export function getReleaseActivityEvents({client, releaseId}: InitialFetchEventsOptions): {
   events$: Observable<ReleaseEventsObservableValue>
   reloadEvents: () => void
   loadMore: () => void
 } {
-  if (!releaseId) {
-    return {events$: of(RELEASE_ACTIVITY_INITIAL_VALUE), reloadEvents: () => {}, loadMore: () => {}}
-  }
   const refetchEventsTrigger$ = new BehaviorSubject<{
     cursor: string | null
     origin: 'loadMore' | 'reload' | 'initial'
@@ -102,7 +99,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
           loading: next.loading,
           error: next.error,
         }
-      }, RELEASE_ACTIVITY_INITIAL_VALUE),
+      }, INITIAL_VALUE),
       tap((response) => {
         nextCursor = response.nextCursor
       }),

@@ -5,8 +5,8 @@ import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest
 
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionLogs'
 import {
-  EDITS_EVENTS_INITIAL_VALUE,
   type getReleaseEditEvents as getReleaseEditEventsFunction,
+  INITIAL_VALUE,
 } from './getReleaseEditEvents'
 
 const mockClient = {
@@ -133,17 +133,6 @@ describe('getReleaseEditEvents()', () => {
   afterEach(() => {
     vi.resetAllMocks()
   })
-  it('should initialize with the default value if releaseId is not provided', () => {
-    testScheduler.run(({expectObservable, hot}) => {
-      const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
-      const {editEvents$} = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: undefined,
-        releasesState$: releasesState$,
-      })
-      expectObservable(editEvents$).toBe('(a|)', {a: EDITS_EVENTS_INITIAL_VALUE})
-    })
-  })
   it('should not get the events if release is undefined', () => {
     testScheduler.run(({expectObservable, hot}) => {
       const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
@@ -154,7 +143,7 @@ describe('getReleaseEditEvents()', () => {
         releasesState$,
       })
 
-      expectObservable(editEvents$).toBe('(a)', {a: EDITS_EVENTS_INITIAL_VALUE})
+      expectObservable(editEvents$).toBe('(a)', {a: INITIAL_VALUE})
     })
   })
   it('should get and build the release edit events', () => {
@@ -169,8 +158,8 @@ describe('getReleaseEditEvents()', () => {
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
       expectObservable(editEvents$).toBe('a-b', {
-        a: {editEvents: [], loading: true},
-        b: {editEvents: [MOCKED_EVENT], loading: false},
+        a: {editEvents: [], loading: true, error: null},
+        b: {editEvents: [MOCKED_EVENT], loading: false, error: null},
       })
     })
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
@@ -213,8 +202,8 @@ describe('getReleaseEditEvents()', () => {
         .mockReturnValueOnce(mockSecondResponse$)
         .mockReturnValueOnce(mockFinalResponse$)
       expectObservable(editEvents$).toBe('a---b', {
-        a: {editEvents: [], loading: true},
-        b: {editEvents: [MOCKED_EVENT], loading: false},
+        a: {editEvents: [], loading: true, error: null},
+        b: {editEvents: [MOCKED_EVENT], loading: false, error: null},
       })
     })
     expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(3)
@@ -249,8 +238,8 @@ describe('getReleaseEditEvents()', () => {
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
       // Even though the state changes, the editEvents$ should not emit again
       expectObservable(editEvents$).toBe('a-b', {
-        a: {editEvents: [], loading: true},
-        b: {editEvents: [MOCKED_EVENT], loading: false},
+        a: {editEvents: [], loading: true, error: null},
+        b: {editEvents: [MOCKED_EVENT], loading: false, error: null},
       })
     })
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
@@ -294,14 +283,16 @@ describe('getReleaseEditEvents()', () => {
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$).mockReturnValueOnce(mockResponse2$)
 
       expectObservable(editEvents$).toBe('a-b---c', {
-        a: {editEvents: [], loading: true},
+        a: {editEvents: [], loading: true, error: null},
         b: {
           editEvents: [MOCKED_EVENT],
           loading: false,
+          error: null,
         },
         c: {
           editEvents: [MOCKED_EVENT],
           loading: false,
+          error: null,
         },
       })
     })
