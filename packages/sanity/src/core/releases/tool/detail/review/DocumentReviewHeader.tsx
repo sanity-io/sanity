@@ -55,7 +55,6 @@ export function DocumentReviewHeader({
             releaseId={releaseId}
             previewValues={previewValues}
             isLoading={isLoading}
-            hasValidationError={validation?.hasError}
           />
         </Box>
         <Flex gap={2} padding={3} style={{flexShrink: 0}}>

@@ -6,7 +6,7 @@ import {IntentLink} from 'sanity/router'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../../util/draftUtils'
-import {useDocumentPresence} from '../../index'
+import {type ReleaseState, useDocumentPresence} from '../../index'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 interface ReleaseDocumentPreviewProps {
@@ -15,8 +15,8 @@ interface ReleaseDocumentPreviewProps {
   releaseId: string
   previewValues: PreviewValue
   isLoading: boolean
-  revision?: string
-  hasValidationError?: boolean
+  releaseState?: ReleaseState
+  documentRevision?: string
 }
 
 export function ReleaseDocumentPreview({
@@ -25,10 +25,23 @@ export function ReleaseDocumentPreview({
   releaseId,
   previewValues,
   isLoading,
-  revision,
-  hasValidationError,
+  releaseState,
+  documentRevision,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
+
+  const intentParams = useMemo(() => {
+    if (releaseState !== 'published' && releaseState !== 'archived') return {}
+
+    const rev = releaseState === 'archived' ? '@lastEdited' : '@lastPublished'
+
+    return {
+      rev,
+      inspect: 'sanity/structure/history',
+      historyEvent: documentRevision,
+      historyVersion: getReleaseIdFromReleaseDocumentId(releaseId),
+    }
+  }, [documentRevision, releaseId, releaseState])
 
   const LinkComponent = useMemo(
     () =>
@@ -41,13 +54,21 @@ export function ReleaseDocumentPreview({
             params={{
               id: getPublishedId(documentId),
               type: documentTypeName,
+              ...intentParams,
             }}
-            searchParams={[['perspective', getReleaseIdFromReleaseDocumentId(releaseId)]]}
+            searchParams={[
+              [
+                'perspective',
+                releaseState === 'published'
+                  ? 'published'
+                  : getReleaseIdFromReleaseDocumentId(releaseId),
+              ],
+            ]}
             ref={ref}
           />
         )
       }),
-    [documentId, documentTypeName, releaseId],
+    [documentId, documentTypeName, intentParams, releaseId, releaseState],
   )
 
   const previewPresence = useMemo(
@@ -55,16 +76,9 @@ export function ReleaseDocumentPreview({
     [documentPresence],
   )
 
-  const preview = (
-    <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
-  )
-
-  /** @todo revision deeplink support for archived and published version docs */
-  if (revision) return preview
-
   return (
     <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
-      {preview}
+      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
     </Card>
   )
 }

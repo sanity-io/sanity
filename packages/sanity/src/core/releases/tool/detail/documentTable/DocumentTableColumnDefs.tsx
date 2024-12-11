@@ -20,21 +20,23 @@ const MemoReleaseDocumentPreview = memo(
   function MemoReleaseDocumentPreview({
     item,
     releaseId,
-    revision,
+    releaseState,
+    documentRevision,
   }: {
     item: DocumentInRelease
     releaseId: string
-    revision?: string
+    releaseState?: ReleaseState
+    documentRevision?: string
   }) {
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
         documentTypeName={item.document._type}
         releaseId={releaseId}
-        revision={revision}
+        releaseState={releaseState}
+        documentRevision={documentRevision}
         previewValues={item.previewValues.values}
         isLoading={item.previewValues.isLoading}
-        hasValidationError={item.validation?.hasError}
       />
     )
   },
@@ -135,11 +137,8 @@ export const getDocumentTableColumnDefs: (
         <MemoReleaseDocumentPreview
           item={datum}
           releaseId={releaseId}
-          revision={
-            releaseState === 'archived' || releaseState === 'published'
-              ? datum.document._rev
-              : undefined
-          }
+          releaseState={releaseState}
+          documentRevision={datum.document._rev}
         />
       </Box>
     ),
