@@ -105,8 +105,12 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * Gets the appropriate modifier key for the current platform.
      * @returns The modifier key name ('Meta' for macOS, 'Control' for other platforms).
      */
-    getModifierKey: () => {
+    getModifierKey: (options?: {browserName?: string}) => {
       if (process.platform === 'darwin') {
+        // There's a bug in Chromium on macOS where it use 'Control' instead of 'Meta' inside Playwright for some reason
+        if (options?.browserName && ['chromium', 'firefox'].includes(options.browserName)) {
+          return 'Control'
+        }
         return 'Meta'
       }
       return 'Control'
