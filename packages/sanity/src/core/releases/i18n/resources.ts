@@ -311,7 +311,7 @@ const releasesLocaleStrings = {
   /** Text for toast when release has been reverted immediately */
   'toast.immediate-revert.success': "The '{{title}}' release was successfully reverted",
   /** Text for toast when release has reverted release successfully staged */
-  'toast.revert-stage.success': "Revert release for '{{title}}' was successfully created",
+  'toast.revert-stage.success': "Revert release for '{{title}}' was successfully created. <Link/>",
   /** Link text for toast link to the generated revert release */
   'toast.revert-stage.success-link': 'View revert release',
 

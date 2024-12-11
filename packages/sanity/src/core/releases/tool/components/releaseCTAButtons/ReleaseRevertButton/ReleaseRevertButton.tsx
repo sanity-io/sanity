@@ -82,17 +82,27 @@ export const ReleaseRevertButton = ({
           title: (
             <Text muted size={1}>
               <Translate
+                components={{
+                  Link: () => (
+                    <Text
+                      size={1}
+                      weight="medium"
+                      data-as="a"
+                      onClick={navigateToRevertRelease(revertReleaseId)}
+                      style={{
+                        cursor: 'pointer',
+                        marginBottom: '0.5rem',
+                        display: 'flex',
+                      }}
+                    >
+                      {t('toast.revert-stage.success-link')}
+                    </Text>
+                  ),
+                }}
                 t={t}
                 i18nKey="toast.revert-stage.success"
                 values={{title: release.metadata.title}}
               />
-            </Text>
-          ),
-          description: (
-            <Text size={1} weight="medium">
-              <a onClick={navigateToRevertRelease(revertReleaseId)} style={{cursor: 'pointer'}}>
-                {t('toast.revert-stage.success-link')}
-              </a>
             </Text>
           ),
         })

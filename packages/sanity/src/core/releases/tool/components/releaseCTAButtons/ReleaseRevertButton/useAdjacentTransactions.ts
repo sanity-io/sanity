@@ -1,27 +1,20 @@
+import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  combineLatest,
-  delay,
-  filter,
-  forkJoin,
-  from,
-  map,
-  type Observable,
-  of,
-  switchMap,
-} from 'rxjs'
+import {combineLatest, filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
 import {API_VERSION} from '../../../../../tasks/constants'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
-type RevertDocuments = (Omit<DocumentInRelease['document'], 'publishedDocumentExists'> & {
+type RevertDocument = SanityDocument & {
   _system?: {
     delete: boolean
   }
-})[]
+}
+
+type RevertDocuments = RevertDocument[]
 
 interface AdjacentTransactionsResult {
   hasPostPublishTransactions: boolean | null
@@ -97,22 +90,18 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
                 documents.find(({document}) => document._id === docId)?.document || {}
 
               return of({
-                _id: docId,
-                ...unpublishDocument,
+                ...(unpublishDocument as SanityDocument),
                 _system: {delete: true},
               })
             }
 
             return observableClient
               .request<{
-                documents: Omit<DocumentInRelease['document'], 'publishedDocumentExists'>[]
+                documents: RevertDocuments
               }>({
                 url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
               })
-              .pipe(
-                map((response) => response.documents[0]),
-                delay(5000),
-              )
+              .pipe(map((response) => response.documents[0]))
           }),
         ),
       ),
