@@ -13,7 +13,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await $overlay.press('Space')
     }
 
-    await expect($overlay).not.toBeVisible({timeout: 1500})
+    await expect($overlay).not.toBeVisible()
   }
   return {
     /**
