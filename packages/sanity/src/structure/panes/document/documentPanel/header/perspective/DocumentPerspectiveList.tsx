@@ -124,7 +124,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return !editState?.published
   }, [editState?.liveEdit, editState?.published])
 
-  const getIsReleaseSelected = useCallback(
+  const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion)
         return {selected: release.name === getVersionFromId(displayed?._id || '')}
@@ -243,9 +243,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           <VersionChip
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
-            {...getIsReleaseSelected(release)}
-            // selected
-            // disabled={false}
+            {...getReleaseChipState(release)}
             onClick={handleBundleChange(release.name)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
