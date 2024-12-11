@@ -7,6 +7,7 @@ import {useRouter} from 'sanity/router'
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
+import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -31,6 +32,13 @@ export const ReleasePublishAllButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
   const telemetry = useTelemetry()
+  const publish2 = useMemo(() => {
+    if (supportsLocalStorage) {
+      return localStorage.getItem('publish2') === 'true'
+    }
+    return false
+  }, [])
+
   const [publishBundleStatus, setPublishBundleStatus] = useState<
     'idle' | 'confirm' | 'confirm-2' | 'publishing'
   >('idle')
@@ -151,21 +159,23 @@ export const ReleasePublishAllButton = ({
 
   return (
     <>
-      <Button
-        tooltipProps={{
-          disabled: !isPublishButtonDisabled,
-          content: publishTooltipContent,
-          placement: 'bottom',
-        }}
-        icon={PublishIcon}
-        disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        text={'Unstable Publish'}
-        onClick={() => setPublishBundleStatus('confirm-2')}
-        loading={publishBundleStatus === 'publishing'}
-        data-testid="publish-all-button"
-        tone="suggest"
-      />
+      {publish2 && (
+        <Button
+          tooltipProps={{
+            disabled: !isPublishButtonDisabled,
+            content: publishTooltipContent,
+            placement: 'bottom',
+          }}
+          icon={PublishIcon}
+          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          text={'Unstable Publish'}
+          onClick={() => setPublishBundleStatus('confirm-2')}
+          loading={publishBundleStatus === 'publishing'}
+          data-testid="publish-all-button"
+          tone="suggest"
+        />
+      )}
       <Button
         tooltipProps={{
           disabled: !isPublishButtonDisabled,
