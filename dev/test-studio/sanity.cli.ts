@@ -30,17 +30,17 @@ export default defineCliConfig({
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
   reactStrictMode: true,
-  reactCompiler: {
-    target: '18',
-    sources: millionLintEnabled
-      ? (filename) => {
+  reactCompiler: millionLintEnabled
+    ? {
+        target: '18',
+        sources: (filename) => {
           if (filename.includes('node_modules')) {
             return false
           }
           return millionInclude.every((pattern) => !filename.endsWith(pattern.split('**/')[1]))
-        }
-      : undefined,
-  },
+        },
+      }
+    : {target: '18'},
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
