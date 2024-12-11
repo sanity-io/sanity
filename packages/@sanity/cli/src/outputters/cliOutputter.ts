@@ -23,7 +23,7 @@ export default {
 
   error(...args: unknown[]): void {
     if (args[0] instanceof Error) {
-      console.error(chalk.red(args[0].stack))
+      console.error(`${SYMBOL_FAIL} ${chalk.red(args[0].stack)}`)
     } else {
       console.error(`${SYMBOL_FAIL} ${args.join(' ')}`)
     }
