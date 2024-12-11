@@ -12,7 +12,6 @@ import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 import {evaluate, patch} from 'silver-fleece'
-import which from 'which'
 
 import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
 import {type InitFlags} from '../../commands/init/initCommand'
