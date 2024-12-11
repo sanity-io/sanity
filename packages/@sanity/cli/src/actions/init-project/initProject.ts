@@ -121,7 +121,8 @@ export default async function initSanity(
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
-  const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
+  const success = output.success
+  const warn = output.warn
 
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
@@ -131,7 +132,6 @@ export default async function initSanity(
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
   const packageManager = cliFlags['package-manager']
-  const check = chalk.green('✓')
 
   let remoteTemplateInfo: RepoInfo | undefined
   if (cliFlags.template && checkIsRemoteTemplate(cliFlags.template)) {
@@ -259,17 +259,17 @@ export default async function initSanity(
   if (hasToken) {
     trace.log({step: 'login', alreadyLoggedIn: true})
     const user = await getUserData(apiClient)
-    print(`${check} You are logged in as %s using %s`, user.email, getProviderName(user.provider))
+    success('You are logged in as %s using %s', user.email, getProviderName(user.provider))
   } else if (!unattended) {
     trace.log({step: 'login'})
     await getOrCreateUser()
   }
 
-  let introMessage = `${check} Fetching existing projects`
+  let introMessage = 'Fetching existing projects'
   if (cliFlags.quickstart) {
-    introMessage = `${check} Eject your existing project's Sanity configuration`
+    introMessage = "Eject your existing project's Sanity configuration"
   }
-  print(introMessage)
+  success(introMessage)
   print('')
 
   const flags = await prepareFlags()
@@ -282,7 +282,8 @@ export default async function initSanity(
 
   // If user doesn't want to output any template code
   if (bareOutput) {
-    print(`\n${chalk.green('Success!')} Below are your project details:\n`)
+    success('Below are your project details')
+    print('')
     print(`Project ID: ${chalk.cyan(projectId)}`)
     print(`Dataset: ${chalk.cyan(datasetName)}`)
     print(
@@ -706,16 +707,13 @@ export default async function initSanity(
   trace.complete()
 
   async function getOrCreateUser() {
-    print(`We can't find any auth credentials in your Sanity config`)
-    print('- log in or create a new account\n')
+    warn('No authentication credentials found in your Sanity config')
+    print('')
 
     // Provide login options (`sanity login`)
     const {extOptions, ...otherArgs} = args
     const loginArgs: CliCommandArguments<LoginFlags> = {...otherArgs, extOptions: {}}
     await login(loginArgs, {...context, telemetry: trace.newContext('login')})
-
-    print("Good stuff, you're now authenticated. You'll need a project to keep your")
-    print('datasets and collaborators safe and snug.')
   }
 
   async function getProjectDetails(): Promise<{
@@ -876,7 +874,6 @@ export default async function initSanity(
         new prompt.Separator(),
         ...projectChoices,
       ],
-      suffix: 'Use ↑↓ to select, Enter to confirm',
     })
 
     if (selected === 'new') {
@@ -1049,20 +1046,20 @@ export default async function initSanity(
       type: 'list',
       choices: [
         {
-          value: 'moviedb',
-          name: 'Movie project (schema + sample data)',
-        },
-        {
-          value: 'shopify',
-          name: 'E-commerce (Shopify)',
+          value: 'clean',
+          name: 'Clean project with no predefined schema types',
         },
         {
           value: 'blog',
           name: 'Blog (schema)',
         },
         {
-          value: 'clean',
-          name: 'Clean project with no predefined schema types',
+          value: 'shopify',
+          name: 'E-commerce (Shopify)',
+        },
+        {
+          value: 'moviedb',
+          name: 'Movie project (schema + sample data)',
         },
       ],
     })

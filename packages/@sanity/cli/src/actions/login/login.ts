@@ -146,7 +146,7 @@ export async function login(
       })
   }
 
-  output.print(chalk.green('Login successful'))
+  output.success('Login successful')
   trace.complete()
 }
 
@@ -335,7 +335,7 @@ async function promptProviders(
 
   const provider = await prompt.single({
     type: 'list',
-    message: 'Login type',
+    message: 'Please log in or create a new account',
     choices: providers.map((choice) => choice.title),
   })
 
