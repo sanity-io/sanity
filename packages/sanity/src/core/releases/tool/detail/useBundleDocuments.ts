@@ -98,7 +98,7 @@ export function useBundleDocuments(releaseId: string): {
                   getPreviewValueWithFallback({
                     value: document,
                     version: version.snapshot,
-                    perspective: `bundle.${releaseId}`,
+                    perspective: releaseId,
                   }),
                   schemaType,
                 ),
@@ -151,7 +151,7 @@ export function useBundleDocuments(releaseId: string): {
                   getPreviewValueWithFallback({
                     value: document,
                     version: version.snapshot || document,
-                    perspective: `bundle.${releaseId}`,
+                    perspective: releaseId,
                   }),
                   schemaType,
                 ),
