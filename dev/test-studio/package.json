@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@portabletext/editor": "^1.16.3",
+    "@million/lint": "^1.0.13",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.67.1",
