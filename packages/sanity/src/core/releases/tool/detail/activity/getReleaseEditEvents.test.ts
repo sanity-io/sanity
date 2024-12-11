@@ -100,7 +100,16 @@ const MOCKED_EVENT = {
   timestamp: '2024-12-05T17:09:28.325641Z',
   releaseName: 'rWBfpXZVj',
 }
+
 const mockGetTransactionsLogs = getTransactionsLogs as Mock
+const BASE_GET_TRANSACTION_LOGS_PARAMS = {
+  effectFormat: 'mendoza',
+  fromTransaction: undefined,
+  limit: 100,
+  reverse: true,
+  tag: 'sanity.studio.release.history',
+  toTransaction: MOCKED_RELEASE._rev,
+} as const
 
 const MOCKED_RELEASES_STATE = {
   state: 'loaded' as const,
@@ -159,21 +168,67 @@ describe('getReleaseEditEvents()', () => {
       })
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
-      expectObservable(editEvents$).toBe('ab', {
+      expectObservable(editEvents$).toBe('a-b', {
         a: {editEvents: [], loading: true},
-        b: {
-          editEvents: [MOCKED_EVENT],
-          loading: false,
-        },
+        b: {editEvents: [MOCKED_EVENT], loading: false},
       })
     })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
+      mockClient,
+      MOCKED_RELEASE._id,
+      BASE_GET_TRANSACTION_LOGS_PARAMS,
+    )
+  })
+  it('should expand the release edit events transactions if received max', () => {
+    testScheduler.run(({expectObservable, cold, hot}) => {
+      const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
+
+      const {editEvents$} = getReleaseEditEvents({
+        client: mockClient,
+        releaseId: MOCKED_RELEASE._id,
+        releasesState$,
+      })
+      const mockFirstResponse$ = cold('-a|', {
+        a: Array.from({length: 100}).map((_, index) => {
+          return {
+            ...MOCKED_TRANSACTION_LOGS[0],
+            id:
+              index === 0
+                ? MOCKED_TRANSACTION_LOGS[0].id
+                : `${MOCKED_TRANSACTION_LOGS[0].id}-${index + 1}`,
+          }
+        }),
+      })
+      const mockSecondResponse$ = cold('-a|', {
+        a: Array.from({length: 100}).map((_, index) => {
+          return {
+            ...MOCKED_TRANSACTION_LOGS[0],
+            id: `${MOCKED_TRANSACTION_LOGS[0].id}-${index + 101}`,
+          }
+        }),
+      })
+      const mockFinalResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
+      mockGetTransactionsLogs
+        .mockReturnValueOnce(mockFirstResponse$)
+        .mockReturnValueOnce(mockSecondResponse$)
+        .mockReturnValueOnce(mockFinalResponse$)
+      expectObservable(editEvents$).toBe('a---b', {
+        a: {editEvents: [], loading: true},
+        b: {editEvents: [MOCKED_EVENT], loading: false},
+      })
+    })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(3)
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
-      effectFormat: 'mendoza',
-      fromTransaction: undefined,
-      limit: 100,
-      reverse: true,
-      tag: 'sanity.studio.release.history',
+      ...BASE_GET_TRANSACTION_LOGS_PARAMS,
       toTransaction: MOCKED_RELEASE._rev,
+    })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
+      ...BASE_GET_TRANSACTION_LOGS_PARAMS,
+      toTransaction: `${MOCKED_TRANSACTION_LOGS[0].id}-100`,
+    })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
+      ...BASE_GET_TRANSACTION_LOGS_PARAMS,
+      toTransaction: `${MOCKED_TRANSACTION_LOGS[0].id}-200`,
     })
   })
   it('should not refetch the edit events if rev has not changed', () => {
@@ -193,22 +248,16 @@ describe('getReleaseEditEvents()', () => {
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
       // Even though the state changes, the editEvents$ should not emit again
-      expectObservable(editEvents$).toBe('ab', {
+      expectObservable(editEvents$).toBe('a-b', {
         a: {editEvents: [], loading: true},
-        b: {
-          editEvents: [MOCKED_EVENT],
-          loading: false,
-        },
+        b: {editEvents: [MOCKED_EVENT], loading: false},
       })
     })
-    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
-      effectFormat: 'mendoza',
-      fromTransaction: undefined,
-      limit: 100,
-      reverse: true,
-      tag: 'sanity.studio.release.history',
-      toTransaction: MOCKED_RELEASE._rev,
-    })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
+      mockClient,
+      MOCKED_RELEASE._id,
+      BASE_GET_TRANSACTION_LOGS_PARAMS,
+    )
   })
   it('should refetch the edit events if release._rev changes', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
@@ -244,7 +293,7 @@ describe('getReleaseEditEvents()', () => {
 
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$).mockReturnValueOnce(mockResponse2$)
 
-      expectObservable(editEvents$).toBe('ab---c', {
+      expectObservable(editEvents$).toBe('a-b---c', {
         a: {editEvents: [], loading: true},
         b: {
           editEvents: [MOCKED_EVENT],
@@ -256,21 +305,15 @@ describe('getReleaseEditEvents()', () => {
         },
       })
     })
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
+      mockClient,
+      MOCKED_RELEASE._id,
+      BASE_GET_TRANSACTION_LOGS_PARAMS,
+    )
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
-      effectFormat: 'mendoza',
-      fromTransaction: undefined,
-      limit: 100,
-      reverse: true,
-      tag: 'sanity.studio.release.history',
-      toTransaction: MOCKED_RELEASE._rev,
-    })
-    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, MOCKED_RELEASE._id, {
-      effectFormat: 'mendoza',
+      ...BASE_GET_TRANSACTION_LOGS_PARAMS,
       // Uses the previous release._rev as the fromTransaction
       fromTransaction: MOCKED_RELEASE._rev,
-      limit: 100,
-      reverse: true,
-      tag: 'sanity.studio.release.history',
       // Uses the new release._rev as the toTransaction
       toTransaction: 'changed-rev',
     })
