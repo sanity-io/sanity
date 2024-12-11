@@ -2,7 +2,6 @@ import http, {type Server} from 'node:http'
 import os from 'node:os'
 
 import {type SanityClient} from '@sanity/client'
-import chalk from 'chalk'
 import open from 'open'
 
 import {debug as debugIt} from '../../debug'
