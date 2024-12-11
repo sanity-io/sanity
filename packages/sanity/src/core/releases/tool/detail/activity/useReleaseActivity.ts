@@ -14,6 +14,7 @@ export interface ReleaseActivity {
   loading: boolean
   error: null | Error
   loadMore: () => void
+  hasMore: boolean
 }
 
 export function useReleaseActivity({
@@ -36,7 +37,10 @@ export function useReleaseActivity({
     () => getReleaseActivityEvents({client, releaseId}),
     [client, releaseId],
   )
-  const {events, loading, error} = useObservable(events$, RELEASE_ACTIVITY_INITIAL_VALUE)
+  const {events, loading, error, nextCursor} = useObservable(
+    events$,
+    RELEASE_ACTIVITY_INITIAL_VALUE,
+  )
 
   const {editEvents$} = useMemo(
     () => getReleaseEditEvents({client, releaseId, releasesState$}),
@@ -98,6 +102,7 @@ export function useReleaseActivity({
 
   return {
     events: allEvents,
+    hasMore: Boolean(nextCursor),
     loadMore,
     loading,
     error,

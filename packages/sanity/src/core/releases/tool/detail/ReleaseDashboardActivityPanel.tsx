@@ -62,6 +62,9 @@ export function ReleaseDashboardActivityPanel({
                   events={activity.events}
                   releaseTitle={release.metadata.title || release.name}
                   releaseId={release._id}
+                  hasMore={activity.hasMore}
+                  loadMore={activity.loadMore}
+                  isLoading={activity.loading}
                 />
               </MotionFlex>
             </Resizable>
