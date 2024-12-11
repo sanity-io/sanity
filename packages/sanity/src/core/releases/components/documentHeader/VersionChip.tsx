@@ -10,33 +10,49 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {getVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
-import {type ReleaseDocument} from '../../store/types'
+import {type ReleaseDocument, type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
-const Chip = styled(Button)`
-  border-radius: 9999px !important;
-  transition: none;
-  text-decoration: none !important;
-  cursor: pointer;
+interface ChipStyleProps {
+  $isArchived?: boolean
+}
 
-  // target enabled state
-  &:not([data-disabled='true']) {
-    --card-border-color: var(--card-badge-default-bg-color);
-  }
+const Chip = styled(Button)<ChipStyleProps>(
+  ({$isArchived}) =>
+    `
+    border-radius: 9999px !important;
+    transition: none;
+    text-decoration: none !important;
+    cursor: pointer;
 
-  &[data-disabled='true'] {
-    color: var(--card-muted-fg-color);
-  }
-`
+    // target enabled state
+    &:not([data-disabled='true']) {
+      --card-border-color: var(--card-badge-default-bg-color);
+    }
+
+    &[data-disabled='true'] {
+      color: var(--card-muted-fg-color);
+      cursor: default;
+
+      // archived will be disabled but should have bg color
+      ${
+        $isArchived &&
+        css`
+          background-color: var(--card-badge-default-bg-color);
+        `
+      }
+    }
+  `,
+)
 
 /**
  * @internal
@@ -56,6 +72,7 @@ export const VersionChip = memo(function VersionChip(props: {
     documentType: string
     menuReleaseId: string
     fromRelease: string
+    releaseState?: ReleaseState
     isVersion: boolean
     disabled?: boolean
   }
@@ -75,6 +92,7 @@ export const VersionChip = memo(function VersionChip(props: {
       documentType,
       menuReleaseId,
       fromRelease,
+      releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
     },
@@ -162,6 +180,8 @@ export const VersionChip = memo(function VersionChip(props: {
     } as HTMLElement
   }, [contextMenuPoint])
 
+  const contextMenuHandler = disabled ? undefined : handleContextMenu
+
   return (
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
@@ -178,7 +198,8 @@ export const VersionChip = memo(function VersionChip(props: {
           tone={tone}
           icon={<ReleaseAvatar padding={1} tone={tone} />}
           iconRight={locked && LockIcon}
-          onContextMenu={handleContextMenu}
+          onContextMenu={contextMenuHandler}
+          $isArchived={releaseState === 'archived'}
         />
       </Tooltip>
 

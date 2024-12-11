@@ -2,6 +2,7 @@ import {Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
   formatRelativeLocalePublishDate,
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
   isReleaseScheduledOrScheduling,
@@ -14,6 +15,7 @@ import {
   VersionChip,
   versionDocumentExists,
 } from 'sanity'
+import {usePaneRouter} from 'sanity/structure'
 
 import {useDocumentPane} from '../../../useDocumentPane'
 
@@ -66,18 +68,19 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
+  const {params} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {data: releases, loading} = useReleases()
+  const {data: releases, loading, archivedReleases} = useReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
   const filteredReleases: FilterReleases = useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
 
-    return releases.reduce(
+    const activeReleases = releases.reduce(
       (acc: FilterReleases, release) => {
         const versionDocExists = versionDocumentExists(documentVersions, release._id)
         if (versionDocExists) {
@@ -89,7 +92,21 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       },
       {notCurrentReleases: [], currentReleases: []},
     )
-  }, [documentVersions, releases])
+
+    // without historyVersion, version is not in an archived release
+    if (!params?.historyVersion) return activeReleases
+
+    const archivedRelease = archivedReleases.find(
+      (r) => getReleaseIdFromReleaseDocumentId(r._id) === params?.historyVersion,
+    )
+
+    // only for explicitly archived releases; published releases use published perspective
+    if (archivedRelease?.state === 'archived') {
+      activeReleases.currentReleases.push(archivedRelease)
+    }
+
+    return activeReleases
+  }, [archivedReleases, documentVersions, params?.historyVersion, releases])
 
   const handleBundleChange = useCallback(
     (bundleId: string) => () => {
@@ -106,6 +123,19 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     // If it's not live edit, we want to check for the existence of the published doc.
     return !editState?.published
   }, [editState?.liveEdit, editState?.published])
+
+  const getReleaseChipState = useCallback(
+    (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
+      if (!params?.historyVersion)
+        return {selected: release.name === getVersionFromId(displayed?._id || '')}
+
+      const isReleaseHistoryMatch =
+        getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
+
+      return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
+    },
+    [displayed?._id, params?.historyVersion],
+  )
 
   return (
     <>
@@ -177,18 +207,20 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         }
         selected={
           /** the draft is selected when:
+           * not viewing a historical version,
            * when the document displayed is a draft,
            * when the perspective is null,
            * when the document is not published and the displayed version is draft,
            * when there is no draft (new document),
            */
           !!(
-            editState?.draft?._id === displayed?._id ||
-            !selectedPerspectiveName ||
-            (!editState?.published &&
-              editState?.draft &&
-              editState?.draft?._id === displayed?._id) ||
-            (!editState?.published && !editState?.draft)
+            !params?.historyVersion &&
+            (editState?.draft?._id === displayed?._id ||
+              !selectedPerspectiveName ||
+              (!editState?.published &&
+                editState?.draft &&
+                editState?.draft?._id === displayed?._id) ||
+              (!editState?.published && !editState?.draft))
           )
         }
         text={t('release.chip.draft')}
@@ -211,7 +243,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           <VersionChip
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
-            selected={release.name === getVersionFromId(displayed?._id || '')}
+            {...getReleaseChipState(release)}
             onClick={handleBundleChange(release.name)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
@@ -223,6 +255,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               releasesLoading: loading,
               documentType: documentType,
               fromRelease: release.name,
+              releaseState: release.state,
               isVersion: true,
             }}
           />

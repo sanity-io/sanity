@@ -31,6 +31,12 @@ export function ArchivedReleaseDocumentBanner(): JSX.Element {
       (r) => getReleaseIdFromReleaseDocumentId(r._id) === params?.historyVersion,
     )
   }, [archivedReleases, params?.historyVersion])
+
+  const description =
+    release?.state === 'published'
+      ? 'banners.published-release.description'
+      : 'banners.archived-release.description'
+
   return (
     <Banner
       tone="caution"
@@ -40,7 +46,7 @@ export function ArchivedReleaseDocumentBanner(): JSX.Element {
           <Text size={1}>
             <Translate
               t={t}
-              i18nKey="banners.archived-release.description"
+              i18nKey={description}
               components={{
                 VersionBadge: ({children}) => {
                   if (!release) return children
