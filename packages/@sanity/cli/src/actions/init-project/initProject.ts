@@ -654,7 +654,7 @@ export default async function initSanity(
 
     print('')
     print('If you want to delete the imported data, use')
-    print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print(`  ${chalk.cyan(`npx sanity dataset delete ${datasetName}`)}`)
     print('and create a new clean dataset with')
     print(`  ${chalk.cyan(`npx sanity dataset create <name>`)}\n`)
   }
