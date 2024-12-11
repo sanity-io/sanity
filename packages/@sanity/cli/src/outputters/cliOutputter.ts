@@ -38,7 +38,7 @@ export default {
 
   spinner(options: Options): Ora {
     const spinner = ora({...options, spinner: 'dots'})
-    // Override the default `succeed` method to use a green checkmark, instead of the default emoji
+    // Override the default status methods to use custom symbols instead of emojis
     spinner.succeed = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_CHECK})
     spinner.warn = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_WARN})
     spinner.fail = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_FAIL})
