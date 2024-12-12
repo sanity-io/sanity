@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
@@ -16,30 +16,21 @@ type RevertDocument = SanityDocument & {
 
 type RevertDocuments = RevertDocument[]
 
-interface AdjacentTransactionsResult {
-  documentRevertStates: RevertDocuments | null
-}
+type DocumentRevertStates = RevertDocuments | null
 
 export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
   const client = useClient({apiVersion: API_VERSION})
   const observableClient = client.observable
   const transactionId = documents[0]?.document._rev
   const {dataset} = client.config()
-  const [trigger, setTrigger] = useState(0)
-  const promiseRef = useRef<Promise<AdjacentTransactionsResult['documentRevertStates']> | null>(
-    null,
-  )
-  const resolvePromiseRef = useRef<
-    ((value: AdjacentTransactionsResult['documentRevertStates']) => void) | null
+
+  const resultPromiseRef = useRef<Promise<DocumentRevertStates> | null>(null)
+  const resolvedDocumentRevertStatesPromiseRef = useRef<
+    ((value: DocumentRevertStates) => void) | null
   >(null)
-  const resolvedValueRef = useRef<AdjacentTransactionsResult['documentRevertStates'] | null>(null)
+  const resolvedDocumentRevertStatesResultRef = useRef<DocumentRevertStates | null>(null)
 
-  const memoObservable = useMemo(() => {
-    if (!trigger) {
-      // If not triggered, return null to prevent the observable from running
-      return of(null)
-    }
-
+  const memoDocumentRevertStates = useMemo(() => {
     // Observable to get the revert states of the documents
     const documentRevertStates$: Observable<RevertDocuments> = from(
       getTransactionsLogs(
@@ -84,51 +75,42 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
               }>({
                 url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
               })
-              .pipe(map((response) => response.documents[0]))
+              .pipe(map(({documents: [revertDocument]}) => revertDocument))
           }),
         ),
       ),
     )
 
     return documentRevertStates$
-  }, [trigger, client, documents, transactionId, observableClient, dataset])
+  }, [client, documents, transactionId, observableClient, dataset])
 
-  const observableResult = useObservable(memoObservable, null)
+  const documentRevertStatesResult = useObservable(memoDocumentRevertStates, null)
 
   useEffect(() => {
-    if (observableResult !== null) {
-      resolvedValueRef.current = observableResult
+    if (documentRevertStatesResult !== null) {
+      resolvedDocumentRevertStatesResultRef.current = documentRevertStatesResult
 
       // Resolve the promise if it exists
-      if (resolvePromiseRef.current) {
-        resolvePromiseRef.current(observableResult)
-        resolvePromiseRef.current = null
-        promiseRef.current = null // Reset the promiseRef for future fetches
+      if (resolvedDocumentRevertStatesPromiseRef.current) {
+        resolvedDocumentRevertStatesPromiseRef.current(documentRevertStatesResult)
+        resolvedDocumentRevertStatesPromiseRef.current = null
+        resultPromiseRef.current = null // Reset the resultPromiseRef for future fetches
       }
     }
-  }, [observableResult])
+  }, [documentRevertStatesResult])
 
-  const startObservables = useCallback(() => {
-    if (resolvedValueRef.current) {
+  return useCallback(() => {
+    if (resolvedDocumentRevertStatesResultRef.current) {
       // Return resolved value immediately if available
-      return Promise.resolve(resolvedValueRef.current)
+      return Promise.resolve(resolvedDocumentRevertStatesResultRef.current)
     }
 
-    if (!promiseRef.current) {
-      promiseRef.current = new Promise((res) => {
-        resolvePromiseRef.current = res
-        setTrigger((curTrigger) => curTrigger + 1)
+    if (!resultPromiseRef.current) {
+      resultPromiseRef.current = new Promise((res) => {
+        resolvedDocumentRevertStatesPromiseRef.current = res
       })
     }
 
-    return promiseRef.current
+    return resultPromiseRef.current
   }, [])
-
-  return useMemo(
-    () => ({
-      documentRevertStates: observableResult,
-      getAdjacentTransactions: startObservables,
-    }),
-    [observableResult, startObservables],
-  )
 }

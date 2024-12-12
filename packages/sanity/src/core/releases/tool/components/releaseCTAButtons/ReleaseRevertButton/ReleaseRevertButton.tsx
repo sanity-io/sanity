@@ -1,7 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {useRouter} from '../../../../../../router'
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -38,7 +38,7 @@ const ConfirmReleaseDialog = ({
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
-  const {getAdjacentTransactions} = useAdjacentTransactions(documents)
+  const getAdjacentTransactions = useAdjacentTransactions(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const toast = useToast()
   const telemetry = useTelemetry()
@@ -50,10 +50,6 @@ const ConfirmReleaseDialog = ({
       router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)}),
     [router],
   )
-
-  useEffect(() => {
-    getAdjacentTransactions()
-  }, [getAdjacentTransactions])
 
   const handleRevertRelease = useCallback(async () => {
     setRevertReleaseStatus('reverting')
