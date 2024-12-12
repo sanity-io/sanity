@@ -1,6 +1,5 @@
 import path from 'node:path'
 
-import MillionLint from '@million/lint'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
@@ -17,6 +16,7 @@ try {
     cause: err,
   })
 }
+const Million = millionLintEnabled ? (await import('@million/lint')).default : null
 
 export default defineCliConfig({
   api: {
@@ -46,9 +46,9 @@ export default defineCliConfig({
 
     return {
       ...viteConfig,
-      plugins: millionLintEnabled
+      plugins: Million
         ? [
-            MillionLint.vite({
+            Million.vite({
               filter: {
                 include: millionInclude,
               },

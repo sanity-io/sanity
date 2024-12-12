@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
 import {
-  createElement,
   type ForwardedRef,
   forwardRef,
   memo,
@@ -122,13 +121,15 @@ export const DocumentPanelHeader = memo(
       [contextMenuNodes, referenceElement],
     )
 
+    const title = useMemo(() => <DocumentHeaderTitle />, [])
+
     return (
       <TooltipDelayGroupProvider>
         <PaneHeader
           border
           ref={ref}
           loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={<DocumentHeaderTitle />}
+          title={title}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
           backButton={
@@ -146,13 +147,13 @@ export const DocumentPanelHeader = memo(
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
                 <>
-                  {unstable_languageFilter.map((languageFilterComponent, idx) => {
-                    // @TODO should use JSX instead of calling createElement directly
-                    return createElement(languageFilterComponent, {
-                      // eslint-disable-next-line react/no-array-index-key
-                      key: `language-filter-${idx}`,
-                      schemaType,
-                    })
+                  {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
+                    return (
+                      <LanguageFilterComponent
+                        key={`language-filter-${idx}`}
+                        schemaType={schemaType}
+                      />
+                    )
                   })}
                 </>
               )}

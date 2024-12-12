@@ -1,13 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
-import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type PatchEvent} from '../../patch'
-import {
-  type RenderBlockActionsCallback,
-  type RenderBlockActionsProps,
-} from '../../types/_transitional'
+import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 
 interface BlockActionsProps {
@@ -24,21 +20,17 @@ const Root = styled.div`
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
-  const decoratorValues = useMemo(() => editor.schemaTypes.decorators.map((d) => d.value), [editor])
+  const decoratorValues = editor.schemaTypes.decorators.map((d) => d.value)
 
-  const blockActions = useMemo(() => {
-    if (renderBlockActions) {
-      const blockActionProps: RenderBlockActionsProps = {
+  const blockActions = renderBlockActions
+    ? renderBlockActions({
         block,
         value: PortableTextEditor.getValue(editor),
         set: createSetCallback({allowedDecorators: decoratorValues, block, onChange}),
         unset: createUnsetCallback({block, onChange}),
         insert: createInsertCallback({allowedDecorators: decoratorValues, block, onChange}),
-      }
-      return renderBlockActions(blockActionProps)
-    }
-    return undefined
-  }, [renderBlockActions, block, editor, onChange, decoratorValues])
+      })
+    : undefined
 
   // Don't render anything if the renderBlockActions function returns null.
   // Note that if renderBlockComponent is a React class, this will never be the case.
