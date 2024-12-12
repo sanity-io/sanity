@@ -9,7 +9,7 @@ const render = (props?: Partial<SchemaIconProps>) =>
     wrapper: ({children}) => <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>,
   })
 
-describe('SchemIcon', () => {
+describe('SchemaIcon', () => {
   it("should render the title's first letter as uppercase when there is no icon present & the title is a single word", () => {
     render()
 

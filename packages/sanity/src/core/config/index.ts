@@ -1,6 +1,7 @@
 export * from './components'
 export * from './ConfigPropertyError'
 export * from './ConfigResolutionError'
+export * from './createDefaultIcon'
 export * from './defineConfig'
 export * from './definePlugin'
 export * from './document'

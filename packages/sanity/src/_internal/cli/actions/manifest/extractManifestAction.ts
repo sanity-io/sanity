@@ -91,6 +91,11 @@ async function extractManifest(
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
 
     const manifest: CreateManifest = {
+      /**
+       * Version history:
+       * 1: Initial release.
+       * 2: Added tools file.
+       */
       version: 2,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
