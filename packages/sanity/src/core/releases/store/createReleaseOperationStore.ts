@@ -7,6 +7,7 @@ import {
 
 import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
+import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useAdjacentTransactions'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
@@ -19,6 +20,12 @@ export interface ReleaseOperationsStore {
   updateRelease: (release: EditableReleaseDocument) => Promise<void>
   createRelease: (release: EditableReleaseDocument) => Promise<void>
   deleteRelease: (releaseId: string) => Promise<void>
+  revertRelease: (
+    revertReleaseId: string,
+    documents: RevertDocument[],
+    releaseMetadata: ReleaseDocument['metadata'],
+    revertType: 'staged' | 'immediately',
+  ) => Promise<void>
   createVersion: (
     releaseId: string,
     documentId: string,
@@ -160,6 +167,35 @@ export function createReleaseOperationsStore(options: {
       },
     ])
 
+  const handleRevertRelease = async (
+    revertReleaseId: string,
+    releaseDocuments: RevertDocument[],
+    releaseMetadata: ReleaseDocument['metadata'],
+    revertType: 'staged' | 'immediately',
+  ) => {
+    await handleCreateRelease({
+      _id: revertReleaseId,
+      metadata: {
+        title: releaseMetadata.title,
+        description: releaseMetadata.description,
+        releaseType: 'asap',
+      },
+    })
+    await Promise.allSettled(
+      releaseDocuments.map((document) =>
+        handleCreateVersion(
+          getReleaseIdFromReleaseDocumentId(revertReleaseId),
+          document._id,
+          document,
+        ),
+      ),
+    )
+
+    if (revertType === 'immediately') {
+      await handlePublishRelease(revertReleaseId)
+    }
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -169,6 +205,7 @@ export function createReleaseOperationsStore(options: {
     updateRelease: handleUpdateRelease,
     publishRelease: handlePublishRelease,
     deleteRelease: handleDeleteRelease,
+    revertRelease: handleRevertRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,

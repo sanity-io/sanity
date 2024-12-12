@@ -1,14 +1,14 @@
 import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
-import {filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
+import {catchError, filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
 import {API_VERSION} from '../../../../../tasks/constants'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
-type RevertDocument = SanityDocument & {
+export type RevertDocument = SanityDocument & {
   _system?: {
     delete: boolean
   }
@@ -16,7 +16,7 @@ type RevertDocument = SanityDocument & {
 
 type RevertDocuments = RevertDocument[]
 
-type DocumentRevertStates = RevertDocuments | null
+type DocumentRevertStates = RevertDocuments | null | undefined
 
 export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
   const client = useClient({apiVersion: API_VERSION})
@@ -30,9 +30,18 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
   >(null)
   const resolvedDocumentRevertStatesResultRef = useRef<DocumentRevertStates | null>(null)
 
+  useEffect(() => {
+    if (!resultPromiseRef.current) {
+      resultPromiseRef.current = new Promise((resolve) => {
+        resolvedDocumentRevertStatesPromiseRef.current = resolve
+      })
+    }
+  }, [])
+
   const memoDocumentRevertStates = useMemo(() => {
-    // Observable to get the revert states of the documents
-    const documentRevertStates$: Observable<RevertDocuments> = from(
+    if (!documents.length) return of(undefined)
+
+    const documentRevertStates$: Observable<RevertDocuments | null | undefined> = from(
       getTransactionsLogs(
         client,
         documents.map(({document}) => document._id),
@@ -45,8 +54,14 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
         },
       ),
     ).pipe(
-      filter((transactions) => transactions.length > 0),
-      map(([publishTransaction, ...otherTransactions]) => {
+      filter(Boolean),
+      map((transactions) => {
+        if (transactions.length === 0) {
+          throw new Error('No transactions found.')
+        }
+
+        const [publishTransaction, ...otherTransactions] = transactions
+
         const getDocumentTransaction = (docId: string) =>
           otherTransactions.find(({documentIDs}) => documentIDs.includes(docId))?.id
 
@@ -55,12 +70,13 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
           revisionId: getDocumentTransaction(document._id),
         }))
       }),
-      switchMap((docRevisionPairs) =>
-        forkJoin(
+      switchMap((docRevisionPairs) => {
+        if (!docRevisionPairs) return of(undefined) // Pass undefined if no docRevisionPairs
+
+        return forkJoin(
           docRevisionPairs.map(({docId, revisionId}) => {
             if (!revisionId) {
               const {publishedDocumentExists, ...unpublishDocument} =
-                // eslint-disable-next-line max-nested-callbacks
                 documents.find(({document}) => document._id === docId)?.document || {}
 
               return of({
@@ -75,10 +91,21 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
               }>({
                 url: `/data/history/${dataset}/documents/${docId}?revision=${revisionId}`,
               })
-              .pipe(map(({documents: [revertDocument]}) => revertDocument))
+              .pipe(
+                map(({documents: [revertDocument]}) => revertDocument),
+                catchError((err) => {
+                  console.error(`Error fetching document ${docId}:`, err)
+                  return of(undefined) // Return undefined for errors
+                }),
+              )
           }),
-        ),
-      ),
+        )
+      }),
+      map((results) => results?.filter((result) => result !== undefined)),
+      catchError((err) => {
+        console.error('Error in the adjacent transactions pipeline:', err)
+        return of(undefined)
+      }),
     )
 
     return documentRevertStates$
@@ -103,12 +130,6 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
     if (resolvedDocumentRevertStatesResultRef.current) {
       // Return resolved value immediately if available
       return Promise.resolve(resolvedDocumentRevertStatesResultRef.current)
-    }
-
-    if (!resultPromiseRef.current) {
-      resultPromiseRef.current = new Promise((res) => {
-        resolvedDocumentRevertStatesPromiseRef.current = res
-      })
     }
 
     return resultPromiseRef.current

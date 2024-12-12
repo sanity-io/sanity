@@ -42,7 +42,7 @@ const ConfirmReleaseDialog = ({
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const toast = useToast()
   const telemetry = useTelemetry()
-  const {createRelease, publishRelease, createVersion} = useReleaseOperations()
+  const {revertRelease} = useReleaseOperations()
   const router = useRouter()
 
   const navigateToRevertRelease = useCallback(
@@ -62,19 +62,15 @@ const ConfirmReleaseDialog = ({
         throw new Error('Unable to find documents to revert')
       }
 
-      await createRelease({
-        _id: revertReleaseId,
-        metadata: {
+      await revertRelease(
+        revertReleaseId,
+        documentRevertStates,
+        {
           title: t('revert-release.title', {title: release.metadata.title}),
           description: t('revert-release.description', {title: release.metadata.title}),
           releaseType: 'asap',
         },
-      })
-
-      await Promise.allSettled(
-        documentRevertStates.map((document) =>
-          createVersion(getReleaseIdFromReleaseDocumentId(revertReleaseId), document._id, document),
-        ),
+        stageNewRevertRelease ? 'staged' : 'immediately',
       )
 
       if (stageNewRevertRelease) {
@@ -110,8 +106,6 @@ const ConfirmReleaseDialog = ({
           ),
         })
       } else {
-        await publishRelease(revertReleaseId)
-
         telemetry.log(RevertRelease, {revertType: 'immediately'})
 
         toast.push({
@@ -144,15 +138,13 @@ const ConfirmReleaseDialog = ({
   }, [
     setRevertReleaseStatus,
     getAdjacentTransactions,
-    createRelease,
+    revertRelease,
     t,
     release.metadata.title,
     stageNewRevertRelease,
-    createVersion,
     telemetry,
     toast,
     navigateToRevertRelease,
-    publishRelease,
   ])
 
   const description =

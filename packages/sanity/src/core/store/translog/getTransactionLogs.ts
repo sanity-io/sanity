@@ -68,7 +68,7 @@ export async function getTransactionsLogs(
      */
     authors?: string
   },
-): Promise<TransactionLogEventWithEffects[]> {
+): Promise<TransactionLogEventWithEffects[] | undefined> {
   const clientConfig = client.config()
   const dataset = clientConfig.dataset
   const queryParams = new URLSearchParams({
@@ -89,6 +89,8 @@ export async function getTransactionsLogs(
       Array.isArray(documentIds) ? documentIds.join(',') : documentIds
     }?${queryParams.toString()}`,
   )
+
+  if (!documentIds.length) return undefined
 
   const stream = await getJsonStream(transactionsUrl, clientConfig.token)
   const transactions: TransactionLogEventWithEffects[] = []

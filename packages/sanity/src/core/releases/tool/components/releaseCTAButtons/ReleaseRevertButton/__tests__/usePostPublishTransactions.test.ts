@@ -60,6 +60,12 @@ describe('usePostPublishTransactions', () => {
     expect(result.current).toBeNull()
   })
 
+  it('should return false when no documents provided', async () => {
+    const {result} = renderHook(() => usePostPublishTransactions([]))
+
+    expect(result.current).toBe(false)
+  })
+
   it('should call getTransactionsLogs with the correct params', async () => {
     mockGetTransactionsLogs.mockResolvedValue(mockTransactionLogs)
 
