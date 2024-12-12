@@ -13,6 +13,10 @@ import {
   type ReleaseEvent,
 } from './activity/types'
 
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined
+}
+
 const STATUS_TITLE_I18N = {
   CreateRelease: 'footer.status.created',
   PublishRelease: 'footer.status.published',
@@ -27,17 +31,18 @@ export function ReleaseStatusItems({
   release: ReleaseDocument
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-
-  const footerEvent = events.find((event) => {
-    return (
-      isCreateReleaseEvent(event) ||
-      isPublishReleaseEvent(event) ||
-      isArchiveReleaseEvent(event) ||
-      isUnarchiveReleaseEvent(event)
+  const footerEvents = useMemo(() => {
+    const createEvent = events.find(isCreateReleaseEvent)
+    const extraEvent = events.find(
+      (event) =>
+        isPublishReleaseEvent(event) ||
+        isArchiveReleaseEvent(event) ||
+        isUnarchiveReleaseEvent(event),
     )
-  })
+    return [createEvent, extraEvent].filter(isDefined)
+  }, [events])
 
-  if (!footerEvent) {
+  if (!footerEvents.length) {
     return (
       <Flex flex={1} gap={1}>
         <StatusItem
@@ -54,15 +59,18 @@ export function ReleaseStatusItems({
   }
   return (
     <Flex flex={1} gap={1}>
-      <StatusItem
-        avatar={footerEvent.author && <UserAvatar size={0} user={footerEvent.author} />}
-        text={
-          <>
-            {t(STATUS_TITLE_I18N[footerEvent.type])}{' '}
-            <RelativeTime time={footerEvent.timestamp} useTemporalPhrase minimal />
-          </>
-        }
-      />
+      {footerEvents.map((event) => (
+        <StatusItem
+          key={event.id}
+          avatar={event.author && <UserAvatar size={0} user={event.author} />}
+          text={
+            <>
+              {t(STATUS_TITLE_I18N[event.type])}{' '}
+              <RelativeTime time={event.timestamp} useTemporalPhrase minimal />
+            </>
+          }
+        />
+      ))}
     </Flex>
   )
 }
