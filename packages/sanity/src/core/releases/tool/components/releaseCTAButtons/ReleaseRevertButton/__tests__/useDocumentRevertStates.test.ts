@@ -1,3 +1,5 @@
+import {type SanityClient} from '@sanity/client'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
@@ -5,7 +7,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {useClient} from '../../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionLogs'
 import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
-import {useAdjacentTransactions} from '../useAdjacentTransactions'
+import {useDocumentRevertStates} from '../useDocumentRevertStates'
 
 vi.mock('../../../../../../hooks/useClient', () => ({
   useClient: vi.fn(),
@@ -15,22 +17,27 @@ vi.mock('../../../../../../store/translog/getTransactionLogs', () => ({
   getTransactionsLogs: vi.fn(),
 }))
 
-describe('useAdjacentTransactions', () => {
+describe('useDocumentRevertStates', () => {
   const mockDocuments = [
     {document: {_id: 'doc1', _rev: 'rev1'}},
     {document: {_id: 'doc2', _rev: 'rev2'}},
   ] as DocumentInRelease[]
 
+  /** @todo improve the useClient mock */
   const mockClient = {
     getUrl: vi.fn(),
     config: vi.fn().mockReturnValue({dataset: 'test-dataset'}),
     observable: {
       request: vi.fn(),
     },
+  } as unknown as SanityClient & {
+    observable: {
+      request: Mock<SanityClient['observable']['request']>
+    }
   }
 
-  const mockUseClient = useClient as Mock
-  const mockGetTransactionsLogs = getTransactionsLogs as Mock
+  const mockUseClient = useClient as Mock<typeof useClient>
+  const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -40,10 +47,10 @@ describe('useAdjacentTransactions', () => {
     mockGetTransactionsLogs.mockResolvedValue([
       {id: 'trans1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
       {id: 'trans2', documentIDs: ['doc2'], timestamp: new Date().toISOString()},
-    ])
+    ] as TransactionLogEventWithEffects[])
 
     mockClient.observable.request.mockImplementation(({url}) => {
-      if (url.includes('doc1')) {
+      if (url!.includes('doc1')) {
         return of({
           documents: [
             {
@@ -54,7 +61,7 @@ describe('useAdjacentTransactions', () => {
           ],
         })
       }
-      if (url.includes('doc2')) {
+      if (url!.includes('doc2')) {
         return of({
           documents: [
             {
@@ -70,12 +77,12 @@ describe('useAdjacentTransactions', () => {
   })
 
   it('should return a function', () => {
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
     expect(typeof result.current).toBe('function')
   })
 
   it('should fetch adjacent transactions and resolve to revert states', async () => {
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
       const resolvedResult = await result.current()
@@ -107,7 +114,7 @@ describe('useAdjacentTransactions', () => {
   it('should handle missing revisions and mark for deletion', async () => {
     mockClient.observable.request.mockReturnValueOnce(of({documents: []})) // No revert document found
 
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
       const resolvedResult = await result.current()
@@ -130,7 +137,7 @@ describe('useAdjacentTransactions', () => {
   it('should return null if no transactions exist', async () => {
     mockGetTransactionsLogs.mockResolvedValue([]) // No transactions
 
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
       const resolvedResult = await result.current()
@@ -149,7 +156,7 @@ describe('useAdjacentTransactions', () => {
   it('should handle errors gracefully and return undefined', async () => {
     mockGetTransactionsLogs.mockRejectedValue(new Error('Failed to fetch transactions'))
 
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
       const resolvedResult = await result.current()
@@ -167,7 +174,7 @@ describe('useAdjacentTransactions', () => {
 
   it('should handle a mix of existing and missing revisions', async () => {
     mockClient.observable.request.mockImplementation(({url}) => {
-      if (url.includes('doc1')) {
+      if (url!.includes('doc1')) {
         return of({
           documents: [
             {
@@ -180,7 +187,7 @@ describe('useAdjacentTransactions', () => {
       return of({documents: []}) // No revert document for doc2
     })
 
-    const {result} = renderHook(() => useAdjacentTransactions(mockDocuments))
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
       const resolvedResult = await result.current()

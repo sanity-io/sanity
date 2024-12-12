@@ -14,7 +14,7 @@ import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
-import {useAdjacentTransactions} from './useAdjacentTransactions'
+import {useDocumentRevertStates} from './useDocumentRevertStates'
 import {usePostPublishTransactions} from './usePostPublishTransactions'
 
 interface ReleasePublishAllButtonProps {
@@ -38,7 +38,7 @@ const ConfirmReleaseDialog = ({
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
-  const getAdjacentTransactions = useAdjacentTransactions(documents)
+  const getAdjacentTransactions = useDocumentRevertStates(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const toast = useToast()
   const telemetry = useTelemetry()

@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type RevertDocument} from '../../tool/components/releaseCTAButtons/ReleaseRevertButton/useAdjacentTransactions'
+import {type RevertDocument} from '../../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {createReleaseOperationsStore} from '../createReleaseOperationStore'
 
 describe('createReleaseOperationsStore', () => {

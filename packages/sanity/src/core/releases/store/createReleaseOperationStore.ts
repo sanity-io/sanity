@@ -7,7 +7,7 @@ import {
 
 import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
-import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useAdjacentTransactions'
+import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {

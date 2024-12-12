@@ -18,7 +18,7 @@ type RevertDocuments = RevertDocument[]
 
 type DocumentRevertStates = RevertDocuments | null | undefined
 
-export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
+export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
   const client = useClient({apiVersion: API_VERSION})
   const observableClient = client.observable
   const transactionId = documents[0]?.document._rev

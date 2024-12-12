@@ -1,5 +1,5 @@
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {from} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
@@ -17,7 +17,7 @@ vi.mock('../../../../../../store/translog/getTransactionLogs', () => ({
 
 const processMicroTasks = () =>
   act(async () => {
-    await Promise.resolve() // Process pending updates
+    await Promise.resolve()
   })
 
 describe('usePostPublishTransactions', () => {
@@ -29,7 +29,7 @@ describe('usePostPublishTransactions', () => {
   const mockClient = {getUrl: vi.fn(), config: vi.fn()}
 
   const mockUseClient = useClient as Mock
-  const mockGetTransactionsLogs = getTransactionsLogs as Mock
+  const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -40,20 +40,20 @@ describe('usePostPublishTransactions', () => {
   const mockTransactionLogs = [
     {
       id: 'trans1',
-      type: 'publish',
-      effects: [],
+      author: 'author1',
+      documentIDs: ['doc1'],
       timestamp: '2024-01-01T00:00:00Z',
     },
     {
       id: 'trans2',
-      type: 'update',
-      effects: [],
+      author: 'author1',
+      documentIDs: ['doc1'],
       timestamp: '2024-01-01T01:00:00Z',
     },
-  ]
+  ] as TransactionLogEventWithEffects[]
 
   it('should return null initially', () => {
-    mockGetTransactionsLogs.mockReturnValue(from([]))
+    mockGetTransactionsLogs.mockResolvedValue(undefined)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
 
@@ -95,8 +95,9 @@ describe('usePostPublishTransactions', () => {
     mockGetTransactionsLogs.mockResolvedValue([
       {
         id: 'trans1',
-        type: 'publish',
-        effects: [],
+        author: 'author1',
+        documentIDs: ['doc1'],
+        effects: {},
         timestamp: '2024-01-01T00:00:00Z',
       },
     ])
