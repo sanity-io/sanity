@@ -161,7 +161,7 @@ export type DocumentGroupEvent =
  */
 export const isCreateDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is CreateDocumentVersionEvent => event.type === 'CreateDocumentVersion'
+): event is CreateDocumentVersionEvent => event.type === 'createDocumentVersion'
 
 /**
  * @hidden
@@ -169,7 +169,7 @@ export const isCreateDocumentVersionEvent = (
  */
 export const isDeleteDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is DeleteDocumentVersionEvent => event.type === 'DeleteDocumentVersion'
+): event is DeleteDocumentVersionEvent => event.type === 'deleteDocumentVersion'
 
 /**
  * @hidden
@@ -177,7 +177,7 @@ export const isDeleteDocumentVersionEvent = (
  */
 export const isPublishDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is PublishDocumentVersionEvent => event.type === 'PublishDocumentVersion'
+): event is PublishDocumentVersionEvent => event.type === 'publishDocumentVersion'
 
 /**
  * @hidden
@@ -185,7 +185,7 @@ export const isPublishDocumentVersionEvent = (
  */
 export const isUnpublishDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is UnpublishDocumentEvent => event.type === 'UnpublishDocument'
+): event is UnpublishDocumentEvent => event.type === 'unpublishDocument'
 
 /**
  * @hidden
@@ -193,7 +193,7 @@ export const isUnpublishDocumentEvent = (
  */
 export const isScheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is ScheduleDocumentVersionEvent => event.type === 'ScheduleDocumentVersion'
+): event is ScheduleDocumentVersionEvent => event.type === 'scheduleDocumentVersion'
 
 /**
  * @hidden
@@ -201,7 +201,7 @@ export const isScheduleDocumentVersionEvent = (
  */
 export const isUnscheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is UnscheduleDocumentVersionEvent => event.type === 'UnscheduleDocumentVersion'
+): event is UnscheduleDocumentVersionEvent => event.type === 'unscheduleDocumentVersion'
 
 /**
  * @hidden
@@ -209,7 +209,7 @@ export const isUnscheduleDocumentVersionEvent = (
  */
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is DeleteDocumentGroupEvent => event.type === 'DeleteDocumentGroup'
+): event is DeleteDocumentGroupEvent => event.type === 'deleteDocumentGroup'
 
 /**
  * @hidden
@@ -217,7 +217,7 @@ export const isDeleteDocumentGroupEvent = (
  */
 export const isCreateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is CreateLiveDocumentEvent => event.type === 'CreateLiveDocument'
+): event is CreateLiveDocumentEvent => event.type === 'createLiveDocument'
 
 /**
  * @hidden
@@ -225,7 +225,7 @@ export const isCreateLiveDocumentEvent = (
  */
 export const isUpdateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is UpdateLiveDocumentEvent => event.type === 'UpdateLiveDocument'
+): event is UpdateLiveDocumentEvent => event.type === 'updateLiveDocument'
 
 /**
  * @hidden
@@ -233,7 +233,7 @@ export const isUpdateLiveDocumentEvent = (
  */
 export const isEditDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
-): event is EditDocumentVersionEvent => event.type === 'EditDocumentVersion'
+): event is EditDocumentVersionEvent => event.type === 'editDocumentVersion'
 
 /**
  * A generic event with a type and a timestamp.
@@ -251,7 +251,7 @@ export interface BaseEvent {
  * @beta
  */
 export interface CreateDocumentVersionEvent extends BaseEvent {
-  type: 'CreateDocumentVersion'
+  type: 'createDocumentVersion'
   documentId: string
 
   releaseId?: string
@@ -274,7 +274,7 @@ export interface CreateDocumentVersionEvent extends BaseEvent {
  * @beta
  */
 export interface DeleteDocumentVersionEvent extends BaseEvent {
-  type: 'DeleteDocumentVersion'
+  type: 'deleteDocumentVersion'
   documentId: string
 
   releaseId?: string
@@ -287,7 +287,7 @@ export interface DeleteDocumentVersionEvent extends BaseEvent {
  * @beta
  */
 export interface PublishDocumentVersionEvent extends BaseEvent {
-  type: 'PublishDocumentVersion'
+  type: 'publishDocumentVersion'
   documentId: string
   revisionId: string
 
@@ -320,7 +320,7 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
  * @beta
  */
 export interface UnpublishDocumentEvent extends BaseEvent {
-  type: 'UnpublishDocument'
+  type: 'unpublishDocument'
   documentId: string
 
   /** The version that was created based on it */
@@ -336,7 +336,7 @@ export interface UnpublishDocumentEvent extends BaseEvent {
  * @beta
  */
 export interface ScheduleDocumentVersionEvent extends BaseEvent {
-  type: 'ScheduleDocumentVersion'
+  type: 'scheduleDocumentVersion'
   documentId: string
 
   releaseId: string
@@ -355,7 +355,7 @@ export interface ScheduleDocumentVersionEvent extends BaseEvent {
  * @beta
  */
 export interface UnscheduleDocumentVersionEvent extends BaseEvent {
-  type: 'UnscheduleDocumentVersion'
+  type: 'unscheduleDocumentVersion'
   documentId: string
 
   releaseId: string
@@ -370,7 +370,7 @@ export interface UnscheduleDocumentVersionEvent extends BaseEvent {
  * @beta
  */
 export interface DeleteDocumentGroupEvent extends BaseEvent {
-  type: 'DeleteDocumentGroup'
+  type: 'deleteDocumentGroup'
   documentId: string
 
   author: string
@@ -381,7 +381,7 @@ export interface DeleteDocumentGroupEvent extends BaseEvent {
  * @beta
  */
 export interface CreateLiveDocumentEvent extends BaseEvent {
-  type: 'CreateLiveDocument'
+  type: 'createLiveDocument'
   documentId: string
   revisionId: string
 
@@ -393,7 +393,7 @@ export interface CreateLiveDocumentEvent extends BaseEvent {
  * @beta
  */
 export interface UpdateLiveDocumentEvent extends BaseEvent {
-  type: 'UpdateLiveDocument'
+  type: 'updateLiveDocument'
   documentId: string
   revisionId: string
 
@@ -408,7 +408,7 @@ export interface UpdateLiveDocumentEvent extends BaseEvent {
  * Or a create event and a publish event.
  */
 export interface EditDocumentVersionEvent extends BaseEvent {
-  type: 'EditDocumentVersion'
+  type: 'editDocumentVersion'
   documentId: string
   // Given this event could be a result of multiple edits, we could have more than one author.
   contributors: string[]
@@ -419,7 +419,7 @@ export interface EditDocumentVersionEvent extends BaseEvent {
    */
   revisionId: string
   transactions: {
-    type: 'EditTransaction'
+    type: 'editTransaction'
     author: string
     timestamp: string
     revisionId: string

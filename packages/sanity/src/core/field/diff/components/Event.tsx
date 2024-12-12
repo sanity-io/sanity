@@ -5,6 +5,8 @@ import {createElement, useMemo} from 'react'
 import {
   type DocumentGroupEvent,
   getReleaseTone,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
   type RelativeTimeOptions,
   useDateTimeFormat,
   UserAvatar,
@@ -143,7 +145,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
     return formattedDate
   }, [timestamp, dateFormat])
 
-  const userIds = event.type === 'EditDocumentVersion' ? event.contributors : [event.author]
+  const userIds = isEditDocumentVersionEvent(event) ? event.contributors : [event.author]
 
   return (
     <>
@@ -157,7 +159,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         <Stack space={2}>
           <Text size={1} weight="medium">
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type])}
-            {event.type === 'PublishDocumentVersion' && documentVariantType === 'published' && (
+            {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
                 {event.release ? (

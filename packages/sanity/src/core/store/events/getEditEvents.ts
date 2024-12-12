@@ -41,7 +41,7 @@ const getEditTransaction = (
   transaction: TransactionLogEventWithEffects,
 ): EditDocumentVersionEvent['transactions'][number] => {
   return {
-    type: 'EditTransaction',
+    type: 'editTransaction',
     author: transaction.author,
     timestamp: transaction.timestamp,
     revisionId: transaction.id,
@@ -86,13 +86,13 @@ export function getEditEvents(
       ? ({
           id: transaction.id,
           timestamp: transaction.timestamp,
-          type: 'UpdateLiveDocument',
+          type: 'updateLiveDocument',
           documentId: documentId,
           revisionId: transaction.id,
           author: transaction.author,
         } satisfies UpdateLiveDocumentEvent)
       : ({
-          type: 'EditDocumentVersion',
+          type: 'editDocumentVersion',
           documentId: documentId,
           id: transaction.id,
           timestamp: transaction.timestamp,

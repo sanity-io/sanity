@@ -21,6 +21,7 @@ import {
   type DocumentGroupEvent,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
+  isEditDocumentVersionEvent,
 } from './types'
 import {type EventsObservableValue} from './useEventsStore'
 
@@ -133,7 +134,7 @@ function calculateDiff({
       transactionIndex: index,
       event: events.find(
         (event) =>
-          event.type !== 'EditDocumentVersion' &&
+          !isEditDocumentVersionEvent(event) &&
           'revisionId' in event &&
           event.revisionId === transaction.id,
       ),
