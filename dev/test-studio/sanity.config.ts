@@ -1,4 +1,5 @@
 import {assist} from '@sanity/assist'
+import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {koKRLocale} from '@sanity/locale-ko-kr'
@@ -14,6 +15,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
@@ -76,7 +78,9 @@ const sharedSettings = definePlugin({
       enabled: true,
     },
   },
-
+  search: {
+    strategy: 'groq2024',
+  },
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
@@ -127,6 +131,7 @@ const sharedSettings = definePlugin({
         lng: -74.1180863,
       },
     }),
+    colorInput(),
     workshopTool({
       collections: [
         {name: 'sanity', title: 'sanity'},
@@ -144,6 +149,7 @@ const sharedSettings = definePlugin({
     errorReportingTestPlugin(),
     tsdoc(),
     media(),
+    markdownSchema(),
   ],
 })
 

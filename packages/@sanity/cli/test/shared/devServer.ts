@@ -9,6 +9,7 @@ export async function testServerCommand({
   port,
   cwd,
   env,
+  basePath,
   expectedTitle,
   expectedFiles = [],
   args,
@@ -16,6 +17,7 @@ export async function testServerCommand({
   command: 'preview' | 'dev' | 'start'
   port: number
   cwd: string
+  basePath: string
   expectedTitle: string
   expectedFiles?: string[]
   env?: Record<string, string>
@@ -77,7 +79,7 @@ export async function testServerCommand({
       let res: ResponseData
       try {
         res = await Promise.race([
-          request(`http://localhost:${port}/`),
+          request(`http://localhost:${port}${basePath.replace(/\/$/, '')}/`),
           new Promise<ResponseData>((_, rejectTimeout) =>
             setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect')),
           ),
@@ -97,7 +99,7 @@ export async function testServerCommand({
       for (const file of expectedFiles) {
         fileHashes.set(
           file,
-          await request(`http://localhost:${port}/${file}`)
+          await request(`http://localhost:${port}${file}`)
             .then(({body, statusCode}) =>
               statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null,
             )

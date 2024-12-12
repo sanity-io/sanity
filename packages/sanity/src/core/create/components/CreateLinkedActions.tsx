@@ -1,6 +1,6 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {type ReactNode, useCallback, useState} from 'react'
+import {Flex} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
@@ -9,6 +9,7 @@ import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedActionsProps} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
+import {DialogPortalProvider} from './DialogPortalProvider'
 
 export function CreateLinkedActions(props: CreateLinkedActionsProps) {
   const {metadata, panelPortalElementId, onDocumentChange, documentTitle} = props
@@ -51,12 +52,4 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
       )}
     </Flex>
   )
-}
-
-function DialogPortalProvider(props: {portalElementId: string; children: ReactNode}) {
-  const {children, portalElementId} = props
-  const {element, elements} = usePortal()
-  const portalElement = elements?.[portalElementId] || element
-
-  return <PortalProvider element={portalElement}>{children}</PortalProvider>
 }

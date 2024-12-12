@@ -1,9 +1,10 @@
 export interface FaviconProps {
-  basePath: string
+  /** @deprecated No longer needed/used - will be added by Vite automatically */
+  basePath?: string
 }
 
-export function Favicons({basePath}: FaviconProps) {
-  const base = `${basePath.replace(/\/+$/, '')}/static`
+export function Favicons(_props: FaviconProps) {
+  const base = '/static'
   return (
     <>
       <link rel="icon" href={`${base}/favicon.ico`} sizes="any" />

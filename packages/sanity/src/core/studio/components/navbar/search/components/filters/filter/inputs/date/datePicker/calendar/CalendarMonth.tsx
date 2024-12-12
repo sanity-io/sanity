@@ -11,6 +11,9 @@ const WEEK_DAY_NAME_KEYS = {
   // Monday is start of the week
   1: SHORT_WEEK_DAY_KEYS,
 
+  // Saturday is start of week
+  6: [...SHORT_WEEK_DAY_KEYS.slice(5), ...SHORT_WEEK_DAY_KEYS.slice(0, 5)],
+
   // Sunday is start of the week
   7: [SHORT_WEEK_DAY_KEYS[6], ...SHORT_WEEK_DAY_KEYS.slice(0, 6)],
 }

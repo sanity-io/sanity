@@ -150,7 +150,8 @@ export function SearchProvider({
             `findability-source: global`,
             `findability-filter-count:${completeFilters.length}`,
           ],
-          limit: SEARCH_LIMIT,
+          // `groq2024` supports pagination. Therefore, fetch fewer results.
+          limit: strategy === 'groq2024' ? 25 : SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
@@ -164,7 +165,9 @@ export function SearchProvider({
       })
 
       // Update previousCursorRef snapshot only on a valid search request
-      previousCursorRef.current = cursor
+      if (cursorChanged) {
+        previousCursorRef.current = cursor
+      }
     }
 
     // Update snapshots, even if no search request was executed
@@ -180,6 +183,7 @@ export function SearchProvider({
     searchState.terms,
     terms,
     cursor,
+    strategy,
     perspectiveStack,
     releases,
     state.perspective,

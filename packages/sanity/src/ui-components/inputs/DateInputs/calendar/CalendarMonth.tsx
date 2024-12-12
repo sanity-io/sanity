@@ -27,10 +27,12 @@ export function CalendarMonth(props: CalendarMonthProps) {
     weekInfo: {firstDay: weekStartDay},
   } = useCurrentLocale()
 
-  const weekDayNames =
-    weekStartDay === 1
-      ? props.weekDayNames
-      : [props.weekDayNames[6], ...props.weekDayNames.slice(0, 6)]
+  let weekDayNames: Array<string> = props.weekDayNames
+  if (weekStartDay === 7) {
+    weekDayNames = [props.weekDayNames[6], ...props.weekDayNames.slice(0, 6)]
+  } else if (weekStartDay === 6) {
+    weekDayNames = [...props.weekDayNames.slice(5), ...props.weekDayNames.slice(0, 5)]
+  }
 
   return (
     <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">

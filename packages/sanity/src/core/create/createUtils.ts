@@ -38,3 +38,18 @@ export function isSanityCreateExcludedType(schemaType: SchemaType): boolean {
   }
   return false
 }
+
+/**
+ * Documents with fields with a value (non-underscore-prefixed) are not supported by Start in Create yet,
+ * because Create would overwrite them.
+ * This includes pristine new documents with initialValues or created from initial value templates.
+ * @internal
+ */
+export function isSanityCreateStartCompatibleDoc(doc: SanityDocumentLike): boolean {
+  const nonNullEntries = Object.entries(doc)
+    .filter(([key]) => !key.startsWith('_'))
+    /* we could possibly allow empty string and array, but its not for now */
+    .filter(([, value]) => !(value === null || value === undefined))
+
+  return !nonNullEntries.length
+}

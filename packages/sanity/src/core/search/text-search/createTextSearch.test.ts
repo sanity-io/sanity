@@ -2,14 +2,7 @@ import {Schema} from '@sanity/schema'
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {
-  getDocumentTypeConfiguration,
-  getOrder,
-  getQueryString,
-  isNegationToken,
-  isPrefixToken,
-  prefixLast,
-} from './createTextSearch'
+import {getDocumentTypeConfiguration, getOrder, getQueryString} from './createTextSearch'
 
 const testType = Schema.compile({
   types: [
@@ -240,55 +233,5 @@ describe('getQueryString', () => {
   it('appends no wildcard to search query when `queryType` is `prefixNone`', () => {
     expect(getQueryString('test', {queryType: 'prefixNone'})).toEqual('test')
     expect(getQueryString('', {queryType: 'prefixNone'})).toEqual('')
-  })
-})
-
-describe('isNegationToken', () => {
-  it('identifies negation tokens', () => {
-    expect(isNegationToken('-test')).toBe(true)
-    expect(isNegationToken('--')).toBe(true)
-    expect(isNegationToken('test')).toBe(false)
-    expect(isNegationToken('test-')).toBe(false)
-    expect(isNegationToken(undefined)).toBe(false)
-  })
-})
-
-describe('isPrefixToken', () => {
-  it('identifies prefix tokens', () => {
-    expect(isPrefixToken('test*')).toBe(true)
-    expect(isPrefixToken('test')).toBe(false)
-    expect(isPrefixToken('*test')).toBe(false)
-    expect(isPrefixToken(undefined)).toBe(false)
-  })
-})
-
-describe('prefixLast', () => {
-  it('transforms the final non-negation token into a wildcard prefix', () => {
-    expect(prefixLast('a')).toBe('a*')
-    expect(prefixLast('a b')).toBe('a b*')
-    expect(prefixLast('a -b')).toBe('a* -b')
-    expect(prefixLast('a "bc" d')).toBe('a "bc" d*')
-    expect(prefixLast('ab "cd"')).toBe('ab "cd"*')
-    expect(prefixLast('a --')).toBe('a* --')
-  })
-
-  it('does not transform the final non-negation token if it is already a wildcard prefix', () => {
-    expect(prefixLast('a*')).toBe('a*')
-    expect(prefixLast('a* -b')).toBe('a* -b')
-  })
-
-  it('does not transform any tokens if only negation tokens are present', () => {
-    expect(prefixLast('-a -b')).toBe('-a -b')
-    expect(prefixLast('--')).toBe('--')
-  })
-
-  it('trims tokens', () => {
-    expect(prefixLast('a   "ab   c"   d')).toBe('a "ab   c" d*')
-  })
-
-  it('preserves quoted tokens', () => {
-    expect(prefixLast('"a b" c d')).toBe('"a b" c d*')
-    expect(prefixLast('"a   b"   c d  "ef" "g  "')).toBe('"a   b" c d "ef" "g  "*')
-    expect(prefixLast('"a " b" c d')).toBe('"a " b c d*')
   })
 })

@@ -2,6 +2,10 @@
 import chalk from 'chalk'
 import ora, {type Options, type Ora} from 'ora'
 
+const SYMBOL_CHECK = chalk.green('✓')
+const SYMBOL_WARN = chalk.yellow('⚠')
+const SYMBOL_FAIL = chalk.red('✗')
+
 let isFirstClear = true
 
 export default {
@@ -9,15 +13,19 @@ export default {
     console.log(...args)
   },
 
+  success(...args: unknown[]): void {
+    console.log(`${SYMBOL_CHECK} ${args.join(' ')}`)
+  },
+
   warn(...args: unknown[]): void {
-    console.warn(...args)
+    console.warn(`${SYMBOL_WARN} ${args.join(' ')}`)
   },
 
   error(...args: unknown[]): void {
     if (args[0] instanceof Error) {
-      console.error(chalk.red(args[0].stack))
+      console.error(`${SYMBOL_FAIL} ${chalk.red(args[0].stack)}`)
     } else {
-      console.error(...args)
+      console.error(`${SYMBOL_FAIL} ${args.join(' ')}`)
     }
   },
 
@@ -28,7 +36,12 @@ export default {
     isFirstClear = false
   },
 
-  spinner(options: Options | string): Ora {
-    return ora(options)
+  spinner(options: Options): Ora {
+    const spinner = ora({...options, spinner: 'dots'})
+    // Override the default status methods to use custom symbols instead of emojis
+    spinner.succeed = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_CHECK})
+    spinner.warn = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_WARN})
+    spinner.fail = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_FAIL})
+    return spinner
   },
 }

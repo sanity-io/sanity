@@ -1,10 +1,9 @@
 import path from 'node:path'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
-import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
-import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
+import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
 import {getSanityPkgExportAliases} from './getBrowserAliases'
@@ -12,7 +11,6 @@ import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
 import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
-import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 
@@ -88,6 +86,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
+  const {default: viteReact} = await import('@vitejs/plugin-react')
   const viteConfig: InlineConfig = {
     // Define a custom cache directory so that sanity's vite cache
     // does not conflict with any potential local vite projects
@@ -110,7 +109,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
         reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
-      sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo, importMap}),
     ],
@@ -149,6 +147,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
+        onwarn: onRollupWarn,
         external: createExternalFromImportMap(importMap),
         input: {
           sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
@@ -160,6 +159,32 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   return viteConfig
 }
 
+function onRollupWarn(warning: Rollup.RollupLog, warn: Rollup.LoggingFunction) {
+  if (suppressUnusedImport(warning)) {
+    return
+  }
+
+  warn(warning)
+}
+
+function suppressUnusedImport(warning: Rollup.RollupLog & {ids?: string[]}): boolean {
+  if (warning.code !== 'UNUSED_EXTERNAL_IMPORT') return false
+
+  // Suppress:
+  // ```
+  // "useDebugValue" is imported from external module "react"…
+  // ```
+  if (warning.names?.includes('useDebugValue')) {
+    warning.names = warning.names.filter((n) => n !== 'useDebugValue')
+    if (warning.names.length === 0) return true
+  }
+
+  // If some library does something unexpected, we suppress since it isn't actionable
+  if (warning.ids?.every((id) => id.includes('/node_modules/'))) return true
+
+  return false
+}
+
 /**
  * Ensure Sanity entry chunk is always loaded
  *
@@ -167,7 +192,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
  * @returns Merged configuration
  * @internal
  */
-export function finalizeViteConfig(config: InlineConfig): InlineConfig {
+export async function finalizeViteConfig(config: InlineConfig): Promise<InlineConfig> {
   if (typeof config.build?.rollupOptions?.input !== 'object') {
     throw new Error(
       'Vite config must contain `build.rollupOptions.input`, and it must be an object',
@@ -180,6 +205,7 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
     )
   }
 
+  const {mergeConfig} = await import('vite')
   return mergeConfig(config, {
     build: {
       rollupOptions: {
@@ -211,6 +237,7 @@ export async function extendViteConfigWithUserConfig(
     config = await userConfig(config, env)
   } else if (typeof userConfig === 'object') {
     debug('Merging vite config using user-specified object')
+    const {mergeConfig} = await import('vite')
     config = mergeConfig(config, userConfig)
   }
 

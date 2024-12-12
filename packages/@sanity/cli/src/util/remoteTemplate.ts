@@ -410,16 +410,6 @@ export async function validateRemoteTemplate(
   }
 }
 
-export async function isNextJsTemplate(root: string): Promise<boolean> {
-  try {
-    const packageJson = await readFile(join(root, 'package.json'), 'utf8')
-    const pkg = JSON.parse(packageJson)
-    return !!(pkg.dependencies?.next || pkg.devDependencies?.next)
-  } catch {
-    return false
-  }
-}
-
 export async function checkNeedsReadToken(root: string): Promise<boolean> {
   try {
     const templatePath = await Promise.any(

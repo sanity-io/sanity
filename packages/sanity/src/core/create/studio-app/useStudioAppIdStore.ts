@@ -3,11 +3,11 @@ import {useClient, useSource} from 'sanity'
 
 import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
-import {fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
+import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
 
-export interface ResolvedStudioAppId {
+export interface ResolvedStudioApp {
   loading: boolean
-  appId?: string
+  studioApp?: CompatibleStudioAppId
 }
 
 /**
@@ -15,7 +15,7 @@ export interface ResolvedStudioAppId {
  *
  * @internal
  */
-export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioAppId {
+export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioApp {
   const client = useClient({apiVersion: '2024-09-01'})
   const config = useSanityCreateConfig()
   const {projectId} = useSource()
@@ -42,11 +42,11 @@ export function useStudioAppIdStoreInner(props: {
   projectId: string
   enabled: boolean
   appIdFetcher: AppIdFetcher
-}): ResolvedStudioAppId {
+}): ResolvedStudioApp {
   const {cache, enabled, appIdFetcher, projectId} = props
   const [loading, setLoading] = useState(false)
 
-  const [appId, setAppId] = useState<string | undefined>()
+  const [studioApp, setStudioApp] = useState<CompatibleStudioAppId | undefined>()
 
   useEffect(() => {
     let mounted = true
@@ -58,9 +58,9 @@ export function useStudioAppIdStoreInner(props: {
 
       try {
         const entry = await cache.get({projectId, appIdFetcher})
-        if (mounted) setAppId(entry?.appId)
+        if (mounted) setStudioApp(entry)
       } catch (err) {
-        if (mounted) setAppId(undefined)
+        if (mounted) setStudioApp(undefined)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -77,6 +77,6 @@ export function useStudioAppIdStoreInner(props: {
 
   return {
     loading,
-    appId,
+    studioApp,
   }
 }

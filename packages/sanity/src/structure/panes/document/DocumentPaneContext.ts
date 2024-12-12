@@ -92,6 +92,7 @@ export interface DocumentPaneContextValue {
   isDeleting: boolean
   isDeleted: boolean
   isPermissionsLoading: boolean
+  isInitialValueLoading?: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
   __internal_tasks?: {
     footerAction: React.ReactNode

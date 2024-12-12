@@ -138,8 +138,8 @@ export async function bootstrapLocalTemplate(
     writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
     writeFileIfNotExists('package.json', packageManifest),
     writeFileIfNotExists(
-      '.eslintrc',
-      `${JSON.stringify({extends: '@sanity/eslint-config-studio'}, null, 2)}\n`,
+      'eslint.config.mjs',
+      `import studio from '@sanity/eslint-config-studio'\n\nexport default [...studio]\n`,
     ),
   ])
 

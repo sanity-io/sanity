@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import chalk from 'chalk'
-import glob from 'glob'
+import {globSync} from 'glob'
 import semver from 'semver'
 
 interface LernaConfig {
@@ -42,7 +42,7 @@ const sortRanges = (ranges: string[]) =>
 const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 
 const pkgs = patterns
-  .flatMap((pattern) => glob.sync(pattern))
+  .flatMap((pattern) => globSync(pattern))
   .map((file) => path.join(rootPath, file))
   .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
   .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))

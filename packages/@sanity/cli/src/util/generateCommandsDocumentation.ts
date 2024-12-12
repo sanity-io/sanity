@@ -22,12 +22,15 @@ export function generateCommandsDocumentation(
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
-    `usage: sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
+    `usage: npx sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
     '',
     'Commands:',
   ]
     .concat(commands.map((cmd) => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
-    .concat(['', `See 'sanity help${prefix} <command>' for specific information on a subcommand.`])
+    .concat([
+      '',
+      `See 'npx sanity help${prefix} <command>' for specific information on a subcommand.`,
+    ])
 
   return rows.join('\n')
 }
@@ -43,14 +46,14 @@ export function generateCommandDocumentation(
   if (!command) {
     throw new Error(
       subCommand
-        ? `"${subCommand}" is not a subcommand of "${group}". See 'sanity help ${group}'`
+        ? `"${subCommand}" is not a subcommand of "${group}". See 'npx sanity help ${group}'`
         : getNoSuchCommandText(group || command),
     )
   }
 
   const cmdParts = [group || command.name, subCommand].filter(Boolean).join(' ')
   return [
-    `usage: sanity ${cmdParts} ${command.signature}`,
+    `usage: npx sanity ${cmdParts} ${command.signature}`,
     '',
     `   ${command.description}`,
     '',

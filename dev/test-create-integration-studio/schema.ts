@@ -25,6 +25,30 @@ export const schemaTypes = [
     },
   }),
   defineType({
+    type: 'document',
+    name: 'has-initial-values',
+    fields: [
+      defineField({
+        name: 'title',
+        title: 'Documents with initial values are disabled for Create',
+        type: 'string',
+        initialValue: () =>
+          new Promise<string>((resolve) => {
+            setTimeout(() => {
+              resolve('Delayed initial value')
+            }, 5000)
+          }),
+      }),
+      defineField({
+        name: 'description',
+        title:
+          'When any value resolves, the Start in Create button disappears. This is not perfect, but "good enough" for now.',
+        type: 'string',
+        initialValue: 'Initial value',
+      }),
+    ],
+  }),
+  defineType({
     title: 'Documentation Article',
     name: 'create-test-article',
     type: 'document',
@@ -40,7 +64,7 @@ export const schemaTypes = [
       }),
       defineField({
         name: 'description',
-        title: 'Description',
+        title: 'Description – with initial value – Create excluded',
         type: 'text',
         rows: 3,
         description: 'Lede and page summary.',

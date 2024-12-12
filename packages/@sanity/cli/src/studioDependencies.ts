@@ -18,7 +18,7 @@ export const studioDependencies = {
     '@sanity/eslint-config-studio': 'latest',
     // When using typescript, we'll want the these types too, so might as well install them
     '@types/react': '^18.0.25',
-    'eslint': '^8.6.0',
+    'eslint': '^9.9.0',
     'prettier': '^3.0.2',
     'typescript': '^5.1.6', // Peer dependency of eslint-config-studio (implicitly)
   },

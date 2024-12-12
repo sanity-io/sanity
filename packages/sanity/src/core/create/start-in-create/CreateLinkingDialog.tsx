@@ -25,7 +25,7 @@ export function CreateLinkingDialog() {
   }, [])
 
   return (
-    <Dialog id={id} width={0} header={t('linking-in-progress-dialog.header')}>
+    <Dialog header={t('linking-in-progress-dialog.header')} id={id} width={0}>
       <Stack space={4}>
         <Text size={1} weight="semibold">
           {t('linking-in-progress-dialog.lede')}

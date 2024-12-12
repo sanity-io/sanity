@@ -17,11 +17,9 @@ import {
   type TextSearchResponse,
   type TextSearchResults,
 } from '../common'
+import {prefixLast} from '../common/token'
 
 const DEFAULT_LIMIT = 1000
-const WILDCARD_TOKEN = '*'
-const NEGATION_TOKEN = '-'
-const TOKEN_REGEX = /(?:[^\s"]+|"[^"]*")+/g
 
 function normalizeSearchTerms(
   searchParams: string | SearchTerms,
@@ -85,32 +83,6 @@ export function getOrder(sort: SearchSort[] = []): TextSearchOrder[] {
     }),
     {},
   )
-}
-
-export function isNegationToken(token: string | undefined): boolean {
-  return typeof token !== 'undefined' && token.trim().at(0) === NEGATION_TOKEN
-}
-
-export function isPrefixToken(token: string | undefined): boolean {
-  return typeof token !== 'undefined' && token.trim().at(-1) === WILDCARD_TOKEN
-}
-
-export function prefixLast(query: string): string {
-  const tokens = (query.match(TOKEN_REGEX) ?? []).map((token) => token.trim())
-  const finalNonNegationTokenIndex = tokens.findLastIndex((token) => !isNegationToken(token))
-  const finalNonNegationToken = tokens[finalNonNegationTokenIndex]
-
-  if (tokens.length === 0) {
-    return WILDCARD_TOKEN
-  }
-
-  if (isPrefixToken(finalNonNegationToken) || typeof finalNonNegationToken === 'undefined') {
-    return tokens.join(' ')
-  }
-
-  const prefixedTokens = [...tokens]
-  prefixedTokens.splice(finalNonNegationTokenIndex, 1, `${finalNonNegationToken}${WILDCARD_TOKEN}`)
-  return prefixedTokens.join(' ')
 }
 
 export function getQueryString(

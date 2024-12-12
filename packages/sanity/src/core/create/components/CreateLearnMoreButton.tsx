@@ -4,6 +4,7 @@ import {type ForwardedRef, forwardRef} from 'react'
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
+import {createUserDocumentationUrl} from './constants'
 
 export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   props,
@@ -13,7 +14,7 @@ export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   return (
     <Button
       as={'a'}
-      href={'https://www.sanity.io/docs/create?ref=studio'}
+      href={createUserDocumentationUrl}
       target="_blank"
       ref={ref}
       text={t('start-in-create-dialog.cta.learn-more')}

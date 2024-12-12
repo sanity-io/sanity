@@ -3,7 +3,6 @@ import path from 'node:path'
 
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
-import {build} from 'vite'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
 
@@ -209,6 +208,7 @@ export async function buildVendorDependencies({
   // removes the `RollupWatcher` type
   type BuildResult = Exclude<Awaited<ReturnType<typeof build>>, {close: unknown}>
 
+  const {build} = await import('vite')
   // Use Vite to build the packages into the output directory
   let buildResult = (await build({
     // Define a custom cache directory so that sanity's vite cache

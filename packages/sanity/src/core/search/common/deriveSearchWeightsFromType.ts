@@ -67,58 +67,57 @@ function getLeafWeights(
     type: SchemaType | undefined,
     path: string,
     depth: number,
+    accumulator: SearchWeightEntry[] = [], // use accumulator to avoid stack overflow
   ): SearchWeightEntry[] {
-    if (!type) return []
-    if (depth > maxDepth) return []
+    if (!type) return accumulator
+    if (depth > maxDepth) return accumulator
 
     const typeChain = getTypeChain(type)
 
     if (isStringField(type) || isPtField(type)) {
       const weight = getWeight(type, path)
-
-      if (typeof weight !== 'number') return []
-      return [{path, weight, type: isPtField(type) ? 'pt' : 'string'}]
+      if (typeof weight === 'number') {
+        accumulator.push({path, weight, type: isPtField(type) ? 'pt' : 'string'})
+      }
+      return accumulator
     }
 
     if (isSlugField(type)) {
       const weight = getWeight(type, path)
-      if (typeof weight !== 'number') return []
-      return [
-        {
+      if (typeof weight === 'number') {
+        accumulator.push({
           path: getFullyQualifiedPath(type, path),
           weight,
           type: isPtField(type) ? 'pt' : 'string',
-        },
-      ]
+        })
+      }
+      return accumulator
     }
 
-    const results: SearchWeightEntry[] = []
-
-    const objectTypes = typeChain.filter(
-      (t): t is Extract<SchemaType, {jsonType: 'object'}> =>
+    let recursiveResult = accumulator
+    for (const t of typeChain) {
+      if (
         t.jsonType === 'object' &&
         !!t.fields?.length &&
-        !ignoredBuiltInObjectTypes.includes(t.name),
-    )
-    for (const objectType of objectTypes) {
-      for (const field of objectType.fields) {
-        const nextPath = pathToString([path, field.name].filter(Boolean))
-        results.push(...traverse(field.type, nextPath, depth + 1))
+        !ignoredBuiltInObjectTypes.includes(t.name)
+      ) {
+        for (const field of t.fields) {
+          recursiveResult = traverse(
+            field.type,
+            pathToString([path, field.name].filter(Boolean)),
+            depth + 1,
+            recursiveResult,
+          )
+        }
+      } else if (t.jsonType === 'array' && !!t.of?.length) {
+        for (const arrayItemType of t.of) {
+          // eslint-disable-next-line no-param-reassign
+          recursiveResult = traverse(arrayItemType, `${path}[]`, depth + 1, recursiveResult)
+        }
       }
     }
 
-    const arrayTypes = typeChain.filter(
-      (t): t is Extract<SchemaType, {jsonType: 'array'}> =>
-        t.jsonType === 'array' && !!t.of?.length,
-    )
-    for (const arrayType of arrayTypes) {
-      for (const arrayItemType of arrayType.of) {
-        const nextPath = `${path}[]`
-        results.push(...traverse(arrayItemType, nextPath, depth + 1))
-      }
-    }
-
-    return results
+    return recursiveResult
   }
 
   // Cross Dataset Reference are not part of the schema, so we should not attempt to reconcile them.

@@ -1,8 +1,10 @@
+import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
+import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {imageAssetSource} from 'sanity-test-studio/assetSources'
@@ -87,12 +89,14 @@ export default defineConfig({
         lng: -74.1180863,
       },
     }),
+    colorInput(),
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     media(),
+    markdownSchema(),
   ],
   beta: {
     treeArrayEditing: {

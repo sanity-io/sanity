@@ -144,6 +144,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const initialValue = useUnique(initialValueRaw)
+  const isInitialValueLoading = initialValue.loading
 
   const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -773,6 +774,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       ready,
       schemaType: schemaType!,
       isPermissionsLoading,
+      isInitialValueLoading,
       permissions,
       setTimelineMode,
       setTimelineRange,
@@ -833,17 +835,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openPath,
       index,
       inspectOpen,
+      isDeleted,
+      isDeleting,
+      isPermissionsLoading,
+      isInitialValueLoading,
+      languageFilter,
       validation,
       menuItemGroups,
       paneKey,
       previewUrl,
       ready,
       schemaType,
-      isPermissionsLoading,
       permissions,
       setTimelineRange,
-      isDeleting,
-      isDeleted,
       timelineError,
       timelineMode,
       timelineStore,
@@ -853,7 +857,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       selectedReleaseId,
       views,
       formState,
-      languageFilter,
       revisionId,
       lastNonDeletedRevId,
     ],

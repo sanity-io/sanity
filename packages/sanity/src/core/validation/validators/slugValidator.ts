@@ -34,7 +34,7 @@ function serializePath(path: Path): string {
 
 const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   const {getClient, document, path, type} = context
-  const schemaOptions = type?.options as {disableArrayWarning?: boolean} | undefined
+  const schemaOptions = type?.options
 
   if (!document) {
     throw new Error(`\`document\` was not provided in validation context.`)
