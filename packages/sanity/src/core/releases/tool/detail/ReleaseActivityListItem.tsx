@@ -31,14 +31,14 @@ const StatusText = styled(Text)`
   }
 `
 const ACTIVITY_TEXT_118N: Record<ReleaseEvent['type'], string> = {
-  addDocumentToRelease: 'activity.event.add-document',
-  archiveRelease: 'activity.event.archive',
-  createRelease: 'activity.event.create',
-  discardDocumentFromRelease: 'activity.event.discard-document',
-  publishRelease: 'activity.event.publish',
-  scheduleRelease: 'activity.event.schedule',
-  unarchiveRelease: 'activity.event.unarchive',
-  unscheduleRelease: 'activity.event.unschedule',
+  AddDocumentToRelease: 'activity.event.add-document',
+  ArchiveRelease: 'activity.event.archive',
+  CreateRelease: 'activity.event.create',
+  DiscardDocumentFromRelease: 'activity.event.discard-document',
+  PublishRelease: 'activity.event.publish',
+  ScheduleRelease: 'activity.event.schedule',
+  UnarchiveRelease: 'activity.event.unarchive',
+  UnscheduleRelease: 'activity.event.unschedule',
   releaseEditEvent: 'activity.event.edit',
 }
 
@@ -49,18 +49,20 @@ const ReleaseEventDocumentPreview = ({
   releaseId: string
   event: AddDocumentToReleaseEvent | DiscardDocumentFromReleaseEvent
 }) => {
+  // TODO: Get this from the event
+  const documentType = 'author'
   const {value, isLoading} = useDocumentPreviewValues({
     documentId: event.documentId,
-    documentType: event.documentType,
+    documentType: documentType,
   })
   return (
     <Stack space={2}>
       <ReleaseDocumentPreview
         releaseId={releaseId}
         documentId={event.documentId}
-        documentTypeName={event.documentType}
         isLoading={isLoading}
         previewValues={{...value, subtitle: ''}}
+        documentTypeName={documentType}
         layout="block"
       />
     </Stack>

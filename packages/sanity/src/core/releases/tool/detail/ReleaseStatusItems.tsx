@@ -1,5 +1,4 @@
 import {Flex} from '@sanity/ui'
-import {useMemo} from 'react'
 
 import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
@@ -19,10 +18,10 @@ function isDefined<T>(value: T | undefined): value is T {
 }
 
 const STATUS_TITLE_I18N = {
-  createRelease: 'footer.status.created',
-  publishRelease: 'footer.status.published',
-  archiveRelease: 'footer.status.archived',
-  unarchiveRelease: 'footer.status.unarchived',
+  CreateRelease: 'footer.status.created',
+  PublishRelease: 'footer.status.published',
+  ArchiveRelease: 'footer.status.archived',
+  UnarchiveRelease: 'footer.status.unarchived',
 }
 export function ReleaseStatusItems({
   events,
@@ -50,7 +49,7 @@ export function ReleaseStatusItems({
           avatar={<AvatarSkeleton size={0} />}
           text={
             <>
-              {t(STATUS_TITLE_I18N.createRelease)}{' '}
+              {t(STATUS_TITLE_I18N.CreateRelease)}{' '}
               <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
             </>
           }
