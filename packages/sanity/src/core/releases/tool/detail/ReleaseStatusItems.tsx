@@ -1,4 +1,5 @@
 import {Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 
 import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'

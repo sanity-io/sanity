@@ -18,6 +18,7 @@ export interface BaseEvent {
   author: string
   releaseName: string
   id: string // Added client side ${event.timestamp}-${event.type}
+  origin: 'translog' | 'events' // Added client side to identify from where the event was received
 }
 
 export interface CreateReleaseEvent extends BaseEvent {
@@ -92,3 +93,11 @@ export const isDiscardDocumentFromReleaseEvent = (
 ): event is DiscardDocumentFromReleaseEvent => event.type === 'DiscardDocumentFromRelease'
 export const isEditReleaseEvent = (event: ReleaseEvent): event is EditReleaseEvent =>
   event.type === 'releaseEditEvent'
+
+export const isTranslogEvent = (
+  event: ReleaseEvent,
+): event is EditReleaseEvent | CreateReleaseEvent => event.origin === 'translog'
+
+export const isEventsAPIEvent = (
+  event: ReleaseEvent,
+): event is Exclude<ReleaseEvent, EditReleaseEvent> => event.origin === 'events'

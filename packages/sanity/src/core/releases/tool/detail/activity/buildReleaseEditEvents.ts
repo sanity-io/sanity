@@ -39,6 +39,7 @@ export function buildReleaseEditEvents(
     if (Object.values(changed).length >= 1) {
       releaseEditEvents.push({
         type: before ? 'releaseEditEvent' : 'CreateRelease',
+        origin: 'translog',
         author: transaction.author,
         change: changed,
         id: transaction.id,

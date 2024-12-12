@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {TestScheduler} from 'rxjs/testing'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {addIdToEvent, getReleaseActivityEvents, INITIAL_VALUE} from './getReleaseActivityEvents'
+import {addEventData, getReleaseActivityEvents, INITIAL_VALUE} from './getReleaseActivityEvents'
 import {type ReleaseEvent} from './types'
 
 const mockObservableRequest = vi.fn()
@@ -15,19 +15,19 @@ const mockClient = {
   config: vi.fn().mockReturnValue({dataset: 'testDataset'}),
 } as unknown as SanityClient
 
-const creationEvent: Omit<ReleaseEvent, 'id'> = {
+const creationEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T00:00:00Z',
   type: 'CreateRelease',
   releaseName: 'r123',
   author: 'user-1',
 }
-const addFirstDocumentEvent: Omit<ReleaseEvent, 'id'> = {
+const addFirstDocumentEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T01:00:00Z',
   type: 'AddDocumentToRelease',
   releaseName: 'r123',
   author: 'user-1',
 }
-const addSecondDocumentEvent: Omit<ReleaseEvent, 'id'> = {
+const addSecondDocumentEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T02:00:00Z',
   type: 'AddDocumentToRelease',
   releaseName: 'r123',
@@ -57,7 +57,7 @@ describe('getReleaseActivityEvents', () => {
       expectObservable(events$).toBe('(ab)', {
         a: INITIAL_VALUE,
         b: {
-          events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
+          events: [addEventData(addFirstDocumentEvent), addEventData(creationEvent)],
           nextCursor: 'cursor1',
           loading: false,
           error: null,
@@ -94,13 +94,13 @@ describe('getReleaseActivityEvents', () => {
       expectObservable(events$).toBe('(ab)-(cd)', {
         a: INITIAL_VALUE,
         b: {
-          events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
+          events: [addEventData(addFirstDocumentEvent), addEventData(creationEvent)],
           nextCursor: 'cursor1',
           loading: false,
           error: null,
         },
         c: {
-          events: [addIdToEvent(addFirstDocumentEvent), addIdToEvent(creationEvent)],
+          events: [addEventData(addFirstDocumentEvent), addEventData(creationEvent)],
           nextCursor: 'cursor1',
           // Emits a loading state
           loading: true,
@@ -108,9 +108,9 @@ describe('getReleaseActivityEvents', () => {
         },
         d: {
           events: [
-            addIdToEvent(addSecondDocumentEvent),
-            addIdToEvent(addFirstDocumentEvent),
-            addIdToEvent(creationEvent),
+            addEventData(addSecondDocumentEvent),
+            addEventData(addFirstDocumentEvent),
+            addEventData(creationEvent),
           ],
           // Preserves previous cursor
           nextCursor: 'cursor1',
@@ -151,23 +151,23 @@ describe('getReleaseActivityEvents', () => {
           loading: false,
           nextCursor: 'cursor2',
           error: null,
-          events: [addIdToEvent(addSecondDocumentEvent), addIdToEvent(addFirstDocumentEvent)],
+          events: [addEventData(addSecondDocumentEvent), addEventData(addFirstDocumentEvent)],
         },
         c: {
           loading: true,
           // Given it's a loadMore action, we don't need to keep the previous cursor
           nextCursor: '',
           error: null,
-          events: [addIdToEvent(addSecondDocumentEvent), addIdToEvent(addFirstDocumentEvent)],
+          events: [addEventData(addSecondDocumentEvent), addEventData(addFirstDocumentEvent)],
         },
         d: {
           loading: false,
           nextCursor: '',
           error: null,
           events: [
-            addIdToEvent(addSecondDocumentEvent),
-            addIdToEvent(addFirstDocumentEvent),
-            addIdToEvent(creationEvent),
+            addEventData(addSecondDocumentEvent),
+            addEventData(addFirstDocumentEvent),
+            addEventData(creationEvent),
           ],
         },
       })

@@ -84,6 +84,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {releaseType: 'undecided', intendedPublishDate: undefined},
         id: '27IdYXOVe1PEc0ZOADFAhQ',
         timestamp: '2024-12-05T17:09:28.325641Z',
@@ -183,6 +184,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {intendedPublishDate: '2024-12-13T17:12:00.000Z'},
         id: 'zGoOhrVQZLzwh7QVfgQryJ',
         timestamp: '2024-12-05T17:12:56.253502Z',
@@ -252,6 +254,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {
           releaseType: 'scheduled',
           intendedPublishDate: '2024-12-20T16:35:00.000Z',
@@ -527,6 +530,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {intendedPublishDate: '2024-12-13T17:12:00.000Z'},
         id: 'zGoOhrVQZLzwh7QVfgQryJ',
         timestamp: '2024-12-05T17:12:56.253502Z',
@@ -535,6 +539,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {releaseType: 'scheduled', intendedPublishDate: '2024-12-12T17:12:00.000Z'},
         id: '27IdYXOVe1PEc0ZOADFjtK',
         timestamp: '2024-12-05T17:12:48.742846Z',
@@ -543,6 +548,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {releaseType: 'undecided', intendedPublishDate: undefined},
         id: '27IdYXOVe1PEc0ZOADFAhQ',
         timestamp: '2024-12-05T17:09:28.325641Z',
@@ -551,6 +557,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'releaseEditEvent',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {releaseType: 'scheduled', intendedPublishDate: '2024-12-20T16:35:00.000Z'},
         id: 'zGoOhrVQZLzwh7QVfgIGWK',
         timestamp: '2024-12-05T16:35:11.995089Z',
@@ -559,6 +566,7 @@ describe('buildReleaseEditEvents()', () => {
       {
         type: 'CreateRelease',
         author: 'p8xDvUMxC',
+        origin: 'translog',
         change: {releaseType: 'asap'},
         id: '27IdYXOVe1PEc0ZOAD1jvY',
         timestamp: '2024-12-05T16:34:59.512774Z',

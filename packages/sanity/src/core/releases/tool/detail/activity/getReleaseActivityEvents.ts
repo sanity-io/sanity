@@ -28,8 +28,8 @@ function removeDupes(prev: ReleaseEvent[], next: ReleaseEvent[]): ReleaseEvent[]
   return Array.from(noDupes.values())
 }
 
-export function addIdToEvent(event: Omit<ReleaseEvent, 'id'>): ReleaseEvent {
-  return {...event, id: `${event.timestamp}-${event.type}`} as ReleaseEvent
+export function addEventData(event: Omit<ReleaseEvent, 'id' | 'origin'>): ReleaseEvent {
+  return {...event, id: `${event.timestamp}-${event.type}`, origin: 'events'} as ReleaseEvent
 }
 
 interface InitialFetchEventsOptions {
@@ -56,7 +56,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
     }
     return client.observable
       .request<{
-        events: Omit<ReleaseEvent, 'id'>[]
+        events: Omit<ReleaseEvent, 'id' | 'origin'>[]
         nextCursor: string
       }>({
         url: `/data/events/${client.config().dataset}/releases/${getReleaseIdFromReleaseDocumentId(releaseId)}?${params.toString()}`,
@@ -65,7 +65,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
       .pipe(
         map((response) => {
           return {
-            events: response.events.map(addIdToEvent),
+            events: response.events.map(addEventData),
             nextCursor: response.nextCursor,
             loading: false,
             error: null,

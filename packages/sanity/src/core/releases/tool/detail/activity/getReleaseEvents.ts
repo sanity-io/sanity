@@ -16,7 +16,7 @@ import {type ReleasesReducerState} from '../../../store/reducer'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseActivityEvents} from './getReleaseActivityEvents'
 import {getReleaseEditEvents} from './getReleaseEditEvents'
-import {isCreateReleaseEvent, type ReleaseEvent} from './types'
+import {isCreateReleaseEvent, isEventsAPIEvent, isTranslogEvent, type ReleaseEvent} from './types'
 
 interface getReleaseEventsOpts {
   client: SanityClient
@@ -74,11 +74,10 @@ export function getReleaseEvents({
         .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
         .reduce((acc: ReleaseEvent[], event) => {
           if (isCreateReleaseEvent(event)) {
-            // Check if the creation event exists, we want to show only one, prefer the one that has the "changes" object
             const creationEvent = acc.find(isCreateReleaseEvent)
-            // The creation event with the "change" will come from the edit events, we want that one as it has more info.
             if (!creationEvent) acc.push(event)
-            else if (!creationEvent.change && event.change) {
+            // Prefer the translog event for the creation given it has extra information.
+            else if (isEventsAPIEvent(creationEvent) && isTranslogEvent(event)) {
               acc[acc.indexOf(creationEvent)] = event
             }
           } else acc.push(event)
