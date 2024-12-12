@@ -10,6 +10,11 @@ import {
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentGroupEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   useEvents,
   useTranslation,
@@ -82,11 +87,11 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     (revEvent: DocumentGroupEvent) => {
       try {
         if (
-          revEvent.type === 'DeleteDocumentVersion' ||
-          revEvent.type === 'DeleteDocumentGroup' ||
-          revEvent.type === 'UnpublishDocument' ||
-          revEvent.type === 'ScheduleDocumentVersion' ||
-          revEvent.type == 'UnscheduleDocumentVersion'
+          isDeleteDocumentVersionEvent(revEvent) ||
+          isDeleteDocumentGroupEvent(revEvent) ||
+          isUnpublishDocumentEvent(revEvent) ||
+          isScheduleDocumentVersionEvent(revEvent) ||
+          isUnscheduleDocumentVersionEvent(revEvent)
         ) {
           console.error('Event is not selectable')
           return

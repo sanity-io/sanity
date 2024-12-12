@@ -52,7 +52,7 @@ describe('getEditEvents()', () => {
   ]
   describe('when the document is not liveEdit', () => {
     const expectedEvent: EditDocumentVersionEvent = {
-      type: 'EditDocumentVersion',
+      type: 'editDocumentVersion',
       id: 'edit-tx-2',
       documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
       timestamp: '2024-11-19T08:27:33.251404Z',
@@ -62,13 +62,13 @@ describe('getEditEvents()', () => {
       revisionId: 'edit-tx-2',
       transactions: [
         {
-          type: 'EditTransaction',
+          type: 'editTransaction',
           author: 'p8xDvUMxC',
           timestamp: '2024-11-19T08:27:33.251404Z',
           revisionId: 'edit-tx-2',
         },
         {
-          type: 'EditTransaction',
+          type: 'editTransaction',
           author: 'p8xDvUMxC',
           timestamp: '2024-11-19T08:27:27.753746Z',
           revisionId: 'edit-tx-1',
@@ -99,7 +99,7 @@ describe('getEditEvents()', () => {
         },
       }
       const newEvent: EditDocumentVersionEvent = {
-        type: 'EditDocumentVersion',
+        type: 'editDocumentVersion',
         documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
         timestamp: '2024-11-19T08:35:27.753746Z',
         id: 'new-tx',
@@ -109,7 +109,7 @@ describe('getEditEvents()', () => {
         revisionId: 'new-tx',
         transactions: [
           {
-            type: 'EditTransaction',
+            type: 'editTransaction',
             author: 'p8xDvUMxC',
             timestamp: '2024-11-19T08:35:27.753746Z',
             revisionId: 'new-tx',
@@ -170,7 +170,7 @@ describe('getEditEvents()', () => {
   })
   describe('when the document is liveEdit', () => {
     const expectedEvent: UpdateLiveDocumentEvent = {
-      type: 'UpdateLiveDocument',
+      type: 'updateLiveDocument',
       id: 'edit-tx-2',
       documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
       timestamp: '2024-11-19T08:27:33.251404Z',
@@ -200,7 +200,7 @@ describe('getEditEvents()', () => {
         },
       }
       const newEvent: UpdateLiveDocumentEvent = {
-        type: 'UpdateLiveDocument',
+        type: 'updateLiveDocument',
         documentId: 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
         timestamp: '2024-11-19T08:35:27.753746Z',
         id: 'new-tx',

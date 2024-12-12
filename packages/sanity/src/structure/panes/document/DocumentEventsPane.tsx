@@ -4,6 +4,8 @@ import {
   getDraftId,
   getPublishedId,
   getVersionId,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
   useEventsStore,
   usePerspective,
   useReleases,
@@ -53,7 +55,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       isPristine: Boolean(eventsStore.events.length === 0),
       lastNonDeletedRevId:
         eventsStore.events.find(
-          (e) => e.type !== 'DeleteDocumentGroup' && e.type !== 'DeleteDocumentVersion',
+          (e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e),
         )?.id || null,
     }),
     [eventsStore],

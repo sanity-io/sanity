@@ -2,6 +2,11 @@ import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {
   type DocumentGroupEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
   LoadingBlock,
   ScrollContainer,
   useEvents,
@@ -56,11 +61,11 @@ export function EventsSelector({showList}: {showList: boolean}) {
     (event: DocumentGroupEvent) => {
       try {
         if (
-          event.type === 'DeleteDocumentVersion' ||
-          event.type === 'DeleteDocumentGroup' ||
-          event.type === 'UnpublishDocument' ||
-          event.type === 'ScheduleDocumentVersion' ||
-          event.type === 'UnscheduleDocumentVersion'
+          isDeleteDocumentVersionEvent(event) ||
+          isDeleteDocumentGroupEvent(event) ||
+          isUnpublishDocumentEvent(event) ||
+          isScheduleDocumentVersionEvent(event) ||
+          isUnscheduleDocumentVersionEvent(event)
         ) {
           console.error('Event is not selectable')
           return

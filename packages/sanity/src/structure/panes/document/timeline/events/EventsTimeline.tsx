@@ -8,6 +8,7 @@ import {
   getDocumentVariantType,
   isCreateDocumentVersionEvent,
   isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
   LoadingBlock,
   useTranslation,
 } from 'sanity'
@@ -128,11 +129,11 @@ export const EventsTimeline = ({
   const renderOptionsMenu = useCallback(
     (event: DocumentGroupEvent) => {
       const documentVariantType = getDocumentVariantType(event.documentId)
-      if (event.type === 'PublishDocumentVersion' && documentVariantType === 'published') {
+      if (isPublishDocumentVersionEvent(event) && documentVariantType === 'published') {
         return <PublishedEventMenu event={event} />
       }
       if (
-        event.type === 'PublishDocumentVersion' &&
+        isPublishDocumentVersionEvent(event) &&
         documentVariantType === 'draft' &&
         event.creationEvent
       ) {

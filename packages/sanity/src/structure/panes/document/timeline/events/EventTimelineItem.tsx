@@ -1,6 +1,15 @@
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import {type DocumentGroupEvent, Event, useTranslation} from 'sanity'
+import {
+  type DocumentGroupEvent,
+  Event,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  useTranslation,
+} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
 
@@ -12,13 +21,12 @@ export interface TimelineItemProps {
 }
 
 const getIsSelectable = (event: DocumentGroupEvent) => {
-  const {type} = event
   return (
-    type !== 'DeleteDocumentVersion' &&
-    type !== 'DeleteDocumentGroup' &&
-    type !== 'UnpublishDocument' &&
-    type !== 'ScheduleDocumentVersion' &&
-    type !== 'UnscheduleDocumentVersion'
+    !isDeleteDocumentVersionEvent(event) &&
+    !isDeleteDocumentGroupEvent(event) &&
+    !isUnpublishDocumentEvent(event) &&
+    !isScheduleDocumentVersionEvent(event) &&
+    !isUnscheduleDocumentVersionEvent(event)
   )
 }
 
