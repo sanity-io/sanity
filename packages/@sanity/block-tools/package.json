@@ -63,7 +63,7 @@
     "@vercel/stega": "0.1.2",
     "@vitest/coverage-v8": "^2.1.1",
     "jsdom": "^23.0.1",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.8"
   },
   "publishConfig": {
     "access": "public"

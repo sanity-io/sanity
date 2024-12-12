@@ -81,6 +81,6 @@
     "@types/object-inspect": "^1.13.0",
     "@types/react": "^18.3.12",
     "rimraf": "^5.0.10",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.8"
   }
 }
