@@ -8,8 +8,8 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useReleaseActivity} from './activity/useReleaseActivity'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
+import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
@@ -42,7 +42,7 @@ export const ReleaseDetail = () => {
   const {data, archivedReleases, loading} = useReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
-  const activity = useReleaseActivity(releaseId)
+  const releaseEvents = useReleaseEvents(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
@@ -136,12 +136,12 @@ export const ReleaseDetail = () => {
             <ReleaseDashboardFooter
               documents={results}
               release={releaseInDetail}
-              events={activity.events}
+              events={releaseEvents.events}
             />
           </Flex>
 
           <ReleaseDashboardActivityPanel
-            activity={activity}
+            events={releaseEvents}
             release={releaseInDetail}
             show={inspector === 'activity'}
           />

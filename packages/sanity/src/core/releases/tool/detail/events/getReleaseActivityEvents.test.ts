@@ -17,19 +17,19 @@ const mockClient = {
 
 const creationEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T00:00:00Z',
-  type: 'CreateRelease',
+  type: 'createRelease',
   releaseName: 'r123',
   author: 'user-1',
 }
 const addFirstDocumentEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T01:00:00Z',
-  type: 'AddDocumentToRelease',
+  type: 'addDocumentToRelease',
   releaseName: 'r123',
   author: 'user-1',
 }
 const addSecondDocumentEvent: Omit<ReleaseEvent, 'id' | 'origin'> = {
   timestamp: '2024-12-03T02:00:00Z',
-  type: 'AddDocumentToRelease',
+  type: 'addDocumentToRelease',
   releaseName: 'r123',
   author: 'user-2',
 }

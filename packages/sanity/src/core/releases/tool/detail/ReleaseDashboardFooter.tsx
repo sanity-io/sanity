@@ -7,7 +7,7 @@ import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePu
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
 import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUnscheduleButton'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
-import {type ReleaseEvent} from './activity/types'
+import {type ReleaseEvent} from './events/types'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
 import {type DocumentInRelease} from './useBundleDocuments'
 

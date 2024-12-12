@@ -50,6 +50,10 @@ const releasesLocaleStrings = {
   /* The text for the activity event when a document is removed from a release */
   'activity.event.discard-document': 'discarded a document version',
   'activity.event.edit': 'set release time to <ScheduleTarget></ScheduleTarget>',
+  /**The text to display in the changes when the release type changes to asap */
+  'activity.event.edit-time-asap': 'immediately',
+  /**The text to display in the changes when the release type changes to undecided */
+  'activity.event.edit-time-undecided': 'never',
   /* The text for the activity event when the release is published */
   'activity.event.publish': 'published the <strong>{{releaseTitle}}</strong> release',
   /* The text for the activity event when the release is scheduled */

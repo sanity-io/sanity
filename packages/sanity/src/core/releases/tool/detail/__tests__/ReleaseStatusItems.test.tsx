@@ -8,7 +8,7 @@ import {
   archivedReleaseEvents,
   publishedReleaseEvents,
   unarchivedReleaseEvents,
-} from '../activity/__fixtures__/testHelpers'
+} from '../events/__fixtures__/release-events'
 import {ReleaseStatusItems} from '../ReleaseStatusItems'
 
 describe('ReleaseStatusItems', () => {

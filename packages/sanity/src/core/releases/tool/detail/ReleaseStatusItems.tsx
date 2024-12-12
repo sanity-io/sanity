@@ -12,7 +12,7 @@ import {
   isPublishReleaseEvent,
   isUnarchiveReleaseEvent,
   type ReleaseEvent,
-} from './activity/types'
+} from './events/types'
 
 function isDefined<T>(value: T | undefined): value is T {
   return value !== undefined

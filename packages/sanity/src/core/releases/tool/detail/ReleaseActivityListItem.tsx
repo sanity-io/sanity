@@ -19,7 +19,7 @@ import {
   isEditReleaseEvent,
   isScheduleReleaseEvent,
   type ReleaseEvent,
-} from './activity/types'
+} from './events/types'
 
 const StatusText = styled(Text)`
   strong {
@@ -69,11 +69,12 @@ const ReleaseEventDocumentPreview = ({
 
 const ScheduleTarget = ({children, event}: {children: React.ReactNode; event: ReleaseEvent}) => {
   const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const formattedDate = useMemo(() => {
     if (isEditReleaseEvent(event)) {
-      if (event.change.releaseType === 'asap') return 'immediately'
-      if (event.change.releaseType === 'undecided') return 'never'
+      if (event.change.releaseType === 'asap') return t('activity.event.edit-time-asap')
+      if (event.change.releaseType === 'undecided') return t('activity.event.edit-time-undecided')
     }
 
     let dateString: string | undefined
@@ -87,7 +88,7 @@ const ScheduleTarget = ({children, event}: {children: React.ReactNode; event: Re
 
     if (!dateString) return null
     return dateTimeFormat.format(new Date(dateString))
-  }, [dateTimeFormat, event])
+  }, [dateTimeFormat, event, t])
 
   if (!formattedDate && isCreateReleaseEvent(event)) return null
   return (

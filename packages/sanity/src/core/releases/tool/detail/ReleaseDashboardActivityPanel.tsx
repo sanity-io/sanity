@@ -10,11 +10,11 @@ import {Resizable} from '../../../form/studio/tree-editing/components/layout/res
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
-import {type ReleaseActivity} from './activity/useReleaseActivity'
+import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
 interface ReleaseDashboardActivityPanelProps {
-  activity: ReleaseActivity
+  events: ReleaseEvents
   release: ReleaseDocument
   show: boolean
 }
@@ -25,7 +25,7 @@ const FillHeight = styled.div`
   flex-direction: column;
 `
 export function ReleaseDashboardActivityPanel({
-  activity,
+  events,
   release,
   show,
 }: ReleaseDashboardActivityPanelProps) {
@@ -55,16 +55,16 @@ export function ReleaseDashboardActivityPanel({
                     {t('activity.panel.title')}
                   </Text>
                 </Box>
-                {activity.loading && !activity.events.length && (
+                {events.loading && !events.events.length && (
                   <LoadingBlock title={t('activity.panel.loading')} />
                 )}
                 <ReleaseActivityList
-                  events={activity.events}
                   releaseTitle={release.metadata.title || release.name}
                   releaseId={release._id}
-                  hasMore={activity.hasMore}
-                  loadMore={activity.loadMore}
-                  isLoading={activity.loading}
+                  events={events.events}
+                  hasMore={events.hasMore}
+                  loadMore={events.loadMore}
+                  isLoading={events.loading}
                 />
               </MotionFlex>
             </Resizable>

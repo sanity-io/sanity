@@ -10,7 +10,7 @@ import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumen
 import {EVENTS_INITIAL_VALUE, getReleaseEvents} from './getReleaseEvents'
 import {type ReleaseEvent} from './types'
 
-export interface ReleaseActivity {
+export interface ReleaseEvents {
   events: ReleaseEvent[]
   loading: boolean
   error: null | Error
@@ -18,7 +18,7 @@ export interface ReleaseActivity {
   hasMore: boolean
 }
 
-export function useReleaseActivity(releaseId: string): ReleaseActivity {
+export function useReleaseEvents(releaseId: string): ReleaseEvents {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()

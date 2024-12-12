@@ -14,7 +14,7 @@ import {
   isEventsAPIEvent,
   isTranslogEvent,
   type ReleaseEvent,
-} from './activity/types'
+} from './events/types'
 import {ReleaseActivityListItem} from './ReleaseActivityListItem'
 
 const estimateSize = (event: ReleaseEvent | undefined) => {
