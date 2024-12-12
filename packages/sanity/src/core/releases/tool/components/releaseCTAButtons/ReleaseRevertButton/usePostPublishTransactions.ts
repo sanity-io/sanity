@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {from, map} from 'rxjs'
+import {catchError, from, map, of} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -13,7 +13,7 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
 
   const memoObservable = useMemo(() => {
     // Observable to check if there are post-publish transactions
-    const hasPostPublishTransactions$ = from(
+    return from(
       getTransactionsLogs(
         client,
         documents.map(({document}) => document._id),
@@ -27,9 +27,8 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
       // the transaction of published is also returned
       // so post publish transactions will result in more than 1 transaction
       map((transactions) => transactions.length > 1),
+      catchError(() => of(null)),
     )
-
-    return hasPostPublishTransactions$
   }, [client, documents, transactionId])
 
   const observableResult = useObservable(memoObservable, null)
