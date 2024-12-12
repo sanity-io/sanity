@@ -19,10 +19,10 @@ function isDefined<T>(value: T | undefined): value is T {
 }
 
 const STATUS_TITLE_I18N = {
-  CreateRelease: 'footer.status.created',
-  PublishRelease: 'footer.status.published',
-  ArchiveRelease: 'footer.status.archived',
-  UnarchiveRelease: 'footer.status.unarchived',
+  createRelease: 'footer.status.created',
+  publishRelease: 'footer.status.published',
+  archiveRelease: 'footer.status.archived',
+  unarchiveRelease: 'footer.status.unarchived',
 }
 export function ReleaseStatusItems({
   events,
@@ -50,7 +50,7 @@ export function ReleaseStatusItems({
           avatar={<AvatarSkeleton size={0} />}
           text={
             <>
-              {t(STATUS_TITLE_I18N.CreateRelease)}{' '}
+              {t(STATUS_TITLE_I18N.createRelease)}{' '}
               <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
             </>
           }

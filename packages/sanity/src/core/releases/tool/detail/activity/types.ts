@@ -22,43 +22,45 @@ export interface BaseEvent {
 }
 
 export interface CreateReleaseEvent extends BaseEvent {
-  type: 'CreateRelease'
+  type: 'createRelease'
   change?: Change
 }
 
 export interface ScheduleReleaseEvent extends BaseEvent {
-  type: 'ScheduleRelease'
+  type: 'scheduleRelease'
   publishAt: string
 }
 
 export interface UnscheduleReleaseEvent extends BaseEvent {
-  type: 'UnscheduleRelease'
+  type: 'unscheduleRelease'
 }
 
 export interface PublishReleaseEvent extends BaseEvent {
-  type: 'PublishRelease'
+  type: 'publishRelease'
 }
 
 export interface ArchiveReleaseEvent extends BaseEvent {
-  type: 'ArchiveRelease'
+  type: 'archiveRelease'
 }
 
 export interface UnarchiveReleaseEvent extends BaseEvent {
-  type: 'UnarchiveRelease'
+  type: 'unarchiveRelease'
 }
 
 export interface AddDocumentToReleaseEvent extends BaseEvent {
-  type: 'AddDocumentToRelease'
-  documentId: string // corresponds to documents.ID
-  versionId: string // corresponds to documents.ID
+  type: 'addDocumentToRelease'
+  documentId: string
+  documentType: string
+  versionId: string
   revisionId: string
   versionRevisionId: string
 }
 
 export interface DiscardDocumentFromReleaseEvent extends BaseEvent {
-  type: 'DiscardDocumentFromRelease'
-  documentId: string // corresponds to documents.ID
-  versionId: string // corresponds to documents.ID
+  type: 'discardDocumentFromRelease'
+  documentId: string
+  documentType: string
+  versionId: string
   versionRevisionId: string
 }
 
@@ -74,23 +76,23 @@ export interface EditReleaseEvent extends BaseEvent {
 
 // Type guards
 export const isCreateReleaseEvent = (event: ReleaseEvent): event is CreateReleaseEvent =>
-  event.type === 'CreateRelease'
+  event.type === 'createRelease'
 export const isScheduleReleaseEvent = (event: ReleaseEvent): event is ScheduleReleaseEvent =>
-  event.type === 'ScheduleRelease'
+  event.type === 'scheduleRelease'
 export const isUnscheduleReleaseEvent = (event: ReleaseEvent): event is UnscheduleReleaseEvent =>
-  event.type === 'UnscheduleRelease'
+  event.type === 'unscheduleRelease'
 export const isPublishReleaseEvent = (event: ReleaseEvent): event is PublishReleaseEvent =>
-  event.type === 'PublishRelease'
+  event.type === 'publishRelease'
 export const isArchiveReleaseEvent = (event: ReleaseEvent): event is ArchiveReleaseEvent =>
-  event.type === 'ArchiveRelease'
+  event.type === 'archiveRelease'
 export const isUnarchiveReleaseEvent = (event: ReleaseEvent): event is UnarchiveReleaseEvent =>
-  event.type === 'UnarchiveRelease'
+  event.type === 'unarchiveRelease'
 export const isAddDocumentToReleaseEvent = (
   event: ReleaseEvent,
-): event is AddDocumentToReleaseEvent => event.type === 'AddDocumentToRelease'
+): event is AddDocumentToReleaseEvent => event.type === 'addDocumentToRelease'
 export const isDiscardDocumentFromReleaseEvent = (
   event: ReleaseEvent,
-): event is DiscardDocumentFromReleaseEvent => event.type === 'DiscardDocumentFromRelease'
+): event is DiscardDocumentFromReleaseEvent => event.type === 'discardDocumentFromRelease'
 export const isEditReleaseEvent = (event: ReleaseEvent): event is EditReleaseEvent =>
   event.type === 'releaseEditEvent'
 
