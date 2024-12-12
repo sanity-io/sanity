@@ -1,11 +1,11 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
-export function StatusItem(props: {avatar?: ReactNode; text: ReactNode}) {
-  const {avatar, text} = props
+export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) {
+  const {avatar, text, testId} = props
 
   return (
-    <Card>
+    <Card data-testid={testId}>
       <Flex>
         {avatar && (
           <Box padding={1}>

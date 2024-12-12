@@ -63,6 +63,7 @@ export function ReleaseStatusItems({
       {footerEvents.map((event) => (
         <StatusItem
           key={event.id}
+          testId={`status-${event.type}`}
           avatar={event.author && <UserAvatar size={0} user={event.author} />}
           text={
             <>

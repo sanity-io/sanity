@@ -564,7 +564,7 @@ describe('buildReleaseEditEvents()', () => {
         releaseName: 'rWBfpXZVj',
       },
       {
-        type: 'CreateRelease',
+        type: 'createRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {releaseType: 'asap'},

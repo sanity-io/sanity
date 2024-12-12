@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, within} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -39,7 +39,7 @@ describe('ReleaseStatusItems', () => {
     const text = await component.findByText('Created')
     expect(text).toBeInTheDocument()
   })
-  it('renders a status item for a PublishRelease event', async () => {
+  it('renders a status item for a PublishRelease event and the create event', async () => {
     const wrapper = await createTestProvider({
       resources: [releasesUsEnglishLocaleBundle],
     })
@@ -50,10 +50,14 @@ describe('ReleaseStatusItems', () => {
         wrapper,
       },
     )
-    const timeElement = await component.findByRole('time')
+    const publishEvent = await component.findByTestId('status-publishRelease')
+    const timeElement = await within(publishEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-05T00:00:00.000Z')
-    const text = await component.findByText('Published')
+    const text = await within(publishEvent).findByText('Published')
     expect(text).toBeInTheDocument()
+
+    const createEvent = await component.findByTestId('status-createRelease')
+    expect(createEvent).toBeInTheDocument()
   })
   it('renders a status item for an ArchiveRelease event', async () => {
     const wrapper = await createTestProvider({
@@ -66,10 +70,15 @@ describe('ReleaseStatusItems', () => {
         wrapper,
       },
     )
-    const timeElement = await component.findByRole('time')
+    const archivedEvent = await component.findByTestId('status-archiveRelease')
+
+    const timeElement = await within(archivedEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-05T00:00:00.000Z')
-    const text = await component.findByText('Archived')
+    const text = await within(archivedEvent).findByText('Archived')
     expect(text).toBeInTheDocument()
+
+    const createEvent = await component.findByTestId('status-createRelease')
+    expect(createEvent).toBeInTheDocument()
   })
   it('renders a status item for an UnarchiveRelease event', async () => {
     const wrapper = await createTestProvider({
@@ -81,9 +90,14 @@ describe('ReleaseStatusItems', () => {
         wrapper,
       },
     )
-    const timeElement = await component.findByRole('time')
+    const unarchiveEvent = await component.findByTestId('status-unarchiveRelease')
+
+    const timeElement = await within(unarchiveEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-06T00:00:00.000Z')
-    const text = await component.findByText('Unarchived')
+    const text = await within(unarchiveEvent).findByText('Unarchived')
     expect(text).toBeInTheDocument()
+
+    const createEvent = await component.findByTestId('status-createRelease')
+    expect(createEvent).toBeInTheDocument()
   })
 })
