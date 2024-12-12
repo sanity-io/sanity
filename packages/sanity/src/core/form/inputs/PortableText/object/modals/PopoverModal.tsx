@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useRef, useState} from 'react'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
@@ -24,18 +24,8 @@ interface PopoverEditDialogProps {
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-export function PopoverEditDialog(props: PopoverEditDialogProps) {
+export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
   const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
-  const [open, setOpen] = useState(false)
-
-  // This hook is here to set open after the initial render.
-  // If rendered immediately, the popover will for a split second be
-  // visible in the top left of the boundaryElement before correctly
-  // placed pointing at the reference element.
-  useEffect(() => {
-    setOpen(true)
-  }, [])
-
   return (
     <RootPopover
       content={<Content {...props} />}
@@ -44,7 +34,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
       data-ui="PopoverEditDialog"
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       floatingBoundary={floatingBoundary}
-      open={open}
+      open
       overflow="auto"
       placement="bottom"
       portal="default"
