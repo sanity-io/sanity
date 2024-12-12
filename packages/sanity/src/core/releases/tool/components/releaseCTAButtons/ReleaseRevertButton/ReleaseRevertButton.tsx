@@ -30,19 +30,134 @@ const ConfirmReleaseDialog = ({
   documents,
   setRevertReleaseStatus,
   release,
-  handleRevertRelease,
 }: {
   revertReleaseStatus: RevertReleaseStatus
   documents: DocumentInRelease[]
   setRevertReleaseStatus: (status: RevertReleaseStatus) => void
   release: ReleaseDocument
-  handleRevertRelease: (stageNewRevertRelease: boolean) => Promise<void>
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
+  const {getAdjacentTransactions} = useAdjacentTransactions(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
+  const toast = useToast()
+  const telemetry = useTelemetry()
+  const {createRelease, publishRelease, createVersion} = useReleaseOperations()
+  const router = useRouter()
 
-  if (revertReleaseStatus === 'idle') return null
+  const navigateToRevertRelease = useCallback(
+    (revertReleaseId: string) => () =>
+      router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)}),
+    [router],
+  )
+
+  useEffect(() => {
+    getAdjacentTransactions()
+  }, [getAdjacentTransactions])
+
+  const handleRevertRelease = useCallback(async () => {
+    setRevertReleaseStatus('reverting')
+    const documentRevertStates = await getAdjacentTransactions()
+
+    const revertReleaseId = createReleaseId()
+
+    try {
+      if (!documentRevertStates) {
+        throw new Error('Unable to find documents to revert')
+      }
+
+      await createRelease({
+        _id: revertReleaseId,
+        metadata: {
+          title: t('revert-release.title', {title: release.metadata.title}),
+          description: t('revert-release.description', {title: release.metadata.title}),
+          releaseType: 'asap',
+        },
+      })
+
+      await Promise.allSettled(
+        documentRevertStates.map((document) =>
+          createVersion(getReleaseIdFromReleaseDocumentId(revertReleaseId), document._id, document),
+        ),
+      )
+
+      if (stageNewRevertRelease) {
+        telemetry.log(RevertRelease, {revertType: 'staged'})
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                components={{
+                  Link: () => (
+                    <Text
+                      size={1}
+                      weight="medium"
+                      data-as="a"
+                      onClick={navigateToRevertRelease(revertReleaseId)}
+                      style={{
+                        cursor: 'pointer',
+                        marginBottom: '0.5rem',
+                        display: 'flex',
+                      }}
+                    >
+                      {t('toast.revert-stage.success-link')}
+                    </Text>
+                  ),
+                }}
+                t={t}
+                i18nKey="toast.revert-stage.success"
+                values={{title: release.metadata.title}}
+              />
+            </Text>
+          ),
+        })
+      } else {
+        await publishRelease(revertReleaseId)
+
+        telemetry.log(RevertRelease, {revertType: 'immediately'})
+
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                t={t}
+                i18nKey="toast.immediate-revert.success"
+                values={{title: release.metadata.title}}
+              />
+            </Text>
+          ),
+        })
+      }
+    } catch (revertError) {
+      toast.push({
+        status: 'error',
+        title: (
+          <Text muted size={1}>
+            <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
+          </Text>
+        ),
+      })
+      console.error(revertError)
+    } finally {
+      setRevertReleaseStatus('idle')
+    }
+  }, [
+    setRevertReleaseStatus,
+    getAdjacentTransactions,
+    createRelease,
+    t,
+    release.metadata.title,
+    stageNewRevertRelease,
+    createVersion,
+    telemetry,
+    toast,
+    navigateToRevertRelease,
+    publishRelease,
+  ])
 
   const description =
     documents.length > 1
@@ -62,7 +177,7 @@ const ConfirmReleaseDialog = ({
               : 'action.immediate-revert-release',
           ),
           tone: 'positive',
-          onClick: () => handleRevertRelease(stageNewRevertRelease),
+          onClick: handleRevertRelease,
           loading: revertReleaseStatus === 'reverting',
           disabled: revertReleaseStatus === 'reverting',
         },
@@ -110,132 +225,8 @@ export const ReleaseRevertButton = ({
   documents,
   disabled,
 }: ReleasePublishAllButtonProps) => {
-  const {getAdjacentTransactions} = useAdjacentTransactions(documents)
   const {t} = useTranslation(releasesLocaleNamespace)
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
-  const toast = useToast()
-  const router = useRouter()
-  const telemetry = useTelemetry()
-  const {createRelease, publishRelease, createVersion} = useReleaseOperations()
-
-  useEffect(() => {
-    if (revertReleaseStatus === 'confirm') getAdjacentTransactions()
-  }, [getAdjacentTransactions, revertReleaseStatus])
-
-  const navigateToRevertRelease = useCallback(
-    (revertReleaseId: string) => () =>
-      router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)}),
-    [router],
-  )
-
-  const handleRevertRelease = useCallback(
-    async (stageNewRevertRelease: boolean) => {
-      setRevertReleaseStatus('reverting')
-      const documentRevertStates = await getAdjacentTransactions()
-
-      const revertReleaseId = createReleaseId()
-
-      try {
-        if (!documentRevertStates) {
-          throw new Error('Unable to find documents to revert')
-        }
-
-        await createRelease({
-          _id: revertReleaseId,
-          metadata: {
-            title: t('revert-release.title', {title: release.metadata.title}),
-            description: t('revert-release.description', {title: release.metadata.title}),
-            releaseType: 'asap',
-          },
-        })
-
-        await Promise.allSettled(
-          documentRevertStates.map((document) =>
-            createVersion(
-              getReleaseIdFromReleaseDocumentId(revertReleaseId),
-              document._id,
-              document,
-            ),
-          ),
-        )
-
-        if (stageNewRevertRelease) {
-          telemetry.log(RevertRelease, {revertType: 'staged'})
-          toast.push({
-            closable: true,
-            status: 'success',
-            title: (
-              <Text muted size={1}>
-                <Translate
-                  components={{
-                    Link: () => (
-                      <Text
-                        size={1}
-                        weight="medium"
-                        data-as="a"
-                        onClick={navigateToRevertRelease(revertReleaseId)}
-                        style={{
-                          cursor: 'pointer',
-                          marginBottom: '0.5rem',
-                          display: 'flex',
-                        }}
-                      >
-                        {t('toast.revert-stage.success-link')}
-                      </Text>
-                    ),
-                  }}
-                  t={t}
-                  i18nKey="toast.revert-stage.success"
-                  values={{title: release.metadata.title}}
-                />
-              </Text>
-            ),
-          })
-        } else {
-          await publishRelease(revertReleaseId)
-
-          telemetry.log(RevertRelease, {revertType: 'immediately'})
-
-          toast.push({
-            closable: true,
-            status: 'success',
-            title: (
-              <Text muted size={1}>
-                <Translate
-                  t={t}
-                  i18nKey="toast.immediate-revert.success"
-                  values={{title: release.metadata.title}}
-                />
-              </Text>
-            ),
-          })
-        }
-      } catch (revertError) {
-        toast.push({
-          status: 'error',
-          title: (
-            <Text muted size={1}>
-              <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
-            </Text>
-          ),
-        })
-        console.error(revertError)
-      } finally {
-        setRevertReleaseStatus('idle')
-      }
-    },
-    [
-      getAdjacentTransactions,
-      createRelease,
-      t,
-      release.metadata.title,
-      createVersion,
-      telemetry,
-      toast,
-      navigateToRevertRelease,
-      publishRelease,
-    ],
-  )
 
   return (
     <>
@@ -246,13 +237,14 @@ export const ReleaseRevertButton = ({
         tone="critical"
         disabled={disabled}
       />
-      <ConfirmReleaseDialog
-        release={release}
-        documents={documents}
-        handleRevertRelease={handleRevertRelease}
-        revertReleaseStatus={revertReleaseStatus}
-        setRevertReleaseStatus={setRevertReleaseStatus}
-      />
+      {revertReleaseStatus !== 'idle' && (
+        <ConfirmReleaseDialog
+          release={release}
+          documents={documents}
+          revertReleaseStatus={revertReleaseStatus}
+          setRevertReleaseStatus={setRevertReleaseStatus}
+        />
+      )}
     </>
   )
 }
