@@ -11,17 +11,16 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
   const client = useClient({apiVersion: API_VERSION})
   const transactionId = documents[0]?.document._rev
 
-  const memoObservable = useMemo(() => {
+  const memoHasPostPublishTransactions = useMemo(() => {
     if (!documents.length) return of(false)
 
-    // Observable to check if there are post-publish transactions
     return from(
       getTransactionsLogs(
         client,
         documents.map(({document}) => document._id),
         {
           fromTransaction: transactionId,
-          // one transaction for every document plus the publish transaction
+          // publish transaction + at least one post publish transaction
           limit: 2,
         },
       ),
@@ -34,7 +33,5 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
     )
   }, [client, documents, transactionId])
 
-  const observableResult = useObservable(memoObservable, null)
-
-  return observableResult
+  return useObservable(memoHasPostPublishTransactions, null)
 }

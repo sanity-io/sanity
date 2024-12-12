@@ -56,9 +56,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
     ).pipe(
       filter(Boolean),
       map((transactions) => {
-        if (transactions.length === 0) {
-          throw new Error('No transactions found.')
-        }
+        if (transactions.length === 0) throw new Error('No transactions found.')
 
         const [publishTransaction, ...otherTransactions] = transactions
 
@@ -71,7 +69,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
         }))
       }),
       switchMap((docRevisionPairs) => {
-        if (!docRevisionPairs) return of(undefined) // Pass undefined if no docRevisionPairs
+        if (!docRevisionPairs) return of(undefined)
 
         return forkJoin(
           docRevisionPairs.map(({docId, revisionId}) => {
@@ -95,7 +93,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
                 map(({documents: [revertDocument]}) => revertDocument),
                 catchError((err) => {
                   console.error(`Error fetching document ${docId}:`, err)
-                  return of(undefined) // Return undefined for errors
+                  return of(undefined)
                 }),
               )
           }),
@@ -103,7 +101,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
       }),
       map((results) => results?.filter((result) => result !== undefined)),
       catchError((err) => {
-        console.error('Error in the adjacent transactions pipeline:', err)
+        console.error('Error in document revert states pipeline:', err)
         return of(undefined)
       }),
     )
@@ -117,11 +115,11 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
     if (documentRevertStatesResult !== null) {
       resolvedDocumentRevertStatesResultRef.current = documentRevertStatesResult
 
-      // Resolve the promise if it exists
+      // Resolve promise if it exists
       if (resolvedDocumentRevertStatesPromiseRef.current) {
         resolvedDocumentRevertStatesPromiseRef.current(documentRevertStatesResult)
         resolvedDocumentRevertStatesPromiseRef.current = null
-        resultPromiseRef.current = null // Reset the resultPromiseRef for future fetches
+        resultPromiseRef.current = null // Reset resultPromiseRef for future fetches
       }
     }
   }, [documentRevertStatesResult])
