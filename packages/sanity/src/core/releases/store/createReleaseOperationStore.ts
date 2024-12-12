@@ -24,7 +24,7 @@ export interface ReleaseOperationsStore {
     revertReleaseId: string,
     documents: RevertDocument[],
     releaseMetadata: ReleaseDocument['metadata'],
-    revertType: 'staged' | 'immediately',
+    revertType: 'staged' | 'immediate',
   ) => Promise<void>
   createVersion: (
     releaseId: string,
@@ -171,7 +171,7 @@ export function createReleaseOperationsStore(options: {
     revertReleaseId: string,
     releaseDocuments: RevertDocument[],
     releaseMetadata: ReleaseDocument['metadata'],
-    revertType: 'staged' | 'immediately',
+    revertType: 'staged' | 'immediate',
   ) => {
     await handleCreateRelease({
       _id: revertReleaseId,
@@ -191,7 +191,7 @@ export function createReleaseOperationsStore(options: {
       ),
     )
 
-    if (revertType === 'immediately') {
+    if (revertType === 'immediate') {
       await handlePublishRelease(revertReleaseId)
     }
   }

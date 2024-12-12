@@ -70,7 +70,7 @@ const ConfirmReleaseDialog = ({
           description: t('revert-release.description', {title: release.metadata.title}),
           releaseType: 'asap',
         },
-        stageNewRevertRelease ? 'staged' : 'immediately',
+        stageNewRevertRelease ? 'staged' : 'immediate',
       )
 
       if (stageNewRevertRelease) {
@@ -106,7 +106,7 @@ const ConfirmReleaseDialog = ({
           ),
         })
       } else {
-        telemetry.log(RevertRelease, {revertType: 'immediately'})
+        telemetry.log(RevertRelease, {revertType: 'immediate'})
 
         toast.push({
           closable: true,

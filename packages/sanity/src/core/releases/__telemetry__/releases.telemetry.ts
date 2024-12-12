@@ -24,7 +24,7 @@ export interface RevertInfo {
   /**
    * determined whether reverting a release created a new staged release, or immediately reverted
    */
-  revertType: 'immediately' | 'staged'
+  revertType: 'immediate' | 'staged'
 }
 
 /**
