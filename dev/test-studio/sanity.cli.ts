@@ -16,7 +16,6 @@ try {
     cause: err,
   })
 }
-const Million = millionLintEnabled ? (await import('@million/lint')).default : null
 
 export default defineCliConfig({
   api: {
@@ -46,9 +45,9 @@ export default defineCliConfig({
 
     return {
       ...viteConfig,
-      plugins: Million
+      plugins: millionLintEnabled
         ? [
-            Million.vite({
+            require('@million/lint').vite({
               filter: {
                 include: millionInclude,
               },
