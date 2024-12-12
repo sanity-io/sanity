@@ -45,7 +45,7 @@ const logoutCommand: CliCommandDefinition = {
     // Clear cached telemetry consent
     cfg.delete(TELEMETRY_CONSENT_CONFIG_KEY)
 
-    output.print(chalk.green('Logged out'))
+    output.success('Logged out')
   },
 }
 

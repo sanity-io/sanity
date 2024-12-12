@@ -12,7 +12,6 @@ import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 import {evaluate, patch} from 'silver-fleece'
-import which from 'which'
 
 import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
 import {type InitFlags} from '../../commands/init/initCommand'
@@ -121,7 +120,8 @@ export default async function initSanity(
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
-  const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
+  const success = output.success
+  const warn = output.warn
 
   const intendedPlan = cliFlags['project-plan']
   const intendedCoupon = cliFlags.coupon
@@ -258,25 +258,17 @@ export default async function initSanity(
   if (hasToken) {
     trace.log({step: 'login', alreadyLoggedIn: true})
     const user = await getUserData(apiClient)
-    print('')
-    print(
-      `${chalk.gray("  👤 You're logged in as %s using %s")}`,
-      user.name,
-      getProviderName(user.provider),
-    )
-    print('')
+    success('You are logged in as %s using %s', user.email, getProviderName(user.provider))
   } else if (!unattended) {
     trace.log({step: 'login'})
     await getOrCreateUser()
   }
 
-  let introMessage = "Let's get you started with a new project"
+  let introMessage = 'Fetching existing projects'
   if (cliFlags.quickstart) {
-    introMessage = "Let's get you started with remote Sanity project"
-  } else if (remoteTemplateInfo) {
-    introMessage = "Let's get you started with a remote Sanity template"
+    introMessage = "Eject your existing project's Sanity configuration"
   }
-  print(`  ➡️ ${chalk.gray(introMessage)}`)
+  success(introMessage)
   print('')
 
   const flags = await prepareFlags()
@@ -289,7 +281,8 @@ export default async function initSanity(
 
   // If user doesn't want to output any template code
   if (bareOutput) {
-    print(`\n${chalk.green('Success!')} Below are your project details:\n`)
+    success('Below are your project details')
+    print('')
     print(`Project ID: ${chalk.cyan(projectId)}`)
     print(`Dataset: ${chalk.cyan(datasetName)}`)
     print(
@@ -659,13 +652,11 @@ export default async function initSanity(
       context,
     })
 
-    if (await hasGlobalCli()) {
-      print('')
-      print('If you want to delete the imported data, use')
-      print(`  ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
-      print('and create a new clean dataset with')
-      print(`  ${chalk.cyan(`sanity dataset create <name>`)}\n`)
-    }
+    print('')
+    print('If you want to delete the imported data, use')
+    print(`  ${chalk.cyan(`npx sanity dataset delete ${datasetName}`)}`)
+    print('and create a new clean dataset with')
+    print(`  ${chalk.cyan(`npx sanity dataset create <name>`)}\n`)
   }
 
   const devCommandMap: Record<PackageManager, string> = {
@@ -687,12 +678,10 @@ export default async function initSanity(
     print(`Then: ${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
   }
 
-  if (await hasGlobalCli()) {
-    print(`Other helpful commands`)
-    print(`sanity docs - to open the documentation in a browser`)
-    print(`sanity manage - to open the project settings in a browser`)
-    print(`sanity help - to explore the CLI manual`)
-  }
+  print(`Other helpful commands`)
+  print(`npx sanity docs - to open the documentation in a browser`)
+  print(`npx sanity manage - to open the project settings in a browser`)
+  print(`npx sanity help - to explore the CLI manual`)
 
   const sendInvite =
     isFirstProject &&
@@ -717,16 +706,13 @@ export default async function initSanity(
   trace.complete()
 
   async function getOrCreateUser() {
-    print(`We can't find any auth credentials in your Sanity config`)
-    print('- log in or create a new account\n')
+    warn('No authentication credentials found in your Sanity config')
+    print('')
 
     // Provide login options (`sanity login`)
     const {extOptions, ...otherArgs} = args
     const loginArgs: CliCommandArguments<LoginFlags> = {...otherArgs, extOptions: {}}
     await login(loginArgs, {...context, telemetry: trace.newContext('login')})
-
-    print("Good stuff, you're now authenticated. You'll need a project to keep your")
-    print('datasets and collaborators safe and snug.')
   }
 
   async function getProjectDetails(): Promise<{
@@ -880,7 +866,7 @@ export default async function initSanity(
     }))
 
     const selected = await prompt.single({
-      message: 'Select project to use',
+      message: 'Create a new project or select an existing one',
       type: 'list',
       choices: [
         {value: 'new', name: 'Create new project'},
@@ -1059,20 +1045,20 @@ export default async function initSanity(
       type: 'list',
       choices: [
         {
-          value: 'moviedb',
-          name: 'Movie project (schema + sample data)',
-        },
-        {
-          value: 'shopify',
-          name: 'E-commerce (Shopify)',
+          value: 'clean',
+          name: 'Clean project with no predefined schema types',
         },
         {
           value: 'blog',
           name: 'Blog (schema)',
         },
         {
-          value: 'clean',
-          name: 'Clean project with no predefined schema types',
+          value: 'shopify',
+          name: 'E-commerce (Shopify)',
+        },
+        {
+          value: 'moviedb',
+          name: 'Movie project (schema + sample data)',
         },
       ],
     })
@@ -1559,13 +1545,4 @@ function getImportCommand(
     (cmd): cmd is CliCommandDefinition =>
       !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset',
   )
-}
-
-async function hasGlobalCli(): Promise<boolean> {
-  try {
-    const globalCliPath = await which('sanity')
-    return Boolean(globalCliPath)
-  } catch (err) {
-    return false
-  }
 }
