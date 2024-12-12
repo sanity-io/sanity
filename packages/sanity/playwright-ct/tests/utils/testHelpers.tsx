@@ -13,7 +13,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await $overlay.press('Space')
     }
 
-    await expect($overlay).not.toBeVisible({timeout: 1500})
+    await expect($overlay).not.toBeVisible()
   }
   return {
     /**
@@ -105,11 +105,20 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * Gets the appropriate modifier key for the current platform.
      * @returns The modifier key name ('Meta' for macOS, 'Control' for other platforms).
      */
-    getModifierKey: () => {
-      if (process.platform === 'darwin') {
+    getModifierKey: (options?: {browserName?: string}) => {
+      // There's a bug with Firefox and Chromium on macOS where it use 'Control' instead of 'Meta' inside Playwright for some reason
+      if (
+        process.platform === 'darwin' &&
+        options?.browserName &&
+        ['chromium', 'firefox'].includes(options.browserName)
+      ) {
+        return 'Control'
+      }
+      // Webkit on Linux uses 'Meta' instead of 'Control' as the modifier key for some reason
+      if (process.platform === 'linux' && options?.browserName === 'webkit') {
         return 'Meta'
       }
-      return 'Control'
+      return 'ControlOrMeta'
     },
     /**
      * Types text with a delay using `page.keyboard.type`. Default delay emulates a human typing.

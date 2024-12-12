@@ -44,12 +44,6 @@ test.describe('Portable Text Input', () => {
       page,
       browserName,
     }) => {
-      // avoid flakiness to make sure the test has the best chance despite being slow
-      test.slow()
-
-      // For now, only test in Chromium due to flakiness in Firefox and WebKit
-      test.skip(browserName !== 'chromium')
-
       const {
         getModifierKey,
         getFocusedPortableTextEditor,
@@ -62,7 +56,7 @@ test.describe('Portable Text Input', () => {
       await mount(<DecoratorsStory />)
       const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
       const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
-      const modifierKey = getModifierKey()
+      const modifierKey = getModifierKey({browserName})
 
       for (const decorator of DEFAULT_DECORATORS) {
         if (decorator.hotkey) {
