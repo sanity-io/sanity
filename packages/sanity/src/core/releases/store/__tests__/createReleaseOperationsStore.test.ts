@@ -201,7 +201,7 @@ describe('createReleaseOperationsStore', () => {
         revertReleaseDocumentId,
         releaseDocuments,
         releaseMetadata,
-        'immediately',
+        'immediate',
       )
 
       expect(mockClient.request).toHaveBeenCalledWith({
