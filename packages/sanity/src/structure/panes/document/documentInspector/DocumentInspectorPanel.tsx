@@ -25,6 +25,7 @@ export function DocumentInspectorPanel(props: DocumentInspectorPanelProps): Reac
 
   if (collapsed || !inspector) return null
 
+  // @TODO should use JSX instead of calling createElement directly
   const element = createElement(inspector.component, {
     onClose: handleClose,
     documentId,

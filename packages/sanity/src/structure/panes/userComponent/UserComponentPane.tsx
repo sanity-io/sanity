@@ -40,6 +40,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
       />
 
       <UserComponentPaneContent>
+        {/* @TODO should use JSX instead of calling createElement directly */}
         {isValidElementType(component) &&
           createElement(component, {
             ...restProps,

@@ -189,6 +189,7 @@ function render(
       </>
     ) : (
       <>
+        {/* @TODO should use JSX instead of calling createElement directly */}
         {createElement(head.name, {}, render(children, values, componentMap, formatters))}
         {render(remaining, values, componentMap, formatters)}
       </>

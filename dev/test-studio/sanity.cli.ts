@@ -8,10 +8,8 @@ const millionLintEnabled = process.env.REACT_MILLION_LINT === 'true'
 const millionInclude: string[] = []
 try {
   if (millionLintEnabled) {
-    for (const report of require('./.react-compiler-bailout-report.json')) {
-      if (report.messages.length && report.filePath.includes('packages/sanity')) {
-        millionInclude.push(`**/sanity/src/${report.filePath.split('sanity/src/')[1]}`)
-      }
+    for (const filePath of require('./.react-compiler-bailout-report.json')) {
+      millionInclude.push(`**/${filePath}`)
     }
   }
 } catch (err) {
@@ -37,7 +35,9 @@ export default defineCliConfig({
           if (filename.includes('node_modules')) {
             return false
           }
-          return millionInclude.every((pattern) => !filename.endsWith(pattern.split('**/')[1]))
+          return millionInclude.every(
+            (pattern) => !filename.endsWith(`/${pattern.split('**/')[1]}`),
+          )
         },
       }
     : {target: '18'},

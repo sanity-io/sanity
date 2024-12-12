@@ -1,20 +1,21 @@
-import {useEffect, useState} from 'react'
+import {startTransition, useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 
 import {usePresenceStore} from '../datastores'
 import {type GlobalPresence} from './types'
 
+const initial: GlobalPresence[] = []
+const fallback = of(initial)
+
 /** @internal */
 export function useGlobalPresence(): GlobalPresence[] {
-  const [presence, setPresence] = useState<GlobalPresence[]>([])
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const timeout = setTimeout(() => startTransition(() => setReady(true)))
+    return () => clearTimeout(timeout)
+  }, [])
   const presenceStore = usePresenceStore()
 
-  useEffect(() => {
-    const subscription = presenceStore.globalPresence$.subscribe(setPresence)
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [presenceStore])
-
-  return presence
+  return useObservable(ready ? presenceStore.globalPresence$ : fallback, initial)
 }

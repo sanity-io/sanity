@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react'
+/* eslint-disable no-nested-ternary */
 import {usePaneRouter} from 'sanity/structure'
 
 import {type LanguageFilterPluginOptions} from './types'
@@ -19,50 +19,42 @@ export function usePaneLanguages(props: {options: LanguageFilterPluginOptions}):
     (lang) => !options.defaultLanguages?.includes(lang.id),
   )
 
-  const selectedLanguages: string[] = useMemo(() => {
-    if (params?.langs === '$none') {
-      return []
-    }
+  const selectedLanguages: string[] =
+    params?.langs === '$none'
+      ? []
+      : params?.langs === '$all'
+        ? selectableLanguages.map((lang) => lang.id)
+        : params?.langs?.split(LANG_ID_SEPARATOR) || selectableLanguages.map((lang) => lang.id)
 
-    if (params?.langs === '$all') {
-      return selectableLanguages.map((lang) => lang.id)
-    }
-
-    return params?.langs?.split(LANG_ID_SEPARATOR) || selectableLanguages.map((lang) => lang.id)
-  }, [params, selectableLanguages])
-
-  const selectAll = useCallback(() => {
+  const selectAll = () => {
     setParams({...params, langs: '$all'})
-  }, [params, setParams])
+  }
 
-  const selectNone = useCallback(() => {
+  const selectNone = () => {
     setParams({...params, langs: '$none'})
-  }, [params, setParams])
+  }
 
-  const toggleLanguage = useCallback(
-    (languageId: string) => {
-      let lang = selectedLanguages
+  const toggleLanguage = (languageId: string) => {
+    let lang = selectedLanguages
 
-      if (lang.includes(languageId)) {
-        lang = lang.filter((l) => l !== languageId)
-      } else {
-        lang = [...lang, languageId]
-      }
+    if (lang.includes(languageId)) {
+      lang = lang.filter((l) => l !== languageId)
+    } else {
+      lang = [...lang, languageId]
+    }
 
-      if (lang.length === 0) {
-        setParams({...params, langs: '$none'}) // none
-        return
-      }
+    if (lang.length === 0) {
+      setParams({...params, langs: '$none'}) // none
+      return
+    }
 
-      if (lang.length === selectableLanguages.length) {
-        setParams({...params, langs: '$all'})
-        return
-      }
+    if (lang.length === selectableLanguages.length) {
+      setParams({...params, langs: '$all'})
+      return
+    }
 
-      setParams({...params, langs: lang.join(LANG_ID_SEPARATOR)})
-    },
-    [params, selectableLanguages, selectedLanguages, setParams],
-  )
+    setParams({...params, langs: lang.join(LANG_ID_SEPARATOR)})
+  }
 
   return {selectableLanguages, selectedLanguages, selectAll, selectNone, toggleLanguage}
 }

@@ -9,6 +9,7 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
   dimensions: PreviewMediaDimensions,
 ): ReactNode {
   if (isValidElementType(value)) {
+    // @TODO should use JSX instead of calling createElement directly
     return createElement(value, {layout, dimensions})
   }
 
@@ -30,6 +31,7 @@ export function renderPreviewNode<Layout = PreviewLayoutKey>(
   }
 
   if (isValidElementType(value)) {
+    // @TODO should use JSX instead of calling createElement directly
     return createElement(value, {layout})
   }
 

@@ -6,7 +6,6 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -31,7 +30,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = imageUrlBuilder(client)
 
   const inputRef = useRef<HTMLButtonElement | null>(null)
 

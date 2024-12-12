@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-nested-ternary */
-import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
+import {type ContentSourceMap, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
 import {vercelStegaDecodeAll} from '@vercel/stega'
-import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
@@ -73,50 +72,37 @@ function InputDebugger(props: InputProps) {
     // onFocus,
   } = useDocumentPane()
   const sourcePath = 'field'
-  const resultSourceMap = useMemo(() => {
-    const documents = [
-      {_id: documentId, _type: documentType} satisfies ContentSourceMapDocuments[number],
-    ]
-    const paths = [
-      `${props.path
-        .map((segment) =>
-          typeof segment === 'string'
-            ? `['${segment}']`
-            : typeof segment === 'object' &&
-                !Array.isArray(segment) &&
-                typeof segment?._key === 'string'
-              ? `[?(@._key=='${segment._key}')]`
-              : undefined,
-        )
-        .filter(Boolean)
-        .join('')}`,
-    ]
-    const mappings = {
-      [`$['${sourcePath}']`]: {
-        source: {
-          document: 0,
-          path: 0,
-          type: 'documentValue' as const,
-        },
-        type: 'value' as const,
-      },
-    }
-
-    return {documents, paths, mappings} satisfies ContentSourceMap
-  }, [documentId, documentType, props.path])
-  const stegaResult = useMemo(
-    () =>
-      stegaEncodeSourceMap({[sourcePath]: value}, resultSourceMap, {
-        enabled: true,
-        studioUrl: '/stega',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any),
-    [resultSourceMap, value],
-  )
-  const stegaEditLinks = useMemo(
-    () => vercelStegaDecodeAll(JSON.stringify(stegaResult)),
-    [stegaResult],
-  )
+  const documents: ContentSourceMap['documents'] = [{_id: documentId, _type: documentType}]
+  const paths: ContentSourceMap['paths'] = [
+    `${props.path
+      .map((segment) =>
+        typeof segment === 'string'
+          ? `['${segment}']`
+          : typeof segment === 'object' &&
+              !Array.isArray(segment) &&
+              typeof segment?._key === 'string'
+            ? `[?(@._key=='${segment._key}')]`
+            : undefined,
+      )
+      .filter(Boolean)
+      .join('')}`,
+  ]
+  const mappings: ContentSourceMap['mappings'] = {}
+  mappings[`$['${sourcePath}']`] = {
+    source: {
+      document: 0,
+      path: 0,
+      type: 'documentValue' as const,
+    },
+    type: 'value' as const,
+  }
+  const resultSourceMap = {documents, paths, mappings}
+  const stegaResult = stegaEncodeSourceMap({[sourcePath]: value}, resultSourceMap, {
+    enabled: true,
+    studioUrl: '/stega',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any)
+  const stegaEditLinks = vercelStegaDecodeAll(JSON.stringify(stegaResult))
   if (!stegaEditLinks || stegaEditLinks.length < 1) return null
 
   return (

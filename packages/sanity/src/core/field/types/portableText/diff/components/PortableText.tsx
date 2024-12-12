@@ -228,6 +228,7 @@ export function PortableText(props: Props): JSX.Element {
             }
           } // end if seg.text
         })
+        // @TODO should use JSX instead of calling createElement directly
         return createElement('div', {key: block._key}, ...returnedChildren)
       }
       throw new Error("'span' schemaType not found")

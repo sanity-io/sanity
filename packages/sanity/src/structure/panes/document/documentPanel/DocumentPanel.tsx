@@ -98,6 +98,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () =>
       activeView.type === 'component' &&
       activeView.component &&
+      // @TODO should use JSX instead of calling createElement directly
       createElement(activeView.component, {
         document: {
           draft: editState?.draft || null,

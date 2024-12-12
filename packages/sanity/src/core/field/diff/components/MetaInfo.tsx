@@ -24,6 +24,7 @@ export function MetaInfo(props: MetaInfoProps) {
       {icon && (
         <Box padding={2}>
           <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
+            {/* @TODO should use JSX instead of calling createElement directly */}
             {createElement(icon)}
           </MetaText>
         </Box>

@@ -76,6 +76,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   )
 
   const renderIcon = useCallback(() => {
+    // @TODO should use JSX instead of calling createElement directly
     return createElement(icon || FallbackIcon)
   }, [icon])
 

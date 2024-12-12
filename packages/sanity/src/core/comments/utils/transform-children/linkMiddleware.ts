@@ -12,6 +12,7 @@ function createLinkElement(url: string): ReactNode {
   const href = url.startsWith('http') ? url : `https://${url}`
   const props = {href, target: '_blank', rel: 'noopener noreferrer', key: url, onClick}
 
+  // @TODO should use JSX instead of calling createElement directly
   return createElement('a', props, url)
 }
 

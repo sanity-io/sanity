@@ -1,6 +1,6 @@
 import {type BifurClient} from '@sanity/bifur-client'
-import {EMPTY, type Observable} from 'rxjs'
-import {map, share} from 'rxjs/operators'
+import {defer, EMPTY, type Observable, timer} from 'rxjs'
+import {delayWhen, map, share} from 'rxjs/operators'
 
 import {type PresenceLocation} from '../types'
 import {type Transport, type TransportEvent, type TransportMessage} from './transport'
@@ -60,9 +60,14 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
 }
 
 export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
-  const incomingEvents$: Observable<TransportEvent> = bifur
-    .listen<IncomingBifurEvent<Location[]>>('presence')
-    .pipe(map(handleIncomingMessage))
+  console.count('createBifurTransport')
+  console.log({bifur, sessionId})
+  const incomingEvents$: Observable<TransportEvent> = defer(() =>
+    bifur.listen<IncomingBifurEvent<Location[]>>('presence'),
+  ).pipe(
+    delayWhen(() => timer(1000)),
+    map(handleIncomingMessage),
+  )
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {

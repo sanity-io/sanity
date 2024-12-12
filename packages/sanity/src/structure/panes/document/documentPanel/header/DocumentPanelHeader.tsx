@@ -147,6 +147,7 @@ export const DocumentPanelHeader = memo(
               {unstable_languageFilter.length > 0 && (
                 <>
                   {unstable_languageFilter.map((languageFilterComponent, idx) => {
+                    // @TODO should use JSX instead of calling createElement directly
                     return createElement(languageFilterComponent, {
                       // eslint-disable-next-line react/no-array-index-key
                       key: `language-filter-${idx}`,

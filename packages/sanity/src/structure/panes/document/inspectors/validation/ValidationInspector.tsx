@@ -112,6 +112,7 @@ function ValidationCard(props: {
         >
           <Flex align="flex-start" gap={3}>
             <Box flex="none">
+              {/* @TODO should use JSX instead of calling createElement directly */}
               <Text size={1}>{createElement(MARKER_ICON[marker.level])}</Text>
             </Box>
 

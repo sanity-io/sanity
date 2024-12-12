@@ -103,6 +103,7 @@ export default function GeneralPreviewStory() {
             selected={interactive ? selected : undefined}
             style={{lineHeight: 0}}
           >
+            {/* @TODO should use JSX instead of calling createElement directly */}
             {createElement(
               component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
               previewProps,

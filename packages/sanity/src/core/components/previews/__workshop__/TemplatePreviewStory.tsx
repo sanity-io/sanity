@@ -51,6 +51,7 @@ export default function TemplatePreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={0}>
           <Card padding={3} radius={2}>
+            {/* @TODO should use JSX instead of calling createElement directly */}
             {createElement(component, {
               description,
               isPlaceholder,
