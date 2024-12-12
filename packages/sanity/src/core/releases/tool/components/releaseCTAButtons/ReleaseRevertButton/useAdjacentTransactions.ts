@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
+import {filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -17,7 +17,6 @@ type RevertDocument = SanityDocument & {
 type RevertDocuments = RevertDocument[]
 
 interface AdjacentTransactionsResult {
-  hasPostPublishTransactions: boolean | null
   documentRevertStates: RevertDocuments | null
 }
 
@@ -27,35 +26,19 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
   const transactionId = documents[0]?.document._rev
   const {dataset} = client.config()
   const [trigger, setTrigger] = useState(0)
-  const promiseRef = useRef<Promise<AdjacentTransactionsResult> | null>(null)
-  const resolvePromiseRef = useRef<((value: AdjacentTransactionsResult) => void) | null>(null)
-  const resolvedValueRef = useRef<AdjacentTransactionsResult | null>(null)
+  const promiseRef = useRef<Promise<AdjacentTransactionsResult['documentRevertStates']> | null>(
+    null,
+  )
+  const resolvePromiseRef = useRef<
+    ((value: AdjacentTransactionsResult['documentRevertStates']) => void) | null
+  >(null)
+  const resolvedValueRef = useRef<AdjacentTransactionsResult['documentRevertStates'] | null>(null)
 
   const memoObservable = useMemo(() => {
     if (!trigger) {
       // If not triggered, return null to prevent the observable from running
-      return of({
-        hasPostPublishTransactions: null,
-        documentRevertStates: null,
-      })
+      return of(null)
     }
-
-    // Observable to check if there are post-publish transactions
-    const hasPostPublishTransactions$ = from(
-      getTransactionsLogs(
-        client,
-        documents.map(({document}) => document._id),
-        {
-          fromTransaction: transactionId,
-          // one transaction for every document plus the publish transaction
-          limit: 2,
-        },
-      ),
-    ).pipe(
-      // the transaction of published is also returned
-      // so post publish transactions will result in more than 1 transaction
-      map((transactions) => transactions.length > 1),
-    )
 
     // Observable to get the revert states of the documents
     const documentRevertStates$: Observable<RevertDocuments> = from(
@@ -107,21 +90,13 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
       ),
     )
 
-    return combineLatest([hasPostPublishTransactions$, documentRevertStates$]).pipe(
-      map(([hasPostPublishTransactions, documentRevertStates]) => ({
-        hasPostPublishTransactions,
-        documentRevertStates,
-      })),
-    )
+    return documentRevertStates$
   }, [trigger, client, documents, transactionId, observableClient, dataset])
 
-  const observableResult = useObservable(memoObservable, {
-    hasPostPublishTransactions: null,
-    documentRevertStates: null,
-  })
+  const observableResult = useObservable(memoObservable, null)
 
   useEffect(() => {
-    if (observableResult.hasPostPublishTransactions !== null) {
+    if (observableResult !== null) {
       resolvedValueRef.current = observableResult
 
       // Resolve the promise if it exists
@@ -149,8 +124,11 @@ export const useAdjacentTransactions = (documents: DocumentInRelease[]) => {
     return promiseRef.current
   }, [])
 
-  return {
-    ...observableResult,
-    getAdjacentTransactions: startObservables,
-  }
+  return useMemo(
+    () => ({
+      documentRevertStates: observableResult,
+      getAdjacentTransactions: startObservables,
+    }),
+    [observableResult, startObservables],
+  )
 }
