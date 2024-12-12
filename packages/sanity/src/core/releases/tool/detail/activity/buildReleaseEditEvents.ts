@@ -38,7 +38,7 @@ export function buildReleaseEditEvents(
     // If the "changed" object has more than one key identify it as a change event
     if (Object.values(changed).length >= 1) {
       releaseEditEvents.push({
-        type: before ? 'releaseEditEvent' : 'CreateRelease',
+        type: before ? 'releaseEditEvent' : 'createRelease',
         author: transaction.author,
         change: changed,
         id: transaction.id,
