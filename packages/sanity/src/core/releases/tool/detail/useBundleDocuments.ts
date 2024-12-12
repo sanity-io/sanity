@@ -1,6 +1,6 @@
 import {isValidationErrorMarker, type SanityDocument} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
-import {useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, of} from 'rxjs'
 import {filter, map, mergeMap, startWith, switchAll, switchMap, take, toArray} from 'rxjs/operators'
@@ -12,7 +12,12 @@ import {useSource} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {getReleaseIdFromReleaseDocumentId, useDocumentPreviewStore, useReleases} from '../../index'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  type ReleaseDocument,
+  useDocumentPreviewStore,
+  useReleases,
+} from '../../index'
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
@@ -34,13 +39,36 @@ export function useBundleDocuments(releaseId: string): {
   const {getClient, i18n} = useSource()
   const schema = useSchema()
   const {data: releases, archivedReleases} = useReleases()
-
-  const release = releases
-    .concat(archivedReleases)
-    .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
+  const [finalDocumentStates, setFinalDocumentStates] = useState<
+    ReleaseDocument['finalDocumentStates'] | null
+  >(null)
+  const [lastReleaseId, setLastReleaseId] = useState<string | null>(null)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
   const {dataset} = client.config()
+
+  const release = useMemo(
+    () =>
+      releases
+        .concat(archivedReleases)
+        .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId),
+    [archivedReleases, releaseId, releases],
+  )
+
+  const releaseState = useMemo(() => release?.state, [release?.state])
+
+  /**
+   * finalDocumentStates only used for published and archived releases
+   * in these cases the version documents are immutable
+   * the same release in these states will there have the same finalDocumentStates
+   * This keeps publishedReleaseDocumentsObservable stable as the release is updated (eg. metadata)
+   */
+  useEffect(() => {
+    if (release && release._id !== lastReleaseId) {
+      setFinalDocumentStates(release.finalDocumentStates || [])
+      setLastReleaseId(release._id)
+    }
+  }, [release, lastReleaseId])
 
   const activeReleaseDocumentsObservable = useMemo(() => {
     return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter).pipe(
@@ -123,11 +151,9 @@ export function useBundleDocuments(releaseId: string): {
   }, [documentPreviewStore, groqFilter, i18n, getClient, schema, observableClient, releaseId])
 
   const publishedReleaseDocumentsObservable = useMemo(() => {
-    if (!release?.finalDocumentStates?.length) return of({loading: false, results: []})
+    if (!finalDocumentStates?.length) return of({loading: false, results: []})
 
-    const documentStates = release.finalDocumentStates
-
-    return from(documentStates).pipe(
+    return from(finalDocumentStates).pipe(
       mergeMap(({id: documentId}) => {
         const document$ = observableClient
           .request<{documents: DocumentInRelease['document'][]}>({
@@ -177,24 +203,17 @@ export function useBundleDocuments(releaseId: string): {
         results,
       })),
     )
-  }, [
-    dataset,
-    documentPreviewStore,
-    observableClient,
-    release?.finalDocumentStates,
-    releaseId,
-    schema,
-  ])
+  }, [finalDocumentStates, observableClient, dataset, schema, documentPreviewStore, releaseId])
 
   const observable = useMemo(() => {
-    if (!release) return of({loading: true, results: []})
+    if (!releaseState) return of({loading: true, results: []})
 
-    if (release.state === 'published' || release.state === 'archived') {
+    if (releaseState === 'published' || releaseState === 'archived') {
       return publishedReleaseDocumentsObservable
     }
 
     return activeReleaseDocumentsObservable
-  }, [activeReleaseDocumentsObservable, publishedReleaseDocumentsObservable, release])
+  }, [activeReleaseDocumentsObservable, publishedReleaseDocumentsObservable, releaseState])
 
   return useObservable(observable, {loading: true, results: []})
 }
