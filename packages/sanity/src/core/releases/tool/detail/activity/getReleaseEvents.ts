@@ -6,6 +6,7 @@ import {
   map,
   merge,
   type Observable,
+  of,
   skip,
   startWith,
   tap,
@@ -23,6 +24,7 @@ interface getReleaseEventsOpts {
   releaseId: string
   releasesState$: Observable<ReleasesReducerState>
   documentPreviewStore: DocumentPreviewStore
+  eventsAPIEnabled: boolean
 }
 
 export const EVENTS_INITIAL_VALUE = {
@@ -30,6 +32,17 @@ export const EVENTS_INITIAL_VALUE = {
   hasMore: false,
   error: null,
   loading: true,
+}
+
+const notEnabledActivityEvents: ReturnType<typeof getReleaseActivityEvents> = {
+  events$: of({
+    events: [],
+    nextCursor: '',
+    loading: false,
+    error: null,
+  }),
+  reloadEvents: () => {},
+  loadMore: () => {},
 }
 
 /**
@@ -40,8 +53,12 @@ export function getReleaseEvents({
   releaseId,
   releasesState$,
   documentPreviewStore,
+  eventsAPIEnabled,
 }: getReleaseEventsOpts) {
-  const activityEvents = getReleaseActivityEvents({client, releaseId})
+  const activityEvents = eventsAPIEnabled
+    ? getReleaseActivityEvents({client, releaseId})
+    : notEnabledActivityEvents
+
   const {editEvents$} = getReleaseEditEvents({client, releaseId, releasesState$})
 
   const releaseRev$ = releasesState$.pipe(

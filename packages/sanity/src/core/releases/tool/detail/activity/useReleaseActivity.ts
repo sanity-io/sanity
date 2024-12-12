@@ -3,6 +3,7 @@ import {useObservable} from 'react-rx'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'
@@ -21,6 +22,8 @@ export function useReleaseActivity(releaseId: string): ReleaseActivity {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
+  const source = useSource()
+  const eventsAPIEnabled = Boolean(source.beta?.eventsAPI?.enabled)
 
   const releaseEvents = useMemo(
     () =>
@@ -29,8 +32,9 @@ export function useReleaseActivity(releaseId: string): ReleaseActivity {
         releaseId: getReleaseDocumentIdFromReleaseId(releaseId),
         releasesState$,
         documentPreviewStore,
+        eventsAPIEnabled,
       }),
-    [releaseId, client, releasesState$, documentPreviewStore],
+    [releaseId, client, releasesState$, documentPreviewStore, eventsAPIEnabled],
   )
   const events = useObservable(releaseEvents.events$, EVENTS_INITIAL_VALUE)
 
