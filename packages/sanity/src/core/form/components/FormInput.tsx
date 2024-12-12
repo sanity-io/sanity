@@ -33,7 +33,7 @@ function hasAbsolutePath(
 }
 
 /** @internal */
-export const FormInput = memo(function FormInput(
+export const FormInput = memo(function FormInputComponent(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) &
     (FormInputRelativePathArg | FormInputAbsolutePathArg) & {
       /**
@@ -71,11 +71,12 @@ export const FormInput = memo(function FormInput(
     />
   )
 })
+FormInput.displayName = 'Memo(FormInput)'
 
 /**
  * An input that takes input props for object or array and renders an input for a given sub-path
  */
-const FormInputInner = memo(function FormInputInner(
+const FormInputInner = memo(function FormInputInnerComponent(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean
@@ -291,3 +292,4 @@ const FormInputInner = memo(function FormInputInner(
 
   throw new Error('FormInput can only be used with arrays or objects')
 })
+FormInputInner.displayName = 'Memo(FormInputInner)'

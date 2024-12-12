@@ -304,7 +304,7 @@
     "styled-components": "^6.1.13",
     "swr": "2.2.5",
     "vitest": "2.1.1",
-    "@million/lint": "^1.0.13"
+    "@million/lint": "^1.0.14"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

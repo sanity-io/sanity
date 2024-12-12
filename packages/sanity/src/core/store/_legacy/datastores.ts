@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useId, useMemo, useState} from 'react'
+import {useCallback, useMemo} from 'react'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
@@ -20,9 +20,7 @@ import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureTog
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
-import {createBifurTransport} from './presence/message-transports/bifurTransport'
-import {type Transport} from './presence/message-transports/transport'
-import {createPresenceStore, type PresenceStore, SESSION_ID} from './presence/presence-store'
+import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore, type ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user'
@@ -227,56 +225,6 @@ export function usePresenceStore(): PresenceStore {
   const resourceCache = useResourceCache()
   const userStore = useUserStore()
   const connectionStatusStore = useConnectionStatusStore()
-
-  // const id = useId()
-
-  // useMemo(() => console.count(`bifur ${id}`) || console.log({bifur}), [bifur, id])
-  // useMemo(() => console.count(`bifur 2 ${id}`) || console.log({bifur}), [])
-  // useEffect(
-  //   () => console.count('connectionStatusStore') || console.log({connectionStatusStore}),
-  //   [connectionStatusStore],
-  // )
-  // useEffect(() => console.count('resourceCache') || console.log({resourceCache}), [resourceCache])
-  // useEffect(() => console.count('userStore') || console.log({userStore}), [userStore])
-
-  // const [bifurTransport, setBifurTransport] = useState(() =>
-  //   createBifurTransport(bifur, SESSION_ID),
-  // )
-  // useEffect(() => {
-  //   if (
-  //     !resourceCache.get<Transport>({
-  //       namespace: 'bifurTransport',
-  //       dependencies: [bifur],
-  //     })
-  //   ) {
-  //     resourceCache.set({
-  //       namespace: 'bifurTransport',
-  //       dependencies: [bifur],
-  //       value: createBifurTransport(bifur, SESSION_ID),
-  //     })
-  //   }
-  // }, [])
-  // const [bifurTransport] = useState(() => createBifurTransport(bifur, SESSION_ID))
-
-  // const bifurTransport = useMemo(() => {
-  //   const bifurTransportResource =
-  //     resourceCache.get<Transport>({
-  //       namespace: 'bifurTransport',
-  //       dependencies: [bifur],
-  //     }) || createBifurTransport(bifur, SESSION_ID)
-
-  //   resourceCache.set({
-  //     namespace: 'bifurTransport',
-  //     dependencies: [bifur],
-  //     value: bifurTransportResource,
-  //   })
-
-  //   return bifurTransportResource
-  // }, [bifur, resourceCache])
-  // useEffect(
-  //   () => console.count(`bifurTransport ${id}`) || console.log({bifurTransport}),
-  //   [bifurTransport, id],
-  // )
 
   return useMemo(() => {
     const presenceStore =

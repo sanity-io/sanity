@@ -1,6 +1,6 @@
 import * as PathUtils from '@sanity/util/paths'
 import {orderBy} from 'lodash'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components'
@@ -11,15 +11,16 @@ import {type GlobalPresence} from '../../../../store'
 interface PresenceListRowProps {
   focused: boolean
   onFocus: (id: string) => void
-  presence: GlobalPresence
+  locations: GlobalPresence['locations']
+  user: GlobalPresence['user']
 }
 
 export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceListRowProps) {
-  const {presence, focused, onFocus} = props
+  const {locations, user, focused, onFocus} = props
   const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
   const {t} = useTranslation()
 
-  const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
+  const lastActiveLocation = orderBy(locations || [], ['lastActiveAt'], ['desc']).find(
     (location) => location.documentId,
   )
   const hasLink = Boolean(lastActiveLocation?.documentId)
@@ -40,43 +41,42 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   }, [menuItemElement, focused])
 
   const handleFocus = useCallback(() => {
-    onFocus(presence.user.id)
-  }, [onFocus, presence.user.id])
+    onFocus(user.id)
+  }, [onFocus, user.id])
 
-  const LinkComponent = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
-        if (!lastActiveLocation?.path) return null
-        console.log(linkProps)
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{
-              id: lastActiveLocation?.documentId,
-              path: PathUtils.toString(lastActiveLocation?.path),
-            }}
-            ref={ref}
-          />
-        )
-      }),
-    [lastActiveLocation],
-  )
+  if (lastActiveLocation) {
+    return (
+      <MenuItem
+        as={IntentLink}
+        // @ts-expect-error - `intent` is valid when using `IntentLink`
+        intent="edit"
+        params={{
+          id: lastActiveLocation.documentId,
+          path: PathUtils.toString(lastActiveLocation.path),
+        }}
+        // Shared props
+        data-as="a"
+        onFocus={handleFocus}
+        preview={<UserAvatar size={1} user={user} />}
+        ref={setMenuItemElement}
+        text={user.displayName}
+      />
+    )
+  }
 
   return (
     <MenuItem
-      as={lastActiveLocation ? LinkComponent : 'div'}
-      data-as="a"
-      foobar
+      as="div"
       disabled={!hasLink}
-      onFocus={handleFocus}
-      preview={<UserAvatar size={1} user={presence.user} />}
-      ref={setMenuItemElement}
-      text={presence.user.displayName}
       tooltipProps={
         hasLink ? undefined : {content: t('presence.not-in-a-document'), placement: 'left'}
       }
+      // Shared props
+      data-as="a"
+      onFocus={handleFocus}
+      preview={<UserAvatar size={1} user={user} />}
+      ref={setMenuItemElement}
+      text={user.displayName}
     />
   )
 })

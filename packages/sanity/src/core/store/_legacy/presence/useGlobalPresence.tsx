@@ -15,7 +15,7 @@ export function useGlobalPresence(): GlobalPresence[] {
     const timeout = setTimeout(() => startTransition(() => setReady(true)))
     return () => clearTimeout(timeout)
   }, [])
-  const presenceStore = usePresenceStore()
 
+  const presenceStore = usePresenceStore()
   return useObservable(ready ? presenceStore.globalPresence$ : fallback, initial)
 }

@@ -1,5 +1,5 @@
 import {type TFunction} from 'i18next'
-import {type ComponentType, createElement, type ReactNode, useMemo} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
@@ -108,7 +108,7 @@ export function Translate(props: TranslationProps) {
         : undefined,
   })
 
-  const tokens = useMemo(() => simpleParser(translated), [translated])
+  const tokens = simpleParser(translated)
   const listFormat = useListFormat()
   const formatters: FormatterFns = {
     list: (listValues) => listFormat.format(listValues),
@@ -181,16 +181,16 @@ function render(
 
     const children = tail.slice(0, nextCloseIdx) as TextToken[]
     const remaining = tail.slice(nextCloseIdx + 1)
+    const HeadName = head.name as keyof JSX.IntrinsicElements
+    const renderedChildren = render(children, values, componentMap, formatters)
 
-    return Component ? (
+    return (
       <>
-        <Component>{render(children, values, componentMap, formatters)}</Component>
-        {render(remaining, values, componentMap, formatters)}
-      </>
-    ) : (
-      <>
-        {/* @TODO should use JSX instead of calling createElement directly */}
-        {createElement(head.name, {}, render(children, values, componentMap, formatters))}
+        {Component ? (
+          <Component>{renderedChildren}</Component>
+        ) : (
+          <HeadName>{renderedChildren}</HeadName>
+        )}
         {render(remaining, values, componentMap, formatters)}
       </>
     )

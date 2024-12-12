@@ -2,7 +2,6 @@
 
 import {AvatarStack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
@@ -43,17 +42,13 @@ const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
 
-  const uniqueUsers = useMemo(
-    () =>
-      Array.from(new Set(presence.map((a) => a.user.id)))
-        .map((id) => {
-          return presence.find((a) => a.user.id === id)
-        })
-        .filter(isNonNullable),
-    [presence],
-  )
+  const uniqueUsers = Array.from(new Set(presence.map((a) => a.user.id)))
+    .map((id) => {
+      return presence.find((a) => a.user.id === id)
+    })
+    .filter(isNonNullable)
 
-  const tooltipContent = useMemo(() => getTooltipText(uniqueUsers), [uniqueUsers])
+  const tooltipContent = getTooltipText(uniqueUsers)
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
