@@ -63,7 +63,6 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@types/arrify": "^2.0.1",
     "@types/debug": "^4.1.12",
     "rimraf": "^5.0.10",
     "vitest": "^2.1.1"

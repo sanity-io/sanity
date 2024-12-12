@@ -1137,9 +1137,6 @@ importers:
       '@repo/test-config':
         specifier: workspace:*
         version: link:../../@repo/test-config
-      '@types/arrify':
-        specifier: ^2.0.1
-        version: 2.0.5
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -1196,8 +1193,8 @@ importers:
         specifier: 3.67.1
         version: link:../types
       arrify:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^2.0.1
+        version: 2.0.1
       groq-js:
         specifier: ^1.14.2
         version: 1.14.2
@@ -1223,9 +1220,6 @@ importers:
       '@sanity/icons':
         specifier: ^3.5.2
         version: 3.5.2(react@19.0.0-rc-f994737d14-20240522)
-      '@types/arrify':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/lodash':
         specifier: ^4.17.7
         version: 4.17.13
@@ -1566,8 +1560,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.1
       arrify:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^2.0.1
+        version: 2.0.1
       async-mutex:
         specifier: ^0.4.1
         version: 0.4.1
@@ -1830,9 +1824,6 @@ importers:
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.3
-      '@types/arrify':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/configstore':
         specifier: ^5.0.1
         version: 5.0.1
@@ -4937,13 +4928,6 @@ packages:
 
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
-
-  '@types/arrify@1.0.4':
-    resolution: {integrity: sha512-63nK8r8jvEVJ1r0ENaY9neB1wDzPHFYAzKiIxPawuzcijEX8XeOywwPL8fkSCwiTIYop9MSh+TKy9L2ZzTXV6g==}
-
-  '@types/arrify@2.0.5':
-    resolution: {integrity: sha512-z0U1DC4o60MskxP6SdTXMXOV89EGVZc9vzmXs28BUgc9q6ikQIbcm1ap1ScJsKRycNwwnv5zAGhOVqEIjas9Vw==}
-    deprecated: This is a stub types definition. arrify provides its own type definitions, so you do not need this installed.
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -15398,12 +15382,6 @@ snapshots:
   '@types/argparse@1.0.38': {}
 
   '@types/aria-query@5.0.4': {}
-
-  '@types/arrify@1.0.4': {}
-
-  '@types/arrify@2.0.5':
-    dependencies:
-      arrify: 2.0.1
 
   '@types/babel__core@7.20.5':
     dependencies:
