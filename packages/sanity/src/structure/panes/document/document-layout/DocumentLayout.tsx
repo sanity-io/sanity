@@ -82,6 +82,7 @@ export function DocumentLayout() {
     schemaType,
     value,
     isInitialValueLoading,
+    ready,
   } = useDocumentPane()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
@@ -259,6 +260,7 @@ export function DocumentLayout() {
                     document={value}
                     documentId={documentId}
                     documentType={schemaType}
+                    documentReady={ready}
                     isInitialValueLoading={!!isInitialValueLoading}
                     panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
                   />

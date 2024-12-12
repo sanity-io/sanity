@@ -55,7 +55,8 @@ export function StartInCreateBanner(props: StartInCreateBannerProps) {
 function StartInCreateBannerInner(props: StartInCreateBannerProps & {appIdCache: AppIdCache}) {
   const {studioApp} = useStudioAppIdStore(props.appIdCache)
 
-  if (!studioApp) {
+  // we check documentReady here and not in the top wrapper, to allow the cache code to run while the document is loading
+  if (!studioApp || !props.documentReady) {
     return null
   }
   return <StartInCreateBannerStudioApp {...props} studioApp={studioApp} />
