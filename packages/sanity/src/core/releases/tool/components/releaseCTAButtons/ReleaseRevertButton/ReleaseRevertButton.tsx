@@ -38,7 +38,7 @@ const ConfirmReleaseDialog = ({
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
-  const getAdjacentTransactions = useDocumentRevertStates(documents)
+  const getDocumentRevertStates = useDocumentRevertStates(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
   const toast = useToast()
   const telemetry = useTelemetry()
@@ -53,7 +53,7 @@ const ConfirmReleaseDialog = ({
 
   const handleRevertRelease = useCallback(async () => {
     setRevertReleaseStatus('reverting')
-    const documentRevertStates = await getAdjacentTransactions()
+    const documentRevertStates = await getDocumentRevertStates()
 
     const revertReleaseId = createReleaseId()
 
@@ -137,7 +137,7 @@ const ConfirmReleaseDialog = ({
     }
   }, [
     setRevertReleaseStatus,
-    getAdjacentTransactions,
+    getDocumentRevertStates,
     revertRelease,
     t,
     release.metadata.title,

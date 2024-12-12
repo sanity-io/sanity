@@ -10,7 +10,7 @@ import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
 export type RevertDocument = SanityDocument & {
   _system?: {
-    delete: boolean
+    delete: true
   }
 }
 
@@ -32,9 +32,10 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
 
   useEffect(() => {
     if (!resultPromiseRef.current) {
-      resultPromiseRef.current = new Promise((resolve) => {
-        resolvedDocumentRevertStatesPromiseRef.current = resolve
-      })
+      const {promise, resolve} = Promise.withResolvers<DocumentRevertStates>()
+
+      resultPromiseRef.current = promise
+      resolvedDocumentRevertStatesPromiseRef.current = resolve
     }
   }, [])
 
@@ -78,9 +79,9 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
                 documents.find(({document}) => document._id === docId)?.document || {}
 
               return of({
-                ...(unpublishDocument as SanityDocument),
+                ...unpublishDocument,
                 _system: {delete: true},
-              })
+              } as RevertDocument)
             }
 
             return observableClient
