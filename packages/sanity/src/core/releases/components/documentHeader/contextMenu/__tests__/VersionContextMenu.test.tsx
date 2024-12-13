@@ -1,8 +1,8 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import * as sanity from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type ReleaseDocument} from '../../../../store/types'
 import {VersionContextMenu} from '../VersionContextMenu'
 
 vi.mock('sanity/router', () => ({
@@ -13,11 +13,12 @@ vi.mock('sanity/router', () => ({
 }))
 
 describe('VersionContextMenu', () => {
-  const mockReleases: sanity.ReleaseDocument[] = [
+  const mockReleases: ReleaseDocument[] = [
     {
       _id: '_.releases.release1',
       name: 'release1',
       _type: 'system.release',
+      _rev: 'rev1',
       _updatedAt: '',
       _createdAt: '',
       state: 'active',
@@ -31,6 +32,7 @@ describe('VersionContextMenu', () => {
       _id: '_.releases.release2',
       name: 'release2',
       _type: 'system.release',
+      _rev: 'rev1',
       _createdAt: '',
       _updatedAt: '',
       createdBy: 'safsd',
@@ -87,9 +89,6 @@ describe('VersionContextMenu', () => {
       documentId: 'testid',
       isVersion: false,
     }
-
-    /** @todo we can probably rewrite this to be better */
-    vi.spyOn(sanity, 'isPublishedId').mockReturnValue(true)
 
     render(<VersionContextMenu {...publishedProps} />, {wrapper})
 

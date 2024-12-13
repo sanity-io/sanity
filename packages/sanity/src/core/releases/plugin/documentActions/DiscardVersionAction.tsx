@@ -1,13 +1,14 @@
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useState} from 'react'
+
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
-  DiscardVersionDialog,
   type DocumentActionDescription,
   type DocumentActionProps,
-  InsufficientPermissionsMessage,
-  useCurrentUser,
-  useDocumentPairPermissions,
-} from 'sanity'
+} from '../../../config/document/actions'
+import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
 
 /**
  * @internal

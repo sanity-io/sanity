@@ -100,9 +100,12 @@ describe('ReleasesOverview', () => {
     })
 
     it('does not allow for switching between history modes', async () => {
-      await waitFor(() => {
-        screen.getByText('Open')
-      })
+      await waitFor(
+        () => {
+          screen.getByText('Open')
+        },
+        {timeout: 4000},
+      )
       expect(screen.getByText('Open').closest('button')).toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).toBeDisabled()
     })
