@@ -6,7 +6,7 @@ import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {getReleasesPerspective} from './utils'
+import {getReleasesPerspectiveStack} from './utils'
 
 /**
  * @internal
@@ -98,10 +98,10 @@ export function usePerspective(): PerspectiveValue {
 
   const perspectiveStack = useMemo(
     () =>
-      getReleasesPerspective({
+      getReleasesPerspectiveStack({
         releases,
-        selectedPerspective: selectedPerspectiveName,
-        excluded: excludedPerspectives,
+        selectedPerspectiveName,
+        excludedPerspectives,
       }),
     [releases, selectedPerspectiveName, excludedPerspectives],
   )
