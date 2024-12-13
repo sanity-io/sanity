@@ -8,6 +8,7 @@ import {filter, map, mergeMap, startWith, switchAll, switchMap, take, toArray} f
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useClient, useSchema} from '../../../hooks'
+import {type LocaleSource} from '../../../i18n/types'
 import {
   type DocumentPreviewStore,
   getPreviewValueWithFallback,
