@@ -12,6 +12,7 @@ import {
 } from '@sanity/template-validator'
 import {x} from 'tar'
 
+import {debug} from '../debug'
 import {type CliApiClient, type PackageJson} from '../types'
 
 const DISALLOWED_PATHS = [
@@ -325,4 +326,21 @@ export async function generateSanityApiReadToken(
       },
     })
   return response.key
+}
+
+export async function setCorsOrigin(
+  origin: string,
+  projectId: string,
+  apiClient: CliApiClient,
+): Promise<void> {
+  try {
+    await apiClient({api: {projectId}}).request({
+      method: 'POST',
+      url: '/cors',
+      body: {origin: origin, allowCredentials: false},
+    })
+  } catch (error) {
+    // Silent fail, it most likely means that the origin is already set
+    debug('Failed to set CORS origin', error)
+  }
 }

@@ -6,6 +6,7 @@ import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detecto
 
 import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
+import {getDefaultPortForFramework} from '../../util/frameworkPort'
 import {
   applyEnvVariables,
   checkNeedsReadToken,
@@ -13,6 +14,7 @@ import {
   generateSanityApiReadToken,
   getPackages,
   type RepoInfo,
+  setCorsOrigin,
   tryApplyPackageName,
   validateRemoteTemplate,
 } from '../../util/remoteTemplate'
@@ -65,6 +67,12 @@ export async function bootstrapRemoteTemplate(
       fs: new LocalFileSystemDetector(packagePath),
       frameworkList: frameworks as readonly Framework[],
     })
+    const port = getDefaultPortForFramework(packageFramework?.slug)
+
+    debug('Setting CORS origin to http://localhost:%d', port)
+    await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+
+    debug('Applying environment variables to %s', pkg)
     // Next.js uses `.env.local` for local environment variables
     const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
     await applyEnvVariables(packagePath, {...variables, readToken}, envName)
