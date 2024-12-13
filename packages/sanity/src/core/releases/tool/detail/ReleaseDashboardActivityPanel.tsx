@@ -3,6 +3,7 @@
 
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
+import {getReleaseIdFromReleaseDocumentId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -66,7 +67,9 @@ export function ReleaseDashboardActivityPanel({
                   <LoadingBlock title={t('activity.panel.loading')} />
                 )}
                 <ReleaseActivityList
-                  releaseTitle={release.metadata.title || release.name}
+                  releaseTitle={
+                    release.metadata.title || getReleaseIdFromReleaseDocumentId(release._id)
+                  }
                   releaseId={release._id}
                   events={events.events}
                   hasMore={events.hasMore}

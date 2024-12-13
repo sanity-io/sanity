@@ -1225,8 +1225,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */
-  'release.navbar.drafts': 'Drafts',
-  /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',
