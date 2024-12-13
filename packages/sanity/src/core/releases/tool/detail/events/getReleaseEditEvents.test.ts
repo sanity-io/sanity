@@ -93,7 +93,7 @@ const MOCKED_TRANSACTION_LOGS: TransactionLogEventWithEffects[] = [
 ]
 
 const MOCKED_EVENT = {
-  type: 'releaseEditEvent',
+  type: 'editRelease',
   author: 'p8xDvUMxC',
   origin: 'translog',
   change: {releaseType: 'undecided', intendedPublishDate: undefined},

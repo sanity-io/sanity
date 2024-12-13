@@ -39,7 +39,7 @@ const ACTIVITY_TEXT_118N: Record<ReleaseEvent['type'], string> = {
   scheduleRelease: 'activity.event.schedule',
   unarchiveRelease: 'activity.event.unarchive',
   unscheduleRelease: 'activity.event.unschedule',
-  releaseEditEvent: 'activity.event.edit',
+  editRelease: 'activity.event.edit',
 }
 
 const ReleaseEventDocumentPreview = ({

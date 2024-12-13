@@ -69,7 +69,7 @@ interface Change {
   releaseType?: ReleaseType
 }
 export interface EditReleaseEvent extends BaseEvent {
-  type: 'releaseEditEvent'
+  type: 'editRelease'
   isCreationEvent?: boolean
   change: Change
 }
@@ -94,7 +94,7 @@ export const isDiscardDocumentFromReleaseEvent = (
   event: ReleaseEvent,
 ): event is DiscardDocumentFromReleaseEvent => event.type === 'discardDocumentFromRelease'
 export const isEditReleaseEvent = (event: ReleaseEvent): event is EditReleaseEvent =>
-  event.type === 'releaseEditEvent'
+  event.type === 'editRelease'
 
 export const isTranslogEvent = (
   event: ReleaseEvent,

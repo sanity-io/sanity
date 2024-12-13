@@ -82,7 +82,7 @@ describe('buildReleaseEditEvents()', () => {
     )
     expect(changes).toEqual([
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {releaseType: 'undecided', intendedPublishDate: undefined},
@@ -182,7 +182,7 @@ describe('buildReleaseEditEvents()', () => {
     )
     expect(changes).toEqual([
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {intendedPublishDate: '2024-12-13T17:12:00.000Z'},
@@ -252,7 +252,7 @@ describe('buildReleaseEditEvents()', () => {
     )
     expect(releaseEditEvents).toEqual([
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {
@@ -528,7 +528,7 @@ describe('buildReleaseEditEvents()', () => {
 
     expect(changes).toEqual([
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {intendedPublishDate: '2024-12-13T17:12:00.000Z'},
@@ -537,7 +537,7 @@ describe('buildReleaseEditEvents()', () => {
         releaseName: 'rWBfpXZVj',
       },
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {releaseType: 'scheduled', intendedPublishDate: '2024-12-12T17:12:00.000Z'},
@@ -546,7 +546,7 @@ describe('buildReleaseEditEvents()', () => {
         releaseName: 'rWBfpXZVj',
       },
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {releaseType: 'undecided', intendedPublishDate: undefined},
@@ -555,7 +555,7 @@ describe('buildReleaseEditEvents()', () => {
         releaseName: 'rWBfpXZVj',
       },
       {
-        type: 'releaseEditEvent',
+        type: 'editRelease',
         author: 'p8xDvUMxC',
         origin: 'translog',
         change: {releaseType: 'scheduled', intendedPublishDate: '2024-12-20T16:35:00.000Z'},
