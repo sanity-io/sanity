@@ -11,7 +11,7 @@ import {
   checkNeedsReadToken,
   downloadAndExtractRepo,
   generateSanityApiReadToken,
-  getMonoRepo,
+  getPackages,
   type RepoInfo,
   tryApplyPackageName,
   validateRemoteTemplate,
@@ -40,7 +40,7 @@ export async function bootstrapRemoteTemplate(
   const spinner = output.spinner(`Bootstrapping files from template "${name}"`).start()
 
   debug('Validating remote template')
-  const packages = await getMonoRepo(repoInfo, bearerToken)
+  const packages = await getPackages(repoInfo, bearerToken)
   await validateRemoteTemplate(repoInfo, packages, bearerToken)
 
   debug('Create new directory "%s"', outputPath)
