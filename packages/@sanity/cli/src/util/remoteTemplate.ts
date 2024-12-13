@@ -14,6 +14,11 @@ import {x} from 'tar'
 
 import {type CliApiClient, type PackageJson} from '../types'
 
+const DISALLOWED_PATHS = [
+  // Prevent security risks from unknown GitHub Actions
+  '/.github/',
+]
+
 const ENV_VAR = {
   ...REQUIRED_ENV_VAR,
   READ_TOKEN: 'SANITY_API_READ_TOKEN',
@@ -180,6 +185,9 @@ export async function downloadAndExtractRepo(
         if (rootPath === null) {
           const pathSegments = posixPath.split(posix.sep)
           rootPath = pathSegments.length ? pathSegments[0] : null
+        }
+        for (const disallowedPath of DISALLOWED_PATHS) {
+          if (posixPath.includes(disallowedPath)) return false
         }
         return posixPath.startsWith(`${rootPath}${filePath ? `/${filePath}/` : '/'}`)
       },
