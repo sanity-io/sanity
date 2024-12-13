@@ -9,6 +9,7 @@ import {useReleases} from '../../store/useReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useReleaseHistory} from './documentTable/useReleaseHistory'
+import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
@@ -41,6 +42,7 @@ export const ReleaseDetail = () => {
   const {data, archivedReleases, loading} = useReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
+  const releaseEvents = useReleaseEvents(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
   const history = useReleaseHistory(documentIds, releaseId)
@@ -115,7 +117,7 @@ export const ReleaseDetail = () => {
 
   if (releaseInDetail) {
     return (
-      <Flex direction="column" flex={1} height="fill">
+      <Flex direction="column" flex={1} height="fill" overflow="hidden">
         <Card flex="none" padding={3}>
           <ReleaseDashboardHeader
             release={releaseInDetail}
@@ -131,17 +133,18 @@ export const ReleaseDetail = () => {
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter documents={results} release={releaseInDetail} />
+            <ReleaseDashboardFooter
+              documents={results}
+              release={releaseInDetail}
+              events={releaseEvents.events}
+            />
           </Flex>
 
-          {inspector === 'activity' && (
-            <>
-              <Card flex="none" borderLeft marginY={2} style={{opacity: 0.6}} />
-              <Card flex="none" style={{width: 320}}>
-                <ReleaseDashboardActivityPanel />
-              </Card>
-            </>
-          )}
+          <ReleaseDashboardActivityPanel
+            events={releaseEvents}
+            release={releaseInDetail}
+            show={inspector === 'activity'}
+          />
         </Flex>
       </Flex>
     )

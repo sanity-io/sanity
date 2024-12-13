@@ -9,10 +9,10 @@ function omitRev(document: SanityDocument | undefined) {
   return doc
 }
 
-export function applyMendozaPatch(
-  document: SanityDocument | undefined,
+export function applyMendozaPatch<T extends SanityDocument | undefined>(
+  document: T,
   patch: RawPatch,
-): SanityDocument | undefined {
+): T {
   const next = applyPatch(omitRev(document), patch)
   return next === null ? undefined : next
 }

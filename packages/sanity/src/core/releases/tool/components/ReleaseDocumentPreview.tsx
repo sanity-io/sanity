@@ -3,6 +3,7 @@ import {Card} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
+import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -17,6 +18,8 @@ interface ReleaseDocumentPreviewProps {
   isLoading: boolean
   releaseState?: ReleaseState
   documentRevision?: string
+  hasValidationError?: boolean
+  layout?: PreviewLayoutKey
 }
 
 export function ReleaseDocumentPreview({
@@ -27,6 +30,8 @@ export function ReleaseDocumentPreview({
   isLoading,
   releaseState,
   documentRevision,
+  layout,
+  hasValidationError,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
@@ -78,7 +83,12 @@ export function ReleaseDocumentPreview({
 
   return (
     <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
-      <SanityDefaultPreview {...previewValues} status={previewPresence} isPlaceholder={isLoading} />
+      <SanityDefaultPreview
+        {...previewValues}
+        status={previewPresence}
+        isPlaceholder={isLoading}
+        layout={layout}
+      />
     </Card>
   )
 }

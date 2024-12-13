@@ -195,7 +195,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
               height: `${datum.virtualRow.size}px`,
               transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
               paddingInline: `max(
-                calc((100vw - var(--maxInlineSize)) / 2),
+                calc((100% - var(--maxInlineSize)) / 2),
                 var(--paddingInline)
               )`,
             }}

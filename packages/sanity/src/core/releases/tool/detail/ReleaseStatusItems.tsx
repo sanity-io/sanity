@@ -1,52 +1,75 @@
 import {Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 
-import {RelativeTime, UserAvatar} from '../../../components'
+import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
 import {StatusItem} from '../components/StatusItem'
+import {
+  isArchiveReleaseEvent,
+  isCreateReleaseEvent,
+  isPublishReleaseEvent,
+  isUnarchiveReleaseEvent,
+  type ReleaseEvent,
+} from './events/types'
 
-interface LastEdit {
-  author: string
-  date: string
+const STATUS_TITLE_I18N = {
+  createRelease: 'footer.status.created',
+  publishRelease: 'footer.status.published',
+  archiveRelease: 'footer.status.archived',
+  unarchiveRelease: 'footer.status.unarchived',
 }
-
-function getLastEdit(): LastEdit | null {
-  /* TODO: Hold until release activity is ready, we will need to use that data to show the last edit done to the release. */
-  return null
-}
-
-export function ReleaseStatusItems({release}: {release: ReleaseDocument}) {
+export function ReleaseStatusItems({
+  events,
+  release,
+}: {
+  events: ReleaseEvent[]
+  release: ReleaseDocument
+}) {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const footerEvents = useMemo(() => {
+    const createEvent = events.find(isCreateReleaseEvent)
+    const extraEvent = events.find(
+      (event) =>
+        isPublishReleaseEvent(event) ||
+        isArchiveReleaseEvent(event) ||
+        isUnarchiveReleaseEvent(event),
+    )
+    return [createEvent, extraEvent].filter(isNonNullable)
+  }, [events])
 
-  const lastEdit = getLastEdit()
-  return (
-    <Flex flex={1} gap={1}>
-      {/* Created */}
-      {release.state !== 'archived' && !release.publishAt && !lastEdit && (
+  if (!footerEvents.length) {
+    return (
+      <Flex flex={1} gap={1}>
         <StatusItem
-          avatar={<UserAvatar size={0} user={release.createdBy} />}
+          avatar={<AvatarSkeleton size={0} />}
           text={
             <>
-              {t('footer.status.created')}{' '}
+              {t(STATUS_TITLE_I18N.createRelease)}{' '}
               <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
             </>
           }
         />
-      )}
-
-      {/* Edited */}
-      {lastEdit && !release.publishAt && release.state === 'archived' && (
+      </Flex>
+    )
+  }
+  return (
+    <Flex flex={1} gap={1}>
+      {footerEvents.map((event) => (
         <StatusItem
-          avatar={lastEdit ? <UserAvatar size={0} user={lastEdit.author} /> : null}
+          key={event.id}
+          testId={`status-${event.type}`}
+          avatar={event.author && <UserAvatar size={0} user={event.author} />}
           text={
             <>
-              {t('footer.status.edited')}{' '}
-              <RelativeTime time={lastEdit.date} minimal useTemporalPhrase />
+              {t(STATUS_TITLE_I18N[event.type])}{' '}
+              <RelativeTime time={event.timestamp} useTemporalPhrase minimal />
             </>
           }
         />
-      )}
+      ))}
     </Flex>
   )
 }

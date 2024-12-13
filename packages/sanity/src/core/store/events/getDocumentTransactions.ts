@@ -1,7 +1,7 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {type SanityClient} from 'sanity'
 
-import {getJsonStream} from '../_legacy/history/history/getJsonStream'
+import {getTransactionsLogs} from '../translog/getTransactionLogs'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
@@ -26,40 +26,19 @@ export async function getDocumentTransactions({
   if (documentTransactionsCache[cacheKey] && typeof toTransaction !== 'undefined') {
     return documentTransactionsCache[cacheKey]
   }
-  const clientConfig = client.config()
-  const dataset = clientConfig.dataset
+  const skipFromTransaction = fromTransaction !== toTransaction
 
-  const queryParams = new URLSearchParams({
+  let transactions = await getTransactionsLogs(client, documentId, {
     tag: 'sanity.studio.documents.history',
     effectFormat: 'mendoza',
-    excludeContent: 'true',
-    includeIdentifiedDocumentsOnly: 'true',
-    limit: TRANSLOG_ENTRY_LIMIT.toString(),
+    excludeContent: true,
+    includeIdentifiedDocumentsOnly: true,
+    limit: TRANSLOG_ENTRY_LIMIT,
     fromTransaction: fromTransaction,
+    toTransaction: toTransaction,
   })
-
-  if (toTransaction) {
-    queryParams.append('toTransaction', toTransaction)
-  }
-
-  const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${documentId}?${queryParams.toString()}`,
-  )
-  const transactions: TransactionLogEventWithEffects[] = []
-
-  const skipFromTransaction = fromTransaction !== toTransaction
-  const stream = await getJsonStream(transactionsUrl, clientConfig.token)
-  const reader = stream.getReader()
-  for (;;) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await reader.read()
-    if (result.done) break
-
-    if ('error' in result.value) {
-      throw new Error(result.value.error.description || result.value.error.type)
-    }
-    if (result.value.id === fromTransaction && skipFromTransaction) continue
-    else transactions.push(result.value)
+  if (skipFromTransaction) {
+    transactions = transactions.filter((transaction) => transaction.id !== fromTransaction)
   }
 
   if (

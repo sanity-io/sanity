@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '../store/types'
 
 export const activeScheduledRelease: ReleaseDocument = {
+  _rev: 'activeRev',
   _id: '_.releases.activeRelease',
   _type: 'system.release',
   createdBy: '',
@@ -17,6 +18,7 @@ export const activeScheduledRelease: ReleaseDocument = {
 }
 
 export const scheduledRelease: ReleaseDocument = {
+  _rev: 'scheduledRev',
   _id: '_.releases.scheduledRelease',
   _type: 'system.release',
   createdBy: '',
@@ -34,6 +36,7 @@ export const scheduledRelease: ReleaseDocument = {
 }
 
 export const activeASAPRelease: ReleaseDocument = {
+  _rev: 'activeASAPRev',
   _id: '_.releases.activeASAPRelease',
   _type: 'system.release',
   createdBy: '',
@@ -49,6 +52,7 @@ export const activeASAPRelease: ReleaseDocument = {
 }
 
 export const archivedScheduledRelease: ReleaseDocument = {
+  _rev: 'archivedRev',
   _id: '_.releases.archivedRelease',
   _type: 'system.release',
   createdBy: '',
@@ -65,6 +69,7 @@ export const archivedScheduledRelease: ReleaseDocument = {
 }
 
 export const publishedASAPRelease: ReleaseDocument = {
+  _rev: 'publishedRev',
   _id: '_.releases.publishedRelease',
   _type: 'system.release',
   createdBy: '',
@@ -82,6 +87,7 @@ export const publishedASAPRelease: ReleaseDocument = {
 }
 
 export const activeUndecidedRelease: ReleaseDocument = {
+  _rev: 'undecidedRev',
   _id: '_.releases.undecidedRelease',
   _type: 'system.release',
   createdBy: '',

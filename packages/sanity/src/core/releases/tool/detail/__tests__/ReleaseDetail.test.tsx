@@ -18,6 +18,7 @@ import {
   mockUseBundleDocuments,
   useBundleDocumentsMockReturn,
 } from './__mocks__/useBundleDocuments.mock'
+import {useReleaseEventsMockReturn} from './__mocks__/useReleaseEvents.mock'
 
 vi.mock('sanity/router', async (importOriginal) => {
   return {
@@ -45,6 +46,10 @@ vi.mock('../../../store/useReleaseOperations', () => ({
 
 vi.mock('../useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturn),
+}))
+
+vi.mock('../events/useReleaseEvents', () => ({
+  useReleaseEvents: vi.fn(() => useReleaseEventsMockReturn),
 }))
 
 vi.mock('../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({

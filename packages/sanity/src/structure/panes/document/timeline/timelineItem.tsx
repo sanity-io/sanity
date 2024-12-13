@@ -3,6 +3,7 @@ import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {
+  AvatarSkeleton,
   type ChunkType,
   type RelativeTimeOptions,
   useDateTimeFormat,
@@ -61,15 +62,6 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   minimal: true,
   useTemporalPhrase: true,
 }
-
-const AvatarSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[1].size}px;
-    height: ${theme.avatar.sizes[1].size}px;
-  `
-})
 
 const NameSkeleton = styled(Skeleton)((props) => {
   const theme = getTheme_v2(props.theme)

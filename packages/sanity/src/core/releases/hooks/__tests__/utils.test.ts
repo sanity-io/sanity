@@ -17,6 +17,7 @@ function createReleaseMock(
   const name = getReleaseIdFromReleaseDocumentId(id)
   return {
     _id: id,
+    _rev: 'rev',
     _type: RELEASE_DOCUMENT_TYPE,
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),

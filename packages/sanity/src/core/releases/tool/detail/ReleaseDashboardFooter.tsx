@@ -7,14 +7,16 @@ import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePu
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
 import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUnscheduleButton'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
+import {type ReleaseEvent} from './events/types'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export function ReleaseDashboardFooter(props: {
   documents: DocumentInRelease[]
   release: ReleaseDocument
+  events: ReleaseEvent[]
 }) {
-  const {documents, release} = props
+  const {documents, release, events} = props
 
   const releaseActionButton = useMemo(() => {
     if (release.metadata.releaseType === 'scheduled') {
@@ -52,7 +54,7 @@ export function ReleaseDashboardFooter(props: {
 
       <Flex padding={3}>
         <Flex flex={1} gap={1}>
-          <ReleaseStatusItems release={release} />
+          <ReleaseStatusItems events={events} release={release} />
         </Flex>
 
         <Flex flex="none" gap={1}>
