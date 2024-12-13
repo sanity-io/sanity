@@ -64,14 +64,15 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const isArchived = state === 'archived'
+  const isReleasePinned = releaseId === selectedReleaseId
 
   const handlePinRelease = useCallback(() => {
-    if (releaseId === selectedReleaseId) {
+    if (isReleasePinned) {
       setPerspective('drafts')
     } else {
       setPerspective(releaseId)
     }
-  }, [releaseId, selectedReleaseId, setPerspective])
+  }, [isReleasePinned, releaseId, setPerspective])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
@@ -82,7 +83,6 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
         tone: 'inherit',
       }
 
-  const isReleasePinned = selectedReleaseId === releaseId
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
@@ -109,7 +109,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             onClick={handlePinRelease}
             padding={2}
             round
-            selected={releaseId === selectedReleaseId}
+            selected={isReleasePinned}
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>

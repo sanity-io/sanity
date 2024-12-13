@@ -34,7 +34,6 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
@@ -429,7 +428,7 @@ describe('ReleasesOverview', () => {
       fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
       expect(useRouter().navigate).toHaveBeenCalledWith({
-        releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
+        releaseId: 'rASAP',
       })
     })
   })
