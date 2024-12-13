@@ -1,9 +1,10 @@
 import {AddIcon, EditIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
-import {Translate, useTranslation} from 'sanity'
 
 import {Tooltip} from '../../../../ui-components'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleasesMetadata} from '../../store/useReleasesMetadata'
 

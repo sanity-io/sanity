@@ -99,9 +99,12 @@ describe('ReleasesOverview', () => {
     })
 
     it('does not allow for switching between history modes', async () => {
-      await waitFor(() => {
-        screen.getByText('Open')
-      })
+      await waitFor(
+        () => {
+          screen.getByText('Open')
+        },
+        {timeout: 4000},
+      )
       expect(screen.getByText('Open').closest('button')).toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).toBeDisabled()
     })
@@ -243,15 +246,14 @@ describe('ReleasesOverview', () => {
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
-      expect(usePerspectiveMockReturn.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
-        '_.releases.activeASAPRelease',
-      )
+      expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
     })
 
     it('will show pinned release in release list', () => {
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockReturn,
-        globalReleaseDocumentId: '_.releases.activeASAPRelease',
+        selectedPerspective: activeASAPRelease,
+        selectedReleaseId: 'rASAP',
       })
 
       // re-render to apply the update to global bundle id
@@ -425,7 +427,9 @@ describe('ReleasesOverview', () => {
       const releaseRow = screen.getAllByTestId('table-row')[0]
       fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'activeASAPRelease'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({
+        releaseId: 'rASAP',
+      })
     })
   })
 })

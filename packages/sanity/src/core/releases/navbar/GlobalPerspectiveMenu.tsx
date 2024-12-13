@@ -11,6 +11,7 @@ import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -45,7 +46,7 @@ const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): JSX.Element {
   const {loading, data: releases} = useReleases()
-  const {globalReleaseDocumentId} = usePerspective()
+  const {selectedReleaseId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
@@ -92,10 +93,10 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       const groupSubsetReleases = sortedReleaseTypeReleases[type]
       const offset = offsets[type]
 
-      groupSubsetReleases.forEach(({_id}, groupReleaseIndex) => {
+      groupSubsetReleases.forEach((release, groupReleaseIndex) => {
         const index = offset + groupReleaseIndex
 
-        if (_id === globalReleaseDocumentId) {
+        if (selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)) {
           lastIndex = index
         }
       })
@@ -107,7 +108,7 @@ export function GlobalPerspectiveMenu(): JSX.Element {
       lastIndex,
       offsets,
     }
-  }, [globalReleaseDocumentId, sortedReleaseTypeReleases])
+  }, [selectedReleaseId, sortedReleaseTypeReleases])
 
   const releasesList = useMemo(() => {
     if (loading) {

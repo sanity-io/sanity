@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {DotIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
@@ -94,12 +93,9 @@ export const GlobalPerspectiveMenuItem = forwardRef<
     isPerspectiveExcluded,
   } = usePerspective()
 
-  // eslint-disable-next-line no-nested-ternary
-  const releaseId: 'published' | 'drafts' | ReleaseId = isReleaseDocument(release)
-    ? (getReleaseIdFromReleaseDocumentId(release._id) as ReleaseId)
-    : isDraftPerspective(release)
-      ? (release._id as 'drafts')
-      : (release as 'published')
+  const releaseId = isReleaseDocument(release)
+    ? getReleaseIdFromReleaseDocumentId(release._id)
+    : release
 
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName

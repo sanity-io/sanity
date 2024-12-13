@@ -1,9 +1,11 @@
+import {type ReleaseId} from '@sanity/client'
 import {Flex, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -30,14 +32,14 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
 }): JSX.Element | null {
   const {t} = useTranslation()
-  const {globalReleaseDocumentId} = usePerspective()
+  const {selectedReleaseId} = usePerspective()
 
   const getMenuItemRef = useCallback(
-    (releaseId: string) =>
-      releaseId === globalReleaseDocumentId
+    (releaseId: ReleaseId) =>
+      selectedReleaseId === releaseId
         ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
         : undefined,
-    [globalReleaseDocumentId, currentGlobalBundleMenuItemRef],
+    [currentGlobalBundleMenuItemRef, selectedReleaseId],
   )
 
   if (releases.length === 0) return null
@@ -62,7 +64,7 @@ export function ReleaseTypeMenuSection({
           <GlobalPerspectiveMenuItem
             release={release}
             key={release._id}
-            ref={getMenuItemRef(release._id)}
+            ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
             rangePosition={getRangePosition(range, releaseTypeOffset + index)}
           />
         ))}

@@ -13,26 +13,28 @@ import {useCallback} from 'react'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
-  const {state, _id} = release
+  const {state} = release
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
+  const {selectedReleaseId, setPerspective} = usePerspective()
 
-  const {globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId} =
-    usePerspective()
+  const isSelected = releaseId === selectedReleaseId
 
   const handlePinRelease = useCallback(() => {
-    if (_id === globalReleaseDocumentId) {
+    if (isSelected) {
       setPerspective('drafts')
     } else {
-      setPerspectiveFromReleaseDocumentId(_id)
+      setPerspective(releaseId)
     }
-  }, [_id, globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId])
+  }, [isSelected, releaseId, setPerspective])
 
   return (
     <Container width={3}>
@@ -40,12 +42,12 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         <Flex gap={1}>
           <Button
             disabled={state === 'archived' || state === 'published'}
-            icon={_id === globalReleaseDocumentId ? PinFilledIcon : PinIcon}
+            icon={isSelected ? PinFilledIcon : PinIcon}
             mode="bleed"
             onClick={handlePinRelease}
             padding={2}
             radius="full"
-            selected={_id === globalReleaseDocumentId}
+            selected={isSelected}
             space={2}
             text={tRelease('dashboard.details.pin-release')}
             tone={getReleaseTone(release)}

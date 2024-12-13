@@ -17,7 +17,7 @@ import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store/types'
+import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
@@ -140,7 +140,7 @@ export function ReleasesOverview() {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
-  const {globalReleaseDocumentId} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
@@ -149,9 +149,12 @@ export function ReleasesOverview() {
       datum.isDeleted
         ? {tone: 'transparent'}
         : {
-            tone: globalReleaseDocumentId === datum._id ? getReleaseTone(datum) : 'default',
+            tone:
+              isReleaseDocument(selectedPerspective) && selectedPerspective._id === datum._id
+                ? getReleaseTone(datum)
+                : 'default',
           },
-    [globalReleaseDocumentId],
+    [selectedPerspective],
   )
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)

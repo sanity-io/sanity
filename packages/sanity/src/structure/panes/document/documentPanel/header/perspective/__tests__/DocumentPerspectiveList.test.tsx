@@ -45,16 +45,15 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
-  createdBy: 'pzAhBTkNX',
-  _id: '_.releases.spring-drop',
+  _id: '_.releases.rSpringDrop',
   _type: 'system.release',
+  _rev: 'r123',
   metadata: {
     description: 'What a spring drop, allergies galore 🌸',
     releaseType: 'asap',
     title: 'Spring Drop',
   },
   _createdAt: '2024-07-02T11:37:51Z',
-  name: 'spring-drop',
   state: 'scheduled',
 }
 

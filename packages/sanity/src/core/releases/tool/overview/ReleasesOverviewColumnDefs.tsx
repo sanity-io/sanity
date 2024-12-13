@@ -60,29 +60,29 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId} =
-    usePerspective()
-  const {state, _id} = release
+  const {selectedReleaseId, setPerspective} = usePerspective()
+  const {state} = release
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const isArchived = state === 'archived'
+  const isReleasePinned = releaseId === selectedReleaseId
 
   const handlePinRelease = useCallback(() => {
-    if (_id === globalReleaseDocumentId) {
+    if (isReleasePinned) {
       setPerspective('drafts')
     } else {
-      setPerspectiveFromReleaseDocumentId(_id)
+      setPerspective(releaseId)
     }
-  }, [_id, globalReleaseDocumentId, setPerspective, setPerspectiveFromReleaseDocumentId])
+  }, [isReleasePinned, releaseId, setPerspective])
 
   const cardProps: TableRowProps = release.isDeleted
     ? {tone: 'transparent'}
     : {
         as: 'a',
         // navigate to release detail
-        onClick: () => router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(release._id)}),
+        onClick: () => router.navigate({releaseId: releaseId}),
         tone: 'inherit',
       }
 
-  const isReleasePinned = _id === globalReleaseDocumentId
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
@@ -109,7 +109,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             onClick={handlePinRelease}
             padding={2}
             round
-            selected={_id === globalReleaseDocumentId}
+            selected={isReleasePinned}
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>

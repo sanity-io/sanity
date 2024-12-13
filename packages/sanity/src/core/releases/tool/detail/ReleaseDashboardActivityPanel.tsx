@@ -10,6 +10,7 @@ import {Resizable} from '../../../form/studio/tree-editing/components/layout/res
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
@@ -66,7 +67,9 @@ export function ReleaseDashboardActivityPanel({
                   <LoadingBlock title={t('activity.panel.loading')} />
                 )}
                 <ReleaseActivityList
-                  releaseTitle={release.metadata.title || release.name}
+                  releaseTitle={
+                    release.metadata.title || getReleaseIdFromReleaseDocumentId(release._id)
+                  }
                   releaseId={release._id}
                   events={events.events}
                   hasMore={events.hasMore}

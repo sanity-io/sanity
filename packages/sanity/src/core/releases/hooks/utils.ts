@@ -1,3 +1,5 @@
+import {type ReleaseId} from '@sanity/client'
+
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {type ReleaseDocument} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -47,27 +49,27 @@ export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[
   })
 }
 
-export function getReleasesPerspective({
-  selectedPerspective,
+export function getReleasesPerspectiveStack({
+  selectedPerspectiveName,
   releases,
-  excluded,
+  excludedPerspectives,
 }: {
-  selectedPerspective: string | undefined
+  selectedPerspectiveName: ReleaseId | undefined | 'published'
   releases: ReleaseDocument[]
-  excluded: string[]
+  excludedPerspectives: string[]
 }): string[] {
-  if (!selectedPerspective) {
+  if (!selectedPerspectiveName || selectedPerspectiveName === 'published') {
     return []
   }
-  const sorted = sortReleases(releases).map((release) =>
+  const sorted: string[] = sortReleases(releases).map((release) =>
     getReleaseIdFromReleaseDocumentId(release._id),
   )
-  const selectedIndex = sorted.indexOf(selectedPerspective)
+  const selectedIndex = sorted.indexOf(selectedPerspectiveName)
   if (selectedIndex === -1) {
     return []
   }
   return sorted
     .slice(selectedIndex)
     .concat(DRAFTS_FOLDER)
-    .filter((name) => !excluded.includes(name))
+    .filter((name) => !excludedPerspectives.includes(name))
 }

@@ -1,10 +1,11 @@
+import {type ReleaseId} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
 import {type ReleaseDocument} from '../../store/types'
 import {createReleaseId} from '../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleasesPerspective, sortReleases} from '../utils'
+import {getReleasesPerspectiveStack, sortReleases} from '../utils'
 
 function createReleaseMock(
   value: Partial<
@@ -21,8 +22,6 @@ function createReleaseMock(
     _type: RELEASE_DOCUMENT_TYPE,
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),
-    name: getReleaseIdFromReleaseDocumentId(id),
-    createdBy: 'snty1',
     state: 'active',
     ...value,
     metadata: {
@@ -53,7 +52,7 @@ describe('sortReleases()', () => {
     const sorted = sortReleases(releases)
     const expectedOrder = ['rasap2', 'rasap1']
     expectedOrder.forEach((expectedName, idx) => {
-      expect(sorted[idx].name).toBe(expectedName)
+      expect(getReleaseIdFromReleaseDocumentId(sorted[idx]._id)).toBe(expectedName)
     })
   })
   it('should return the scheduled releases ordered by intendedPublishAt or publishAt', () => {
@@ -94,7 +93,7 @@ describe('sortReleases()', () => {
     const sorted = sortReleases(releases)
     const expectedOrder = ['rfuture4', 'rfuture3', 'rfuture2', 'rfuture1']
     expectedOrder.forEach((expectedName, idx) => {
-      expect(sorted[idx].name).toBe(expectedName)
+      expect(getReleaseIdFromReleaseDocumentId(sorted[idx]._id)).toBe(expectedName)
     })
   })
   it('should return the undecided releases ordered by createdAt', () => {
@@ -117,7 +116,7 @@ describe('sortReleases()', () => {
     const sorted = sortReleases(releases)
     const expectedOrder = ['rundecided2', 'rundecided1']
     expectedOrder.forEach((expectedName, idx) => {
-      expect(sorted[idx].name).toBe(expectedName)
+      expect(getReleaseIdFromReleaseDocumentId(sorted[idx]._id)).toBe(expectedName)
     })
   })
   it("should gracefully combine all release types, and sort them by 'undecided', 'scheduled', 'asap'", () => {
@@ -163,12 +162,12 @@ describe('sortReleases()', () => {
     const sorted = sortReleases(releases)
     const expectedOrder = ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1']
     expectedOrder.forEach((expectedName, idx) => {
-      expect(sorted[idx].name).toBe(expectedName)
+      expect(getReleaseIdFromReleaseDocumentId(sorted[idx]._id)).toBe(expectedName)
     })
   })
 })
 
-describe('getReleasesPerspective()', () => {
+describe('getReleasesPerspectiveStack()', () => {
   const releases = [
     createReleaseMock({
       _id: '_.releases.rasap2',
@@ -209,24 +208,38 @@ describe('getReleasesPerspective()', () => {
     }),
   ]
   // Define your test cases with the expected outcomes
-  const testCases = [
-    {perspective: 'rasap1', excluded: [], expected: ['rasap1', 'drafts']},
-    {perspective: 'rasap2', excluded: [], expected: ['rasap2', 'rasap1', 'drafts']},
+  const testCases: {
+    selectedPerspectiveName: ReleaseId | 'published' | undefined
+    excludedPerspectives: string[]
+    expected: string[]
+  }[] = [
+    {selectedPerspectiveName: 'rasap1', excludedPerspectives: [], expected: ['rasap1', 'drafts']},
     {
-      perspective: 'rundecided2',
-      excluded: [],
+      selectedPerspectiveName: 'rasap2',
+      excludedPerspectives: [],
+      expected: ['rasap2', 'rasap1', 'drafts'],
+    },
+    {
+      selectedPerspectiveName: 'rundecided2',
+      excludedPerspectives: [],
       expected: ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1', 'drafts'],
     },
     {
-      perspective: 'rundecided2',
-      excluded: ['rfuture1', 'drafts'],
+      selectedPerspectiveName: 'rundecided2',
+      excludedPerspectives: ['rfuture1', 'drafts'],
       expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
     },
+    {selectedPerspectiveName: 'published', excludedPerspectives: [], expected: []},
+    {selectedPerspectiveName: undefined, excludedPerspectives: [], expected: []},
   ]
   it.each(testCases)(
     'should return the correct release stack for %s',
-    ({perspective, excluded, expected}) => {
-      const result = getReleasesPerspective({releases, selectedPerspective: perspective, excluded})
+    ({selectedPerspectiveName, excludedPerspectives, expected}) => {
+      const result = getReleasesPerspectiveStack({
+        releases,
+        selectedPerspectiveName,
+        excludedPerspectives,
+      })
       expect(result).toEqual(expected)
     },
   )

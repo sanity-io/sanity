@@ -1,6 +1,6 @@
-import {type ReleaseDocument} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {type ReleaseDocument} from '../../../store/types'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 
 describe('buildReleaseEditEvents()', () => {

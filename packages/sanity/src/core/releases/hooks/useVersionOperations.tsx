@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
@@ -9,7 +10,7 @@ import {usePerspective} from './usePerspective'
 
 export interface VersionOperationsValue {
   createVersion: (
-    releaseId: string,
+    releaseId: ReleaseId,
     documentId: string,
     initialValue?: Record<string, unknown>,
   ) => Promise<void>
@@ -22,19 +23,19 @@ export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
   const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
 
-  const {setPerspectiveFromReleaseId} = usePerspective()
+  const {setPerspective} = usePerspective()
   const toast = useToast()
   const {t} = useTranslation()
 
   const handleCreateVersion = async (
-    releaseId: string,
+    releaseId: ReleaseId,
     documentId: string,
     initialValue?: Record<string, unknown>,
   ) => {
     const origin = getDocumentVariantType(documentId)
     try {
       await createVersion(releaseId, documentId, initialValue)
-      setPerspectiveFromReleaseId(releaseId)
+      setPerspective(releaseId)
       telemetry.log(AddedVersion, {
         documentOrigin: origin,
       })

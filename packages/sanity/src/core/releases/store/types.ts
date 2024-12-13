@@ -37,13 +37,6 @@ export interface ReleaseDocument extends SanityDocument {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  /**
-   * The same as the last path segment of the _id, added by the backend.
-   */
-  // TODO: Remove this, we want to force the use of `getReleaseIdFromReleaseDocumentId`
-  name: string
-  // TODO: Remove this is not part of the API response
-  createdBy: string
   state: ReleaseState
   finalDocumentStates?: ReleaseFinalDocumentState[]
   /**

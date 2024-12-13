@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {
   bufferTime,
   catchError,
@@ -10,7 +11,6 @@ import {
   startWith,
   switchMap,
 } from 'rxjs'
-import {type SanityClient} from 'sanity'
 
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleasesMetadata} from './useReleasesMetadata'
