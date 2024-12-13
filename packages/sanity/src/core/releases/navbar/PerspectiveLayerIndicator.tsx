@@ -10,9 +10,9 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
   $inRange: boolean
   $last: boolean
   $first: boolean
-  $isPublished: boolean
+  $isDraft: boolean
 }>(
-  ({$inRange, $last, $first, $isPublished}) => css`
+  ({$inRange, $last, $first, $isDraft}) => css`
     position: relative;
 
     --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
@@ -32,9 +32,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
         left: var(--indicator-left);
         bottom: -var(--indicator-bottom);
         width: var(--indicator-width);
-        height: ${$isPublished
-          ? 'calc(var(--indicator-bottom) + 12px)'
-          : 'var(--indicator-bottom)'};
+        height: ${$isDraft ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'};
         background-color: var(--indicator-color);
       }
     `}

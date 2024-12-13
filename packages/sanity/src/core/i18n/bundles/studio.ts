@@ -1223,6 +1223,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
   /** Label for published releases in navbar */
+  'release.navbar.drafts': 'Drafts',
+  /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'Releases',

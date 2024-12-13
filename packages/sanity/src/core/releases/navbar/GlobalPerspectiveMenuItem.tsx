@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {DotIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
@@ -8,11 +9,13 @@ import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
-import {type ReleaseDocument} from '../store/types'
+import {isReleaseDocument, type ReleaseDocument} from '../store/types'
+import {type LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
+  isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../util/util'
@@ -78,67 +81,67 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
 export const GlobalPerspectiveMenuItem = forwardRef<
   HTMLDivElement,
   {
-    release: ReleaseDocument | 'published'
+    release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
   }
 >((props, ref) => {
   const {release, rangePosition} = props
   const {
-    globalReleaseDocumentId,
-    setPerspectiveFromReleaseDocumentId,
     setPerspective,
+    selectedPerspective,
+    selectedPerspectiveName,
     toggleExcludedPerspective,
     isPerspectiveExcluded,
   } = usePerspective()
-  const isReleasePublishedPerspective = isPublishedPerspective(release)
-  const isUnnamedRelease = !isReleasePublishedPerspective && !release.metadata.title
-  const releaseId = isReleasePublishedPerspective ? 'published' : release._id
-  const active = releaseId === globalReleaseDocumentId
-  const first = rangePosition === 'first'
-  const within = rangePosition === 'within'
-  const last = rangePosition === 'last'
-  const inRange = first || within || last
 
-  const releasePerspectiveId = isReleasePublishedPerspective
-    ? releaseId
-    : getReleaseIdFromReleaseDocumentId(releaseId)
-  const isReleasePerspectiveExcluded = isPerspectiveExcluded(releasePerspectiveId)
+  // eslint-disable-next-line no-nested-ternary
+  const releaseId: 'published' | 'drafts' | ReleaseId = isReleaseDocument(release)
+    ? (getReleaseIdFromReleaseDocumentId(release._id) as ReleaseId)
+    : isDraftPerspective(release)
+      ? (release._id as 'drafts')
+      : (release as 'published')
+
+  const active = selectedPerspectiveName
+    ? releaseId === selectedPerspectiveName
+    : isDraftPerspective(release)
+
+  const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
   const {t} = useTranslation()
 
   const displayTitle = useMemo(() => {
-    if (isUnnamedRelease) {
-      return t('release.placeholder-untitled-release')
-    }
+    if (isPublishedPerspective(release)) return t('release.navbar.published')
+    if (isDraftPerspective(release)) return t('release.navbar.drafts')
 
-    return isReleasePublishedPerspective ? t('release.navbar.published') : release.metadata?.title
-  }, [isReleasePublishedPerspective, isUnnamedRelease, release, t])
+    return release.metadata.title || t('release.placeholder-untitled-release')
+  }, [release, t])
 
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
-      toggleExcludedPerspective(releasePerspectiveId)
+      toggleExcludedPerspective(releaseId)
     },
-    [toggleExcludedPerspective, releasePerspectiveId],
+    [toggleExcludedPerspective, releaseId],
   )
 
   const handleOnReleaseClick = useCallback(
-    () =>
-      isReleasePublishedPerspective
-        ? setPerspective(releaseId)
-        : setPerspectiveFromReleaseDocumentId(releaseId),
-    [releaseId, isReleasePublishedPerspective, setPerspective, setPerspectiveFromReleaseDocumentId],
+    () => setPerspective(releaseId),
+    [releaseId, setPerspective],
   )
 
-  const canReleaseBeExcluded =
-    !isPublishedPerspective(release) && !isReleaseScheduledOrScheduling(release) && inRange && !last
+  const canReleaseBeExcluded = useMemo(() => {
+    if (release === 'published') return false
+    if (isDraftPerspective(release)) return isReleaseDocument(selectedPerspective)
+    if (isReleaseScheduledOrScheduling(release)) return false
+    return rangePosition && ['first', 'within'].includes(rangePosition)
+  }, [rangePosition, release, selectedPerspective])
 
   return (
     <GlobalPerspectiveMenuItemIndicator
-      $isPublished={isReleasePublishedPerspective}
-      $first={first}
-      $last={last}
-      $inRange={inRange}
+      $isDraft={isDraftPerspective(release)}
+      $first={rangePosition === 'first'}
+      $last={rangePosition === 'last'}
+      $inRange={Boolean(rangePosition)}
       ref={ref}
     >
       <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
@@ -156,7 +159,6 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               ) : (
                 <ReleaseAvatar tone={getReleaseTone(release)} />
               )}
-              {/* )} */}
             </Text>
           </Box>
           <Stack
@@ -171,7 +173,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             <Text size={1} weight="medium">
               {displayTitle}
             </Text>
-            {!isPublishedPerspective(release) &&
+            {isReleaseDocument(release) &&
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
@@ -193,7 +195,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
                 />
               </Tooltip>
             )}
-            {!isPublishedPerspective(release) && isReleaseScheduledOrScheduling(release) && (
+            {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
               <Box padding={2}>
                 <Text size={1} data-testid="release-lock-icon">
                   <LockIcon />
