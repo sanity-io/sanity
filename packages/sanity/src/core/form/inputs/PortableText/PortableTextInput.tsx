@@ -132,6 +132,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
+  const [ready, setReady] = useState(false)
   const telemetry = useTelemetry()
 
   const toast = useToast()
@@ -237,6 +238,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             description: change.description,
           })
           break
+        case 'ready':
+          setReady(true)
+          break
         default:
       }
       if (editorRef.current && onEditorChange) {
@@ -305,7 +309,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         file,
         uploaderCandidates: getUploadCandidates(schemaType.of, resolveUploader, file),
       }))
-      const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
+      const readyTasks = tasks.filter((task) => task.uploaderCandidates.length > 0)
       const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
 
       if (rejected.length > 0) {
@@ -330,7 +334,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
       // todo: consider if we should to ask the user here
       // the list of candidates is sorted by their priority and the first one is selected
-      ready.forEach((task) => {
+      readyTasks.forEach((task) => {
         uploadFile(
           task.file,
           // eslint-disable-next-line max-nested-callbacks
@@ -379,7 +383,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
               ref={editorRef}
-              readOnly={readOnly}
+              readOnly={readOnly || !ready}
               schemaType={schemaType}
               value={value}
             >
@@ -397,6 +401,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onPaste={handlePaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
+                readOnly={readOnly || !ready}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
                 renderEditable={renderEditable}
