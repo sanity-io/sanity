@@ -20,7 +20,7 @@ import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureTog
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
-import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
+import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore, type ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user'
@@ -231,7 +231,7 @@ export function usePresenceStore(): PresenceStore {
       resourceCache.get<PresenceStore>({
         namespace: 'presenceStore',
         dependencies: [bifur, connectionStatusStore, userStore],
-      }) || __tmp_wrap_presenceStore({bifur, connectionStatusStore, userStore})
+      }) || createPresenceStore({bifur, connectionStatusStore, userStore})
 
     resourceCache.set({
       namespace: 'presenceStore',
