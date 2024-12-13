@@ -2,13 +2,11 @@ import {type ReleaseDocument} from '../store/types'
 
 export const activeScheduledRelease: ReleaseDocument = {
   _rev: 'activeRev',
-  _id: '_.releases.activeRelease',
+  _id: '_.releases.rActive',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'active',
-  name: 'activeRelease',
   metadata: {
     title: 'active Release',
     releaseType: 'scheduled',
@@ -19,13 +17,11 @@ export const activeScheduledRelease: ReleaseDocument = {
 
 export const scheduledRelease: ReleaseDocument = {
   _rev: 'scheduledRev',
-  _id: '_.releases.scheduledRelease',
+  _id: '_.releases.rScheduled',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'scheduled',
-  name: 'scheduledRelease',
   publishAt: '2023-10-10T10:00:00Z',
   metadata: {
     title: 'scheduled Release',
@@ -37,13 +33,11 @@ export const scheduledRelease: ReleaseDocument = {
 
 export const activeASAPRelease: ReleaseDocument = {
   _rev: 'activeASAPRev',
-  _id: '_.releases.activeASAPRelease',
+  _id: '_.releases.rASAP',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-01T08:00:00Z',
   _updatedAt: '2023-10-01T09:00:00Z',
   state: 'active',
-  name: 'activeRelease',
   metadata: {
     title: 'active asap Release',
     releaseType: 'asap',
@@ -53,13 +47,11 @@ export const activeASAPRelease: ReleaseDocument = {
 
 export const archivedScheduledRelease: ReleaseDocument = {
   _rev: 'archivedRev',
-  _id: '_.releases.archivedRelease',
+  _id: '_.releases.rArchived',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'archived',
-  name: 'archivedRelease',
   metadata: {
     title: 'archived Release',
     releaseType: 'scheduled',
@@ -70,13 +62,11 @@ export const archivedScheduledRelease: ReleaseDocument = {
 
 export const publishedASAPRelease: ReleaseDocument = {
   _rev: 'publishedRev',
-  _id: '_.releases.publishedRelease',
+  _id: '_.releases.rPublished',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'published',
-  name: 'publishedRelease',
   publishAt: '2023-10-10T09:00:00Z',
   metadata: {
     title: 'published Release',
@@ -88,13 +78,11 @@ export const publishedASAPRelease: ReleaseDocument = {
 
 export const activeUndecidedRelease: ReleaseDocument = {
   _rev: 'undecidedRev',
-  _id: '_.releases.undecidedRelease',
+  _id: '_.releases.rUndecided',
   _type: 'system.release',
-  createdBy: '',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'active',
-  name: 'undecidedRelease',
   metadata: {
     title: 'undecided Release',
     releaseType: 'undecided',

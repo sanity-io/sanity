@@ -1,5 +1,5 @@
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type CurrentPerspective} from '../hooks/usePerspective'
+import {type SelectedPerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {LATEST} from './const'
 
@@ -62,13 +62,17 @@ export function formatRelativeLocalePublishDate(release: ReleaseDocument): strin
 }
 
 /** @internal */
-export function isPublishedPerspective(bundle: CurrentPerspective | string): bundle is 'published' {
-  return bundle === 'published'
+export function isPublishedPerspective(
+  perspective: SelectedPerspective | string,
+): perspective is 'published' {
+  return perspective === 'published'
 }
 
 /** @internal */
-export function isDraftPerspective(bundle: CurrentPerspective | string): bundle is typeof LATEST {
-  return bundle === LATEST
+export function isDraftPerspective(
+  perspective: SelectedPerspective | string,
+): perspective is 'drafts' {
+  return perspective === LATEST
 }
 
 /** @internal */

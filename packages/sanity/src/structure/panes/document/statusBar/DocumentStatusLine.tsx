@@ -6,7 +6,6 @@ import {
   DocumentStatus,
   getPreviewStateObservable,
   getReleaseIdFromReleaseDocumentId,
-  isDraftPerspective,
   isPublishedPerspective,
   useDocumentPreviewStore,
   usePerspective,
@@ -29,7 +28,7 @@ export function DocumentStatusLine() {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
   const releases = useReleases()
-  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedPerspective, selectedReleaseId, perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       schemaType
@@ -89,9 +88,6 @@ export function DocumentStatusLine() {
   }
   const mode = getMode()
 
-  const isReleasePerspective =
-    !isPublishedPerspective(selectedPerspective) && !isDraftPerspective(selectedPerspective)
-
   if (status) {
     return <DocumentStatusPulse status={status || undefined} />
   }
@@ -112,12 +108,11 @@ export function DocumentStatusLine() {
           draft={mode === 'draft' ? editState?.draft : undefined}
           published={mode === 'published' ? editState?.published : undefined}
           versions={
-            mode === 'version' &&
-            isReleasePerspective &&
-            selectedPerspective.name &&
-            editState?.version
+            mode === 'version' && selectedReleaseId && editState?.version
               ? {
-                  [selectedPerspective.name]: {snapshot: editState?.version},
+                  [selectedReleaseId]: {
+                    snapshot: editState?.version,
+                  },
                 }
               : undefined
           }

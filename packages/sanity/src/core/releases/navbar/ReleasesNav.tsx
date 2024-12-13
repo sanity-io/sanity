@@ -40,7 +40,7 @@ export function ReleasesNav(): JSX.Element {
   const {selectedPerspective, setPerspective} = usePerspective()
   const {t} = useTranslation()
 
-  const handleClearPerspective = () => setPerspective(LATEST._id)
+  const handleClearPerspective = () => setPerspective(LATEST)
 
   const releasesToolLink = useMemo(
     () => (

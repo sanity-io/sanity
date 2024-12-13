@@ -26,9 +26,8 @@ vi.mock('../../../util/draftUtils', async (importOriginal) => ({
 
 const mockReleases = [
   {
-    _id: `${RELEASE_DOCUMENTS_PATH}.spring-drop`,
-    name: 'spring-drop',
-    _type: 'system-tmp.release',
+    _id: `${RELEASE_DOCUMENTS_PATH}.rSpring`,
+    _type: 'system.release',
     _updatedAt: '2024-07-12T10:39:32Z',
     _createdAt: '2024-07-02T11:37:51Z',
     createdBy: 'pzAhBTkNX',
@@ -36,15 +35,12 @@ const mockReleases = [
     metadata: {
       description: 'What a spring drop, allergies galore 🌸',
       title: 'Spring Drop',
-      icon: 'heart-filled',
-      hue: 'magenta',
       releaseType: 'asap',
     },
   },
   {
-    _id: 'winter-drop',
-    _type: 'system-tmp.release',
-    name: 'winter-drop',
+    _id: `${RELEASE_DOCUMENTS_PATH}.rWinter`,
+    _type: 'system.release',
     _createdAt: '2024-07-02T11:37:51Z',
     _updatedAt: '2024-07-12T10:39:32Z',
     createdBy: 'pzAhBTkNX',
@@ -52,8 +48,6 @@ const mockReleases = [
     metadata: {
       description: 'What a winter drop',
       title: 'Winter Drop',
-      icon: 'heart-filled',
-      hue: 'purple',
       releaseType: 'asap',
     },
   },
@@ -72,9 +66,10 @@ async function setupMocks({
 
   mockUseReleases.mockReturnValue({
     data: releases,
+    releasesIds: releases.map((release) => release._id),
+    archivedReleases: [],
     loading: false,
     dispatch: vi.fn(),
-    stack: [],
   })
 
   mockedGetPublishedId.mockReturnValue('document-1' as PublishedId)
@@ -110,7 +105,7 @@ describe('useDocumentVersions', () => {
   it('should return the releases if versions are found', async () => {
     await setupMocks({
       releases: [mockReleases[0]],
-      versionIds: ['versions.spring-drop.document-1'],
+      versionIds: ['versions.rSpring.document-1'],
     })
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     await waitFor(() => {

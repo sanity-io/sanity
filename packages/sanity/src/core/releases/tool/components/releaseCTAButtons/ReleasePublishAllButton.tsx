@@ -11,7 +11,7 @@ import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {usePerspective} from '../../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {type ReleaseDocument} from '../../../index'
+import {isReleaseDocument, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
@@ -72,7 +72,7 @@ export const ReleasePublishAllButton = ({
       // TODO: handle a published release on the document list
       router.navigate({})
       if (
-        perspective.selectedPerspective !== 'published' &&
+        isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
       ) {
         perspective.setPerspective('drafts')

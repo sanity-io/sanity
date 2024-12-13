@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -5,56 +6,49 @@ import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspective} from './utils'
 
 /**
  * @internal
  */
-export type CurrentPerspective = ReleaseDocument | 'published' | typeof LATEST
+export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
 
 /**
  * @internal
  */
 export interface PerspectiveValue {
-  /* The current perspective */
-  selectedPerspectiveName: 'published' | `r${string}` | undefined
-  selectedReleaseId: `r${string}` | undefined
+  /* The selected perspective name, it could be a release or Published */
+  selectedPerspectiveName: 'published' | ReleaseId | undefined
+  /**
+   * The releaseId as r<string>; it won't be defined if the selected perspective is 'published'
+   */
+  selectedReleaseId: ReleaseId | undefined
 
   /* Return the current global release */
-  selectedPerspective: CurrentPerspective
+  selectedPerspective: SelectedPerspective
   /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (perspectiveId: string) => void
-  /* change the perspective in the studio based on a release ID */
-  setPerspectiveFromReleaseDocumentId: (releaseDocumentId: string) => void
-  setPerspectiveFromReleaseId: (releaseId: string) => void
+  setPerspective: (perspectiveId: 'published' | 'drafts' | ReleaseId | undefined) => void
   /* Add/remove excluded perspectives */
   toggleExcludedPerspective: (perspectiveId: string) => void
   /* Check if a perspective is excluded */
   isPerspectiveExcluded: (perspectiveId: string) => boolean
-  /* The excluded perspectives */
-  excludedPerspectives: string[]
   /**
    * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
    */
   perspectiveStack: string[]
-  /* */
-  globalReleaseDocumentId: string
 }
 
 const EMPTY_ARRAY: string[] = []
+
 /**
- * TODO: Improve distinction between global and pane perspectives.
- *
  * @internal
  */
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
-  const {data: releases, archivedReleases} = useReleases()
-  // TODO: Actually validate the perspective value, if it's not a valid perspective, we should fallback to undefined
-  const currentPerspectiveName = router.stickyParams.perspective as
+  const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
+  const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
-    | `r${string}`
+    | ReleaseId
     | undefined
 
   const excludedPerspectives = useMemo(
@@ -62,17 +56,16 @@ export function usePerspective(): PerspectiveValue {
     [router.stickyParams.excludedPerspectives],
   )
 
-  // TODO: Should it be possible to set the perspective within a pane, rather than globally?
   const setPerspective = useCallback(
-    (releaseId: string | undefined) => {
+    (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
       let perspectiveParam = ''
 
-      if (!releaseId) {
+      if (!releaseId || releaseId === 'drafts') {
         perspectiveParam = ''
-      } else if (releaseId === 'published') {
-        perspectiveParam = 'published'
-      } else if (releaseId !== 'drafts') {
+      } else if (releaseId === 'published' || releaseId.startsWith('r')) {
         perspectiveParam = releaseId
+      } else {
+        throw new Error(`Invalid releaseId: ${releaseId}`)
       }
 
       router.navigateStickyParams({
@@ -83,49 +76,34 @@ export function usePerspective(): PerspectiveValue {
     [router],
   )
 
-  const selectedBundle =
-    currentPerspectiveName && releases
-      ? releases.find(
-          (release) => getReleaseIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
-        )
-      : LATEST
-
-  // clear the perspective param when it is not an active release
   useEffect(() => {
-    if (
-      archivedReleases?.find(
-        (release) => getReleaseIdFromReleaseDocumentId(release._id) === currentPerspectiveName,
-      )
-    ) {
-      setPerspective(LATEST._id)
+    // clear the perspective param when it is not an active release
+    if (releasesLoading) return
+    const isCurrentPerspectiveValid = releases.some(
+      (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
+    )
+    if (!isCurrentPerspectiveValid) {
+      setPerspective(LATEST)
     }
-  }, [archivedReleases, currentPerspectiveName, selectedBundle, setPerspective])
+  }, [archivedReleases, selectedPerspectiveName, releases, releasesLoading, setPerspective])
 
-  const currentPerspective: CurrentPerspective = useMemo(
-    () =>
-      currentPerspectiveName === 'published' ? currentPerspectiveName : selectedBundle || LATEST,
-    [currentPerspectiveName, selectedBundle],
-  )
+  const selectedPerspective: SelectedPerspective = useMemo(() => {
+    if (!selectedPerspectiveName) return 'drafts'
+    if (selectedPerspectiveName === 'published') return 'published'
+    const selectedRelease = releases.find(
+      (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
+    )
+    return selectedRelease || 'drafts'
+  }, [selectedPerspectiveName, releases])
 
-  const setPerspectiveFromReleaseId = useCallback(
-    (releaseId: string) => setPerspective(releaseId),
-    [setPerspective],
-  )
-
-  const setPerspectiveFromReleaseDocumentId = useCallback(
-    (releaseId: string) =>
-      setPerspectiveFromReleaseId(getReleaseIdFromReleaseDocumentId(releaseId)),
-    [setPerspectiveFromReleaseId],
-  )
-
-  const perspective = useMemo(
+  const perspectiveStack = useMemo(
     () =>
       getReleasesPerspective({
         releases,
-        selectedPerspective: currentPerspectiveName,
+        selectedPerspective: selectedPerspectiveName,
         excluded: excludedPerspectives,
       }),
-    [releases, currentPerspectiveName, excludedPerspectives],
+    [releases, selectedPerspectiveName, excludedPerspectives],
   )
 
   const toggleExcludedPerspective = useCallback(
@@ -148,30 +126,22 @@ export function usePerspective(): PerspectiveValue {
 
   return useMemo(
     () => ({
-      selectedPerspectiveName: currentPerspectiveName,
+      selectedPerspective,
+      selectedPerspectiveName,
       selectedReleaseId:
-        currentPerspectiveName === 'published' ? undefined : currentPerspectiveName,
-      excludedPerspectives,
+        selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
+      perspectiveStack,
+
       setPerspective,
-      setPerspectiveFromReleaseDocumentId: setPerspectiveFromReleaseDocumentId,
-      setPerspectiveFromReleaseId: setPerspectiveFromReleaseId,
       toggleExcludedPerspective,
-      selectedPerspective: currentPerspective,
-      globalReleaseDocumentId: isPublishedPerspective(currentPerspective)
-        ? 'published'
-        : currentPerspective._id,
-      perspectiveStack: perspective,
       isPerspectiveExcluded,
     }),
     [
-      currentPerspectiveName,
-      excludedPerspectives,
+      selectedPerspectiveName,
       setPerspective,
-      setPerspectiveFromReleaseDocumentId,
-      setPerspectiveFromReleaseId,
       toggleExcludedPerspective,
-      currentPerspective,
-      perspective,
+      selectedPerspective,
+      perspectiveStack,
       isPerspectiveExcluded,
     ],
   )

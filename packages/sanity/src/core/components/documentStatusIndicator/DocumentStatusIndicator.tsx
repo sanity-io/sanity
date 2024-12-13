@@ -5,6 +5,7 @@ import {styled} from 'styled-components'
 
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
 import {useReleases} from '../../releases/store/useReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
@@ -50,7 +51,9 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
     () =>
       versions
         ? Object.keys(versions).map((versionName) => {
-            const release = releases?.find((r) => r.name === versionName)
+            const release = releases?.find(
+              (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
+            )
             return release?.metadata.releaseType
           })
         : [],

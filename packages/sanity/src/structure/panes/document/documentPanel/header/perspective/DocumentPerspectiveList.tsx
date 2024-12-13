@@ -108,8 +108,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return activeReleases
   }, [archivedReleases, documentVersions, params?.historyVersion, releases])
 
-  const handleBundleChange = useCallback(
-    (bundleId: string) => () => {
+  const handlePerspectiveChange = useCallback(
+    (bundleId: Parameters<typeof setPerspective>[0]) => () => {
       setPerspective(bundleId)
     },
     [setPerspective],
@@ -127,7 +127,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion)
-        return {selected: release.name === getVersionFromId(displayed?._id || '')}
+        return {
+          selected:
+            getReleaseIdFromReleaseDocumentId(release._id) ===
+            getVersionFromId(displayed?._id || ''),
+        }
 
       const isReleaseHistoryMatch =
         getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
@@ -154,7 +158,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         disabled={isPublishedChipDisabled}
-        onClick={handleBundleChange('published')}
+        onClick={handlePerspectiveChange('published')}
         selected={
           /** the publish is selected when:
            * when the document displayed is a published document, but has no draft and the perspective that is
@@ -225,7 +229,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         }
         text={t('release.chip.draft')}
         tone="caution"
-        onClick={handleBundleChange('drafts')}
+        onClick={handlePerspectiveChange('drafts')}
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
@@ -244,7 +248,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
             {...getReleaseChipState(release)}
-            onClick={handleBundleChange(release.name)}
+            onClick={handlePerspectiveChange(getReleaseIdFromReleaseDocumentId(release._id))}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             locked={isReleaseScheduledOrScheduling(release)}
@@ -254,7 +258,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
               documentType: documentType,
-              fromRelease: release.name,
+              fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
               releaseState: release.state,
               isVersion: true,
             }}

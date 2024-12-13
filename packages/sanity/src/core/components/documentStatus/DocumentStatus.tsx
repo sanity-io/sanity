@@ -5,7 +5,12 @@ import {useMemo} from 'react'
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
-import {getReleaseTone, ReleaseAvatar, useReleases} from '../../releases'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getReleaseTone,
+  ReleaseAvatar,
+  useReleases,
+} from '../../releases'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
@@ -54,7 +59,9 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
         />
       )}
       {versionsList.map(([versionName, {snapshot}]) => {
-        const release = releases?.find((r) => r.name === versionName)
+        const release = releases?.find(
+          (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
+        )
         return (
           <VersionStatus
             key={versionName}

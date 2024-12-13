@@ -34,6 +34,7 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
@@ -243,15 +244,14 @@ describe('ReleasesOverview', () => {
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
-      expect(usePerspectiveMockReturn.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
-        '_.releases.activeASAPRelease',
-      )
+      expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
     })
 
     it('will show pinned release in release list', () => {
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockReturn,
-        globalReleaseDocumentId: '_.releases.activeASAPRelease',
+        selectedPerspective: activeASAPRelease,
+        selectedReleaseId: 'rASAP',
       })
 
       // re-render to apply the update to global bundle id
@@ -425,7 +425,9 @@ describe('ReleasesOverview', () => {
       const releaseRow = screen.getAllByTestId('table-row')[0]
       fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({releaseId: 'activeASAPRelease'})
+      expect(useRouter().navigate).toHaveBeenCalledWith({
+        releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
+      })
     })
   })
 })

@@ -32,7 +32,7 @@ describe('useVersionOperations', () => {
       'documentId',
       undefined,
     )
-    expect(usePerspectiveMockReturn.setPerspectiveFromReleaseId).toHaveBeenCalledWith('releaseId')
+    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('releaseId')
   })
 
   it('should discard a version successfully', async () => {

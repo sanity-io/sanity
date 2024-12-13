@@ -34,7 +34,7 @@ const getIntent = (
   item: InitialValueTemplateItem,
   version?: string,
 ): PaneHeaderIntentProps | null => {
-  const isBundleIntent = version && version !== LATEST._id && !isPublishedPerspective(version)
+  const isBundleIntent = version && version !== LATEST && !isPublishedPerspective(version)
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 

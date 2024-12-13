@@ -3,6 +3,7 @@ import {
   EventsProvider,
   getDraftId,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
   getVersionId,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
@@ -26,7 +27,12 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {rev, since, historyVersion} = params
 
   const documentId = useMemo(() => {
-    if (historyVersion && archivedReleases.some((release) => release.name === historyVersion)) {
+    if (
+      historyVersion &&
+      archivedReleases.some(
+        (release) => getReleaseIdFromReleaseDocumentId(release._id) === historyVersion,
+      )
+    ) {
       // Check if we have a release that matches with this historyVersion
       return getVersionId(options.id, historyVersion)
     }

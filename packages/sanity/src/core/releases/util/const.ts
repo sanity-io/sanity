@@ -3,14 +3,9 @@
 /**
  * @internal
  */
-export const LATEST = {
-  // this exists implicitly
-  _id: 'drafts',
-  metadata: {
-    title: 'Latest',
-  },
-} as const
+export const LATEST = 'drafts' as const
 
+export const PUBLISHED = 'published' as const
 /**
  * @internal
  */
