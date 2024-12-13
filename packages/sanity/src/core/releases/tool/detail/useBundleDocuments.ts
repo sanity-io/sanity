@@ -17,8 +17,11 @@ import {useSource} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {getReleaseIdFromReleaseDocumentId, useDocumentPreviewStore, useReleases} from '../../index'
-import {type ReleasesReducerState} from '../../store/reducer'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  type ReleaseDocument,
+  useDocumentPreviewStore,
+} from '../../index'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 
@@ -34,74 +37,61 @@ export interface DocumentInRelease {
 }
 
 const getPublishedArchivedReleaseDocumentsObservable: (
-  releasesState$: Observable<ReleasesReducerState>,
-  releaseId: string,
+  release: ReleaseDocument,
   observableClient: ObservableSanityClient,
   dataset: string | undefined,
   schema: Schema,
   documentPreviewStore: DocumentPreviewStore,
 ) => Observable<{loading: boolean; results: DocumentInRelease[]}> = (
-  releasesState$,
-  releaseId,
+  release,
   observableClient,
   dataset,
   schema,
   documentPreviewStore,
-  // eslint-disable-next-line max-params
-) =>
-  releasesState$.pipe(
-    map((releasesState) =>
-      releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
-    ),
-    map((release) => release?.finalDocumentStates),
-    take(1),
-    switchMap((finalDocumentStates) => {
-      if (!finalDocumentStates?.length) return of({} as DocumentInRelease)
+) => {
+  if (!release.finalDocumentStates?.length) return of({loading: false, results: []})
 
-      return from(finalDocumentStates).pipe(
-        mergeMap(({id: documentId}) => {
-          const document$ = observableClient
-            .request<{documents: DocumentInRelease['document'][]}>({
-              url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
-            })
-            .pipe(map(({documents: [document]}) => document))
+  return from(release.finalDocumentStates || []).pipe(
+    mergeMap(({id: documentId}) => {
+      const document$ = observableClient
+        .request<{documents: DocumentInRelease['document'][]}>({
+          url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
+        })
+        .pipe(map(({documents: [document]}) => document))
 
-          const previewValues$ = document$.pipe(
-            switchMap((document) => {
-              const schemaType = schema.get(document._type)
-              if (!schemaType) {
-                throw new Error(`Schema type not found for document type ${document._type}`)
-              }
+      const previewValues$ = document$.pipe(
+        switchMap((document) => {
+          const schemaType = schema.get(document._type)
+          if (!schemaType) {
+            throw new Error(`Schema type not found for document type ${document._type}`)
+          }
 
-              return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-                take(1),
-                // eslint-disable-next-line max-nested-callbacks
-                map((version) => ({
-                  isLoading: false,
-                  values: prepareForPreview(
-                    getPreviewValueWithFallback({
-                      value: document,
-                      version: version.snapshot || document,
-                      perspective: releaseId,
-                    }),
-                    schemaType,
-                  ),
-                })),
-                startWith({isLoading: true, values: {}}),
-              )
-            }),
-            filter(({isLoading}) => !isLoading),
-          )
-
-          return combineLatest([document$, previewValues$]).pipe(
-            map(([document, previewValues]) => ({
-              document,
-              previewValues,
-              memoKey: uuid(),
-              validation: {validation: [], hasError: false, isValidating: false},
+          return documentPreviewStore.observeForPreview(document, schemaType).pipe(
+            take(1),
+            map((version) => ({
+              isLoading: false,
+              values: prepareForPreview(
+                getPreviewValueWithFallback({
+                  value: document,
+                  version: version.snapshot || document,
+                  perspective: getReleaseIdFromReleaseDocumentId(release._id),
+                }),
+                schemaType,
+              ),
             })),
+            startWith({isLoading: true, values: {}}),
           )
         }),
+        filter(({isLoading}) => !isLoading),
+      )
+
+      return combineLatest([document$, previewValues$]).pipe(
+        map(([document, previewValues]) => ({
+          document,
+          previewValues,
+          memoKey: uuid(),
+          validation: {validation: [], hasError: false, isValidating: false},
+        })),
       )
     }),
     toArray(),
@@ -110,6 +100,7 @@ const getPublishedArchivedReleaseDocumentsObservable: (
       results,
     })),
   )
+}
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
@@ -119,19 +110,10 @@ export function useBundleDocuments(releaseId: string): {
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
   const schema = useSchema()
-  const {data: releases, archivedReleases} = useReleases()
   const {state$: releasesState$} = useReleasesStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
   const {dataset} = client.config()
-
-  const releaseState = useMemo(
-    () =>
-      releases
-        .concat(archivedReleases)
-        .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)?.state,
-    [archivedReleases, releaseId, releases],
-  )
 
   const activeReleaseDocumentsObservable = useMemo(() => {
     return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter).pipe(
@@ -213,19 +195,6 @@ export function useBundleDocuments(releaseId: string): {
     )
   }, [documentPreviewStore, groqFilter, i18n, getClient, schema, observableClient, releaseId])
 
-  const publishedReleaseDocumentsObservable = useMemo(
-    () =>
-      getPublishedArchivedReleaseDocumentsObservable(
-        releasesState$,
-        releaseId,
-        observableClient,
-        dataset,
-        schema,
-        documentPreviewStore,
-      ),
-    [releasesState$, releaseId, observableClient, dataset, schema, documentPreviewStore],
-  )
-
   const observable = useMemo(
     () =>
       releasesState$.pipe(
@@ -240,8 +209,7 @@ export function useBundleDocuments(releaseId: string): {
 
           if (state === 'published' || state === 'archived') {
             return getPublishedArchivedReleaseDocumentsObservable(
-              releasesState$,
-              releaseId,
+              release,
               observableClient,
               dataset,
               schema,
