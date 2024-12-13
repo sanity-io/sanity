@@ -138,7 +138,7 @@ describe('getReleaseEditEvents()', () => {
     testScheduler.run(({expectObservable, hot}) => {
       const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
 
-      const {editEvents$} = getReleaseEditEvents({
+      const editEvents$ = getReleaseEditEvents({
         client: mockClient,
         releaseId: 'not-existing-release',
         releasesState$,
@@ -151,7 +151,7 @@ describe('getReleaseEditEvents()', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
       const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
 
-      const {editEvents$} = getReleaseEditEvents({
+      const editEvents$ = getReleaseEditEvents({
         client: mockClient,
         releaseId: MOCKED_RELEASE._id,
         releasesState$,
@@ -173,7 +173,7 @@ describe('getReleaseEditEvents()', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
       const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
 
-      const {editEvents$} = getReleaseEditEvents({
+      const editEvents$ = getReleaseEditEvents({
         client: mockClient,
         releaseId: MOCKED_RELEASE._id,
         releasesState$,
@@ -230,7 +230,7 @@ describe('getReleaseEditEvents()', () => {
         a: MOCKED_RELEASES_STATE,
         b: MOCKED_RELEASES_STATE,
       })
-      const {editEvents$} = getReleaseEditEvents({
+      const editEvents$ = getReleaseEditEvents({
         client: mockClient,
         releaseId: MOCKED_RELEASE._id,
         releasesState$: releasesState$,
@@ -264,7 +264,7 @@ describe('getReleaseEditEvents()', () => {
         b: updatedReleaseState,
       })
 
-      const {editEvents$} = getReleaseEditEvents({
+      const editEvents$ = getReleaseEditEvents({
         client: mockClient,
         releaseId: MOCKED_RELEASE._id,
         releasesState$: releasesState$,

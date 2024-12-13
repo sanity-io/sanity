@@ -126,40 +126,36 @@ export function getReleaseEditEvents({
   client,
   releaseId,
   releasesState$,
-}: getReleaseActivityEventsOpts): {
-  editEvents$: Observable<EditEventsObservableValue>
-} {
-  return {
-    editEvents$: releasesState$.pipe(
-      map((releasesState) => releasesState.releases.get(releaseId)),
-      // Don't emit if the release is not found
-      filter(Boolean),
-      distinctUntilChanged((prev, next) => prev._rev === next._rev),
-      switchMap((release) => {
-        return getReleaseTransactions({
-          client,
-          documentId: releaseId,
-          toTransaction: release._rev,
-        }).pipe(
-          map((transactions) => {
-            return {
-              editEvents: buildReleaseEditEvents(transactions, release),
-              loading: false,
-              error: null,
-            }
-          }),
-        )
-      }),
-      startWith(INITIAL_VALUE),
-      scan((acc, current) => {
-        // Accumulate edit events from previous state
-        const editEvents = current.loading
-          ? acc.editEvents // Preserve previous events while loading
-          : current.editEvents // Update with new events when available
+}: getReleaseActivityEventsOpts): Observable<EditEventsObservableValue> {
+  return releasesState$.pipe(
+    map((releasesState) => releasesState.releases.get(releaseId)),
+    // Don't emit if the release is not found
+    filter(Boolean),
+    distinctUntilChanged((prev, next) => prev._rev === next._rev),
+    switchMap((release) => {
+      return getReleaseTransactions({
+        client,
+        documentId: releaseId,
+        toTransaction: release._rev,
+      }).pipe(
+        map((transactions) => {
+          return {
+            editEvents: buildReleaseEditEvents(transactions, release),
+            loading: false,
+            error: null,
+          }
+        }),
+      )
+    }),
+    startWith(INITIAL_VALUE),
+    scan((acc, current) => {
+      // Accumulate edit events from previous state
+      const editEvents = current.loading
+        ? acc.editEvents // Preserve previous events while loading
+        : current.editEvents // Update with new events when available
 
-        return {...current, editEvents}
-      }, INITIAL_VALUE),
-      shareReplay(1),
-    ),
-  }
+      return {...current, editEvents}
+    }, INITIAL_VALUE),
+    shareReplay(1),
+  )
 }

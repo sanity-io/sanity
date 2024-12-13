@@ -59,7 +59,7 @@ export function getReleaseEvents({
     ? getReleaseActivityEvents({client, releaseId})
     : notEnabledActivityEvents
 
-  const {editEvents$} = getReleaseEditEvents({client, releaseId, releasesState$})
+  const editEvents$ = getReleaseEditEvents({client, releaseId, releasesState$})
 
   const releaseRev$ = releasesState$.pipe(
     map((state) => state.releases.get(releaseId)?._rev),
