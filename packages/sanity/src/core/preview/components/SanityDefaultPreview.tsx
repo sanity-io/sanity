@@ -5,7 +5,6 @@ import {type SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {type ImageUrlFitMode} from '@sanity/types'
 import {
   type ComponentType,
-  createElement,
   type ElementType,
   isValidElement,
   type ReactElement,
@@ -38,7 +37,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
  * @internal
  * */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
-  const {icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
+  const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
@@ -74,11 +73,11 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   )
 
   const renderIcon = useCallback(() => {
-    return createElement(icon || FallbackIcon)
-  }, [icon])
+    return Icon ? <Icon /> : <FallbackIcon />
+  }, [Icon])
 
   const media = useMemo(() => {
-    if (icon === false) {
+    if (Icon === false) {
       // Explicitly disabled
       return false
     }
@@ -108,7 +107,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 
     // Render fallback icon
     return renderIcon
-  }, [icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
+  }, [Icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
@@ -120,12 +119,11 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     [media, restProps, title],
   )
 
-  const layoutComponent = _previewComponents[layout || 'default']
+  const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
+    Omit<PreviewProps, 'renderDefault'>
+  >
 
-  const children = createElement(
-    layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-    previewProps,
-  )
+  const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
     return (

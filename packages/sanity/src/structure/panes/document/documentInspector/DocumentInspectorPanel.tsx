@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {createElement, type ReactElement, useCallback} from 'react'
+import {type ReactElement, useCallback} from 'react'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
@@ -25,11 +25,10 @@ export function DocumentInspectorPanel(props: DocumentInspectorPanelProps): Reac
 
   if (collapsed || !inspector) return null
 
-  const element = createElement(inspector.component, {
-    onClose: handleClose,
-    documentId,
-    documentType,
-  })
+  const Component = inspector.component
+  const element = (
+    <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+  )
 
   if (features.resizablePanes) {
     return (

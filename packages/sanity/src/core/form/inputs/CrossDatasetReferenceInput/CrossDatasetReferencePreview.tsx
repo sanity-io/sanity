@@ -3,7 +3,7 @@ import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
-import {createElement, isValidElement as ReactIsValidElement, useMemo} from 'react'
+import {isValidElement as ReactIsValidElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
 import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'
@@ -71,7 +71,9 @@ export function CrossDatasetReferencePreview(props: {
         )
       }
     }
-    return refType?.icon ? createElement(refType.icon) : null
+    if (!refType?.icon) return null
+    const Icon = refType.icon
+    return <Icon />
   }, [previewMedia, dataset, projectId, refType?.icon, t])
 
   return (

@@ -12,7 +12,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
-import {createElement, type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
+import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
 
 import {ErrorBoundary} from '../../../../../ui-components'
@@ -92,6 +92,7 @@ function ValidationCard(props: {
   const {marker, onOpen, schemaType, value} = props
   const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
+  const Icon = MARKER_ICON[marker.level]
 
   return (
     <ErrorBoundary onCatch={setErrorInfo}>
@@ -112,7 +113,9 @@ function ValidationCard(props: {
         >
           <Flex align="flex-start" gap={3}>
             <Box flex="none">
-              <Text size={1}>{createElement(MARKER_ICON[marker.level])}</Text>
+              <Text size={1}>
+                <Icon />
+              </Text>
             </Box>
 
             <Stack flex={1} space={2}>

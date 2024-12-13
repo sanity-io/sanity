@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, createElement, type ReactElement, useCallback} from 'react'
+import {type ComponentType, type ReactElement, useCallback} from 'react'
 
 import {type PreviewProps} from '../../components/previews'
 import {
@@ -33,7 +33,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     throw new Error('the `schemaType` property must be defined')
   }
 
-  const defaultResolvedComponent = componentResolver(componentProps.schemaType)
+  const DefaultResolvedComponent = componentResolver(componentProps.schemaType)
 
   const renderDefault = useCallback(
     (parentTypeProps: T) => {
@@ -46,16 +46,13 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
       // in order to prevent that a component is render itself
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {components, ...restSchemaType} = parentTypeProps.schemaType
-      const parentTypeResolvedComponent = componentResolver(restSchemaType)
-      return createElement(parentTypeResolvedComponent, parentTypeProps)
+      const ParentTypeResolvedComponent = componentResolver(restSchemaType)
+      return <ParentTypeResolvedComponent {...parentTypeProps} />
     },
     [componentResolver],
   )
 
-  return createElement(defaultResolvedComponent, {
-    ...componentProps,
-    renderDefault,
-  }) as ReactElement<T>
+  return <DefaultResolvedComponent {...componentProps} renderDefault={renderDefault} />
 }
 
 /**

@@ -1,7 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns'
-import {createElement} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -24,7 +23,6 @@ export function RevisionStatusLine(): JSX.Element {
 
   const message = {
     name: 'revision',
-    icon: RestoreIcon,
     text: date ? (
       <Translate
         t={t}
@@ -41,7 +39,9 @@ export function RevisionStatusLine(): JSX.Element {
     <>
       <Flex flex={1} gap={3} padding={2}>
         <Box flex="none">
-          <Text size={1}>{createElement(message.icon)}</Text>
+          <Text size={1}>
+            <RestoreIcon />
+          </Text>
         </Box>
         <Box flex={1}>
           <StatusText size={1} textOverflow="ellipsis">

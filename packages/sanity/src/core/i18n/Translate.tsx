@@ -1,5 +1,5 @@
 import {type TFunction} from 'i18next'
-import {type ComponentType, createElement, type ReactNode, useMemo} from 'react'
+import {type ComponentType, type ReactNode, useMemo} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
@@ -182,14 +182,10 @@ function render(
     const children = tail.slice(0, nextCloseIdx) as TextToken[]
     const remaining = tail.slice(nextCloseIdx + 1)
 
-    return Component ? (
+    const As = Component ? Component : head.name
+    return (
       <>
-        <Component>{render(children, values, componentMap, formatters)}</Component>
-        {render(remaining, values, componentMap, formatters)}
-      </>
-    ) : (
-      <>
-        {createElement(head.name, {}, render(children, values, componentMap, formatters))}
+        <As>{render(children, values, componentMap, formatters)}</As>
         {render(remaining, values, componentMap, formatters)}
       </>
     )

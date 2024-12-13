@@ -1,11 +1,4 @@
-import {
-  type ComponentType,
-  createElement,
-  type CSSProperties,
-  type ReactElement,
-  useMemo,
-  useState,
-} from 'react'
+import {type ComponentType, type CSSProperties, type ReactElement, useMemo, useState} from 'react'
 
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
@@ -31,7 +24,7 @@ export function PreviewLoader(
   const {
     layout,
     value,
-    component,
+    component: Component,
     style: styleProp,
     schemaType,
     skipVisibilityCheck,
@@ -87,15 +80,15 @@ export function PreviewLoader(
 
   return (
     <div ref={setElement} style={style}>
-      {createElement(component, {
-        ...restProps,
-        ...(preview?.value || {}),
-        media,
-        error: preview?.error,
-        isPlaceholder: preview?.isLoading,
-        layout,
-        schemaType,
-      })}
+      <Component
+        {...restProps}
+        {...(preview?.value || {})}
+        media={media}
+        error={preview?.error}
+        isPlaceholder={preview?.isLoading}
+        layout={layout}
+        schemaType={schemaType}
+      />
     </div>
   )
 }

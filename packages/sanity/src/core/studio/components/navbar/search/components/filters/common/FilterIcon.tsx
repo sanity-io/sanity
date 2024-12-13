@@ -1,5 +1,4 @@
 import {UnknownIcon} from '@sanity/icons'
-import {createElement} from 'react'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
@@ -14,9 +13,9 @@ export function FilterIcon({filter}: FilterIconProps) {
     state: {definitions},
   } = useSearchState()
 
-  const icon = getFilterDefinition(definitions.filters, filter.filterName)?.icon
-  if (icon) {
-    return createElement(icon)
+  const Icon = getFilterDefinition(definitions.filters, filter.filterName)?.icon
+  if (Icon) {
+    return <Icon />
   }
   return <UnknownIcon />
 }

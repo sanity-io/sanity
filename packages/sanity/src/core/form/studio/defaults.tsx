@@ -1,5 +1,3 @@
-import {createElement} from 'react'
-
 import {Preview} from '../../preview/components/Preview'
 import {
   type RenderAnnotationCallback,
@@ -20,35 +18,41 @@ import {defaultResolveItemComponent} from './inputResolver/itemResolver'
 
 /** @internal */
 export const defaultRenderAnnotation: RenderAnnotationCallback = (props) => {
-  return createElement(defaultResolveAnnotationComponent(props.schemaType), props)
+  const Annotation = defaultResolveAnnotationComponent(props.schemaType)
+  return <Annotation {...props} />
 }
 
 /** @internal */
 export const defaultRenderBlock: RenderBlockCallback = (props) => {
-  return createElement(defaultResolveBlockComponent(props.schemaType), props)
+  const Block = defaultResolveBlockComponent(props.schemaType)
+  return <Block {...props} />
 }
 
 /** @internal */
 export const defaultRenderInlineBlock: RenderBlockCallback = (props) => {
-  return createElement(defaultResolveInlineBlockComponent(props.schemaType), props)
+  const InlineBlock = defaultResolveInlineBlockComponent(props.schemaType)
+  return <InlineBlock {...props} />
 }
 
 /** @internal */
 export const defaultRenderField: RenderFieldCallback = (props) => {
-  return createElement(defaultResolveFieldComponent(props.schemaType), props)
+  const Field = defaultResolveFieldComponent(props.schemaType)
+  return <Field {...props} />
 }
 
 /** @internal */
 export const defaultRenderInput: RenderInputCallback = (props) => {
-  return createElement(defaultResolveInputComponent(props.schemaType), props)
+  const Input = defaultResolveInputComponent(props.schemaType)
+  return <Input {...props} />
 }
 
 /** @internal */
 export const defaultRenderItem: RenderItemCallback = (props) => {
-  return createElement(defaultResolveItemComponent(props.schemaType), props)
+  const Item = defaultResolveItemComponent(props.schemaType)
+  return <Item {...props} />
 }
 
 /** @internal */
 export const defaultRenderPreview: RenderPreviewCallback = (props) => {
-  return createElement(Preview, props)
+  return <Preview {...props} />
 }

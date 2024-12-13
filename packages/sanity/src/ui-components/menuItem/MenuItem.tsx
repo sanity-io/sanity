@@ -9,7 +9,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {
-  createElement,
   forwardRef,
   type HTMLProps,
   isValidElement,
@@ -92,8 +91,8 @@ export const MenuItem = forwardRef(function MenuItem(
     children: childrenProp,
     disabled,
     hotkeys,
-    icon,
-    iconRight,
+    icon: Icon,
+    iconRight: IconRight,
     preview = null,
     renderMenuItem,
     text,
@@ -118,11 +117,11 @@ export const MenuItem = forwardRef(function MenuItem(
             </Flex>
           </PreviewWrapper>
         )}
-        {icon && (
+        {Icon && (
           <Box paddingRight={1}>
             <Text size={FONT_SIZE}>
-              {isValidElement(icon) && icon}
-              {isValidElementType(icon) && createElement(icon)}
+              {isValidElement(Icon) && Icon}
+              {isValidElementType(Icon) && <Icon />}
             </Text>
           </Box>
         )}
@@ -142,7 +141,7 @@ export const MenuItem = forwardRef(function MenuItem(
             )}
           </Stack>
         )}
-        {(badgeText || hotkeys || iconRight) && (
+        {(badgeText || hotkeys || IconRight) && (
           <Flex align="center" gap={3} marginLeft={3}>
             {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
@@ -152,10 +151,10 @@ export const MenuItem = forwardRef(function MenuItem(
               </Badge>
             )}
 
-            {iconRight && (
+            {IconRight && (
               <Text size={FONT_SIZE}>
-                {isValidElement(iconRight) && iconRight}
-                {isValidElementType(iconRight) && createElement(iconRight)}
+                {isValidElement(IconRight) && IconRight}
+                {isValidElementType(IconRight) && <IconRight />}
               </Text>
             )}
           </Flex>
@@ -166,12 +165,12 @@ export const MenuItem = forwardRef(function MenuItem(
     preview,
     disabled,
     __unstable_space,
-    icon,
+    Icon,
     text,
     __unstable_subtitle,
     badgeText,
     hotkeys,
-    iconRight,
+    IconRight,
   ])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
