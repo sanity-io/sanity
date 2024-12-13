@@ -181,6 +181,11 @@ export async function downloadAndExtractRepo(
           const pathSegments = posixPath.split(posix.sep)
           rootPath = pathSegments.length ? pathSegments[0] : null
         }
+        // Exclude files in the .github directory to prevent potential security risks
+        // from running unknown actions if the repository is pushed to GitHub
+        if (posixPath.includes('/.github/')) {
+          return false
+        }
         return posixPath.startsWith(`${rootPath}${filePath ? `/${filePath}/` : '/'}`)
       },
     }),
