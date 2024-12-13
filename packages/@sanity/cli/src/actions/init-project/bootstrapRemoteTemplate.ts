@@ -73,6 +73,7 @@ export async function bootstrapRemoteTemplate(
     await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
 
     debug('Applying environment variables to %s', pkg)
+    // Next.js uses `.env.local` for local environment variables
     const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
     await applyEnvVariables(packagePath, {...variables, readToken}, envName)
   }
