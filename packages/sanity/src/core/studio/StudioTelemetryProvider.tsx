@@ -56,35 +56,35 @@ export const debugLoggingStore: CreateBatchedStoreOptions = {
 export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
 
-  const projectId = client.config().projectId
+  const store = useMemo(() => {
+    const projectId = client.config().projectId
+    const storeOptions: CreateBatchedStoreOptions = DEBUG_TELEMETRY
+      ? debugLoggingStore
+      : {
+          // submit any pending events every <n> ms
+          flushInterval: 30000,
 
-  const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    if (DEBUG_TELEMETRY) {
-      return debugLoggingStore
-    }
-    return {
-      // submit any pending events every <n> ms
-      flushInterval: 30000,
+          // implements user consent resolving
+          resolveConsent: () =>
+            client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
-      // implements user consent resolving
-      resolveConsent: () =>
-        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
-
-      // implements sending events to backend
-      sendEvents: (batch) =>
-        client.request({
-          uri: '/intake/batch',
-          method: 'POST',
-          json: true,
-          body: {projectId, batch},
-        }),
-      // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
-      sendBeacon: (batch) =>
-        navigator.sendBeacon(client.getUrl('/intake/batch'), JSON.stringify({projectId, batch})),
-    }
-  }, [client, projectId])
-
-  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+          // implements sending events to backend
+          sendEvents: (batch) =>
+            client.request({
+              uri: '/intake/batch',
+              method: 'POST',
+              json: true,
+              body: {projectId, batch},
+            }),
+          // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
+          sendBeacon: (batch) =>
+            navigator.sendBeacon(
+              client.getUrl('/intake/batch'),
+              JSON.stringify({projectId, batch}),
+            ),
+        }
+    return createBatchedStore(sessionId, storeOptions)
+  }, [client])
 
   useEffect(() => {
     const workspaces = arrify(props.config)
