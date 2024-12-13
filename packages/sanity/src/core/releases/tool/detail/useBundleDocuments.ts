@@ -3,7 +3,17 @@ import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
-import {filter, map, mergeMap, startWith, switchAll, switchMap, take, toArray} from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  startWith,
+  switchAll,
+  switchMap,
+  take,
+  toArray,
+} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
@@ -214,17 +224,15 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
-}): ReleaseDocumentsObservableResult => {
-  return releasesState$.pipe(
+}): ReleaseDocumentsObservableResult =>
+  releasesState$.pipe(
     map((releasesState) =>
       releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
     ),
+    filter(Boolean),
+    distinctUntilChanged((prev, next) => prev._rev === next._rev),
     switchMap((release) => {
-      if (!release) return of({loading: true, results: []})
-
-      const {state} = release
-
-      if (state === 'published' || state === 'archived') {
+      if (release.state === 'published' || release.state === 'archived') {
         return getPublishedArchivedReleaseDocumentsObservable({
           schema,
           documentPreviewStore,
@@ -241,8 +249,8 @@ const getReleaseDocumentsObservable = ({
         releaseId,
       })
     }),
+    startWith({loading: true, results: []}),
   )
-}
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
