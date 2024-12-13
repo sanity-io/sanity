@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {
+  catchError,
   distinctUntilChanged,
   expand,
   filter,
@@ -144,6 +145,10 @@ export function getReleaseEditEvents({
             loading: false,
             error: null,
           }
+        }),
+        catchError((error) => {
+          console.error(error)
+          return of({editEvents: [], loading: false, error})
         }),
       )
     }),

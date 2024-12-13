@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {BehaviorSubject, type Observable} from 'rxjs'
-import {map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
+import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvent} from './types'
@@ -70,6 +70,10 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
             loading: false,
             error: null,
           }
+        }),
+        catchError((error) => {
+          console.error(error)
+          return [{events: [], nextCursor: '', loading: false, error}]
         }),
       )
   }

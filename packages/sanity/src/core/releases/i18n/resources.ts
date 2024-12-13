@@ -64,6 +64,8 @@ const releasesLocaleStrings = {
   'activity.event.unschedule': 'marked as unscheduled',
   /** The loading text for when releases are loading */
   'activity.panel.loading': 'Loading release activity',
+  /** The loading text for when releases are loading */
+  'activity.panel.error': 'An error occurred getting the release activity',
   /** The title for the activity panel shown in the releases detail screen */
   'activity.panel.title': 'Activity',
 

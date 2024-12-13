@@ -55,6 +55,13 @@ export function ReleaseDashboardActivityPanel({
                     {t('activity.panel.title')}
                   </Text>
                 </Box>
+                {events.error && !events.events.length && (
+                  <Card padding={3} tone="caution">
+                    <Box padding={2}>
+                      <Text size={0}>{t('activity.panel.error')}</Text>
+                    </Box>
+                  </Card>
+                )}
                 {events.loading && !events.events.length && (
                   <LoadingBlock title={t('activity.panel.loading')} />
                 )}
