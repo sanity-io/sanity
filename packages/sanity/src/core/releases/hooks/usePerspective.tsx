@@ -6,6 +6,7 @@ import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspectiveStack} from './utils'
 
 /**
@@ -20,7 +21,7 @@ export interface PerspectiveValue {
   /* The selected perspective name, it could be a release or Published */
   selectedPerspectiveName: 'published' | ReleaseId | undefined
   /**
-   * The releaseId as r<string>; it won't be defined if the selected perspective is 'published'
+   * The releaseId as r<string>; it will be undefined if the selected perspective is `published` or `drafts`
    */
   selectedReleaseId: ReleaseId | undefined
 
@@ -78,7 +79,12 @@ export function usePerspective(): PerspectiveValue {
 
   useEffect(() => {
     // clear the perspective param when it is not an active release
-    if (releasesLoading || !selectedPerspectiveName) return
+    if (
+      releasesLoading ||
+      !selectedPerspectiveName ||
+      isPublishedPerspective(selectedPerspectiveName)
+    )
+      return
     const isCurrentPerspectiveValid = releases.some(
       (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
     )

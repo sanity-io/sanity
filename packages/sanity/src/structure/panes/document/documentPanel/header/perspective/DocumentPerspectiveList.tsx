@@ -109,8 +109,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   }, [archivedReleases, documentVersions, params?.historyVersion, releases])
 
   const handlePerspectiveChange = useCallback(
-    (bundleId: Parameters<typeof setPerspective>[0]) => () => {
-      setPerspective(bundleId)
+    (perspective: Parameters<typeof setPerspective>[0]) => () => {
+      setPerspective(perspective)
     },
     [setPerspective],
   )
