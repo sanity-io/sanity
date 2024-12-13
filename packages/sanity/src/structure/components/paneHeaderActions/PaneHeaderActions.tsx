@@ -49,49 +49,8 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
   const templates = useTemplates()
 
-  const handleAction = useCallback(
-    (item: PaneMenuItem) => {
-      if (typeof item.action === 'string' && !(item.action in actionHandlers)) {
-        console.warn('No handler for action:', item.action)
-        return false
-      }
-
-      const handler =
-        // eslint-disable-next-line no-nested-ternary
-        typeof item.action === 'function'
-          ? item.action
-          : typeof item.action === 'string'
-            ? actionHandlers[item.action]
-            : null
-
-      if (handler) {
-        handler(item.params as Record<string, string>)
-        return true
-      }
-
-      return false
-    },
-    [actionHandlers],
-  )
-
-  const menuNodes = useMemo(
-    () =>
-      resolveMenuNodes({
-        actionHandler: handleAction,
-        menuItemGroups,
-        menuItems: menuItems
-          // remove items with `create` intents because those will get combined
-          // into one action button (see `initialValueTemplateItemFromMenuItems`)
-          .filter((item) => item.intent?.type !== 'create'),
-      }),
-    [handleAction, menuItemGroups, menuItems],
-  )
-
-  const actionNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
-  const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-
-  const initialValueTemplateItemFromMenuItems = useMemo(() => {
-    return menuItems
+  const combinedInitialValueTemplates = useMemo(() => {
+    const initialValueTemplateItemFromMenuItems = menuItems
       .map((item, menuItemIndex) => {
         if (item.intent?.type !== 'create') return null
 
@@ -139,15 +98,39 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
         return initialValueTemplateItem
       })
-  }, [menuItems, templates])
-
-  const combinedInitialValueTemplates = useMemo(() => {
     // this de-dupes create actions
     return uniqBy(
       [...initialValueTemplateItemFromMenuItems, ...initialValueTemplateItemsFromStructure],
       (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters]),
     )
-  }, [initialValueTemplateItemFromMenuItems, initialValueTemplateItemsFromStructure])
+  }, [initialValueTemplateItemsFromStructure, menuItems, templates])
+
+  const handleAction = useCallback(
+    (item: PaneMenuItem) => {
+      if (typeof item.action === 'string' && !(item.action in actionHandlers)) {
+        console.warn('No handler for action:', item.action)
+        return false
+      }
+
+      const handler =
+        // eslint-disable-next-line no-nested-ternary
+        typeof item.action === 'function'
+          ? item.action
+          : typeof item.action === 'string'
+            ? actionHandlers[item.action]
+            : null
+
+      if (handler) {
+        handler(item.params as Record<string, string>)
+        return true
+      }
+
+      return false
+    },
+    [actionHandlers],
+  )
+
+  const {actionNodes, contextMenuNodes} = useMenuNodes(menuItemGroups, menuItems, handleAction)
 
   return (
     <Flex gap={1}>
@@ -163,3 +146,24 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
     </Flex>
   )
 })
+
+function useMenuNodes(
+  menuItemGroups: PaneMenuItemGroup[],
+  menuItems: PaneMenuItem[],
+  handleAction: (item: PaneMenuItem) => boolean,
+) {
+  return useMemo(() => {
+    const menuNodes = resolveMenuNodes({
+      actionHandler: handleAction,
+      menuItemGroups,
+      menuItems: menuItems
+        // remove items with `create` intents because those will get combined
+        // into one action button (see `initialValueTemplateItemFromMenuItems`)
+        .filter((item) => item.intent?.type !== 'create'),
+    })
+
+    const actionNodes = menuNodes.filter(isMenuNodeButton)
+    const contextMenuNodes = menuNodes.filter(isNotMenuNodeButton)
+    return {actionNodes, contextMenuNodes}
+  }, [handleAction, menuItemGroups, menuItems])
+}
