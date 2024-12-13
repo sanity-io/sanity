@@ -7,7 +7,6 @@ import {
 } from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
-import CopyToClipboard from 'react-copy-to-clipboard'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
 import {Button} from '../../../ui-components'
@@ -232,28 +231,36 @@ export function ConfirmDeleteDialogBody({
                                 {documentId || 'unavailable'}
                               </Text>
                               {documentId && (
-                                <CopyToClipboard
-                                  text={documentId}
-                                  // eslint-disable-next-line react/jsx-no-bind
-                                  onCopy={() => {
-                                    toast.push({
-                                      title: t(
-                                        'confirm-delete-dialog.cdr-table.id-copied-toast.title',
-                                      ),
-                                      status: 'success',
-                                    })
+                                <Button
+                                  mode="bleed"
+                                  icon={CopyIcon}
+                                  tooltipProps={{
+                                    content: t(
+                                      'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
+                                    ),
                                   }}
-                                >
-                                  <Button
-                                    mode="bleed"
-                                    icon={CopyIcon}
-                                    tooltipProps={{
-                                      content: t(
-                                        'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
-                                      ),
-                                    }}
-                                  />
-                                </CopyToClipboard>
+                                  // eslint-disable-next-line react/jsx-no-bind
+                                  onClick={() => {
+                                    navigator.clipboard
+                                      .writeText(documentId)
+                                      .then(() => {
+                                        toast.push({
+                                          status: 'success',
+                                          title: t(
+                                            'confirm-delete-dialog.cdr-table.id-copied-toast.title',
+                                          ),
+                                        })
+                                      })
+                                      .catch(() => {
+                                        toast.push({
+                                          status: 'error',
+                                          title: t(
+                                            'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed',
+                                          ),
+                                        })
+                                      })
+                                  }}
+                                />
                               )}
                             </DocumentIdFlex>
                           </td>
