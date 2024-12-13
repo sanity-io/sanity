@@ -78,7 +78,7 @@ export function usePerspective(): PerspectiveValue {
 
   useEffect(() => {
     // clear the perspective param when it is not an active release
-    if (releasesLoading) return
+    if (releasesLoading || !selectedPerspectiveName) return
     const isCurrentPerspectiveValid = releases.some(
       (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
     )
