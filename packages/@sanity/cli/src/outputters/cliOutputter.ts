@@ -37,7 +37,7 @@ export default {
   },
 
   spinner(options: Options): Ora {
-    const spinner = ora({...options, spinner: 'dots'})
+    const spinner = ora(options)
     // Override the default status methods to use custom symbols instead of emojis
     spinner.succeed = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_CHECK})
     spinner.warn = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_WARN})
