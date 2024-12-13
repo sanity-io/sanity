@@ -17,7 +17,7 @@ const PaneLayoutRoot = styled(Flex)`
 
 export default function ResizeStory() {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const controller = useMemo(() => createPaneLayoutController(), [])
+  const [controller] = useState(() => createPaneLayoutController())
   const collapsed = false
   const [state, setState] = useState<PaneLayoutState>({
     expandedElement: null,

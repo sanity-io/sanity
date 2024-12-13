@@ -1,6 +1,6 @@
 import {Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useState} from 'react'
 
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -29,8 +29,8 @@ export function CommonDateRangeInput({
    * For placeholder values: Use the current date for the end date input, and an arbitrary date
    * in the past (e.g. -7 days from now) for the start date input.
    */
-  const placeholderStartDate = useMemo(() => addDays(new Date(), PLACEHOLDER_START_DATE_OFFSET), [])
-  const placeholderEndDate = useMemo(() => new Date(), [])
+  const [placeholderStartDate] = useState(() => addDays(new Date(), PLACEHOLDER_START_DATE_OFFSET))
+  const [placeholderEndDate] = useState(() => new Date())
 
   const handleDatePickerChange = useCallback(
     ({date, endDate}: {date?: Date | null; endDate?: Date | null}) => {

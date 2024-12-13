@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import type * as React from 'react'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
 
 function usePaneChildLinkComponent(props: {
@@ -48,7 +48,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   // notice that the ID is only created on mount and should not change between
   // subsequent re-renders, therefore this ID will only change when the parent
   // component re-renders.
-  const randomId = useMemo(() => Math.floor(Math.random() * 10000000).toString(16), [])
+  const [randomId] = useState(() => Math.floor(Math.random() * 10000000).toString(16))
 
   return (
     <Box height="fill">

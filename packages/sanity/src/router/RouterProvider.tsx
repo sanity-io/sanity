@@ -47,7 +47,7 @@ export interface RouterProviderProps {
  * import {useCallback, useMemo} from 'react'
  *
  * function Root() {
- *   const router = useMemo(() => route.create('/'), [])
+ *   const [router] = useState(() => route.create('/'))
  *
  *   const [state, setState] = useState<RouterState>({})
  *

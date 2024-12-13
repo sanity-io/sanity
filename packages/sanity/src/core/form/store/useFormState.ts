@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 
 import {type FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
@@ -53,9 +53,9 @@ export function useFormState<
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
-  const prepareHiddenState = useMemo(() => createCallbackResolver({property: 'hidden'}), [])
-  const prepareReadOnlyState = useMemo(() => createCallbackResolver({property: 'readOnly'}), [])
-  const prepareFormState = useMemo(() => createPrepareFormState(), [])
+  const [prepareHiddenState] = useState(() => createCallbackResolver({property: 'hidden'}))
+  const [prepareReadOnlyState] = useState(() => createCallbackResolver({property: 'readOnly'}))
+  const [prepareFormState] = useState(() => createPrepareFormState())
 
   const reconcileFieldGroupState = useMemo(() => {
     let last: StateTree<string> | undefined

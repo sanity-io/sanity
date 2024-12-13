@@ -1,7 +1,7 @@
 import {useToast} from '@sanity/ui'
 import {getTimeZones} from '@vvo/tzdb'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import ToastDescription from '../components/toastDescription/ToastDescription'
 import {DATE_FORMAT, LOCAL_STORAGE_TZ_KEY} from '../constants'
@@ -55,8 +55,7 @@ function getStoredTimeZone(): NormalizedTimeZone {
 }
 
 const useTimeZone = () => {
-  const initialTimeZone = useMemo(() => getStoredTimeZone(), [])
-  const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(initialTimeZone)
+  const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getStoredTimeZone())
   const toast = useToast()
 
   useEffect(() => {
