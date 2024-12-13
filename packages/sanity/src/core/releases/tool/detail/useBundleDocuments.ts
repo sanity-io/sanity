@@ -226,15 +226,42 @@ export function useBundleDocuments(releaseId: string): {
     [releasesState$, releaseId, observableClient, dataset, schema, documentPreviewStore],
   )
 
-  const observable = useMemo(() => {
-    if (!releaseState) return of({loading: true, results: []})
+  const observable = useMemo(
+    () =>
+      releasesState$.pipe(
+        map((releasesState) =>
+          releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
+        ),
+        take(1),
+        switchMap((release) => {
+          if (!release) return of({loading: true, results: []})
 
-    if (releaseState === 'published' || releaseState === 'archived') {
-      return publishedReleaseDocumentsObservable
-    }
+          const {state} = release
 
-    return activeReleaseDocumentsObservable
-  }, [activeReleaseDocumentsObservable, publishedReleaseDocumentsObservable, releaseState])
+          if (state === 'published' || state === 'archived') {
+            return getPublishedArchivedReleaseDocumentsObservable(
+              releasesState$,
+              releaseId,
+              observableClient,
+              dataset,
+              schema,
+              documentPreviewStore,
+            )
+          }
+
+          return activeReleaseDocumentsObservable
+        }),
+      ),
+    [
+      activeReleaseDocumentsObservable,
+      dataset,
+      documentPreviewStore,
+      observableClient,
+      releaseId,
+      releasesState$,
+      schema,
+    ],
+  )
 
   return useObservable(observable, {loading: true, results: []})
 }
