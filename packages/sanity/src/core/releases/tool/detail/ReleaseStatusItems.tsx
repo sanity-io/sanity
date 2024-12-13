@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 
 import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
 import {StatusItem} from '../components/StatusItem'
@@ -13,10 +14,6 @@ import {
   isUnarchiveReleaseEvent,
   type ReleaseEvent,
 } from './events/types'
-
-function isDefined<T>(value: T | undefined): value is T {
-  return value !== undefined
-}
 
 const STATUS_TITLE_I18N = {
   createRelease: 'footer.status.created',
@@ -40,7 +37,7 @@ export function ReleaseStatusItems({
         isArchiveReleaseEvent(event) ||
         isUnarchiveReleaseEvent(event),
     )
-    return [createEvent, extraEvent].filter(isDefined)
+    return [createEvent, extraEvent].filter(isNonNullable)
   }, [events])
 
   if (!footerEvents.length) {
