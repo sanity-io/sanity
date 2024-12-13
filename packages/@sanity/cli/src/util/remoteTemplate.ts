@@ -14,6 +14,11 @@ import {x} from 'tar'
 
 import {type CliApiClient, type PackageJson} from '../types'
 
+const DISALLOWED_PATHS = [
+  // Prevent security risks from unknown GitHub Actions
+  '/.github/',
+]
+
 const ENV_VAR = {
   ...REQUIRED_ENV_VAR,
   READ_TOKEN: 'SANITY_API_READ_TOKEN',
@@ -181,10 +186,8 @@ export async function downloadAndExtractRepo(
           const pathSegments = posixPath.split(posix.sep)
           rootPath = pathSegments.length ? pathSegments[0] : null
         }
-        // Exclude files in the .github directory to prevent potential security risks
-        // from running unknown actions if the repository is pushed to GitHub
-        if (posixPath.includes('/.github/')) {
-          return false
+        for (const disallowedPath of DISALLOWED_PATHS) {
+          if (posixPath.includes(disallowedPath)) return false
         }
         return posixPath.startsWith(`${rootPath}${filePath ? `/${filePath}/` : '/'}`)
       },
