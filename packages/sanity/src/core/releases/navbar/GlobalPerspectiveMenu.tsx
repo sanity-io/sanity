@@ -10,6 +10,7 @@ import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useReleases} from '../store/useReleases'
+import {LATEST} from '../util/const'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -124,6 +125,10 @@ export function GlobalPerspectiveMenu(): JSX.Element {
             <GlobalPerspectiveMenuItem
               rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
               release={'published'}
+            />
+            <GlobalPerspectiveMenuItem
+              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
+              release={LATEST}
             />
           </StyledPublishedBox>
           <>

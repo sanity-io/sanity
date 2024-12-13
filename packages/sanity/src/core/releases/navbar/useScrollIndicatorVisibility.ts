@@ -8,8 +8,8 @@ function isElementVisibleInContainer(container: ScrollElement, element: ScrollEl
   const containerRect = container.getBoundingClientRect()
   const elementRect = element.getBoundingClientRect()
 
-  // 32.5px is padding on published element + padding of perspective menu item
-  const isVisible = elementRect.top >= containerRect.top + 32.5
+  // 32.5px is padding on published/draft element + padding of perspective/draft menu item
+  const isVisible = elementRect.top >= containerRect.top + 32.5 * 2
 
   return isVisible
 }

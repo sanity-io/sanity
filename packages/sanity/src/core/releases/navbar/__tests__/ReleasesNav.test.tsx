@@ -196,10 +196,7 @@ describe('ReleasesNav', () => {
         })
 
         it('should set a given perspective from the menu', async () => {
-          expect(usePerspectiveMockReturn.setPerspectiveFromReleaseDocumentId).toHaveBeenCalledWith(
-            '_.releases.active-scheduled-2',
-          )
-          expect(usePerspectiveMockReturn.setPerspective).not.toHaveBeenCalled()
+          expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('active-scheduled-2')
         })
 
         it('should allow for hiding of any deeper layered releases', async () => {
@@ -228,6 +225,21 @@ describe('ReleasesNav', () => {
           expect(
             within(publishedRelease).queryByTestId('release-toggle-visibility'),
           ).not.toBeInTheDocument()
+        })
+
+        it('should allow for hiding of draft perspective', async () => {
+          const drafts = within(screen.getByTestId('release-menu'))
+            .getByText('Drafts')
+            .closest('button')!
+
+          expect(within(drafts).queryByTestId('release-toggle-visibility')).toBeInTheDocument()
+          // toggle to hide
+          fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
+          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('drafts')
+
+          // toggle to include
+          fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
+          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('drafts')
         })
 
         it('should not allow hiding of the current perspective', async () => {

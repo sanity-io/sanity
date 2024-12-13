@@ -130,7 +130,6 @@ export function usePerspective(): PerspectiveValue {
 
   const toggleExcludedPerspective = useCallback(
     (excluded: string) => {
-      if (excluded === LATEST._id) return
       const existingPerspectives = excludedPerspectives || []
 
       const nextExcludedPerspectives = existingPerspectives.includes(excluded)
