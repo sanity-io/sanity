@@ -12,6 +12,7 @@ import {
 } from '@sanity/template-validator'
 import {x} from 'tar'
 
+import {debug} from '../../debug'
 import {type CliApiClient, type PackageJson} from '../types'
 
 const ENV_VAR = {
@@ -330,7 +331,8 @@ export async function setCorsOrigin(
       url: '/cors',
       body: {origin: origin, allowCredentials: false},
     })
-  } catch {
+  } catch (error) {
     // Silent fail, it most likely means that the origin is already set
+    debug('Failed to set CORS origin', error)
   }
 }
