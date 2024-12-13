@@ -1,6 +1,6 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {memo, useMemo} from 'react'
+import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {RelativeTime} from '../../../components/RelativeTime'
@@ -67,7 +67,7 @@ const ReleaseEventDocumentPreview = ({
   )
 }
 
-const ScheduleTarget = ({children, event}: {children: React.ReactNode; event: ReleaseEvent}) => {
+const ScheduleTarget = ({children, event}: {children: ReactNode; event: ReleaseEvent}) => {
   const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
   const {t} = useTranslation(releasesLocaleNamespace)
 
