@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["REACT_PRODUCTION_PROFILING"],
+      "env": ["REACT_PRODUCTION_PROFILING", "REACT_MILLION_LINT"],
       "outputs": [".sanity/**", "dist/**", "workshop/scopes.js"]
     },
     "start": {
