@@ -1222,7 +1222,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.form.placeholer-describe-release': 'Describe the release…',
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
-  /** Label for published releases in navbar */
+  /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
