@@ -12,7 +12,7 @@ import {
 } from '@sanity/template-validator'
 import {x} from 'tar'
 
-import {debug} from '../../debug'
+import {debug} from '../debug'
 import {type CliApiClient, type PackageJson} from '../types'
 
 const ENV_VAR = {
