@@ -3,7 +3,6 @@
 
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
-import {getReleaseIdFromReleaseDocumentId} from 'sanity'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -11,6 +10,7 @@ import {Resizable} from '../../../form/studio/tree-editing/components/layout/res
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
