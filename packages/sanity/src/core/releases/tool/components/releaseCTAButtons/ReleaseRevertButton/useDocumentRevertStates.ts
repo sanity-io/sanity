@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, filter, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
+import {catchError, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -55,7 +55,6 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
         },
       ),
     ).pipe(
-      filter(Boolean),
       map((transactions) => {
         if (transactions.length === 0) throw new Error('No transactions found.')
 

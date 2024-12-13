@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, filter, from, map, of} from 'rxjs'
+import {catchError, from, map, of} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -25,7 +25,6 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
         },
       ),
     ).pipe(
-      filter(Boolean),
       // the transaction of published is also returned
       // so post publish transactions will result in more than 1 transaction
       map((transactions) => transactions.length > 1),
