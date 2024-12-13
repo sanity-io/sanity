@@ -6,6 +6,7 @@ import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detecto
 
 import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
+import {getDefaultPortForFramework} from '../../util/frameworkPort'
 import {
   applyEnvVariables,
   checkNeedsReadToken,
@@ -20,7 +21,6 @@ import {
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {tryGitInit} from './git'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
-import {getDefaultPortForFramework} from '../../util/frameworkPort'
 
 export interface BootstrapRemoteOptions {
   outputPath: string
