@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import SplitPane from '@rexxars/react-split-pane'
+import {SplitPane} from '@rexxars/react-split-pane'
 import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
 import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
@@ -809,7 +809,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
           </Grid>
         </Header>
         <SplitpaneContainer flex="auto">
-          {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
           <SplitPane
             // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
@@ -828,10 +827,9 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                   - Disables resize if the container height is less then 500px
                   This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
                 */}
-              {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
               <SplitPane
                 className="sidebarPanes"
-                split={'horizontal'}
+                split="horizontal"
                 defaultSize={
                   narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
                 }
