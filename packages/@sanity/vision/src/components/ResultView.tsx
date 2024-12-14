@@ -1,4 +1,4 @@
-import JSONInspector from '@rexxars/react-json-inspector'
+import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons'
 import {Code} from '@sanity/ui'
 import LRU from 'quick-lru'
@@ -16,7 +16,7 @@ export function ResultView(props: {data: unknown; datasetName: string}): JSX.Ele
   if (isRecord(data) || Array.isArray(data)) {
     return (
       <ResultViewWrapper>
-        <JSONInspector
+        <JsonInspector
           data={data}
           search={false}
           isExpanded={isExpanded}

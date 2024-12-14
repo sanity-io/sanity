@@ -1,4 +1,4 @@
-import JSONInspector from '@rexxars/react-json-inspector'
+import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
 import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import {useCallback} from 'react'
@@ -106,7 +106,7 @@ export function InspectDialog(props: InspectDialogProps) {
         >
           {viewMode === VIEW_MODE_PARSED && (
             <JSONInspectorWrapper>
-              <JSONInspector
+              <JsonInspector
                 data={value}
                 isExpanded={isExpanded}
                 onClick={toggleExpanded}
