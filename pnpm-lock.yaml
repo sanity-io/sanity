@@ -1541,9 +1541,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: 3.0.0-beta.54
         version: 3.0.0-beta.54(react@18.3.1)
-      '@types/react-copy-to-clipboard':
-        specifier: ^5.0.2
-        version: 5.0.7
       '@types/react-is':
         specifier: ^18.3.0
         version: 18.3.1
@@ -1706,9 +1703,6 @@ importers:
       react-compiler-runtime:
         specifier: 19.0.0-beta-37ed2a7-20241206
         version: 19.0.0-beta-37ed2a7-20241206(react@18.3.1)
-      react-copy-to-clipboard:
-        specifier: ^5.0.4
-        version: 5.1.0(react@18.3.1)
       react-fast-compare:
         specifier: ^3.2.0
         version: 3.2.2
@@ -5119,9 +5113,6 @@ packages:
 
   '@types/raf@3.4.3':
     resolution: {integrity: sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==}
-
-  '@types/react-copy-to-clipboard@5.0.7':
-    resolution: {integrity: sha512-Gft19D+as4M+9Whq1oglhmK49vqPhcLzk8WfvfLvaYMIPYanyfLy0+CwFucMJfdKoSFyySPmkkWn8/E6voQXjQ==}
 
   '@types/react-dom@18.3.3':
     resolution: {integrity: sha512-uTYkxTLkYp41nq/ULXyXMtkNT1vu5fXJoqad6uTNCOGat5t9cLgF4vMNLBXsTOXpdOI44XzKPY1M5RRm0bQHuw==}
@@ -15706,10 +15697,6 @@ snapshots:
   '@types/prop-types@15.7.14': {}
 
   '@types/raf@3.4.3': {}
-
-  '@types/react-copy-to-clipboard@5.0.7':
-    dependencies:
-      '@types/react': 18.3.14
 
   '@types/react-dom@18.3.3(@types/react@18.3.14)':
     dependencies:

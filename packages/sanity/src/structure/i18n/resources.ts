@@ -181,6 +181,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.cdr-table.document-id.label': 'Document ID',
   /** The toast title when the copy button has been clicked */
   'confirm-delete-dialog.cdr-table.id-copied-toast.title': 'Copied document ID to clipboard!',
+  /** The toast title when the copy button has been clicked but copying failed */
+  'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */
   'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
   /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
