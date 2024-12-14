@@ -4,6 +4,7 @@ import {useMemo} from 'react'
 
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
 import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
+import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
 import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUnscheduleButton'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
@@ -42,6 +43,12 @@ export function ReleaseDashboardFooter(props: {
           documents={documents}
           disabled={!documents.length}
         />
+      )
+    }
+
+    if (release.state === 'published') {
+      return (
+        <ReleaseRevertButton release={release} documents={documents} disabled={!documents.length} />
       )
     }
 

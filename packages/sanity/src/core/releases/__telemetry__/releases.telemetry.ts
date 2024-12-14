@@ -20,6 +20,13 @@ export interface OriginInfo {
   origin: 'structure' | 'release-plugin'
 }
 
+export interface RevertInfo {
+  /**
+   * determined whether reverting a release created a new staged release, or immediately reverted
+   */
+  revertType: 'immediate' | 'staged'
+}
+
 /**
  * When a document (version) is successfully added to a release
  * @internal
@@ -100,4 +107,13 @@ export const UnarchivedRelease = defineEvent({
   name: 'Unarchive release',
   version: 1,
   description: 'User unarchived a release',
+})
+
+/** When a release is successfully reverted
+ * @internal
+ */
+export const RevertRelease = defineEvent<RevertInfo>({
+  name: 'Revert release',
+  version: 1,
+  description: 'User reverted a release',
 })

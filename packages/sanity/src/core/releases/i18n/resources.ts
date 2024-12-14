@@ -14,6 +14,8 @@ const releasesLocaleStrings = {
   'action.archived': 'Archived',
   /** Action text for comparing document versions */
   'action.compare-versions': 'Compare versions',
+  /** Action text for reverting a release by creating a new release */
+  'action.create-revert-release': 'Stage in new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
   /** Action text for editing a release */
@@ -32,8 +34,12 @@ const releasesLocaleStrings = {
   'action.publish-all-documents': 'Publish all documents',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
+  /** Action text for reverting a release */
+  'action.revert': 'Revert release',
   /** Text for the summary button in release tool */
   'actions.summary': 'Summary',
+  /** Action text for reverting a release immediately without staging changes */
+  'action.immediate-revert-release': 'Revert now',
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
   /** Header for the dialog confirming the archive of a release */
@@ -185,6 +191,29 @@ const releasesLocaleStrings = {
   /** Label for when documents in release have validation errors */
   'publish-dialog.validation.error': 'Some documents have validation errors',
 
+  /** Description for the review changes button in release tool */
+  'review.description': 'Add documents to this release to review changes',
+  /** Text for when a document is edited */
+  'review.edited': 'Edited <RelativeTime/>',
+  /** Description for the dialog confirming the revert of a release with multiple documents */
+  'revert-dialog.confirm-revert-description_one':
+    'This will revert {{releaseDocumentsLength}} document version.',
+  /** Description for the dialog confirming the revert of a release with multiple documents */
+  'revert-dialog.confirm-revert-description_other':
+    'This will revert {{releaseDocumentsLength}} document versions.',
+  /** Title for the dialog confirming the revert of a release */
+  'revert-dialog.confirm-revert.title': "Are you sure you want to revert the '{{title}}' release?",
+  /** Checkbox label to confirm whether to create a staged release for revert or immediately revert */
+  'revert-dialog.confirm-revert.stage-revert-checkbox-label':
+    'Stage revert actions in a new release',
+  /** Warning card text for when immediately revert a release with history */
+  'revert-dialog.confirm-revert.warning-card':
+    'Changes were made to documents in this release after they were published. Reverting will overwrite these changes.',
+  /** Title of a reverted release */
+  'revert-release.title': 'Reverting "{{title}}"',
+  /** Description of a reverted release */
+  'revert-release.description': 'Revert changes to document versions in "{{title}}".',
+
   /** Title o unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
@@ -204,7 +233,7 @@ const releasesLocaleStrings = {
     "The '<strong>{{title}}</strong>' release and its document will be published on the selected date.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'schedule-dialog.confirm-description_other':
-    'The <strong>{{title}}</strong> release and its {{count}}  document versions will be scheduled for publishing.',
+    'The <strong>{{title}}</strong> release and its {{count}} document versions will be scheduled for publishing.',
 
   /** Description for the confirm button for scheduling a release */
   'schedule-dialog.confirm-button': 'Yes, schedule for publishing',
@@ -217,11 +246,6 @@ const releasesLocaleStrings = {
   /** Description shown in unschedule relaease dialog */
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
-
-  /** Description for the review changes button in release tool */
-  'review.description': 'Add documents to this release to review changes',
-  /** Text for when a document is edited */
-  'review.edited': 'Edited <RelativeTime/>',
 
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',
@@ -282,6 +306,14 @@ const releasesLocaleStrings = {
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
   /** Text for tooltip when a release has been scheduled */
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
+  /** Text for toast when release failed to revert */
+  'toast.revert.error': 'Failed to revert release: {{error}}',
+  /** Text for toast when release has been reverted immediately */
+  'toast.immediate-revert.success': "The '{{title}}' release was successfully reverted",
+  /** Text for toast when release has reverted release successfully staged */
+  'toast.revert-stage.success': "Revert release for '{{title}}' was successfully created. <Link/>",
+  /** Link text for toast link to the generated revert release */
+  'toast.revert-stage.success-link': 'View revert release',
 
   /** Title for the dialog confirming the unpublish of a release */
   'unpublish-dialog.header': 'Are you sure you want to unpublish this document when releasing?',
