@@ -104,7 +104,7 @@ export function createObserveFields(options: {
             mergeMap((result) => {
               return concat(
                 observableOf(result),
-                result === undefined // hack: if we get undefined as result here it can be because the document has
+                result === null // hack: if we get null as result here it can be because the document has
                   ? // just been created and is not yet indexed. We therefore need to wait a bit
                     // and then re-fetch.
                     fetchDocumentPathsSlow(id, fields as any)
