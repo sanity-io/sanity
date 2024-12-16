@@ -91,5 +91,3 @@ export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<ScheduledPublish
 export const TOOL_NAME = 'schedules'
 
 export const TOOL_TITLE = 'Schedules'
-
-export const TOOL_TYPE = 'sanity/scheduled-publishing'

@@ -514,18 +514,23 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
 }
 
 const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
-  tools.map(
-    ({title, name, icon, type}) =>
-      ({
+  tools.map((tool) => {
+    const {
+      title,
+      name,
+      icon,
+      __internalApplicationType: type,
+    } = tool as Workspace['tools'][number] & {__internalApplicationType: string}
+    return {
+      title,
+      name,
+      type: type || null,
+      icon: resolveIcon({
+        icon,
         title,
-        name,
-        type: type || null,
-        icon: resolveIcon({
-          icon,
-          title,
-        }),
-      }) satisfies ManifestTool,
-  )
+      }),
+    } satisfies ManifestTool
+  })
 
 const resolveIcon = (props: SchemaIconProps): string | null => {
   try {

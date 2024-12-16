@@ -14,11 +14,11 @@ export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
       {
         name: name || 'vision',
         title: title || 'Vision',
-        type: 'sanity/vision',
         icon: icon || EyeOpenIcon,
         component: lazy(() => import('./SanityVision')),
         options: config,
         router: route.create('/*'),
+        __internalApplicationType: 'sanity/vision',
       },
     ],
     i18n: {
