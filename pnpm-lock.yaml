@@ -611,7 +611,7 @@ importers:
         version: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@million/lint':
-        specifier: ^1.0.14
+        specifier: 1.0.14
         version: 1.0.14(encoding@0.1.13)(rollup@4.28.1)
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-201e55d-20241215
