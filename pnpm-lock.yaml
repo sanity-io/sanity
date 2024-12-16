@@ -1061,7 +1061,7 @@ importers:
         version: 4.2.0
       zod:
         specifier: ^3.22.4
-        version: 3.23.8
+        version: 3.24.1
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*
@@ -22920,7 +22920,7 @@ snapshots:
       rxjs: 7.8.1
       sanity: link:packages/sanity
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      zod: 3.23.8
+      zod: 3.24.1
     transitivePeerDependencies:
       - '@types/react'
       - react-native
