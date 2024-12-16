@@ -31,6 +31,10 @@ export default defineCliConfig({
     ? {
         target: '18',
         sources: (filename) => {
+          /**
+           * This is the default filter when `sources` is not defined.
+           * Since we're overriding it we have to ensure we don't accidentally try running the compiler on non-src files from npm.
+           */
           if (filename.includes('node_modules')) {
             return false
           }
@@ -47,6 +51,10 @@ export default defineCliConfig({
       ...viteConfig,
       plugins: millionLintEnabled
         ? [
+            /**
+             * We're doing a dynamic import here, instead of a static import, to avoid an issue where a WebSocket Server is created by Million for `vite dev` that isn't closed.
+             * Which leaves `sanity build` hanging, even if the plugin itself isn't actually used.
+             */
             require('@million/lint').vite({
               filter: {
                 include: millionInclude,
