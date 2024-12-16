@@ -60,7 +60,7 @@
     "@juggle/resize-observer": "^3.3.1",
     "@lezer/highlight": "^1.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
-    "@rexxars/react-split-pane": "^0.1.93",
+    "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.5.3",
     "@sanity/ui": "^2.10.10",
