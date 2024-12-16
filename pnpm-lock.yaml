@@ -1509,8 +1509,8 @@ importers:
         specifier: 3.67.1
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.19.10
-        version: 1.19.10(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.19.11
+        version: 1.19.11(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.67.1
         version: link:../@sanity/schema
@@ -4901,8 +4901,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.19.10':
-    resolution: {integrity: sha512-w7EBlxjV2WHcPE4rdkfS95tIO07XoNKh1uNH4ZvVXyWWPLBc1wERZJDCnIsEnWxDl/ni6uwnKNjClfku0zdTJw==}
+  '@sanity/presentation@1.19.11':
+    resolution: {integrity: sha512-VytpwLdHsEVCV8iSMFobiDaewDbeFifxfbn7Cl9/6qss14c/5J0ylQ6UlDop3aMwC9rUygDzIwCZY3YTfyJjaQ==}
     engines: {node: '>=16.14'}
 
   '@sanity/prettier-config@1.0.3':
@@ -15664,7 +15664,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.19.10(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.19.11(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
       '@sanity/comlink': 2.0.2
@@ -15679,7 +15679,7 @@ snapshots:
       mendoza: 3.0.8
       mnemonist: 0.39.8
       path-to-regexp: 6.3.0
-      react-compiler-runtime: 19.0.0-beta-37ed2a7-20241206(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-201e55d-20241215(react@18.3.1)
       rxjs: 7.8.1
       suspend-react: 0.1.3(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
