@@ -3,7 +3,10 @@ import {createContext} from 'sanity/_createContext'
 
 /** @internal */
 export interface HoveredFieldContextValue {
-  hoveredStack: string[]
+  store: {
+    subscribe: (onStoreCallback: () => void) => () => void
+    getSnapshot: () => string[]
+  }
   onMouseEnter: (path: Path) => void
   onMouseLeave: (path: Path) => void
 }
@@ -12,7 +15,10 @@ export interface HoveredFieldContextValue {
 export const HoveredFieldContext = createContext<HoveredFieldContextValue>(
   'sanity/_singletons/context/hovered-field',
   {
-    hoveredStack: [],
+    store: {
+      subscribe: () => () => undefined,
+      getSnapshot: () => [],
+    },
     onMouseEnter: () => undefined,
     onMouseLeave: () => undefined,
   },
