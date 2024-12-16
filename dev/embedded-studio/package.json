@@ -15,8 +15,8 @@
     "styled-components": "^6.1.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.14",
-    "@types/react-dom": "^18.3.3",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "5.7.2",
     "vite": "^5.4.11"
