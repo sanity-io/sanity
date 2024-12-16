@@ -7,7 +7,7 @@ import {
   fromEvent,
   merge,
   type Observable,
-  of as observableOf,
+  of,
   timer,
 } from 'rxjs'
 import {
@@ -100,20 +100,20 @@ export function createObserveFields(options: {
     return listen(id).pipe(
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
-          return fetchDocumentPathsFast(id, fields as any).pipe(
+          return fetchDocumentPathsFast(id, fields).pipe(
             mergeMap((result) => {
               return concat(
-                observableOf(result),
-                result === null // hack: if we get null as result here it can be because the document has
+                of(result),
+                result === null // hack: if we get undefined as result here it can be because the document has
                   ? // just been created and is not yet indexed. We therefore need to wait a bit
                     // and then re-fetch.
-                    fetchDocumentPathsSlow(id, fields as any)
+                    fetchDocumentPathsSlow(id, fields)
                   : [],
               )
             }),
           )
         }
-        return fetchDocumentPathsSlow(id, fields as any)
+        return fetchDocumentPathsSlow(id, fields)
       }),
     )
   }
@@ -157,7 +157,7 @@ export function createObserveFields(options: {
     // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
     let latest: T | undefined | null = undefined
     const changes$ = merge(
-      defer(() => (latest === undefined ? EMPTY : observableOf(latest))),
+      defer(() => (latest === undefined ? EMPTY : of(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
         : currentDatasetListenFields(id, fields)) as Observable<T>,
