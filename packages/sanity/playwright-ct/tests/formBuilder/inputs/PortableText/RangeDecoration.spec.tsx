@@ -45,7 +45,12 @@ test.describe('Portable Text Input', () => {
     //   await page.waitForTimeout(360000)
     // })
     test(`Draws range decoration around our selection`, async ({mount, page}) => {
+      const {getFocusedPortableTextEditor} = testHelpers({page})
+
       await mount(<RangeDecorationStory document={document} decorationData={decorationData} />)
+
+      await getFocusedPortableTextEditor('field-body')
+
       await expect(page.getByTestId('range-decoration')).toHaveText('there')
     })
 
