@@ -78,6 +78,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   overscan?: number
   /** Rendered component in virtual lists */
   renderItem: CommandListRenderItemCallback<T>
+  /** `data-testid` to apply to outermost container */
+  testId?: string
   /** Allow wraparound keyboard navigation between first and last items */
   wrapAround?: boolean
 }

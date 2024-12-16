@@ -114,6 +114,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     onlyShowSelectionWhenActive,
     overscan,
     renderItem,
+    testId,
     wrapAround = true,
     ...responsivePaddingProps
   },
@@ -583,6 +584,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
+      data-testid={testId}
       {...responsivePaddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
