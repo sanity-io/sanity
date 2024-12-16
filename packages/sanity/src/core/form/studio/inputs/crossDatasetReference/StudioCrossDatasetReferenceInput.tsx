@@ -7,7 +7,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
@@ -58,7 +58,9 @@ export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
-  ref.current = value
+  useEffect(() => {
+    ref.current = value
+  }, [value])
   return ref
 }
 

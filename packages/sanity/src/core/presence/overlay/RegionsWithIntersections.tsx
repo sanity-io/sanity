@@ -3,11 +3,13 @@ import {
   forwardRef,
   type ReactNode,
   useCallback,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
 
+import {resizeObserver} from '../../util/resizeObserver'
 import {
   DEBUG,
   INTERSECTION_ELEMENT_PADDING,
@@ -86,6 +88,17 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
     setIntersections((current) => ({...current, [id]: entry}))
   }, [])
 
+  const [overlayWidth, setOverlayWidth] = useState(0)
+  useLayoutEffect(() => {
+    if (!overlayRef.current) return undefined
+
+    setOverlayWidth(overlayRef.current.offsetWidth)
+
+    return resizeObserver.observe(overlayRef.current, (event) => {
+      setOverlayWidth(event.contentRect.width)
+    })
+  }, [])
+
   const top = intersections['::top']
   const bottom = intersections['::bottom']
   const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] = useMemo(
@@ -154,8 +167,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
       />
       <div>{children}</div>
       <OverlayWrapper ref={overlayRef}>
-        {overlayRef.current &&
-          render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
+        {overlayWidth && render(regionsWithIntersectionDetails, overlayWidth)}
       </OverlayWrapper>
       {regions.map((region) => {
         const forceWidth = region.rect.width === 0

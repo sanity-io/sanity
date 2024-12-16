@@ -17,7 +17,7 @@
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier . --check",
     "check:lint": "turbo run lint --continue -- --quiet",
-    "check:react-compiler": "eslint --cache --no-inline-config --no-eslintrc --ext .cjs,.mjs,.js,.jsx,.ts,.tsx --parser @typescript-eslint/parser --plugin react-compiler --rule 'react-compiler/react-compiler: [warn]' --ignore-path .eslintignore.react-compiler --max-warnings 76 .",
+    "check:react-compiler": "eslint --cache --no-inline-config --no-eslintrc --ext .cjs,.mjs,.js,.jsx,.ts,.tsx --parser @typescript-eslint/parser --plugin react-compiler --rule 'react-compiler/react-compiler: [warn]' --ignore-path .eslintignore.react-compiler --max-warnings 28 .",
     "report:react-compiler-bailout": "eslint --cache --no-inline-config --no-eslintrc --ext .cjs,.mjs,.js,.jsx,.ts,.tsx --parser @typescript-eslint/parser --plugin react-compiler --rule 'react-compiler/react-compiler: [error,{__unstable_donotuse_reportAllBailouts:true}]' --ignore-path .eslintignore.react-compiler -f ./scripts/reactCompilerBailouts.cjs . || true",
     "check:test": "run-s test -- --silent",
     "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",

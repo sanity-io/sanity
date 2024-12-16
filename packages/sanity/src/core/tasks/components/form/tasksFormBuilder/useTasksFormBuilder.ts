@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {
   createPatchChannel,
@@ -83,10 +83,11 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error('Nope')
   })
-
-  patchRef.current = (event: PatchEvent) => {
-    patch.execute(toMutationPatches(event.patches), initialValue)
-  }
+  useEffect(() => {
+    patchRef.current = (event: PatchEvent) => {
+      patch.execute(toMutationPatches(event.patches), initialValue)
+    }
+  }, [initialValue, patch])
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 

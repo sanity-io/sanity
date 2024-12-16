@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import {type Path} from '@sanity/types'
-import {memo, type ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
+import {memo, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type OnPathFocusPayload} from '../..'
@@ -23,7 +23,9 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
   props: FormCallbacksValue & {children: ReactNode},
 ) {
   const ref = useRef<FormCallbacksValue>(props)
-  ref.current = props
+  useEffect(() => {
+    ref.current = props
+  }, [props])
 
   const transformPatches = useCallback(
     (patches: FormPatch[]) => {

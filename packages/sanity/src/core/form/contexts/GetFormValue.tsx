@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type ReactNode, useCallback, useContext, useRef} from 'react'
+import {type ReactNode, useCallback, useContext, useEffect, useRef} from 'react'
 import {GetFormValueContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field'
@@ -10,18 +10,21 @@ import {type FormDocumentValue} from '../types'
  * @internal
  * @hidden
  */
-export function GetFormValueProvider(props: {
+export const GetFormValueProvider = function GetFormValueProvider(props: {
   value: FormDocumentValue | undefined
   children: ReactNode
 }) {
   const valueRef = useRef(props.value)
-  valueRef.current = props.value
+  useEffect(() => {
+    valueRef.current = props.value
+  }, [props.value])
 
   const getValue = useCallback((path: Path) => getValueAtPath(valueRef.current, path), [valueRef])
   return (
     <GetFormValueContext.Provider value={getValue}>{props.children}</GetFormValueContext.Provider>
   )
 }
+GetFormValueProvider.displayName = 'GetFormValueProvider'
 
 /**
  * React hook that returns a function that can be called to look up the value from the current document at the given path.

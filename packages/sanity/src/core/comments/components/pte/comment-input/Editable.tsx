@@ -9,7 +9,7 @@ import {useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
-import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
@@ -85,8 +85,8 @@ export function Editable(props: EditableProps) {
     renderBlock,
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
-  const rootElementRef = useRef<HTMLDivElement | null>(null)
-  const editableRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
 
   const selection = usePortableTextEditorSelection()
@@ -104,7 +104,7 @@ export function Editable(props: EditableProps) {
 
   const cursorElement = useCursorElement({
     disabled: !mentionsMenuOpen,
-    rootElement: rootElementRef.current,
+    rootElement: rootElement,
   })
 
   const renderPlaceholder = useCallback(
@@ -195,7 +195,7 @@ export function Editable(props: EditableProps) {
 
   const popoverContent = (
     <MentionsMenu
-      inputElement={editableRef.current}
+      inputElement={inputElement}
       loading={mentionOptions.loading}
       onSelect={insertMention}
       options={mentionOptions.data || EMPTY_ARRAY}
@@ -204,7 +204,7 @@ export function Editable(props: EditableProps) {
   )
 
   return (
-    <div ref={rootElementRef}>
+    <div ref={setRootElement}>
       <StyledPopover
         arrow={false}
         constrainSize
@@ -216,7 +216,6 @@ export function Editable(props: EditableProps) {
         ref={popoverRef}
         referenceElement={cursorElement}
       />
-
       <PortableTextEditable
         data-testid="comment-input-editable"
         data-ui="EditableElement"
@@ -224,7 +223,7 @@ export function Editable(props: EditableProps) {
         onBlur={onBlur}
         onFocus={onFocus}
         onKeyDown={handleKeyDown}
-        ref={editableRef}
+        ref={setInputElement}
         renderBlock={renderBlock}
         renderChild={renderChild}
         renderPlaceholder={renderPlaceholder}
@@ -235,3 +234,4 @@ export function Editable(props: EditableProps) {
     </div>
   )
 }
+Editable.displayName = 'Editable'
