@@ -50,6 +50,7 @@ export const scheduledPublishing = definePlugin({
         icon: CalendarIcon,
         component: Tool,
         router: route.create('/', [route.create('/state/:state'), route.create('/date/:date')]),
+        __internalApplicationType: 'sanity/scheduled-publishing',
       },
     ]
   },

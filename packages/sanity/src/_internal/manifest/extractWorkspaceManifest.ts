@@ -1,4 +1,7 @@
+import DOMPurify from 'isomorphic-dompurify'
 import startCase from 'lodash/startCase'
+import {createElement} from 'react'
+import {renderToString} from 'react-dom/server'
 import {
   type ArraySchemaType,
   type BlockDefinition,
@@ -21,7 +24,9 @@ import {
   type StringSchemaType,
   type Workspace,
 } from 'sanity'
+import {ServerStyleSheet} from 'styled-components'
 
+import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
   getCustomFields,
   isCrossDatasetReference,
@@ -40,9 +45,11 @@ import {
   type ManifestSchemaType,
   type ManifestSerializable,
   type ManifestTitledValue,
+  type ManifestTool,
   type ManifestValidationGroup,
   type ManifestValidationRule,
 } from './manifestTypes'
+import {config} from './purifyConfig'
 
 interface Context {
   schema: Schema
@@ -70,14 +77,22 @@ const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
+  const serializedTools = extractManifestTools(workspace.tools)
 
   return {
     name: workspace.name,
     title: workspace.title,
     subtitle: workspace.subtitle,
     basePath: workspace.basePath,
+    projectId: workspace.projectId,
     dataset: workspace.dataset,
+    icon: resolveIcon({
+      icon: workspace.icon,
+      title: workspace.title,
+      subtitle: workspace.subtitle,
+    }),
     schema: serializedSchema,
+    tools: serializedTools,
   }
 }
 
@@ -499,4 +514,49 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
   }
 
   return titledValues
+}
+
+const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
+  tools.map((tool) => {
+    const {
+      title,
+      name,
+      icon,
+      __internalApplicationType: type,
+    } = tool as Workspace['tools'][number] & {__internalApplicationType: string}
+    return {
+      title,
+      name,
+      type: type || null,
+      icon: resolveIcon({
+        icon,
+        title,
+      }),
+    } satisfies ManifestTool
+  })
+
+const resolveIcon = (props: SchemaIconProps): string | null => {
+  const sheet = new ServerStyleSheet()
+
+  try {
+    /**
+     * You must render the element first so
+     * the style-sheet above can be populated
+     */
+    const element = renderToString(sheet.collectStyles(createElement(SchemaIcon, props)))
+    const styleTags = sheet.getStyleTags()
+
+    /**
+     * We can then create a single string
+     * of HTML combining our styles and element
+     * before purifying below.
+     */
+    const html = `${styleTags}${element}`.trim()
+
+    return DOMPurify.sanitize(html, config)
+  } catch (error) {
+    return null
+  } finally {
+    sheet.seal()
+  }
 }
