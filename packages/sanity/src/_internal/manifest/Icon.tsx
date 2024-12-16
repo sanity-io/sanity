@@ -3,7 +3,6 @@ import {buildTheme} from '@sanity/ui/theme'
 import {type ComponentType, createElement, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {createDefaultIcon} from 'sanity'
-import {type ServerStyleSheet, StyleSheetManager} from 'styled-components'
 
 const theme = buildTheme()
 
@@ -11,15 +10,10 @@ interface SchemaIconProps {
   icon?: ComponentType | ReactNode
   title: string
   subtitle?: string
-  sheet?: ServerStyleSheet
 }
 
-const SchemaIcon = ({icon, title, subtitle, sheet}: SchemaIconProps): JSX.Element => {
-  return (
-    <StyleSheetManager sheet={sheet?.instance}>
-      <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
-    </StyleSheetManager>
-  )
+const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): JSX.Element => {
+  return <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
 }
 
 function normalizeIcon(

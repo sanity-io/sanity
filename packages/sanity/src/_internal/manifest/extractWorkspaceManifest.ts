@@ -543,7 +543,7 @@ const resolveIcon = (props: SchemaIconProps): string | null => {
      * You must render the element first so
      * the style-sheet above can be populated
      */
-    const element = renderToString(createElement(SchemaIcon, {...props, sheet}))
+    const element = renderToString(sheet.collectStyles(createElement(SchemaIcon, props)))
     const styleTags = sheet.getStyleTags()
 
     /**
