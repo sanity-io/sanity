@@ -49,12 +49,18 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
   /**
    * Add current search to recent searches, trigger child item click and close search
    */
-  const handleSearchResultClick = useCallback(() => {
-    if (recentSearchesStore) {
-      recentSearchesStore.addSearch(terms, filters)
-    }
-    onClose?.()
-  }, [filters, onClose, recentSearchesStore, terms])
+  const handleSearchResultClick = useCallback(
+    (event) => {
+      if (recentSearchesStore) {
+        recentSearchesStore.addSearch(terms, filters)
+      }
+      // if the cmd key is pressed, we don't want to close the search
+      if (!event?.metaKey) {
+        onClose?.()
+      }
+    },
+    [filters, onClose, recentSearchesStore, terms],
+  )
 
   const handleEndReached = useCallback(() => {
     dispatch({type: 'PAGE_INCREMENT'})
