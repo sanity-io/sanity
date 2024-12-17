@@ -77,9 +77,11 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 
 ## Stay up to date
 
-- Follow **@sanity_io** on [Twitter](https://twitter.com/sanity_io)
+- Follow us on [X](https://x.com/sanity_io)
+- Follow us on [Bluesky](https://bsky.app/profile/sanity.io)
+- Subscribe to our [YouTube channel](https://www.youtube.com/@sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
-- Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
+- Subscribe to our [newsletter](https://www.sanity.io/newsletter)
 - Join the [developer community on Slack](https://slack.sanity.io)
 
 ## Code of Conduct
