@@ -1,5 +1,3 @@
-'use no memo'
-
 import {
   differenceInDays,
   differenceInHours,
@@ -50,16 +48,22 @@ export interface RelativeTimeOptions {
 
 /** @internal */
 export function useRelativeTime(time: Date | string, options: RelativeTimeOptions = {}): string {
-  const resolved = useFormatRelativeTime(time, options)
-
-  const [, forceUpdate] = useReducer((x) => x + 1, 0)
+  const [now, updateNow] = useReducer(
+    // We don't care about the action input, every update should use the current time as the new state
+    () => Date.now(),
+    // Since we use the third argument of `useReducer`, this `null` doesn't end up anywhere
+    null,
+    // By using the lazy init we ensure that `Date.now()` is only called once during init, and then only when `updateNow` is called, instead of on every render
+    () => Date.now(),
+  )
+  const resolved = useFormatRelativeTime(time, options.relativeTo || now, options)
 
   useEffect(() => {
     let timerId: number | null
 
     function tick(interval: number) {
       timerId = window.setTimeout(() => {
-        forceUpdate()
+        updateNow()
         // avoid pile-up of setInterval callbacks,
         // e.g. schedule the next update at `refreshInterval` *after* the previous one finishes
         timerId = window.setTimeout(() => tick(interval), interval)
@@ -75,12 +79,16 @@ export function useRelativeTime(time: Date | string, options: RelativeTimeOption
         clearTimeout(timerId)
       }
     }
-  }, [forceUpdate, resolved.refreshInterval])
+  }, [resolved.refreshInterval])
 
   return resolved.timestamp
 }
 
-function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = {}): TimeSpec {
+function useFormatRelativeTime(
+  date: Date | string,
+  now: Date | number,
+  opts: Omit<RelativeTimeOptions, 'relativeTo'> = {},
+): TimeSpec {
   const {t} = useTranslation()
   const currentLocale = useCurrentLocale().id
 
@@ -121,12 +129,11 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
     }
   }
 
-  const now = opts.relativeTo || Date.now()
   const diffMonths = differenceInMonths(now, parsedDate)
   const diffYears = differenceInYears(now, parsedDate)
 
   if (diffMonths || diffYears) {
-    if (opts.minimal && diffYears === 0) {
+    if (minimal && diffYears === 0) {
       // same year
       return {
         timestamp: intlCache
@@ -136,7 +143,7 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
       }
     }
 
-    if (opts.minimal) {
+    if (minimal) {
       return {
         timestamp: intlCache
           .dateTimeFormat(currentLocale, {...DATE_ONLY_FORMAT, timeZone})
