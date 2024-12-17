@@ -54,7 +54,7 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
       if (recentSearchesStore) {
         recentSearchesStore.addSearch(terms, filters)
       }
-      // we don't want to close the search if they are opening their result in a new tab
+      // We don't want to close the search if they are opening their result in a new tab
       if (!e.metaKey && !e.ctrlKey) {
         onClose?.()
       }
