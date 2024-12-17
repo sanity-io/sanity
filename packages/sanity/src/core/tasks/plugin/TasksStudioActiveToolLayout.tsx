@@ -28,7 +28,7 @@ const RootFlex = styled(Flex)(({theme}) => {
   `
 })
 
-const SidebarMotionLayer = styled(motion(Layer))(({theme}) => {
+const SidebarMotionLayer = styled(motion.create(Layer))(({theme}) => {
   const media = theme.sanity.media
 
   return css`
