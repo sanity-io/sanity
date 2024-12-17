@@ -206,7 +206,7 @@
     "execa": "^2.0.0",
     "exif-component": "^1.0.1",
     "form-data": "^4.0.0",
-    "framer-motion": "11.0.8",
+    "framer-motion": "11.15.0",
     "get-it": "^8.6.5",
     "get-random-values-esm": "1.0.2",
     "groq-js": "^1.14.2",
