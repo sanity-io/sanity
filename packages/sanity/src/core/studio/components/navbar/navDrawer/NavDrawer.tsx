@@ -53,7 +53,7 @@ const Root = styled(Layer)`
   height: 100%;
 `
 
-const BackdropMotion = styled(motion(Card))`
+const BackdropMotion = styled(motion.create(Card))`
   position: absolute;
   top: 0;
   left: 0;
@@ -62,7 +62,7 @@ const BackdropMotion = styled(motion(Card))`
   background: var(--card-shadow-penumbra-color);
 `
 
-const InnerCardMotion = styled(motion(Card))`
+const InnerCardMotion = styled(motion.create(Card))`
   position: relative;
   pointer-events: all;
   flex-direction: column;

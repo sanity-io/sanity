@@ -9,7 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {CommentDisabledIcon} from '../../../components'
 import {commentsLocaleNamespace} from '../../../i18n'
 
-const MotionPopover = styled(motion(Popover))`
+const MotionPopover = styled(motion.create(Popover))`
   user-select: none;
 `
 

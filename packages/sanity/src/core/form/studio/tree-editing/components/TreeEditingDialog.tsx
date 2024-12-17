@@ -61,7 +61,7 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
   `
 })
 
-const MotionFlex = motion(Flex)
+const MotionFlex = motion.create(Flex)
 
 interface TreeEditingDialogProps {
   onPathFocus: (path: Path) => void

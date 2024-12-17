@@ -10,7 +10,7 @@ import {hasCommentMessageValue} from '../../../helpers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
-const MotionPopover = motion(Popover)
+const MotionPopover = motion.create(Popover)
 
 const RootStack = styled(Stack)`
   width: 250px;

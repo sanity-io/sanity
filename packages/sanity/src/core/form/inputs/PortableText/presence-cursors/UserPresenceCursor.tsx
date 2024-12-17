@@ -83,7 +83,7 @@ const CursorDot = styled.div`
   }
 `
 
-const UserBox = styled(motion(Box))(({theme}) => {
+const UserBox = styled(motion.create(Box))(({theme}) => {
   const radius = getTheme_v2(theme)?.radius[4]
 
   return css`
@@ -102,7 +102,7 @@ const UserBox = styled(motion(Box))(({theme}) => {
   `
 })
 
-const UserText = styled(motion(Text))`
+const UserText = styled(motion.create(Text))`
   color: var(--presence-cursor-fg);
   mix-blend-mode: unset;
 `
