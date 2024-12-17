@@ -30,28 +30,32 @@ const mockConfigContext: InitialValueResolverContext = {
 } as InitialValueResolverContext
 
 describe('resolveInitialValue', () => {
-  test('serializes builders', () => {
-    expect(resolveInitialValue(schema, example, {}, mockConfigContext)).resolves.toMatchObject({
+  test('serializes builders', async () => {
+    await expect(
+      resolveInitialValue(schema, example, {}, mockConfigContext),
+    ).resolves.toMatchObject({
       title: 'here',
     })
   })
 
-  test('works with raw templates', () => {
-    expect(resolveInitialValue(schema, example, {}, mockConfigContext)).resolves.toMatchObject({
+  test('works with raw templates', async () => {
+    await expect(
+      resolveInitialValue(schema, example, {}, mockConfigContext),
+    ).resolves.toMatchObject({
       title: 'here',
     })
   })
 
-  test('throws on missing template `value` prop', () => {
-    expect(
+  test('throws on missing template `value` prop', async () => {
+    await expect(
       resolveInitialValue(schema, omit(example, ['value']) as Template, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message: 'Template "author" has invalid "value" property',
     })
   })
 
-  test('throws on non-function/non-object template `value` prop', () => {
-    expect(
+  test('throws on non-function/non-object template `value` prop', async () => {
+    await expect(
       resolveInitialValue(schema, {...example, value: []}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
@@ -59,8 +63,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('throws on wrong `_type`  prop', () => {
-    expect(
+  test('throws on wrong `_type`  prop', async () => {
+    await expect(
       resolveInitialValue(schema, {...example, value: {_type: 'foo'}}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
@@ -68,8 +72,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('throws on unknown prop in reference', () => {
-    expect(
+  test('throws on unknown prop in reference', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {...example, value: {bestFriend: {_ref: 'grrm', name: 'GRRM'}}},
@@ -82,8 +86,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('throws on unknown props in reference', () => {
-    expect(
+  test('throws on unknown props in reference', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {...example, value: {bestFriend: {_ref: 'grrm', name: 'GRRM', age: 72}}},
@@ -96,8 +100,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('allows setting known reference properties', () => {
-    expect(
+  test('allows setting known reference properties', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {
@@ -124,8 +128,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('allows setting _dataset on cross-dataset references', () => {
-    expect(
+  test('allows setting _dataset on cross-dataset references', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {
@@ -152,16 +156,16 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('should call sync value resolvers', () => {
-    expect(
+  test('should call sync value resolvers', async () => {
+    await expect(
       resolveInitialValue(schema, {...example, value: () => example.value}, {}, mockConfigContext),
     ).resolves.toMatchObject({
       title: 'here',
     })
   })
 
-  test('should call async value resolvers', () => {
-    expect(
+  test('should call async value resolvers', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {
@@ -176,8 +180,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('throws on wrong value type resolved', () => {
-    expect(
+  test('throws on wrong value type resolved', async () => {
+    await expect(
       resolveInitialValue(schema, {...example, value: () => null}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
@@ -188,8 +192,8 @@ describe('resolveInitialValue', () => {
   // todo: we should validate based on schema type here and reenable this test
   //  Currently the initial value validator is not schema aware and fails if resolved initial value is missing _type
   //  but this doesn't account for fields of type object, which is a valid case for omitting _type.
-  test.skip('throws on values with sub-objects missing `_type`', () => {
-    expect(
+  test.skip('throws on values with sub-objects missing `_type`', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {
@@ -204,8 +208,8 @@ describe('resolveInitialValue', () => {
     })
   })
 
-  test('applies missing `_type` to references', () => {
-    expect(
+  test('applies missing `_type` to references', async () => {
+    await expect(
       resolveInitialValue(
         schema,
         {
