@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {useCallback} from 'react'
+import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
@@ -50,12 +50,12 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
    * Add current search to recent searches, trigger child item click and close search
    */
   const handleSearchResultClick = useCallback(
-    (event) => {
+    (e: MouseEvent<HTMLElement>) => {
       if (recentSearchesStore) {
         recentSearchesStore.addSearch(terms, filters)
       }
       // if the cmd key is pressed, we don't want to close the search
-      if (!event?.metaKey) {
+      if (!e?.metaKey) {
         onClose?.()
       }
     },
