@@ -114,7 +114,7 @@ function setSessionId(id: string) {
 export const SESSION_ID = getSessionId() || setSessionId(generate())
 
 /** @internal */
-export function __tmp_wrap_presenceStore(context: {
+export function createPresenceStore(context: {
   bifur: BifurClient
   connectionStatusStore: ConnectionStatusStore
   userStore: UserStore

@@ -41,6 +41,7 @@ export function RevisionStatusLine(): JSX.Element {
     <>
       <Flex flex={1} gap={3} padding={2}>
         <Box flex="none">
+          {/* @TODO should use JSX instead of calling createElement directly */}
           <Text size={1}>{createElement(message.icon)}</Text>
         </Box>
         <Box flex={1}>

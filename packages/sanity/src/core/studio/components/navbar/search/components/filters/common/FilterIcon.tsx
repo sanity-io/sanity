@@ -16,6 +16,7 @@ export function FilterIcon({filter}: FilterIconProps) {
 
   const icon = getFilterDefinition(definitions.filters, filter.filterName)?.icon
   if (icon) {
+    // @TODO should use JSX instead of calling createElement directly
     return createElement(icon)
   }
   return <UnknownIcon />

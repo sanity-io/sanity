@@ -47,11 +47,13 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {components, ...restSchemaType} = parentTypeProps.schemaType
       const parentTypeResolvedComponent = componentResolver(restSchemaType)
+      // @TODO should use JSX instead of calling createElement directly
       return createElement(parentTypeResolvedComponent, parentTypeProps)
     },
     [componentResolver],
   )
 
+  // @TODO should use JSX instead of calling createElement directly
   return createElement(defaultResolvedComponent, {
     ...componentProps,
     renderDefault,

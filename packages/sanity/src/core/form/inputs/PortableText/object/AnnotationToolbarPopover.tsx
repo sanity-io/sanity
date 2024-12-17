@@ -43,6 +43,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const handleOpenPopover = useCallback((open: boolean) => {
     setRenderPopover(open)
     if (open) {
+      // @TODO seems like startTransition is used as a side-effect here
       startTransition(() => {
         setPopoverOpen(open)
       })

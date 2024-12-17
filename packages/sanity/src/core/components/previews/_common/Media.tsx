@@ -48,6 +48,7 @@ function renderMedia(props: {
   const {dimensions, layout, media, styles} = props
 
   if (isValidElementType(media)) {
+    // @TODO should use JSX instead of calling createElement directly
     return createElement(media, {dimensions, layout})
   }
 

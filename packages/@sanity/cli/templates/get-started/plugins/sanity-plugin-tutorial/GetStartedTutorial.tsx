@@ -32,8 +32,8 @@ export const GetStartedTutorial = () => {
   )
 
   const {sanity} = useTheme()
-  const rootElement = useRef(null)
-  const rect = useElementSize(rootElement.current)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rect = useElementSize(rootElement)
   const width = rect?.content?.width
   const isSmallScreen = width ? width < sanity.media[1] : false
   const isProdEnv = process.env.NODE_ENV !== 'development'
@@ -48,7 +48,7 @@ export const GetStartedTutorial = () => {
   }
 
   return (
-    <div ref={rootElement}>
+    <div ref={setRootElement}>
       <Card tone="primary" padding={isSmallScreen ? 3 : 5} paddingBottom={isSmallScreen ? 4 : 6}>
         <Flex justify={isSmallScreen ? 'space-between' : 'flex-end'} align="center">
           {isSmallScreen && (

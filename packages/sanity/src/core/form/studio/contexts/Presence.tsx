@@ -2,7 +2,7 @@
 
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {type ReactNode, useContext, useRef} from 'react'
+import {type ReactNode, useContext, useState} from 'react'
 import {PresenceContext} from 'sanity/_singletons'
 
 import {type FormNodePresence} from '../../../presence'
@@ -29,13 +29,16 @@ export function useFormFieldPresence(): FormNodePresence[] {
  */
 export function useChildPresence(path: Path, inclusive?: boolean): FormNodePresence[] {
   const presence = useFormFieldPresence()
-  const prev = useRef(presence)
+  const [prev, setPrev] = useState(presence)
+
   const next = immutableReconcile(
-    prev.current,
+    prev,
     presence.filter(
       (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
     ),
   )
-  prev.current = next
+  if (next !== prev) {
+    setPrev(next)
+  }
   return next
 }

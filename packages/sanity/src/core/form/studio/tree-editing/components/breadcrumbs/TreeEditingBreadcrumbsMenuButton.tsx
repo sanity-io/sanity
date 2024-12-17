@@ -147,6 +147,7 @@ export function TreeEditingBreadcrumbsMenuButton(
     </RootFlex>
   )
 
+  // @TODO can we avoid cloning the button?
   const clonedButton = cloneElement(button, {
     'aria-expanded': open,
     'aria-haspopup': 'true',

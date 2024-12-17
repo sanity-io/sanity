@@ -66,6 +66,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
     if (!containerElementRef.current) return
     if (aspectRatio === 'auto') {
       const parentNode = containerElementRef.current.parentNode as HTMLElement
+      // @TODO seems like startTransition is used as a side-effect here
       startTransition(() => setContainerAspect(parentNode.offsetWidth / parentNode.offsetHeight))
     } else {
       setContainerAspect(null)

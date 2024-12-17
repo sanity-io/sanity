@@ -22,16 +22,16 @@ export const subscribe = (onStoreChange: () => void) => {
     snapshot = getScheme(localStorage.getItem(LOCAL_STORAGE_KEY)) || 'system'
   }
   subscribers.add(onStoreChange)
-  return (): void => {
+  return () => {
     subscribers.delete(onStoreChange)
   }
 }
 /** @internal */
-export function getSnapshot(): StudioThemeColorSchemeKey {
+export function getSnapshot() {
   return snapshot
 }
 /** @internal */
-export function setSnapshot(nextScheme: StudioThemeColorSchemeKey): void {
+export function setSnapshot(nextScheme: StudioThemeColorSchemeKey) {
   snapshot = getScheme(nextScheme)
   for (const subscription of subscribers) {
     subscription()

@@ -124,17 +124,12 @@ export function DocumentLayout() {
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
-  const currentInspector = useMemo(
-    () => inspectors?.find((i) => i.name === inspector?.name),
-    [inspectors, inspector?.name],
-  )
-
   const hasValue = Boolean(value)
 
   const menuItems = useMemo(
     () =>
       getMenuItems({
-        currentInspector,
+        currentInspector: inspectors?.find((i) => i.name === inspector?.name),
         features,
         hasValue,
         inspectorMenuItems,
@@ -142,7 +137,7 @@ export function DocumentLayout() {
         previewUrl,
         t,
       }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl, t],
+    [features, hasValue, inspector?.name, inspectorMenuItems, inspectors, previewUrl, t],
   )
 
   const handleKeyUp = useCallback(

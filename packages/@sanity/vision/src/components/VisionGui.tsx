@@ -150,6 +150,7 @@ interface VisionGuiState {
   paneSizeOptions: PaneSizeOptions
 }
 
+// @TODO refactor from class component to function component
 export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _visionRoot: RefObject<HTMLDivElement>
   _queryEditorContainer: RefObject<HTMLDivElement>

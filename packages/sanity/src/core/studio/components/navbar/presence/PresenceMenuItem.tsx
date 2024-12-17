@@ -20,6 +20,11 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
   const {t} = useTranslation()
 
+  const lastActiveLocation = orderBy(locations || [], ['lastActiveAt'], ['desc']).find(
+    (location) => location.documentId,
+  )
+  const hasLink = Boolean(lastActiveLocation?.documentId)
+
   /**
    * This is a workaround to keep focus on the selected menu item
    * when the list of users in the menu is updated
@@ -38,11 +43,6 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   const handleFocus = useCallback(() => {
     onFocus(user.id)
   }, [onFocus, user.id])
-
-  const lastActiveLocation = orderBy(locations || [], ['lastActiveAt'], ['desc']).find(
-    (location) => location.documentId,
-  )
-  const hasLink = Boolean(lastActiveLocation?.documentId)
 
   if (lastActiveLocation) {
     return (

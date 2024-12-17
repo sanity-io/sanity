@@ -167,6 +167,7 @@ export function TimelineItem({
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
             <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+              {/* @TODO should use JSX instead of calling createElement directly */}
               <Text size={0}>{iconComponent && createElement(iconComponent)}</Text>
             </IconBox>
           </div>

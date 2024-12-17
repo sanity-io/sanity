@@ -114,7 +114,6 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     onlyShowSelectionWhenActive,
     overscan,
     renderItem,
-    testId,
     wrapAround = true,
     ...responsivePaddingProps
   },
@@ -584,7 +583,6 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
-      data-testid={testId}
       {...responsivePaddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
@@ -643,7 +641,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     </VirtualListBox>
   )
 })
-
+CommandListComponent.displayName = 'ForwardRef(CommandList)'
 /**
  * Renders a Command List with support for the following:
  *
@@ -655,7 +653,6 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
  * @internal
  */
 export const CommandList = memo(CommandListComponent)
-CommandList.displayName = 'Memo(ForwardRef(CommandList))'
 
 const CommandListItemComponent = forwardRef(function CommandListItem(
   props: {
@@ -733,6 +730,6 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
     </Stack>
   )
 })
+CommandListItemComponent.displayName = 'ForwardRef(CommandListItem)'
 
 const CommandListItem = memo(CommandListItemComponent)
-CommandListItem.displayName = 'Memo(ForwardRef(CommandListItem))'

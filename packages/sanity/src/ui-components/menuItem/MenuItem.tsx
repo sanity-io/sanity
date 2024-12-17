@@ -155,6 +155,7 @@ export const MenuItem = forwardRef(function MenuItem(
             {iconRight && (
               <Text size={FONT_SIZE}>
                 {isValidElement(iconRight) && iconRight}
+                {/* @TODO should use JSX instead of calling createElement directly */}
                 {isValidElementType(iconRight) && createElement(iconRight)}
               </Text>
             )}

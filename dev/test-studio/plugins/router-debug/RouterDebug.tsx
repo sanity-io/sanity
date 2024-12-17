@@ -13,7 +13,7 @@ export function RouterDebug() {
     },
   })
 
-  const client = useClient()
+  const client = useClient({apiVersion: '2024-12-12'})
 
   return (
     <Card sizing="border" padding={5}>

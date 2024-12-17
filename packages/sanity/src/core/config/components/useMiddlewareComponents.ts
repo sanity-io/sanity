@@ -5,6 +5,7 @@ import {flattenConfig} from '../../config'
 import {useSource} from '../../studio'
 import {type PluginOptions} from '../types'
 
+// @TODO should use JSX instead of calling createElement directly
 const emptyRender = () => createElement(Fragment)
 
 function _createMiddlewareComponent<T extends {}>(
@@ -14,6 +15,7 @@ function _createMiddlewareComponent<T extends {}>(
   return (outerProps: T) => {
     // This is the inner "layer" of the middleware chain
     // Here we render the _default_ component (typically Sanity's component)
+    // @TODO should use JSX instead of calling createElement directly
     let next = (props: T) => createElement(defaultComponent, props)
 
     for (const middleware of middlewareComponents) {
@@ -22,6 +24,7 @@ function _createMiddlewareComponent<T extends {}>(
       const renderDefault = next
 
       // Here we replace `next` so that the _previous_ layer may use this as its _next_.
+      // @TODO should use JSX instead of calling createElement directly
       next = (props) => createElement(middleware, {...props, renderDefault})
     }
 

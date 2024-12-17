@@ -38,6 +38,7 @@ export const WorkspacePreviewIcon = ({
 }
 
 const createIcon = (icon: ComponentType | ReactNode) => {
+  // @TODO should use JSX instead of calling createElement directly
   if (isValidElementType(icon)) return createElement(icon)
   if (isValidElement(icon)) return icon
   return undefined

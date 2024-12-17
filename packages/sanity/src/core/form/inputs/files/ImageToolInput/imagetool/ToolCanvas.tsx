@@ -203,6 +203,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
 }
 export const ToolCanvas = memo(ToolCanvasComponent)
 
+// @TODO refactor from class component to function component
 class ToolCanvasLegacy extends PureComponent<
   ToolCanvasProps & {
     ratio: number

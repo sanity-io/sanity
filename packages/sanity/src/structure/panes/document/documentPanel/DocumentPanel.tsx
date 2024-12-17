@@ -67,7 +67,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed} = usePane()
   const parentPortal = usePortal()
   const {features} = useStructureTool()
-  const portalRef = useRef<HTMLDivElement | null>(null)
+  const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
 
@@ -80,7 +80,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement | null = features.splitPanes
-    ? portalRef.current || parentPortal.element
+    ? _portalElement || parentPortal.element
     : parentPortal.element
 
   // Calculate the height of the header
@@ -98,6 +98,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () =>
       activeView.type === 'component' &&
       activeView.component &&
+      // @TODO should use JSX instead of calling createElement directly
       createElement(activeView.component, {
         document: {
           draft: editState?.draft || null,
@@ -188,7 +189,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
                   {inspectDialog}
 
-                  <div data-testid="document-panel-portal" ref={portalRef} />
+                  <div data-testid="document-panel-portal" ref={setPortalElement} />
                 </VirtualizerScrollInstanceProvider>
               </BoundaryElementProvider>
             </PortalProvider>

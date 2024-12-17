@@ -102,6 +102,7 @@ export default function PortableTextPreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={1}>
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
+            {/* @TODO should use JSX instead of calling createElement directly */}
             {createElement(
               component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
               previewProps,

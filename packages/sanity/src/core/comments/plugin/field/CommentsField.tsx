@@ -278,43 +278,26 @@ function CommentFieldInner(
     [stringPath],
   )
 
-  const internalComments: FieldProps['__internal_comments'] = useMemo(
-    () => ({
-      button: currentUser && (
-        <CommentsFieldButton
-          count={Number(count)}
-          currentUser={currentUser}
-          fieldTitle={fieldTitle}
-          isCreatingDataset={isCreatingDataset}
-          mentionOptions={mentionOptions}
-          onChange={handleOnChange}
-          onClick={handleClick}
-          onClose={handleClose}
-          onCommentAdd={handleCommentAdd}
-          onDiscard={resetMessageValue}
-          open={isOpen}
-          value={value}
-        />
-      ),
-      hasComments,
-      isAddingComment: isOpen,
-    }),
-    [
-      currentUser,
-      count,
-      fieldTitle,
-      isCreatingDataset,
-      mentionOptions,
-      handleOnChange,
-      handleClick,
-      handleClose,
-      handleCommentAdd,
-      resetMessageValue,
-      isOpen,
-      value,
-      hasComments,
-    ],
-  )
+  const internalComments: FieldProps['__internal_comments'] = {
+    button: currentUser && (
+      <CommentsFieldButton
+        count={Number(count)}
+        currentUser={currentUser}
+        fieldTitle={fieldTitle}
+        isCreatingDataset={isCreatingDataset}
+        mentionOptions={mentionOptions}
+        onChange={handleOnChange}
+        onClick={handleClick}
+        onClose={handleClose}
+        onCommentAdd={handleCommentAdd}
+        onDiscard={resetMessageValue}
+        open={isOpen}
+        value={value}
+      />
+    ),
+    hasComments,
+    isAddingComment: isOpen,
+  }
 
   return (
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>

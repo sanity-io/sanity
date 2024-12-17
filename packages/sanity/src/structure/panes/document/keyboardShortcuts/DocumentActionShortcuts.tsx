@@ -75,6 +75,7 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
     [onActionStart, onKeyDown, states],
   )
 
+  // @TODO should use JSX instead of calling createElement directly
   return createElement(
     as,
     {

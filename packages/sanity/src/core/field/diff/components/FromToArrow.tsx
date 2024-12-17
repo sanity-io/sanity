@@ -20,6 +20,7 @@ export function FromToArrow(
 
   return (
     <Text muted size={1} {...restProps}>
+      {/* @TODO should use JSX instead of calling createElement directly */}
       {createElement(arrowComponent)}
     </Text>
   )

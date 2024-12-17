@@ -19,7 +19,7 @@ import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer}
 import {getTheme_v2} from '@sanity/ui/theme'
 import {omit} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -39,12 +39,12 @@ const noOutlineStyle = {outline: 'none'} as const
 // This is used to determine whether this editor should apply document pane specific styling.
 const FORM_BUILDER_DEFAULT_ID = 'root'
 
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    color: ${color.input.default.enabled.placeholder};
-  `
-})
+const PlaceholderWrapper = styled.span`
+  color: ${(props) => {
+    const {color} = getTheme_v2(props.theme)
+    return color.input.default.enabled.placeholder
+  }};
+`
 
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement>
@@ -142,7 +142,7 @@ export function Editor(props: EditorProps): ReactNode {
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   const editable = useMemo(() => {
-    const editableProps = {
+    const editableProps: PortableTextEditableProps = {
       'aria-describedby': ariaDescribedBy,
       hotkeys,
       onCopy,
@@ -160,7 +160,7 @@ export function Editor(props: EditorProps): ReactNode {
       'selection': initialSelection,
       spellCheck,
       'style': noOutlineStyle,
-    } satisfies PortableTextEditableProps
+    }
     const defaultRender = (defaultRenderProps: PortableTextEditableProps) => (
       <PortableTextEditable {...editableProps} {...omit(defaultRenderProps, ['renderDefault'])} />
     )

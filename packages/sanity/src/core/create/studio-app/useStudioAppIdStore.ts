@@ -71,6 +71,7 @@ export function useStudioAppIdStoreInner(props: {
     }
     return () => {
       mounted = false
+      // @TODO seems like it can create race conditions in strict mode
       setLoading(false)
     }
   }, [setLoading, appIdFetcher, cache, enabled, projectId])

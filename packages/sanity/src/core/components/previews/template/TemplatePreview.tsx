@@ -85,12 +85,16 @@ export function TemplatePreview(props: TemplatePreviewProps) {
       <HeaderFlex>
         <Stack flex={1} space={2}>
           {isValidElementType(title) && (
-            <Text textOverflow="ellipsis">{createElement(title, {layout: 'default'})}</Text>
+            <Text textOverflow="ellipsis">
+              {/* @TODO should use JSX instead of calling createElement directly */}
+              {createElement(title, {layout: 'default'})}
+            </Text>
           )}
           {isValidElement(title) && <Text textOverflow="ellipsis">{title}</Text>}
 
           {isValidElementType(subtitle) && (
             <Text muted size={1} textOverflow="ellipsis">
+              {/* @TODO should use JSX instead of calling createElement directly */}
               {createElement(subtitle, {layout: 'default'})}
             </Text>
           )}

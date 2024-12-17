@@ -111,16 +111,13 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     getState(allReportedValues, hovered, byId, rootElement),
   )
 
-  const visibleConnectors = useMemo(
-    () => sortBy(connectors, (c) => 0 - c.field.path.length).slice(0, 1),
-    [connectors],
-  )
-
   const handleScrollOrResize = useCallback(() => {
     setState(getState(allReportedValues, hovered, byId, rootElement))
   }, [byId, allReportedValues, hovered, rootElement])
 
   useResizeObserver(rootElement, handleScrollOrResize)
+
+  const visibleConnectors = sortBy(connectors, (c) => 0 - c.field.path.length).slice(0, 1)
 
   return (
     <ScrollMonitor onScroll={handleScrollOrResize}>

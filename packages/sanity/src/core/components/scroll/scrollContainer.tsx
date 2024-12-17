@@ -82,6 +82,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
 
   return (
     <ScrollContext.Provider value={childContext}>
+      {/* @TODO should use JSX instead of calling createElement directly */}
       {createElement(as, {'ref': ref, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )

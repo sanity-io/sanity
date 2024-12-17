@@ -59,6 +59,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   const handleSetRootRef = useCallback((ref: HTMLDivElement) => {
     if (!ref) return
+    // @TODO seems like startTransition is used as a side-effect here
     startTransition(() => {
       setRootRef(ref)
     })

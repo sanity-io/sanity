@@ -35,6 +35,7 @@ export function DiffFromTo(props: DiffFromToProps) {
   if (action === 'unchanged') {
     return (
       <DiffCard className={cardClassName} style={cardStyles}>
+        {/* @TODO should use JSX instead of calling createElement directly */}
         {createElement(previewComponent, {schemaType, value: diff.toValue})}
       </DiffCard>
     )
@@ -42,12 +43,14 @@ export function DiffFromTo(props: DiffFromToProps) {
 
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
     <DiffCard as="del" className={cardClassName} diff={diff} path={path} style={cardStyles}>
+      {/* @TODO should use JSX instead of calling createElement directly */}
       {createElement(previewComponent, {schemaType, value: diff.fromValue})}
     </DiffCard>
   )
 
   const to = diff.toValue !== undefined && diff.toValue !== null && (
     <DiffCard as="ins" className={cardClassName} diff={diff} path={path} style={cardStyles}>
+      {/* @TODO should use JSX instead of calling createElement directly */}
       {createElement(previewComponent, {schemaType, value: diff.toValue})}
     </DiffCard>
   )

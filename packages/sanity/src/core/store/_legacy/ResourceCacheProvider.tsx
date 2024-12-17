@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useState} from 'react'
 import {ResourceCacheContext} from 'sanity/_singletons'
 
 import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
@@ -16,7 +16,7 @@ export interface ResourceCacheProviderProps {
 
 /** @internal */
 export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
-  const resourceCache = useMemo((): ResourceCache => {
+  const [resourceCache] = useState((): ResourceCache => {
     const namespaces = new Map<string, MultiKeyWeakMap>()
 
     // this is used to replace the `null` values in any `dependencies` so that
@@ -41,7 +41,7 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
         namespaceMap.set(dependenciesWithoutNull, value)
       },
     }
-  }, [])
+  })
 
   return (
     <ResourceCacheContext.Provider value={resourceCache}>{children}</ResourceCacheContext.Provider>

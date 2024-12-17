@@ -89,6 +89,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     })
 
     // Clone the button element and add the necessary props.
+    // @TODO can we avoid using cloneElement here?
     return cloneElement(btn, {
       'aria-expanded': open,
       'aria-haspopup': 'true',

@@ -77,6 +77,7 @@ function normalizeIcon(
   title: string,
   subtitle = '',
 ): JSX.Element {
+  // @TODO should use JSX instead of calling createElement directly
   if (isValidElementType(icon)) return createElement(icon)
   if (isValidElement(icon)) return icon
   return createDefaultIcon(title, subtitle)

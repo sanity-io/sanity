@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {isNonNullable} from '../../util'
 import {type I18nNode} from './useI18nText'
@@ -19,7 +19,7 @@ export function useGetI18nText<TNode extends I18nNode<TNode>>(
       .filter(isNonNullable)
       .sort(),
   )
-  const namespaces = useMemo(() => JSON.parse(stableNamespaces), [stableNamespaces])
+  const namespaces = JSON.parse(stableNamespaces)
   const {t} = useTranslation(namespaces)
 
   return useCallback(

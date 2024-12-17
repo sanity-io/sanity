@@ -1,19 +1,21 @@
-import {useEffect, useState} from 'react'
+import {startTransition, useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 
 import {usePresenceStore} from '../datastores'
 import {type DocumentPresence} from './types'
 
+const initial: DocumentPresence[] = []
+const fallback = of(initial)
+
 /** @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
-  const presenceStore = usePresenceStore()
-  const [presence, setPresence] = useState<DocumentPresence[]>([])
-
+  const [ready, setReady] = useState(false)
   useEffect(() => {
-    const subscription = presenceStore.documentPresence(documentId).subscribe(setPresence)
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [documentId, presenceStore])
+    const timeout = setTimeout(() => startTransition(() => setReady(true)))
+    return () => clearTimeout(timeout)
+  }, [])
 
-  return presence
+  const presenceStore = usePresenceStore()
+  return useObservable(ready ? presenceStore.documentPresence(documentId) : fallback, initial)
 }

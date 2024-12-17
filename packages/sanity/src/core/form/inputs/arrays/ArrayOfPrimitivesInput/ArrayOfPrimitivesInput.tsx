@@ -26,6 +26,7 @@ interface State {
  * @hidden
  * @beta
  */
+// @TODO refactor from class component to function component
 export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {
   _element: HTMLElement | null = null
 

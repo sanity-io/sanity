@@ -76,6 +76,7 @@ export interface BaseFileInputState {
 const ASSET_FIELD_PATH = ['asset']
 
 /** @internal */
+// @TODO refactor from class component to function component
 export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInputState> {
   _assetFieldPath: Path
   uploadSubscription: Subscription | null = null

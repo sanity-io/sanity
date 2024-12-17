@@ -87,6 +87,7 @@ export function PreviewLoader(
 
   return (
     <div ref={setElement} style={style}>
+      {/* @TODO should use JSX instead of calling createElement directly */}
       {createElement(component, {
         ...restProps,
         ...(preview?.value || {}),
