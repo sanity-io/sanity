@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {useCallback} from 'react'
+import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
@@ -49,12 +49,18 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
   /**
    * Add current search to recent searches, trigger child item click and close search
    */
-  const handleSearchResultClick = useCallback(() => {
-    if (recentSearchesStore) {
-      recentSearchesStore.addSearch(terms, filters)
-    }
-    onClose?.()
-  }, [filters, onClose, recentSearchesStore, terms])
+  const handleSearchResultClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      if (recentSearchesStore) {
+        recentSearchesStore.addSearch(terms, filters)
+      }
+      // We don't want to close the search if they are opening their result in a new tab
+      if (!e.metaKey && !e.ctrlKey) {
+        onClose?.()
+      }
+    },
+    [filters, onClose, recentSearchesStore, terms],
+  )
 
   const handleEndReached = useCallback(() => {
     dispatch({type: 'PAGE_INCREMENT'})
