@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import {describe, expect} from 'vitest'
 
+import {generateCommandsDocumentation} from '../src/util/generateCommandsDocumentation'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
 
@@ -45,6 +46,13 @@ describeCliTest('CLI: basic commands', () => {
     testConcurrent('sanity users list', async () => {
       const result = await runSanityCmdCommand(version, ['users', 'list'])
       expect(result.stdout).toContain('CLI Developers') // name of CI user
+      expect(result.code).toBe(0)
+    })
+
+    testConcurrent('sanity --version', async () => {
+      const result = await runSanityCmdCommand(version, ['--version'])
+      // Can just check that the template isn't there
+      expect(result.stdout).not.toContain(generateCommandsDocumentation({}))
       expect(result.code).toBe(0)
     })
   })
