@@ -481,7 +481,9 @@ export function extractFromSanitySchema(
     }
 
     try {
-      unionRecursionGuards.add(guardPathName)
+      if (guardPathName !== 'reference') {
+        unionRecursionGuards.add(guardPathName)
+      }
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
