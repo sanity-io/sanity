@@ -110,6 +110,8 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   if (core.v || core.version) {
     console.log(`${pkg.name} version ${pkg.version}`)
     process.exit()
+    // As the process.exit function is monkey patched above and is async, the return is necessary
+    return
   }
 
   // Translate `sanity -h <command>` to `sanity help <command>`
