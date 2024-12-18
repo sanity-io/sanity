@@ -40,4 +40,18 @@ describe('findQueriesInPath', () => {
     assert(result.value.type === 'error') // workaround for TS
     expect(result.value.error.message).toMatch(/Duplicate query name found:/)
   })
+
+  test('can find and handle .astro files', async () => {
+    const stream = findQueriesInPath({
+      path: [path.join('**', 'typescript', '__tests__', 'fixtures', '*.astro')],
+    })
+    const res = []
+    for await (const result of stream) {
+      res.push(result)
+    }
+    expect(res.length).toBe(1)
+    expect(res[0].type).toBe('queries')
+    assert(res[0].type === 'queries') // workaround for TS
+    expect(res[0].queries.length).toBe(1)
+  })
 })
