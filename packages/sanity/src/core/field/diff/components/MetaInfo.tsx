@@ -1,5 +1,5 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {type ComponentType, createElement, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 /** @internal */
@@ -17,14 +17,14 @@ const MetaText = styled(Text)`
 
 /** @internal */
 export function MetaInfo(props: MetaInfoProps) {
-  const {title, action, icon, children, markRemoved} = props
+  const {title, action, icon: Icon, children, markRemoved} = props
 
   return (
     <Flex padding={2} align="center">
-      {icon && (
+      {Icon && (
         <Box padding={2}>
           <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
-            {createElement(icon)}
+            <Icon />
           </MetaText>
         </Box>
       )}

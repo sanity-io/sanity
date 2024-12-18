@@ -1,7 +1,7 @@
 import {DocumentIcon, EditIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
-import {type ComponentType, createElement, useMemo} from 'react'
+import {type ComponentType, useMemo} from 'react'
 
 import {ContextMenuButton} from '../../contextMenuButton'
 import {PREVIEW_SIZES} from '../constants'
@@ -87,9 +87,10 @@ export default function PortableTextPreviewStory() {
     [isPlaceholder, media, status, subtitle, title, withActions],
   )
 
-  const component = layout && previewComponents[layout]
+  const Component =
+    layout && (previewComponents[layout] as ComponentType<Omit<PreviewProps, 'renderDefault'>>)
 
-  if (!component) {
+  if (!Component) {
     return (
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Text>Unknown layout: {layout}</Text>
@@ -102,10 +103,7 @@ export default function PortableTextPreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={1}>
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
-            {createElement(
-              component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-              previewProps,
-            )}
+            <Component {...previewProps} />
           </Card>
         </Container>
       </Flex>

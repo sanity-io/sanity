@@ -6,7 +6,7 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
-import {createElement, type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
@@ -228,7 +228,7 @@ export function PortableText(props: Props): JSX.Element {
             }
           } // end if seg.text
         })
-        return createElement('div', {key: block._key}, ...returnedChildren)
+        return <div key={block._key}>{returnedChildren}</div>
       }
       throw new Error("'span' schemaType not found")
     },

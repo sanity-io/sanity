@@ -13,7 +13,6 @@ import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
 import chalk from 'chalk'
 import importFresh from 'import-fresh'
 import {parse as parseHtml} from 'node-html-parser'
-import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
@@ -231,7 +230,7 @@ function getDocumentHtml(
 
   debug('Rendering document component using React')
   const result = addTimestampedImportMapScriptToHtml(
-    renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css})),
+    renderToStaticMarkup(<Document {...defaultProps} {...props} css={css} />),
     importMap,
   )
 

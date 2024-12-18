@@ -1,5 +1,5 @@
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {createElement, type ElementType, isValidElement, type ReactNode} from 'react'
+import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
@@ -63,8 +63,8 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     isPlaceholder,
     media,
     mediaDimensions = DEFAULT_MEDIA_DIMENSION,
-    subtitle,
-    title = 'Untitled',
+    subtitle: Subtitle,
+    title: Title = 'Untitled',
   } = props
 
   if (isPlaceholder) {
@@ -84,19 +84,27 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     <Root>
       <HeaderFlex>
         <Stack flex={1} space={2}>
-          {isValidElementType(title) && (
-            <Text textOverflow="ellipsis">{createElement(title, {layout: 'default'})}</Text>
-          )}
-          {isValidElement(title) && <Text textOverflow="ellipsis">{title}</Text>}
-
-          {isValidElementType(subtitle) && (
-            <Text muted size={1} textOverflow="ellipsis">
-              {createElement(subtitle, {layout: 'default'})}
+          {isValidElementType(Title) && (
+            <Text textOverflow="ellipsis">
+              <Title
+                // @ts-expect-error - @todo fix typings
+                layout="default"
+              />
             </Text>
           )}
-          {isValidElement(subtitle) && (
+          {isValidElement(Title) && <Text textOverflow="ellipsis">{Title}</Text>}
+
+          {isValidElementType(Subtitle) && (
             <Text muted size={1} textOverflow="ellipsis">
-              {subtitle}
+              <Subtitle
+                // @ts-expect-error - @todo fix typings
+                layout="default"
+              />
+            </Text>
+          )}
+          {isValidElement(Subtitle) && (
+            <Text muted size={1} textOverflow="ellipsis">
+              {Subtitle}
             </Text>
           )}
         </Stack>
