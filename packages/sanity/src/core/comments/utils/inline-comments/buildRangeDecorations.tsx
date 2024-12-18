@@ -1,6 +1,6 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type PortableTextBlock} from '@sanity/types'
-import {memo, useCallback, useEffect, useRef} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 
 import {CommentInlineHighlightSpan} from '../../components'
 import {applyInlineCommentIdAttr} from '../../hooks'
@@ -32,8 +32,8 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
     threadId,
   } = props
   const decoratorRef = useRef<HTMLSpanElement | null>(null)
-  const isNestedRef = useRef<boolean>(false)
-  const parentCommentId = useRef<string | null>(null)
+  const [isNested, setIsNested] = useState(false)
+  const [parentCommentId, setParentCommentId] = useState<string | null>(null)
 
   useEffect(() => {
     // Get the previous and next sibling of the decorator element
@@ -42,7 +42,7 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
 
     // If there is no previous or next sibling, then the decorator is not nested
     if (!prevEl || !nextEl) {
-      isNestedRef.current = false
+      setIsNested(false)
       return
     }
 
@@ -56,9 +56,9 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
     const isEqual = prevId === nextId
 
     const isNestedDecorator = Boolean(prevId && nextId && isEqual)
-    parentCommentId.current = isNestedDecorator ? prevId : null
+    setParentCommentId(isNestedDecorator ? prevId : null)
 
-    isNestedRef.current = isNestedDecorator
+    setIsNested(isNestedDecorator)
   }, [])
 
   const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
@@ -67,7 +67,7 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
 
   const hovered =
     currentHoveredCommentId === commentId ||
-    (currentHoveredCommentId === parentCommentId.current && isNestedRef.current)
+    (currentHoveredCommentId === parentCommentId && isNested)
 
   const selected = selectedThreadId === threadId
 
@@ -75,7 +75,7 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
     <CommentInlineHighlightSpan
       isAdded
       isHovered={hovered || selected}
-      isNested={isNestedRef.current}
+      isNested={isNested}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -86,6 +86,7 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
     </CommentInlineHighlightSpan>
   )
 })
+CommentRangeDecoration.displayName = 'Memo(CommentRangeDecoration)'
 
 interface BuildRangeDecorationsProps {
   comments: CommentDocument[]

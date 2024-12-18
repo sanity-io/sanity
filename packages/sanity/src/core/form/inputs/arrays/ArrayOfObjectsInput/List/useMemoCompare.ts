@@ -1,20 +1,17 @@
-import {useEffect, useRef} from 'react'
+import {useState} from 'react'
 
 export function useMemoCompare<T>(next: T, compare: (prev: T, next: T) => boolean): T {
-  // Ref for storing previous value
-  const previousRef = useRef<T>(next)
-  const previous = previousRef.current
+  // State for storing previous value
+  const [previous, setPrevious] = useState<T>(next)
   // Pass previous and next value to compare function
   // to determine whether to consider them equal.
-  const isEqual = compare(previous, next)
-  // If not equal update previousRef to next value.
-  // We only update if not equal so that this hook continues to return
-  // the same old value if compare keeps returning true.
-  useEffect(() => {
-    if (!isEqual) {
-      previousRef.current = next
-    }
-  })
-  // Finally, if equal then return the previous value
-  return isEqual ? previous : next
+  if (!compare(previous, next)) {
+    // We only update if not equal so that this hook continues to return
+    // the same old value if compare keeps returning true.
+    setPrevious(next)
+    // Return the next value right away, no need to have a render cycle with the old value
+    return next
+  }
+  // Finally, return the previous value until it has changed according to the compare function
+  return previous
 }

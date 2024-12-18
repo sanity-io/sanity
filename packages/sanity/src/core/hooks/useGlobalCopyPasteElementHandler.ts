@@ -1,7 +1,8 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useEffect, useRef} from 'react'
+import {useEffect} from 'react'
 import {type FormDocumentValue} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {isFileTargetElement} from '../form/inputs/common/fileTarget/fileTarget'
 import {useCopyPaste} from '../studio/copyPaste'
@@ -23,55 +24,44 @@ export function useGlobalCopyPasteElementHandler({
   element,
   focusPath,
 }: GlobalCopyPasteElementHandler): void {
-  const focusPathRef = useRef<Path>(focusPath || [])
-  const valueRef = useRef(value)
-  valueRef.current = value
-
-  useEffect(() => {
-    focusPathRef.current = focusPath || []
-  }, [focusPath])
-
   const {onCopy, onPaste} = useCopyPaste()
 
-  const handleKeydown = useCallback(
-    (event: KeyboardEvent) => {
-      const targetElement = event.target
+  const handleKeydown = useEffectEvent((event: KeyboardEvent) => {
+    const targetElement = event.target
 
-      if (isCopyHotKey(event)) {
-        // We will skip handling this event if you have focus on an native editable element
-        if (
-          isNativeEditableElement(targetElement as HTMLElement) ||
-          hasSelection() ||
-          isEmptyFocusPath(focusPathRef.current)
-        ) {
-          return
-        }
-
-        event.preventDefault()
-        event.stopPropagation()
-        onCopy(focusPathRef.current, valueRef.current, {
-          context: {source: 'keyboardShortcut'},
-        })
+    if (isCopyHotKey(event)) {
+      // We will skip handling this event if you have focus on an native editable element
+      if (
+        isNativeEditableElement(targetElement as HTMLElement) ||
+        hasSelection() ||
+        isEmptyFocusPath(focusPath!)
+      ) {
+        return
       }
 
-      if (isPasteHotKey(event)) {
-        if (
-          isNativeEditableElement(targetElement as HTMLElement) ||
-          isEmptyFocusPath(focusPathRef.current) ||
-          isFileTargetElement(targetElement as HTMLElement)
-        ) {
-          return
-        }
+      event.preventDefault()
+      event.stopPropagation()
+      onCopy(focusPath!, value, {
+        context: {source: 'keyboardShortcut'},
+      })
+    }
 
-        event.stopPropagation()
-        event.preventDefault()
-        onPaste(focusPathRef.current, valueRef.current, {
-          context: {source: 'keyboardShortcut'},
-        })
+    if (isPasteHotKey(event)) {
+      if (
+        isNativeEditableElement(targetElement as HTMLElement) ||
+        isEmptyFocusPath(focusPath!) ||
+        isFileTargetElement(targetElement as HTMLElement)
+      ) {
+        return
       }
-    },
-    [onCopy, onPaste],
-  )
+
+      event.stopPropagation()
+      event.preventDefault()
+      onPaste(focusPath!, value, {
+        context: {source: 'keyboardShortcut'},
+      })
+    }
+  })
 
   useEffect(() => {
     element?.addEventListener('keydown', handleKeydown)

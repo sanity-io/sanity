@@ -5,6 +5,7 @@ import {
   type ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
 } from 'react'
@@ -38,7 +39,9 @@ export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSch
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
-  ref.current = value
+  useEffect(() => {
+    ref.current = value
+  }, [value])
   return ref
 }
 

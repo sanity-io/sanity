@@ -1,4 +1,5 @@
 import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {useMemo} from 'react'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
 
@@ -162,11 +163,25 @@ export function useTemplatePermissions({
   const grantsStore = useGrantsStore()
   const initialValueContext = useInitialValueResolverContext()
 
-  return useTemplatePermissionsFromHookFactory({
-    templateItems,
-    grantsStore: rest.grantsStore || grantsStore,
-    schema: rest.schema || schema,
-    templates: rest.templates || templates,
-    context: initialValueContext,
-  })
+  return useTemplatePermissionsFromHookFactory(
+    useMemo(
+      () => ({
+        templateItems,
+        grantsStore: rest.grantsStore || grantsStore,
+        schema: rest.schema || schema,
+        templates: rest.templates || templates,
+        context: initialValueContext,
+      }),
+      [
+        grantsStore,
+        initialValueContext,
+        rest.grantsStore,
+        rest.schema,
+        rest.templates,
+        schema,
+        templateItems,
+        templates,
+      ],
+    ),
+  )
 }

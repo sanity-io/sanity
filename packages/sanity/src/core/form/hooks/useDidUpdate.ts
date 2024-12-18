@@ -1,7 +1,5 @@
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
 import shallowEquals from 'shallow-equals'
-
-import {usePrevious} from './usePrevious'
 
 /**
  * A hook for doing side effects as a response to a change in a hook value between renders
@@ -30,10 +28,11 @@ export function useDidUpdate<T>(
   didUpdate: (previous: T | undefined, current: T | undefined) => void,
   compare: (previous: T | undefined, current: T) => boolean = shallowEquals,
 ): void {
-  const previous = usePrevious<T | undefined>(current)
+  const previous = useRef<T | undefined>(undefined)
   useEffect(() => {
-    if (!compare(previous, current)) {
-      didUpdate(previous, current)
+    if (!compare(previous.current, current)) {
+      didUpdate(previous.current, current)
+      previous.current = current
     }
-  }, [didUpdate, current, previous, compare])
+  }, [compare, current, didUpdate])
 }

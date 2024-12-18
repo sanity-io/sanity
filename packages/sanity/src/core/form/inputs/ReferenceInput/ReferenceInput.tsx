@@ -135,7 +135,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
 
-  const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
+  const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =
+    useState<HTMLDivElement | null>(null)
 
   const {push} = useToast()
   const {t} = useTranslation()
@@ -217,11 +218,11 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])
   const handleBlur = useCallback(
     (event: FocusEvent) => {
-      if (!autocompletePopoverReferenceElementRef.current?.contains(event.relatedTarget)) {
+      if (!autocompletePopoverReferenceElement?.contains(event.relatedTarget)) {
         props.elementProps.onBlur(event)
       }
     },
-    [props.elementProps],
+    [autocompletePopoverReferenceElement, props.elementProps],
   )
 
   const isWeakRefToNonexistent =
@@ -304,14 +305,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
             </Text>
           </Alert>
         ) : null}
-        <AutocompleteContainer ref={autocompletePopoverReferenceElementRef}>
+        <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
           <ReferenceAutocomplete
             {...elementProps}
             onFocus={handleFocus}
             onBlur={handleBlur}
             data-testid="autocomplete"
             loading={searchState.isLoading}
-            referenceElement={autocompletePopoverReferenceElementRef.current}
+            referenceElement={autocompletePopoverReferenceElement}
             options={hits}
             radius={2}
             placeholder={t('inputs.reference.search-placeholder')}

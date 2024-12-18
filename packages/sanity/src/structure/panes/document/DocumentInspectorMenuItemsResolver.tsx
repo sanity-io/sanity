@@ -1,4 +1,4 @@
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {type DocumentInspector, type DocumentInspectorMenuItem, useUnique} from 'sanity'
 
 interface DocumentInspectorMenuItemsResolverProps {
@@ -18,36 +18,26 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
   const {documentId, documentType, inspectors, onMenuItems} = props
 
   const len = inspectors.length
-  const lenRef = useRef(len)
-
   const [menuItems, setMenuItems] = useState<DocumentInspectorMenuItem[]>(() =>
     Array.from(new Array(len)),
   )
 
-  const menuItemsRef = useRef(menuItems)
-
   useEffect(() => {
-    if (lenRef.current !== len) {
+    if (menuItems.length !== len) {
       const newFieldActions = Array.from(new Array(len))
 
       for (let i = 0; i < len; i++) {
-        newFieldActions[i] = menuItemsRef.current[i]
+        newFieldActions[i] = menuItems[i]
       }
 
-      lenRef.current = len
-
-      setMenuItems(() => {
-        menuItemsRef.current = newFieldActions
-        return newFieldActions
-      })
+      setMenuItems(newFieldActions)
     }
-  }, [len])
+  }, [len, menuItems])
 
   const setMenuItem = useCallback((index: number, node: DocumentInspectorMenuItem) => {
     setMenuItems((prev) => {
       const next = [...prev]
       next[index] = node
-      menuItemsRef.current = next
       return next
     })
   }, [])
@@ -79,6 +69,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
     </>
   )
 }
+DocumentInspectorMenuItemsResolver.displayName = 'DocumentInspectorMenuItemsResolver'
 
 function defineInspectorMenuItemComponent({
   documentId,

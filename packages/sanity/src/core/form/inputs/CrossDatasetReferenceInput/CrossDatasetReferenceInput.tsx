@@ -142,7 +142,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
   const featureInfo = useFeatureEnabled(CROSS_DATASET_FEATUREKEY)
 
-  const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
+  const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =
+    useState<HTMLDivElement | null>(null)
 
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
 
@@ -282,12 +283,12 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           {isEditing ? (
             <Stack space={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
-                <div ref={autocompletePopoverReferenceElementRef}>
+                <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete
                     {...elementProps}
                     data-testid="autocomplete"
                     loading={searchState.isLoading}
-                    referenceElement={autocompletePopoverReferenceElementRef.current}
+                    referenceElement={autocompletePopoverReferenceElement}
                     portalRef={autocompletePortalRef}
                     id={inputId || ''}
                     options={searchState.hits.map((hit) => ({

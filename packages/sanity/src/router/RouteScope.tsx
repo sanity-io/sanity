@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {type ReactElement, type ReactNode, useCallback, useMemo, useRef} from 'react'
+import {type ReactElement, type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
@@ -63,15 +63,16 @@ export interface RouteScopeProps {
  * }
  * ```
  */
-export function RouteScope(props: RouteScopeProps): ReactElement {
+export const RouteScope = function RouteScope(props: RouteScopeProps): ReactElement {
   const {children, scope, __unsafe_disableScopedSearchParams} = props
   const parentRouter = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =
     parentRouter
 
   const parentStateRef = useRef(parentRouter.state)
-
-  parentStateRef.current = parentRouter.state
+  useEffect(() => {
+    parentStateRef.current = parentRouter.state
+  }, [parentRouter.state])
 
   const resolveNextParentState = useCallback(
     (_nextState: RouterState) => {
@@ -115,3 +116,4 @@ export function RouteScope(props: RouteScopeProps): ReactElement {
 
   return <RouterContext.Provider value={childRouter}>{children}</RouterContext.Provider>
 }
+RouteScope.displayName = 'RouteScope'
