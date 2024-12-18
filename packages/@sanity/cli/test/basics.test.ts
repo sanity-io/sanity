@@ -2,7 +2,6 @@ import path from 'node:path'
 
 import {describe, expect} from 'vitest'
 
-import {generateCommandsDocumentation} from '../src/util/generateCommandsDocumentation'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
 
@@ -51,8 +50,8 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('sanity --version', async () => {
       const result = await runSanityCmdCommand(version, ['--version'])
-      // Can just check that the template isn't there
-      expect(result.stdout).not.toContain(generateCommandsDocumentation({}))
+      // Just check that the result is only one line
+      expect(result.stdout.split('\n')).toHaveLength(1)
       expect(result.code).toBe(0)
     })
   })
