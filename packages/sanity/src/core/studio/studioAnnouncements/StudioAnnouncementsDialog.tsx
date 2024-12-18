@@ -36,12 +36,13 @@ const DialogHeader = styled(Grid)`
   background: var(--card-bg-color);
 `
 
-const FloatingButton = styled(Button)`
+const FloatingButtonBox = styled(Box)`
   position: absolute;
   top: 12px;
   right: 24px;
   z-index: 2;
 `
+const FloatingButton = styled(Button)``
 
 interface AnnouncementProps {
   announcement: StudioAnnouncementDocument
@@ -193,15 +194,17 @@ export function StudioAnnouncementsDialog({
             {index < announcements.length - 1 && <Divider parentRef={dialogRef} />}
           </Fragment>
         ))}
-        <FloatingButton
-          aria-label={t('announcement.dialog.close-label')}
-          icon={CloseIcon}
-          mode="bleed"
-          onClick={onClose}
-          tooltipProps={{
-            content: t('announcement.dialog.close'),
-          }}
-        />
+        <FloatingButtonBox>
+          <FloatingButton
+            aria-label={t('announcement.dialog.close-label')}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={onClose}
+            tooltipProps={{
+              content: t('announcement.dialog.close'),
+            }}
+          />
+        </FloatingButtonBox>
       </Root>
     </Dialog>
   )
