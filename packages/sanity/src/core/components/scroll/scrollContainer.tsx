@@ -7,8 +7,8 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
+  useState,
 } from 'react'
 import {ScrollContext} from 'sanity/_singletons'
 
@@ -38,7 +38,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
   useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
 
   const parentContext = useContext(ScrollContext)
-  const childContext = useMemo(() => createPubSub<Event>(), [])
+  const [childContext] = useState(() => createPubSub<Event>())
 
   useEffect(() => {
     if (!onScroll) return undefined

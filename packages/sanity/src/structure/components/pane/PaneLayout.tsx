@@ -28,7 +28,7 @@ export function PaneLayout(
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
 ) {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
-  const controller = useMemo(() => createPaneLayoutController(), [])
+  const [controller] = useState(() => createPaneLayoutController())
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootRect = useElementRect(rootElement)
   const width = rootRect?.width || 0

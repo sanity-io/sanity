@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {
   createPatchChannel,
@@ -113,7 +113,7 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
 
   const ready = editState.ready && connectionState === 'connected'
 
-  const patchChannel = useMemo(() => createPatchChannel(), [])
+  const [patchChannel] = useState(() => createPatchChannel())
   if (formState === null || !ready) {
     return {loading: true}
   }

@@ -1,5 +1,5 @@
 import {observableCallback} from 'observable-callback'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, fromEvent, merge, of} from 'rxjs'
 import {
@@ -75,8 +75,8 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     [searchFilter, paramsProp],
   )
 
-  const [onRetry$, onRetry] = useMemo(() => observableCallback(), [])
-  const [onFetchFullList$, onLoadFullList] = useMemo(() => observableCallback(), [])
+  const [[onRetry$, onRetry]] = useState(() => observableCallback())
+  const [[onFetchFullList$, onLoadFullList]] = useState(() => observableCallback())
 
   const queryResults$ = useMemo(() => {
     const listenSearchQueryArgs = {

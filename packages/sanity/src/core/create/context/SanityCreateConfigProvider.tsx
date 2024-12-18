@@ -1,4 +1,4 @@
-import {type ReactNode, useMemo} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
@@ -19,7 +19,7 @@ export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProp
   const {children} = props
   const {beta} = useSource()
 
-  const appIdCache = useMemo(() => createAppIdCache(), [])
+  const [appIdCache] = useState(() => createAppIdCache())
 
   const value = useMemo((): SanityCreateConfigContextValue => {
     return {

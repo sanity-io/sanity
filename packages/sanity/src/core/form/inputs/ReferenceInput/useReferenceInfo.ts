@@ -1,5 +1,5 @@
 import {observableCallback} from 'observable-callback'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
@@ -34,7 +34,7 @@ export function useReferenceInfo(
   getReferenceInfo: GetReferenceInfo,
 ): Loadable<ReferenceInfo> {
   // NOTE: this is a small message queue to handle retries
-  const [onRetry$, onRetry] = useMemo(() => observableCallback(), [])
+  const [[onRetry$, onRetry]] = useState(() => observableCallback())
 
   const referenceInfoObservable = useMemo(
     () =>

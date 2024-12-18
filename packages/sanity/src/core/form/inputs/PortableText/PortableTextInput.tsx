@@ -138,10 +138,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const toast = useToast()
 
   // Memoized patch stream
-  const patchSubject: Subject<{
-    patches: EditorPatch[]
-    snapshot: PortableTextBlock[] | undefined
-  }> = useMemo(() => new Subject(), [])
+  const [patchSubject] = useState(
+    () =>
+      new Subject<{
+        patches: EditorPatch[]
+        snapshot: PortableTextBlock[] | undefined
+      }>(),
+  )
   const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
 
   const handleToggleFullscreen = useCallback(() => {
