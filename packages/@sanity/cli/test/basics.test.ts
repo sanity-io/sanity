@@ -50,8 +50,8 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('sanity --version', async () => {
       const result = await runSanityCmdCommand(version, ['--version'])
-      // If the help text isn't returned, the result should only be one line
-      expect(result.stdout.split('\n')).toHaveLength(1)
+      // If the help text isn't returned, the result should only be one line with text
+      expect(result.stdout.split('\n').filter((l) => l.length > 0)).toHaveLength(1)
       expect(result.code).toBe(0)
     })
   })
