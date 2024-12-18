@@ -7,6 +7,7 @@ import {
   type ComponentType,
   type ElementType,
   isValidElement,
+  memo,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -36,7 +37,9 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
  * Used in cases where no custom preview component is provided
  * @internal
  * */
-export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
+export const SanityDefaultPreview = memo(function SanityDefaultPreview(
+  props: SanityDefaultPreviewProps,
+): ReactElement {
   const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -49,6 +52,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
     }) => {
       const {dimensions} = options
+      const width = dimensions.width || 100
+      const height = dimensions.height || 100
 
       // Handle sanity image
       return (
@@ -60,8 +65,8 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
               .image(
                 mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/,
               )
-              .width(dimensions.width || 100)
-              .height(dimensions.height || 100)
+              .width(width)
+              .height(height)
               .fit(dimensions.fit)
               .dpr(dimensions.dpr || 1)
               .url() || ''
@@ -140,4 +145,5 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
   }
 
   return children
-}
+})
+SanityDefaultPreview.displayName = 'Memo(SanityDefaultPreview)'
