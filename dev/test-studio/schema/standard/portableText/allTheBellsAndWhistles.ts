@@ -145,7 +145,11 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           },
           preview: {
             select: {
+              caption: 'caption',
               media: 'asset',
+            },
+            prepare({caption, media}) {
+              return {media, title: caption || 'No caption'}
             },
           },
           fields: [
@@ -186,6 +190,24 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               type: 'boolean',
             }),
           ],
+        }),
+
+        defineField({
+          type: 'image',
+          icon: ImageIcon,
+          name: 'imageWithAssetUrlPreview',
+          title: 'Image w/ asset url preview',
+          options: {
+            hotspot: true,
+          },
+          preview: {
+            select: {
+              media: 'asset.url',
+            },
+            prepare({media}) {
+              return {media, title: 'Image w/ asset url preview'}
+            },
+          },
         }),
 
         defineField({
