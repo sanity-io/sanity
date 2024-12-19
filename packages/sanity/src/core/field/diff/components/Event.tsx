@@ -1,7 +1,7 @@
 import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {createElement, useMemo} from 'react'
+import {useMemo} from 'react'
 import {
   type DocumentGroupEvent,
   getReleaseTone,
@@ -130,7 +130,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const documentVariantType = getDocumentVariantType(event.documentId)
   const {type, timestamp} = event
 
-  const iconComponent = TIMELINE_ICON_COMPONENTS[type]
+  const IconComponent = TIMELINE_ICON_COMPONENTS[type]
   const contributors = 'contributors' in event ? event.contributors || [] : []
 
   const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
@@ -153,7 +153,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         <div style={{position: 'relative'}}>
           <UserAvatarStack maxLength={3} userIds={userIds.filter(Boolean)} size={2} />
           <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-            <Text size={0}>{iconComponent && createElement(iconComponent)}</Text>
+            <Text size={0}>{IconComponent && <IconComponent />}</Text>
           </IconBox>
         </div>
         <Stack space={2}>
