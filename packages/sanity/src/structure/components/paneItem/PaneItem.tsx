@@ -9,11 +9,11 @@ import {Box, type CardProps, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
-  type ReactNode,
   startTransition,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -139,10 +139,15 @@ export function PaneItem(props: PaneItemProps) {
   useEffect(() => setClicked(false), [selected])
 
   // Preloads the edit state on hover, using concurrent rendering with `startTransition` so preloads can be interrupted and not block rendering
-  const [handleMouseEnter, handleMouseLeave, preload] = usePreloadEditState(
-    id,
-    value && isSanityDocument(value) ? schemaType?.name : undefined,
-  )
+  const [preloading, setPreload] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const handleMouseEnter = useCallback(() => {
+    timeoutRef.current = setTimeout(() => startTransition(() => setPreload(true)), 400)
+  }, [])
+  const handleMouseLeave = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    startTransition(() => setPreload(false))
+  }, [])
 
   return (
     <PreviewCard
@@ -166,26 +171,11 @@ export function PaneItem(props: PaneItemProps) {
       tone="inherit"
     >
       {preview}
-      {preload}
+      {preloading && schemaType?.name && value && isSanityDocument(value) && (
+        <PreloadDocumentPane documentId={id} documentType={schemaType.name} />
+      )}
     </PreviewCard>
   )
-}
-
-function usePreloadEditState(
-  documentId: string,
-  documentType: string | undefined,
-): [() => void, () => void, ReactNode] {
-  const [preloading, setPreload] = useState(false)
-  const handleMouseEnter = useCallback(() => startTransition(() => setPreload(true)), [])
-  const handleMouseLeave = useCallback(() => startTransition(() => setPreload(false)), [])
-
-  return [
-    handleMouseEnter,
-    handleMouseLeave,
-    preloading && documentType && (
-      <PreloadDocumentPane documentId={documentId} documentType={documentType} />
-    ),
-  ] as const
 }
 
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
