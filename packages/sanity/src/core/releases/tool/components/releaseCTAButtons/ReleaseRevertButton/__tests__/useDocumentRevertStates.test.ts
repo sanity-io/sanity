@@ -19,8 +19,8 @@ vi.mock('../../../../../../store/translog/getTransactionLogs', () => ({
 
 describe('useDocumentRevertStates', () => {
   const mockDocuments = [
-    {document: {_id: 'doc1', _rev: 'rev1'}},
-    {document: {_id: 'doc2', _rev: 'rev2'}},
+    {document: {_id: 'versions.r1.doc1', _rev: 'rev1'}},
+    {document: {_id: 'versions.r1.doc2', _rev: 'rev2'}},
   ] as DocumentInRelease[]
 
   /** @todo improve the useClient mock */
@@ -45,8 +45,10 @@ describe('useDocumentRevertStates', () => {
     mockUseClient.mockReturnValue(mockClient)
 
     mockGetTransactionsLogs.mockResolvedValue([
-      {id: 'trans1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
-      {id: 'trans2', documentIDs: ['doc2'], timestamp: new Date().toISOString()},
+      {id: 'trans0_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
+      {id: 'trans1_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
+      {id: 'trans0_doc2', documentIDs: ['doc2'], timestamp: new Date().toISOString()},
+      {id: 'trans1_doc2', documentIDs: ['doc2'], timestamp: new Date().toISOString()},
     ] as TransactionLogEventWithEffects[])
 
     mockClient.observable.request.mockImplementation(({url}) => {
@@ -89,8 +91,8 @@ describe('useDocumentRevertStates', () => {
       expect(resolvedResult).toEqual([
         {
           _id: 'doc1',
-          _rev: 'rev1',
-          _system: {delete: true},
+          _rev: 'observable-rev-1',
+          title: 'Reverted Document 1',
         },
         {
           _id: 'doc2',
@@ -102,18 +104,28 @@ describe('useDocumentRevertStates', () => {
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
-      limit: 3,
       reverse: true,
     })
 
-    expect(mockClient.observable.request).toHaveBeenCalledWith({
-      url: '/data/history/test-dataset/documents/doc2?revision=trans2',
+    expect(mockClient.observable.request).toHaveBeenNthCalledWith(1, {
+      url: '/data/history/test-dataset/documents/doc1?revision=trans1_doc1',
+    })
+    expect(mockClient.observable.request).toHaveBeenNthCalledWith(2, {
+      url: '/data/history/test-dataset/documents/doc2?revision=trans1_doc2',
     })
   })
 
   it('should handle missing revisions and mark for deletion', async () => {
-    mockClient.observable.request.mockReturnValueOnce(of({documents: []})) // No revert document found
-
+    mockGetTransactionsLogs.mockResolvedValue([
+      // publish transaction for release
+      {
+        id: 'trans0_doc1',
+        effects: {},
+        author: 'author',
+        documentIDs: ['doc1'],
+        timestamp: new Date().toISOString(),
+      },
+    ])
     const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
     await waitFor(async () => {
@@ -124,12 +136,16 @@ describe('useDocumentRevertStates', () => {
           _rev: 'rev1',
           _system: {delete: true},
         },
+        {
+          _id: 'doc2',
+          _rev: 'rev2',
+          _system: {delete: true},
+        },
       ])
     })
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
-      limit: 3,
       reverse: true,
     })
   })
@@ -146,7 +162,6 @@ describe('useDocumentRevertStates', () => {
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
-      limit: 3,
       reverse: true,
     })
 
@@ -165,7 +180,6 @@ describe('useDocumentRevertStates', () => {
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
-      limit: 3,
       reverse: true,
     })
 
@@ -173,19 +187,37 @@ describe('useDocumentRevertStates', () => {
   })
 
   it('should handle a mix of existing and missing revisions', async () => {
-    mockClient.observable.request.mockImplementation(({url}) => {
-      if (url!.includes('doc1')) {
-        return of({
-          documents: [
-            {
-              _id: 'doc1',
-              title: 'Reverted Document 1',
-            },
-          ],
-        })
-      }
-      return of({documents: []}) // No revert document for doc2
-    })
+    mockGetTransactionsLogs.mockResolvedValue([
+      // publish transaction for release
+      {
+        id: 'trans0_doc1',
+        effects: {},
+        author: 'author',
+        documentIDs: ['doc1'],
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: 'trans0_doc2',
+        effects: {},
+        author: 'author',
+        documentIDs: ['doc2'],
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: 'trans1_doc1',
+        effects: {},
+        author: 'author',
+        documentIDs: ['doc1'],
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: 'trans2_doc1',
+        effects: {},
+        author: 'author',
+        documentIDs: ['doc1'],
+        timestamp: new Date().toISOString(),
+      },
+    ])
 
     const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
 
@@ -194,7 +226,12 @@ describe('useDocumentRevertStates', () => {
       expect(resolvedResult).toEqual([
         {
           _id: 'doc1',
-          _rev: 'rev1',
+          _rev: 'observable-rev-1',
+          title: 'Reverted Document 1',
+        },
+        {
+          _id: 'doc2',
+          _rev: 'rev2',
           _system: {delete: true},
         },
       ])
@@ -202,8 +239,10 @@ describe('useDocumentRevertStates', () => {
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
-      limit: 3,
       reverse: true,
+    })
+    expect(mockClient.observable.request).toHaveBeenNthCalledWith(1, {
+      url: '/data/history/test-dataset/documents/doc1?revision=trans1_doc1',
     })
   })
 })

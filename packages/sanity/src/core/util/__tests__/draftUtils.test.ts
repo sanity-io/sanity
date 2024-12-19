@@ -8,7 +8,7 @@ import {
   getVersionFromId,
   getVersionId,
   removeDupes,
-} from './draftUtils'
+} from '../draftUtils'
 
 test('collate()', () => {
   const foo = {_type: 'foo', _id: 'foo'}
