@@ -469,8 +469,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^1.16.3
-        version: 1.16.4(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.18.1
+        version: 1.18.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.0(react@18.3.1)
@@ -1095,7 +1095,7 @@ importers:
     dependencies:
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
-        version: 3.1.1
+        version: 3.1.2
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*
@@ -1154,7 +1154,7 @@ importers:
     dependencies:
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
-        version: 3.1.1
+        version: 3.1.2
       '@sanity/types':
         specifier: 3.68.1
         version: link:../types
@@ -1449,8 +1449,8 @@ importers:
         specifier: ^3.3.1
         version: 3.4.0
       '@portabletext/editor':
-        specifier: ^1.16.3
-        version: 1.16.4(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^1.18.1
+        version: 1.18.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.0(react@18.3.1)
@@ -1480,7 +1480,7 @@ importers:
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
-        version: 3.1.1
+        version: 3.1.2
       '@sanity/eventsource':
         specifier: ^5.0.0
         version: 5.0.2
@@ -4439,19 +4439,19 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/editor@1.16.4':
-    resolution: {integrity: sha512-tQ1ZHI0ek31wDaCx7FB27Twi1f05yHUqj4i81YsjQSOjR4pOnPVZupUbSzjKprw5mLQPMhLlRl6olprhdtgocw==}
+  '@portabletext/editor@1.18.1':
+    resolution: {integrity: sha512-LdtuzbIaWTlP68VZsECnW+CeHOQaWVlzHhK85EhYZBSaZ/YDGDGcbc+OR2EGyjeDu7ELeTDQPTMaHSoHdaOqHg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/block-tools': ^3.67.1
-      '@sanity/schema': ^3.67.1
-      '@sanity/types': ^3.67.1
+      '@sanity/block-tools': ^3.68.1
+      '@sanity/schema': ^3.68.1
+      '@sanity/types': ^3.68.1
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.1
       styled-components: ^6.1.13
 
-  '@portabletext/patches@1.1.0':
-    resolution: {integrity: sha512-2qn4WaRc23m5qRwclT3sAyuHwTyjxCb4Lg0BQyhp7CABd83HtnPPYoP6hycREs6HRdWA48H3sU5gqUVPoxJxdg==}
+  '@portabletext/patches@1.1.1':
+    resolution: {integrity: sha512-FXeVdLvSJ3JmZzS0dbxEFJZXplFo7K27/Twv0/dX/l86tfhhUkDSqaTlWcigxuibvohjdEYp2mB8Ucgao/JzIQ==}
 
   '@portabletext/react@3.2.0':
     resolution: {integrity: sha512-BA216Z8yhb/eP24bfb09uiT0SVnQHTVZMPXf4MRBEZ+G8cMzZM/ab3tcp8owyp91+3kTKR0qSIpzYSKdm1Pakw==}
@@ -4762,9 +4762,9 @@ packages:
     resolution: {integrity: sha512-DeZn2czD3uqSbZzeZD3UggtV49l9qMZx9f1n7QLgD5Fj+o3ZmUbYWIWE/5PGH95Jnpg80rDap6vuAvPyMp9sWQ==}
     engines: {node: '>=18'}
 
-  '@sanity/diff-match-patch@3.1.1':
-    resolution: {integrity: sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==}
-    engines: {node: '>=14.18'}
+  '@sanity/diff-match-patch@3.1.2':
+    resolution: {integrity: sha512-jW2zqnnV3cLXy7exOKbqaWJPb15rFSQGseAhlPljzbg5CP0hrujk0TwYpsNMz2xwTELOk1JkBUINQYbPE4TmaA==}
+    engines: {node: '>=18.18'}
 
   '@sanity/eslint-config-i18n@1.0.0':
     resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
@@ -14897,9 +14897,9 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/editor@1.16.4(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@portabletext/editor@1.18.1(@sanity/block-tools@packages+@sanity+block-tools)(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@18.3.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
-      '@portabletext/patches': 1.1.0
+      '@portabletext/patches': 1.1.1
       '@sanity/block-tools': link:packages/@sanity/block-tools
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
@@ -14922,9 +14922,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/patches@1.1.0':
+  '@portabletext/patches@1.1.1':
     dependencies:
-      '@sanity/diff-match-patch': 3.1.1
+      '@sanity/diff-match-patch': 3.1.2
       lodash: 4.17.21
 
   '@portabletext/react@3.2.0(react@18.3.1)':
@@ -15254,7 +15254,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/diff-match-patch@3.1.1': {}
+  '@sanity/diff-match-patch@3.1.2': {}
 
   '@sanity/eslint-config-i18n@1.0.0(eslint@8.57.1)(typescript@5.7.2)':
     dependencies:
@@ -15423,7 +15423,7 @@ snapshots:
   '@sanity/mutate@0.11.0-canary.4(xstate@5.19.0)':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
-      '@sanity/diff-match-patch': 3.1.1
+      '@sanity/diff-match-patch': 3.1.2
       hotscript: 1.0.13
       lodash: 4.17.21
       lodash-es: 4.17.21
@@ -15437,7 +15437,7 @@ snapshots:
   '@sanity/mutate@0.11.1(debug@4.4.0)':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
-      '@sanity/diff-match-patch': 3.1.1
+      '@sanity/diff-match-patch': 3.1.2
       hotscript: 1.0.13
       lodash: 4.17.21
       mendoza: 3.0.8
@@ -22782,7 +22782,7 @@ snapshots:
 
   sanity-diff-patch@4.0.0:
     dependencies:
-      '@sanity/diff-match-patch': 3.1.1
+      '@sanity/diff-match-patch': 3.1.2
 
   sanity-plugin-hotspot-array@2.1.2(@emotion/is-prop-valid@1.3.1)(@sanity/ui@2.10.12(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
