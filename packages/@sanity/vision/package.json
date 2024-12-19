@@ -62,7 +62,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
-    "@sanity/icons": "^3.5.3",
+    "@sanity/icons": "^3.5.5",
     "@sanity/ui": "^2.10.11",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
