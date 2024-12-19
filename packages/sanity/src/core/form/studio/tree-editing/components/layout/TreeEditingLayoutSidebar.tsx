@@ -23,7 +23,7 @@ const SidebarCard = styled(Card)`
   flex-direction: column;
 `
 
-const SidebarStack = styled(motion(Stack))`
+const SidebarStack = styled(motion.create(Stack))`
   overflow-x: hidden;
 `
 

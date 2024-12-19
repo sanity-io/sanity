@@ -93,6 +93,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       inspectors: inspectorsResolver,
     },
   } = useSource()
+  const telemetry = useTelemetry()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
@@ -371,14 +372,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error('Nope')
   })
-
-  patchRef.current = (event: PatchEvent) => {
-    // when creating a new draft
-    if (!editState.draft && !editState.published && !editState.version) {
-      telemetry.log(CreatedDraft)
+  useEffect(() => {
+    patchRef.current = (event: PatchEvent) => {
+      // when creating a new draft
+      if (!editState.draft && !editState.published && !editState.version) {
+        telemetry.log(CreatedDraft)
+      }
+      patch.execute(toMutationPatches(event.patches), initialValue.value)
     }
-    patch.execute(toMutationPatches(event.patches), initialValue.value)
-  }
+  }, [
+    editState.draft,
+    editState.published,
+    editState.version,
+    initialValue.value,
+    patch,
+    telemetry,
+  ])
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
@@ -484,8 +493,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
     [inspectOpen, params, setPaneParams],
   )
-
-  const telemetry = useTelemetry()
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
@@ -672,7 +679,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
 
   const formStateRef = useRef(formState)
-  formStateRef.current = formState
+  useEffect(() => {
+    formStateRef.current = formState
+  }, [formState])
 
   const setOpenPath = useCallback(
     (path: Path) => {

@@ -17,6 +17,7 @@ import {getTimer} from '../../util/timing'
 
 const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
+const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
 
 /** Escape-hatch env flags to change action behavior */
 const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_EXTRACT_MANIFEST_ENABLED'
@@ -90,7 +91,12 @@ async function extractManifest(
     const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
 
     const manifest: CreateManifest = {
-      version: 1,
+      /**
+       * Version history:
+       * 1: Initial release.
+       * 2: Added tools file.
+       */
+      version: 2,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
     }
@@ -157,26 +163,36 @@ function writeWorkspaceFiles(
 ): Promise<ManifestWorkspaceFile[]> {
   const output = manifestWorkspaces.reduce<Promise<ManifestWorkspaceFile>[]>(
     (workspaces, workspace) => {
-      return [...workspaces, writeWorkspaceSchemaFile(workspace, staticPath)]
+      return [...workspaces, writeWorkspaceFile(workspace, staticPath)]
     },
     [],
   )
   return Promise.all(output)
 }
 
-async function writeWorkspaceSchemaFile(
+async function writeWorkspaceFile(
   workspace: CreateWorkspaceManifest,
   staticPath: string,
 ): Promise<ManifestWorkspaceFile> {
-  const schemaString = JSON.stringify(workspace.schema, null, 2)
-  const hash = createHash('sha1').update(schemaString).digest('hex')
-  const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
-
-  // workspaces with identical schemas will overwrite each others schema file. This is ok, since they are identical and can be shared
-  await writeFile(join(staticPath, filename), schemaString)
+  const [schemaFilename, toolsFilename] = await Promise.all([
+    createFile(staticPath, workspace.schema, SCHEMA_FILENAME_SUFFIX),
+    createFile(staticPath, workspace.tools, TOOLS_FILENAME_SUFFIX),
+  ])
 
   return {
     ...workspace,
-    schema: filename,
+    schema: schemaFilename,
+    tools: toolsFilename,
   }
+}
+
+const createFile = async (path: string, content: any, filenameSuffix: string) => {
+  const stringifiedContent = JSON.stringify(content, null, 2)
+  const hash = createHash('sha1').update(stringifiedContent).digest('hex')
+  const filename = `${hash.slice(0, 8)}${filenameSuffix}`
+
+  // workspaces with identical data will overwrite each others file. This is ok, since they are identical and can be shared
+  await writeFile(join(path, filename), stringifiedContent)
+
+  return filename
 }

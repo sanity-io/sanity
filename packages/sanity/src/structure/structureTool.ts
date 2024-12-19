@@ -116,6 +116,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         controlsDocumentTitle: true,
         options,
         router,
+        __internalApplicationType: 'sanity/structure',
       },
     ],
 

@@ -4,7 +4,7 @@ import {
   type CurrentUser,
 } from '@sanity/types'
 import {omit} from 'lodash'
-import {useMemo, useRef} from 'react'
+import {useMemo} from 'react'
 
 import {isRecord} from '../../util'
 
@@ -22,8 +22,6 @@ export function useCheckCondition(
   context: ConditionalPropertyCallbackContext,
 ): boolean {
   const {currentUser, document, parent, value} = context
-
-  const didWarn = useRef(false)
 
   return useMemo(() => {
     let isTrueIsh = false
@@ -46,7 +44,7 @@ export function useCheckCondition(
       return false
     }
 
-    if (isThenable(isTrueIsh) && !didWarn.current) {
+    if (isThenable(isTrueIsh)) {
       console.warn(
         `The \`${checkPropertyName}\` option is either a promise or a promise returning function. Async callbacks for \`${checkPropertyName}\` option is not currently supported.`,
       )

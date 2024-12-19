@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 
 import {type FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
@@ -53,44 +53,44 @@ export function useFormState<
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
 
-  const prepareHiddenState = useMemo(() => createCallbackResolver({property: 'hidden'}), [])
-  const prepareReadOnlyState = useMemo(() => createCallbackResolver({property: 'readOnly'}), [])
-  const prepareFormState = useMemo(() => createPrepareFormState(), [])
+  const [prepareHiddenState] = useState(() => createCallbackResolver({property: 'hidden'}))
+  const [prepareReadOnlyState] = useState(() => createCallbackResolver({property: 'readOnly'}))
+  const [prepareFormState] = useState(() => createPrepareFormState())
 
-  const reconcileFieldGroupState = useMemo(() => {
+  const [reconcileFieldGroupState] = useState(() => {
     let last: StateTree<string> | undefined
     return (state: StateTree<string> | undefined) => {
       const result = immutableReconcile(last ?? null, state)
       last = result
       return result
     }
-  }, [])
+  })
 
   const reconciledFieldGroupState = useMemo(() => {
     return reconcileFieldGroupState(fieldGroupState)
   }, [fieldGroupState, reconcileFieldGroupState])
 
-  const reconcileCollapsedPaths = useMemo(() => {
+  const [reconcileCollapsedPaths] = useState(() => {
     let last: StateTree<boolean> | undefined
     return (state: StateTree<boolean> | undefined) => {
       const result = immutableReconcile(last ?? null, state)
       last = result
       return result
     }
-  }, [])
+  })
   const reconciledCollapsedPaths = useMemo(
     () => reconcileCollapsedPaths(collapsedPaths),
     [collapsedPaths, reconcileCollapsedPaths],
   )
 
-  const reconcileCollapsedFieldsets = useMemo(() => {
+  const [reconcileCollapsedFieldsets] = useState(() => {
     let last: StateTree<boolean> | undefined
     return (state: StateTree<boolean> | undefined) => {
       const result = immutableReconcile(last ?? null, state)
       last = result
       return result
     }
-  }, [])
+  })
   const reconciledCollapsedFieldsets = useMemo(
     () => reconcileCollapsedFieldsets(collapsedFieldSets),
     [collapsedFieldSets, reconcileCollapsedFieldsets],

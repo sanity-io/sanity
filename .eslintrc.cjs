@@ -37,9 +37,9 @@ const sanityNoRestrictedImportsPaths = [
   },
   {
     name: 'react',
-    importNames: ['default', 'createContext'],
+    importNames: ['default', 'createContext', 'createElement'],
     message:
-      'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons',
+      'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
   },
 ]
 

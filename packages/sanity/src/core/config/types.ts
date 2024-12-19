@@ -110,8 +110,6 @@ export interface Tool<Options = any> {
 
   /**
    * React component for the icon representing the tool.
-   *
-   * @deprecated Tool icons are no longer displayed.
    */
   icon?: ComponentType
 

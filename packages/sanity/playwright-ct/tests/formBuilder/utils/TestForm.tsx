@@ -96,7 +96,7 @@ export function TestForm(props: TestFormProps) {
     },
   )
   const [focusPath, setFocusPath] = useState<Path>(() => focusPathFromProps || [])
-  const patchChannel = useMemo(() => createPatchChannel(), [])
+  const [patchChannel] = useState(() => createPatchChannel())
 
   useGlobalCopyPasteElementHandler({
     element: wrapperRef.current,

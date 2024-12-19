@@ -137,10 +137,11 @@ function RootFieldActionMenuGroup(props: {
     <MenuButton
       button={
         <Button
-          icon={node.icon}
           aria-label={open ? undefined : title}
           data-testid="field-actions-trigger"
+          icon={node.icon}
           mode="bleed"
+          tabIndex={0}
           tooltipProps={{
             ...STATUS_BUTTON_TOOLTIP_PROPS,
             content: node.title,

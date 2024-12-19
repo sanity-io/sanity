@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString, useText} from '@sanity/ui-workshop'
-import {type ComponentType, createElement, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {TemplatePreview, type TemplatePreviewProps} from '../template/TemplatePreview'
 
@@ -36,9 +36,9 @@ export default function TemplatePreviewStory() {
   const description = useText('Description', undefined, 'Props')
 
   const media = mediaValues[mediaKey] || false
-  const component = layout && previewComponents[layout]
+  const Component = layout && previewComponents[layout]
 
-  if (!component) {
+  if (!Component) {
     return (
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Text>Unknown layout: {layout}</Text>
@@ -51,13 +51,13 @@ export default function TemplatePreviewStory() {
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
         <Container width={0}>
           <Card padding={3} radius={2}>
-            {createElement(component, {
-              description,
-              isPlaceholder,
-              media,
-              title,
-              subtitle,
-            })}
+            <Component
+              description={description}
+              isPlaceholder={isPlaceholder}
+              media={media}
+              title={title}
+              subtitle={subtitle}
+            />
           </Card>
         </Container>
       </Flex>

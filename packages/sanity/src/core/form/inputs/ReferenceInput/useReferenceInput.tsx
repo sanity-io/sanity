@@ -5,6 +5,7 @@ import {
   type ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
 } from 'react'
@@ -21,7 +22,9 @@ import {type EditReferenceEvent} from './types'
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
-  ref.current = value
+  useEffect(() => {
+    ref.current = value
+  }, [value])
   return ref
 }
 

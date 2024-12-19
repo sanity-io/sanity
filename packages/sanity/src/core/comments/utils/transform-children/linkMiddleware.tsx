@@ -1,4 +1,4 @@
-import {createElement, type MouseEvent, type ReactNode} from 'react'
+import {type MouseEvent, type ReactNode} from 'react'
 
 import {type Middleware} from './types'
 
@@ -10,9 +10,12 @@ export function onClick(event: MouseEvent<HTMLAnchorElement>): void {
 
 function createLinkElement(url: string): ReactNode {
   const href = url.startsWith('http') ? url : `https://${url}`
-  const props = {href, target: '_blank', rel: 'noopener noreferrer', key: url, onClick}
 
-  return createElement('a', props, url)
+  return (
+    <a key={url} href={href} target="_blank" rel="noopener noreferrer" onClick={onClick}>
+      {url}
+    </a>
+  )
 }
 
 /**

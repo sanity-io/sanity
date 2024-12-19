@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
 import {
-  createElement,
   type ForwardedRef,
   forwardRef,
   memo,
@@ -148,12 +147,14 @@ export const DocumentPanelHeader = memo(
             <Flex align="center" gap={1}>
               {unstable_languageFilter.length > 0 && (
                 <>
-                  {unstable_languageFilter.map((languageFilterComponent, idx) => {
-                    return createElement(languageFilterComponent, {
-                      // eslint-disable-next-line react/no-array-index-key
-                      key: `language-filter-${idx}`,
-                      schemaType,
-                    })
+                  {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
+                    return (
+                      <LanguageFilterComponent
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={`language-filter-${idx}`}
+                        schemaType={schemaType}
+                      />
+                    )
                   })}
                 </>
               )}

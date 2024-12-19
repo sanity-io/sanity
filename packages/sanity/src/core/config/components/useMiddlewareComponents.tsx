@@ -1,28 +1,28 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {type ComponentType, createElement, Fragment, useMemo} from 'react'
+import {type ComponentType, Fragment, useMemo} from 'react'
 
-import {flattenConfig} from '../../config'
 import {useSource} from '../../studio'
+import {flattenConfig} from '..'
 import {type PluginOptions} from '../types'
 
-const emptyRender = () => createElement(Fragment)
+const emptyRender = () => <Fragment />
 
 function _createMiddlewareComponent<T extends {}>(
-  defaultComponent: ComponentType<T>,
+  DefaultComponent: ComponentType<T>,
   middlewareComponents: ComponentType<T>[],
 ): ComponentType<T> {
   return (outerProps: T) => {
     // This is the inner "layer" of the middleware chain
     // Here we render the _default_ component (typically Sanity's component)
-    let next = (props: T) => createElement(defaultComponent, props)
+    let next = (props: T) => <DefaultComponent {...props} />
 
-    for (const middleware of middlewareComponents) {
+    for (const Middleware of middlewareComponents) {
       // As we progress through the chain, the meaning of "renderDefault" changes.
       // At a given layer in the chain, the _next_ layer is the "default".
       const renderDefault = next
 
       // Here we replace `next` so that the _previous_ layer may use this as its _next_.
-      next = (props) => createElement(middleware, {...props, renderDefault})
+      next = (props) => <Middleware {...props} renderDefault={renderDefault} />
     }
 
     return next({

@@ -73,11 +73,11 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       // Wait for field to get ready (without this tests fails randomly on Webkit)
       await page.locator(`[data-testid='${testId}']`).waitFor()
       const $pteField: Locator = page.getByTestId(testId)
+      await $pteField.locator('[contenteditable="true"]').waitFor()
+      const $pteTextbox = $pteField.locator('[contenteditable="true"]')
       // Activate the input if needed
       await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
-      const $pteTextbox = $pteField.getByRole('textbox')
-      await $pteTextbox.isEditable()
       await $pteTextbox.focus()
       return $pteField
     },
@@ -93,11 +93,11 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       // Wait for field to get ready (without this tests fails randomly on Webkit)
       await page.locator(`[data-testid='${testId}']`).waitFor()
       const $pteField: Locator = page.getByTestId(testId)
+      await $pteField.locator('[contenteditable="true"]').waitFor()
+      const $pteTextbox = $pteField.locator('[contenteditable="true"]')
       // Activate the input if needed
       await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
-      const $pteTextbox = $pteField.getByRole('textbox')
-      await $pteTextbox.isEditable()
       await $pteTextbox.focus()
       return $pteTextbox
     },

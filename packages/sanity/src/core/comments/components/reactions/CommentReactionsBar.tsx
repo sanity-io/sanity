@@ -5,7 +5,7 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import {memo, useCallback, useMemo, useRef} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
@@ -110,16 +110,22 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
     return grouped.filter(([name]) => COMMENT_REACTION_EMOJIS[name])
   }, [reactions])
 
-  // An array of the initial order of the reactions. This is used to sort the reactions.
-  // E.g. [':+1:', ':heart:']
-  const sortOrder = useRef<string[]>(Object.keys(Object.fromEntries(groupedReactions)))
-
+  const [sortedGroupedReactions, setSortedGroupedReactions] = useState(() => ({
+    // An array of the initial order of the reactions. This is used to sort the reactions.
+    // E.g. [':+1:', ':heart:']
+    sortOrder: Object.keys(Object.fromEntries(groupedReactions)),
+    // We cache the groupedReactions to know when we should update the sortedReactions, ensuring we don't run into an infinite render loop.
+    groupedReactions: [] as typeof groupedReactions,
+    sortedReactions: [] as typeof groupedReactions,
+  }))
   // Sort the reactions based on the initial order to make sure that the reactions
   // are not jumping around when new reactions are added.
-  const sortedReactions = useMemo(() => {
-    const sorted = groupedReactions.sort(([nameA], [nameB]) => {
-      const indexA = sortOrder.current.indexOf(nameA)
-      const indexB = sortOrder.current.indexOf(nameB)
+  let {sortedReactions} = sortedGroupedReactions
+  if (sortedGroupedReactions.groupedReactions !== groupedReactions) {
+    const {sortOrder} = sortedGroupedReactions
+    sortedReactions = groupedReactions.sort(([nameA], [nameB]) => {
+      const indexA = sortOrder.indexOf(nameA)
+      const indexB = sortOrder.indexOf(nameB)
 
       if (indexA === -1) {
         return 1
@@ -132,10 +138,12 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
       return indexA - indexB
     })
 
-    sortOrder.current = sorted.map(([name]) => name)
-
-    return sorted
-  }, [groupedReactions])
+    setSortedGroupedReactions({
+      groupedReactions,
+      sortOrder: sortedReactions.map(([name]) => name),
+      sortedReactions,
+    })
+  }
 
   return (
     <Flex align="center" gap={1} wrap="wrap">
@@ -190,3 +198,4 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
     </Flex>
   )
 })
+CommentReactionsBar.displayName = 'Memo(CommentReactionsBar)'

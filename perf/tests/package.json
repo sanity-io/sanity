@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "3.67.1",
+  "version": "3.68.1",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -32,6 +32,6 @@
     "esbuild": "0.21.5",
     "ts-node": "^10.9.2",
     "typescript": "5.7.2",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.8"
   }
 }

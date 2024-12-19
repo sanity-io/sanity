@@ -1,7 +1,7 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
@@ -96,7 +96,9 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
+  const [previewCardElement, setPreviewCardElement] = useState<FIXME | null>(null)
   const previewCardRef = useRef<FIXME | null>(null)
+  useImperativeHandle(previewCardRef, () => previewCardElement, [previewCardElement])
 
   // this is here to make sure the item is visible if it's being edited behind a modal
   useScrollIntoViewOnFocusWithin(previewCardRef, open)
@@ -232,7 +234,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         tabIndex={0}
         disabled={resolvingInitialValue}
         onClick={onOpen}
-        ref={previewCardRef}
+        ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
       >
@@ -267,7 +269,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           id={value._key}
           onClose={onClose}
           autofocus={focused}
-          legacy_referenceElement={previewCardRef.current}
+          legacy_referenceElement={previewCardElement}
         >
           {children}
         </EditPortal>

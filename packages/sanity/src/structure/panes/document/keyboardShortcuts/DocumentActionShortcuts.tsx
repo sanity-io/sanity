@@ -1,6 +1,5 @@
 import {isHotkey} from 'is-hotkey-esm'
 import {
-  createElement,
   type ElementType,
   type HTMLProps,
   memo,
@@ -34,7 +33,7 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   const {
     actionsBoxElement,
     activeIndex,
-    as = 'div',
+    as: As = 'div',
     children,
     id,
     onActionStart,
@@ -75,23 +74,15 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
     [onActionStart, onKeyDown, states],
   )
 
-  return createElement(
-    as,
-    {
-      id,
-      onKeyDown: handleKeyDown,
-      tabIndex: -1,
-      ...rest,
-      ref: rootRef,
-    },
-    [
-      children,
-      activeAction && activeAction.dialog && (
+  return (
+    <As id={id} onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
+      {children}
+      {activeAction && activeAction.dialog && (
         <LegacyLayerProvider zOffset="paneFooter">
           <ActionStateDialog dialog={activeAction.dialog} referenceElement={actionsBoxElement} />
         </LegacyLayerProvider>
-      ),
-    ],
+      )}
+    </As>
   )
 })
 

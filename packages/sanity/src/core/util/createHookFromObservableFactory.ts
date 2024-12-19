@@ -3,8 +3,6 @@ import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
-import {useUnique} from './useUnique'
-
 /** @internal */
 export type LoadingTuple<T> = [T, boolean]
 
@@ -43,16 +41,14 @@ export function createHookFromObservableFactory<T, TArg = void>(
   const initialLoadingTuple: LoadingTuple<T | undefined> = [initialValue, true]
   const initialResult = {type: 'tuple', tuple: initialLoadingTuple} as const
 
-  return function useLoadableFromCreateLoadable(_arg: TArg) {
-    // @todo refactor callsites to make use of useMemo so that this hook can be removed
-    const memoArg = useUnique(_arg)
+  return function useLoadableFromCreateLoadable(arg: TArg) {
     const observable = useMemo(
       () =>
-        of(memoArg).pipe(
-          switchMap((arg) =>
+        of(arg).pipe(
+          switchMap((_arg) =>
             concat(
               of({type: 'loading'} as const),
-              observableFactory(arg).pipe(map((value) => ({type: 'value', value}) as const)),
+              observableFactory(_arg).pipe(map((value) => ({type: 'value', value}) as const)),
             ),
           ),
           scan(([prevValue], next): LoadingTuple<T | undefined> => {
@@ -67,7 +63,7 @@ export function createHookFromObservableFactory<T, TArg = void>(
           map((tuple) => ({type: 'tuple', tuple}) as const),
           catchError((error) => of({type: 'error', error} as const)),
         ),
-      [memoArg],
+      [arg],
     )
     const result = useObservable(observable, initialResult)
 

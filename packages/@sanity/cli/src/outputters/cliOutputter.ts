@@ -13,19 +13,19 @@ export default {
     console.log(...args)
   },
 
-  success(...args: unknown[]): void {
-    console.log(`${SYMBOL_CHECK} ${args.join(' ')}`)
+  success(firstPartOfMessage: unknown, ...args: unknown[]): void {
+    console.log(`${SYMBOL_CHECK} ${firstPartOfMessage}`, ...args)
   },
 
-  warn(...args: unknown[]): void {
-    console.warn(`${SYMBOL_WARN} ${args.join(' ')}`)
+  warn(firstPartOfMessage: unknown, ...args: unknown[]): void {
+    console.warn(`${SYMBOL_WARN} ${firstPartOfMessage}`, ...args)
   },
 
-  error(...args: unknown[]): void {
-    if (args[0] instanceof Error) {
-      console.error(`${SYMBOL_FAIL} ${chalk.red(args[0].stack)}`)
+  error(firstPartOfMessage: unknown, ...args: unknown[]): void {
+    if (firstPartOfMessage instanceof Error) {
+      console.error(`${SYMBOL_FAIL} ${chalk.red(firstPartOfMessage.stack)}`)
     } else {
-      console.error(`${SYMBOL_FAIL} ${args.join(' ')}`)
+      console.error(`${SYMBOL_FAIL} ${firstPartOfMessage}`, ...args)
     }
   },
 
@@ -37,7 +37,7 @@ export default {
   },
 
   spinner(options: Options): Ora {
-    const spinner = ora({...options, spinner: 'dots'})
+    const spinner = ora(options)
     // Override the default status methods to use custom symbols instead of emojis
     spinner.succeed = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_CHECK})
     spinner.warn = (text?: string) => spinner.stopAndPersist({text, symbol: SYMBOL_WARN})

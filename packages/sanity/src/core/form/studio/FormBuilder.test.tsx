@@ -2,7 +2,7 @@
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
 import {render} from '@testing-library/react'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
@@ -77,7 +77,7 @@ describe('FormBuilder', () => {
         throw new Error('schema type is not an object')
       }
 
-      const patchChannel = useMemo(() => createPatchChannel(), [])
+      const [patchChannel] = useState(() => createPatchChannel())
 
       const formState = useFormState({
         schemaType,
@@ -174,7 +174,7 @@ describe('FormBuilder', () => {
         throw new Error('schema type is not an object')
       }
 
-      const patchChannel = useMemo(() => createPatchChannel(), [])
+      const [patchChannel] = useState(() => createPatchChannel())
 
       const formState = useFormState({
         schemaType,

@@ -12,6 +12,7 @@ import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singl
 
 import {type TFunction} from '../i18n'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
+import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
 
 /** @internal */
 function useSystemScheme(): ThemeColorSchemeKey {
@@ -78,33 +79,13 @@ export function ColorSchemeLocalStorageProvider({
   children,
   onSchemeChange,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) {
-  const store = useMemo(() => {
-    let snapshot: StudioThemeColorSchemeKey
-    const subscribers = new Set<() => void>()
-
-    return {
-      subscribe: (onStoreChange: () => void) => {
-        if (!snapshot) {
-          snapshot = getScheme(localStorage.getItem(LOCAL_STORAGE_KEY)) || 'system'
-        }
-        subscribers.add(onStoreChange)
-        return () => {
-          subscribers.delete(onStoreChange)
-        }
-      },
-      getSnapshot: () => snapshot,
-      setSnapshot: (nextScheme: StudioThemeColorSchemeKey) => {
-        snapshot = getScheme(nextScheme)
-        for (const subscription of subscribers) {
-          subscription()
-        }
-      },
-      // Only called during server-side rendering, and hydration if using hydrateRoot
-      // https://beta.reactjs.org/apis/react/useSyncExternalStore#adding-support-for-server-rendering
-      getServerSnapshot: () => 'system',
-    }
-  }, [])
-  const scheme = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot)
+  const scheme = useSyncExternalStore<StudioThemeColorSchemeKey>(
+    subscribe,
+    getSnapshot,
+    // Only called during server-side rendering, and hydration if using hydrateRoot
+    // https://beta.reactjs.org/apis/react/useSyncExternalStore#adding-support-for-server-rendering
+    () => 'system',
+  )
 
   useEffect(() => {
     if (typeof onSchemeChange === 'function') {
@@ -114,22 +95,12 @@ export function ColorSchemeLocalStorageProvider({
   }, [onSchemeChange, scheme])
 
   return (
-    <ColorSchemeSetValueContext.Provider value={store.setSnapshot}>
+    <ColorSchemeSetValueContext.Provider value={setSnapshot}>
       <ColorSchemeValueContext.Provider value={scheme}>
         <ColorThemeProvider scheme={scheme}>{children}</ColorThemeProvider>
       </ColorSchemeValueContext.Provider>
     </ColorSchemeSetValueContext.Provider>
   )
-}
-
-function getScheme(scheme: unknown): StudioThemeColorSchemeKey {
-  switch (scheme) {
-    case 'dark':
-    case 'light':
-      return scheme
-    default:
-      return 'system'
-  }
 }
 
 /**
@@ -210,7 +181,7 @@ export function useColorSchemeOptions(
 ) {
   const scheme = useColorSchemeInternalValue()
 
-  return useMemo(() => {
+  return useMemo<ColorSchemeOption[]>(() => {
     return [
       {
         title: t('user-menu.color-scheme.system-title'),
@@ -236,6 +207,6 @@ export function useColorSchemeOptions(
         onSelect: () => setScheme('light'),
         icon: SunIcon,
       },
-    ] satisfies ColorSchemeOption[]
+    ]
   }, [scheme, setScheme, t])
 }

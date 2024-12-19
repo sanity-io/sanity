@@ -63,7 +63,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // nodes about both remote and local patches.
   // - Used by the Portable Text input to modify selections.
   // - Used by `withDocument` to reset value.
-  const patchChannel = useMemo(() => createPatchChannel(), [])
+  const [patchChannel] = useState(() => createPatchChannel())
 
   const isLocked = false //TODO: editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)

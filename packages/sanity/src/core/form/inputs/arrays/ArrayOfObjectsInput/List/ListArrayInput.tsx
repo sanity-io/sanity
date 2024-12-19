@@ -33,7 +33,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     elementProps,
     members,
     onChange,
-    onInsert,
     onItemMove,
     onUpload,
     focusPath,
@@ -113,7 +112,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
       const scroll = instance.scrollElement
 
-      const handleScroll = () => {
+      const handleScroll = (evt?: Event) => {
         const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
         const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
 
@@ -122,7 +121,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         // We pass a component that we have more control over to avoid issues when wrapped in custom component
         const itemOffset = Math.floor(parentElementTop - containerElementTop)
 
-        callback(scroll.scrollTop - itemOffset)
+        callback(scroll.scrollTop - itemOffset, Boolean(evt))
       }
 
       handleScroll()
@@ -225,7 +224,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   top: 0,
                   left: 0,
                   width: '100%',
-                  transform: `translateY(${items[0].start}px)`,
+                  transform: items.length > 0 ? `translateY(${items[0].start}px)` : undefined,
                 }}
               >
                 {items.map((virtualRow) => {

@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {useRef} from 'react'
+import {useState} from 'react'
 
 /**
  * This React hook should be considered an escape hatch – to make sure that a value is the same
@@ -9,11 +9,12 @@ import {useRef} from 'react'
  * @internal
  */
 export function useUnique<ValueType>(value: ValueType): ValueType {
-  const valueRef = useRef<ValueType>(value)
+  const [previous, setPrevious] = useState(value)
 
-  if (!isEqual(valueRef.current, value)) {
-    valueRef.current = value
+  if (!isEqual(previous, value)) {
+    setPrevious(value)
+    return value
   }
 
-  return valueRef.current
+  return previous
 }

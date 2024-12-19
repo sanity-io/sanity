@@ -105,7 +105,7 @@ const DefaultAssetSource = function DefaultAssetSource(
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
-  const _elementId = useRef(`default-asset-source-${uniqueId()}`)
+  const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
   const fetch$ = useRef<Subscription>()
@@ -229,7 +229,7 @@ const DefaultAssetSource = function DefaultAssetSource(
           context: assetType,
         })
       }
-      id={_elementId.current}
+      id={_elementId}
       onClickOutside={handleClose}
       onClose={handleClose}
       ref={ref}

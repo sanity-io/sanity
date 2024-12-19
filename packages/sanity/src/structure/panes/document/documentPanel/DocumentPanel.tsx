@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {createElement, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
@@ -74,7 +74,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed} = usePane()
   const parentPortal = usePortal()
   const {features} = useStructureTool()
-  const portalRef = useRef<HTMLDivElement | null>(null)
+  const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
 
@@ -87,7 +87,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement | null = features.splitPanes
-    ? portalRef.current || parentPortal.element
+    ? _portalElement || parentPortal.element
     : parentPortal.element
 
   // Calculate the height of the header
@@ -101,23 +101,25 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const formViewHidden = activeView.type !== 'form'
 
-  const activeViewNode = useMemo(
-    () =>
-      activeView.type === 'component' &&
-      activeView.component &&
-      createElement(activeView.component, {
-        document: {
-          draft: editState?.draft || null,
-          displayed: displayed || value,
-          historical: displayed,
-          published: editState?.published || null,
-        },
-        documentId,
-        options: activeView.options,
-        schemaType,
-      }),
-    [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value],
-  )
+  const activeViewNode = useMemo(() => {
+    if (activeView.type === 'component' && activeView.component) {
+      const ActiveViewComponent = activeView.component
+      return (
+        <ActiveViewComponent
+          document={{
+            draft: editState?.draft || null,
+            displayed: displayed || value,
+            historical: displayed,
+            published: editState?.published || null,
+          }}
+          documentId={documentId}
+          options={activeView.options}
+          schemaType={schemaType}
+        />
+      )
+    }
+    return false
+  }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
 
   const isLiveEdit = isLiveEditEnabled(schemaType)
 
@@ -231,7 +233,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
                   {inspectDialog}
 
-                  <div data-testid="document-panel-portal" ref={portalRef} />
+                  <div data-testid="document-panel-portal" ref={setPortalElement} />
                 </VirtualizerScrollInstanceProvider>
               </BoundaryElementProvider>
             </PortalProvider>
@@ -251,3 +253,4 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     </PaneContent>
   )
 }
+DocumentPanel.displayName = 'DocumentPanel'

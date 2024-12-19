@@ -2,7 +2,7 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -80,7 +80,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
+  const [previewCardElement, setPreviewCardElement] = useState<HTMLDivElement | null>(null)
   const previewCardRef = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(
+    previewCardRef,
+    () => previewCardElement,
+    [previewCardElement],
+  )
 
   // this is here to make sure the item is visible if it's being edited behind a modal
   useScrollIntoViewOnFocusWithin(previewCardRef, open)
@@ -210,7 +216,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         radius={1}
         disabled={resolvingInitialValue}
         onClick={onOpen}
-        ref={previewCardRef}
+        ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
         style={BUTTON_CARD_STYLE}
@@ -248,7 +254,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           id={value._key}
           onClose={onClose}
           autofocus={focused}
-          legacy_referenceElement={previewCardRef.current}
+          legacy_referenceElement={previewCardElement}
         >
           {children}
         </EditPortal>

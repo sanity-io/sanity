@@ -30,7 +30,7 @@ export interface Panes {
 }
 
 function useRouterPanesStream() {
-  const routerStateSubject = useMemo(() => new ReplaySubject<RouterState>(1), [])
+  const [routerStateSubject] = useState(() => new ReplaySubject<RouterState>(1))
   const routerPanes$ = useMemo(
     () =>
       routerStateSubject

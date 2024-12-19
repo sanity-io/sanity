@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {type ComponentType, createElement, isValidElement, type ReactNode, useMemo} from 'react'
+import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
@@ -37,9 +37,9 @@ export const WorkspacePreviewIcon = ({
   return <Media $size={size}>{iconComponent}</Media>
 }
 
-const createIcon = (icon: ComponentType | ReactNode) => {
-  if (isValidElementType(icon)) return createElement(icon)
-  if (isValidElement(icon)) return icon
+const createIcon = (Icon: ComponentType | ReactNode) => {
+  if (isValidElementType(Icon)) return <Icon />
+  if (isValidElement(Icon)) return Icon
   return undefined
 }
 

@@ -85,7 +85,8 @@ export function PresenceMenu() {
                 focused={focusedId === item.user.id}
                 key={item.user.id}
                 onFocus={handleItemFocus}
-                presence={item}
+                locations={item.locations}
+                user={item.user}
               />
             ))}
 

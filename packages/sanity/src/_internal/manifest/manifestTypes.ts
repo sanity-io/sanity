@@ -6,15 +6,14 @@ export type ManifestSerializable =
   | ManifestSerializable[]
 
 export interface CreateManifest {
-  version: 1
+  version: number
   createdAt: string
   workspaces: ManifestWorkspaceFile[]
 }
 
-export interface ManifestWorkspaceFile {
-  name: string
-  dataset: string
+export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
+  tools: string // filename
 }
 
 export interface CreateWorkspaceManifest {
@@ -23,7 +22,13 @@ export interface CreateWorkspaceManifest {
   subtitle?: string
   basePath: string
   dataset: string
+  projectId: string
   schema: ManifestSchemaType[]
+  tools: ManifestTool[]
+  /**
+   * returns null in the case of the icon not being able to be stringified
+   */
+  icon: string | null
 }
 
 export interface ManifestSchemaType {
@@ -82,4 +87,14 @@ export type ManifestValidationRule = {
   flag: string
   constraint?: ManifestSerializable
   [index: string]: ManifestSerializable | undefined
+}
+
+export interface ManifestTool {
+  name: string
+  title: string
+  /**
+   * returns null in the case of the icon not being able to be stringified
+   */
+  icon: string | null
+  type: string | null
 }

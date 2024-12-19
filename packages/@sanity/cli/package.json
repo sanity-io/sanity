@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.67.1",
+  "version": "3.68.1",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -58,9 +58,10 @@
   "dependencies": {
     "@babel/traverse": "^7.23.5",
     "@sanity/client": "^6.24.1",
-    "@sanity/codegen": "3.67.1",
+    "@sanity/codegen": "3.68.1",
     "@sanity/telemetry": "^0.7.7",
-    "@sanity/util": "3.67.1",
+    "@sanity/template-validator": "^1.0.2",
+    "@sanity/util": "3.68.1",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
@@ -72,8 +73,7 @@
     "prettier": "^3.3.0",
     "semver": "^7.3.5",
     "silver-fleece": "1.1.0",
-    "validate-npm-package-name": "^3.0.0",
-    "yaml": "^2.6.1"
+    "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
@@ -127,7 +127,7 @@
     "semver-compare": "^1.0.0",
     "tar": "^6.1.11",
     "vite": "^5.4.11",
-    "vitest": "^2.1.1",
+    "vitest": "^2.1.8",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
   },

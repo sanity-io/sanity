@@ -30,10 +30,10 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
     items,
     onPathSelect,
     selectedPath,
-    setScrollElement,
+    setScrollElement: setParentScrollElement,
     title,
   } = props
-  const scrollElementRef = useRef<HTMLDivElement | null>(null)
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElementRef = useRef<HTMLDivElement | null>(null)
 
   const [open, setOpen] = useState<boolean>(false)
@@ -42,11 +42,10 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
 
   const handleSetScrollElementRef = useCallback(
     (el: HTMLDivElement | null) => {
-      scrollElementRef.current = el
-
-      setScrollElement?.(el)
+      setScrollElement(el)
+      setParentScrollElement?.(el)
     },
-    [setScrollElement],
+    [setParentScrollElement],
   )
 
   return (
@@ -75,7 +74,7 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
           {children && (
             <VirtualizerScrollInstanceProvider
               containerElement={containerElementRef}
-              scrollElement={scrollElementRef.current}
+              scrollElement={scrollElement}
             >
               <Container
                 width={1}

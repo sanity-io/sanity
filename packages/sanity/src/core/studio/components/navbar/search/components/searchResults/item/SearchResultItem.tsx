@@ -19,7 +19,7 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   documentId: string
   documentType: string
   layout?: GeneralPreviewLayoutKey
-  onClick?: () => void
+  onClick?: (e: MouseEvent<HTMLElement>) => void
   onItemSelect?: ItemSelectHandler
 }
 
@@ -58,7 +58,7 @@ export function SearchResultItem({
       if (!disableIntentLink) {
         onIntentClick(e)
       }
-      onClick?.()
+      onClick?.(e)
     },
     [onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
   )

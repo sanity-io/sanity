@@ -30,7 +30,7 @@ interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
 }
 
 export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) {
-  const {onDismiss} = props
+  const {onDismiss, ...rest} = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
   return (
@@ -52,7 +52,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
       }
       open
       portal
-      {...props}
+      {...rest}
     />
   )
 }

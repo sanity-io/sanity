@@ -6,6 +6,7 @@
 **/static/*
 **/coverage/*
 **/lib/*
+**/__tests__/*
 **/node_modules/*
 **/dist/*
 *.json
@@ -28,3 +29,4 @@ scripts/*
 test/*
 **/__workshop__/*
 packages/sanity/playwright-ct/**
+**/@sanity/cli/templates/**

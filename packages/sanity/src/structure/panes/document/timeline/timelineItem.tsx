@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
+import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
   type ChunkType,
@@ -115,7 +115,7 @@ export function TimelineItem({
 }: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, endTimestamp: timestamp} = chunk
-  const iconComponent = getTimelineEventIconComponent(type)
+  const IconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const collaboratorsUsersIds = collaborators ? Array.from(collaborators) : []
   const isSelectable = type !== 'delete'
@@ -159,7 +159,7 @@ export function TimelineItem({
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
             <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-              <Text size={0}>{iconComponent && createElement(iconComponent)}</Text>
+              <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
           <Stack space={2}>

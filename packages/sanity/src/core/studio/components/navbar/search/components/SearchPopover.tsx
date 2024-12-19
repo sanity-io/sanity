@@ -4,7 +4,6 @@ import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../i18n'
 import {supportsTouch} from '../../../../../util'
 import {
   POPOVER_INPUT_PADDING,
@@ -53,7 +52,7 @@ const OVERLAY_VARIANTS: Variants = {
 
 const Y_POSITION = 12 // vh
 
-const MotionOverlay = styled(motion(Card))`
+const MotionOverlay = styled(motion.create(Card))`
   background-color: var(--card-backdrop-color);
   bottom: 0;
   left: 0;
@@ -62,7 +61,7 @@ const MotionOverlay = styled(motion(Card))`
   top: 0;
 `
 
-const SearchMotionCard = styled(motion(Card))`
+const SearchMotionCard = styled(motion.create(Card))`
   display: flex !important;
   flex-direction: column;
   left: 50%;
@@ -88,10 +87,9 @@ export function SearchPopover({
 }: SearchPopoverProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
 
-  const popoverElement = useRef<HTMLElement | null>(null)
+  const popoverElement = useRef<HTMLDivElement | null>(null)
 
   const {isTopLayer, zIndex} = useLayer()
-  const {t} = useTranslation()
 
   const {
     onClose: onSearchClose,

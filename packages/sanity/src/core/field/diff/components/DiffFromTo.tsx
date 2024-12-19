@@ -1,5 +1,5 @@
 import {type Path, type SchemaType} from '@sanity/types'
-import {createElement, type CSSProperties} from 'react'
+import {type CSSProperties} from 'react'
 
 import {type FieldPreviewComponent} from '../../preview'
 import {type Diff} from '../../types'
@@ -28,27 +28,35 @@ const cardStyles: CSSProperties = {
 
 /** @internal */
 export function DiffFromTo(props: DiffFromToProps) {
-  const {align, cardClassName, diff, layout, path, previewComponent, schemaType} = props
+  const {
+    align,
+    cardClassName,
+    diff,
+    layout,
+    path,
+    previewComponent: PreviewComponent,
+    schemaType,
+  } = props
   const {action} = diff
   const changeVerb = useChangeVerb(diff)
 
   if (action === 'unchanged') {
     return (
       <DiffCard className={cardClassName} style={cardStyles}>
-        {createElement(previewComponent, {schemaType, value: diff.toValue})}
+        <PreviewComponent schemaType={schemaType} value={diff.toValue} />
       </DiffCard>
     )
   }
 
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
     <DiffCard as="del" className={cardClassName} diff={diff} path={path} style={cardStyles}>
-      {createElement(previewComponent, {schemaType, value: diff.fromValue})}
+      <PreviewComponent schemaType={schemaType} value={diff.fromValue} />
     </DiffCard>
   )
 
   const to = diff.toValue !== undefined && diff.toValue !== null && (
     <DiffCard as="ins" className={cardClassName} diff={diff} path={path} style={cardStyles}>
-      {createElement(previewComponent, {schemaType, value: diff.toValue})}
+      <PreviewComponent schemaType={schemaType} value={diff.toValue} />
     </DiffCard>
   )
 

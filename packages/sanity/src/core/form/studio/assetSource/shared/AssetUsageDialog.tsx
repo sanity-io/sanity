@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useReferringDocuments} from '../../../../hooks/useReferringDocuments'
+import {useLegacyReferringDocuments} from '../../../../hooks/useReferringDocuments'
 import {useTranslation} from '../../../../i18n'
 import {AssetUsageList} from './AssetUsageList'
 
@@ -14,7 +14,7 @@ export interface UsageDialogProps {
 }
 
 export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) {
-  const {isLoading, referringDocuments} = useReferringDocuments(asset._id)
+  const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {
     const drafts = referringDocuments.reduce<string[]>(

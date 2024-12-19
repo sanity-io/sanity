@@ -19,6 +19,7 @@ const SvgText = styled.text`
 
 /**
  * Creates an icon element based on the input title
+ * @internal
  */
 export function createDefaultIcon(title: string, subtitle: string) {
   const rng1 = pseudoRandomNumber(`${title} ${subtitle}`)
