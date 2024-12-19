@@ -1,6 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {createElement, memo, type ReactElement} from 'react'
+import {memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -49,11 +49,15 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
     return <>{t('panes.document-header-title.error.text', {error: error.message})}</>
   }
 
+  const Icon = schemaType?.options?.icon || DocumentIcon
+
   return (
     <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0}>
       {collapsed ? (
         <>
-          <Text size={1}>{createElement(schemaType?.options?.icon || DocumentIcon)}</Text>
+          <Text size={1}>
+            <Icon />
+          </Text>
           <TitleContainer
             muted={!value?.title}
             size={1}
