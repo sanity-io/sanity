@@ -2,6 +2,7 @@ import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
+import {getPublishedId} from 'sanity'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -18,10 +19,10 @@ type RevertDocuments = RevertDocument[]
 
 type DocumentRevertStates = RevertDocuments | null | undefined
 
-export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
+export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) => {
   const client = useClient({apiVersion: API_VERSION})
   const observableClient = client.observable
-  const transactionId = documents[0]?.document._rev
+  const transactionId = releaseDocuments[0]?.document._rev
   const {dataset} = client.config()
 
   const resultPromiseRef = useRef<Promise<DocumentRevertStates> | null>(null)
@@ -40,17 +41,21 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
   }, [])
 
   const memoDocumentRevertStates = useMemo(() => {
-    if (!documents.length) return of(undefined)
+    if (!releaseDocuments.length) return of(undefined)
+
+    const publishedDocuments = releaseDocuments.map(({document}) => ({
+      ...document,
+      _id: getPublishedId(document._id),
+    }))
 
     const documentRevertStates$: Observable<RevertDocuments | null | undefined> = from(
       getTransactionsLogs(
         client,
-        documents.map(({document}) => document._id),
+        publishedDocuments.map((document) => document._id),
         {
           toTransaction: transactionId,
-          // one transaction for every document plus the publish transaction
-          limit: documents.length + 1,
-          // reverse to find the transactions immediately before publish
+          // reverse order so most recent publish before release is second element
+          // (first is the release publish itself)
           reverse: true,
         },
       ),
@@ -58,12 +63,11 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
       map((transactions) => {
         if (transactions.length === 0) throw new Error('No transactions found.')
 
-        const [publishTransaction, ...otherTransactions] = transactions
-
         const getDocumentTransaction = (docId: string) =>
-          otherTransactions.find(({documentIDs}) => documentIDs.includes(docId))?.id
+          // second element is the transaction before the release
+          transactions.filter(({documentIDs}) => documentIDs.includes(docId))[1]?.id
 
-        return documents.map(({document}) => ({
+        return publishedDocuments.map((document) => ({
           docId: document._id,
           revisionId: getDocumentTransaction(document._id),
         }))
@@ -75,7 +79,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
           docRevisionPairs.map(({docId, revisionId}) => {
             if (!revisionId) {
               const {publishedDocumentExists, ...unpublishDocument} =
-                documents.find(({document}) => document._id === docId)?.document || {}
+                publishedDocuments.find((document) => document._id === docId) || {}
 
               return of({
                 ...unpublishDocument,
@@ -107,7 +111,7 @@ export const useDocumentRevertStates = (documents: DocumentInRelease[]) => {
     )
 
     return documentRevertStates$
-  }, [client, documents, transactionId, observableClient, dataset])
+  }, [client, releaseDocuments, transactionId, observableClient, dataset])
 
   const documentRevertStatesResult = useObservable(memoDocumentRevertStates, null)
 
