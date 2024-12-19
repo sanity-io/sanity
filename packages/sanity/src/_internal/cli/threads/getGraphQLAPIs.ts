@@ -7,13 +7,16 @@ import oneline from 'oneline'
 import {type Workspace} from 'sanity'
 
 import {type SchemaDefinitionish, type TypeResolvedGraphQLAPI} from '../actions/graphql/types'
+import {withTracingProfiling} from '../debug'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 
-if (isMainThread || !parentPort) {
+const port = parentPort
+
+if (isMainThread || !port) {
   throw new Error('This module must be run as a worker thread')
 }
 
-getGraphQLAPIsForked(parentPort)
+withTracingProfiling('getGraphQLAPIs', async () => getGraphQLAPIsForked(port))
 
 async function getGraphQLAPIsForked(parent: MessagePort): Promise<void> {
   const {cliConfig, cliConfigPath, workDir} = workerData

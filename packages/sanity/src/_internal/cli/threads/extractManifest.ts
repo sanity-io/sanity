@@ -1,6 +1,7 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {extractCreateWorkspaceManifest} from '../../manifest/extractWorkspaceManifest'
+import {withTracingProfiling} from '../debug'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
@@ -30,4 +31,4 @@ async function main() {
   }
 }
 
-main()
+withTracingProfiling('extractManifest', main)
