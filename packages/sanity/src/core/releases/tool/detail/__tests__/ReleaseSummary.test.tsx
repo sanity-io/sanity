@@ -1,8 +1,10 @@
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
+import React, {type PropsWithChildren, useState} from 'react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
+import {setupVirtualisedEnvironment} from '../../../../../../test/testUtils/setupVirtualisedEnvironment'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
 import {
@@ -78,6 +80,16 @@ const releaseDocuments: DocumentInRelease[] = [
   },
 ]
 
+const ScrollContainer: React.FC<PropsWithChildren> = ({children}) => {
+  const [ref, setRef] = useState<HTMLDivElement | null>(null)
+
+  return (
+    <div style={{height: '400px'}} ref={setRef}>
+      {React.cloneElement(children as React.ReactElement, {scrollContainerRef: {current: ref}})}
+    </div>
+  )
+}
+
 const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
@@ -91,88 +103,90 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
       onNavigate={vi.fn()}
       router={route.create('/', [route.create('/:releaseId'), route.intents('/intents')])}
     >
-      <ReleaseSummary
-        scrollContainerRef={{current: null}}
-        documents={releaseDocuments}
-        documentsHistory={{
-          '123': {
-            createdBy: 'created-author-id-1',
-            lastEditedBy: 'edited-author-id-1',
-            editors: ['edited-author-id-1'],
-            history: [
-              {
-                id: '123',
-                timestamp: '2024-11-04T07:53:25Z',
-                author: 'pJ61yWhkD',
-                documentIDs: ['versions.abc.123'],
-                effects: {
-                  'versions.abc.123': {
-                    apply: [
-                      0,
-                      {
-                        _createdAt: '2024-11-04T07:53:25Z',
-                        _id: 'versions.abc.123',
-                        _type: 'book',
-                        _updatedAt: '2024-11-04T07:53:25Z',
-                        address: {
-                          city: 'Stockholm',
-                          country: 'Sweden',
+      <ScrollContainer>
+        <ReleaseSummary
+          scrollContainerRef={{current: null}}
+          documents={releaseDocuments}
+          documentsHistory={{
+            '123': {
+              createdBy: 'created-author-id-1',
+              lastEditedBy: 'edited-author-id-1',
+              editors: ['edited-author-id-1'],
+              history: [
+                {
+                  id: '123',
+                  timestamp: '2024-11-04T07:53:25Z',
+                  author: 'pJ61yWhkD',
+                  documentIDs: ['versions.abc.123'],
+                  effects: {
+                    'versions.abc.123': {
+                      apply: [
+                        0,
+                        {
+                          _createdAt: '2024-11-04T07:53:25Z',
+                          _id: 'versions.abc.123',
+                          _type: 'book',
+                          _updatedAt: '2024-11-04T07:53:25Z',
+                          address: {
+                            city: 'Stockholm',
+                            country: 'Sweden',
+                          },
+                          publishedAt: '2020-02-03T21:36:34.980Z',
+                          title: 'sdfsadfadsf sdf',
+                          translations: {
+                            no: '0',
+                            se: '0',
+                          },
                         },
-                        publishedAt: '2020-02-03T21:36:34.980Z',
-                        title: 'sdfsadfadsf sdf',
-                        translations: {
-                          no: '0',
-                          se: '0',
-                        },
-                      },
-                    ],
-                    revert: [0, null],
+                      ],
+                      revert: [0, null],
+                    },
                   },
                 },
-              },
-            ],
-          },
-          '456': {
-            createdBy: 'created-author-id-2',
-            lastEditedBy: 'edited-author-id-2',
-            editors: ['edited-author-id-1', 'edited-author-id-2'],
-            history: [
-              {
-                id: '456',
-                timestamp: '2024-11-04T07:53:25Z',
-                author: 'pJ61yWhkD',
-                documentIDs: ['versions.abc.456'],
-                effects: {
-                  'versions.abc.456': {
-                    apply: [
-                      0,
-                      {
-                        _createdAt: '2024-11-04T07:53:25Z',
-                        _id: 'versions.abc.456',
-                        _type: 'book',
-                        _updatedAt: '2024-11-04T07:53:25Z',
-                        address: {
-                          city: 'Stockholm',
-                          country: 'Sweden',
+              ],
+            },
+            '456': {
+              createdBy: 'created-author-id-2',
+              lastEditedBy: 'edited-author-id-2',
+              editors: ['edited-author-id-1', 'edited-author-id-2'],
+              history: [
+                {
+                  id: '456',
+                  timestamp: '2024-11-04T07:53:25Z',
+                  author: 'pJ61yWhkD',
+                  documentIDs: ['versions.abc.456'],
+                  effects: {
+                    'versions.abc.456': {
+                      apply: [
+                        0,
+                        {
+                          _createdAt: '2024-11-04T07:53:25Z',
+                          _id: 'versions.abc.456',
+                          _type: 'book',
+                          _updatedAt: '2024-11-04T07:53:25Z',
+                          address: {
+                            city: 'Stockholm',
+                            country: 'Sweden',
+                          },
+                          publishedAt: '2020-02-03T21:36:34.980Z',
+                          title: 'sdfsadfadsf sdf',
+                          translations: {
+                            no: '0',
+                            se: '0',
+                          },
                         },
-                        publishedAt: '2020-02-03T21:36:34.980Z',
-                        title: 'sdfsadfadsf sdf',
-                        translations: {
-                          no: '0',
-                          se: '0',
-                        },
-                      },
-                    ],
-                    revert: [0, null],
+                      ],
+                      revert: [0, null],
+                    },
                   },
                 },
-              },
-            ],
-          },
-        }}
-        release={activeASAPRelease}
-        {...props}
-      />
+              ],
+            },
+          }}
+          release={activeASAPRelease}
+          {...props}
+        />
+      </ScrollContainer>
     </RouterProvider>,
     {
       wrapper,
@@ -181,6 +195,8 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
 }
 
 describe('ReleaseSummary', () => {
+  setupVirtualisedEnvironment()
+
   describe('for an active release', () => {
     beforeEach(async () => {
       await renderTest({})
