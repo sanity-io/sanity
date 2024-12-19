@@ -848,9 +848,6 @@ importers:
       semver:
         specifier: ^7.3.5
         version: 7.6.3
-      silver-fleece:
-        specifier: 1.1.0
-        version: 1.1.0
       validate-npm-package-name:
         specifier: ^3.0.0
         version: 3.0.0
@@ -10977,9 +10974,6 @@ packages:
   sigstore@2.3.1:
     resolution: {integrity: sha512-8G+/XDU8wNsJOQS5ysDVO0Etg9/2uA5gR9l4ZwijjlwxBcrU6RPfwi2+jJmbP+Ap1Hlp/nVAaEO4Fj22/SL2gQ==}
     engines: {node: ^16.14.0 || >=18.0.0}
-
-  silver-fleece@1.1.0:
-    resolution: {integrity: sha512-V3vShUiLRVPMu9aSWpU5kLDoU/HO7muJKE236EO663po3YxivAkMLbRg+amV/FhbIfF5bWXX5TVX+VYmRaOBFA==}
 
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
@@ -23082,8 +23076,6 @@ snapshots:
       '@sigstore/verify': 1.2.1
     transitivePeerDependencies:
       - supports-color
-
-  silver-fleece@1.1.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
