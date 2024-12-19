@@ -12,6 +12,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react'
 
 import {Button} from '../../../button'
@@ -59,13 +60,16 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate = new Date(),
-    focusedDate = selectedDate,
+    selectedDate: _selectedDate,
+    focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
     labels,
     ...restProps
   } = props
+  const [fallbackDate] = useState(() => new Date())
+  const selectedDate = _selectedDate ?? fallbackDate
+  const focusedDate = _focusedDate ?? selectedDate
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),

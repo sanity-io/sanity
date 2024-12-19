@@ -23,6 +23,7 @@ dev/starter-next-studio/*
 dev/starter-studio/*
 dev/strict-studio/*
 dev/studio-e2e-studio/*
+dev/test-studio/*
 examples/*
 perf/*
 scripts/*

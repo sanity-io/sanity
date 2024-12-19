@@ -188,36 +188,66 @@ export function TextBlock(props: TextBlockProps) {
   const parentSchemaType = editor.schemaTypes.portableText
   const referenceElement = divElement
 
-  const componentProps: BlockProps = useMemo(
-    () => ({
-      __unstable_floatingBoundary: floatingBoundary,
-      __unstable_referenceBoundary: referenceBoundary,
-      __unstable_referenceElement: referenceElement,
-      children: text,
-      focused,
-      markers,
-      onClose: onItemClose,
-      onOpen,
-      onPathFocus,
-      onRemove,
-      open: isOpen,
-      parentSchemaType,
-      path: memberItem?.node.path || EMPTY_ARRAY,
-      presence: textPresence,
-      readOnly: Boolean(readOnly),
-      renderAnnotation,
-      renderBlock,
-      renderDefault: DefaultComponent,
-      renderField,
-      renderInput,
-      renderInlineBlock,
-      renderItem,
-      renderPreview,
-      schemaType,
-      selected,
-      validation,
-      value,
-    }),
+  const toolTipContent = useMemo(
+    () =>
+      (tooltipEnabled && (
+        <TooltipBox>
+          <Markers
+            markers={markers}
+            renderCustomMarkers={renderCustomMarkers}
+            validation={validation}
+          />
+        </TooltipBox>
+      )) ||
+      null,
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
+  )
+
+  const blockActionsEnabled = renderBlockActions && !readOnly
+  const changeIndicatorVisible = isFullscreen && memberItem
+
+  const setRef = useCallback(
+    (elm: HTMLDivElement) => {
+      if (memberItem) {
+        setElementRef({key: memberItem.member.key, elementRef: elm})
+      }
+      setDivElement(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem, setElementRef, setDivElement],
+  )
+  const renderedBlock = useMemo(
+    () =>
+      renderBlock &&
+      renderBlock({
+        __unstable_floatingBoundary: floatingBoundary,
+        __unstable_referenceBoundary: referenceBoundary,
+        __unstable_referenceElement: referenceElement,
+        children: text,
+        focused,
+        markers,
+        onClose: onItemClose,
+        onOpen,
+        onPathFocus,
+        onRemove,
+        open: isOpen,
+        parentSchemaType,
+        path: memberItem?.node.path || EMPTY_ARRAY,
+        presence: textPresence,
+        readOnly: Boolean(readOnly),
+        renderAnnotation,
+        renderBlock,
+        // @ts-expect-error - @TODO is renderDefault just missing from types, or really not needed?
+        renderDefault: DefaultComponent,
+        renderField,
+        renderInput,
+        renderInlineBlock,
+        renderItem,
+        renderPreview,
+        schemaType,
+        selected,
+        validation,
+        value,
+      }),
     [
       floatingBoundary,
       focused,
@@ -248,119 +278,65 @@ export function TextBlock(props: TextBlockProps) {
     ],
   )
 
-  const toolTipContent = useMemo(
-    () =>
-      (tooltipEnabled && (
-        <TooltipBox>
-          <Markers
-            markers={markers}
-            renderCustomMarkers={renderCustomMarkers}
-            validation={validation}
-          />
-        </TooltipBox>
-      )) ||
-      null,
-    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
-  )
-
-  const blockActionsEnabled = renderBlockActions && !readOnly
-  const changeIndicatorVisible = isFullscreen && memberItem
-
-  const setRef = useCallback(
-    (elm: HTMLDivElement) => {
-      if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
-      }
-      setDivElement(elm) // update state here so the reference element is available on first render
-    },
-    [memberItem, setElementRef, setDivElement],
-  )
-
-  return useMemo(
-    () => (
-      <Box {...outerPaddingProps} data-testid="text-block" ref={setRef} style={debugRender()}>
-        <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex flex={1} {...innerPaddingProps}>
-            <Box flex={1}>
-              <Tooltip
-                content={toolTipContent}
-                disabled={!tooltipEnabled}
-                placement="top"
-                portal="editor"
+  return (
+    <Box {...outerPaddingProps} data-testid="text-block" ref={setRef} style={debugRender()}>
+      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+        <Flex flex={1} {...innerPaddingProps}>
+          <Box flex={1}>
+            <Tooltip
+              content={toolTipContent}
+              disabled={!tooltipEnabled}
+              placement="top"
+              portal="editor"
+            >
+              <TextRoot
+                $level={value.level || 1}
+                data-error={hasError ? '' : undefined}
+                data-list-item={value.listItem}
+                data-markers={hasMarkers ? '' : undefined}
+                data-read-only={readOnly}
+                data-testid="text-block__text"
+                data-warning={hasWarning ? '' : undefined}
+                spellCheck={spellCheck}
               >
-                <TextRoot
-                  $level={value.level || 1}
-                  data-error={hasError ? '' : undefined}
-                  data-list-item={value.listItem}
-                  data-markers={hasMarkers ? '' : undefined}
-                  data-read-only={readOnly}
-                  data-testid="text-block__text"
-                  data-warning={hasWarning ? '' : undefined}
-                  spellCheck={spellCheck}
-                >
-                  {renderBlock && renderBlock(componentProps)}
-                </TextRoot>
-              </Tooltip>
-            </Box>
+                {renderedBlock}
+              </TextRoot>
+            </Tooltip>
+          </Box>
 
-            {blockActionsEnabled && (
-              <BlockActionsOuter contentEditable={false} marginRight={3}>
-                <BlockActionsInner>
-                  {focused && (
-                    <BlockActions
-                      block={value}
-                      onChange={onChange}
-                      renderBlockActions={renderBlockActions}
-                    />
-                  )}
-                </BlockActionsInner>
-              </BlockActionsOuter>
-            )}
+          {blockActionsEnabled && (
+            <BlockActionsOuter contentEditable={false} marginRight={3}>
+              <BlockActionsInner>
+                {focused && (
+                  <BlockActions
+                    block={value}
+                    onChange={onChange}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
 
-            {changeIndicatorVisible && (
-              <ChangeIndicatorWrapper
-                $hasChanges={memberItem.member.item.changed}
-                contentEditable={false}
-                onMouseEnter={handleChangeIndicatorMouseEnter}
-                onMouseLeave={handleChangeIndicatorMouseLeave}
-              >
-                <StyledChangeIndicatorWithProvidedFullPath
-                  hasFocus={focused}
-                  isChanged={memberItem.member.item.changed}
-                  path={memberItem.member.item.path}
-                  withHoverEffect={false}
-                />
-              </ChangeIndicatorWrapper>
-            )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-          </Flex>
-        </TextBlockFlexWrapper>
-      </Box>
-    ),
-    [
-      blockActionsEnabled,
-      changeIndicatorVisible,
-      componentProps,
-      focused,
-      handleChangeIndicatorMouseEnter,
-      handleChangeIndicatorMouseLeave,
-      hasError,
-      hasMarkers,
-      hasWarning,
-      innerPaddingProps,
-      memberItem,
-      onChange,
-      outerPaddingProps,
-      readOnly,
-      renderBlock,
-      renderBlockActions,
-      reviewChangesHovered,
-      setRef,
-      spellCheck,
-      toolTipContent,
-      tooltipEnabled,
-      value,
-    ],
+          {changeIndicatorVisible && (
+            <ChangeIndicatorWrapper
+              $hasChanges={memberItem.member.item.changed}
+              contentEditable={false}
+              onMouseEnter={handleChangeIndicatorMouseEnter}
+              onMouseLeave={handleChangeIndicatorMouseLeave}
+            >
+              <StyledChangeIndicatorWithProvidedFullPath
+                hasFocus={focused}
+                isChanged={memberItem.member.item.changed}
+                path={memberItem.member.item.path}
+                withHoverEffect={false}
+              />
+            </ChangeIndicatorWrapper>
+          )}
+          {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+        </Flex>
+      </TextBlockFlexWrapper>
+    </Box>
   )
 }
 
