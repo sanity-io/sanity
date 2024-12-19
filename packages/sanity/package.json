@@ -274,7 +274,7 @@
     "@sanity/codegen": "3.68.2",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.12.2",
-    "@sanity/tsdoc": "1.0.152",
+    "@sanity/tsdoc": "1.0.153",
     "@sanity/ui-workshop": "^1.2.11",
     "@sentry/types": "^8.12.0",
     "@testing-library/jest-dom": "^6.4.8",
