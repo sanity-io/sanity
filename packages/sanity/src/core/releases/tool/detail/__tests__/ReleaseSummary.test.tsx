@@ -1,10 +1,10 @@
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
-import React, {type PropsWithChildren, useState} from 'react'
+import {cloneElement, type FC, type PropsWithChildren, type ReactElement, useState} from 'react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
-import {setupVirtualisedEnvironment} from '../../../../../../test/testUtils/setupVirtualisedEnvironment'
+import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
 import {
@@ -80,12 +80,12 @@ const releaseDocuments: DocumentInRelease[] = [
   },
 ]
 
-const ScrollContainer: React.FC<PropsWithChildren> = ({children}) => {
+const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
 
   return (
     <div style={{height: '400px'}} ref={setRef}>
-      {React.cloneElement(children as React.ReactElement, {scrollContainerRef: {current: ref}})}
+      {cloneElement(children as ReactElement, {scrollContainerRef: {current: ref}})}
     </div>
   )
 }
@@ -195,7 +195,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
 }
 
 describe('ReleaseSummary', () => {
-  setupVirtualisedEnvironment()
+  setupVirtualListEnv()
 
   describe('for an active release', () => {
     beforeEach(async () => {

@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, vi} from 'vitest'
 
-export const setupVirtualisedEnvironment = (
+export const setupVirtualListEnv = (
   dataTestId?: string,
   rectWidth: number = 350,
   rectHeight: number = 800,
