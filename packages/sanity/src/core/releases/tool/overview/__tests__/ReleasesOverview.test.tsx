@@ -1,9 +1,11 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
+import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
+import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
   getLocalTimeZoneMockReturn,
@@ -77,10 +79,33 @@ vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOrigin
   default: vi.fn(() => useTimeZoneMockReturn),
 }))
 
+const getWrapper = () =>
+  createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
+
+/**
+ * To resolve issues with size render with Virtual list (as described
+ * here: https://github.com/TanStack/virtual/issues/641), must rerender
+ * ReleasesOverview once the exact height wrapper has mounted
+ */
+const TestComponent = () => {
+  const [hasWrapperRendered, setHasWrapperRendered] = useState<boolean>(false)
+  const updateWrapperRendered = () => setHasWrapperRendered(true)
+
+  return (
+    <div style={{height: '400px'}} ref={updateWrapperRendered}>
+      <ReleasesOverview data-wrapperRendered={hasWrapperRendered?.toString()} />
+    </div>
+  )
+}
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseReleases.mockRestore()
   })
+
+  setupVirtualListEnv()
 
   describe('when loading releases', () => {
     beforeEach(async () => {
@@ -90,7 +115,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<ReleasesOverview />, {wrapper})
+      return render(<TestComponent />, {wrapper})
     })
 
     it('does not show releases table but shows loader', () => {
@@ -124,7 +149,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<ReleasesOverview />, {wrapper})
+      return render(<TestComponent />, {wrapper})
     })
 
     it('shows a message about releases', () => {
@@ -165,6 +190,14 @@ describe('ReleasesOverview', () => {
 
     let activeRender: ReturnType<typeof render>
 
+    const rerender = async () => {
+      activeRender.unmount()
+
+      const wrapper = await getWrapper()
+
+      return render(<TestComponent />, {wrapper})
+    }
+
     beforeEach(async () => {
       mockUseTimeZone.mockRestore()
       mockUseReleases.mockReturnValue({
@@ -184,12 +217,10 @@ describe('ReleasesOverview', () => {
         ),
       })
 
-      const wrapper = await createTestProvider({
-        resources: [releasesUsEnglishLocaleBundle],
-      })
+      const wrapper = await getWrapper()
 
       return act(() => {
-        activeRender = render(<ReleasesOverview />, {wrapper})
+        activeRender = render(<TestComponent />, {wrapper})
       })
     })
 
@@ -249,7 +280,7 @@ describe('ReleasesOverview', () => {
       expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
     })
 
-    it('will show pinned release in release list', () => {
+    it('will show pinned release in release list', async () => {
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockReturn,
         selectedPerspective: activeASAPRelease,
@@ -257,7 +288,7 @@ describe('ReleasesOverview', () => {
       })
 
       // re-render to apply the update to global bundle id
-      activeRender.rerender(<ReleasesOverview />)
+      await rerender()
 
       const releaseRows = screen.getAllByTestId('table-row')
       const pinnedReleaseRow = releaseRows[0]
@@ -329,7 +360,7 @@ describe('ReleasesOverview', () => {
         within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
       })
 
-      it('shows dates with timezone abbreviation when it is not the locale', () => {
+      it('shows dates with timezone abbreviation when it is not the locale', async () => {
         mockGetLocaleTimeZone.mockReturnValue({
           abbreviation: 'NST', // Not Sanity Time
           namePretty: 'Not Sanity Time',
@@ -340,7 +371,7 @@ describe('ReleasesOverview', () => {
           value: 'Not Sanity Time',
         })
 
-        activeRender.rerender(<ReleasesOverview />)
+        await rerender()
 
         const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
 
@@ -355,8 +386,6 @@ describe('ReleasesOverview', () => {
             // spoof a timezone that is 8 hours ahead of UTC
             zoneDateToUtc: vi.fn((date) => set(date, {hours: new Date(date).getHours() - 8})),
           })
-
-          activeRender.rerender(<ReleasesOverview />)
         })
 
         it('shows today as having no releases', () => {
