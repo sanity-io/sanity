@@ -1,7 +1,6 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
 import {useState} from 'react'
-// import {usePerspective} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -201,8 +200,6 @@ describe('ReleasesOverview', () => {
 
     beforeEach(async () => {
       mockUseTimeZone.mockRestore()
-      mockGetLocaleTimeZone.mockRestore()
-      mockUsePerspective.mockRestore()
       mockUseReleases.mockReturnValue({
         ...useReleasesMockReturn,
         archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
