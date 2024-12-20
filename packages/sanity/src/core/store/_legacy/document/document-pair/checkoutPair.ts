@@ -252,8 +252,8 @@ export function checkoutPair(
       consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
-    // Use this to keep the listener connection active.
+    // Use this to keep the mutation pipeline active.
     // It won't ever emit any events, but it will prevent the eventsource connection from completing for as long as it is subscribed to
-    _keepalive: listenerEvents$.pipe(mergeMap(() => EMPTY)),
+    _keepalive: commits$.pipe(mergeMap(() => EMPTY)),
   }
 }
