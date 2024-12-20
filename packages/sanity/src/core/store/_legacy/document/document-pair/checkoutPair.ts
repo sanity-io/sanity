@@ -2,7 +2,7 @@ import {type Action, type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
+import {EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
 import {
@@ -65,7 +65,7 @@ export interface Pair {
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
-  complete: () => void
+  _keepalive: Observable<never>
 }
 
 function setVersion<T>(version: 'draft' | 'published') {
@@ -204,10 +204,7 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId} = idPair
 
-  const listenerEventsConnector = new Subject<ListenerEvent>()
-  const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(
-    share({connector: () => listenerEventsConnector}),
-  )
+  const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(share())
 
   const reconnect$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect'),
@@ -255,6 +252,8 @@ export function checkoutPair(
       consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
-    complete: () => listenerEventsConnector.complete(),
+    // Use this to keep the listener connection active.
+    // It won't ever emit any events, but it will prevent the eventsource connection from completing for as long as it is subscribed to
+    _keepalive: listenerEvents$.pipe(mergeMap(() => EMPTY)),
   }
 }
