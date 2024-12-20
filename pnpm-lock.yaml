@@ -1241,9 +1241,6 @@ importers:
       '@sanity/client':
         specifier: ^6.24.1
         version: 6.24.1(debug@4.4.0)
-      '@types/react':
-        specifier: ^18.3.5
-        version: 18.3.17
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*
@@ -1254,6 +1251,9 @@ importers:
       '@sanity/insert-menu':
         specifier: 1.0.16
         version: 1.0.16(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react-is@19.0.0-rc.1)(react@18.3.1)(styled-components@6.1.13(react-dom@19.0.0-rc-f994737d14-20240522(react@18.3.1))(react@18.3.1))
+      '@types/react':
+        specifier: ^18.3.5
+        version: 18.3.17
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@6.0.3(@types/node@22.10.2)(terser@5.37.0)(yaml@2.6.1))
