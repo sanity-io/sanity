@@ -254,6 +254,6 @@ export function checkoutPair(
     },
     // Use this to keep the mutation pipeline active.
     // It won't ever emit any events, but it will prevent the eventsource connection from completing for as long as it is subscribed to
-    _keepalive: commits$.pipe(mergeMap(() => EMPTY)),
+    _keepalive: merge(listenerEvents$, commits$).pipe(mergeMap(() => EMPTY)),
   }
 }
