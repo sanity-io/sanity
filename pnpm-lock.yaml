@@ -382,7 +382,7 @@ importers:
         specifier: ^2.10.11
         version: 2.10.11(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/vision':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../../packages/@sanity/vision
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-201e55d-20241215
@@ -478,7 +478,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.9(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.3.1(react@18.3.1))(react-is@19.0.0-rc.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/block-tools':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
         specifier: ^6.24.1
@@ -653,7 +653,7 @@ importers:
   examples/ecommerce-studio:
     dependencies:
       '@sanity/cli':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
         specifier: ^2.10.11
@@ -758,7 +758,7 @@ importers:
   packages/@sanity/block-tools:
     dependencies:
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../types
       '@types/react':
         specifier: ^18.3.5
@@ -777,7 +777,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/test-config
       '@sanity/schema':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../schema
       '@types/jsdom':
         specifier: ^20.0.0
@@ -807,7 +807,7 @@ importers:
         specifier: ^6.24.1
         version: 6.24.1(debug@4.4.0)
       '@sanity/codegen':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.7
@@ -816,7 +816,7 @@ importers:
         specifier: ^1.0.2
         version: 1.0.3(@types/babel__core@7.20.5)(@types/node@22.10.2)(debug@4.4.0)
       '@sanity/util':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../util
       chalk:
         specifier: ^4.1.2
@@ -1110,10 +1110,10 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(debug@4.4.0)
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../types
       '@sanity/util':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../util
       arrify:
         specifier: ^2.0.1
@@ -1153,7 +1153,7 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../types
       '@sanity/uuid':
         specifier: ^3.0.1
@@ -1190,7 +1190,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../types
       arrify:
         specifier: ^2.0.1
@@ -1273,7 +1273,7 @@ importers:
         specifier: ^6.24.1
         version: 6.24.1(debug@4.4.0)
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../types
       get-random-values-esm:
         specifier: 1.0.2
@@ -1416,7 +1416,7 @@ importers:
   packages/create-sanity:
     dependencies:
       '@sanity/cli':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/cli
       resolve-pkg:
         specifier: ^2.0.0
@@ -1461,10 +1461,10 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       '@sanity/block-tools':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/block-tools
       '@sanity/cli':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/cli
       '@sanity/client':
         specifier: ^6.24.1
@@ -1473,7 +1473,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/diff':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
@@ -1500,28 +1500,28 @@ importers:
         specifier: ^2.1.4
         version: 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
       '@sanity/migrate':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/migrate
       '@sanity/mutator':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/mutator
       '@sanity/presentation':
         specifier: 1.19.13
         version: 1.19.13(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/schema
       '@sanity/telemetry':
         specifier: ^0.7.7
         version: 0.7.9(react@18.3.1)
       '@sanity/types':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: ^2.10.11
         version: 2.10.11(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/util':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/util
       '@sanity/uuid':
         specifier: ^3.0.1
@@ -1795,7 +1795,7 @@ importers:
         specifier: workspace:*
         version: link:../@repo/test-config
       '@sanity/codegen':
-        specifier: 3.68.2
+        specifier: 3.68.3
         version: link:../@sanity/codegen
       '@sanity/generate-help-url':
         specifier: ^3.0.0
