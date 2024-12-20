@@ -1,4 +1,4 @@
-import {existsSync, readFileSync} from 'node:fs'
+import {existsSync} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -11,7 +11,6 @@ import {deburr, noop} from 'lodash'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
-import {evaluate, patch} from 'silver-fleece'
 
 import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
 import {type InitFlags} from '../../commands/init/initCommand'
@@ -433,21 +432,6 @@ export default async function initSanity(
     const templateToUse = unattended ? 'clean' : await promptForNextTemplate(prompt)
 
     await writeSourceFiles(sanityFolder(useTypeScript, templateToUse), undefined, hasSrcFolder)
-
-    // set tsconfig.json target to ES2017
-    const tsConfigPath = path.join(workDir, 'tsconfig.json')
-
-    if (useTypeScript && existsSync(tsConfigPath)) {
-      const tsConfigFile = readFileSync(tsConfigPath, 'utf8')
-      const config = evaluate(tsConfigFile)
-
-      if (config.compilerOptions.target?.toLowerCase() !== 'es2017') {
-        config.compilerOptions.target = 'ES2017'
-
-        const newConfig = patch(tsConfigFile, config)
-        await fs.writeFile(tsConfigPath, Buffer.from(newConfig))
-      }
-    }
 
     const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
 
