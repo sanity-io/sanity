@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, from, map, of} from 'rxjs'
+import {getPublishedId} from 'sanity'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
@@ -17,7 +18,7 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
     return from(
       getTransactionsLogs(
         client,
-        documents.map(({document}) => document._id),
+        documents.map(({document}) => getPublishedId(document._id)),
         {
           fromTransaction: transactionId,
           // publish transaction + at least one post publish transaction
