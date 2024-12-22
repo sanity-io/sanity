@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type UserApplication} from '../helpers'
 import * as _helpers from '../helpers'
-import undeployStudioAction from '../undeployAction'
+import undeployStudioAction, {type UndeployStudioActionFlags} from '../undeployAction'
 
 // Mock dependencies
 vi.mock('../helpers')
@@ -58,7 +58,7 @@ describe('undeployStudioAction', () => {
   it('does nothing if there is no user application', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(null)
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
       'Your project has not been assigned a studio hostname',
@@ -76,7 +76,7 @@ describe('undeployStudioAction', () => {
       true,
     ) // User confirms
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -99,7 +99,7 @@ describe('undeployStudioAction', () => {
       false,
     ) // User cancels
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -107,6 +107,32 @@ describe('undeployStudioAction', () => {
       message: expect.stringContaining('undeploy'),
     })
     expect(helpers.deleteUserApplication).not.toHaveBeenCalled()
+  })
+
+  it(`if running in unattended mode, it doesn't prompt the user for confirmation`, async () => {
+    helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
+
+    await undeployStudioAction(
+      {extOptions: {yes: true}} as CliCommandArguments<UndeployStudioActionFlags>,
+      mockContext,
+    )
+
+    expect(mockContext.prompt.single).not.toHaveBeenCalledWith({
+      type: 'confirm',
+      default: false,
+      message: expect.stringContaining('undeploy'),
+    })
+    expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+    })
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('Studio undeploy scheduled.'),
+    )
   })
 
   it('handles errors during the undeploy process', async () => {
@@ -118,7 +144,7 @@ describe('undeployStudioAction', () => {
     ) // User confirms
 
     await expect(
-      undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
+      undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext),
     ).rejects.toThrow(errorMessage)
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()
