@@ -31,6 +31,9 @@ interface FormViewProps {
 
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
+/**
+ * @internal
+ */
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 

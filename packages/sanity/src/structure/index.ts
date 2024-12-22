@@ -11,6 +11,7 @@ export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from 
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
+export {FormView as FormViewComponent} from './panes/document/documentPanel/documentViews'
 export {type DocumentPaneProviderProps} from './panes/document/types'
 export * from './panes/document/useDocumentPane'
 export * from './panes/documentList'
