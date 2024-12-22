@@ -60,7 +60,7 @@
     "@sanity/client": "^6.24.1",
     "@sanity/codegen": "3.68.3",
     "@sanity/telemetry": "^0.7.7",
-    "@sanity/template-validator": "^1.2.1",
+    "@sanity/template-validator": "1.2.1",
     "@sanity/util": "3.68.3",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
