@@ -32,7 +32,7 @@ export interface RevertInfo {
  * @internal
  */
 export const AddedVersion = defineEvent<VersionInfo>({
-  name: 'Add version of document to release',
+  name: 'Version Document Added to Release ',
   version: 1,
   description: 'User added a document to a release',
 })
@@ -41,7 +41,7 @@ export const AddedVersion = defineEvent<VersionInfo>({
  * @internal
  */
 export const CreatedRelease = defineEvent<OriginInfo>({
-  name: 'Create release',
+  name: 'Release Created',
   version: 1,
   description: 'User created a release',
 })
@@ -50,7 +50,7 @@ export const CreatedRelease = defineEvent<OriginInfo>({
  * @internal
  */
 export const UpdatedRelease = defineEvent({
-  name: 'Update release',
+  name: 'Release Updated',
   version: 1,
   description: 'User updated a release',
 })
@@ -59,7 +59,7 @@ export const UpdatedRelease = defineEvent({
  * @internal
  */
 export const DeletedRelease = defineEvent({
-  name: 'Delete release',
+  name: 'Release Deleted',
   version: 1,
   description: 'User deleted a release',
 })
@@ -68,7 +68,7 @@ export const DeletedRelease = defineEvent({
  * @internal
  */
 export const PublishedRelease = defineEvent({
-  name: 'Publish release',
+  name: 'Release Published',
   version: 1,
   description: 'User published a release',
 })
@@ -77,7 +77,7 @@ export const PublishedRelease = defineEvent({
  * @internal
  */
 export const ScheduledRelease = defineEvent({
-  name: 'Schedule release',
+  name: 'Release Scheduled',
   version: 1,
   description: 'User scheduled a release',
 })
@@ -86,7 +86,7 @@ export const ScheduledRelease = defineEvent({
  * @internal
  */
 export const UnscheduledRelease = defineEvent({
-  name: 'Unschedule release',
+  name: 'Release Unscheduled',
   version: 1,
   description: 'User unscheduled a release',
 })
@@ -95,7 +95,7 @@ export const UnscheduledRelease = defineEvent({
  * @internal
  */
 export const ArchivedRelease = defineEvent({
-  name: 'Archive release',
+  name: 'Release Archived',
   version: 1,
   description: 'User archived a release',
 })
@@ -104,7 +104,7 @@ export const ArchivedRelease = defineEvent({
  * @internal
  */
 export const UnarchivedRelease = defineEvent({
-  name: 'Unarchive release',
+  name: 'Release Unarchived',
   version: 1,
   description: 'User unarchived a release',
 })
@@ -113,7 +113,7 @@ export const UnarchivedRelease = defineEvent({
  * @internal
  */
 export const RevertRelease = defineEvent<RevertInfo>({
-  name: 'Revert release',
+  name: 'Release Reverted',
   version: 1,
   description: 'User reverted a release',
 })
