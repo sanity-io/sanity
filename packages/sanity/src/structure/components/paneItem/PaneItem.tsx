@@ -9,10 +9,11 @@ import {Box, type CardProps, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
-  type ReactNode,
+  startTransition,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -22,6 +23,7 @@ import {
   SanityDefaultPreview,
   useDocumentPresence,
   useDocumentPreviewStore,
+  useEditState,
   useSchema,
 } from 'sanity'
 
@@ -124,14 +126,6 @@ export function PaneItem(props: PaneItemProps) {
     documentPresence,
   ])
 
-  const Link = useMemo(
-    () =>
-      function LinkComponent(linkProps: {children: ReactNode}) {
-        return <ChildLink {...linkProps} childId={id} />
-      },
-    [ChildLink, id],
-  )
-
   const handleClick = useCallback((e: MouseEvent<HTMLElement>) => {
     if (e.metaKey) {
       setClicked(false)
@@ -144,16 +138,31 @@ export function PaneItem(props: PaneItemProps) {
   // Reset `clicked` state when `selected` prop changes
   useEffect(() => setClicked(false), [selected])
 
+  // Preloads the edit state on hover, using concurrent rendering with `startTransition` so preloads can be interrupted and not block rendering
+  const [preloading, setPreload] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const handleMouseEnter = useCallback(() => {
+    timeoutRef.current = setTimeout(() => startTransition(() => setPreload(true)), 400)
+  }, [])
+  const handleMouseLeave = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    startTransition(() => setPreload(false))
+  }, [])
+
   return (
     <PreviewCard
       data-testid={`pane-item-${title}`}
       __unstable_focusRing
-      as={Link as FIXME}
+      as={ChildLink as FIXME}
+      // @ts-expect-error - `childId` is a valid prop on `ChildLink`
+      childId={id}
       data-as="a"
       margin={margin}
       marginBottom={marginBottom}
       marginTop={marginTop}
       onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       pressed={pressed}
       radius={2}
       selected={selected || clicked}
@@ -162,6 +171,18 @@ export function PaneItem(props: PaneItemProps) {
       tone="inherit"
     >
       {preview}
+      {preloading && schemaType?.name && value && isSanityDocument(value) && (
+        <PreloadDocumentPane documentId={id} documentType={schemaType.name} />
+      )}
     </PreviewCard>
   )
 }
+
+function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
+  const {documentId, documentType} = props
+  // Preload the edit state for the document, and keep it alive until mouse leave
+  useEditState(documentId, documentType)
+
+  return null
+}
+PreloadDocumentPane.displayName = 'PreloadDocumentPane'

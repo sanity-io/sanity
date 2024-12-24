@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.68.1",
+  "version": "3.68.3",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,7 +13,7 @@
   "dependencies": {
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
-    "next": "15.1.1",
+    "next": "15.1.2",
     "react": "rc",
     "react-dom": "rc",
     "react-is": "rc",
