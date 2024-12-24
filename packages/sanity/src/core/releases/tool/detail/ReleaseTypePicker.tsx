@@ -108,9 +108,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   }, [inputValue, isPublishDateInPast, publishDate, release.publishAt, releaseType, t, tRelease])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
-    if (pickedReleaseType === 'scheduled') {
-      setDateInputOpen(true)
-    }
+    setDateInputOpen(pickedReleaseType === 'scheduled')
 
     setReleaseType(pickedReleaseType)
     const nextPublishAt = pickedReleaseType === 'scheduled' ? new Date() : undefined
@@ -135,6 +133,11 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
       setUpdatedDate(parsedDate.toISOString())
     }
   }, [])
+
+  const handleOnPickerClick = () => {
+    if (open) close()
+    else setOpen(true)
+  }
 
   const PopoverContent = () => {
     return (
@@ -199,7 +202,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
           isReleaseScheduled || release.state === 'archived' || release.state === 'published'
         }
         mode="bleed"
-        onClick={() => setOpen(!open)}
+        onClick={handleOnPickerClick}
         padding={2}
         ref={buttonRef}
         tooltipProps={{
@@ -209,10 +212,11 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
         selected={open}
         tone={getReleaseTone({...release, metadata: {...release.metadata, releaseType}})}
         style={{borderRadius: '999px'}}
+        data-testid="release-type-picker"
       >
         <Flex flex={1} gap={2}>
           {isUpdating ? (
-            <Spinner size={1} />
+            <Spinner size={1} data-testid="updating-release-spinner" />
           ) : (
             <ReleaseAvatar
               tone={getReleaseTone({...release, metadata: {...release.metadata, releaseType}})}
