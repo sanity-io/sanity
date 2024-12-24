@@ -9,6 +9,7 @@ import {
   activeScheduledRelease,
   activeUndecidedRelease,
   publishedASAPRelease,
+  scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
@@ -34,7 +35,7 @@ const renderComponent = async (release = activeASAPRelease) => {
   render(<ReleaseTypePicker release={release} />, {wrapper})
 
   await waitFor(() => {
-    expect(screen.getByTestId('release-type-picker')).toBeInTheDocument()
+    expect(screen.getByTestId('release-type-label')).toBeInTheDocument()
   })
 }
 
@@ -66,6 +67,26 @@ describe('ReleaseTypePicker', () => {
       await renderComponent(activeScheduledRelease)
 
       expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
+    })
+
+    it('renders the label with a published text when release was asap published', async () => {
+      await renderComponent(publishedASAPRelease)
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+      expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
+
+      expect(screen.getByText('Published')).toBeInTheDocument()
+    })
+
+    it('renders the label with a published text when release was schedule published', async () => {
+      await renderComponent({...scheduledRelease, state: 'published'})
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+      expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
+
+      expect(screen.getByText('Published on Oct 10, 2023')).toBeInTheDocument()
     })
   })
 
@@ -172,11 +193,10 @@ describe('ReleaseTypePicker', () => {
       expect(pickerButton).toBeDisabled()
     })
 
-    it('disables the picker for published releases', async () => {
+    it('does not show button for picker when release is published state', async () => {
       await renderComponent(publishedASAPRelease)
 
-      const pickerButton = screen.getByRole('button')
-      expect(pickerButton).toBeDisabled()
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
     it('shows a spinner when updating the release', async () => {
