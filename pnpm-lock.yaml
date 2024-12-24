@@ -1218,7 +1218,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/test-config
       '@sanity/icons':
-        specifier: ^3.5.5
+        specifier: ^3.5.6
         version: 3.5.6(react@19.0.0-rc-f994737d14-20240522)
       '@types/lodash':
         specifier: ^4.17.7
@@ -1337,7 +1337,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^3.5.5
+        specifier: ^3.5.6
         version: 3.5.6(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.10.12
@@ -1485,7 +1485,7 @@ importers:
         specifier: ^3.42.0
         version: 3.42.0
       '@sanity/icons':
-        specifier: ^3.5.5
+        specifier: ^3.5.6
         version: 3.5.6(react@18.3.1)
       '@sanity/image-url':
         specifier: ^1.0.2
