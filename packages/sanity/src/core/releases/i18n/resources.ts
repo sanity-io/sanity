@@ -42,10 +42,6 @@ const releasesLocaleStrings = {
   'action.immediate-revert-release': 'Revert now',
   /** Label for unarchiving a release */
   'action.unarchive': 'Unarchive release',
-  /** Header for the dialog confirming the archive of a release */
-  'archive-dialog.confirm-archive-header':
-    "Are you sure you want to archive the '{{title}}' release?",
-
   /* The text for the activity event when a document is added to a release */
   'activity.event.add-document': 'added a document version',
   /* The text for the activity event when the release is archived */
@@ -75,6 +71,9 @@ const releasesLocaleStrings = {
   /** The title for the activity panel shown in the releases detail screen */
   'activity.panel.title': 'Activity',
 
+  /** Header for the dialog confirming the archive of a release */
+  'archive-dialog.confirm-archive-header':
+    "Are you sure you want to archive the '{{title}}' release?",
   /** Title for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
@@ -91,7 +90,9 @@ const releasesLocaleStrings = {
   /** Text for when a release / document was created */
   'created': 'Created <RelativeTime/>',
 
-  /** Text for the releases detail screen when a release was published */
+  /** Text for the releases detail screen when a release was published ASAP */
+  'dashboard.details.published-asap': 'Published',
+  /** Text for the releases detail screen when a release was published from scheduling */
   'dashboard.details.published-on': 'Published on {{date}}',
 
   /** Text for the releases detail screen in the pin release button. */
@@ -304,6 +305,11 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been unschedule */
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
+  /** Text for toast when release has been unarchived */
+  'toast.unarchive.success': "The '<strong>{{title}}</strong>' release was unarchived.",
+  /** Text for toast when release failed to unarchive */
+  'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
+  /** Description for toast when release deletion failed */
   /** Text for tooltip when a release has been scheduled */
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
   /** Text for toast when release failed to revert */
