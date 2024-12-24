@@ -157,7 +157,6 @@ describe('ReleaseDetail', () => {
 
 describe('after releases have loaded', () => {
   describe('with unpublished release', () => {
-    const currentDate = new Date().toISOString()
     beforeEach(async () => {
       vi.clearAllMocks()
     })
@@ -167,16 +166,6 @@ describe('after releases have loaded', () => {
         fireEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('archive-release-menu-item')
       })
-
-      // eslint-disable-next-line no-warning-comments
-      // TODO: unsure if this will work this way in the future
-      /*it('should navigate to release review changes screen', () => {
-        expect(screen.getByTestId('review-button').closest('button')).not.toBeDisabled()
-        fireEvent.click(screen.getByTestId('review-button'))
-        expect(mockRouterNavigate).toHaveBeenCalledWith({
-          path: '/test-release-id?screen=review',
-        })
-      })*/
     }
 
     describe('with pending document validation', () => {
