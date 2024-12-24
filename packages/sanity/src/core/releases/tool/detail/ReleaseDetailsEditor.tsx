@@ -21,5 +21,5 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): JSX
     [timer, updateRelease],
   )
 
-  return <TitleDescriptionForm release={release} onChange={handleOnChange} />
+  return <TitleDescriptionForm key={release._id} release={release} onChange={handleOnChange} />
 }
