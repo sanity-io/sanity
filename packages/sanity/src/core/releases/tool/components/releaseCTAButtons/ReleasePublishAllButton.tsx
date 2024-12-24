@@ -2,7 +2,6 @@ import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useRouter} from 'sanity/router'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -27,7 +26,6 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const router = useRouter()
   const {publishRelease} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
@@ -69,8 +67,6 @@ export const ReleasePublishAllButton = ({
           </Text>
         ),
       })
-      // TODO: handle a published release on the document list
-      router.navigate({})
       if (
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
@@ -94,7 +90,7 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [release, publishBundleStatus, publishRelease, telemetry, toast, t, router, perspective])
+  }, [release, publishBundleStatus, publishRelease, telemetry, toast, t, perspective])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null
