@@ -6,7 +6,6 @@ settings:
 
 overrides:
   '@npmcli/arborist': ^7.5.4
-  '@sanity/ui@2': ^2.10.12
   '@typescript-eslint/eslint-plugin': ^7.18.0
   '@typescript-eslint/parser': ^7.18.0
 
@@ -523,7 +522,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.5(@sanity/client@6.24.1)
       '@sanity/react-loader':
-        specifier: ^1.8.3
+        specifier: ^1.10.27
         version: 1.10.31(react@18.3.1)
       '@sanity/tsdoc':
         specifier: 1.0.153
@@ -4754,6 +4753,10 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
+  '@sanity/comlink@2.0.3':
+    resolution: {integrity: sha512-ibYxXGlAssMZUHgL958W28rOetHuXSJjzhfj3T+ipI+scDhsGOZ9AjN5Gd3XENk2RdAE9hhzBJPttJKLpTw5YQ==}
+    engines: {node: '>=18'}
+
   '@sanity/comlink@2.0.3-release.0':
     resolution: {integrity: sha512-0sZMCR1wpIJ1QBPhkl1ppe+vqntfMDod6sCv4+qOPDzMbqYdYXmOHLF1b+ycpgrEgmtIORg07IydmgqeGwBnJw==}
     engines: {node: '>=18'}
@@ -4887,6 +4890,12 @@ packages:
     resolution: {integrity: sha512-daeoWaW67I2t3yIV1s3PI2o8+A7jZnucFQzaIphpFDhHYM/mqjNvEROka300TcZ1Csm4VyPBSvx1IQQ/FkqA5Q==}
     peerDependencies:
       prettier: ^3.2.5
+
+  '@sanity/preview-url-secret@2.0.5':
+    resolution: {integrity: sha512-YWExuJ/Z0CW37vYdiouE9A/NAN3QEewZL6qu6IohXqVY6wDDT0b9ubetTR4Op1kzmK6WbPGj79aiHrPubrM70A==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@sanity/client': ^6.23.0
 
   '@sanity/preview-url-secret@2.0.6-release.1':
     resolution: {integrity: sha512-T9hZ/4sFIVXvP4H+jvo7j0Pol6hZ/ZxpxeQ4xXW7eQ2qssXTnJn6QryIXMg/dMkHm5Jkd0k3M8nKNwBPKO3uJA==}
@@ -10774,7 +10783,7 @@ packages:
     resolution: {integrity: sha512-UhPLzUkXy7m6MFPW+zfW/g3WqpdJuj6IBFCEL81VUNUWNRQkuej10WGe41d70iAqAMCG9+ypSWHmBNv9/lhMvA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/ui': ^2.10.12
+      '@sanity/ui': ^2.0.0
       react: ^18
       sanity: ^3.0.0
       styled-components: ^6.1
@@ -10792,7 +10801,7 @@ packages:
     resolution: {integrity: sha512-5RZJyKuN2SuatWjUEr9x+DOZOPg6+ga/6RD+pc8RK3PgviP+945M+E8k93XwnIzSGNFtix8jf0mUbdbCO7HpjA==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@sanity/ui': ^2.10.12
+      '@sanity/ui': ^1.0 || ^2.0
       react: ^18
       react-dom: ^18
       sanity: ^3.0.0
@@ -15187,6 +15196,12 @@ snapshots:
       - react-is
 
   '@sanity/color@3.0.6': {}
+
+  '@sanity/comlink@2.0.3':
+    dependencies:
+      rxjs: 7.8.1
+      uuid: 11.0.3
+      xstate: 5.19.0
 
   '@sanity/comlink@2.0.3-release.0':
     dependencies:
