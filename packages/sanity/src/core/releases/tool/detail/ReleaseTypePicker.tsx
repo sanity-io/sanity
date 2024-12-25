@@ -1,5 +1,5 @@
 import {LockIcon} from '@sanity/icons'
-import {Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
 import {format, isBefore, isValid} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -94,18 +94,31 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
   const publishDateLabel = useMemo(() => {
+    if (release.state === 'published') {
+      if (isPublishDateInPast && release.publishAt)
+        return tRelease('dashboard.details.published-on', {
+          date: format(new Date(publishDate), 'MMM d, yyyy, pp'),
+        })
+
+      return tRelease('dashboard.details.published-asap')
+    }
+
     if (releaseType === 'asap') return t('release.type.asap')
     if (releaseType === 'undecided') return t('release.type.undecided')
     const labelDate = publishDate || inputValue
     if (!labelDate) return null
 
-    if (isPublishDateInPast && release.publishAt)
-      return tRelease('dashboard.details.published-on', {
-        date: format(new Date(publishDate), 'MMM d, yyyy'),
-      })
-
     return format(new Date(labelDate), `PPpp`)
-  }, [inputValue, isPublishDateInPast, publishDate, release.publishAt, releaseType, t, tRelease])
+  }, [
+    inputValue,
+    isPublishDateInPast,
+    publishDate,
+    release.publishAt,
+    release.state,
+    releaseType,
+    t,
+    tRelease,
+  ])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
     setDateInputOpen(pickedReleaseType === 'scheduled')
@@ -189,6 +202,34 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
     )
   }
 
+  const tone =
+    release.state === 'published'
+      ? 'positive'
+      : getReleaseTone({...release, metadata: {...release.metadata, releaseType}})
+
+  const labelContent = useMemo(
+    () => (
+      <Flex flex={1} gap={2}>
+        {isUpdating ? (
+          <Spinner size={1} data-testid="updating-release-spinner" />
+        ) : (
+          <ReleaseAvatar tone={tone} padding={0} />
+        )}
+
+        <Text muted size={1} data-testid="release-type-label" weight="medium">
+          {publishDateLabel}
+        </Text>
+
+        {isReleaseScheduled && (
+          <Text size={1}>
+            <LockIcon />
+          </Text>
+        )}
+      </Flex>
+    ),
+    [isReleaseScheduled, isUpdating, publishDateLabel, tone],
+  )
+
   return (
     <Popover
       content={<PopoverContent />}
@@ -197,44 +238,34 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Elemen
       placement="bottom-start"
       ref={popoverRef}
     >
-      <Button
-        disabled={
-          isReleaseScheduled || release.state === 'archived' || release.state === 'published'
-        }
-        mode="bleed"
-        onClick={handleOnPickerClick}
-        padding={2}
-        ref={buttonRef}
-        tooltipProps={{
-          placement: 'bottom',
-          content: isReleaseScheduled && tRelease('type-picker.tooltip.scheduled'),
-        }}
-        selected={open}
-        tone={getReleaseTone({...release, metadata: {...release.metadata, releaseType}})}
-        style={{borderRadius: '999px'}}
-        data-testid="release-type-picker"
-      >
-        <Flex flex={1} gap={2}>
-          {isUpdating ? (
-            <Spinner size={1} data-testid="updating-release-spinner" />
-          ) : (
-            <ReleaseAvatar
-              tone={getReleaseTone({...release, metadata: {...release.metadata, releaseType}})}
-              padding={0}
-            />
-          )}
-
-          <Text muted size={1} weight="medium">
-            {publishDateLabel}
-          </Text>
-
-          {isReleaseScheduled && (
-            <Text size={1}>
-              <LockIcon />
-            </Text>
-          )}
-        </Flex>
-      </Button>
+      {release.state === 'published' ? (
+        <Card
+          tone="positive"
+          data-testid="published-release-type-label"
+          padding={2}
+          style={{borderRadius: '999px'}}
+        >
+          {labelContent}
+        </Card>
+      ) : (
+        <Button
+          disabled={isReleaseScheduled || release.state === 'archived'}
+          mode="bleed"
+          onClick={handleOnPickerClick}
+          padding={2}
+          ref={buttonRef}
+          tooltipProps={{
+            placement: 'bottom',
+            content: isReleaseScheduled && tRelease('type-picker.tooltip.scheduled'),
+          }}
+          selected={open}
+          tone={tone}
+          style={{borderRadius: '999px'}}
+          data-testid="release-type-picker"
+        >
+          {labelContent}
+        </Button>
+      )}
     </Popover>
   )
 }

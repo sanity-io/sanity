@@ -7,7 +7,7 @@ import {
 } from '@sanity/icons'
 import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type MouseEventHandler, useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../../ui-components'
@@ -15,6 +15,7 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {
   ArchivedRelease,
   DeletedRelease,
+  UnarchivedRelease,
   UnscheduledRelease,
 } from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -32,7 +33,7 @@ export type ReleaseMenuButtonProps = {
   release: ReleaseDocument
 }
 
-type ReleaseAction = 'archive' | 'delete' | 'unschedule'
+type ReleaseAction = 'archive' | 'unarchive' | 'delete' | 'unschedule'
 
 interface BaseReleaseActionsMap {
   toastSuccessI18nKey: string
@@ -78,6 +79,12 @@ const RELEASE_ACTION_MAP: Record<
     toastFailureI18nKey: 'toast.archive.error',
     telemetry: ArchivedRelease,
   },
+  unarchive: {
+    confirmDialog: false,
+    toastSuccessI18nKey: 'toast.unarchive.success',
+    toastFailureI18nKey: 'toast.unarchive.error',
+    telemetry: UnarchivedRelease,
+  },
   unschedule: {
     confirmDialog: false,
     toastSuccessI18nKey: 'toast.unschedule.success',
@@ -89,7 +96,7 @@ const RELEASE_ACTION_MAP: Record<
 export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
-  const {archive, deleteRelease, unschedule} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
   const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
     getReleaseIdFromReleaseDocumentId(release._id),
   )
@@ -116,6 +123,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
       const actionLookup = {
         delete: handleDelete,
         archive,
+        unarchive,
         unschedule,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
@@ -160,6 +168,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
       releaseMenuDisabled,
       handleDelete,
       archive,
+      unarchive,
       unschedule,
       release._id,
       telemetry,
@@ -168,11 +177,6 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
       releaseTitle,
     ],
   )
-
-  const handleUnarchive = async () => {
-    // noop
-    // TODO: similar to handleArchive - complete once server action exists
-  }
 
   const confirmActionDialog = useMemo(() => {
     if (!selectedAction) return null
@@ -224,8 +228,10 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
     t,
   ])
 
-  const handleOnInitiateAction = useCallback(
-    (action: ReleaseAction) => {
+  const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
+    (event) => {
+      const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
+
       if (releaseDocuments.length > 0 && RELEASE_ACTION_MAP[action].confirmDialog) {
         setSelectedAction(action)
       } else {
@@ -241,9 +247,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
     if (release.state === 'archived')
       return (
         <MenuItem
-          onClick={handleUnarchive}
-          // TODO: disabled as CL action not yet impl
-          disabled
+          data-value="unarchive"
+          onClick={handleOnInitiateAction}
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
           data-testid="unarchive-release-menu-item"
@@ -256,7 +261,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
           disabled: !['scheduled', 'scheduling'].includes(release.state) || isPerformingOperation,
           content: t('action.archive.tooltip'),
         }}
-        onClick={() => handleOnInitiateAction('archive')}
+        data-value="archive"
+        onClick={handleOnInitiateAction}
         icon={ArchiveIcon}
         text={t('action.archive')}
         data-testid="archive-release-menu-item"
@@ -270,7 +276,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
 
     return (
       <MenuItem
-        onClick={() => handleOnInitiateAction('delete')}
+        data-value="delete"
+        onClick={handleOnInitiateAction}
         disabled={releaseMenuDisabled || isPerformingOperation}
         icon={TrashIcon}
         text={t('action.delete-release')}
@@ -284,7 +291,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
 
     return (
       <MenuItem
-        onClick={() => handleOnInitiateAction('unschedule')}
+        data-value="unschedule"
+        onClick={handleOnInitiateAction}
         disabled={releaseMenuDisabled || isPerformingOperation}
         icon={CloseCircleIcon}
         text={t('action.unschedule')}

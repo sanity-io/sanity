@@ -67,11 +67,9 @@ export const publishedASAPRelease: ReleaseDocument = {
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
   state: 'published',
-  publishAt: '2023-10-10T09:00:00Z',
   metadata: {
     title: 'published Release',
     releaseType: 'asap',
-    intendedPublishAt: '2023-10-10T09:00:00Z',
     description: 'archived Release description',
   },
 }

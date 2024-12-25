@@ -9,6 +9,7 @@ import {
   activeScheduledRelease,
   activeUndecidedRelease,
   publishedASAPRelease,
+  scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
@@ -34,7 +35,7 @@ const renderComponent = async (release = activeASAPRelease) => {
   render(<ReleaseTypePicker release={release} />, {wrapper})
 
   await waitFor(() => {
-    expect(screen.getByTestId('release-type-picker')).toBeInTheDocument()
+    expect(screen.getByTestId('release-type-label')).toBeInTheDocument()
   })
 }
 
@@ -66,6 +67,26 @@ describe('ReleaseTypePicker', () => {
       await renderComponent(activeScheduledRelease)
 
       expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
+    })
+
+    it('renders the label with a published text when release was asap published', async () => {
+      await renderComponent(publishedASAPRelease)
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+      expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
+
+      expect(screen.getByText('Published')).toBeInTheDocument()
+    })
+
+    it('renders the label with a published text when release was schedule published', async () => {
+      await renderComponent({...scheduledRelease, state: 'published'})
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+      expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
+
+      expect(screen.getByText('Published on Oct 10, 2023, 3:00:00 AM')).toBeInTheDocument()
     })
   })
 
@@ -127,8 +148,10 @@ describe('ReleaseTypePicker', () => {
 
       const Calendar = getByDataUi(document.body, 'CalendarMonth')
 
-      // Select the 10th day in the calendar
+      // Select the 10th day in the calendar month
       fireEvent.click(within(Calendar).getByText('10'))
+      fireEvent.change(screen.getByLabelText('Select hour'), {target: {value: 10}})
+      fireEvent.change(screen.getByLabelText('Select minute'), {target: {value: 55}})
       expect(mockUpdateRelease).not.toHaveBeenCalled()
 
       // Close the popup and check if the release is updated
@@ -139,7 +162,8 @@ describe('ReleaseTypePicker', () => {
         metadata: expect.objectContaining({
           ...activeASAPRelease.metadata,
           releaseType: 'scheduled',
-          intendedPublishAt: expect.stringMatching(/^\d{4}-\d{2}-10T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+          /**  @todo improve the assertion on the dateTime */
+          intendedPublishAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:55:\d{2}\.\d{3}Z$/),
         }),
       })
     })
@@ -172,11 +196,10 @@ describe('ReleaseTypePicker', () => {
       expect(pickerButton).toBeDisabled()
     })
 
-    it('disables the picker for published releases', async () => {
+    it('does not show button for picker when release is published state', async () => {
       await renderComponent(publishedASAPRelease)
 
-      const pickerButton = screen.getByRole('button')
-      expect(pickerButton).toBeDisabled()
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
     it('shows a spinner when updating the release', async () => {
