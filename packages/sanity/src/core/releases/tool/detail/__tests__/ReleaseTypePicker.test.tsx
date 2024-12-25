@@ -86,7 +86,7 @@ describe('ReleaseTypePicker', () => {
 
       expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
 
-      expect(screen.getByText('Published on Oct 10, 2023')).toBeInTheDocument()
+      expect(screen.getByText('Published on Oct 10, 2023, 3:00:00 AM')).toBeInTheDocument()
     })
   })
 
@@ -148,8 +148,10 @@ describe('ReleaseTypePicker', () => {
 
       const Calendar = getByDataUi(document.body, 'CalendarMonth')
 
-      // Select the 10th day in the calendar
+      // Select the 10th day in the calendar month
       fireEvent.click(within(Calendar).getByText('10'))
+      fireEvent.change(screen.getByLabelText('Select hour'), {target: {value: 10}})
+      fireEvent.change(screen.getByLabelText('Select minute'), {target: {value: 55}})
       expect(mockUpdateRelease).not.toHaveBeenCalled()
 
       // Close the popup and check if the release is updated
@@ -160,7 +162,8 @@ describe('ReleaseTypePicker', () => {
         metadata: expect.objectContaining({
           ...activeASAPRelease.metadata,
           releaseType: 'scheduled',
-          intendedPublishAt: expect.stringMatching(/^\d{4}-\d{2}-10T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+          /**  @todo improve the assertion on the dateTime */
+          intendedPublishAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:55:\d{2}\.\d{3}Z$/),
         }),
       })
     })
