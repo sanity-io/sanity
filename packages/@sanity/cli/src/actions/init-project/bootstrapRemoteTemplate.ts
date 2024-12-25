@@ -30,6 +30,8 @@ export interface BootstrapRemoteOptions {
   variables: GenerateConfigOptions['variables']
 }
 
+const SANITY_DEFAULT_PORT = 3333
+const READ_TOKEN_LABEL = 'Live Preview API'
 const INITIAL_COMMIT_MESSAGE = 'Initial commit from Sanity CLI'
 
 export async function bootstrapRemoteTemplate(
@@ -45,6 +47,7 @@ export async function bootstrapRemoteTemplate(
     headers.Authorization = `Bearer ${bearerToken}`
   }
   const spinner = output.spinner(`Bootstrapping files from template "${name}"`).start()
+  const corsAdded: number[] = [SANITY_DEFAULT_PORT]
 
   debug('Validating remote template')
   const fileReader = new GitHubFileReader(contentsUrl, headers)
@@ -67,7 +70,7 @@ export async function bootstrapRemoteTemplate(
 
   debug('Applying environment variables')
   const readToken = needsReadToken
-    ? await generateSanityApiReadToken('API Read Token', variables.projectId, apiClient)
+    ? await generateSanityApiReadToken(READ_TOKEN_LABEL, variables.projectId, apiClient)
     : undefined
 
   for (const pkg of packages ?? ['']) {
@@ -76,10 +79,13 @@ export async function bootstrapRemoteTemplate(
       fs: new LocalFileSystemDetector(packagePath),
       frameworkList: frameworks as readonly Framework[],
     })
-    const port = getDefaultPortForFramework(packageFramework?.slug)
 
-    debug('Setting CORS origin to http://localhost:%d', port)
-    await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+    const port = getDefaultPortForFramework(packageFramework?.slug)
+    if (corsAdded.includes(port) === false) {
+      debug('Setting CORS origin to http://localhost:%d', port)
+      await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+      corsAdded.push(port)
+    }
 
     debug('Applying environment variables to %s', pkg)
     // Next.js uses `.env.local` for local environment variables
@@ -97,4 +103,10 @@ export async function bootstrapRemoteTemplate(
   await updateInitialTemplateMetadata(apiClient, variables.projectId, `external-${name}`)
 
   spinner.succeed()
+  if (corsAdded.length) {
+    output.success(`CORS origins added (${corsAdded.map((p) => `localhost:${p}`).join(', ')})`)
+  }
+  if (readToken) {
+    output.success(`API token generated (${READ_TOKEN_LABEL})`)
+  }
 }
