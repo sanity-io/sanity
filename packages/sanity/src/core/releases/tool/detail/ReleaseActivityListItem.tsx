@@ -98,7 +98,7 @@ const ScheduleTarget = ({children, event}: {children: ReactNode; event: ReleaseE
   )
 }
 
-const FadeInCard = motion(Card)
+const FadeInCard = motion.create(Card)
 export const ReleaseActivityListItem = memo(
   ({
     event,

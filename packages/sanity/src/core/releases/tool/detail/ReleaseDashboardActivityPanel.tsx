@@ -19,7 +19,7 @@ interface ReleaseDashboardActivityPanelProps {
   release: ReleaseDocument
   show: boolean
 }
-const MotionFlex = motion(Flex)
+const MotionFlex = motion.create(Flex)
 const FillHeight = styled.div`
   height: 100%;
   display: flex;
