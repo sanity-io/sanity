@@ -53,7 +53,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The text in the tasks sidebar, in the document tab, when the document doesn't have any task*/
   'empty-state.list.document.text': 'Once a document has connected tasks, they will be shown here.',
   /** The heading in the tasks sidebar, when viewing the document tab, but there is not an active document*/
-  'empty-state.list.no-active-document.heading': "Open a document to see it's task",
+  'empty-state.list.no-active-document.heading': 'Open a document to see its task',
   /** The text in the tasks sidebar, when viewing the document tab, but there is not an active document*/
   'empty-state.list.no-active-document.text': 'Tasks on your active document will be shown here.',
   /** The heading in the tasks sidebar, in the subscriber tab, when the user is not subscribed to any task*/
