@@ -31,7 +31,7 @@ interface TimelineProps {
   listMaxHeight?: string
 }
 
-const TimelineItemWrapper = motion(Box)
+const TimelineItemWrapper = motion.create(Box)
 const CHILDREN_ITEMS_VARIANTS: Variants = {
   initial: {
     opacity: 0,

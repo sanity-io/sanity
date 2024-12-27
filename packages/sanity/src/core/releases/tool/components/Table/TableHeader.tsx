@@ -7,7 +7,7 @@ import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
 
-const MotionIcon = motion(ArrowUpIcon)
+const MotionIcon = motion.create(ArrowUpIcon)
 
 const BasicHeader = ({text}: {text: string}) => (
   <Box padding={2}>

@@ -32,8 +32,8 @@ import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilte
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
-const MotionStudioButton = motion(StudioButton)
-const MotionUiButton = motion(Button)
+const MotionStudioButton = motion.create(StudioButton)
+const MotionUiButton = motion.create(Button)
 
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
 
