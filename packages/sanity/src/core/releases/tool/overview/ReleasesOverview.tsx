@@ -1,16 +1,13 @@
-import {AddIcon, ChevronDownIcon, CloseIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {endOfDay, format, isSameDay, startOfDay} from 'date-fns'
+import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
+// eslint-disable-next-line no-restricted-imports
+import {Box, Button, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type RouterContextValue, type SearchParam, useRouter} from 'sanity/router'
+import {type SearchParam, useRouter} from 'sanity/router'
 
-import {Button, Button as StudioButton} from '../../../../ui-components'
-import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarDay'
-import {
-  CalendarFilter,
-  type CalendarProps,
-} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
+import {Button as StudioButton, Tooltip} from '../../../../ui-components'
+import {CalendarFilter} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
@@ -24,106 +21,28 @@ import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
+import {
+  DATE_SEARCH_PARAM_KEY,
+  getInitialFilterDate,
+  getInitialReleaseGroupMode,
+  GROUP_SEARCH_PARAM_KEY,
+  type Mode,
+} from './queryParamUtils'
+import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
-type Mode = 'open' | 'archived'
-
-const MotionButton = motion(Button)
 const MotionStudioButton = motion(StudioButton)
+const MotionUiButton = motion(Button)
 
-const DateFilterButton = ({filterDate, onClear}: {filterDate: Date; onClear: () => void}) => {
-  const [isExiting, setIsExiting] = useState(false)
-
-  const handleOnExitComplete = useMemo(
-    () => () => {
-      setIsExiting(false)
-      onClear()
-    },
-    [onClear],
-  )
-
-  if (!filterDate) return null
-
-  return (
-    <AnimatePresence onExitComplete={handleOnExitComplete}>
-      {!isExiting && (
-        <MotionButton
-          data-testid="selected-date-filter"
-          initial={{width: 0, opacity: 0}}
-          animate={{width: 'auto', opacity: 1}}
-          exit={{width: 0, opacity: 0}}
-          transition={{duration: 0.35, ease: 'easeInOut'}}
-          iconRight={CloseIcon}
-          mode="bleed"
-          onClick={() => setIsExiting(true)}
-          padding={2}
-          selected
-          text={format(filterDate, 'PPP')}
-        />
-      )}
-    </AnimatePresence>
-  )
-}
-
-const DATE_SEARCH_PARAM_KEY = 'date'
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
-const GROUP_SEARCH_PARAM_KEY = 'group'
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
 }
 
-const useTimezoneAdjustedDateTimeRange = () => {
-  const {zoneDateToUtc} = useTimeZone()
-
-  return useCallback(
-    (date: Date) => [startOfDay(date), endOfDay(date)].map(zoneDateToUtc),
-    [zoneDateToUtc],
-  )
-}
-
-const ReleaseCalendarDay: CalendarProps['renderCalendarDay'] = (props) => {
-  const {data: releases} = useReleases()
-  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
-
-  const {date} = props
-
-  const [startOfDayForTimeZone, endOfDayForTimeZone] = getTimezoneAdjustedDateTimeRange(date)
-
-  const dayHasReleases = releases?.some((release) => {
-    const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
-    if (!releasePublishAt) return false
-
-    const publishDateUTC = new Date(releasePublishAt)
-
-    return (
-      release.metadata.releaseType === 'scheduled' &&
-      publishDateUTC >= startOfDayForTimeZone &&
-      publishDateUTC <= endOfDayForTimeZone
-    )
-  })
-
-  return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
-}
-
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
-
-const getInitialFilterDate = (router: RouterContextValue) => () => {
-  const activeFilterDate = new URLSearchParams(router.state._searchParams).get(
-    DATE_SEARCH_PARAM_KEY,
-  )
-
-  return activeFilterDate ? new Date(activeFilterDate) : undefined
-}
-
-const getInitialReleaseGroupMode = (router: RouterContextValue) => () => {
-  const activeGroupMode = new URLSearchParams(router.state._searchParams).get(
-    GROUP_SEARCH_PARAM_KEY,
-  )
-
-  return activeGroupMode === 'archived' ? 'archived' : 'open'
-}
 
 export function ReleasesOverview() {
   const {data: releases, archivedReleases, loading: loadingReleases} = useReleases()
@@ -241,7 +160,7 @@ export function ReleasesOverview() {
     }
     return (
       <AnimatePresence>
-        <MotionButton
+        <MotionStudioButton
           {...groupModeButtonBaseProps}
           key="open-group"
           onClick={handleReleaseGroupModeChange}
@@ -249,21 +168,23 @@ export function ReleasesOverview() {
           text={t('action.open')}
           value="open"
         />
-        {/* StudioButton supports tooltip when button is disabled */}
-        <MotionStudioButton
-          {...groupModeButtonBaseProps}
-          key="archived-group"
-          disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
-          tooltipProps={{
-            disabled: archivedReleases.length !== 0,
-            content: t('no-archived-release'),
-            placement: 'bottom',
-          }}
-          onClick={handleReleaseGroupModeChange}
-          selected={releaseGroupMode === 'archived'}
-          text={t('action.archived')}
-          value="archived"
-        />
+        <Tooltip
+          disabled={archivedReleases.length !== 0}
+          content={t('no-archived-release')}
+          placement="bottom"
+        >
+          <div>
+            <MotionUiButton
+              {...groupModeButtonBaseProps}
+              key="archived-group"
+              disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
+              onClick={handleReleaseGroupModeChange}
+              selected={releaseGroupMode === 'archived'}
+              text={t('action.archived')}
+              value="archived"
+            />
+          </div>
+        </Tooltip>
       </AnimatePresence>
     )
   }, [
@@ -343,7 +264,7 @@ export function ReleasesOverview() {
           <Card borderRight flex="none" disabled>
             <CalendarFilter
               disabled={loading || releases.length === 0}
-              renderCalendarDay={ReleaseCalendarDay}
+              renderCalendarDay={ReleaseCalendarFilterDay}
               selectedDate={releaseFilterDate}
               onSelect={handleSelectFilterDate}
             />
