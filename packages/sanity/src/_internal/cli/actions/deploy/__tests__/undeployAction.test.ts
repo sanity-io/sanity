@@ -58,7 +58,12 @@ describe('undeployStudioAction', () => {
   it('does nothing if there is no user application', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(null)
 
-    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      mockContext,
+    )
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
       'Your project has not been assigned a studio hostname',
@@ -76,7 +81,12 @@ describe('undeployStudioAction', () => {
       true,
     ) // User confirms
 
-    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      mockContext,
+    )
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -99,7 +109,12 @@ describe('undeployStudioAction', () => {
       false,
     ) // User cancels
 
-    await undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext)
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      mockContext,
+    )
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -144,7 +159,12 @@ describe('undeployStudioAction', () => {
     ) // User confirms
 
     await expect(
-      undeployStudioAction({} as CliCommandArguments<UndeployStudioActionFlags>, mockContext),
+      undeployStudioAction(
+        {
+          extOptions: {},
+        } as CliCommandArguments<UndeployStudioActionFlags>,
+        mockContext,
+      ),
     ).rejects.toThrow(errorMessage)
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()
