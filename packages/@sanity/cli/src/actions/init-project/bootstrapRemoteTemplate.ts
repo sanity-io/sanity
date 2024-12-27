@@ -1,6 +1,7 @@
 import {mkdir} from 'node:fs/promises'
 import {join} from 'node:path'
 
+import {getMonoRepo, GitHubFileReader, validateTemplate} from '@sanity/template-validator'
 import {type Framework, frameworks} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 
@@ -12,11 +13,10 @@ import {
   checkNeedsReadToken,
   downloadAndExtractRepo,
   generateSanityApiReadToken,
-  getPackages,
+  getGitHubRawContentUrl,
   type RepoInfo,
   setCorsOrigin,
   tryApplyPackageName,
-  validateRemoteTemplate,
 } from '../../util/remoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {tryGitInit} from './git'
@@ -39,11 +39,20 @@ export async function bootstrapRemoteTemplate(
   const {outputPath, repoInfo, bearerToken, variables, packageName} = opts
   const {output, apiClient} = context
   const name = [repoInfo.username, repoInfo.name, repoInfo.filePath].filter(Boolean).join('/')
+  const contentsUrl = getGitHubRawContentUrl(repoInfo)
+  const headers: Record<string, string> = {}
+  if (bearerToken) {
+    headers.Authorization = `Bearer ${bearerToken}`
+  }
   const spinner = output.spinner(`Bootstrapping files from template "${name}"`).start()
 
   debug('Validating remote template')
-  const packages = await getPackages(repoInfo, bearerToken)
-  await validateRemoteTemplate(repoInfo, packages, bearerToken)
+  const fileReader = new GitHubFileReader(contentsUrl, headers)
+  const packages = await getMonoRepo(fileReader)
+  const validation = await validateTemplate(fileReader, packages)
+  if (!validation.isValid) {
+    throw new Error(validation.errors.join('\n'))
+  }
 
   debug('Create new directory "%s"', outputPath)
   await mkdir(outputPath, {recursive: true})

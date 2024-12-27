@@ -220,10 +220,10 @@ export function ReleasesOverview() {
     })
   }, [releaseFilterDate, releaseGroupMode, router])
 
-  const hasMounted = useRef(false)
+  const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    hasMounted.current = true
+    setHasMounted(true)
   }, [])
 
   const currentArchivedPicker = useMemo(() => {
@@ -231,7 +231,7 @@ export function ReleasesOverview() {
       disabled: loading || !hasReleases,
       mode: 'bleed' as ButtonMode,
       padding: 2,
-      ...(hasMounted.current
+      ...(hasMounted
         ? {
             initial: {opacity: 0},
             animate: {opacity: 1},
@@ -269,6 +269,7 @@ export function ReleasesOverview() {
   }, [
     loading,
     hasReleases,
+    hasMounted,
     handleReleaseGroupModeChange,
     releaseGroupMode,
     t,

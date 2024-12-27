@@ -2,7 +2,7 @@ import {type Action, type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
+import {EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
@@ -67,7 +67,7 @@ export type Pair = {
   published: DocumentVersion
   draft: DocumentVersion
   version?: DocumentVersion
-  complete: () => void
+  _keepalive: Observable<never>
 }
 
 function setVersion<T>(version: 'draft' | 'published' | 'version') {
@@ -206,10 +206,7 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const listenerEventsConnector = new Subject<ListenerEvent>()
-  const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(
-    share({connector: () => listenerEventsConnector}),
-  )
+  const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(share())
 
   const reconnect$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect'),
@@ -276,6 +273,8 @@ export function checkoutPair(
       events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
-    complete: () => listenerEventsConnector.complete(),
+    // Use this to keep the mutation pipeline active.
+    // It won't ever emit any events, but it will prevent the eventsource connection from completing for as long as it is subscribed to
+    _keepalive: merge(listenerEvents$, commits$).pipe(mergeMap(() => EMPTY)),
   }
 }

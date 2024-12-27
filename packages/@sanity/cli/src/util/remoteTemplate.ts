@@ -4,12 +4,7 @@ import {Readable} from 'node:stream'
 import {pipeline} from 'node:stream/promises'
 import {type ReadableStream} from 'node:stream/web'
 
-import {
-  ENV_TEMPLATE_FILES,
-  getMonoRepo,
-  REQUIRED_ENV_VAR,
-  validateSanityTemplate,
-} from '@sanity/template-validator'
+import {ENV_TEMPLATE_FILES, REQUIRED_ENV_VAR} from '@sanity/template-validator'
 import {x} from 'tar'
 
 import {debug} from '../debug'
@@ -42,7 +37,7 @@ export type RepoInfo = {
   filePath: string
 }
 
-function getGitHubRawContentUrl(repoInfo: RepoInfo): string {
+export function getGitHubRawContentUrl(repoInfo: RepoInfo): string {
   const {username, name, branch, filePath} = repoInfo
   return `https://raw.githubusercontent.com/${username}/${name}/${branch}/${filePath}`
 }
@@ -194,37 +189,6 @@ export async function downloadAndExtractRepo(
       },
     }),
   )
-}
-
-/**
- * Checks if a GitHub repository is a monorepo by examining common monorepo configuration files.
- * Supports pnpm workspaces, Lerna, Rush, and npm workspaces (package.json).
- * @returns Promise that resolves to an array of package paths/names if monorepo is detected, undefined otherwise
- */
-export async function getPackages(
-  repoInfo: RepoInfo,
-  bearerToken?: string,
-): Promise<string[] | undefined> {
-  const headers: Record<string, string> = {}
-  if (bearerToken) {
-    headers.Authorization = `Bearer ${bearerToken}`
-  }
-  return getMonoRepo(getGitHubRawContentUrl(repoInfo), headers)
-}
-
-export async function validateRemoteTemplate(
-  repoInfo: RepoInfo,
-  packages: string[] = [''],
-  bearerToken?: string,
-): Promise<void> {
-  const headers: Record<string, string> = {}
-  if (bearerToken) {
-    headers.Authorization = `Bearer ${bearerToken}`
-  }
-  const result = await validateSanityTemplate(getGitHubRawContentUrl(repoInfo), packages, headers)
-  if (!result.isValid) {
-    throw new Error(result.errors.join('\n'))
-  }
 }
 
 export async function checkNeedsReadToken(root: string): Promise<boolean> {
