@@ -166,7 +166,7 @@
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/eventsource": "^5.0.0",
     "@sanity/export": "^3.42.0",
-    "@sanity/icons": "^3.5.5",
+    "@sanity/icons": "^3.5.6",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.37.9",
     "@sanity/insert-menu": "1.0.18",
