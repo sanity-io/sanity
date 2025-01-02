@@ -128,7 +128,7 @@ const STYLES_ASSETMENU_WRAPPER = {
   marginBottom: '-0.5rem',
 }
 
-export const AssetRow = (props: RowProps) => {
+export const AssetRow = (props: RowProps): React.JSX.Element => {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()
@@ -195,28 +195,31 @@ export const AssetRow = (props: RowProps) => {
     versionedClient.observable,
   ])
 
-  const handleDialogClose = () => {
+  const handleDialogClose = useCallback(() => {
     setShowUsageDialog(false)
     setShowDeleteDialog(false)
-  }
+  }, [])
 
-  const handleToggleUsageDialog = () => {
+  const handleToggleUsageDialog = useCallback(() => {
     setShowUsageDialog(true)
-  }
+  }, [])
 
-  const handleToggleOpen = () => {
-    setIsOpen(!isOpen)
-  }
+  const handleToggleOpen = useCallback(() => {
+    setIsOpen((prev) => !prev)
+  }, [])
 
-  const handleMenuAction = (action: AssetMenuAction) => {
-    if (action.type === 'delete') {
-      handleConfirmDelete()
-    }
+  const handleMenuAction = useCallback(
+    (action: AssetMenuAction) => {
+      if (action.type === 'delete') {
+        handleConfirmDelete()
+      }
 
-    if (action.type === 'showUsage') {
-      handleToggleUsageDialog()
-    }
-  }
+      if (action.type === 'showUsage') {
+        handleToggleUsageDialog()
+      }
+    },
+    [handleConfirmDelete, handleToggleUsageDialog],
+  )
 
   const usageDialog = useMemo(() => {
     return (
@@ -224,7 +227,7 @@ export const AssetRow = (props: RowProps) => {
         <AssetUsageDialog assetType="file" asset={asset} onClose={handleDialogClose} />
       )
     )
-  }, [asset, showUsageDialog])
+  }, [asset, handleDialogClose, showUsageDialog])
 
   const deleteDialog = useMemo(() => {
     return (
@@ -238,7 +241,7 @@ export const AssetRow = (props: RowProps) => {
         />
       )
     )
-  }, [asset, handleDeleteAsset, isDeleting, showDeleteDialog])
+  }, [asset, handleDeleteAsset, handleDialogClose, isDeleting, showDeleteDialog])
 
   if (isMobile) {
     return (
