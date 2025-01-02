@@ -104,15 +104,14 @@ describe('Keyboard accessibility', () => {
     expect(onFocus).toBeCalled()
   })
 
-  it('emits onChange when pressing enter', async () => {
+  it('emits onChange when pressing space', async () => {
     const {onChange, result} = await renderBooleanInput({
       fieldDefinition: defs.booleanTest,
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
     await userEvent.tab()
-    // @TODO figure out why upgrading to `@testing-library/user-event` v14 breaks this test
-    await userEvent.keyboard('{space}')
+    await userEvent.keyboard(' ')
     expect(onChange).toBeCalled()
   })
 
