@@ -7,7 +7,7 @@ const ROOT_PATH = path.resolve(__dirname, '../..')
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   extends: ['plugin:boundaries/recommended'],
-  plugins: ['boundaries'],
+  plugins: ['boundaries', 'testing-library'],
   rules: {
     'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
     'boundaries/element-types': [
@@ -202,6 +202,7 @@ module.exports = {
     },
     {
       files: ['**/*.test.*'],
+      extends: ['plugin:testing-library/react'],
       rules: {
         'max-nested-callbacks': 'off',
       },

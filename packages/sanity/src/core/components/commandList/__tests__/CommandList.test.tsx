@@ -95,6 +95,8 @@ describe('core/components: CommandList', () => {
   })
 
   it('should change active item on pressing arrow keys', async () => {
+    const user = userEvent.setup()
+
     render(<TestComponent items={[0, 1, 2, 3]} />)
 
     const buttons = screen.getAllByTestId('button')
@@ -103,28 +105,28 @@ describe('core/components: CommandList', () => {
     await waitFor(() => expect(buttons[0]).toHaveAttribute(CUSTOM_ACTIVE_ATTR))
 
     // Set second button as active on arrow down
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[1]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[3]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
 
     // Set third button as active on arrow down
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[1]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[3]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
 
     // Set fourth button as active on arrow down
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[1]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[3]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
 
     // Set first button as active when reaching the end of the list
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[1]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
@@ -144,21 +146,25 @@ describe('core/components: CommandList', () => {
   })
 
   it('should set the last item as active when pressing key up on the first item', async () => {
+    const user = userEvent.setup()
+
     const items = [...Array(100).keys()]
     render(<TestComponent items={items} />)
 
     const buttons = screen.getAllByTestId('button')
 
     // Set last button as active on arrow up on the first item
-    await userEvent.keyboard('[ArrowUp]')
+    await user.keyboard('[ArrowUp]')
     expect(buttons[items.length - 1]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
 
     // Set first button as active on arrow down on the last item
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
   })
 
   it('should skip disabled elements', async () => {
+    const user = userEvent.setup()
+
     render(<TestComponent items={[0, 1, 2, 3]} withDisabledItems />)
 
     const buttons = screen.getAllByTestId('button')
@@ -167,7 +173,7 @@ describe('core/components: CommandList', () => {
     await waitFor(() => expect(buttons[1]).toHaveAttribute(CUSTOM_ACTIVE_ATTR))
 
     // Fourth button should be active since the third is disabled
-    await userEvent.keyboard('[ArrowDown]')
+    await user.keyboard('[ArrowDown]')
     expect(buttons[0]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[1]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
