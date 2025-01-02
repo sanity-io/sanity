@@ -52,7 +52,6 @@
     "lodash": "^4.17.21",
     "qs": "^6.10.2",
     "react": "^19.0.0",
-    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^19.0.0",
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",

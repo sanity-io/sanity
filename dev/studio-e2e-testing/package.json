@@ -22,7 +22,6 @@
     "@sanity/vision": "3.68.3",
     "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "react": "^19.0.0",
-    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",
     "sanity-plugin-markdown": "^5.0.0",

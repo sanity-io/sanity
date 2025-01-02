@@ -15,7 +15,6 @@
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "react": "^19.0.0",
-    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^19.0.0",
     "react-icons": "^5.2.1",
     "sanity": "workspace:*",
