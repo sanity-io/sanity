@@ -1,6 +1,5 @@
 import {type LayoutProps} from '../../config'
 import {AddonDatasetProvider} from '../../studio'
-import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
   // TODO: Replace for useReleasesEnabled
@@ -10,9 +9,5 @@ export function ReleasesStudioLayout(props: LayoutProps) {
     return props.renderDefault(props)
   }
 
-  return (
-    <AddonDatasetProvider>
-      <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
-    </AddonDatasetProvider>
-  )
+  return <AddonDatasetProvider>{props.renderDefault(props)}</AddonDatasetProvider>
 }

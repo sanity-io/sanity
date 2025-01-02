@@ -1,9 +1,8 @@
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {useCallback, useContext, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {ReleasesMetadataContext} from 'sanity/_singletons'
 
 import {type MetadataWrapper} from '../store/createReleaseMetadataAggregator'
-import {type ReleasesMetadata} from '../store/useReleasesMetadata'
 import {useReleasesStore} from '../store/useReleasesStore'
 
 /**
@@ -24,27 +23,12 @@ const DEFAULT_METADATA_STATE: MetadataWrapper = {
 const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) => {
   const [listenerReleaseIds, setListenerReleaseIds] = useState<string[]>([])
   const {getMetadataStateForSlugs$} = useReleasesStore()
-  const [releasesMetadata, setReleasesMetadata] = useState<Record<string, ReleasesMetadata> | null>(
-    null,
-  )
 
   const memoObservable = useMemo(
     () => getMetadataStateForSlugs$(listenerReleaseIds.map((slug) => slug)),
     [getMetadataStateForSlugs$, listenerReleaseIds],
   )
-
-  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
-
-  // patch metadata in local state
-  useEffect(
-    () =>
-      setReleasesMetadata((prevReleaseMetadata) => {
-        if (!observedResult.data) return prevReleaseMetadata
-
-        return {...(prevReleaseMetadata || {}), ...observedResult.data}
-      }),
-    [observedResult.data],
-  )
+  const releasesMetadata = useObservable(memoObservable, DEFAULT_METADATA_STATE)
 
   const addReleaseIdsToListener = useCallback((addReleaseIds: (string | undefined)[]) => {
     setListenerReleaseIds((prevSlugs) => [
@@ -82,9 +66,9 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
     () => ({
       addReleaseIdsToListener: addReleaseIdsToListener,
       removeReleaseIdsFromListener: removeReleaseIdsFromListener,
-      state: {...observedResult, data: releasesMetadata},
+      state: releasesMetadata,
     }),
-    [addReleaseIdsToListener, releasesMetadata, observedResult, removeReleaseIdsFromListener],
+    [addReleaseIdsToListener, releasesMetadata, removeReleaseIdsFromListener],
   )
 
   return (

@@ -19,18 +19,15 @@ export interface ReleasesMetadata {
 }
 
 export const useReleasesMetadata = (releaseIds: string[]) => {
-  const {
-    addReleaseIdsToListener: addBundleIdsToListener,
-    removeReleaseIdsFromListener: removeBundleIdsFromListener,
-    state,
-  } = useReleasesMetadataProvider()
+  const {addReleaseIdsToListener, removeReleaseIdsFromListener, state} =
+    useReleasesMetadataProvider()
   const [responseData, setResponseData] = useState<Record<string, ReleasesMetadata> | null>(null)
 
   useEffect(() => {
-    if (releaseIds.length) addBundleIdsToListener([...new Set(releaseIds)])
+    if (releaseIds.length) addReleaseIdsToListener([...new Set(releaseIds)])
 
-    return () => removeBundleIdsFromListener([...new Set(releaseIds)])
-  }, [addBundleIdsToListener, releaseIds, removeBundleIdsFromListener])
+    return () => removeReleaseIdsFromListener([...new Set(releaseIds)])
+  }, [addReleaseIdsToListener, releaseIds, removeReleaseIdsFromListener])
 
   const {data, loading} = state
 
