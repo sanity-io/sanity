@@ -4,7 +4,6 @@ import {
   type ForwardedRef,
   forwardRef,
   type HTMLProps,
-  type JSX,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -16,7 +15,7 @@ import {ScrollContext} from 'sanity/_singletons'
 /** @internal */
 export interface ScrollContainerProps<T extends ElementType>
   extends Omit<HTMLProps<T>, 'as' | 'onScroll'> {
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   onScroll?: (event: Event) => () => void
 }
 

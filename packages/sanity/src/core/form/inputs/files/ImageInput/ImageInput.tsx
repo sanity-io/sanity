@@ -2,16 +2,7 @@ import {isImageSource} from '@sanity/asset-utils'
 import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
-import {
-  type FocusEvent,
-  type JSX,
-  memo,
-  type ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -284,7 +275,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
-  const renderPreview = useCallback<() => JSX.Element>(() => {
+  const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
       return <></>
     }

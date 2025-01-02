@@ -23,7 +23,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   const input = result.container.querySelector('input')!
 
-  await userEvent.type(input, 'this is invalid')
+  userEvent.type(input, 'this is invalid')
   expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
 
@@ -44,7 +44,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
   const input = result.container.querySelector('input')!
 
   // NOTE: the date is entered and displayed in local timezone
-  await userEvent.type(input, '2021-03-28')
+  userEvent.type(input, '2021-03-28')
   expect(input.value).toBe('2021-03-28')
 
   fireEvent.blur(input)

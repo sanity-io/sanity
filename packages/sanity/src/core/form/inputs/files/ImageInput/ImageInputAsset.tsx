@@ -1,6 +1,6 @@
 import {type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
-import {type FocusEvent, type JSX, memo, useMemo} from 'react'
+import {type FocusEvent, memo, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {type InputProps} from '../../../types'
@@ -25,7 +25,7 @@ function ImageInputAssetComponent(props: {
   isStale: boolean
   readOnly: boolean | undefined
   renderAssetMenu(): React.JSX.Element | null
-  renderPreview: () => JSX.Element
+  renderPreview: () => React.JSX.Element
   renderUploadPlaceholder(): React.JSX.Element
   renderUploadState(uploadState: UploadState): React.JSX.Element
   tone: CardTone

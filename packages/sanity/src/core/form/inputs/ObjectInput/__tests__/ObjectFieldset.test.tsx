@@ -125,7 +125,7 @@ describe('collapsible fieldset with default options', () => {
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
 
     expect(toggleButton).toBeDefined()
-    await userEvent.click(toggleButton!)
+    userEvent.click(toggleButton!)
     expect(onSetFieldSetCollapsed).toHaveBeenCalledTimes(1)
   })
 

@@ -1,4 +1,4 @@
-import {type JSX, memo, useMemo} from 'react'
+import {memo, useMemo} from 'react'
 
 import {HookCollectionState} from './HookCollectionState'
 import {type GetHookCollectionStateProps} from './types'
@@ -33,4 +33,4 @@ GetHookCollectionStateComponent.displayName = 'Memo(GetHookCollectionState)'
 /** @internal */
 export const GetHookCollectionState = GetHookCollectionStateComponent as <Args, State>(
   props: GetHookCollectionStateProps<Args, State>,
-) => JSX.Element
+) => React.JSX.Element

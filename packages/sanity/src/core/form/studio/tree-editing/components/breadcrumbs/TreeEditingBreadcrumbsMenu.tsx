@@ -7,7 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {type JSX, useCallback} from 'react'
+import {useCallback} from 'react'
 import {
   CommandList,
   type Path,
@@ -26,7 +26,7 @@ interface BreadcrumbsItemProps {
   selected: boolean
   isFirst: boolean
   onPathSelect: (path: Path) => void
-  renderMenuItemTitle: (value: PreviewValue) => JSX.Element
+  renderMenuItemTitle: (value: PreviewValue) => React.JSX.Element
 }
 
 function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {

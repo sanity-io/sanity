@@ -1,13 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Card, rem} from '@sanity/ui'
-import {
-  type ElementType,
-  forwardRef,
-  type HTMLProps,
-  type JSX,
-  type ReactNode,
-  useMemo,
-} from 'react'
+import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type Annotation, type Diff} from '../../types'
@@ -17,7 +10,7 @@ import {DiffTooltip} from './DiffTooltip'
 /** @internal */
 export interface DiffCardProps {
   annotation?: Annotation
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   diff?: Diff
   disableHoverEffect?: boolean
   path?: Path | string

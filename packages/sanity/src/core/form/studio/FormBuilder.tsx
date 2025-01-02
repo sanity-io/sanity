@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {type JSX, useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -296,7 +296,7 @@ interface RootInputProps {
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
   onPathOpen: (path: Path) => void
   openPath: Path
-  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => JSX.Element
+  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => React.JSX.Element
 }
 
 function RootInput(props: RootInputProps) {
