@@ -111,6 +111,7 @@ describe('Keyboard accessibility', () => {
     })
 
     await userEvent.tab()
+    // @TODO figure out why upgrading to `@testing-library/user-event` v14 breaks this test
     await userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
   })
@@ -200,7 +201,7 @@ describe('readOnly property', () => {
     // Keyboard event
     await userEvent.tab({shift: true})
     await userEvent.tab()
-    await userEvent.keyboard('{space}')
+    await userEvent.keyboard('{Space}')
     expect(onChange).toBeCalled()
   })
 
