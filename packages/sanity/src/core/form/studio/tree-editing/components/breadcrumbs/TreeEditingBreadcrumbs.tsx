@@ -14,7 +14,6 @@ import {
   type ForwardedRef,
   forwardRef,
   Fragment,
-  type JSX,
   type PropsWithChildren,
   useMemo,
   useState,
@@ -120,7 +119,9 @@ interface TreeEditingBreadcrumbsProps {
   selectedPath: Path
 }
 
-export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.Element | null {
+export function TreeEditingBreadcrumbs(
+  props: TreeEditingBreadcrumbsProps,
+): React.JSX.Element | null {
   const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)

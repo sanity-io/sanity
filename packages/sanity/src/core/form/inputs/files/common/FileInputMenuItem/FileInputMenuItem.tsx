@@ -3,7 +3,6 @@ import {
   type ForwardedRef,
   forwardRef,
   type HTMLProps,
-  type JSX,
   useCallback,
   useId,
 } from 'react'
@@ -37,7 +36,7 @@ export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
   )
 
   const renderMenuItem = useCallback(
-    (item: JSX.Element) => (
+    (item: React.JSX.Element) => (
       <div>
         {item}
         {/* Visibly hidden input */}

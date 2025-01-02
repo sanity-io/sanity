@@ -1,4 +1,4 @@
-import {type JSX, type ReactNode, useMemo, useState} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
@@ -15,7 +15,9 @@ interface SanityCreateConfigProviderProps {
 /**
  * @internal
  */
-export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProps): JSX.Element {
+export function SanityCreateConfigProvider(
+  props: SanityCreateConfigProviderProps,
+): React.JSX.Element {
   const {children} = props
   const {beta} = useSource()
 

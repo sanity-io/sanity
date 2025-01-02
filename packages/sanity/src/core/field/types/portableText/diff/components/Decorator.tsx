@@ -1,4 +1,3 @@
-import {type JSX} from 'react'
 import {styled} from 'styled-components'
 
 const DecoratorWrapper = styled.span<{decoration: string}>`
@@ -26,6 +25,6 @@ const DecoratorWrapper = styled.span<{decoration: string}>`
   }}
 `
 
-export function Decorator({mark, children}: {mark: string; children: JSX.Element}) {
+export function Decorator({mark, children}: {mark: string; children: React.JSX.Element}) {
   return <DecoratorWrapper decoration={mark}>{children}</DecoratorWrapper>
 }

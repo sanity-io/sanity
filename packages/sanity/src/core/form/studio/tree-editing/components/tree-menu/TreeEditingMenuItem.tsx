@@ -12,7 +12,7 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {type JSX, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
@@ -114,7 +114,7 @@ interface TreeEditingMenuItemProps {
   siblingHasChildren?: boolean
 }
 
-export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Element {
+export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.Element {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0

@@ -1,6 +1,6 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
-import {Fragment, type JSX, type PropsWithChildren, useMemo} from 'react'
+import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
@@ -78,7 +78,7 @@ interface CommentMessageSerializerProps {
  * @beta
  * @hidden
  */
-export function CommentMessageSerializer(props: CommentMessageSerializerProps): JSX.Element {
+export function CommentMessageSerializer(props: CommentMessageSerializerProps): React.JSX.Element {
   const {blocks} = props
 
   return (

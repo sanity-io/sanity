@@ -1,4 +1,3 @@
-import {type JSX} from 'react'
 import {IsLastPaneContext} from 'sanity/_singletons'
 
 interface IsLastPaneProviderProps {
@@ -10,6 +9,9 @@ interface IsLastPaneProviderProps {
  * @internal
  * @hidden
  */
-export function IsLastPaneProvider({children, isLastPane}: IsLastPaneProviderProps): JSX.Element {
+export function IsLastPaneProvider({
+  children,
+  isLastPane,
+}: IsLastPaneProviderProps): React.JSX.Element {
   return <IsLastPaneContext.Provider value={isLastPane}>{children}</IsLastPaneContext.Provider>
 }

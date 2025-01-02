@@ -1,6 +1,6 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {type JSX, type MouseEvent, useCallback, useContext} from 'react'
+import {type MouseEvent, useCallback, useContext} from 'react'
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n'
@@ -16,8 +16,8 @@ const EMPTY_PATH: Path = []
 export function Block(props: {
   diff: PortableTextDiff
   block: PortableTextTextBlock
-  children: JSX.Element
-}): JSX.Element {
+  children: React.JSX.Element
+}): React.JSX.Element {
   const {diff, block, children} = props
   const color = useDiffAnnotationColor(diff, EMPTY_PATH)
   const {path: fullPath} = useContext(DiffContext)

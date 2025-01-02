@@ -162,7 +162,7 @@ interface TreeEditingStoryProps {
   value?: SanityDocument
 }
 
-export function TreeEditingStory(props: TreeEditingStoryProps): JSX.Element {
+export function TreeEditingStory(props: TreeEditingStoryProps): React.JSX.Element {
   const {legacyEditing, openPath, value} = props
 
   const types = getSchemaTypes({legacyEditing})

@@ -2,7 +2,6 @@ import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {
   cloneElement,
-  type JSX,
   type KeyboardEvent,
   type ReactElement,
   useCallback,
@@ -69,7 +68,7 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
-): JSX.Element {
+): React.JSX.Element {
   const {
     button,
     collapsed = false,

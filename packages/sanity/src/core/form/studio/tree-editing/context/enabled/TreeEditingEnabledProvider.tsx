@@ -1,4 +1,4 @@
-import {type JSX, useMemo} from 'react'
+import {useMemo} from 'react'
 import {TreeEditingEnabledContext} from 'sanity/_singletons'
 
 import {type TreeEditingEnabledContextValue, useTreeEditingEnabled} from './useTreeEditingEnabled'
@@ -8,7 +8,9 @@ interface TreeEditingEnabledProviderProps {
   legacyEditing?: boolean
 }
 
-export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProps): JSX.Element {
+export function TreeEditingEnabledProvider(
+  props: TreeEditingEnabledProviderProps,
+): React.JSX.Element {
   const {children, legacyEditing: legacyEditingProp} = props
   const parentContextValue = useTreeEditingEnabled()
 

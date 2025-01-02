@@ -6,7 +6,7 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
-import {type JSX, type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
@@ -51,7 +51,7 @@ type Props = {
   schemaType: ObjectSchemaType
 }
 
-export function PortableText(props: Props): JSX.Element {
+export function PortableText(props: Props): React.JSX.Element {
   const {diff, schemaType} = props
   const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextTextBlock
   const {t} = useTranslation()
@@ -258,7 +258,7 @@ function renderTextSegment({
   segIndex: number
   spanSchemaType: SpanSchemaType
   t: TFunction
-}): JSX.Element {
+}): React.JSX.Element {
   // Newlines
   if (seg.text === '\n') {
     return <br />
@@ -315,13 +315,13 @@ function renderDecorators({
   activeMarks: string[]
   decoratorTypes: {title: string; value: string}[]
   diff: PortableTextDiff
-  children: JSX.Element
+  children: React.JSX.Element
   seg: StringDiffSegment
   segIndex: number
   spanDiff: ObjectDiff
   spanSchemaType: SpanSchemaType
   t: TFunction
-}): JSX.Element {
+}): React.JSX.Element {
   let returned = <span key={`text-segment-${segIndex}`}>{children}</span>
   const fromPtDiffText: string =
     (diff.origin.fromValue && diff.fromValue && diff.fromValue.children[0].text) || '' // Always one child

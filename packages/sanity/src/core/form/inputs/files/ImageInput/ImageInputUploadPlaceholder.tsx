@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {get} from 'lodash'
-import {type JSX, memo, useMemo} from 'react'
+import {memo, useMemo} from 'react'
 
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {type BaseImageInputProps, type FileInfo} from './types'
@@ -10,7 +10,7 @@ function ImageInputUploadPlaceholderComponent(props: {
   handleSelectFiles: (files: File[]) => void
   hoveringFiles: FileInfo[]
   readOnly: boolean | undefined
-  renderBrowser(): JSX.Element | null
+  renderBrowser(): React.JSX.Element | null
   resolveUploader: BaseImageInputProps['resolveUploader']
   schemaType: BaseImageInputProps['schemaType']
 }) {

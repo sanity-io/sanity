@@ -27,7 +27,6 @@ import {
   type ComponentType,
   type FocusEventHandler,
   type FormEventHandler,
-  type JSX,
   type MutableRefObject,
   type ReactElement,
   type ReactNode,
@@ -580,7 +579,7 @@ export interface PortableTextInputProps
    * @hidden
    * @beta
    */
-  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => React.JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */

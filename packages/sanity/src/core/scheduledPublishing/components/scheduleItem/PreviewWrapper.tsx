@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type JSX, type ReactNode, useState} from 'react'
+import {type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components/tooltip'
@@ -31,7 +31,7 @@ interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
   // eslint-disable-next-line no-undef
-  linkComponent?: ElementType | keyof JSX.IntrinsicElements
+  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
   onClick?: () => void
   previewState?: PaneItemPreviewState
   publishedDocumentId?: string

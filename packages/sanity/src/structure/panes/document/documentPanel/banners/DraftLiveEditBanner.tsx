@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
-import {type JSX, useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {
   isDraftId,
   type ObjectSchemaType,
@@ -26,7 +26,7 @@ export function DraftLiveEditBanner({
   displayed,
   documentId,
   schemaType,
-}: DraftLiveEditBannerProps): JSX.Element | null {
+}: DraftLiveEditBannerProps): React.JSX.Element | null {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)

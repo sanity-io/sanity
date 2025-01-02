@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {Card, Flex} from '@sanity/ui'
-import {type JSX, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 
 import {TreeEditingBreadcrumbs} from '../components'
@@ -118,7 +118,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeEditingBreadcrumbsStory(): JSX.Element {
+export default function TreeEditingBreadcrumbsStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'item-1'}])
 
   const {menuItems} = useMemo((): TreeEditingState => {

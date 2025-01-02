@@ -1,6 +1,6 @@
 import {Stack} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
-import {type JSX, memo} from 'react'
+import {memo} from 'react'
 import {type Path} from 'sanity'
 
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
@@ -15,7 +15,7 @@ interface TreeEditingMenuProps {
 
 export const TreeEditingMenu = memo(function TreeEditingMenu(
   props: TreeEditingMenuProps,
-): JSX.Element {
+): React.JSX.Element {
   const {items, onPathSelect, selectedPath} = props
 
   return (

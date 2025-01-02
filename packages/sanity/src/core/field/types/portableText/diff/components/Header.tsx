@@ -1,5 +1,5 @@
 import {Heading} from '@sanity/ui'
-import {type JSX, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 const headingSizes: Record<string, number | undefined> = {
@@ -24,6 +24,6 @@ const StyledHeading = styled(Heading)`
   }
 `
 
-export function Header({style, children}: {style: string; children: ReactNode}): JSX.Element {
+export function Header({style, children}: {style: string; children: ReactNode}): React.JSX.Element {
   return <StyledHeading size={headingSizes[style]}>{children}</StyledHeading>
 }

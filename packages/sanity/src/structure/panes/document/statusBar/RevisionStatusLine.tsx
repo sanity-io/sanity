@@ -1,7 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns'
-import {type JSX} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -17,7 +16,7 @@ export const StatusText = styled(Text)`
   }
 `
 
-export function RevisionStatusLine(): JSX.Element {
+export function RevisionStatusLine(): React.JSX.Element {
   const {displayed} = useDocumentPane()
   const {t} = useTranslation()
   const date = displayed?._updatedAt || displayed?._createdAt

@@ -1,12 +1,12 @@
 import {type BoxOverflow} from '@sanity/ui'
-import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps, type JSX} from 'react'
+import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 import {Root} from './PaneContent.styles'
 import {usePane} from './usePane'
 import {usePaneLayout} from './usePaneLayout'
 
 interface PaneContentProps {
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   overflow?: BoxOverflow
   padding?: number | number[]
 }

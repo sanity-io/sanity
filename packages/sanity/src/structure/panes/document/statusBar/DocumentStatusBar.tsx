@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {type JSX, type Ref, useCallback, useState} from 'react'
+import {type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
   isSanityCreateLinked,
@@ -45,7 +45,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
 
-  let actions: JSX.Element | null = null
+  let actions: React.JSX.Element | null = null
   if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
     actions = (
       <CreateLinkedActions

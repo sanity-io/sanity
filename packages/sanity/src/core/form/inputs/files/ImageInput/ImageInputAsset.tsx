@@ -24,10 +24,10 @@ function ImageInputAssetComponent(props: {
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
-  renderAssetMenu(): JSX.Element | null
+  renderAssetMenu(): React.JSX.Element | null
   renderPreview: () => JSX.Element
-  renderUploadPlaceholder(): JSX.Element
-  renderUploadState(uploadState: UploadState): JSX.Element
+  renderUploadPlaceholder(): React.JSX.Element
+  renderUploadState(uploadState: UploadState): React.JSX.Element
   tone: CardTone
   value: BaseImageInputValue | undefined
 }) {

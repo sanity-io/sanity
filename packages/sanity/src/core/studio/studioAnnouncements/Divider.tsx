@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {type JSX, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 const Hr = styled.hr<{$show: boolean}>`
@@ -28,7 +28,7 @@ const DIVIDER_FADE_THRESHOLD = '-60px 0px 0px 0px'
 /**
  * A divider that fades when reaching the top of the parent.
  */
-export function Divider({parentRef}: DividerProps): JSX.Element {
+export function Divider({parentRef}: DividerProps): React.JSX.Element {
   const itemRef = useRef<HTMLHRElement | null>(null)
   const [show, setShow] = useState(true)
 

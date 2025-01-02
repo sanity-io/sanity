@@ -1,5 +1,4 @@
 import {Card, Container, Stack} from '@sanity/ui'
-import {type JSX} from 'react'
 
 import {CommentMessageSerializer} from '../components'
 import {type CommentMessage} from '../types'
@@ -41,7 +40,7 @@ const BLOCKS: CommentMessage = [
   },
 ]
 
-export default function CommentsMessageURLSerializerStory(): JSX.Element {
+export default function CommentsMessageURLSerializerStory(): React.JSX.Element {
   return (
     <Container width={1} padding={4} sizing="border">
       <Stack space={4}>

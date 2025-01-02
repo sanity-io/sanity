@@ -1,5 +1,5 @@
 import {Card, Container, Flex} from '@sanity/ui'
-import {type JSX, memo, type ReactNode, useCallback, useRef, useState} from 'react'
+import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
@@ -22,7 +22,7 @@ interface TreeEditingLayoutProps {
 
 export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
-): JSX.Element {
+): React.JSX.Element {
   const {
     breadcrumbs,
     children,

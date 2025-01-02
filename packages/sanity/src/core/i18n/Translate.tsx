@@ -1,5 +1,5 @@
 import {type TFunction} from 'i18next'
-import {type ComponentType, type JSX, type ReactNode, useMemo} from 'react'
+import {type ComponentType, type ReactNode, useMemo} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
@@ -34,7 +34,7 @@ type FormatterFns = {list: (value: Iterable<string>) => string}
  */
 export type TranslateComponentMap = Record<
   string,
-  ComponentType<{children?: ReactNode}> | keyof JSX.IntrinsicElements
+  ComponentType<{children?: ReactNode}> | keyof React.JSX.IntrinsicElements
 >
 
 /**

@@ -6,7 +6,7 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
-import {type JSX, memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
+import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
@@ -70,7 +70,7 @@ const emptyStyle: BlockStyleItem = {
 
 export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps,
-): JSX.Element {
+): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
