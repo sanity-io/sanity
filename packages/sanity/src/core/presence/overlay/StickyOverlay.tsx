@@ -327,7 +327,7 @@ function PresenceInside(props: {
   )
 }
 
-const PassThrough = (props: {children: ReactElement; [prop: string]: any}) => props.children
+const PassThrough = (props: {children: ReactElement<any>; [prop: string]: any}) => props.children
 
 const DebugValue = DEBUG
   ? function DebugValue(props: any) {

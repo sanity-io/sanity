@@ -3,6 +3,7 @@ import {
   type ForwardedRef,
   forwardRef,
   type HTMLProps,
+  type JSX,
   useCallback,
   useId,
 } from 'react'

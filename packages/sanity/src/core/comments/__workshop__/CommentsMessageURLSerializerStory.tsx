@@ -1,4 +1,5 @@
 import {Card, Container, Stack} from '@sanity/ui'
+import {type JSX} from 'react'
 
 import {CommentMessageSerializer} from '../components'
 import {type CommentMessage} from '../types'

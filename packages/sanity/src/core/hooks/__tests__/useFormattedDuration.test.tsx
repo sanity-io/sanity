@@ -16,7 +16,7 @@ describe('useFormattedDuration', () => {
     i18n: {bundles: [studioDefaultLocaleResources]},
   })
 
-  const wrapper = ({children}: {children: ReactElement}) => (
+  const wrapper = ({children}: {children: ReactElement<any>}) => (
     <ThemeProvider theme={studioTheme}>
       <LocaleProviderBase
         locales={[usEnglishLocale]}

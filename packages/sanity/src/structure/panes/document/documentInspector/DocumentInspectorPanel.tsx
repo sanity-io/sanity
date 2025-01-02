@@ -13,7 +13,9 @@ interface DocumentInspectorPanelProps {
   flex?: number | number[]
 }
 
-export function DocumentInspectorPanel(props: DocumentInspectorPanelProps): ReactElement | null {
+export function DocumentInspectorPanel(
+  props: DocumentInspectorPanelProps,
+): ReactElement<any> | null {
   const {documentId, documentType, flex} = props
   const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()

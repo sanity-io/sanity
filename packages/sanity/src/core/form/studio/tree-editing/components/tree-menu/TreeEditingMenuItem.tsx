@@ -12,7 +12,7 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type JSX, useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'

@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {type Ref, useCallback, useState} from 'react'
+import {type JSX, type Ref, useCallback, useState} from 'react'
 import {
   type CreateLinkMetadata,
   isSanityCreateLinked,

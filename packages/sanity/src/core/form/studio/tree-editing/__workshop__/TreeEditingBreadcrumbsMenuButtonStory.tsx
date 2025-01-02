@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {Flex} from '@sanity/ui'
-import {useState} from 'react'
+import {type JSX, useState} from 'react'
 import {type Path} from 'sanity'
 
 import {TreeEditingBreadcrumbsMenuButton} from '../components'

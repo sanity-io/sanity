@@ -9,7 +9,7 @@ import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type JSX, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   FormInput,
   type InputProps,

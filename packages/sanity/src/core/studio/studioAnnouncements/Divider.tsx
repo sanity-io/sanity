@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {useEffect, useRef, useState} from 'react'
+import {type JSX, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 const Hr = styled.hr<{$show: boolean}>`
@@ -13,7 +13,7 @@ const Hr = styled.hr<{$show: boolean}>`
 `
 
 interface DividerProps {
-  parentRef: React.RefObject<HTMLDivElement>
+  parentRef: React.RefObject<HTMLDivElement | null>
 }
 
 /**

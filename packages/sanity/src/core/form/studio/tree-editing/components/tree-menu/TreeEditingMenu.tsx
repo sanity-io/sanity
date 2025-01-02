@@ -1,6 +1,6 @@
 import {Stack} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
-import {memo} from 'react'
+import {type JSX, memo} from 'react'
 import {type Path} from 'sanity'
 
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'

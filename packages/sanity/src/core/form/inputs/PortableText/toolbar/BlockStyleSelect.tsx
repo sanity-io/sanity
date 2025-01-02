@@ -6,7 +6,7 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
-import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
+import {type JSX, memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'

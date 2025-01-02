@@ -2,6 +2,7 @@ import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
+  type JSX,
   type ReactNode,
   useContext,
   useEffect,

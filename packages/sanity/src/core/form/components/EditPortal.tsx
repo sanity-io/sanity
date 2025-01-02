@@ -28,7 +28,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
 
-export function EditPortal(props: Props): ReactElement {
+export function EditPortal(props: Props): ReactElement<any> {
   const {
     children,
     header,

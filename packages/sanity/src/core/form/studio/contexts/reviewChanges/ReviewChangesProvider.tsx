@@ -9,7 +9,7 @@ import {type ReviewChangesContextValue} from './types'
 export function ReviewChangesContextProvider(props: {
   children?: ReactNode
   changesOpen: boolean
-}): ReactElement {
+}): ReactElement<any> {
   const {children, changesOpen} = props
   const contextValue: ReviewChangesContextValue = useMemo(() => ({changesOpen}), [changesOpen])
 

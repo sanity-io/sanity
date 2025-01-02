@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {get} from 'lodash'
-import {memo, useMemo} from 'react'
+import {type JSX, memo, useMemo} from 'react'
 
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {type BaseImageInputProps, type FileInfo} from './types'

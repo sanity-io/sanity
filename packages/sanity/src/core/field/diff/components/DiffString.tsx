@@ -35,7 +35,7 @@ const ChangeSegment = styled(Text)`
 `
 
 /** @internal */
-export function DiffStringSegment(props: {segment: StringDiffSegment}): ReactElement {
+export function DiffStringSegment(props: {segment: StringDiffSegment}): ReactElement<any> {
   const {segment} = props
   const {text} = segment
   const {t} = useTranslation()

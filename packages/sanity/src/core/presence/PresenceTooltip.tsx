@@ -6,7 +6,7 @@ import {UserAvatar} from '../components/userAvatar'
 import {type FormNodePresence} from './types'
 
 interface PresenceTooltipProps {
-  children?: ReactElement
+  children?: ReactElement<any>
   items: FormNodePresence[]
 }
 

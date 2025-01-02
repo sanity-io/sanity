@@ -4,6 +4,7 @@ import {
   type ForwardedRef,
   forwardRef,
   type HTMLProps,
+  type JSX,
   useContext,
   useEffect,
   useImperativeHandle,

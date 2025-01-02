@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {type JSX, useMemo} from 'react'
 import {TreeEditingEnabledContext} from 'sanity/_singletons'
 
 import {type TreeEditingEnabledContextValue, useTreeEditingEnabled} from './useTreeEditingEnabled'

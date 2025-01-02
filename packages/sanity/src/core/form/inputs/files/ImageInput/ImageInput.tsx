@@ -2,7 +2,16 @@ import {isImageSource} from '@sanity/asset-utils'
 import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
-import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type JSX,
+  memo,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type Subscription} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -517,7 +526,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
         //@ts-expect-error all possible cases should be covered
         return <>{t('inputs.image.error.unknown-member-kind', {kind: member.kind})}</>
       })}
-
       {hotspotField && focusPath[0] === 'hotspot' && (
         <FormInput
           {...props}

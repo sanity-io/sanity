@@ -1,3 +1,4 @@
+import {type JSX} from 'react'
 import {IsLastPaneContext} from 'sanity/_singletons'
 
 interface IsLastPaneProviderProps {

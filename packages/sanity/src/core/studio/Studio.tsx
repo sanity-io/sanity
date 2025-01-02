@@ -93,7 +93,7 @@ export interface StudioProps {
 /**
  * @hidden
  * @beta */
-export function Studio(props: StudioProps): ReactElement {
+export function Studio(props: StudioProps): ReactElement<any> {
   const {
     basePath,
     config,

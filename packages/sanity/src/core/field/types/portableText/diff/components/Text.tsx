@@ -1,5 +1,12 @@
 import {isKeySegment, type Path} from '@sanity/types'
-import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} from 'react'
+import {
+  type HTMLProps,
+  type JSX,
+  type SyntheticEvent,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react'
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n'

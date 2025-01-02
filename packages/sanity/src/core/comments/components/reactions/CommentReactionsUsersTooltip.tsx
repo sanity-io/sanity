@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {type JSX, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'

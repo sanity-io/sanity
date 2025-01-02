@@ -14,6 +14,7 @@ import {
   type ForwardedRef,
   forwardRef,
   Fragment,
+  type JSX,
   type PropsWithChildren,
   useMemo,
   useState,

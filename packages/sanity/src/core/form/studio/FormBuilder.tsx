@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {type JSX, useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'

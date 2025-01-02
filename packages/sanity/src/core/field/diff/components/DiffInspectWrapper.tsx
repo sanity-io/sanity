@@ -26,7 +26,7 @@ const Meta = styled.div`
 `
 
 /** @internal */
-export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): ReactElement {
+export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): ReactElement<any> {
   const {children, as, change, ...restProps} = props
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
@@ -62,7 +62,7 @@ const MetaLabel = ({title}: {title: string}) => (
   </Box>
 )
 
-function DiffInspector({change}: {change: FieldChangeNode}): ReactElement | null {
+function DiffInspector({change}: {change: FieldChangeNode}): ReactElement<any> | null {
   const {t} = useTranslation()
   return (
     <Stack space={3}>

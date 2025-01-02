@@ -182,7 +182,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
 
 export function AssigneeSelectionMenu(props: {
   onSelect: (userId: string) => void
-  menuButton: React.ReactElement
+  menuButton: React.ReactElement<any>
   value?: string
 }) {
   const {onSelect, menuButton, value} = props

@@ -77,7 +77,7 @@ export interface RouterProviderProps {
  *
  * @public
  */
-export function RouterProvider(props: RouterProviderProps): ReactElement {
+export function RouterProvider(props: RouterProviderProps): ReactElement<any> {
   const {onNavigate, router: routerProp, state} = props
 
   const resolveIntentLink = useCallback(

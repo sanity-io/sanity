@@ -4,7 +4,7 @@ import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sani
 import {studioTheme} from '@sanity/ui'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
-import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
+import {type ComponentType, type ElementType, type ErrorInfo, isValidElement, type JSX} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 

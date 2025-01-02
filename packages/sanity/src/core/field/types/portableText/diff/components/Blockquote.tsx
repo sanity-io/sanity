@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type JSX, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 const Quote = styled.blockquote`

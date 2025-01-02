@@ -1,5 +1,5 @@
 import {type BoxOverflow} from '@sanity/ui'
-import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps, type JSX} from 'react'
 
 import {Root} from './PaneContent.styles'
 import {usePane} from './usePane'

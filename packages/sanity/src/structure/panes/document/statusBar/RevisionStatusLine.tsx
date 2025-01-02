@@ -1,6 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns'
+import {type JSX} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 

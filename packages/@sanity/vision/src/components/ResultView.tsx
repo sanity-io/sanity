@@ -2,6 +2,7 @@ import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons'
 import {Code} from '@sanity/ui'
 import LRU from 'quick-lru'
+import {type JSX} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 

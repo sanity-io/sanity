@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type JSX, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 // This can contain nested <div> elements, so it's not rendered as a <p> element

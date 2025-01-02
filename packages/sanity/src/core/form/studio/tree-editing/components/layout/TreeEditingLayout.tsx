@@ -1,5 +1,5 @@
 import {Card, Container, Flex} from '@sanity/ui'
-import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type JSX, memo, type ReactNode, useCallback, useRef, useState} from 'react'
 import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'

@@ -6,7 +6,7 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
-import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {type JSX, type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
@@ -196,7 +196,7 @@ export function PortableText(props: Props): JSX.Element {
             }
             if (endedAnnotation) {
               const key = `annotation-${endedAnnotation.object._key}`
-              const lastChild = returnedChildren[returnedChildren.length - 1] as ReactElement
+              const lastChild = returnedChildren[returnedChildren.length - 1] as ReactElement<any>
               if (lastChild && lastChild.key !== key) {
                 const annotationDiff = findAnnotationDiff(diff.origin, endedAnnotation.mark)
                 const objectSchemaType =

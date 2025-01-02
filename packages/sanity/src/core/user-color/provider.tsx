@@ -15,7 +15,7 @@ export interface UserColorManagerProviderProps {
 export function UserColorManagerProvider({
   children,
   manager: managerFromProps,
-}: UserColorManagerProviderProps): ReactElement {
+}: UserColorManagerProviderProps): ReactElement<any> {
   const scheme = useColorSchemeValue()
 
   const manager = useMemo(() => {

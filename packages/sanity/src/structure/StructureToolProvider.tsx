@@ -21,7 +21,7 @@ export function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
   children,
-}: StructureToolProviderProps): ReactElement {
+}: StructureToolProviderProps): ReactElement<any> {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const source = useSource()
   const configContext = useConfigContextFromSource(source)

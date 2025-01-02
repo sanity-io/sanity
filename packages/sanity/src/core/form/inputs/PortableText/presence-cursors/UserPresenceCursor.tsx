@@ -6,7 +6,7 @@ import {
   getTheme_v2,
 } from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useMemo, useState} from 'react'
+import {type JSX, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useUserColor} from '../../../../user-color/hooks'

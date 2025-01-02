@@ -7,7 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {useCallback} from 'react'
+import {type JSX, useCallback} from 'react'
 import {
   CommandList,
   type Path,

@@ -1,6 +1,6 @@
 import {type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
-import {type FocusEvent, memo, useMemo} from 'react'
+import {type FocusEvent, type JSX, memo, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {type InputProps} from '../../../types'

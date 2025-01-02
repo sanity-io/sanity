@@ -33,7 +33,7 @@ export function GroupChange(
     readOnly?: boolean
     hidden?: boolean
   } & HTMLAttributes<HTMLDivElement>,
-): ReactElement | null {
+): ReactElement<any> | null {
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)

@@ -37,7 +37,7 @@ import {Root, TooltipBox} from './Annotation.styles'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
-  children: ReactElement
+  children: ReactElement<any>
   editorNodeFocused: boolean
   floatingBoundary: HTMLElement | null
   focused: boolean

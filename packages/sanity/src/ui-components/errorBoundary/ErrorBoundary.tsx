@@ -3,7 +3,7 @@ import {
   ErrorBoundary as UIErrorBoundary,
   type ErrorBoundaryProps as UIErrorBoundaryProps,
 } from '@sanity/ui'
-import {useCallback, useContext} from 'react'
+import {type JSX, useCallback, useContext} from 'react'
 
 import {SourceContext} from '../../_singletons'
 

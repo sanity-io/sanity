@@ -27,6 +27,7 @@ import {
   type ComponentType,
   type FocusEventHandler,
   type FormEventHandler,
+  type JSX,
   type MutableRefObject,
   type ReactElement,
   type ReactNode,
@@ -72,7 +73,7 @@ export interface OnPathFocusPayload {
  * @hidden
  * @public */
 export interface BaseInputProps {
-  renderDefault: (props: InputProps) => ReactElement
+  renderDefault: (props: InputProps) => ReactElement<any>
 }
 
 /**

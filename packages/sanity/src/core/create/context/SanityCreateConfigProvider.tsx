@@ -1,4 +1,4 @@
-import {type ReactNode, useMemo, useState} from 'react'
+import {type JSX, type ReactNode, useMemo, useState} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'

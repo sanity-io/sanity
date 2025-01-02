@@ -26,7 +26,7 @@ import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
 type AutocompleteSearchHit = {value: string} & SearchHit
 
 interface PopoverContentProps {
-  content: ReactElement | null
+  content: ReactElement<any> | null
   hidden: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void

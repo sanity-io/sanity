@@ -6,6 +6,6 @@ import {ZIndexContext, zIndexContextDefaults} from 'sanity/_singletons'
  *
  * @internal
  */
-export function ZIndexProvider({children}: {children?: ReactNode}): ReactElement {
+export function ZIndexProvider({children}: {children?: ReactNode}): ReactElement<any> {
   return <ZIndexContext.Provider value={zIndexContextDefaults}>{children}</ZIndexContext.Provider>
 }

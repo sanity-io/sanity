@@ -31,7 +31,7 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
   props: Omit<ButtonProps, 'tooltipProps'> &
     Omit<HTMLProps<HTMLButtonElement>, 'ref'> & {changeCount: number},
   ref: ForwardedRef<HTMLButtonElement>,
-): ReactElement {
+): ReactElement<any> {
   const {selected, changeCount, ...restProps} = props
   const {t} = useTranslation()
 

@@ -1,6 +1,6 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
-import {Fragment, type PropsWithChildren, useMemo} from 'react'
+import {Fragment, type JSX, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'

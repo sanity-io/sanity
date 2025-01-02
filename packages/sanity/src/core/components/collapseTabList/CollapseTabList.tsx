@@ -17,7 +17,7 @@ import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton'
 
-function _isReactElement(node: unknown): node is ReactElement {
+function _isReactElement(node: unknown): node is ReactElement<any> {
   return Boolean(node)
 }
 
@@ -40,7 +40,7 @@ interface CollapseTabListProps {
   gap?: number | number[]
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
-    button?: ReactElement
+    button?: ReactElement<any>
   }
   onMenuClose?: () => void
   collapsed?: boolean
@@ -65,7 +65,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
-  const [hiddenElements, setHiddenElements] = useState<ReactElement[]>([])
+  const [hiddenElements, setHiddenElements] = useState<ReactElement<any>[]>([])
   const [showChildren, setShowChildren] = useState(false)
 
   const children = useMemo(
@@ -102,12 +102,12 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       collapsed
         ? children
         : // eslint-disable-next-line max-nested-callbacks
-          children.filter(({key}) => hiddenElements.find((o: ReactElement) => o.key === key)),
+          children.filter(({key}) => hiddenElements.find((o: ReactElement<any>) => o.key === key)),
     [children, hiddenElements, collapsed],
   )
 
   const handleIntersection = useCallback(
-    (e: IntersectionObserverEntry, child: ReactElement) => {
+    (e: IntersectionObserverEntry, child: ReactElement<any>) => {
       const isHidden = hiddenElements.some((el) => el.key === child.key)
 
       if (!showChildren) setShowChildren(true)

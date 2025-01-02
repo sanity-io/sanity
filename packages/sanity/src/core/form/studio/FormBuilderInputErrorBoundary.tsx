@@ -1,5 +1,5 @@
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type JSX, useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary'

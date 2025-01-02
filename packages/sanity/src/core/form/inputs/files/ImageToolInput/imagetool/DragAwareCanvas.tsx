@@ -1,5 +1,5 @@
 import Debug from 'debug'
-import {forwardRef, memo, useCallback, useEffect, useRef} from 'react'
+import {forwardRef, type JSX, memo, useCallback, useEffect, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {type Coordinate} from './types'

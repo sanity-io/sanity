@@ -1,4 +1,4 @@
-import {memo, useMemo} from 'react'
+import {type JSX, memo, useMemo} from 'react'
 
 import {HookCollectionState} from './HookCollectionState'
 import {type GetHookCollectionStateProps} from './types'

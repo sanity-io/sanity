@@ -588,7 +588,7 @@ export interface DocumentLayoutProps {
    * The type of the document. This is a read-only property and changing it will have no effect.
    */
   documentType: string
-  renderDefault: (props: DocumentLayoutProps) => React.ReactElement
+  renderDefault: (props: DocumentLayoutProps) => React.ReactElement<any>
 }
 
 interface DocumentComponents {

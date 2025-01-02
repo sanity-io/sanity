@@ -2,6 +2,7 @@ import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {
   cloneElement,
+  type JSX,
   type KeyboardEvent,
   type ReactElement,
   useCallback,
@@ -57,7 +58,7 @@ const StyledPopover = styled(Popover)(() => {
 })
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
-  button: ReactElement
+  button: ReactElement<any>
   collapsed?: boolean
   items: TreeEditingBreadcrumb[]
   menuTitle?: string

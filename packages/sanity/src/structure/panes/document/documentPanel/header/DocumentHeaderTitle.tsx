@@ -4,7 +4,7 @@ import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanit
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
-export function DocumentHeaderTitle(): ReactElement {
+export function DocumentHeaderTitle(): ReactElement<any> {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
   const documentValue = editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)

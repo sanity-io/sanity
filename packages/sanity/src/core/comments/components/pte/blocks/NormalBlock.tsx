@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type JSX, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 const NormalText = styled(Text)`
