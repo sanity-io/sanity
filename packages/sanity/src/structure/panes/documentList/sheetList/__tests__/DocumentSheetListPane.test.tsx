@@ -1,6 +1,5 @@
-import {fireEvent, render, screen, within} from '@testing-library/react'
+import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {act} from 'react'
 import {defineConfig} from 'sanity'
 import {type DocumentListPaneNode} from 'sanity/structure'
 import {describe, expect, it, vi} from 'vitest'
@@ -59,7 +58,7 @@ const renderTest = async () => {
     config,
     resources: [structureUsEnglishLocaleBundle],
   })
-  render(
+  return render(
     <DocumentSheetListPane
       paneKey={'123'}
       index={0}
@@ -88,7 +87,7 @@ describe('DocumentSheetListPane', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
 
-        act(async () => {
+        await act(async () => {
           await userEvent.click(screen.getByTestId('cell-name-0'))
           await userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
 
@@ -236,7 +235,7 @@ describe('DocumentSheetListPane', () => {
           await userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
-        act(async () => {
+        await act(async () => {
           await userEvent.keyboard('{Shift}{ArrowRight}')
         })
 
