@@ -76,7 +76,7 @@ export function TestForm(props: TestFormProps) {
   } = props
 
   const {setDocumentMeta} = useCopyPaste()
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>(openPathFromProps)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -99,7 +99,7 @@ export function TestForm(props: TestFormProps) {
   const [patchChannel] = useState(() => createPatchChannel())
 
   useGlobalCopyPasteElementHandler({
-    element: wrapperRef.current,
+    element: rootElement,
     focusPath,
     value: document,
   })
@@ -300,7 +300,7 @@ export function TestForm(props: TestFormProps) {
     ],
   )
   return (
-    <div ref={wrapperRef}>
+    <div ref={setRootElement}>
       <BoundaryElementProvider element={documentScrollElement}>
         <VirtualizerScrollInstanceProvider
           scrollElement={documentScrollElement}

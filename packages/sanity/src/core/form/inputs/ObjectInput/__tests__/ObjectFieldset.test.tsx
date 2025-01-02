@@ -145,7 +145,7 @@ describe('collapsible fieldset with default options', () => {
 
     const toggleButton = fieldset!.querySelector('legend button')
     expect(toggleButton).toBeDefined()
-    await userEvent.click(toggleButton!)
+    userEvent.click(toggleButton!)
     expect(onFocus).not.toHaveBeenCalled()
   })
 })

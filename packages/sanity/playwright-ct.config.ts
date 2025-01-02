@@ -1,6 +1,7 @@
 import path from 'node:path'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import {getViteAliases} from '@repo/dev-aliases/vite'
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
@@ -55,8 +56,16 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     /* Configure Playwright vite config */
-    /*
+    // /*
     ctViteConfig: {
+      resolve: {
+        alias: getViteAliases(),
+        dedupe: ['styled-components'],
+      },
+      optimizeDeps: {
+        exclude: ['sanity'],
+      },
+      /*
       resolve: {
         alias: {
           '@sanity/util/content': path.join(
@@ -65,8 +74,9 @@ export default defineConfig({
           ),
         },
       },
+      */
     },
-    */
+    // */
     /* Where to find playwright-ct template files */
     ctTemplateDir: './playwright-ct/template',
   },

@@ -83,8 +83,8 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
                       <UserColorManagerProvider>
                         <StyledChangeConnectorRoot
                           isReviewChangesOpen={false}
-                          onOpenReviewChanges={() => {}}
-                          onSetFocus={() => {}}
+                          onOpenReviewChanges={noop}
+                          onSetFocus={noop}
                         >
                           <PaneLayout height="fill">
                             <Pane id="test-pane">
@@ -106,3 +106,6 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
     </Suspense>
   )
 }
+
+// eslint-disable-next-line no-empty-function
+function noop() {}

@@ -38,7 +38,7 @@
     "@sanity/tsdoc": "1.0.157",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.10.14",
-    "@sanity/ui-workshop": "^1.0.0",
+    "@sanity/ui-workshop": "^2.0.20",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
