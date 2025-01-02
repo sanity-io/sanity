@@ -57,7 +57,7 @@ export async function runTest({
     plugins: [
       {...sourcemaps(), enforce: 'pre'},
       react({
-        babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
+        babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
       }),
     ],
     resolve: {alias},

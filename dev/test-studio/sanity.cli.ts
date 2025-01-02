@@ -29,7 +29,7 @@ export default defineCliConfig({
   reactStrictMode: true,
   reactCompiler: millionLintEnabled
     ? {
-        target: '18',
+        target: '19',
         sources: (filename) => {
           /**
            * This is the default filter when `sources` is not defined.
@@ -43,7 +43,7 @@ export default defineCliConfig({
           )
         },
       }
-    : {target: '18'},
+    : {target: '19'},
   vite(viteConfig: UserConfig): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
