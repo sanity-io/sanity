@@ -1,3 +1,3 @@
 export * from './CommentInput'
 export * from './CommentInputProvider'
-export * from './Editable'
+//export * from './Editable'
