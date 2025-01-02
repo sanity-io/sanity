@@ -1,9 +1,9 @@
 import {renderHook} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
-import {useSource, useTreeEditingEnabled} from 'sanity'
 import {describe, expect, type Mock, test, vi} from 'vitest'
 
-import {TreeEditingEnabledProvider} from '../context'
+import {useSource} from '../../../../studio/source'
+import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../context'
 
 // Mock the entire module
 vi.mock('../../../../studio/source')

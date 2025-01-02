@@ -9,12 +9,13 @@ import {
   useCallback,
   useState,
 } from 'react'
-import {ErrorActions, isDev, isProd} from 'sanity'
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components'
+import {ErrorActions} from '../components/errorActions/ErrorActions'
 import {SchemaError} from '../config'
+import {isDev, isProd} from '../environment'
 import {errorReporter} from '../error/errorReporter'
 import {CorsOriginError} from '../store'
 import {isRecord} from '../util'

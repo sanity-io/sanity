@@ -36,7 +36,7 @@ import {
 // We use a type import to ensure this change does not affect the runtime.
 // The 'sanity' package re-exports the '@sanity/types' module, which is why this
 // approach works.
-// eslint-disable-next-line import/consistent-type-specifier-style
+// eslint-disable-next-line import/consistent-type-specifier-style, no-restricted-imports
 import type {
   ArrayOfObjectsComponents,
   ArrayOfPrimitivesComponents,

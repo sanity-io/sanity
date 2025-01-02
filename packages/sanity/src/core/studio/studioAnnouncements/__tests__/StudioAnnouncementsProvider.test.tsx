@@ -2,10 +2,11 @@
 import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
-import {type Config, defineConfig} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../config/defineConfig'
+import {type Config} from '../../../config/types'
 import {useClient} from '../../../hooks/useClient'
 import {
   ProductAnnouncementCardClicked,

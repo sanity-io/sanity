@@ -1,4 +1,7 @@
-import {type FormDocumentValue, type ObjectSchemaType, type PatchEvent, type Path} from 'sanity'
+import {type ObjectSchemaType, type Path} from '@sanity/types'
+
+import {type PatchEvent} from '../../form/patch/PatchEvent'
+import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 
 /**
  * @beta

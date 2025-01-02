@@ -1,11 +1,11 @@
 import {Box, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
-import {SANITY_VERSION} from 'sanity'
 import semver from 'semver'
 
 import {Button} from '../../../ui-components'
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../i18n'
+import {SANITY_VERSION} from '../../version'
 import {checkForLatestVersions} from './checkForLatestVersions'
 
 // How often to to check last timestamp. at 30 min, should fetch new version

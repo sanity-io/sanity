@@ -1,4 +1,4 @@
-import {type Path, type SchemaType} from 'sanity'
+import {type Path, type SchemaType} from '@sanity/types'
 
 export interface TreeEditingMenuItem {
   children?: TreeEditingMenuItem[]

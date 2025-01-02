@@ -1,9 +1,10 @@
+import {isKeySegment} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {last} from 'lodash'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {EMPTY_ARRAY, isKeySegment} from 'sanity'
 import {styled} from 'styled-components'
 
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {ObjectInputMembers} from '../../members'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'

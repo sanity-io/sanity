@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineType} from '@sanity/types'
 
 export const bookDocument = defineType({
   name: 'book',

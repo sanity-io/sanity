@@ -2,10 +2,10 @@
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {defineConfig} from 'sanity'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../config/defineConfig'
 import {ProductAnnouncementCardSeen} from '../__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsCard} from '../StudioAnnouncementsCard'
 
