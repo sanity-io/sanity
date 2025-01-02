@@ -67,7 +67,7 @@ describe('StringInput', () => {
 
     const input = result.container.querySelector('input')
 
-    userEvent.type(input!, 't')
+    await userEvent.type(input!, 't')
 
     expect(onNativeChange).toHaveBeenCalledTimes(1)
   })
@@ -91,8 +91,8 @@ describe('StringInput', () => {
     const input = result.container.querySelector('input')
     expect(input!.value).toBe('t')
 
-    userEvent.click(input!)
-    userEvent.keyboard('[Backspace]')
+    await userEvent.click(input!)
+    await userEvent.keyboard('[Backspace]')
 
     expect(onNativeChange).toHaveBeenCalledTimes(1)
   })

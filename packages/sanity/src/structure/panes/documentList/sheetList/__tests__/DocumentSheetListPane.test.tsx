@@ -88,9 +88,9 @@ describe('DocumentSheetListPane', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
+        act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
+          await userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
         })
@@ -99,11 +99,11 @@ describe('DocumentSheetListPane', () => {
       it('should update cell when double clicked', async () => {
         await renderTest()
 
-        act(() => {
+        await act(async () => {
           expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+          await userEvent.clear(screen.getByTestId('cell-name-0'))
+          await userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
         })
@@ -112,14 +112,14 @@ describe('DocumentSheetListPane', () => {
       it('should update cell when selected and enter key pressed', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
         })
         // separate act to allow for initial state flush before clicking enter
-        act(() => {
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+        await act(async () => {
+          await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+          await userEvent.clear(screen.getByTestId('cell-name-0'))
+          await userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
 
           expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
         })
@@ -129,8 +129,8 @@ describe('DocumentSheetListPane', () => {
       it('copies when cell is selected', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
         act(() => {
@@ -145,8 +145,8 @@ describe('DocumentSheetListPane', () => {
       it('pastes when cell is selected', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
@@ -165,9 +165,9 @@ describe('DocumentSheetListPane', () => {
       it('pastes when cell is focused', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
+          await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
         })
 
         act(() => {
@@ -184,12 +184,12 @@ describe('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is selected', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
-        await act(() => {
-          userEvent.keyboard('{Shift}{ArrowDown}')
+        await act(async () => {
+          await userEvent.keyboard('{Shift}{ArrowDown}')
         })
 
         act(() => {
@@ -207,12 +207,12 @@ describe('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is focused', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
-        await act(() => {
-          userEvent.keyboard('{Shift}{ArrowDown}')
+        await act(async () => {
+          await userEvent.keyboard('{Shift}{ArrowDown}')
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
@@ -232,12 +232,12 @@ describe('DocumentSheetListPane', () => {
       it('does not paste when pasting across columns', async () => {
         await renderTest()
 
-        await act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
+        await act(async () => {
+          await userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
-        act(() => {
-          userEvent.keyboard('{Shift}{ArrowRight}')
+        act(async () => {
+          await userEvent.keyboard('{Shift}{ArrowRight}')
         })
 
         expect(screen.getByTestId('cell-age-0')).toHaveAttribute('aria-selected', 'true')

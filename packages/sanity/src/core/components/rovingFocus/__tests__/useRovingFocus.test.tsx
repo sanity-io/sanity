@@ -39,13 +39,13 @@ describe('base/useRovingFocus:', () => {
   /**
    * Horizontal direction
    */
-  it('horizontal direction', () => {
+  it('horizontal direction', async () => {
     const {container} = render(<RenderTestComponent />)
     const rootElement = container.querySelector('#rootElement')
     const buttons = rootElement!.querySelectorAll('button')
 
     // Focus button #0 on tab
-    userEvent.tab()
+    await userEvent.tab()
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow right
@@ -76,13 +76,13 @@ describe('base/useRovingFocus:', () => {
   /**
    * Vertical direction
    */
-  it('vertical direction', () => {
+  it('vertical direction', async () => {
     const {container} = render(<RenderTestComponent direction="vertical" />)
     const rootElement = container.querySelector('#rootElement')
     const buttons = rootElement!.querySelectorAll('button')
 
     // Focus button #0 on tab
-    userEvent.tab()
+    await userEvent.tab()
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow down
@@ -113,13 +113,13 @@ describe('base/useRovingFocus:', () => {
   /**
    * With disabled buttons
    */
-  it('with disabled buttons', () => {
+  it('with disabled buttons', async () => {
     const {container} = render(<RenderTestComponent withDisabledButtons />)
     const rootElement = container.querySelector('#rootElement')
     const buttons = rootElement!.querySelectorAll('button')
 
     // Focus button #1 on tab
-    userEvent.tab()
+    await userEvent.tab()
     expect(buttons[1]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right (skips #2 because it is disabled)
@@ -134,13 +134,13 @@ describe('base/useRovingFocus:', () => {
   /**
    * Without loop
    */
-  it('without loop', () => {
+  it('without loop', async () => {
     const {container} = render(<RenderTestComponent loop={false} />)
     const rootElement = container.querySelector('#rootElement')
     const buttons = rootElement!.querySelectorAll('button')
 
     // Focus button #0 on tab
-    userEvent.tab()
+    await userEvent.tab()
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow right
@@ -163,13 +163,13 @@ describe('base/useRovingFocus:', () => {
   /**
    * Initial focus last
    */
-  it('initial focus last', () => {
+  it('initial focus last', async () => {
     const {container} = render(<RenderTestComponent initialFocus="last" />)
     const rootElement = container.querySelector('#rootElement')
     const buttons = rootElement!.querySelectorAll('button')
 
     // Focus button #3 on tab (the last button)
-    userEvent.tab()
+    await userEvent.tab()
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #0 on arrow right
