@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@sanity/assist": "^3.0.8",
-    "@sanity/icons": "^3.5.6",
+    "@sanity/icons": "^3.5.7",
     "@sanity/image-url": "^1.0.2",
     "@sanity/preview-url-secret": "^2.0.0",
     "@sanity/vision": "^3.62.0",
