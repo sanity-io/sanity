@@ -3,7 +3,6 @@ import {omit} from 'lodash'
 import {type ReactNode} from 'react'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
-import {type PreparedSnapshot} from 'sanity'
 
 import {
   getDraftId,
@@ -13,6 +12,7 @@ import {
   isVersionId,
 } from '../../util/draftUtils'
 import {type DocumentPreviewStore} from '../documentPreviewStore'
+import {type PreparedSnapshot} from '../types'
 
 /**
  * @internal

@@ -1,6 +1,6 @@
+import {type SanityClient} from '@sanity/client'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-import {type SanityClient} from 'sanity'
 
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentTransactions} from './getDocumentTransactions'

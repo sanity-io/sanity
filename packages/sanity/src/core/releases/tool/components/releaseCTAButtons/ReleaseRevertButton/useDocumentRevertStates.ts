@@ -2,11 +2,11 @@ import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
-import {getPublishedId} from 'sanity'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionLogs'
 import {API_VERSION} from '../../../../../tasks/constants'
+import {getPublishedId} from '../../../../../util/draftUtils'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
 export type RevertDocument = SanityDocument & {

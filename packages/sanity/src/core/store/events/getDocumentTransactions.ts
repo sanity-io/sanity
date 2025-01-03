@@ -1,5 +1,5 @@
+import {type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {type SanityClient} from 'sanity'
 
 import {getTransactionsLogs} from '../translog/getTransactionLogs'
 

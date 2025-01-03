@@ -10,7 +10,9 @@ import {
   UnpublishIcon,
 } from '@sanity/icons'
 import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {type DocumentVersionEventType, type StudioLocaleResourceKeys} from 'sanity'
+
+import {type StudioLocaleResourceKeys} from '../../../i18n/bundles/studio'
+import {type DocumentVersionEventType} from '../../../store/events/types'
 
 export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComponent> = {
   createDocumentVersion: AddCircleIcon,
