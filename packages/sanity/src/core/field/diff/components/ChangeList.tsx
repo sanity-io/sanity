@@ -26,7 +26,7 @@ export interface ChangeListProps {
 }
 
 /** @internal */
-export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactElement | null {
+export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactElement<any> | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)

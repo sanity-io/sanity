@@ -10,7 +10,7 @@ import {InlineBox} from './styledComponents'
 interface TextProps {
   diff?: StringDiff
   childDiff?: ObjectDiff
-  children: JSX.Element
+  children: React.JSX.Element
   path: Path
   segment: StringDiffSegment
 }

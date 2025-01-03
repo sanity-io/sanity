@@ -34,7 +34,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
+export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement<any> {
   const {children, focused, isOpen, onOpen, onRemove, readOnly, value} = props
   const {t} = useTranslation()
   const menuButtonId = useId()

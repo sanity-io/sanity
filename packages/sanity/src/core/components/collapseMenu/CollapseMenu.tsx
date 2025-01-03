@@ -30,7 +30,7 @@ export interface CollapseMenuProps {
   gap?: number | number[]
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
-    button?: ReactElement
+    button?: ReactElement<any>
   }
   onMenuClose?: () => void
 }
@@ -73,13 +73,13 @@ const OptionObserveElement = styled(ObserveElement)`
   ${OPTION_STYLE}
 `
 
-function _isReactElement(node: unknown): node is ReactElement {
+function _isReactElement(node: unknown): node is ReactElement<any> {
   return Boolean(node)
 }
 
 interface IntersectionEntry {
   intersects: boolean
-  element: ReactElement
+  element: ReactElement<any>
   // todo: potentially add bounding rects so we can calculate how many we can fit non-collapsed vs collapsed
 }
 
@@ -126,7 +126,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
 /** @internal */
 export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
-  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: ReactElement[]},
+  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: ReactElement<any>[]},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -180,7 +180,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleExpandedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: ReactElement) => {
+    (e: IntersectionObserverEntry, element: ReactElement<any>) => {
       setExpandedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -205,7 +205,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleCollapsedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: ReactElement) => {
+    (e: IntersectionObserverEntry, element: ReactElement<any>) => {
       setCollapsedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -335,10 +335,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
 })
 
 const RenderHidden = memo(function RenderHidden(props: {
-  elements: ReactElement[]
+  elements: ReactElement<any>[]
   gap?: number | number[]
   intersectionOptions: IntersectionObserverInit
-  onIntersectionChange: (e: IntersectionObserverEntry, element: ReactElement) => void
+  onIntersectionChange: (e: IntersectionObserverEntry, element: ReactElement<any>) => void
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (

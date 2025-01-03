@@ -26,7 +26,7 @@ export function DraftLiveEditBanner({
   displayed,
   documentId,
   schemaType,
-}: DraftLiveEditBannerProps): JSX.Element | null {
+}: DraftLiveEditBannerProps): React.JSX.Element | null {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)

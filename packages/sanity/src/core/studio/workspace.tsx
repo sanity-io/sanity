@@ -1,4 +1,4 @@
-import {type ReactChild, useContext} from 'react'
+import {type ReactElement, useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
 import {type Workspace} from '../config'
@@ -6,7 +6,7 @@ import {type Workspace} from '../config'
 /** @internal */
 export interface WorkspaceProviderProps {
   workspace: Workspace
-  children?: ReactChild
+  children?: ReactElement<any> | number | string
 }
 
 /** @internal */

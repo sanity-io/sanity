@@ -7,7 +7,7 @@ import {type Tool} from '../types'
  * @beta */
 // Components
 export interface LayoutProps {
-  renderDefault: (props: LayoutProps) => ReactElement
+  renderDefault: (props: LayoutProps) => ReactElement<any>
 }
 
 /**
@@ -15,7 +15,7 @@ export interface LayoutProps {
  * @beta */
 export interface LogoProps {
   title: string
-  renderDefault: (props: LogoProps) => ReactElement
+  renderDefault: (props: LogoProps) => ReactElement<any>
 }
 
 /**
@@ -36,7 +36,7 @@ export interface NavbarAction {
  * @hidden
  * @beta */
 export interface NavbarProps {
-  renderDefault: (props: NavbarProps) => ReactElement
+  renderDefault: (props: NavbarProps) => ReactElement<any>
 
   /**
    * @internal
@@ -48,7 +48,7 @@ export interface NavbarProps {
  * @hidden
  * @beta */
 export interface ActiveToolLayoutProps {
-  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement<any>
   activeTool: Tool
 }
 
@@ -61,7 +61,7 @@ export interface ToolMenuProps {
   context: 'sidebar' | 'topbar'
   isSidebarOpen: boolean
   tools: Tool[]
-  renderDefault: (props: ToolMenuProps) => ReactElement
+  renderDefault: (props: ToolMenuProps) => ReactElement<any>
 }
 
 /**

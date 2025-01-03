@@ -57,7 +57,7 @@ const StyledPopover = styled(Popover)(() => {
 })
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
-  button: ReactElement
+  button: ReactElement<any>
   collapsed?: boolean
   items: TreeEditingBreadcrumb[]
   menuTitle?: string
@@ -68,7 +68,7 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
-): JSX.Element {
+): React.JSX.Element {
   const {
     button,
     collapsed = false,

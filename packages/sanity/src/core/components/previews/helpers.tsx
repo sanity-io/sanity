@@ -10,13 +10,7 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
 ): ReactNode {
   if (isValidElementType(value)) {
     const Value = value
-    return (
-      <Value
-        // @ts-expect-error - @TODO fix typings
-        layout={layout}
-        dimensions={dimensions}
-      />
-    )
+    return <Value layout={layout} dimensions={dimensions} />
   }
 
   if (typeof value === 'string') {
@@ -38,12 +32,7 @@ export function renderPreviewNode<Layout = PreviewLayoutKey>(
 
   if (isValidElementType(value)) {
     const Value = value
-    return (
-      <Value
-        // @ts-expect-error - @TODO fix typings
-        layout={layout}
-      />
-    )
+    return <Value layout={layout} />
   }
 
   // @todo: find out why `value` isn't infered as `ReactNode` here

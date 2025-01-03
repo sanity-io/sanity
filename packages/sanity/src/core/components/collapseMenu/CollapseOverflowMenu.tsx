@@ -13,7 +13,7 @@ export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
   props: Pick<
     CollapseMenuProps,
     'disableRestoreFocusOnClose' | 'menuButtonProps' | 'onMenuClose'
-  > & {menuOptions: ReactElement[]; menuButton: ReactElement},
+  > & {menuOptions: ReactElement<any>[]; menuButton: ReactElement<any>},
   forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
   const {disableRestoreFocusOnClose, menuButton, menuButtonProps, menuOptions, onMenuClose} = props

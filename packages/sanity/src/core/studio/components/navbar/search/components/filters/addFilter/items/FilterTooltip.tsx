@@ -14,7 +14,7 @@ import {getSchemaField} from '../../../../utils/getSchemaField'
 import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
 
 interface FilterTooltipProps {
-  children: ReactElement
+  children: ReactElement<any>
   fieldDefinition?: SearchFieldDefinition
   filterDefinition: SearchFilterDefinition
   visible?: boolean

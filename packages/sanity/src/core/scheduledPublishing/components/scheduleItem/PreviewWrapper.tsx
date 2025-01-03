@@ -31,7 +31,7 @@ interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
   // eslint-disable-next-line no-undef
-  linkComponent?: ElementType | keyof JSX.IntrinsicElements
+  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
   onClick?: () => void
   previewState?: PaneItemPreviewState
   publishedDocumentId?: string

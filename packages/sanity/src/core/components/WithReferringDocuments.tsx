@@ -14,7 +14,7 @@ export function WithReferringDocuments({
   children,
   id,
 }: {
-  children: (props: {isLoading: boolean; referringDocuments: SanityDocument[]}) => ReactElement
+  children: (props: {isLoading: boolean; referringDocuments: SanityDocument[]}) => ReactElement<any>
   /**
    * @deprecated - no longer required
    */

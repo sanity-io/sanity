@@ -23,7 +23,7 @@ export interface DragAwareCanvasProps {
 }
 
 const DragAwareCanvasComponent = forwardRef<HTMLCanvasElement, DragAwareCanvasProps>(
-  function DragAwareCanvas(props, ref): JSX.Element {
+  function DragAwareCanvas(props, ref): React.JSX.Element {
     const {readOnly, onDragStart, onDragEnd, onDrag, ...rest} = props
 
     const domNode = useRef<HTMLCanvasElement | null>(null)

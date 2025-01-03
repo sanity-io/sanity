@@ -131,7 +131,7 @@ const STYLES_ASSETMENU_WRAPPER = {
 export const AssetRow = (props: RowProps): React.JSX.Element => {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
-  const deleteRef$ = useRef<Subscription>()
+  const deleteRef$ = useRef<Subscription>(undefined)
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)

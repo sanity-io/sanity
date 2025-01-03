@@ -7,7 +7,7 @@ interface ImageLoaderProps {
     isLoading: boolean
     image: HTMLImageElement | null
     error: Error | null
-  }) => ReactElement | null
+  }) => ReactElement<any> | null
 }
 
 export function ImageLoader(props: ImageLoaderProps) {

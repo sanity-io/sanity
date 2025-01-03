@@ -151,11 +151,11 @@ interface VisionGuiState {
 }
 
 export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
-  _visionRoot: RefObject<HTMLDivElement>
-  _queryEditorContainer: RefObject<HTMLDivElement>
-  _paramsEditorContainer: RefObject<HTMLDivElement>
-  _operationUrlElement: RefObject<HTMLInputElement>
-  _customApiVersionElement: RefObject<HTMLInputElement>
+  _visionRoot: RefObject<HTMLDivElement | null>
+  _queryEditorContainer: RefObject<HTMLDivElement | null>
+  _paramsEditorContainer: RefObject<HTMLDivElement | null>
+  _operationUrlElement: RefObject<HTMLInputElement | null>
+  _customApiVersionElement: RefObject<HTMLInputElement | null>
   _resizeListener: ResizeObserver | undefined
   _querySubscription: Subscription | undefined
   _listenSubscription: Subscription | undefined

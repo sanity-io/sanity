@@ -116,7 +116,7 @@ interface TreeEditingMenuItemProps {
   siblingHasChildren?: boolean
 }
 
-export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Element {
+export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.Element {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0

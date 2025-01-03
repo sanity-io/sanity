@@ -105,8 +105,8 @@ function TargetContentChange({target}: {target: TaskTarget}) {
 
 export function getChangeDetails(activity: FieldChange): {
   text: string
-  icon: ReactElement
-  changeTo?: ReactElement
+  icon: ReactElement<any>
+  changeTo?: ReactElement<any>
 } {
   switch (activity.field) {
     case 'status': {

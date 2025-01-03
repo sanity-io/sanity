@@ -21,7 +21,7 @@ export function Resizable(
 ) {
   const {as: forwardedAs, children, minWidth, maxWidth, initialWidth, ...restProps} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const elementWidthRef = useRef<number>()
+  const elementWidthRef = useRef<number>(undefined)
   const [targetWidth, setTargetWidth] = useState<number>(initialWidth)
 
   const handleResizeStart = useCallback(() => {

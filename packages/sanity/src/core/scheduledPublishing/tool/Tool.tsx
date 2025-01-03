@@ -35,7 +35,7 @@ export default function Tool() {
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {enabled} = useScheduledPublishingEnabled()
 
-  const lastScheduleState = useRef<ScheduleState | undefined>()
+  const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
   const selectedDate = router.state.date

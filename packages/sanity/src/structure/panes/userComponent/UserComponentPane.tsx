@@ -20,7 +20,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
     component: UserComponent,
     menuItems,
     menuItemGroups,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
     type: _unused,
     ...restPane
   } = pane
@@ -46,8 +46,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             {...restPane}
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
-            ref={setRef as any}
-            // @ts-expect-error - @TODO Fix typings
+            ref={setRef}
             child={child}
             paneKey={paneKey}
           />

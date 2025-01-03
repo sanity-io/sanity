@@ -113,7 +113,7 @@ export function ColorSchemeCustomProvider({
   scheme,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
   scheme: StudioThemeColorSchemeKey
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <ColorSchemeSetValueContext.Provider
       value={typeof onSchemeChange === 'function' ? onSchemeChange : false}

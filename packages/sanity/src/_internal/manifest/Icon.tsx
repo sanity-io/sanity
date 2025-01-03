@@ -12,7 +12,7 @@ interface SchemaIconProps {
   subtitle?: string
 }
 
-const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): JSX.Element => {
+const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): React.JSX.Element => {
   return <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
 }
 
@@ -20,7 +20,7 @@ function normalizeIcon(
   Icon: ComponentType | ReactNode | undefined,
   title: string,
   subtitle = '',
-): JSX.Element {
+): React.JSX.Element {
   if (isValidElementType(Icon)) return <Icon />
   if (isValidElement(Icon)) return Icon
   return createDefaultIcon(title, subtitle)

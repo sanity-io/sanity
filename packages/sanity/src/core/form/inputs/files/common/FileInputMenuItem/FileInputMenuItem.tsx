@@ -36,7 +36,7 @@ export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
   )
 
   const renderMenuItem = useCallback(
-    (item: JSX.Element) => (
+    (item: React.JSX.Element) => (
       <div>
         {item}
         {/* Visibly hidden input */}

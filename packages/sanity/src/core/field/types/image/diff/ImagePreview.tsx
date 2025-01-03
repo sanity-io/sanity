@@ -95,7 +95,7 @@ const HotspotDiff = styled.div`
   }
 `
 
-export function ImagePreview(props: ImagePreviewProps): ReactElement {
+export function ImagePreview(props: ImagePreviewProps): ReactElement<any> {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

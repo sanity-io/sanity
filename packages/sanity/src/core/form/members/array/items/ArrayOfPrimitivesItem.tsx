@@ -37,7 +37,7 @@ export interface PrimitiveMemberItemProps {
  * @beta
  */
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<{focus: () => void}>(undefined)
   const {member, renderItem, renderInput} = props
 
   const [localValue, setLocalValue] = useState<undefined | string>()

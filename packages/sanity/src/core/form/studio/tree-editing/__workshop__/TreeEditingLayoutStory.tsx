@@ -118,7 +118,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeEditingLayoutStory(): JSX.Element {
+export default function TreeEditingLayoutStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'first-item'}])
 
   const state = useMemo(() => {

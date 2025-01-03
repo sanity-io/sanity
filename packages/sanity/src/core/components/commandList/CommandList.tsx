@@ -608,7 +608,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
               disabled,
               selected,
               virtualIndex,
-            }) as ReactElement
+            }) as ReactElement<any>
 
             // @TODO can we avoid using cloneElement here?
             const clonedItem =

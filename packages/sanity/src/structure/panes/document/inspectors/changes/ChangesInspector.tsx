@@ -35,7 +35,7 @@ const Grid = styled(Box)`
   gap: 0.25em;
 `
 
-export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactElement {
+export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactElement<any> {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
 

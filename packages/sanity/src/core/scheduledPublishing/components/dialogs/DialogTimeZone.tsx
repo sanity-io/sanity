@@ -120,6 +120,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             options={allTimeZones}
             padding={4}
             placeholder="Search for a city or time zone"
+            // @ts-expect-error fix boundaryElement typings later
             popover={{
               boundaryElement: document.querySelector('body'),
               constrainSize: true,

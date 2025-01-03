@@ -45,7 +45,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   const shouldRender = editState?.ready && typeof collapsed === 'boolean'
 
-  let actions: JSX.Element | null = null
+  let actions: React.JSX.Element | null = null
   if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
     actions = (
       <CreateLinkedActions

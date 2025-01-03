@@ -10,7 +10,7 @@ import {DiffTooltip} from './DiffTooltip'
 /** @internal */
 export interface DiffCardProps {
   annotation?: Annotation
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   diff?: Diff
   disableHoverEffect?: boolean
   path?: Path | string

@@ -23,10 +23,10 @@ interface BreadcrumbsItemProps {
   selected: boolean
   isFirst: boolean
   onPathSelect: (path: Path) => void
-  renderMenuItemTitle: (value: PreviewValue) => JSX.Element
+  renderMenuItemTitle: (value: PreviewValue) => React.JSX.Element
 }
 
-function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
+function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
   const {item, onPathSelect, selected, isFirst, renderMenuItemTitle} = props
 
   const {value} = useValuePreviewWithFallback({
@@ -67,7 +67,9 @@ interface TreeEditingBreadcrumbsMenuProps {
   selectedPath: Path
 }
 
-export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
+export function TreeEditingBreadcrumbsMenu(
+  props: TreeEditingBreadcrumbsMenuProps,
+): React.JSX.Element {
   const {items, onPathSelect, selectedPath, collapsed = false} = props
   const {t} = useTranslation()
 

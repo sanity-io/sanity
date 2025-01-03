@@ -12,7 +12,7 @@ import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
-  children: ReactElement
+  children: ReactElement<any>
   description?: ReactNode
   diff: Diff
   path?: Path | string
@@ -21,7 +21,7 @@ export interface DiffTooltipProps extends TooltipProps {
 /** @internal */
 export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
-  children: ReactElement
+  children: ReactElement<any>
   description?: ReactNode
 }
 

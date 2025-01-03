@@ -63,7 +63,7 @@ export interface RouteScopeProps {
  * }
  * ```
  */
-export const RouteScope = function RouteScope(props: RouteScopeProps): ReactElement {
+export const RouteScope = function RouteScope(props: RouteScopeProps): ReactElement<any> {
   const {children, scope, __unsafe_disableScopedSearchParams} = props
   const parentRouter = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =

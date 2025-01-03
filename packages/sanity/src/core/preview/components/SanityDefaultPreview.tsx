@@ -39,7 +39,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
  * */
 export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   props: SanityDefaultPreviewProps,
-): ReactElement {
+): ReactElement<any> {
   const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

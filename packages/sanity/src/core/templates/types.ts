@@ -179,7 +179,7 @@ export interface TemplateItem {
    * React icon for the item, if any.
    * Defaults to the icon for the associated template.
    */
-  icon?: ElementType | ReactElement
+  icon?: ElementType | ReactElement<any>
 
   /**
    * Experimental: not fully supported yet

@@ -20,7 +20,7 @@ export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
   },
-): ReactElement {
+): ReactElement<any> {
   const {
     layout,
     value,

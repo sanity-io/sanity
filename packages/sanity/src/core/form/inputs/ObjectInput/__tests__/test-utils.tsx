@@ -16,7 +16,7 @@ export * from '@testing-library/react'
 export type {RenderOptions}
 
 const customRender = (
-  ui: ReactElement,
+  ui: ReactElement<any>,
   options?: Omit<RenderOptions, 'wrapper'>,
 ): ReturnType<typeof render> => render(ui, {wrapper: Providers, ...options})
 

@@ -87,7 +87,7 @@ export interface BaseItemProps<T> {
   presence: FormNodePresence[]
 
   /** The function to call to render the default item. See {@link ItemProps} */
-  renderDefault: (props: ItemProps) => ReactElement
+  renderDefault: (props: ItemProps) => ReactElement<any>
 }
 
 /**

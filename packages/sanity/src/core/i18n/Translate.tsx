@@ -34,7 +34,7 @@ type FormatterFns = {list: (value: Iterable<string>) => string}
  */
 export type TranslateComponentMap = Record<
   string,
-  ComponentType<{children?: ReactNode}> | keyof JSX.IntrinsicElements
+  ComponentType<{children?: ReactNode}> | keyof React.JSX.IntrinsicElements
 >
 
 /**

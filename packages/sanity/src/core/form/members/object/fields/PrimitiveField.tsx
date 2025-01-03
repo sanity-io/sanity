@@ -29,7 +29,7 @@ export function PrimitiveField(props: {
 
   const fieldActions = useDocumentFieldActions()
 
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<{focus: () => void}>(undefined)
 
   const [localValue, setLocalValue] = useState<string | undefined>()
 

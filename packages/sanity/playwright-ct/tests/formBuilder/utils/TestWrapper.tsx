@@ -40,7 +40,7 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
  * It provides a mock Sanity client and a mock workspace.
  */
-export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
+export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures} = props
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
@@ -83,8 +83,8 @@ export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
                       <UserColorManagerProvider>
                         <StyledChangeConnectorRoot
                           isReviewChangesOpen={false}
-                          onOpenReviewChanges={() => {}}
-                          onSetFocus={() => {}}
+                          onOpenReviewChanges={noop}
+                          onSetFocus={noop}
                         >
                           <PaneLayout height="fill">
                             <Pane id="test-pane">
@@ -106,3 +106,6 @@ export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
     </Suspense>
   )
 }
+
+// eslint-disable-next-line no-empty-function
+function noop() {}

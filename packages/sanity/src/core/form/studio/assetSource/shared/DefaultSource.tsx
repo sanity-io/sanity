@@ -108,7 +108,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
-  const fetch$ = useRef<Subscription>()
+  const fetch$ = useRef<Subscription>(undefined)
   const [assets, setAssets] = useState<Asset[]>([])
   const [isLastPage, setIsLastPage] = useState(false)
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)

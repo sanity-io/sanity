@@ -11,7 +11,8 @@ export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' 
  * @internal
  */
 export const MenuGroup = (
-  props: MenuGroupProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex'>,
+  props: MenuGroupProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex' | 'popover'>,
 ) => {
   return <UIMenuGroup {...props} fontSize={1} padding={3} />
 }

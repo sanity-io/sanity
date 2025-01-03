@@ -4,9 +4,9 @@ export function Delay({
   children,
   ms = 0,
 }: {
-  children?: ReactElement | (() => ReactElement)
+  children?: ReactElement<any> | (() => ReactElement<any>)
   ms?: number
-}): ReactElement {
+}): ReactElement<any> {
   const [ready, setReady] = useState(ms <= 0)
 
   useEffect(() => {

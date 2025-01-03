@@ -10,7 +10,7 @@ import {Button, type ButtonProps, type TooltipProps} from '../../../ui-component
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   dividerBefore?: boolean
   focused?: boolean
   tooltipProps?: TooltipProps

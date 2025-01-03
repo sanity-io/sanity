@@ -50,7 +50,7 @@ export interface WithRouterProps {
   /**
    * A function that renders the wrapped component with the `router` object as a parameter.
    */
-  children: (router: RouterContextValue) => ReactElement
+  children: (router: RouterContextValue) => ReactElement<any>
 }
 
 /**

@@ -47,7 +47,7 @@ const ITEM: TreeEditingBreadcrumb = {
   })),
 }
 
-export default function TreeEditingBreadcrumbsMenuButtonStory(): JSX.Element {
+export default function TreeEditingBreadcrumbsMenuButtonStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['first-item'])
 
   return (

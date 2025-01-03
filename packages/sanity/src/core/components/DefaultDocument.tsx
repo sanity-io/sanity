@@ -122,7 +122,7 @@ const EMPTY_ARRAY: never[] = []
 /**
  * @hidden
  * @beta */
-export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
+export function DefaultDocument(props: DefaultDocumentProps): ReactElement<any> {
   const {entryPath, css = EMPTY_ARRAY} = props
 
   return (
