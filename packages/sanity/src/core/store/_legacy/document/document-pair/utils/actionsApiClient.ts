@@ -1,4 +1,4 @@
-import {type SanityClient} from 'sanity'
+import {type SanityClient} from '@sanity/client'
 
 const ACTIONS_API_MINIMUM_VERSION = '2024-05-23'
 

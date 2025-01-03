@@ -1,4 +1,4 @@
-import {defineType} from 'sanity'
+import {defineType} from '@sanity/types'
 
 import {eventsArray} from '../objects'
 

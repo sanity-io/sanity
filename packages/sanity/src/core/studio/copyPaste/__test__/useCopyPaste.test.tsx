@@ -1,10 +1,12 @@
+import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {act, renderHook} from '@testing-library/react'
-import {type FIXME, PatchEvent, type SanityClient} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type FIXME} from '../../../FIXME'
+import {PatchEvent} from '../../../form/patch/PatchEvent'
 import {useCopyPaste} from '../CopyPasteProvider'
 import {type SanityClipboardItem} from '../types'
 import {getClipboardItem} from '../utils'

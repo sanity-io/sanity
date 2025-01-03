@@ -1,8 +1,9 @@
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map} from 'rxjs'
-import {type Previewable, useDocumentPreviewStore} from 'sanity'
 
+import {type Previewable} from '../../../../preview/types'
+import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {flattenItems} from '../components/search/utils'
 import {type TreeEditingMenuItem} from '../types'
 

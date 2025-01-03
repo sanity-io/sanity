@@ -1,4 +1,4 @@
-import {type PortableTextBlock} from 'sanity'
+import {type PortableTextBlock} from '@sanity/types'
 
 export const audienceRoles = [
   'administrator',
