@@ -81,7 +81,9 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
 
   const {patch} = useDocumentOperation(documentId, documentType)
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error('Nope')
+    throw new Error(
+      'Attempted to patch the Sanity document during initial render. Input components should only call `onChange()` in an effect or a callback.',
+    )
   })
   useEffect(() => {
     patchRef.current = (event: PatchEvent) => {

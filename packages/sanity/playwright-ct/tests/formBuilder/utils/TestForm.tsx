@@ -186,7 +186,9 @@ export function TestForm(props: TestFormProps) {
   }, [setFocusPath])
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error('Nope')
+    throw new Error(
+      'Attempted to patch the Sanity document during initial render. Input components should only call `onChange()` in an effect or a callback.',
+    )
   })
 
   patchRef.current = (event: PatchEvent) => {
