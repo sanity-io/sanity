@@ -7,7 +7,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 3333",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "next start"
   },
   "dependencies": {

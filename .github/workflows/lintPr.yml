@@ -46,5 +46,8 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Register Problem Matcher for ESLint that handles -f compact and shows warnings inline on PRs
+        run: echo "::add-matcher::.github/eslint-compact.json"
+
       - name: Lint files
-        run: pnpm lint
+        run: pnpm turbo run lint --output-logs=full --continue -- -f compact

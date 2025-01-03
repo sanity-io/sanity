@@ -66,7 +66,7 @@
     "prepublishOnly": "pnpm build",
     "example:movies-studio": "cd examples/blog-studio && pnpm start",
     "install:deps": "pnpm install",
-    "lint": "run-s check:lint",
+    "lint": "pnpm check:lint",
     "lint:fix": "run-s chore:lint:fix",
     "list:deps-updates": "npm-check-updates --workspaces --root -m",
     "normalize-pkgfields": "node -r esbuild-register scripts/normalizePackageFields",

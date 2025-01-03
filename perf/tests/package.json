@@ -7,7 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "pnpm build:cli && (cd studio && pnpm build)",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "perf:test": "ts-node --files cli",
     "perf:test:ci": "ts-node --files cli",

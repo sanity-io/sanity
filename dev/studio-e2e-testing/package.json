@@ -10,7 +10,7 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3339",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "preview": "sanity preview --port 3339",
     "start": "sanity preview --port 3339"
   },

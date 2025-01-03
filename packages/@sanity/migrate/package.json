@@ -44,7 +44,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
     "watch": "pkg-utils watch"

@@ -9,7 +9,7 @@
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
     "dev": "../.bin/sanity dev",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "../.bin/sanity start"
   },
   "dependencies": {

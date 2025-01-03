@@ -140,7 +140,7 @@
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:ct": "rimraf playwright-ct/template/.cache && playwright test -c playwright-ct.config.ts",
