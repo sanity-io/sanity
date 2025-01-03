@@ -189,7 +189,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/ui@2": "$@sanity/ui",
+      "@sanity/ui@2": "2.10.17-canary.0",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
