@@ -38,13 +38,13 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector, selectedReleaseName} =
+  const {connectionState, onPathOpen, inspector, openInspector, selectedReleaseId} =
     useDocumentPane()
   const {params, setParams, createPathWithParams} = usePaneRouter()
   const {selectedPerspectiveName} = usePerspective()
   const versionOrPublishedId = useMemo(
-    () => (selectedReleaseName ? getVersionId(documentId, selectedReleaseName) : documentId),
-    [documentId, selectedReleaseName],
+    () => (selectedReleaseId ? getVersionId(documentId, selectedReleaseId) : documentId),
+    [documentId, selectedReleaseId],
   )
 
   const selectedCommentId = params?.comment

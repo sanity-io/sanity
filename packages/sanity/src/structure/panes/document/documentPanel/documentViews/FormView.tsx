@@ -40,8 +40,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     editState,
     documentId,
     documentType,
-    selectedVersionName,
-    selectedReleaseName,
+    selectedReleaseId,
     fieldActions,
     onChange,
     validation,
@@ -84,7 +83,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType, selectedReleaseName)
+      .documentEvents(documentId, documentType, selectedReleaseId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -101,14 +100,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     return () => {
       sub.unsubscribe()
     }
-  }, [
-    documentId,
-    documentStore,
-    documentType,
-    patchChannel,
-    selectedReleaseName,
-    selectedVersionName,
-  ])
+  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
 
   const hasRev = Boolean(value?._rev)
   useEffect(() => {
@@ -223,7 +215,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                   // but these should be compatible
                   formState.value as FormDocumentValue
                 }
-                version={selectedReleaseName}
+                version={selectedReleaseId}
               />
             </>
           )}
