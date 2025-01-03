@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import {type ReleaseId} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -81,7 +80,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, matchGlobalVersion = true} = props
+  const {children, index, pane, paneKey, onFocusPath, forcedVersion} = props
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -116,20 +115,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const perspective = usePerspective()
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
-    if (!matchGlobalVersion) {
-      return {
-        selectedPerspectiveName: undefined,
-        isReleaseLocked: false,
-        selectedReleaseId: undefined,
-      }
-    }
-    const historyVersion = params.historyVersion as ReleaseId | undefined
-    if (historyVersion) {
-      return {
-        selectedPerspectiveName: historyVersion,
-        selectedReleaseId: historyVersion,
-        isReleaseLocked: true,
-      }
+    if (forcedVersion) {
+      return forcedVersion
     }
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
@@ -139,8 +126,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         : false,
     }
   }, [
-    matchGlobalVersion,
-    params.historyVersion,
+    forcedVersion,
     perspective.selectedPerspectiveName,
     perspective.selectedReleaseId,
     perspective.selectedPerspective,
