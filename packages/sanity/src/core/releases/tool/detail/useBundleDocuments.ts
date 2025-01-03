@@ -1,4 +1,9 @@
-import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
+import {
+  isValidationErrorMarker,
+  type PreviewValue,
+  type SanityDocument,
+  type Schema,
+} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -108,7 +113,18 @@ const getActiveReleaseDocumentsObservable = ({
         map((document) => {
           const schemaType = schema.get(document._type)
           if (!schemaType) {
-            throw new Error(`Schema type not found for document type ${document._type}`)
+            console.error(
+              `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
+            )
+            return of({
+              isLoading: false,
+              values: {
+                _id: document._id,
+                title: `Document type "${document._type}" not found`,
+                _createdAt: document._createdAt,
+                _updatedAt: document._updatedAt,
+              } satisfies PreviewValue,
+            })
           }
 
           return documentPreviewStore.observeForPreview(document, schemaType).pipe(
