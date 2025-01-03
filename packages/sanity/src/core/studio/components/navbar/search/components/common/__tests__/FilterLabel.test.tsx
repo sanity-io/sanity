@@ -1,5 +1,5 @@
+import {type SanityClient} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
-import {type SanityClient} from 'sanity'
 import {describe, expect, test} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../../test/mocks/mockSanityClient'

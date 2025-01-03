@@ -1,4 +1,4 @@
-import {defineField, defineType, type ReferenceFilterResolverContext} from 'sanity'
+import {defineField, defineType, type ReferenceFilterResolverContext} from '@sanity/types'
 
 import {eventsArray} from '../objects'
 

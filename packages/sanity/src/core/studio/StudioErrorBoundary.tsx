@@ -13,7 +13,7 @@ import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components'
-import {ErrorActions} from '../components'
+import {ErrorActions} from '../components/errorActions/ErrorActions'
 import {SchemaError} from '../config'
 import {isDev, isProd} from '../environment'
 import {errorReporter} from '../error/errorReporter'

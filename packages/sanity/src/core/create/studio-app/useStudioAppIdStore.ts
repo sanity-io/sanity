@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
-import {useClient, useSource} from 'sanity'
 
+import {useClient} from '../../hooks/useClient'
+import {useSource} from '../../studio/source'
 import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'

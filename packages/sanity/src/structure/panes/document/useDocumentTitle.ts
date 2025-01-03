@@ -1,5 +1,6 @@
-import {unstable_useValuePreview as useValuePreview} from 'sanity'
+import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
+import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 
 /**
@@ -23,7 +24,7 @@ interface UseDocumentTitle {
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, displayed} = useDocumentPane()
-
+  const {t} = useTranslation(structureLocaleNamespace)
   const subscribed = Boolean(displayed)
 
   const {error, value} = useValuePreview({
@@ -41,11 +42,19 @@ export function useDocumentTitle(): UseDocumentTitle {
   }
 
   if (!displayed) {
-    return {error: undefined, title: `New ${schemaType?.title || schemaType?.name}`}
+    return {
+      error: undefined,
+      title: t('panes.document-header-title.new.text', {
+        schemaType: schemaType?.title || schemaType?.name,
+      }),
+    }
   }
 
   if (error) {
-    return {error: `Error: ${error.message}`, title: undefined}
+    return {
+      error: t('panes.document-list-pane.error.text', {error: error.message}),
+      title: undefined,
+    }
   }
 
   return {error: undefined, title: value?.title}

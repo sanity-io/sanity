@@ -42,7 +42,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "perf": "node ./perf/run.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
