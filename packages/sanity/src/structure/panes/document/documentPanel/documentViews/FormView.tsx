@@ -15,6 +15,7 @@ import {
   useDocumentStore,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -102,21 +103,23 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [documentId, documentStore, documentType, patchChannel])
 
   const hasRev = Boolean(value?._rev)
+  const handleInitialValue = useEffectEvent(() => {
+    // this is a workaround for an issue that caused the document pushed to withDocument to get
+    // stuck at the first initial value.
+    // This effect is triggered only when the document goes from not having a revision, to getting one
+    // so it will kick in as soon as the document is received from the backend
+    patchChannel.publish({
+      type: 'mutation',
+      patches: [],
+      snapshot: value,
+    })
+  })
   useEffect(() => {
     if (hasRev) {
-      // this is a workaround for an issue that caused the document pushed to withDocument to get
-      // stuck at the first initial value.
-      // This effect is triggered only when the document goes from not having a revision, to getting one
-      // so it will kick in as soon as the document is received from the backend
-      patchChannel.publish({
-        type: 'mutation',
-        patches: [],
-        snapshot: value,
-      })
+      handleInitialValue()
     }
     // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
+  }, [handleInitialValue, hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 

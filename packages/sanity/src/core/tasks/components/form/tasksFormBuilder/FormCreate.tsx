@@ -2,6 +2,7 @@ import {TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components'
 import {type ObjectInputProps, set} from '../../../../form'
@@ -47,46 +48,48 @@ export function FormCreate(props: ObjectInputProps) {
   const {data} = useTasks()
   const savedTask = data.find((task) => task._id === value._id)
 
+  const handleCreatingSuccess = useEffectEvent(() => {
+    telemetry.log(TaskCreated)
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: t('form.status.success'),
+    })
+
+    setCreating(false)
+    if (createMore) {
+      setViewMode({type: 'create'})
+    } else {
+      setActiveTab('subscribed')
+    }
+  })
   useEffect(() => {
     // This useEffect takes care of closing the form when a task entered the "creation" state.
     // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
     if (creating && savedTask?.createdByUser) {
-      telemetry.log(TaskCreated)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t('form.status.success'),
-      })
-
-      setCreating(false)
-      if (createMore) {
-        setViewMode({type: 'create'})
-      } else {
-        setActiveTab('subscribed')
-      }
+      handleCreatingSuccess()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [creating, savedTask?.createdByUser])
+  }, [creating, handleCreatingSuccess, savedTask?.createdByUser])
 
+  const handleCreatingTimeout = useEffectEvent(() => {
+    setCreating(false)
+    toast.push({
+      closable: true,
+      status: 'error',
+      title: t('form.status.error.creation-failed'),
+    })
+  })
   useEffect(() => {
     // If after 10 seconds the task is still in the "creating" state, show an error and reset the creating state.
     let timeoutId: ReturnType<typeof setTimeout> | null = null
     if (creating) {
-      timeoutId = setTimeout(() => {
-        setCreating(false)
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('form.status.error.creation-failed'),
-        })
-      }, 10000)
+      timeoutId = setTimeout(() => handleCreatingTimeout(), 10000)
     }
     // Cleanup function to clear the timeout
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [creating])
+  }, [creating, handleCreatingTimeout])
 
   const handleCreate = useCallback(async () => {
     setCreating(true)

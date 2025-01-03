@@ -1,5 +1,6 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../hooks'
 import {getJsonStream} from '../../store/_legacy/history/history/getJsonStream'
@@ -65,10 +66,11 @@ export function useActivityLog(task: TaskDocument): {
     [transactionsUrl, token, publishedId],
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+  const handleFetchAndParse = useEffectEvent((rev: string) => fetchAndParse(task))
   useEffect(() => {
-    fetchAndParse(task)
     // Task is updated on every change, wait until the revision changes to update the activity log.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndParse, task._rev])
+    handleFetchAndParse(task._rev)
+  }, [handleFetchAndParse, task._rev])
   return {changes}
 }
