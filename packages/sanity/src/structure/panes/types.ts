@@ -1,3 +1,5 @@
+import {type ReleaseId} from '@sanity/client'
+
 import {type PaneNode} from '../types'
 
 export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
@@ -9,8 +11,12 @@ export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
   isActive?: boolean
   pane: Extract<PaneNode, {type: T}>
   /**
-   * Decides if the pane should check for the global version when determining the document id.
-   * default: true
+   * Allows to override the global version with a specific version or release.
+   * @beta
    */
-  matchGlobalVersion?: boolean
+  forcedVersion?: {
+    selectedPerspectiveName: ReleaseId | 'published' | undefined
+    isReleaseLocked: boolean
+    selectedReleaseId: ReleaseId | undefined
+  }
 }
