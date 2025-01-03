@@ -4,6 +4,7 @@ import {
   type ForwardedRef,
   forwardRef,
   type HTMLProps,
+  memo,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -19,19 +20,9 @@ export interface ScrollContainerProps<T extends ElementType>
   onScroll?: (event: Event) => () => void
 }
 
-/**
- * This provides a utility function for use within Sanity Studios to create scrollable containers
- * It also provides a way for components inside a scrollable container to track onScroll on their first parent scroll container
- * NOTE: this is used by different studio utilities to track positions of elements on screen
- * NOTE: It will call any given `onScroll` callback with a Native DOM Event, and not a React Synthetic event
- * NOTE: It will not make sure the element is actually scrollable, this still needs to be done with css as usual
- *
- * @internal
- */
-export const ScrollContainer = forwardRef(function ScrollContainer<T extends ElementType = 'div'>(
-  props: ScrollContainerProps<T>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+const ScrollContainerComponent = forwardRef(function ScrollContainerComponent<
+  T extends ElementType = 'div',
+>(props: ScrollContainerProps<T>, forwardedRef: ForwardedRef<HTMLDivElement>) {
   const {as: As = 'div', onScroll, ...rest} = props
   const ref = useRef<HTMLDivElement | null>(null)
 
@@ -79,3 +70,15 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
     </ScrollContext.Provider>
   )
 })
+
+/**
+ * This provides a utility function for use within Sanity Studios to create scrollable containers
+ * It also provides a way for components inside a scrollable container to track onScroll on their first parent scroll container
+ * NOTE: this is used by different studio utilities to track positions of elements on screen
+ * NOTE: It will call any given `onScroll` callback with a Native DOM Event, and not a React Synthetic event
+ * NOTE: It will not make sure the element is actually scrollable, this still needs to be done with css as usual
+ *
+ * @internal
+ */
+export const ScrollContainer = memo(ScrollContainerComponent)
+ScrollContainer.displayName = 'Memo(Forwardref(ScrollContainer))'

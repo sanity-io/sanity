@@ -121,87 +121,111 @@ export const DocumentPanelHeader = memo(
       [contextMenuNodes, referenceElement],
     )
 
+    const title = useMemo(() => <DocumentHeaderTitle />, [])
+    const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
+    const backButton = useMemo(
+      () =>
+        showBackButton && (
+          <Button
+            as={BackLink}
+            data-as="a"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: t('pane-header.back-button.text')}}
+          />
+        ),
+      [BackLink, showBackButton, t],
+    )
+    const renderedActions = useMemo(
+      () => (
+        <Flex align="center" gap={1}>
+          {unstable_languageFilter.length > 0 && (
+            <>
+              {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
+                return (
+                  <LanguageFilterComponent
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`language-filter-${idx}`}
+                    schemaType={schemaType}
+                  />
+                )
+              })}
+            </>
+          )}
+
+          {menuButtonNodes.map((item) => (
+            <PaneHeaderActionButton key={item.key} node={item} />
+          ))}
+          {editState && (
+            <RenderActionCollectionState
+              actions={actions}
+              actionProps={editState}
+              group="paneActions"
+            >
+              {renderPaneActions}
+            </RenderActionCollectionState>
+          )}
+
+          {showSplitPaneButton && (
+            <Button
+              aria-label={t('buttons.split-pane-button.aria-label')}
+              icon={SplitVerticalIcon}
+              key="split-pane-button"
+              mode="bleed"
+              onClick={onPaneSplit}
+              tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
+            />
+          )}
+
+          {showSplitPaneCloseButton && (
+            <Button
+              icon={CloseIcon}
+              key="close-view-button"
+              mode="bleed"
+              onClick={onPaneClose}
+              tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+            />
+          )}
+
+          {showPaneGroupCloseButton && (
+            <Button
+              icon={CloseIcon}
+              key="close-view-button"
+              mode="bleed"
+              tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
+              as={BackLink}
+            />
+          )}
+        </Flex>
+      ),
+      [
+        BackLink,
+        actions,
+        editState,
+        menuButtonNodes,
+        onPaneClose,
+        onPaneSplit,
+        renderPaneActions,
+        schemaType,
+        showPaneGroupCloseButton,
+        showSplitPaneButton,
+        showSplitPaneCloseButton,
+        t,
+        unstable_languageFilter,
+      ],
+    )
+
     return (
       <TooltipDelayGroupProvider>
         <PaneHeader
           border
           ref={ref}
           loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={<DocumentHeaderTitle />}
-          tabs={showTabs && <DocumentHeaderTabs />}
+          title={title}
+          tabs={tabs}
           tabIndex={tabIndex}
-          backButton={
-            showBackButton && (
-              <Button
-                as={BackLink}
-                data-as="a"
-                icon={ArrowLeftIcon}
-                mode="bleed"
-                tooltipProps={{content: t('pane-header.back-button.text')}}
-              />
-            )
-          }
-          actions={
-            <Flex align="center" gap={1}>
-              {unstable_languageFilter.length > 0 && (
-                <>
-                  {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
-                    return (
-                      <LanguageFilterComponent
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`language-filter-${idx}`}
-                        schemaType={schemaType}
-                      />
-                    )
-                  })}
-                </>
-              )}
-
-              {menuButtonNodes.map((item) => (
-                <PaneHeaderActionButton key={item.key} node={item} />
-              ))}
-              {editState && (
-                <RenderActionCollectionState
-                  actions={actions}
-                  actionProps={editState}
-                  group="paneActions"
-                >
-                  {renderPaneActions}
-                </RenderActionCollectionState>
-              )}
-
-              {showSplitPaneButton && (
-                <Button
-                  aria-label={t('buttons.split-pane-button.aria-label')}
-                  icon={SplitVerticalIcon}
-                  key="split-pane-button"
-                  mode="bleed"
-                  onClick={onPaneSplit}
-                  tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
-                />
-              )}
-
-              {showSplitPaneCloseButton && (
-                <Button
-                  icon={CloseIcon}
-                  key="close-view-button"
-                  mode="bleed"
-                  onClick={onPaneClose}
-                  tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
-                />
-              )}
-
-              {showPaneGroupCloseButton && (
-                <Button
-                  icon={CloseIcon}
-                  key="close-view-button"
-                  mode="bleed"
-                  tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
-                  as={BackLink}
-                />
-              )}
-            </Flex>
-          }
+          backButton={backButton}
+          actions={renderedActions}
         />
       </TooltipDelayGroupProvider>
     )

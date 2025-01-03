@@ -9,7 +9,7 @@ export default defineCliConfig({
     projectId: process.env.SANITY_E2E_PROJECT_ID,
     dataset: process.env.SANITY_E2E_DATASET,
   },
-  reactCompiler: {target: '18'},
+  reactCompiler: {target: '19'},
   vite: {
     define: {
       'process.env.SANITY_E2E_PROJECT_ID': JSON.stringify(process.env.SANITY_E2E_PROJECT_ID),
