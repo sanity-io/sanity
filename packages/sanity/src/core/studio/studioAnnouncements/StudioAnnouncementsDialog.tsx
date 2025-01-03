@@ -48,7 +48,7 @@ interface AnnouncementProps {
   announcement: StudioAnnouncementDocument
   mode: DialogMode
   isFirst: boolean
-  parentRef: React.RefObject<HTMLDivElement>
+  parentRef: React.RefObject<HTMLDivElement | null>
 }
 
 /**

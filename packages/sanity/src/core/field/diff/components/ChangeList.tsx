@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
-import {type ReactElement, useCallback, useContext, useMemo, useRef, useState} from 'react'
+import {useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -26,7 +26,7 @@ export interface ChangeListProps {
 }
 
 /** @internal */
-export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactElement | null {
+export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)

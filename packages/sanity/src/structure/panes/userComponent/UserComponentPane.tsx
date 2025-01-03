@@ -47,7 +47,6 @@ export function UserComponentPane(props: UserComponentPaneProps) {
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
             ref={setRef as any}
-            // @ts-expect-error - @TODO Fix typings
             child={child}
             paneKey={paneKey}
           />

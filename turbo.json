@@ -3,6 +3,7 @@
   // All environment variables that should invalidate a cached build needs to be declared here
   "globalEnv": [
     "CI",
+    "GITHUB_ACTIONS",
     "DEBUG",
     "NODE_ENV",
     "PKG_FORMAT",

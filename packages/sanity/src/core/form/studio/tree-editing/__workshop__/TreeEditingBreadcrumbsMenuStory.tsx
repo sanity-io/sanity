@@ -55,7 +55,7 @@ const items: TreeEditingBreadcrumb[] = [
   },
 ]
 
-export default function TreeEditingBreadcrumbsMenuStory(): JSX.Element {
+export default function TreeEditingBreadcrumbsMenuStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['second-item'])
 
   return (

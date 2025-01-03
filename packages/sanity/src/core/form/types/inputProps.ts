@@ -28,7 +28,6 @@ import {
   type FocusEventHandler,
   type FormEventHandler,
   type MutableRefObject,
-  type ReactElement,
   type ReactNode,
 } from 'react'
 
@@ -72,7 +71,7 @@ export interface OnPathFocusPayload {
  * @hidden
  * @public */
 export interface BaseInputProps {
-  renderDefault: (props: InputProps) => ReactElement
+  renderDefault: (props: InputProps) => React.JSX.Element
 }
 
 /**
@@ -579,7 +578,7 @@ export interface PortableTextInputProps
    * @hidden
    * @beta
    */
-  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => React.JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */

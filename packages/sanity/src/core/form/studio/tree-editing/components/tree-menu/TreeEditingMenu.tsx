@@ -15,7 +15,7 @@ interface TreeEditingMenuProps {
 
 export const TreeEditingMenu = memo(function TreeEditingMenu(
   props: TreeEditingMenuProps,
-): JSX.Element {
+): React.JSX.Element {
   const {items, onPathSelect, selectedPath} = props
 
   return (

@@ -1,5 +1,4 @@
 import {type FieldDefinition, type StringSchemaType} from '@sanity/types'
-import {type ReactElement} from 'react'
 
 import {type PrimitiveInputElementProps, type StringInputProps} from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
@@ -10,7 +9,7 @@ const noopRenderDefault = () => <></>
 export type TestRenderStringInputCallback = (
   inputProps: StringInputProps,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderStringInput(options: {
   fieldDefinition: FieldDefinition<'date' | 'datetime' | 'string' | 'url'>
