@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import {type ReleaseId} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -23,6 +24,7 @@ import {
   getExpandOperations,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
+  isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
   isVersionId,
@@ -79,7 +81,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath} = props
+  const {children, index, pane, paneKey, onFocusPath, matchGlobalVersion = true} = props
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -110,19 +112,39 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {
-    selectedPerspectiveName,
-    selectedReleaseId: globalSelectedReleaseId,
-    selectedPerspective,
-  } = usePerspective()
-  const seeingHistoricVersion = Boolean(params.historyVersion)
 
-  const selectedReleaseId = seeingHistoricVersion ? params.historyVersion : globalSelectedReleaseId
+  const perspective = usePerspective()
 
-  /* Version and the global perspective should match.
-   * If user clicks on add document, and then switches to another version, he should click again on create document.
-   */
-  const newDocumentVersion = params.version === selectedPerspectiveName ? params.version : undefined
+  const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
+    if (!matchGlobalVersion) {
+      return {
+        selectedPerspectiveName: undefined,
+        isReleaseLocked: false,
+        selectedReleaseId: undefined,
+      }
+    }
+    const historyVersion = params.historyVersion as ReleaseId | undefined
+    if (historyVersion) {
+      return {
+        selectedPerspectiveName: historyVersion,
+        selectedReleaseId: historyVersion,
+        isReleaseLocked: true,
+      }
+    }
+    return {
+      selectedPerspectiveName: perspective.selectedPerspectiveName,
+      selectedReleaseId: perspective.selectedReleaseId,
+      isReleaseLocked: isReleaseDocument(perspective.selectedPerspective)
+        ? isReleaseScheduledOrScheduling(perspective.selectedPerspective)
+        : false,
+    }
+  }, [
+    matchGlobalVersion,
+    params.historyVersion,
+    perspective.selectedPerspectiveName,
+    perspective.selectedReleaseId,
+    perspective.selectedPerspective,
+  ])
 
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
@@ -178,15 +200,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const getDocumentVersionType = useCallback(() => {
     let version: DocumentActionsVersionType
     switch (true) {
-      /**
-       * bundle Perspective will always be undefined in published and draft but not on version
-       * should also check if the current value is a version otherwise this would impact the document actions
-       */
-      case typeof selectedPerspectiveName !== 'undefined' && isVersionId(value._id):
-        version = 'version'
-        break
-      case Boolean(params):
+      case Boolean(params.rev):
         version = 'revision'
+        break
+      case selectedReleaseId && isVersionId(value._id):
+        version = 'version'
         break
       case selectedPerspectiveName === 'published':
         version = 'published'
@@ -196,7 +214,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [selectedPerspectiveName, params, value._id])
+  }, [selectedPerspectiveName, selectedReleaseId, params, value._id])
 
   const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 
@@ -205,9 +223,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       schemaType: documentType,
       documentId,
       versionType: actionsPerspective,
-      ...(selectedPerspectiveName && {versionName: selectedReleaseId}),
+      ...(selectedReleaseId && {versionName: selectedReleaseId}),
     }),
-    [documentType, documentId, actionsPerspective, selectedPerspectiveName, selectedReleaseId],
+    [documentType, documentId, actionsPerspective, selectedReleaseId],
   )
 
   // Resolve document actions
@@ -616,11 +634,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isSystemPerspectiveApplied =
       isLiveEditAndPublishedPerspective || (selectedPerspectiveName ? existsInBundle : true)
 
-    const isReleaseLocked =
-      typeof selectedPerspective === 'object' && 'state' in selectedPerspective
-        ? isReleaseScheduledOrScheduling(selectedPerspective)
-        : false
-
     return (
       !isSystemPerspectiveApplied ||
       !ready ||
@@ -645,13 +658,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.transactionSyncLock?.enabled,
     liveEdit,
     selectedPerspectiveName,
-    selectedPerspective,
     existsInBundle,
     ready,
     revisionId,
     isDeleting,
     isDeleted,
     isCreateLinked,
+    isReleaseLocked,
   ])
 
   const formState = useFormState({
@@ -737,74 +750,74 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const documentPane: DocumentPaneContextValue = useMemo(
-    () => ({
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      closeInspector,
-      collapsedFieldSets,
-      collapsedPaths,
-      compareValue,
-      connectionState,
-      displayed,
-      documentId,
-      documentIdRaw,
-      documentType,
-      documentVersions,
-      editState,
-      existsInBundle,
-      fieldActions,
-      focusPath,
-      inspector: currentInspector || null,
-      inspectors,
-      __internal_tasks,
-      onBlur: handleBlur,
-      onChange: handleChange,
-      onFocus: handleFocus,
-      onPathOpen: setOpenPath,
-      onHistoryClose: handleHistoryClose,
-      onHistoryOpen: handleHistoryOpen,
-      onInspectClose: handleLegacyInspectClose,
-      onMenuAction: handleMenuAction,
-      onPaneClose: handlePaneClose,
-      onPaneSplit: handlePaneSplit,
-      onSetActiveFieldGroup: handleSetActiveFieldGroup,
-      onSetCollapsedPath: handleOnSetCollapsedPath,
-      onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-      openInspector,
-      openPath,
-      index,
-      inspectOpen,
-      validation,
-      menuItemGroups: menuItemGroups || [],
-      paneKey,
-      previewUrl,
-      ready,
-      schemaType: schemaType!,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      permissions,
-      setTimelineMode,
-      setTimelineRange,
-      setIsDeleting,
-      isDeleting,
-      isDeleted,
-      timelineError,
-      timelineMode,
-      timelineStore,
-      title,
-      value,
-      selectedVersionName: selectedPerspectiveName,
-      selectedReleaseId,
-      views,
-      formState,
-      unstable_languageFilter: languageFilter,
+    () =>
+      ({
+        actions,
+        activeViewId,
+        badges,
+        changesOpen,
+        closeInspector,
+        collapsedFieldSets,
+        collapsedPaths,
+        compareValue,
+        connectionState,
+        displayed,
+        documentId,
+        documentIdRaw,
+        documentType,
+        documentVersions,
+        editState,
+        existsInBundle,
+        fieldActions,
+        focusPath,
+        inspector: currentInspector || null,
+        inspectors,
+        __internal_tasks,
+        onBlur: handleBlur,
+        onChange: handleChange,
+        onFocus: handleFocus,
+        onPathOpen: setOpenPath,
+        onHistoryClose: handleHistoryClose,
+        onHistoryOpen: handleHistoryOpen,
+        onInspectClose: handleLegacyInspectClose,
+        onMenuAction: handleMenuAction,
+        onPaneClose: handlePaneClose,
+        onPaneSplit: handlePaneSplit,
+        onSetActiveFieldGroup: handleSetActiveFieldGroup,
+        onSetCollapsedPath: handleOnSetCollapsedPath,
+        onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+        openInspector,
+        openPath,
+        index,
+        inspectOpen,
+        validation,
+        menuItemGroups: menuItemGroups || [],
+        paneKey,
+        previewUrl,
+        ready,
+        schemaType: schemaType!,
+        isPermissionsLoading,
+        isInitialValueLoading,
+        permissions,
+        setTimelineMode,
+        setTimelineRange,
+        setIsDeleting,
+        isDeleting,
+        isDeleted,
+        timelineError,
+        timelineMode,
+        timelineStore,
+        title,
+        value,
+        selectedReleaseId,
+        views,
+        formState,
+        unstable_languageFilter: languageFilter,
 
-      // History specific
-      revisionId,
-      lastNonDeletedRevId,
-    }),
+        // History specific
+        revisionId,
+        lastNonDeletedRevId,
+      }) satisfies DocumentPaneContextValue,
     [
       actions,
       activeViewId,
@@ -862,7 +875,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
-      selectedPerspectiveName,
       selectedReleaseId,
       views,
       formState,

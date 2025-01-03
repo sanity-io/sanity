@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {
   type ObjectSchemaType,
   type Path,
@@ -84,8 +85,7 @@ export interface DocumentPaneContextValue {
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
-  selectedReleaseName?: `r${string}`
-  selectedVersionName?: string // 'published'
+  selectedReleaseId: ReleaseId | undefined
   views: View[]
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null

@@ -8,4 +8,9 @@ export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
   isSelected?: boolean
   isActive?: boolean
   pane: Extract<PaneNode, {type: T}>
+  /**
+   * Decides if the pane should check for the global version when determining the document id.
+   * default: true
+   */
+  matchGlobalVersion?: boolean
 }
