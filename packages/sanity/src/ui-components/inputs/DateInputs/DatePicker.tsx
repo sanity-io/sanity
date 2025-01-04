@@ -9,6 +9,7 @@ export const DatePicker = forwardRef(function DatePicker(
     onChange: (nextDate: Date) => void
     selectTime?: boolean
     timeStep?: number
+    timezone?: string
     calendarLabels: CalendarLabels
   },
   ref: ForwardedRef<HTMLDivElement>,
@@ -32,6 +33,7 @@ export const DatePicker = forwardRef(function DatePicker(
       selectedDate={value}
       onSelect={handleSelect}
       focusedDate={focusedDate || value}
+      timezone={props.timezone}
       onFocusedDateChange={setFocusedDay}
     />
   )

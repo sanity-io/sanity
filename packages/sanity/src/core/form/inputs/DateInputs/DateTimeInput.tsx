@@ -1,7 +1,9 @@
+import {Stack, Text} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
   format,
+  isValidTimezoneString,
   parse,
 } from '@sanity/util/legacyDateFormat'
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
@@ -19,12 +21,14 @@ interface ParsedOptions {
   dateFormat: string
   timeFormat: string
   timeStep: number
+  displayTimezone?: string
 }
 
 interface SchemaOptions {
   dateFormat?: string
   timeFormat?: string
   timeStep?: number
+  displayTimezone?: string
 }
 
 /**
@@ -37,19 +41,28 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 1,
+    displayTimezone:
+      options.displayTimezone && isValidTimezoneString(options.displayTimezone)
+        ? options.displayTimezone
+        : undefined,
   }
 }
 
 function serialize(date: Date) {
   return date.toISOString()
 }
-function deserialize(isoString: string): ParseResult {
-  const deserialized = new Date(isoString)
-  if (isValidDate(deserialized)) {
-    return {isValid: true, date: deserialized}
+
+// deserialize specifically handles the deserialisation of the iso date string from content lake
+const deserialize =
+  (timezone?: string) =>
+  (isoString: string): ParseResult => {
+    // create a date object respecting the timezone
+    const {date: deserialized} = parse(isoString, undefined, timezone)
+    if (deserialized && isValidDate(deserialized)) {
+      return {isValid: true, date: deserialized}
+    }
+    return {isValid: false, error: `Invalid date value: "${isoString}"`}
   }
-  return {isValid: false, error: `Invalid date value: "${isoString}"`}
-}
 
 // enforceTimeStep takes a dateString and datetime schema options and enforces the time
 // to be within the configured timeStep
@@ -65,7 +78,8 @@ function enforceTimeStep(dateString: string, timeStep: number) {
     return serialize(setMinutes(date, minutes - leftOver))
   }
 
-  return serialize(date)
+  const serilalised = serialize(date)
+  return serilalised
 }
 
 /**
@@ -74,7 +88,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 export function DateTimeInput(props: DateTimeInputProps) {
   const {onChange, schemaType, value, elementProps} = props
 
-  const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
+  const {dateFormat, timeFormat, timeStep, displayTimezone} = parseOptions(schemaType.options)
   const {t} = useTranslation()
 
   const handleChange = useCallback(
@@ -90,28 +104,37 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const formatInputValue = useCallback(
-    (date: Date) => format(date, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat],
+    (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timezone: displayTimezone}),
+    [dateFormat, timeFormat, displayTimezone],
   )
 
   const parseInputValue = useCallback(
-    (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat],
+    (inputValue: string): ParseResult =>
+      parse(inputValue, `${dateFormat} ${timeFormat}`, displayTimezone),
+    [dateFormat, timeFormat, displayTimezone],
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
-    <CommonDateTimeInput
-      {...elementProps}
-      calendarLabels={calendarLabels}
-      onChange={handleChange}
-      deserialize={deserialize}
-      formatInputValue={formatInputValue}
-      parseInputValue={parseInputValue}
-      placeholder={schemaType.placeholder}
-      selectTime
-      serialize={serialize}
-      timeStep={timeStep}
-      value={value}
-    />
+    <Stack space={3}>
+      <CommonDateTimeInput
+        {...elementProps}
+        calendarLabels={calendarLabels}
+        onChange={handleChange}
+        deserialize={deserialize(displayTimezone)}
+        formatInputValue={formatInputValue}
+        parseInputValue={parseInputValue}
+        placeholder={schemaType.placeholder}
+        selectTime
+        serialize={serialize}
+        timeStep={timeStep}
+        timezone={displayTimezone}
+        value={value}
+      />
+      {displayTimezone ? (
+        <Text size={1} muted>
+          {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
+        </Text>
+      ) : null}
+    </Stack>
   )
 }

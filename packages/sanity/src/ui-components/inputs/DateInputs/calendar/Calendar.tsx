@@ -1,6 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {format as formatTZ, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {range} from 'lodash'
 import {
   type ComponentProps,
@@ -22,10 +23,44 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
+const format = (date: Date, formatStr: string, options?: {timezone?: string}) => {
+  if (!options?.timezone) {
+    const dateParts = date
+      .toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+      .split('/')
+
+    switch (formatStr) {
+      case 'DD':
+        return dateParts[1]
+      case 'MM':
+        return dateParts[0]
+      default:
+        return dateParts[2]
+    }
+  }
+
+  const zonedDate = utcToZonedTime(date, options.timezone)
+  const formatPattern =
+    {
+      DD: 'dd',
+      MM: 'MM',
+      YYYY: 'yyyy',
+    }[formatStr] || 'yyyy'
+
+  return formatTZ(zonedDate, formatPattern, {
+    timeZone: options.timezone,
+  })
+}
+
 type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
+  timezone?: string
   onSelect: (date: Date) => void
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
@@ -62,10 +97,31 @@ export const Calendar = forwardRef(function Calendar(
     selectedDate = new Date(),
     focusedDate = selectedDate,
     timeStep = 1,
+    timezone,
     onSelect,
     labels,
     ...restProps
   } = props
+
+  const getDisplayHour = useCallback(() => {
+    if (!timezone) return selectedDate.getHours()
+    const zonedDate = utcToZonedTime(selectedDate, timezone)
+    return zonedDate.getHours()
+  }, [selectedDate, timezone])
+
+  const getDisplayMinutes = useCallback(() => {
+    if (!timezone) return selectedDate.getMinutes()
+    const zonedDate = utcToZonedTime(selectedDate, timezone)
+    return zonedDate.getMinutes()
+  }, [selectedDate, timezone])
+
+  const getDisplayMonth = useCallback(() => {
+    return Number(format(selectedDate, 'MM', {timezone})) - 1 // month is 0-indexed
+  }, [selectedDate, timezone])
+
+  const getDisplayYear = useCallback(() => {
+    return Number(format(selectedDate, 'YYYY', {timezone}))
+  }, [selectedDate, timezone])
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -101,25 +157,46 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleMinutesChange = useCallback(
     (event: FormEvent<HTMLSelectElement>) => {
-      const m = Number(event.currentTarget.value)
-      onSelect(setMinutes(selectedDate, m))
+      const minutes = Number(event.currentTarget.value)
+      if (!timezone) {
+        onSelect(setMinutes(selectedDate, minutes))
+        return
+      }
+      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const newZonedDate = setMinutes(zonedDate, minutes)
+      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      onSelect(utcDate)
     },
-    [onSelect, selectedDate],
+    [onSelect, selectedDate, timezone],
   )
 
   const handleHoursChange = useCallback(
     (event: FormEvent<HTMLSelectElement>) => {
-      const m = Number(event.currentTarget.value)
-      onSelect(setHours(selectedDate, m))
+      const hours = Number(event.currentTarget.value)
+      if (!timezone) {
+        onSelect(setHours(selectedDate, hours))
+        return
+      }
+      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const newZonedDate = setHours(zonedDate, hours)
+      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      onSelect(utcDate)
     },
-    [onSelect, selectedDate],
+    [onSelect, selectedDate, timezone],
   )
 
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
-      onSelect(setHours(setMinutes(selectedDate, mins), hours))
+      if (!timezone) {
+        onSelect(setHours(setMinutes(selectedDate, mins), hours))
+        return
+      }
+      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
+      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      onSelect(utcDate)
     },
-    [onSelect, selectedDate],
+    [onSelect, selectedDate, timezone],
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
@@ -208,7 +285,7 @@ export const Calendar = forwardRef(function Calendar(
             <CalendarMonthSelect
               onChange={handleFocusedMonthChange}
               monthNames={labels.monthNames}
-              value={focusedDate?.getMonth()}
+              value={getDisplayMonth()}
             />
           </Box>
           <Box marginLeft={2}>
@@ -219,7 +296,7 @@ export const Calendar = forwardRef(function Calendar(
                 goToPreviousYear: labels.goToPreviousYear,
               }}
               onChange={setFocusedDateYear}
-              value={focusedDate.getFullYear()}
+              value={getDisplayYear()}
             />
           </Box>
         </Flex>
@@ -254,7 +331,7 @@ export const Calendar = forwardRef(function Calendar(
                   fontSize={1}
                   padding={2}
                   radius={2}
-                  value={selectedDate?.getHours()}
+                  value={getDisplayHour()}
                   onChange={handleHoursChange}
                 >
                   {HOURS_24.map((h) => (
@@ -275,7 +352,7 @@ export const Calendar = forwardRef(function Calendar(
                   fontSize={1}
                   padding={2}
                   radius={2}
-                  value={selectedDate?.getMinutes()}
+                  value={getDisplayMinutes()}
                   onChange={handleMinutesChange}
                 >
                   {range(0, 60, timeStep).map((m) => (

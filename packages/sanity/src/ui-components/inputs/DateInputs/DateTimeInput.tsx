@@ -28,6 +28,7 @@ export interface DateTimeInputProps {
   readOnly?: boolean
   selectTime?: boolean
   timeStep?: number
+  timezone?: string
   value?: Date
   calendarLabels: CalendarLabels
   constrainSize?: boolean
@@ -115,6 +116,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       calendarLabels={calendarLabels}
                       selectTime={selectTime}
                       timeStep={timeStep}
+                      timezone={props.timezone}
                       onKeyUp={handleKeyUp}
                       value={value}
                       onChange={onChange}

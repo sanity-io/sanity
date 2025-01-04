@@ -69,3 +69,41 @@ test('formatting of deserialized value', async () => {
   // const {textInput} = renderInput({value: '2021-03-28T17:23:00.000Z'} as any)
   expect(input.value).toBe('2021-03-28 10:23')
 })
+
+test('time is shown in the display timezone if specified (utc+1 winter)', async () => {
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+      options: {displayTimezone: 'Europe/Oslo'},
+    }),
+    props: {documentValue: {test: '2021-01-15T12:00:00.000Z'}},
+    render: (inputProps) => <DateTimeInput {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+
+  userEvent.type(input, '2021-03-28 13:00')
+  expect(input.value).toBe('2021-03-28 13:00')
+  fireEvent.blur(input)
+  expect(input.value).toBe('2021-03-28 13:00')
+})
+
+test('time is shown in the display timezone if specified (utc+2 summer)', async () => {
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+      options: {displayTimezone: 'Europe/Oslo'},
+    }),
+    props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
+    render: (inputProps) => <DateTimeInput {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+
+  userEvent.type(input, '2021-06-15 14:00')
+  expect(input.value).toBe('2021-06-15 14:00')
+  fireEvent.blur(input)
+  expect(input.value).toBe('2021-06-15 14:00')
+})

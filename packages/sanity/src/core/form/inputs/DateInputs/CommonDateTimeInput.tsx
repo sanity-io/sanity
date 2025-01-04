@@ -28,6 +28,7 @@ export interface CommonDateTimeInputProps {
   selectTime?: boolean
   serialize: (date: Date) => string
   timeStep?: number
+  timezone?: string
   value: string | undefined
   calendarLabels: CalendarLabels
 }
@@ -96,7 +97,6 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     forwardedRef,
     () => ref.current,
   )
-
   const parseResult = localValue ? parseInputValue(localValue) : value ? deserialize(value) : null
 
   const inputValue = localValue
@@ -122,6 +122,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       }
       ref={ref}
       value={parseResult?.date}
+      timezone={props.timezone}
       inputValue={inputValue || ''}
       readOnly={Boolean(readOnly)}
       onInputChange={handleDatePickerInputChange}
