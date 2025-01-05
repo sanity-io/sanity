@@ -7,6 +7,7 @@ import {
   memo,
   type MouseEvent,
   useCallback,
+  useContext,
   useMemo,
   useState,
 } from 'react'
@@ -15,6 +16,7 @@ import deepCompare from 'react-fast-compare'
 import {EMPTY_ARRAY} from '../util'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'
+import {ConnectorContext} from '../../_singletons/context/ConnectorContext'
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
@@ -23,6 +25,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     isChanged?: boolean
     withHoverEffect?: boolean
+    isInteractive?: boolean
   },
 ) {
   const {
@@ -34,6 +37,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     onMouseLeave: onMouseLeaveProp,
     path = EMPTY_ARRAY,
     withHoverEffect,
+    isInteractive,
     ...restProps
   } = props
   const layer = useLayer()
@@ -82,6 +86,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         isChanged={isChanged}
         disabled={disabled}
         withHoverEffect={withHoverEffect}
+        isInteractive={isInteractive}
       >
         {children}
       </ElementWithChangeBar>
@@ -102,6 +107,7 @@ export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
+  const {isInteractive} = useContext(ConnectorContext)
 
   return (
     <ChangeBarWrapper
@@ -110,6 +116,7 @@ export function ChangeIndicator(
       hasFocus={hasFocus}
       isChanged={isChanged}
       withHoverEffect={withHoverEffect}
+      isInteractive={isInteractive}
     >
       {children}
     </ChangeBarWrapper>
