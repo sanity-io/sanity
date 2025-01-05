@@ -13,6 +13,7 @@ export interface ChangeConnectorRootProps {
   isReviewChangesOpen: boolean
   onOpenReviewChanges: () => void
   onSetFocus: (path: Path) => void
+  isEnabled?: boolean
 }
 
 /** @internal */
@@ -22,6 +23,7 @@ export function ChangeConnectorRoot({
   isReviewChangesOpen,
   onOpenReviewChanges,
   onSetFocus,
+  isEnabled = true,
   ...restProps
 }: ChangeConnectorRootProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>()
@@ -31,8 +33,9 @@ export function ChangeConnectorRoot({
       isReviewChangesOpen,
       onOpenReviewChanges,
       onSetFocus,
+      isEnabled,
     }),
-    [isReviewChangesOpen, onOpenReviewChanges, onSetFocus],
+    [isReviewChangesOpen, onOpenReviewChanges, onSetFocus, isEnabled],
   )
 
   return (

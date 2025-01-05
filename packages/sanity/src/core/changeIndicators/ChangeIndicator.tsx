@@ -7,11 +7,13 @@ import {
   memo,
   type MouseEvent,
   useCallback,
+  useContext,
   useMemo,
   useState,
 } from 'react'
 import deepCompare from 'react-fast-compare'
 
+import {ConnectorContext} from '../../_singletons/context/ConnectorContext'
 import {EMPTY_ARRAY} from '../util'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'
@@ -102,6 +104,11 @@ export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
+  const {isEnabled} = useContext(ConnectorContext)
+
+  if (!isEnabled) {
+    return children
+  }
 
   return (
     <ChangeBarWrapper

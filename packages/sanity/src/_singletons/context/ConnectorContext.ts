@@ -9,5 +9,6 @@ export const ConnectorContext = createContext<ConnectorContextValue>(
     isReviewChangesOpen: false,
     onOpenReviewChanges: () => undefined,
     onSetFocus: () => undefined,
+    isEnabled: true,
   } as ConnectorContextValue,
 )
