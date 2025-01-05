@@ -327,7 +327,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? sinceDocument
-    : editState?.published || null
+    : (props.compareValue ?? editState?.published ?? null)
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
