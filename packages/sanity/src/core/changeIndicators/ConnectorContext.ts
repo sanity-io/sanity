@@ -6,4 +6,5 @@ export interface ConnectorContextValue {
   onOpenReviewChanges: () => void | undefined
   onSetFocus: (nextPath: Path) => void | undefined
   isEnabled: boolean
+  isInteractive?: boolean
 }

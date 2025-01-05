@@ -25,6 +25,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     isChanged?: boolean
     withHoverEffect?: boolean
+    isInteractive?: boolean
   },
 ) {
   const {
@@ -36,6 +37,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     onMouseLeave: onMouseLeaveProp,
     path = EMPTY_ARRAY,
     withHoverEffect,
+    isInteractive,
     ...restProps
   } = props
   const layer = useLayer()
@@ -84,6 +86,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         isChanged={isChanged}
         disabled={disabled}
         withHoverEffect={withHoverEffect}
+        isInteractive={isInteractive}
       >
         {children}
       </ElementWithChangeBar>
@@ -104,7 +107,7 @@ export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
-  const {isEnabled} = useContext(ConnectorContext)
+  const {isEnabled, isInteractive} = useContext(ConnectorContext)
 
   if (!isEnabled) {
     return children
@@ -117,6 +120,7 @@ export function ChangeIndicator(
       hasFocus={hasFocus}
       isChanged={isChanged}
       withHoverEffect={withHoverEffect}
+      isInteractive={isInteractive}
     >
       {children}
     </ChangeBarWrapper>
