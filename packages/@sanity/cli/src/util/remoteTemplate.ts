@@ -301,7 +301,7 @@ export async function setCorsOrigin(
     await apiClient({api: {projectId}}).request({
       method: 'POST',
       url: '/cors',
-      body: {origin: origin, allowCredentials: false},
+      body: {origin: origin, allowCredentials: true},
     })
   } catch (error) {
     // Silent fail, it most likely means that the origin is already set
