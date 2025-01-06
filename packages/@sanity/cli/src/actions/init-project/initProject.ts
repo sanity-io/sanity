@@ -846,7 +846,7 @@ export default async function initSanity(
 
     const projectChoices = projects.map((project) => ({
       value: project.id,
-      name: `${project.displayName} [${project.id}]`,
+      name: `${project.displayName} (${project.id})`,
     }))
 
     const selected = await prompt.single({
