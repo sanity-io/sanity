@@ -18,8 +18,8 @@
   "devDependencies": {
     "@sanity/client": "^6.24.1",
     "@swc-node/register": "^1.10.9",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@types/serve-handler": "^6.1.4",
     "@types/yargs": "^17.0.7",
     "@vitejs/plugin-react": "^4.3.4",
