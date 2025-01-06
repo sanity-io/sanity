@@ -1,0 +1,54 @@
+import {type ComponentType} from 'react'
+
+import {type SanityDocument} from '../documents'
+import {type Path} from '../paths'
+import {type ReferenceFilterOptions} from '../reference'
+import {type ObjectSchemaType, type PreviewConfig} from '../schema'
+
+/** @beta */
+export interface GlobalDocumentReferenceValue {
+  _type: string
+  _ref: string
+  _key?: string
+  _weak?: boolean
+}
+
+/** @beta */
+export interface WeakGlobalDocumentReferenceValue extends GlobalDocumentReferenceValue {
+  _weak: true
+}
+
+/** @beta */
+export type GlobalDocumentReferenceFilterSearchOptions = {
+  filter?: string
+  params?: Record<string, unknown>
+  tag?: string
+}
+
+/** @beta */
+export type GlobalDocumentReferenceFilterResolver = (options: {
+  document: SanityDocument
+  parent?: Record<string, unknown> | Record<string, unknown>[]
+  parentPath: Path
+}) =>
+  | GlobalDocumentReferenceFilterSearchOptions
+  | Promise<GlobalDocumentReferenceFilterSearchOptions>
+
+/** @beta */
+export interface GlobalDocumentReferenceType {
+  type: string
+  title?: string
+  icon: ComponentType
+  preview: PreviewConfig
+}
+
+/** @beta */
+export interface GlobalDocumentReferenceSchemaType extends Omit<ObjectSchemaType, 'options'> {
+  jsonType: 'object'
+  to: GlobalDocumentReferenceType[]
+  resourceType: string
+  resourceId: string
+  studioUrl?: (document: {id: string; type?: string}) => string | null
+  weak?: boolean
+  options?: ReferenceFilterOptions
+}
