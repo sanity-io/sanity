@@ -61,7 +61,7 @@
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.17.7",
     "@vercel/stega": "0.1.2",
-    "@vitest/coverage-v8": "^2.1.1",
+    "@vitest/coverage-v8": "^2.1.8",
     "jsdom": "^23.0.1",
     "vitest": "^2.1.8"
   },
