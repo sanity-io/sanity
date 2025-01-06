@@ -128,7 +128,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               placement="bottom"
               ref={popoverRef}
             >
-              {suffix}
+              <>{suffix}</>
             </Popover>
           </LayerProvider>
         ) : (
