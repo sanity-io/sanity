@@ -1482,8 +1482,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.2
       '@sanity/export':
-        specifier: ^3.42.1
-        version: 3.42.1
+        specifier: ^3.42.2
+        version: 3.42.2
       '@sanity/icons':
         specifier: ^3.5.7
         version: 3.5.7(react@18.3.1)
@@ -4781,8 +4781,8 @@ packages:
   '@sanity/eventsource@5.0.2':
     resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
-  '@sanity/export@3.42.1':
-    resolution: {integrity: sha512-KGG2V6eEdNtXY/ElYopXiXxv35FRzMQwCIh8jdY43eOWKTkuSGda0kptGmHDJk+QJY8qOA3PqzG2GVu/CDeEvg==}
+  '@sanity/export@3.42.2':
+    resolution: {integrity: sha512-3dpGwzyhMXFPdGkS28rv7nBAnCKgW+OGTVM+tO31YO9AIZJ9M016WZcYKEYhX+wCLNiGTNrqWXfac9L4Unh8fQ==}
     engines: {node: '>=18'}
 
   '@sanity/generate-help-url@3.0.0':
@@ -15303,7 +15303,7 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@3.42.1':
+  '@sanity/export@3.42.2':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
       '@sanity/util': link:packages/@sanity/util
