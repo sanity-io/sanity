@@ -1506,8 +1506,8 @@ importers:
         specifier: 3.68.3
         version: link:../@sanity/mutator
       '@sanity/presentation':
-        specifier: 1.19.16
-        version: 1.19.16(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: 1.19.17
+        version: 1.19.17(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/schema':
         specifier: 3.68.3
         version: link:../@sanity/schema
@@ -4761,6 +4761,10 @@ packages:
     resolution: {integrity: sha512-ibYxXGlAssMZUHgL958W28rOetHuXSJjzhfj3T+ipI+scDhsGOZ9AjN5Gd3XENk2RdAE9hhzBJPttJKLpTw5YQ==}
     engines: {node: '>=18'}
 
+  '@sanity/comlink@2.0.4':
+    resolution: {integrity: sha512-ODjmZZJ4a4hiSK4TaQk2ysppIweIj6UNZ7o+fAkh7hotwcLxh+qTo8Rpb5yW2UfqGSAWTQDMcta9/4HAMWGfUA==}
+    engines: {node: '>=18'}
+
   '@sanity/core-loader@1.7.22':
     resolution: {integrity: sha512-O5gUZAMVemqIcLzlQdAyb0ZrqIrl4o73hDInmVbHXzw/dmL7NWuTYYKEblKpAR85putmDCgOm2uMj1NCDczKaA==}
     engines: {node: '>=18'}
@@ -4882,8 +4886,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation@1.19.16':
-    resolution: {integrity: sha512-qxrhHkUcLrW1zk8+jjzc1K8co8Hn+GM4oBpLXub4vZbIRHeUzxfIRlP3IwgAIWTpzV+CWLGVWsTJQU2E6WvFqw==}
+  '@sanity/presentation@1.19.17':
+    resolution: {integrity: sha512-B+xh38f42CnF/VZZi3GZV+e48zGACreWsT4cR5bW2t2vLHt6PgcknbaRm48Fk+g7kCuXr0ACMbbdWU4pJqAiyA==}
     engines: {node: '>=16.14'}
 
   '@sanity/prettier-config@1.0.3':
@@ -10271,11 +10275,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-compiler-runtime@19.0.0-beta-201e55d-20241215:
-    resolution: {integrity: sha512-jBEo/UqVgiz6veJjhQMoNaGQLKUQwzMQpiYrA4XsGVOC2sElDF0oMjic5107LitP988yHrqDDZwZirS4OAEqyA==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0
-
   react-compiler-runtime@19.0.0-beta-55955c9-20241229:
     resolution: {integrity: sha512-I8niUyydqnPVMjqsOEfFwiRlWbndSjgwGhbm5GZuKev3b0HAcUAqAoHNIpp0XSHInlwfn4Zvtbva5TLupEOw+Q==}
     peerDependencies:
@@ -15256,6 +15255,12 @@ snapshots:
       uuid: 11.0.4
       xstate: 5.19.1
 
+  '@sanity/comlink@2.0.4':
+    dependencies:
+      rxjs: 7.8.1
+      uuid: 11.0.4
+      xstate: 5.19.1
+
   '@sanity/core-loader@1.7.22':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
@@ -15558,10 +15563,10 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation@1.19.16(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/presentation@1.19.17(@emotion/is-prop-valid@1.3.1)(@sanity/color@3.0.6)(debug@4.4.0)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.24.1(debug@4.4.0)
-      '@sanity/comlink': 2.0.3
+      '@sanity/comlink': 2.0.4
       '@sanity/icons': 3.5.7(react@18.3.1)
       '@sanity/logos': 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
       '@sanity/preview-url-secret': 2.0.5(@sanity/client@6.24.1(debug@4.4.0))
@@ -15573,7 +15578,7 @@ snapshots:
       mendoza: 3.0.8
       mnemonist: 0.39.8
       path-to-regexp: 6.3.0
-      react-compiler-runtime: 19.0.0-beta-201e55d-20241215(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-55955c9-20241229(react@18.3.1)
       rxjs: 7.8.1
       suspend-react: 0.1.3(react@18.3.1)
       use-effect-event: 1.0.2(react@18.3.1)
@@ -22165,10 +22170,6 @@ snapshots:
       react: 18.3.1
       reactcss: 1.2.3(react@18.3.1)
       tinycolor2: 1.6.0
-
-  react-compiler-runtime@19.0.0-beta-201e55d-20241215(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   react-compiler-runtime@19.0.0-beta-55955c9-20241229(react@18.3.1):
     dependencies:
