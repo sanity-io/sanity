@@ -20,7 +20,7 @@
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.68.3",
-    "@sanity/client": "^6.24.1",
+    "@sanity/client": "6.25.0-alpha.0",
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
