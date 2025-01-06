@@ -298,8 +298,8 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
@@ -340,8 +340,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -391,8 +391,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -577,8 +577,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -1361,8 +1361,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*
@@ -1698,8 +1698,8 @@ importers:
         specifier: ^3.4.1
         version: 3.4.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-fast-compare:
         specifier: ^3.2.0
         version: 3.2.2
@@ -1978,8 +1978,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -2011,8 +2011,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-compiler-runtime:
-        specifier: 19.0.0-beta-55955c9-20241229
-        version: 19.0.0-beta-55955c9-20241229(react@18.3.1)
+        specifier: 19.0.0-beta-63e3235-20250105
+        version: 19.0.0-beta-63e3235-20250105(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -10278,6 +10278,11 @@ packages:
 
   react-compiler-runtime@19.0.0-beta-55955c9-20241229:
     resolution: {integrity: sha512-I8niUyydqnPVMjqsOEfFwiRlWbndSjgwGhbm5GZuKev3b0HAcUAqAoHNIpp0XSHInlwfn4Zvtbva5TLupEOw+Q==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+
+  react-compiler-runtime@19.0.0-beta-63e3235-20250105:
+    resolution: {integrity: sha512-ojqSg+8uNvomQKpZT+iPgUPWc/ZqFLt9wnoVSNiwVtX51pZgbcgRJnekSYGv0XuyCXQuy4zCz1IaEW+UXjf/ZQ==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
@@ -22177,6 +22182,10 @@ snapshots:
   react-compiler-runtime@19.0.0-beta-55955c9-20241229(react@19.0.0-rc-f994737d14-20240522):
     dependencies:
       react: 19.0.0-rc-f994737d14-20240522
+
+  react-compiler-runtime@19.0.0-beta-63e3235-20250105(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:
