@@ -97,7 +97,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     <LazyTextInput
       ref={ref}
       {...rest}
-      disabled={readOnly}
+      readOnly={readOnly}
       value={inputValue}
       onChange={onInputChange}
       suffix={
