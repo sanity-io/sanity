@@ -13,6 +13,7 @@ const coreTypes = [
   {name: 'object', jsonType: 'object', type: 'type'},
   {name: 'reference', jsonType: 'object', type: 'type'},
   {name: 'crossDatasetReference', jsonType: 'object', type: 'type'},
+  {name: 'globalDocumentReference', jsonType: 'object', type: 'type'},
   {name: 'slug', jsonType: 'object', type: 'type'},
   {name: 'span', jsonType: 'object', type: 'type'},
   {name: 'string', jsonType: 'string', type: 'type'},

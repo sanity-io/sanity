@@ -180,6 +180,11 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode // we don't support cross-dataset references at the moment
     }
 
+    // Global document references are not supported
+    if (isGlobalDocumentReferenceType(schemaType)) {
+      return {type: 'unknown'} satisfies UnknownTypeNode // we don't support global document references at the moment
+    }
+
     if (isReferenceType(schemaType)) {
       return createReferenceTypeNodeDefintion(schemaType)
     }
@@ -403,6 +408,9 @@ function isReferenceType(typeDef: SanitySchemaType): typeDef is ReferenceSchemaT
 }
 function isCrossDatasetReferenceType(typeDef: SanitySchemaType) {
   return isType(typeDef, 'crossDatasetReference')
+}
+function isGlobalDocumentReferenceType(typeDef: SanitySchemaType) {
+  return isType(typeDef, 'globalDocumentReference')
 }
 function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
   return isType(typeDef, 'string')
