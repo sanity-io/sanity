@@ -16,7 +16,7 @@ describe('GraphQL - Schema extraction', () => {
     vi.runAllTimers()
   })
 
-  it('Should be able to extract schema 1', () => {
+  it('Should be able to extract a simple schema', () => {
     const extracted = extractFromSanitySchema(testStudioSchema, {
       nonNullDocumentFields: false,
     })
@@ -24,7 +24,7 @@ describe('GraphQL - Schema extraction', () => {
     expect(sortExtracted(extracted)).toMatchSnapshot()
   })
 
-  it('Should be able to extract schema 2', () => {
+  it('Should be able to extract schema with union refs', () => {
     const extracted = extractFromSanitySchema(unionRefsSchema, {
       nonNullDocumentFields: false,
     })
