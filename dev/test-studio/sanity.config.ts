@@ -266,6 +266,7 @@ export default defineConfig([
       // TODO: Switched off because Actions API doesn't support versions (yet).
       enabled: false,
     },
+    beta: {eventsAPI: {enabled: true}},
     auth: {
       loginMethod: 'token',
     },
