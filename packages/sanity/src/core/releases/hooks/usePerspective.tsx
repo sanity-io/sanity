@@ -2,6 +2,7 @@ import {type ReleaseId} from '@sanity/client'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {isSystemBundleName} from '../../util/draftUtils'
 import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
@@ -158,10 +159,10 @@ export function usePerspective({
     () => ({
       selectedPerspective,
       selectedPerspectiveName,
-      selectedReleaseId:
-        selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
+      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
+        ? undefined
+        : selectedPerspectiveName,
       perspectiveStack,
-
       setPerspective,
       toggleExcludedPerspective,
       isPerspectiveExcluded,
