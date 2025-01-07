@@ -27,6 +27,7 @@ import {styled} from 'styled-components'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {Pane, PaneFooter, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
 import {
@@ -66,8 +67,10 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 export function DocumentLayout() {
   const {
     changesOpen,
+    displayed,
     documentId,
     documentType,
+    editState,
     fieldActions,
     focusPath,
     inspectOpen,
@@ -128,6 +131,8 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
+  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+
   const hasValue = Boolean(value)
 
   const menuItems = useMemo(
@@ -139,9 +144,19 @@ export function DocumentLayout() {
         inspectorMenuItems,
         inspectors,
         previewUrl,
+        documentIdStack,
         t,
       }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl, t],
+    [
+      currentInspector,
+      documentIdStack,
+      features,
+      hasValue,
+      inspectorMenuItems,
+      inspectors,
+      previewUrl,
+      t,
+    ],
   )
 
   const handleKeyUp = useCallback(
