@@ -54,12 +54,15 @@ export function getReleasesPerspectiveStack({
   releases,
   excludedPerspectives,
 }: {
-  selectedPerspectiveName: ReleaseId | undefined | 'published'
+  selectedPerspectiveName: ReleaseId | undefined | 'published' | 'draft'
   releases: ReleaseDocument[]
   excludedPerspectives: string[]
 }): string[] {
   if (!selectedPerspectiveName || selectedPerspectiveName === 'published') {
     return []
+  }
+  if (selectedPerspectiveName === 'draft') {
+    return [DRAFTS_FOLDER].filter((name) => !excludedPerspectives.includes(name))
   }
   const sorted: string[] = sortReleases(releases).map((release) =>
     getReleaseIdFromReleaseDocumentId(release._id),
