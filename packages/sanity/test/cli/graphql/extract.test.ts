@@ -4,6 +4,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import {type ApiSpecification} from '../../../src/_internal/cli/actions/graphql/types'
 import testStudioSchema from './fixtures/test-studio'
+import unionRefsSchema from './fixtures/union-refs'
 
 describe('GraphQL - Schema extraction', () => {
   beforeEach(() => {
@@ -15,8 +16,16 @@ describe('GraphQL - Schema extraction', () => {
     vi.runAllTimers()
   })
 
-  it('Should be able to extract schema', () => {
+  it('Should be able to extract a simple schema', () => {
     const extracted = extractFromSanitySchema(testStudioSchema, {
+      nonNullDocumentFields: false,
+    })
+
+    expect(sortExtracted(extracted)).toMatchSnapshot()
+  })
+
+  it('Should be able to extract schema with union refs', () => {
+    const extracted = extractFromSanitySchema(unionRefsSchema, {
       nonNullDocumentFields: false,
     })
 
