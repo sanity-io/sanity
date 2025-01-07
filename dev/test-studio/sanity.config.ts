@@ -261,6 +261,11 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {
+      // TODO: Switched off because Actions API doesn't support versions (yet).
+      enabled: false,
+    },
     auth: {
       loginMethod: 'token',
     },
