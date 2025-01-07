@@ -8,13 +8,13 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev --port 3337",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "../.bin/sanity start --port 3337"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
+    "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "react": "^18.3.1",
-    "react-compiler-runtime": "19.0.0-beta-201e55d-20241215",
+    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.0"

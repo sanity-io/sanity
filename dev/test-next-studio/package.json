@@ -7,12 +7,12 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 3333",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "next start"
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
+    "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "next": "15.1.2",
     "react": "rc",
     "react-dom": "rc",

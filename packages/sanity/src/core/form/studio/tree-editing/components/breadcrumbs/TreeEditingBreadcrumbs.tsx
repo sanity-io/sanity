@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -18,9 +19,10 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'

@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
-import {isString} from 'sanity'
 
+import {isString} from '../../util/isString'
 import {type SanityClipboardItem} from './types'
 
 /**

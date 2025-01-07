@@ -27,12 +27,12 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev --port 4000",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "../.bin/sanity start --port 4000"
   },
   "dependencies": {
     "@sanity/icons": "^3.5.6",
-    "@sanity/ui": "^2.10.12",
+    "@sanity/ui": "^2.10.14",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",

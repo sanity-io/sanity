@@ -1,7 +1,7 @@
-import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
 import {getEditEvents} from './getEditEvents'
+import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 
 describe('getEditEvents()', () => {
   const editTransactions = [

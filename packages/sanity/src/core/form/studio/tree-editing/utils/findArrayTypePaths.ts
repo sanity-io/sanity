@@ -5,7 +5,7 @@ import {
   type ObjectField,
   type Path,
   type SchemaType,
-} from 'sanity'
+} from '@sanity/types'
 
 /**
  * Find the paths to array schema types in a list of fields

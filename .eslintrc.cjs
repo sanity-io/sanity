@@ -2,8 +2,7 @@
 // @ts-check
 'use strict'
 
-const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
-const sanityNoRestrictedImportsPaths = [
+const noRestrictedImportPaths = [
   {
     name: '@sanity/ui',
     importNames: [
@@ -42,6 +41,8 @@ const sanityNoRestrictedImportsPaths = [
       'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
   },
 ]
+
+const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
 
 /** @type {import('eslint').Linter.Config} */
 const config = {
@@ -225,28 +226,25 @@ const config = {
         'no-restricted-imports': [
           'error',
           {
-            paths: sanityNoRestrictedImportsPaths,
+            paths: noRestrictedImportPaths,
           },
         ],
       },
     },
     {
       files: ['packages/sanity/src/core/**'],
-      excludedFiles: [
-        '**/__workshop__/**',
-        'packages/sanity/src/_singletons/**',
-        'packages/sanity/src/_createContext/**',
-      ],
+      excludedFiles: ['**/__workshop__/**'],
       rules: {
         'no-restricted-imports': [
           'error',
           {
             paths: [
-              // {
-              //   name: 'sanity',
-              //   message: 'Please import from the relative path instead of the `sanity` package',
-              // },
-              ...sanityNoRestrictedImportsPaths,
+              {
+                name: 'sanity',
+                message:
+                  'Please import from a relative path instead (since you are inside `packages/sanity/src/core`).',
+              },
+              ...noRestrictedImportPaths,
             ],
           },
         ],

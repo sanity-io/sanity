@@ -43,7 +43,7 @@
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test vitest --coverage",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "pkg-utils watch"

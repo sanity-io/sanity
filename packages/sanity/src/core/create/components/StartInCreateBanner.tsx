@@ -11,8 +11,8 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {TextWithTone} from 'sanity'
 
+import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {useWorkspace} from '../../studio'

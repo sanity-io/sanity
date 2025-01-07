@@ -3,8 +3,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {type ActionsFeatureToggle, mapResponse} from './fetchFeatureToggle'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
+vi.mock('../../../../../version', () => ({
   SANITY_VERSION: '3.47.0',
 }))
 

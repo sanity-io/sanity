@@ -10,7 +10,7 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3339",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "preview": "sanity preview --port 3339",
     "start": "sanity preview --port 3339"
   },
@@ -18,11 +18,11 @@
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.5.6",
-    "@sanity/ui": "^2.10.12",
+    "@sanity/ui": "^2.10.14",
     "@sanity/vision": "3.68.3",
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
+    "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "react": "^18.3.1",
-    "react-compiler-runtime": "19.0.0-beta-201e55d-20241215",
+    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
     "sanity-plugin-markdown": "^5.0.0",

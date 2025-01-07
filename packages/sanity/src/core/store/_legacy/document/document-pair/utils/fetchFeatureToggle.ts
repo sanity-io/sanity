@@ -1,8 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {map, type Observable, of, type OperatorFunction, ReplaySubject, timeout, timer} from 'rxjs'
 import {catchError, concatMap, share} from 'rxjs/operators'
-import {SANITY_VERSION} from 'sanity'
 import {satisfies} from 'semver'
+
+import {SANITY_VERSION} from '../../../../../version'
 
 export interface ActionsFeatureToggle {
   enabled: boolean

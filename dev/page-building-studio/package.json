@@ -8,14 +8,14 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "../.bin/sanity start"
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
+    "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
     "react": "^18.2.0",
-    "react-compiler-runtime": "19.0.0-beta-201e55d-20241215",
+    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
     "sanity": "workspace:*",

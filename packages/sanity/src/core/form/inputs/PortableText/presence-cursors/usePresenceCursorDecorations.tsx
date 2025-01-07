@@ -3,9 +3,9 @@ import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {EMPTY_ARRAY} from 'sanity'
 
 import {type FormNodePresence} from '../../../../presence'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 import {UserPresenceCursor} from './UserPresenceCursor'
 

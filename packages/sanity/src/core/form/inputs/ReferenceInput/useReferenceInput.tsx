@@ -9,10 +9,11 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {usePerspective, useReleases} from 'sanity'
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
+import {usePerspective} from '../../../releases/hooks/usePerspective'
+import {useReleases} from '../../../releases/store/useReleases'
 import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'

@@ -2,22 +2,21 @@ import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@s
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
-import {
-  type DocumentGroupEvent,
-  getReleaseTone,
-  isEditDocumentVersionEvent,
-  isPublishDocumentVersionEvent,
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  UserAvatar,
-  useRelativeTime,
-  useTranslation,
-  useUser,
-} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
+import {
+  type DocumentGroupEvent,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
+} from '../../../store/events/types'
+import {useUser} from '../../../store/user/hooks'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,

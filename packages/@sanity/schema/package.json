@@ -56,7 +56,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js lib",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -75,7 +75,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/icons": "^3.5.5",
+    "@sanity/icons": "^3.5.7",
     "@types/lodash": "^4.17.7",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "^18.3.12",

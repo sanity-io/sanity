@@ -1,3 +1,4 @@
+import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
 import {
   Card,
   // eslint-disable-next-line no-restricted-imports
@@ -10,18 +11,12 @@ import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  FormInput,
-  type InputProps,
-  isKeySegment,
-  type ObjectInputProps,
-  type ObjectSchemaType,
-  type Path,
-  useTranslation,
-} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {FormInput} from '../../../components/FormInput'
+import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
