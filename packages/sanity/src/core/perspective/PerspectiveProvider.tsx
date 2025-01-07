@@ -4,6 +4,7 @@ import {PerspectiveContext} from 'sanity/_singletons'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {type PerspectiveContextValue, type ReleaseId, type SelectedPerspective} from './types'
 
@@ -44,8 +45,9 @@ export function PerspectiveProvider({
     () => ({
       selectedPerspective,
       selectedPerspectiveName,
-      selectedReleaseId:
-        selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
+      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
+        ? undefined
+        : selectedPerspectiveName,
       perspectiveStack,
       excludedPerspectives,
     }),

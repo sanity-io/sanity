@@ -106,9 +106,38 @@ export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
+/** @internal */
+export const systemBundles = ['drafts', 'published'] as const
+
+/** @internal */
+export type SystemBundle = (typeof systemBundles)[number]
+
+/** @internal */
+export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is SystemBundle {
+  return systemBundles.includes(maybeSystemBundle as SystemBundle)
+}
+
+/** @internal */
+const systemBundleNames = ['draft', 'published'] as const
+
+/** @internal */
+type SystemBundleName = (typeof systemBundleNames)[number]
+
+/**
+ * `isSystemBundle` should be preferred, but some parts of the codebase currently use the singular
+ * "draft" name instead of the plural "drafts".
+ *
+ * @internal
+ */
+export function isSystemBundleName(
+  maybeSystemBundleName: unknown,
+): maybeSystemBundleName is SystemBundleName {
+  return systemBundleNames.includes(maybeSystemBundleName as SystemBundleName)
+}
+
 /**  @internal */
 export function getVersionId(id: string, version: string): string {
-  if (version === 'drafts' || version === 'published') {
+  if (isSystemBundle(version)) {
     throw new Error('Version can not be "published" or "drafts"')
   }
 
