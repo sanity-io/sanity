@@ -12,7 +12,7 @@ export function useEditState(
   version?: string | undefined,
 ): EditStateFor {
   if (version === 'published' || version === 'draft') {
-    throw new Error('Version cannot be published or daft')
+    throw new Error('Version cannot be published or draft')
   }
   const documentStore = useDocumentStore()
 
