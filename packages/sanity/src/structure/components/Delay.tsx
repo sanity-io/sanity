@@ -1,12 +1,12 @@
-import {type ReactElement, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 export function Delay({
   children,
   ms = 0,
 }: {
-  children?: ReactElement | (() => ReactElement)
+  children?: React.JSX.Element | (() => React.JSX.Element)
   ms?: number
-}): ReactElement {
+}): React.JSX.Element {
   const [ready, setReady] = useState(ms <= 0)
 
   useEffect(() => {

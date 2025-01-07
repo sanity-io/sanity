@@ -9,7 +9,7 @@ import {ResultViewWrapper} from './ResultView.styled'
 
 const lru = new LRU({maxSize: 50000})
 
-export function ResultView(props: {data: unknown; datasetName: string}): JSX.Element {
+export function ResultView(props: {data: unknown; datasetName: string}): React.JSX.Element {
   const {data, datasetName} = props
   const workspaceDataset = useDataset()
 

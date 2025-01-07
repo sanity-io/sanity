@@ -118,7 +118,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeEditingBreadcrumbsStory(): JSX.Element {
+export default function TreeEditingBreadcrumbsStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'item-1'}])
 
   const {menuItems} = useMemo((): TreeEditingState => {

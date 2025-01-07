@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import {type ReactElement, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 interface ImageLoaderProps {
   src: string
@@ -7,7 +7,7 @@ interface ImageLoaderProps {
     isLoading: boolean
     image: HTMLImageElement | null
     error: Error | null
-  }) => ReactElement | null
+  }) => React.JSX.Element | null
 }
 
 export function ImageLoader(props: ImageLoaderProps) {

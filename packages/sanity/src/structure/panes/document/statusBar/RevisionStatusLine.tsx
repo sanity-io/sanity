@@ -16,7 +16,7 @@ export const StatusText = styled(Text)`
   }
 `
 
-export function RevisionStatusLine(): JSX.Element {
+export function RevisionStatusLine(): React.JSX.Element {
   const {displayed} = useDocumentPane()
   const {t} = useTranslation()
   const date = displayed?._updatedAt || displayed?._createdAt

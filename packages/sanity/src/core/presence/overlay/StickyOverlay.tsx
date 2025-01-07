@@ -5,7 +5,6 @@ import {
   type CSSProperties,
   Fragment,
   memo,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useMemo,
@@ -327,7 +326,7 @@ function PresenceInside(props: {
   )
 }
 
-const PassThrough = (props: {children: ReactElement; [prop: string]: any}) => props.children
+const PassThrough = (props: {children: React.JSX.Element; [prop: string]: any}) => props.children
 
 const DebugValue = DEBUG
   ? function DebugValue(props: any) {

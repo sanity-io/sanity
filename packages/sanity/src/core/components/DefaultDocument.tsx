@@ -1,5 +1,4 @@
 /* eslint-disable i18next/no-literal-string */
-import {type ReactElement} from 'react'
 
 import {Favicons} from './Favicons'
 import {GlobalErrorHandler} from './globalErrorHandler'
@@ -122,7 +121,7 @@ const EMPTY_ARRAY: never[] = []
 /**
  * @hidden
  * @beta */
-export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
+export function DefaultDocument(props: DefaultDocumentProps): React.JSX.Element {
   const {entryPath, css = EMPTY_ARRAY} = props
 
   return (

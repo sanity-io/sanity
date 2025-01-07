@@ -20,7 +20,7 @@ export interface CommentReactionsMenuButtonProps {
     open: boolean
     tooltipContent: string
     t: TFunction
-  }) => React.ReactElement
+  }) => React.JSX.Element
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {

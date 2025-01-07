@@ -57,7 +57,7 @@ interface TreeEditingSearchProps {
   onPathSelect: (path: Path) => void
 }
 
-export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
+export function TreeEditingSearch(props: TreeEditingSearchProps): React.JSX.Element {
   const {items, onPathSelect} = props
 
   const [textInputElement, setTextInputElement] = useState<HTMLInputElement | null>(null)

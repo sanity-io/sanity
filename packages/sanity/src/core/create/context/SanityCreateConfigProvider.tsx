@@ -15,7 +15,9 @@ interface SanityCreateConfigProviderProps {
 /**
  * @internal
  */
-export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProps): JSX.Element {
+export function SanityCreateConfigProvider(
+  props: SanityCreateConfigProviderProps,
+): React.JSX.Element {
   const {children} = props
   const {beta} = useSource()
 

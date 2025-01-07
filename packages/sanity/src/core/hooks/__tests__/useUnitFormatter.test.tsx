@@ -1,6 +1,5 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
-import {type ReactElement} from 'react'
 import {beforeAll, beforeEach, describe, expect, it} from 'vitest'
 
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
@@ -16,7 +15,7 @@ describe('useUnitFormatter', () => {
     i18n: {bundles: [studioDefaultLocaleResources]},
   })
 
-  const wrapper = ({children}: {children: ReactElement}) => (
+  const wrapper = ({children}: {children: React.ReactNode}) => (
     <ThemeProvider theme={studioTheme}>
       <LocaleProviderBase
         locales={[

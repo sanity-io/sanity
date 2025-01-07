@@ -19,7 +19,7 @@ const components: PortableTextComponents = {
   },
 }
 
-export function SimpleBlockPortableText(): JSX.Element {
+export function SimpleBlockPortableText(): React.JSX.Element {
   const {data, loading, error} = useQuery<
     {
       _id: string

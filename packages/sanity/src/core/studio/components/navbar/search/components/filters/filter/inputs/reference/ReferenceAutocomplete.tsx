@@ -1,15 +1,6 @@
 import {type ReferenceValue, type SchemaType} from '@sanity/types'
 import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type ReactElement,
-  useCallback,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../../../ui-components'
@@ -26,7 +17,7 @@ import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
 type AutocompleteSearchHit = {value: string} & SearchHit
 
 interface PopoverContentProps {
-  content: ReactElement | null
+  content: React.JSX.Element | null
   hidden: boolean
   onMouseEnter: () => void
   onMouseLeave: () => void

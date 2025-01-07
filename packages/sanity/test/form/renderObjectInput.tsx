@@ -1,5 +1,4 @@
 import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
-import {type ReactElement} from 'react'
 import {vi} from 'vitest'
 
 import {
@@ -23,7 +22,7 @@ const noopRenderDefault = () => <></>
 export type TestRenderObjectInputCallback = (
   inputProps: ObjectInputProps,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderObjectInput(options: {
   fieldDefinition: FieldDefinition<'object'>

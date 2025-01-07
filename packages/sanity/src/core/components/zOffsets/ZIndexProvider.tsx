@@ -1,4 +1,4 @@
-import {type ReactElement, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import {ZIndexContext, zIndexContextDefaults} from 'sanity/_singletons'
 
 /**
@@ -6,6 +6,6 @@ import {ZIndexContext, zIndexContextDefaults} from 'sanity/_singletons'
  *
  * @internal
  */
-export function ZIndexProvider({children}: {children?: ReactNode}): ReactElement {
+export function ZIndexProvider({children}: {children?: ReactNode}): React.JSX.Element {
   return <ZIndexContext.Provider value={zIndexContextDefaults}>{children}</ZIndexContext.Provider>
 }

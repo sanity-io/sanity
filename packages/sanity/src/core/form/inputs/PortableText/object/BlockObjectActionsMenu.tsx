@@ -5,7 +5,6 @@ import {
   forwardRef,
   type MouseEvent,
   type PropsWithChildren,
-  type ReactElement,
   type Ref,
   useCallback,
   useEffect,
@@ -34,7 +33,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
+export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): React.JSX.Element {
   const {children, focused, isOpen, onOpen, onRemove, readOnly, value} = props
   const {t} = useTranslation()
   const menuButtonId = useId()

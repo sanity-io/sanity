@@ -12,7 +12,6 @@ import {
   forwardRef,
   type HTMLProps,
   isValidElement,
-  type JSX,
   type ReactNode,
   type Ref,
   useCallback,
@@ -53,7 +52,7 @@ export type MenuItemProps = Pick<
   /**
    * Optional render callback which receives menu item content.
    */
-  renderMenuItem?: (menuItemContent: JSX.Element) => ReactNode
+  renderMenuItem?: (menuItemContent: React.JSX.Element) => ReactNode
   text?: string
   tooltipProps?: TooltipProps | null
   /**

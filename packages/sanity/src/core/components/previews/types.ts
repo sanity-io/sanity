@@ -1,5 +1,5 @@
 import {type ImageUrlFitMode, type SchemaType} from '@sanity/types'
-import {type ComponentType, type ReactElement, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 /**
  * Portable text preview layout key
@@ -65,7 +65,7 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   withRadius?: boolean
   withShadow?: boolean
   schemaType?: SchemaType
-  renderDefault: (props: PreviewProps) => ReactElement
+  renderDefault: (props: PreviewProps) => React.JSX.Element
 }
 
 /**

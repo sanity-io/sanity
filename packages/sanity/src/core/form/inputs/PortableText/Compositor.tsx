@@ -36,7 +36,7 @@ import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditMod
 import {TextBlock} from './text'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
-  elementRef: React.RefObject<HTMLDivElement>
+  elementRef: React.RefObject<HTMLDivElement | null>
   hasFocusWithin: boolean
   hideToolbar?: boolean
   hotkeys?: HotkeyOptions

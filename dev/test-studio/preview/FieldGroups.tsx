@@ -2,7 +2,7 @@ import {Box, Card, Stack, Text} from '@sanity/ui'
 
 import {useQuery} from './loader'
 
-export function FieldGroups(): JSX.Element {
+export function FieldGroups(): React.JSX.Element {
   const {data, loading, error} = useQuery<
     {
       _id: string

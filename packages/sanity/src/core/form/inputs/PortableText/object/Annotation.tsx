@@ -1,14 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {
-  type ComponentType,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
+import {type ComponentType, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -37,7 +30,7 @@ import {Root, TooltipBox} from './Annotation.styles'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
-  children: ReactElement
+  children: React.JSX.Element
   editorNodeFocused: boolean
   floatingBoundary: HTMLElement | null
   focused: boolean
