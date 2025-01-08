@@ -1,6 +1,5 @@
 import {ArchiveIcon, CloseCircleIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Text, useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui'
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -12,12 +11,12 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
-import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
+import {type ReleaseAction} from './releaseActions'
 import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 
 export type ReleaseMenuProps = ReleaseMenuButtonProps & {
@@ -41,92 +40,15 @@ export const ReleaseMenu = ({
 
   const releaseMenuDisabled = !release || isLoadingReleaseDocuments
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
-  const telemetry = useTelemetry()
-  const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
-
-  const handleDelete = useCallback(async () => {
-    await deleteRelease(release._id)
-
-    // return to release overview list now that release is deleted
-    router.navigate({})
-  }, [deleteRelease, release._id, router])
-
-  const handleAction = useCallback(
-    async (action: ReleaseAction) => {
-      if (releaseMenuDisabled) return
-
-      const actionLookup = {
-        delete: handleDelete,
-        archive,
-        unarchive,
-        unschedule,
-      }
-      const actionValues = RELEASE_ACTION_MAP[action]
-
-      try {
-        setIsPerformingOperation(true)
-        await actionLookup[action](release._id)
-        telemetry.log(actionValues.telemetry)
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastSuccessI18nKey}
-                values={{title: releaseTitle}}
-              />
-            </Text>
-          ),
-        })
-      } catch (actionError) {
-        toast.push({
-          status: 'error',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastFailureI18nKey}
-                values={{title: releaseTitle, error: actionError.toString()}}
-              />
-            </Text>
-          ),
-        })
-        console.error(actionError)
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(undefined)
-      }
-    },
-    [
-      releaseMenuDisabled,
-      handleDelete,
-      archive,
-      unarchive,
-      unschedule,
-      release._id,
-      telemetry,
-      toast,
-      t,
-      releaseTitle,
-      setSelectedAction,
-    ],
-  )
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
 
-      if (releaseDocuments.length > 0 && RELEASE_ACTION_MAP[action].confirmDialog) {
-        setSelectedAction(action)
-        setReleaseDocumentsCount(releaseDocuments.length)
-      } else {
-        handleAction(action)
-      }
+      setSelectedAction(action)
+      setReleaseDocumentsCount(releaseDocuments.length)
     },
-    [handleAction, releaseDocuments.length, setReleaseDocumentsCount, setSelectedAction],
+    [releaseDocuments.length, setReleaseDocumentsCount, setSelectedAction],
   )
 
   const archiveUnarchiveMenuItem = useMemo(() => {

@@ -1,7 +1,7 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton} from '../../../../../ui-components'
@@ -105,8 +105,16 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
     ],
   )
 
+  /** in some instanced, immediately execute the action without requiring confirmation */
+  useEffect(() => {
+    if (!selectedAction) return
+
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog || !releaseDocumentsCount)
+      handleAction(selectedAction)
+  }, [handleAction, releaseDocumentsCount, selectedAction])
+
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction) return null
+    if (!selectedAction || !releaseDocumentsCount) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
