@@ -20,7 +20,7 @@ const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
   value: EditableReleaseDocument
-}): JSX.Element {
+}): React.JSX.Element {
   const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const publishAt = value.metadata.intendedPublishAt

@@ -19,7 +19,7 @@ interface CreateReleaseDialogProps {
   origin?: OriginInfo['origin']
 }
 
-export function CreateReleaseDialog(props: CreateReleaseDialogProps): JSX.Element {
+export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.Element {
   const {onCancel, onSubmit, origin} = props
   const toast = useToast()
   const {createRelease} = useReleaseOperations()

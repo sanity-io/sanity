@@ -44,7 +44,7 @@ const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 const ASAP_RANGE_OFFSET = 2
 
-export function GlobalPerspectiveMenu(): JSX.Element {
+export function GlobalPerspectiveMenu(): React.JSX.Element {
   const {loading, data: releases} = useReleases()
   const {selectedReleaseId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)

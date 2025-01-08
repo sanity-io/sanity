@@ -12,7 +12,7 @@ import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
 import {Banner} from './Banner'
 
-export function ArchivedReleaseDocumentBanner(): JSX.Element {
+export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
   const {archivedReleases} = useReleases()
 

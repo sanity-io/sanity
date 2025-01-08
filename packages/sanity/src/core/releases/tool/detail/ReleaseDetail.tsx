@@ -73,7 +73,7 @@ export const ReleaseDetail = () => {
     }
   }, [activeView, releaseInDetail?.publishAt, navigateToSummary])
 
-  const scrollContainerRef = useRef(null)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const detailContent = useMemo(() => {
     if (documentsLoading) {

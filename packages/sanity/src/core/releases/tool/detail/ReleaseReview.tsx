@@ -38,7 +38,7 @@ export function ReleaseReview({
   documents: DocumentInRelease[]
   release: ReleaseDocument
   documentsHistory: Record<string, DocumentHistory>
-  scrollContainerRef: RefObject<HTMLDivElement>
+  scrollContainerRef: RefObject<HTMLDivElement | null>
 }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [expandedItems, setIsExpandedItems] = useState<Record<string, boolean>>({})

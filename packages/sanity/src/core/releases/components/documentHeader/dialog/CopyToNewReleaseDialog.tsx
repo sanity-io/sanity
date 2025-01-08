@@ -22,7 +22,7 @@ export function CopyToNewReleaseDialog(props: {
   tone: BadgeTone
   title: string
   onCreateVersion: (releaseId: string) => void
-}): JSX.Element {
+}): React.JSX.Element {
   const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
   const {t} = useTranslation()
   const toast = useToast()

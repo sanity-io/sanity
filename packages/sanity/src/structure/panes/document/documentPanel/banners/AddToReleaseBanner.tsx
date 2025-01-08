@@ -25,7 +25,7 @@ export function AddToReleaseBanner({
   documentId: string
   currentRelease: ReleaseDocument
   value?: Record<string, unknown>
-}): JSX.Element {
+}): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()

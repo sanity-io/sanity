@@ -15,8 +15,8 @@ import {
   Fragment,
   type HTMLProps,
   type MutableRefObject,
-  type ReactNode,
   type RefAttributes,
+  type RefObject,
   useMemo,
   useRef,
 } from 'react'
@@ -41,7 +41,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
   data: TableData[]
-  emptyState: (() => JSX.Element) | string
+  emptyState: (() => React.JSX.Element) | string
   loading?: boolean
   /**
    * Should be the dot separated path to the unique identifier of the row. e.g. document._id
@@ -51,9 +51,9 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum,
   }: {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
-  }) => ReactNode
+  }) => React.ReactNode
   rowProps?: (datum: TableData) => Partial<TableRowProps>
-  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
+  scrollContainerRef: RefObject<HTMLDivElement | null>
   hideTableInlinePadding?: boolean
 }
 

@@ -1,13 +1,13 @@
 import {type CSSProperties} from 'react'
 
 export interface InjectedTableProps {
-  as?: React.ElementType | keyof JSX.IntrinsicElements
+  as?: React.ElementType | keyof React.JSX.IntrinsicElements
   id: string
   style: {width?: number}
 }
 
 export interface Column<TableData = unknown> {
-  header: (props: HeaderProps) => JSX.Element
+  header: (props: HeaderProps) => React.JSX.Element
   cell: (props: {
     datum: TableData
     cellProps: InjectedTableProps

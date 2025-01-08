@@ -19,7 +19,7 @@ export function AddDocumentSearch({
   open: boolean
   onClose: () => void
   releaseId: string
-}): JSX.Element {
+}): React.JSX.Element {
   const {createVersion} = useReleaseOperations()
   const toast = useToast()
   const telemetry = useTelemetry()

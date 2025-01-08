@@ -186,7 +186,7 @@ export const VersionChip = memo(function VersionChip(props: {
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         <Chip
-          ref={(ref) => (chipRef.current = ref)}
+          ref={chipRef}
           disabled={disabled}
           mode="bleed"
           onClick={onClick}

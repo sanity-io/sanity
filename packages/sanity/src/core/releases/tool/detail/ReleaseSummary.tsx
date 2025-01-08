@@ -23,7 +23,7 @@ export type BundleDocumentRow = DocumentWithHistory
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
   documentsHistory: Record<string, DocumentHistory>
-  scrollContainerRef: RefObject<HTMLDivElement>
+  scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
 }
 
@@ -42,13 +42,17 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, documentsHistory],
   )
 
-  const renderRowActions: React.FC<{datum: BundleDocumentRow | unknown}> = useCallback(
-    ({datum}) => {
+  const renderRowActions = useCallback(
+    (rowProps: {datum: BundleDocumentRow | unknown}) => {
       if (release.state !== 'active') return null
 
-      const document = datum as BundleDocumentRow
-
-      return <DocumentActions document={document} releaseTitle={release.metadata.title} />
+      return (
+        <DocumentActions
+          // TODO: Validate this with a proper asserter
+          document={rowProps.datum as BundleDocumentRow}
+          releaseTitle={release.metadata.title}
+        />
+      )
     },
     [release.metadata.title, release.state],
   )
