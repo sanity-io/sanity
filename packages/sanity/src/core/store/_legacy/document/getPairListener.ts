@@ -2,9 +2,10 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, merge, type Observable, of, throwError} from 'rxjs'
+import {defer, merge, type Observable, of, throwError, timer} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
+import {LISTENER_RESET_DELAY} from '../../../preview/constants'
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
 import {debug} from './debug'
 import {
@@ -95,6 +96,7 @@ export function getPairListener(
         //filter((event) => Math.random() < 0.99 || event.type !== 'mutation'),
         shareReplayLatest({
           predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
+          resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
         }),
       ),
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
