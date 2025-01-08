@@ -1,6 +1,6 @@
 import {type ObjectDiff} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactElement, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -35,7 +35,7 @@ const Grid = styled(Box)`
   gap: 0.25em;
 `
 
-export function ChangesInspector({showChanges}: {showChanges: boolean}): ReactElement {
+export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
 

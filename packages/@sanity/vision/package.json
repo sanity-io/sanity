@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.68.3",
+  "version": "3.69.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -63,7 +63,7 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.5.7",
-    "@sanity/ui": "^2.10.14",
+    "@sanity/ui": "^2.11.1",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
@@ -85,10 +85,10 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.0.0-beta-55955c9-20241229",
+    "babel-plugin-react-compiler": "19.0.0-beta-63e3235-20250105",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.14"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

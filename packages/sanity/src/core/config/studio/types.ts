@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactElement} from 'react'
+import {type ComponentType} from 'react'
 
 import {type Tool} from '../types'
 
@@ -7,7 +7,7 @@ import {type Tool} from '../types'
  * @beta */
 // Components
 export interface LayoutProps {
-  renderDefault: (props: LayoutProps) => ReactElement
+  renderDefault: (props: LayoutProps) => React.JSX.Element
 }
 
 /**
@@ -15,7 +15,7 @@ export interface LayoutProps {
  * @beta */
 export interface LogoProps {
   title: string
-  renderDefault: (props: LogoProps) => ReactElement
+  renderDefault: (props: LogoProps) => React.JSX.Element
 }
 
 interface NavbarActionBase {
@@ -46,7 +46,7 @@ export type NavbarAction = Action | ActionWithCustomRender
  * @hidden
  * @beta */
 export interface NavbarProps {
-  renderDefault: (props: NavbarProps) => ReactElement
+  renderDefault: (props: NavbarProps) => React.JSX.Element
 
   /**
    * @internal
@@ -58,7 +58,7 @@ export interface NavbarProps {
  * @hidden
  * @beta */
 export interface ActiveToolLayoutProps {
-  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  renderDefault: (props: ActiveToolLayoutProps) => React.JSX.Element
   activeTool: Tool
 }
 
@@ -71,7 +71,7 @@ export interface ToolMenuProps {
   context: 'sidebar' | 'topbar'
   isSidebarOpen: boolean
   tools: Tool[]
-  renderDefault: (props: ToolMenuProps) => ReactElement
+  renderDefault: (props: ToolMenuProps) => React.JSX.Element
 }
 
 /**

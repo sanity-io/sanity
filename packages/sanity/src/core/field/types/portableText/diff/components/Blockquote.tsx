@@ -5,7 +5,7 @@ const Quote = styled.blockquote`
   margin: 0;
 `
 
-export function Blockquote({children}: {children: ReactNode}): JSX.Element {
+export function Blockquote({children}: {children: ReactNode}): React.JSX.Element {
   return (
     <div>
       <Quote>{children}</Quote>

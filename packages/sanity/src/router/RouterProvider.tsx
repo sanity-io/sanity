@@ -1,5 +1,5 @@
 import {fromPairs, partition, toPairs} from 'lodash'
-import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {STICKY_PARAMS} from './stickyParams'
@@ -79,7 +79,7 @@ export interface RouterProviderProps {
  *
  * @public
  */
-export function RouterProvider(props: RouterProviderProps): ReactElement {
+export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
   const {onNavigate, router: routerProp, state} = props
 
   const resolveIntentLink = useCallback(

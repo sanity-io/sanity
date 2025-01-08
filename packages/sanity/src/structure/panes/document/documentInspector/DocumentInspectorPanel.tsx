@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {type ReactElement, useCallback} from 'react'
+import {useCallback} from 'react'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
@@ -13,7 +13,9 @@ interface DocumentInspectorPanelProps {
   flex?: number | number[]
 }
 
-export function DocumentInspectorPanel(props: DocumentInspectorPanelProps): ReactElement | null {
+export function DocumentInspectorPanel(
+  props: DocumentInspectorPanelProps,
+): React.JSX.Element | null {
   const {documentId, documentType, flex} = props
   const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()

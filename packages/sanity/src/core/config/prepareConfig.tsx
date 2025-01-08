@@ -71,7 +71,7 @@ function normalizeIcon(
   Icon: ComponentType | ElementType | undefined,
   title: string,
   subtitle = '',
-): JSX.Element {
+): React.JSX.Element {
   if (isValidElementType(Icon)) return <Icon />
   if (isValidElement(Icon)) return Icon
   return createDefaultIcon(title, subtitle)

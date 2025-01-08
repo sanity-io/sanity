@@ -1,6 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {memo, type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -12,12 +11,9 @@ const TitleContainer = styled(Text)`
   max-width: 100%;
   min-width: 0;
 `
-
-export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
-  collapsed?: boolean
-}): ReactElement {
-  const {collapsed = false} = props
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+export function DocumentHeaderTitle({collapsed = false}: {collapsed?: boolean}): React.JSX.Element {
+  const {connectionState, schemaType, title, editState} = useDocumentPane()
+  const documentValue = editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
@@ -77,4 +73,4 @@ export const DocumentHeaderTitle = memo(function DocumentHeaderTitle(props: {
       )}
     </Flex>
   )
-})
+}

@@ -24,7 +24,7 @@ interface TreeEditingLayoutProps {
 
 export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
-): JSX.Element {
+): React.JSX.Element {
   const {
     breadcrumbs,
     children,

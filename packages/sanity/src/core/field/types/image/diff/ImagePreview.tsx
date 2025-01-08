@@ -3,7 +3,7 @@ import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
+import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {useClient} from '../../../../hooks'
@@ -95,7 +95,7 @@ const HotspotDiff = styled.div`
   }
 `
 
-export function ImagePreview(props: ImagePreviewProps): ReactElement {
+export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

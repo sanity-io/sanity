@@ -10,7 +10,7 @@ import {
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import {omit, throttle} from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
   type DocumentActionsContext,
@@ -375,10 +375,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
-      'Attempted to patch the Sanity document during initial render. Input components should only call `onChange()` in an effect or a callback.',
+      'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
   })
-  useEffect(() => {
+  useInsertionEffect(() => {
+    // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
+    // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
+    // Note: although we discourage patch-on-mount, we still support it.
     patchRef.current = (event: PatchEvent) => {
       // when creating a new draft
       if (!editState.draft && !editState.published && !editState.version) {

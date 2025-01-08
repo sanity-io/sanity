@@ -49,10 +49,10 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     selectTime,
     timeStep,
     calendarLabels,
+    readOnly,
     constrainSize = true,
     monthPickerVariant,
     padding,
-    disableInput,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -84,10 +84,10 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
-  const suffix = (
+  const suffix = readOnly ? null : (
     <Flex style={{padding: '5px'}}>
       <Button
-        disabled={rest.readOnly}
+        disabled={readOnly}
         aria-label={calendarLabels.ariaLabel}
         ref={buttonRef}
         icon={CalendarIcon}
@@ -104,8 +104,8 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     <LazyTextInput
       ref={ref}
       {...rest}
+      readOnly={readOnly}
       value={inputValue}
-      readOnly={disableInput}
       onChange={onInputChange}
       suffix={
         isPickerOpen ? (
@@ -137,7 +137,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               placement="bottom"
               ref={popoverRef}
             >
-              {suffix}
+              <>{suffix}</>
             </Popover>
           </LayerProvider>
         ) : (

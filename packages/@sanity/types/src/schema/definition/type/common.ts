@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactElement, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {type ConditionalProperty, type DeprecatedProperty, type I18nTextRecord} from '../../types'
 import {type ObjectOptions} from './object'
@@ -55,7 +55,7 @@ export interface BaseSchemaTypeOptions {
 export interface BaseSchemaDefinition {
   name: string
   title?: string
-  description?: string | ReactElement
+  description?: string | React.JSX.Element
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
   icon?: ComponentType | ReactNode

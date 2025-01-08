@@ -299,7 +299,7 @@ interface RootInputProps {
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
   onPathOpen: (path: Path) => void
   openPath: Path
-  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => JSX.Element
+  renderInput: (props: Omit<ObjectInputProps, 'renderDefault'>) => React.JSX.Element
 }
 
 function RootInput(props: RootInputProps) {

@@ -45,7 +45,7 @@ const router = route.create('/')
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
  * It provides a mock Sanity client and a mock workspace.
  */
-export const TestWrapper = (props: TestWrapperProps): JSX.Element | null => {
+export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures} = props
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 

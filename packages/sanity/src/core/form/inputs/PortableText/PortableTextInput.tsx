@@ -14,6 +14,7 @@ import {
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
+import {coreBehaviors, createMarkdownBehaviors} from '@portabletext/editor/behaviors'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
@@ -384,6 +385,21 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <EditorProvider
               initialConfig={{
+                behaviors: [
+                  ...coreBehaviors,
+                  ...createMarkdownBehaviors({
+                    defaultStyle: ({schema}) =>
+                      schema.styles.find((style) => style.value === 'normal')?.value,
+                    blockquoteStyle: ({schema}) =>
+                      schema.styles.find((style) => style.value === 'blockquote')?.value,
+                    headingStyle: ({schema, level}) =>
+                      schema.styles.find((style) => style.value === `h${level}`)?.value,
+                    orderedListStyle: ({schema}) =>
+                      schema.lists.find((list) => list.value === 'number')?.value,
+                    unorderedListStyle: ({schema}) =>
+                      schema.lists.find((list) => list.value === 'bullet')?.value,
+                  }),
+                ],
                 initialValue: value,
                 readOnly: readOnly || !ready,
                 keyGenerator,

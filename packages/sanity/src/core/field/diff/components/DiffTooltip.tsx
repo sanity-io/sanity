@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {type ReactElement, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
@@ -13,7 +13,7 @@ import {Event} from '../components/Event'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
-  children: ReactElement
+  children: React.JSX.Element
   description?: ReactNode
   diff: Diff
   path?: Path | string
@@ -22,7 +22,7 @@ export interface DiffTooltipProps extends TooltipProps {
 /** @internal */
 export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
-  children: ReactElement
+  children: React.JSX.Element
   description?: ReactNode
 }
 

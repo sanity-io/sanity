@@ -67,7 +67,6 @@ export type Pair = {
   published: DocumentVersion
   draft: DocumentVersion
   version?: DocumentVersion
-  _keepalive: Observable<never>
 }
 
 function setVersion<T>(version: 'draft' | 'published' | 'version') {
@@ -273,8 +272,5 @@ export function checkoutPair(
       events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
-    // Use this to keep the mutation pipeline active.
-    // It won't ever emit any events, but it will prevent the eventsource connection from completing for as long as it is subscribed to
-    _keepalive: merge(listenerEvents$, commits$).pipe(mergeMap(() => EMPTY)),
   }
 }

@@ -14,7 +14,7 @@ import {
   type SlugValue,
   type StringSchemaType,
 } from '@sanity/types'
-import {type ReactElement, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -60,8 +60,8 @@ export interface BaseFieldProps {
   index: number
   changed: boolean
   children: ReactNode
-  renderDefault: (props: FieldProps) => ReactElement
   version?: string
+  renderDefault: (props: FieldProps) => React.JSX.Element
 }
 
 /**

@@ -141,7 +141,7 @@ export function ReleaseForm(props: {
                   inputValue={format(inputValue, 'PPp')}
                   constrainSize={false}
                   padding={0}
-                  disableInput
+                  readOnly
                 />
 
                 <Button

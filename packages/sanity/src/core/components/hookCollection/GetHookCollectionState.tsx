@@ -33,4 +33,4 @@ GetHookCollectionStateComponent.displayName = 'Memo(GetHookCollectionState)'
 /** @internal */
 export const GetHookCollectionState = GetHookCollectionStateComponent as <Args, State>(
   props: GetHookCollectionStateProps<Args, State>,
-) => JSX.Element
+) => React.JSX.Element

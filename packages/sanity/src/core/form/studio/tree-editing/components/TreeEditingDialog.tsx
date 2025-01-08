@@ -66,7 +66,7 @@ interface TreeEditingDialogProps {
   schemaType: ObjectSchemaType
 }
 
-export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | null {
+export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
   const {t} = useTranslation()

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GraphQL - Schema extraction > Should be able to extract schema 1`] = `
+exports[`GraphQL - Schema extraction > Should be able to extract a simple schema 1`] = `
 {
   "interfaces": [
     {
@@ -1643,6 +1643,986 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema 1`] = `
       "kind": "Type",
       "name": "Span",
       "originalName": "span",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+  ],
+}
+`;
+
+exports[`GraphQL - Schema extraction > Should be able to extract schema with union refs 1`] = `
+{
+  "interfaces": [
+    {
+      "description": "A Sanity document",
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+      ],
+      "kind": "Interface",
+      "name": "Document",
+    },
+  ],
+  "types": [
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "A",
+      "originalName": "a",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrB",
+      "types": [
+        "A",
+        "B",
+      ],
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrUnion",
+      "types": [
+        "A",
+        "Union",
+      ],
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "B",
+      "originalName": "b",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "Span",
+          },
+          "description": undefined,
+          "fieldName": "children",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "level",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "listItem",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "style",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Block",
+      "originalName": "block",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "File",
+      "originalName": "file",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "alt",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lat",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lng",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "Geopoint",
+      "originalName": "geopoint",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAsset",
+        },
+        {
+          "fieldName": "crop",
+          "type": "SanityImageCrop",
+        },
+        {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspot",
+        },
+      ],
+      "kind": "Type",
+      "name": "Image",
+      "originalName": "image",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
+          "fieldName": "id",
+          "type": "String",
+        },
+        {
+          "description": "A canonical name for the source this asset is originating from",
+          "fieldName": "name",
+          "type": "String",
+        },
+        {
+          "description": "A URL to find more information about this asset in the originating source",
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityAssetSourceData",
+      "originalName": "sanity.assetSourceData",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityFileAsset",
+      "originalName": "sanity.fileAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadata",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityImageAsset",
+      "originalName": "sanity.imageAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "bottom",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "left",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "right",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "top",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageCrop",
+      "originalName": "sanity.imageCrop",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "aspectRatio",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageDimensions",
+      "originalName": "sanity.imageDimensions",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "x",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "y",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageHotspot",
+      "originalName": "sanity.imageHotspot",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensions",
+        },
+        {
+          "description": undefined,
+          "fieldName": "hasAlpha",
+          "type": "Boolean",
+        },
+        {
+          "description": undefined,
+          "fieldName": "isOpaque",
+          "type": "Boolean",
+        },
+        {
+          "fieldName": "location",
+          "type": "Geopoint",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lqip",
+          "type": "String",
+        },
+        {
+          "fieldName": "palette",
+          "type": "SanityImagePalette",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageMetadata",
+      "originalName": "sanity.imageMetadata",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePalette",
+      "originalName": "sanity.imagePalette",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "background",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "foreground",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "population",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePaletteSwatch",
+      "originalName": "sanity.imagePaletteSwatch",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "marks",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "text",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Span",
+      "originalName": "span",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "children": {
+        "description": undefined,
+        "isReference": true,
+        "references": undefined,
+        "type": "AOrUnion",
+      },
+      "description": undefined,
+      "fields": [],
+      "kind": "List",
+      "name": "Title",
+      "originalName": "title",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "children": {
+            "inlineObjects": undefined,
+            "references": [
+              "A",
+              "B",
+            ],
+            "type": "AOrB",
+          },
+          "description": undefined,
+          "fieldName": "body",
+          "kind": "List",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Union",
+      "originalName": "union",
       "type": "Object",
       Symbol(internal): {},
     },
