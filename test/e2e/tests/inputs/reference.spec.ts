@@ -104,6 +104,8 @@ withDefaultClient((context) => {
     page,
     createDraftDocument,
   }) => {
+    // this is in a situation where the _strengthenOnPublish.weak is not set
+
     test.slow()
     const originalTitle = 'Initial Doc'
     const documentStatus = page.getByTestId('pane-footer-document-status')
