@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {Observable, ReplaySubject, share, timer} from 'rxjs'
+import {EMPTY, merge, Observable, of, ReplaySubject, share, timer} from 'rxjs'
+import {mergeMap} from 'rxjs/operators'
 
 import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -26,9 +27,13 @@ export const memoizedPair: (
   ): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
       const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
-      subscriber.next(pair)
-
-      return pair.complete
+      return merge(
+        of(pair),
+        // merge in draft events and published events to makes sure they receive
+        // the events they need for as long as the pair is subscribed to
+        pair.draft.events.pipe(mergeMap(() => EMPTY)),
+        pair.published.events.pipe(mergeMap(() => EMPTY)),
+      ).subscribe(subscriber)
     }).pipe(
       share({
         connector: () => new ReplaySubject(1),
