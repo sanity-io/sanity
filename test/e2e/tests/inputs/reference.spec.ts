@@ -64,4 +64,85 @@ withDefaultClient((context) => {
     publishButton.click()
     await expect(paneFooter).toContainText('Published just now')
   })
+
+  test(`_strengthenOnPublish and _weak properties exist when adding reference`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    const originalTitle = 'Initial Doc'
+
+    await createDraftDocument('/test/content/input-standard;referenceTest')
+    page.getByTestId('string-input').fill(originalTitle)
+
+    /** create reference */
+    await page
+      .locator(
+        'div:nth-child(4) > div > div > div > div:nth-child(2) > div > div > div > div > div > div > button',
+      )
+      .click()
+
+    // Wait for the new document referenced to be created & loaded
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Reference test',
+    )
+
+    // switch to original doc
+    page.getByRole('button', {name: originalTitle}).click()
+
+    // open the context menu
+    page.getByTestId('pane-context-menu-button').first().click()
+    page.getByTestId('action-inspect').click()
+
+    /** Checks that the properties were added when a weak reference is added */
+    await expect(
+      page.getByText('aliasRef._strengthenOnPublish_strengthenOnPublish:{…} 3 properties'),
+    ).toBeVisible()
+    await expect(page.getByText('aliasRef._weak_weak:true')).toBeVisible()
+  })
+
+  test(`_strengthenOnPublish and _weak properties are removed when the reference and document are published`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    test.slow()
+    const originalTitle = 'Initial Doc'
+    const documentStatus = page.getByTestId('pane-footer-document-status')
+
+    await createDraftDocument('/test/content/input-debug;simpleReferences')
+    page.getByTestId('string-input').fill(originalTitle)
+
+    /** create reference */
+    await expect(page.getByRole('button', {name: 'Create…'})).toBeVisible()
+    page.getByRole('button', {name: 'Create…'}).click()
+
+    // wait for the reference document to open
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
+
+    // update and publish the reference
+    page.getByTestId('string-input').nth(1).fill('Reference test')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'Reference test',
+    )
+    page.getByTestId('action-publish').nth(1).click() // publish reference
+    await expect(documentStatus.nth(1)).toContainText('Published just now')
+
+    /** --- IN ORIGINAL DOC --- */
+    page.getByRole('button', {name: originalTitle}).click()
+
+    page.getByTestId('action-publish').first().click() // publish reference
+
+    await expect(documentStatus.first()).toContainText('Published just now')
+
+    // open the context menu
+    page.getByTestId('pane-context-menu-button').first().click()
+    page.getByTestId('action-inspect').click()
+
+    /** Checks that the properties were added when a weak reference is added */
+    await expect(
+      page.getByText('referenceField._strengthenOnPublish_strengthenOnPublish:{…} 3 properties'),
+    ).not.toBeVisible()
+    await expect(page.getByText('referenceField._weak_weak:true')).not.toBeVisible()
+  })
 })
