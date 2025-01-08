@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, type Observable, of, ReplaySubject, share, timer} from 'rxjs'
+import {Observable, ReplaySubject, share, timer} from 'rxjs'
 
 import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -24,12 +24,12 @@ export const memoizedPair: (
     serverActionsEnabled: Observable<boolean>,
     pairListenerOptions?: PairListenerOptions,
   ): Observable<Pair> => {
-    const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
-    return merge(
-      of(pair),
-      // makes sure the pair listener is kept alive for as long as there are subscribers
-      pair._keepalive,
-    ).pipe(
+    return new Observable<Pair>((subscriber) => {
+      const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
+      subscriber.next(pair)
+
+      return pair.complete
+    }).pipe(
       share({
         connector: () => new ReplaySubject(1),
         resetOnComplete: true,
