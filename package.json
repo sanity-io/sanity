@@ -117,7 +117,7 @@
     "@sanity/prettier-config": "^1.0.3",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.164",
-    "@sanity/ui": "^2.11.0",
+    "@sanity/ui": "^2.11.1",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.17.7",
