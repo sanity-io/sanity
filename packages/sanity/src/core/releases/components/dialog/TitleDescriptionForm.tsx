@@ -88,7 +88,7 @@ export function TitleDescriptionForm({
 }: {
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
-}): JSX.Element {
+}): React.JSX.Element {
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [scrollHeight, setScrollHeight] = useState(46)

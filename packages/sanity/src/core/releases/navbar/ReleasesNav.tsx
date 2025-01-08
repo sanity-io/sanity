@@ -29,7 +29,7 @@ const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
   </motion.div>
 )
 
-export function ReleasesNav(): JSX.Element {
+export function ReleasesNav(): React.JSX.Element {
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),

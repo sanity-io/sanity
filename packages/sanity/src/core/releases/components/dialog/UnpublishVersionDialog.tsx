@@ -19,7 +19,7 @@ export function UnpublishVersionDialog(props: {
   onClose: () => void
   documentVersionId: string
   documentType: string
-}): JSX.Element {
+}): React.JSX.Element {
   const {onClose, documentVersionId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const schema = useSchema()

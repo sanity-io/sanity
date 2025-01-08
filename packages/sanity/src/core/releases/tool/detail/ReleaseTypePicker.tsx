@@ -19,7 +19,7 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 
-export function ReleaseTypePicker(props: {release: ReleaseDocument}): JSX.Element {
+export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.Element {
   const {release} = props
 
   const popoverRef = useRef<HTMLDivElement | null>(null)

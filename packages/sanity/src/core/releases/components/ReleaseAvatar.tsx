@@ -11,7 +11,7 @@ export function ReleaseAvatar({
   fontSize?: number
   padding?: number
   tone: BadgeTone
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <Box flex="none" padding={padding} style={{borderRadius: 3}}>
       <Text size={fontSize}>

@@ -30,7 +30,7 @@ export function ReleaseTypeMenuSection({
   releases: ReleaseDocument[]
   range: LayerRange
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
-}): JSX.Element | null {
+}): React.JSX.Element | null {
   const {t} = useTranslation()
   const {selectedReleaseId} = usePerspective()
 

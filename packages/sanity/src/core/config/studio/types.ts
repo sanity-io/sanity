@@ -25,7 +25,7 @@ interface NavbarActionBase {
 }
 
 interface ActionWithCustomRender extends NavbarActionBase {
-  render: () => ReactElement
+  render: () => React.ReactElement
 }
 
 interface Action extends NavbarActionBase {
