@@ -20,6 +20,8 @@ export function ReleaseDashboardFooter(props: {
   const {documents, release, events} = props
 
   const releaseActionButton = useMemo(() => {
+    if (release.state === 'archived') return null
+
     if (release.metadata.releaseType === 'scheduled') {
       return isReleaseScheduledOrScheduling(release) ? (
         <ReleaseUnscheduleButton
@@ -64,7 +66,7 @@ export function ReleaseDashboardFooter(props: {
           <ReleaseStatusItems events={events} release={release} />
         </Flex>
 
-        <Flex flex="none" gap={1}>
+        <Flex flex="none" gap={1} data-testid="release-dashboard-footer-actions">
           {releaseActionButton}
           <ReleaseMenuButton release={release} ignoreCTA />
         </Flex>
