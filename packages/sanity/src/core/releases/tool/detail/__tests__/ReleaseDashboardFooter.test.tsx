@@ -1,0 +1,79 @@
+import {render, screen, waitFor} from '@testing-library/react'
+import {describe, expect, test} from 'vitest'
+
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+  scheduledRelease,
+} from '../../../__fixtures__/release.fixture'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {ReleaseDashboardFooter} from '../ReleaseDashboardFooter'
+
+const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDashboardFooter>>) => {
+  const wrapper = await createTestProvider({
+    resources: [releasesUsEnglishLocaleBundle],
+  })
+
+  const rendered = render(
+    <ReleaseDashboardFooter
+      release={activeASAPRelease}
+      events={[]}
+      documents={[]}
+      {...(props || {})}
+    />,
+    {
+      wrapper,
+    },
+  )
+
+  await waitFor(() => {
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+  })
+
+  return rendered
+}
+
+describe('ReleaseDashboardFooter', () => {
+  describe('for an active asap release', () => {
+    test('shows publish all button', async () => {
+      await renderTest()
+
+      expect(screen.getByTestId('publish-all-button')).toBeInTheDocument()
+    })
+
+    describe('for an active scheduled release', () => {
+      test('shows unschedule button', async () => {
+        await renderTest({release: activeScheduledRelease})
+
+        expect(screen.getByText('Schedule for publishing...')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('for a published release', () => {
+    test('shows revert button', async () => {
+      await renderTest({release: publishedASAPRelease})
+
+      expect(screen.getByText('Revert release')).toBeInTheDocument()
+    })
+  })
+
+  describe('for a scheduled release', () => {
+    test('shows unschedule button', async () => {
+      await renderTest({release: scheduledRelease})
+
+      expect(screen.getByText('Unschedule for publishing')).toBeInTheDocument()
+    })
+  })
+
+  describe('for an archived release', () => {
+    test('shows the unarchive button', async () => {
+      await renderTest({release: archivedScheduledRelease})
+
+      expect(screen.getByTestId('release-dashboard-footer-actions').children.length).toEqual(1)
+    })
+  })
+})
