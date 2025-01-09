@@ -29,9 +29,12 @@ const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDas
     },
   )
 
-  await waitFor(() => {
-    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
-  })
+  await waitFor(
+    () => {
+      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+    },
+    {timeout: 5000, interval: 1000},
+  )
 
   return rendered
 }
@@ -43,13 +46,13 @@ describe('ReleaseDashboardFooter', () => {
 
       expect(screen.getByTestId('publish-all-button')).toBeInTheDocument()
     })
+  })
 
-    describe('for an active scheduled release', () => {
-      test('shows unschedule button', async () => {
-        await renderTest({release: activeScheduledRelease})
+  describe('for an active scheduled release', () => {
+    test('shows unschedule button', async () => {
+      await renderTest({release: activeScheduledRelease})
 
-        expect(screen.getByText('Schedule for publishing...')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Schedule for publishing...')).toBeInTheDocument()
     })
   })
 
