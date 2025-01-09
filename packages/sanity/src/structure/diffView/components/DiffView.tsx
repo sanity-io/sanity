@@ -1,7 +1,7 @@
 import {type ComponentType, useState} from 'react'
+import {type DocumentLayoutProps} from 'sanity'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
-import {type DocumentLayoutProps} from '../../config/types'
 import {useCreatePathSyncChannel} from '../hooks/useCreatePathSyncChannel'
 import {useDiffViewRouter} from '../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../hooks/useDiffViewState'

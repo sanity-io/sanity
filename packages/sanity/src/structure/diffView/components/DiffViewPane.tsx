@@ -1,14 +1,18 @@
 import {BoundaryElementProvider, Box, Card, DialogProvider, PortalProvider} from '@sanity/ui'
 import {noop} from 'lodash'
 import {type CSSProperties, forwardRef, useRef, useState} from 'react'
+import {
+  ChangeIndicatorsTracker,
+  getPublishedId,
+  getVersionFromId,
+  isDraftId,
+  useEditState,
+  VirtualizerScrollInstanceProvider,
+} from 'sanity'
 import {ConnectorContext} from 'sanity/_singletons'
-import {DocumentPaneProvider, FormViewComponent} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {ChangeIndicatorsTracker} from '../../changeIndicators/tracker'
-import {VirtualizerScrollInstanceProvider} from '../../form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useEditState} from '../../hooks/useEditState'
-import {getPublishedId, getVersionFromId, isDraftId} from '../../util/draftUtils'
+import {DocumentPaneProvider, FormViewComponent} from '../..'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {PathSyncChannelSubscriber} from './PathSyncChannelSubscriber'
 import {Scroller} from './Scroller'
@@ -33,7 +37,7 @@ interface DiffViewPaneProps {
 // TODO: Switch off comments. Document inspectors cannot currently be shown inside the diff view.
 // TODO: Switch off references pane. It should be a hyperlink instead.
 export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(function DiffViewPane(
-  {role, documentType, documentId, scrollElement, syncChannel, /*compareValue,*/ compareDocument},
+  {role, documentType, documentId, scrollElement, syncChannel, compareDocument},
   ref,
 ) {
   const paneId = ['diffView', role].join('.')
@@ -103,6 +107,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                   paneKey={paneId}
                   itemId={paneId}
                   perspectiveOverride={version}
+                  excludedPerspectivesOverride={[]}
                   pane={{
                     id: paneId,
                     type: 'document',

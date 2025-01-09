@@ -1,9 +1,9 @@
 import {useCallback, useEffect, useMemo} from 'react'
+import deepEquals from 'react-fast-compare'
 import {useObservable} from 'react-rx'
 import {distinctUntilChanged, filter, map} from 'rxjs'
 import {useDocumentPane} from 'sanity/structure'
 
-import {deepEquals} from '../../validation/util/deepEquals'
 import {type PathSyncChannelProps, type PathSyncState} from '../types/pathSyncChannel'
 
 /**

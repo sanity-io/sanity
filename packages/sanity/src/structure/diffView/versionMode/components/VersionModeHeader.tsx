@@ -11,33 +11,32 @@ import {
 } from '@sanity/ui'
 import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
-
-import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {type DocumentLayoutProps} from '../../../config/types'
-import {useEditState} from '../../../hooks/useEditState'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {ReleaseAvatar} from '../../../releases/components/ReleaseAvatar'
-import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {isReleaseDocument, type ReleaseDocument} from '../../../releases/store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
+  type DocumentLayoutProps,
   formatRelativeLocalePublishDate,
-  isReleaseScheduledOrScheduling,
-} from '../../../releases/util/util'
-import {
   getDraftId,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
+  getReleaseTone,
   getVersionFromId,
   getVersionId,
   isDraftId,
   isPublishedId,
-} from '../../../util/draftUtils'
+  isReleaseDocument,
+  isReleaseScheduledOrScheduling,
+  ReleaseAvatar,
+  type ReleaseDocument,
+  useDocumentVersions,
+  useEditState,
+  useTranslation,
+} from 'sanity'
+import {styled} from 'styled-components'
+
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
-import {diffViewLocaleNamespace} from '../../i18n'
 
 const VersionModeHeaderLayout = styled.header`
   display: grid;
@@ -61,7 +60,7 @@ const VersionModeHeaderLayoutSection = styled.div`
 export const VersionModeHeader: ComponentType<
   {state: 'pending' | 'ready' | 'error'} & Pick<DocumentLayoutProps, 'documentId'>
 > = ({documentId, state}) => {
-  const {t} = useTranslation(diffViewLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const {data: releases} = useDocumentVersions({documentId})
   const {exitDiffView, navigateDiffView} = useDiffViewRouter()
   const {documents} = useDiffViewState()
@@ -169,7 +168,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
 }) => {
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])
-  const {t} = useTranslation(diffViewLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <MenuButton
@@ -241,7 +240,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   isSelected,
   documentId,
 }) => {
-  const {t} = useTranslation(diffViewLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const onClick = useCallback(() => {
     if (type === 'draft') {

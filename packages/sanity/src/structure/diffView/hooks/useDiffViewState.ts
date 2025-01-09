@@ -2,19 +2,18 @@ import {type SanityClient} from '@sanity/client'
 import {useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {EMPTY, map, type Observable} from 'rxjs'
-import {useRouter} from 'sanity/router'
-
-import {useClient} from '../../hooks/useClient'
-import {usePerspective} from '../../releases/hooks/usePerspective'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getDraftId,
   getPublishedId,
   getVersionId,
   isSystemBundle,
-  isVersionId,
   type PublishedId,
-} from '../../util/draftUtils'
+  useClient,
+  usePerspective,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
+
 import {
   DIFF_SEARCH_PARAM_SEPERATOR,
   DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER,
@@ -62,9 +61,10 @@ export function useDiffViewState(): DiffViewState {
   const {perspectiveStack} = usePerspective()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  // ensure not `""`
-  // ensure not `null`
-  // ensure types are in schema
+  // TODO: Validate parameters.
+  // - Ensure not `""`.
+  // - Ensure not `null`.
+  // - Ensure types are present in schema.
   const [previousDocumentType, previousDocumentId] = (
     searchParams.get(DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER) ?? ''
   ).split(DIFF_SEARCH_PARAM_SEPERATOR)
@@ -77,16 +77,15 @@ export function useDiffViewState(): DiffViewState {
   // will be inferred by finding the next existing document in the perspective stack.
   const shouldInferPreviousDocument =
     diffViewMode === 'version' &&
-    searchParams.get(DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER) === null &&
-    isVersionId(nextDocumentId)
+    searchParams.get(DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER) === null
 
   const inferPreviousDocument = useMemo(() => {
     if (!shouldInferPreviousDocument) {
       return EMPTY
     }
 
-    return getFirstExistentVersion({
-      bundles: perspectiveStack.slice(1),
+    return findPrecedingVersion({
+      bundles: perspectiveStack,
       publishedId: getPublishedId(nextDocumentId),
       client,
     })
@@ -99,6 +98,8 @@ export function useDiffViewState(): DiffViewState {
       return
     }
 
+    // TODO: Navigating like this once the previous document has been inferred causes a redundant
+    // browser history entry to be created, resulting in an unusual experience when navigating back.
     navigateDiffView({
       mode: 'version',
       previousDocument: {
@@ -144,12 +145,12 @@ export function useDiffViewState(): DiffViewState {
 }
 
 /**
- * Find the first existing document id in the provided array of bundles. This can be used to find
- * the id of the document that immediately precedes another when release layering is applied.
+ * Find the first existing document id that precedes the first entry in the provided array of
+ * bundles.
  *
  * This function implicitly includes draft and published documents.
  */
-function getFirstExistentVersion({
+function findPrecedingVersion({
   bundles,
   publishedId,
   client,
@@ -161,6 +162,7 @@ function getFirstExistentVersion({
   const ids = bundles
     .flatMap((bundle) => (isSystemBundle(bundle) ? [] : getVersionId(publishedId, bundle)))
     .concat(getDraftId(publishedId), publishedId)
+    .slice(1)
 
   return client.observable
     .fetch<string | undefined>(

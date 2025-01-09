@@ -24,7 +24,7 @@ type NavigateDiffView = (
   >,
 ) => void
 
-interface DiffViewRouter {
+export interface DiffViewRouter {
   navigateDiffView: NavigateDiffView
   exitDiffView: () => void
 }

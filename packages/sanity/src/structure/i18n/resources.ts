@@ -160,6 +160,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
+
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/
@@ -168,6 +169,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'changes.tab.review-changes': 'Review changes',
   /** The label used in the changes inspector for the to selector */
   'changes.to.label': 'To',
+
+  /** The text for the "Compare versions" action for a document */
+  'compare-versions.menu-item.title': 'Compare versions',
+  /** The string used to label draft documents */
+  'compare-versions.status.draft': 'Draft',
+  /** The string used to label published documents */
+  'compare-versions.status.published': 'Published',
+  /** The title used when comparing versions of a document */
+  'compare-versions.title': 'Compare versions',
+
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
   'confirm-delete-dialog.cancel-button.text': 'Cancel',
   /** Used in `confirm-delete-dialog.cdr-summary.title` */

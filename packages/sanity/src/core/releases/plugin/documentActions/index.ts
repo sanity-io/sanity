@@ -1,6 +1,5 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
-import {CompareVersionsAction} from './CompareVersionsAction'
 import {DiscardVersionAction} from './DiscardVersionAction'
 import {UnpublishVersionAction} from './UnpublishVersionAction'
 
@@ -15,6 +14,5 @@ export default function resolveDocumentActions(
     ...(context.versionType === 'version'
       ? duplicateAction.concat(DiscardVersionAction).concat(UnpublishVersionAction)
       : existingActions),
-    CompareVersionsAction,
   ]
 }

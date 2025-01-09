@@ -74,7 +74,6 @@ export function usePerspective({
     | ReleaseId
     | undefined
 
-  // TODO: When `perspectiveOverride` is set, exclusion should not have an effect.
   const excludedPerspectives = useMemo(
     () =>
       excludedPerspectivesOverride ??

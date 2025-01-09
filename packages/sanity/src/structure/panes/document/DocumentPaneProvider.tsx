@@ -53,6 +53,7 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
+import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
@@ -145,6 +146,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     perspective.selectedPerspective,
   ])
 
+  const diffViewRouter = useDiffViewRouter()
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
@@ -545,6 +547,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
+      if (item.action === 'compareVersions' && value) {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          nextDocument: {
+            type: documentType,
+            id: value._id,
+          },
+        })
+        return true
+      }
+
       if (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX)) {
         const nextInspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
         const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
@@ -562,16 +575,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return false
     },
     [
-      t,
-      closeInspector,
-      handleHistoryOpen,
-      inspectorName,
-      inspectors,
-      openInspector,
       previewUrl,
-      toggleLegacyInspect,
-      pushToast,
+      value,
       telemetry,
+      pushToast,
+      t,
+      toggleLegacyInspect,
+      handleHistoryOpen,
+      diffViewRouter,
+      documentType,
+      inspectors,
+      inspectorName,
+      closeInspector,
+      openInspector,
     ],
   )
 

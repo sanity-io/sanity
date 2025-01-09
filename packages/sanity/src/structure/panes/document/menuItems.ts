@@ -1,4 +1,4 @@
-import {EarthAmericasIcon, JsonIcon, LinkIcon} from '@sanity/icons'
+import {EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
 import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
@@ -52,6 +52,16 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
   }
 }
 
+function getCompareVersionsItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
+  return {
+    action: 'compareVersions',
+    group: 'inspectors',
+    title: t('compare-versions.menu-item.title'),
+    icon: TransferIcon,
+    isDisabled: !hasValue,
+  }
+}
+
 export function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
@@ -69,6 +79,7 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
   const items = [
     // Get production preview item
     getProductionPreviewItem(params),
+    getCompareVersionsItem(params),
   ].filter(Boolean) as PaneMenuItem[]
 
   return [
