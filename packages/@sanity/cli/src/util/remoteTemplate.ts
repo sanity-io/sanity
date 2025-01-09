@@ -233,13 +233,13 @@ export async function applyEnvVariables(
       value: string,
       useQuotes: boolean,
     ) => {
-      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'm')
+      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'gm')
       const match = content.match(pattern)
       if (!match) return content
 
       const varName = match[0].split('=')[0]
       return content.replace(
-        new RegExp(`${varName}=.*$`, 'm'),
+        new RegExp(`${varName}=.*$`, 'gm'),
         `${varName}=${useQuotes ? `"${value}"` : value}`,
       )
     }
