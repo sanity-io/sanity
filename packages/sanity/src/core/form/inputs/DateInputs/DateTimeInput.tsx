@@ -1,4 +1,5 @@
-import {Stack, Text} from '@sanity/ui'
+import {EarthGlobeIcon} from '@sanity/icons'
+import {Inline, Text} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -9,6 +10,7 @@ import {
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
+import {Tooltip} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
 import {useTranslation} from '../../../i18n'
 import {set, unset} from '../../patch'
@@ -115,7 +117,21 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
-    <Stack space={3}>
+    <Tooltip
+      placement="bottom-start"
+      content={
+        displayTimezone ? (
+          <Inline space={1}>
+            <EarthGlobeIcon />
+            <Text size={1} muted>
+              {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
+            </Text>
+          </Inline>
+        ) : (
+          ''
+        )
+      }
+    >
       <CommonDateTimeInput
         {...elementProps}
         calendarLabels={calendarLabels}
@@ -130,11 +146,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
         timezone={displayTimezone}
         value={value}
       />
-      {displayTimezone ? (
-        <Text size={1} muted>
-          {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
-        </Text>
-      ) : null}
-    </Stack>
+    </Tooltip>
   )
 }

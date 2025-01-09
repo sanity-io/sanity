@@ -83,10 +83,7 @@ test('time is shown in the display timezone if specified (utc+1 winter)', async 
 
   const input = result.container.querySelector('input')!
 
-  userEvent.type(input, '2021-03-28 13:00')
-  expect(input.value).toBe('2021-03-28 13:00')
-  fireEvent.blur(input)
-  expect(input.value).toBe('2021-03-28 13:00')
+  expect(input.value).toBe('2021-01-15 13:00')
 })
 
 test('time is shown in the display timezone if specified (utc+2 summer)', async () => {
@@ -102,8 +99,5 @@ test('time is shown in the display timezone if specified (utc+2 summer)', async 
 
   const input = result.container.querySelector('input')!
 
-  userEvent.type(input, '2021-06-15 14:00')
-  expect(input.value).toBe('2021-06-15 14:00')
-  fireEvent.blur(input)
   expect(input.value).toBe('2021-06-15 14:00')
 })

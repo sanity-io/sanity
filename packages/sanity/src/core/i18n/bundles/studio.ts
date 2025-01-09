@@ -545,7 +545,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Indicating timezone when a valid displayTimezone is set in the options of the input */
-  'inputs.datetime.timezone-information-text': 'Time is in {{timezone}} timezone',
+  'inputs.datetime.timezone-information-text': 'Timezone: {{timezone}}',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */
