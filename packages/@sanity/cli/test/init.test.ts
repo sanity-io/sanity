@@ -106,7 +106,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'sanity-io/sanity/packages/@sanity/cli/test/test-template',
+        'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -145,7 +145,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'https://github.com/sanity-io/sanity/tree/next/packages/@sanity/cli/test/test-template',
+        'https://github.com/sanity-io/sanity/tree/next/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -183,7 +183,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'sanity-io/sanity/packages/@sanity/cli/test/test-template',
+        'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -192,8 +192,10 @@ describeCliTest('CLI: `sanity init v3`', () => {
 
       const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
 
-      expect(envContent).toContain(`SANITY_PROJECT_ID=${cliProjectId}`)
-      expect(envContent).toContain(`SANITY_DATASET=${testRunArgs.dataset}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_PROJECT_ID=${cliProjectId}`)
+      expect(envContent).toContain(`SANITY_STUDIO_PROJECT_ID=${cliProjectId}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_DATASET=${testRunArgs.dataset}`)
+      expect(envContent).toContain(`SANITY_STUDIO_DATASET=${testRunArgs.dataset}`)
     })
 
     testConcurrent('fails with invalid repository format', async () => {
