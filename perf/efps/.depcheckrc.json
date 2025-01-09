@@ -3,7 +3,6 @@
     "@swc-node/register",
     "@types/react",
     "@types/react-dom",
-    "babel-plugin-react-compiler",
-    "react-compiler-runtime"
+    "babel-plugin-react-compiler"
   ]
 }

@@ -6,7 +6,7 @@ import {usePane} from './usePane'
 import {usePaneLayout} from './usePaneLayout'
 
 interface PaneContentProps {
-  as?: ElementType | keyof JSX.IntrinsicElements
+  as?: ElementType | keyof React.JSX.IntrinsicElements
   overflow?: BoxOverflow
   padding?: number | number[]
 }

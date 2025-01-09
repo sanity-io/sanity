@@ -8,7 +8,9 @@ interface TreeEditingEnabledProviderProps {
   legacyEditing?: boolean
 }
 
-export function TreeEditingEnabledProvider(props: TreeEditingEnabledProviderProps): JSX.Element {
+export function TreeEditingEnabledProvider(
+  props: TreeEditingEnabledProviderProps,
+): React.JSX.Element {
   const {children, legacyEditing: legacyEditingProp} = props
   const parentContextValue = useTreeEditingEnabled()
 

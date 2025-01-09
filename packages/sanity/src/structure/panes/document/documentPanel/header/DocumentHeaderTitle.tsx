@@ -1,10 +1,9 @@
-import {type ReactElement} from 'react'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
-export function DocumentHeaderTitle(): ReactElement {
+export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, editState} = useDocumentPane()
   const documentValue = editState?.draft || editState?.published
   const subscribed = Boolean(documentValue)

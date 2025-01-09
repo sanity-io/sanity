@@ -7,7 +7,6 @@ import {
   forwardRef,
   Fragment,
   memo,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useMemo,
@@ -30,7 +29,7 @@ export interface CollapseMenuProps {
   gap?: number | number[]
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
-    button?: ReactElement
+    button?: React.JSX.Element
   }
   onMenuClose?: () => void
 }
@@ -73,13 +72,13 @@ const OptionObserveElement = styled(ObserveElement)`
   ${OPTION_STYLE}
 `
 
-function _isReactElement(node: unknown): node is ReactElement {
+function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
 }
 
 interface IntersectionEntry {
   intersects: boolean
-  element: ReactElement
+  element: React.JSX.Element
   // todo: potentially add bounding rects so we can calculate how many we can fit non-collapsed vs collapsed
 }
 
@@ -126,7 +125,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
 /** @internal */
 export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
-  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: ReactElement[]},
+  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: React.JSX.Element[]},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -180,7 +179,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleExpandedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: ReactElement) => {
+    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
       setExpandedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -205,7 +204,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleCollapsedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: ReactElement) => {
+    (e: IntersectionObserverEntry, element: React.JSX.Element) => {
       setCollapsedIntersections((current) => {
         const key = element.key
         if (key === null) {
@@ -335,10 +334,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
 })
 
 const RenderHidden = memo(function RenderHidden(props: {
-  elements: ReactElement[]
+  elements: React.JSX.Element[]
   gap?: number | number[]
   intersectionOptions: IntersectionObserverInit
-  onIntersectionChange: (e: IntersectionObserverEntry, element: ReactElement) => void
+  onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (

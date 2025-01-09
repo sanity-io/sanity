@@ -39693,3 +39693,6147 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
   ],
 }
 `;
+
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+{
+  "generation": "gen3",
+  "interfaces": [
+    {
+      "description": "A Sanity document",
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+      ],
+      "kind": "Interface",
+      "name": "Document",
+    },
+  ],
+  "queries": [
+    {
+      "args": [
+        {
+          "description": "A document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "A",
+      "type": "A",
+    },
+    {
+      "args": [
+        {
+          "description": "B document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "B",
+      "type": "B",
+    },
+    {
+      "args": [
+        {
+          "description": "Document document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Document",
+      "type": "Document",
+    },
+    {
+      "args": [
+        {
+          "description": "SanityFileAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityFileAsset",
+      "type": "SanityFileAsset",
+    },
+    {
+      "args": [
+        {
+          "description": "SanityImageAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityImageAsset",
+      "type": "SanityImageAsset",
+    },
+    {
+      "args": [
+        {
+          "description": "Union document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Union",
+      "type": "Union",
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "ASorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "AFilter",
+        },
+      ],
+      "fieldName": "allA",
+      "filter": "_type == "a"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "A",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "BSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "BFilter",
+        },
+      ],
+      "fieldName": "allB",
+      "filter": "_type == "b"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "B",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "DocumentSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentFilter",
+        },
+      ],
+      "fieldName": "allDocument",
+      "filter": "_type in ["union", "a", "b", "sanity.fileAsset", "sanity.imageAsset"]",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "Document",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "SanityFileAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityFileAssetFilter",
+        },
+      ],
+      "fieldName": "allSanityFileAsset",
+      "filter": "_type == "sanity.fileAsset"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "SanityFileAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "SanityImageAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityImageAssetFilter",
+        },
+      ],
+      "fieldName": "allSanityImageAsset",
+      "filter": "_type == "sanity.imageAsset"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "SanityImageAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "UnionSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "UnionFilter",
+        },
+      ],
+      "fieldName": "allUnion",
+      "filter": "_type == "union"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "Union",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+  ],
+  "types": [
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "A",
+      "originalName": "a",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "AFilter",
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrB",
+      "types": [
+        "A",
+        "B",
+      ],
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrUnion",
+      "types": [
+        "A",
+        "Union",
+      ],
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ASorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "B",
+      "originalName": "b",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "BFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "BSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "Span",
+          },
+          "description": undefined,
+          "fieldName": "children",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "level",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "listItem",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "style",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Block",
+      "originalName": "block",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Boolean",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "BooleanFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_projectId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_projectId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Date",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DateFilter",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Datetime",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DatetimeFilter",
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "File",
+      "originalName": "file",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAssetFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Float",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "FloatFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "alt",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lat",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lng",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "Geopoint",
+      "originalName": "geopoint",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "alt",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "lat",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "lng",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "alt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "lat",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "lng",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "ID",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "ID",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "ID",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IDFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAsset",
+        },
+        {
+          "fieldName": "crop",
+          "type": "SanityImageCrop",
+        },
+        {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspot",
+        },
+      ],
+      "kind": "Type",
+      "name": "Image",
+      "originalName": "image",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAssetFilter",
+        },
+        {
+          "fieldName": "crop",
+          "isReference": undefined,
+          "type": "SanityImageCropFilter",
+        },
+        {
+          "fieldName": "hotspot",
+          "isReference": undefined,
+          "type": "SanityImageHotspotFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "crop",
+          "type": "SanityImageCropSorting",
+        },
+        {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspotSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Int",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IntFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
+          "fieldName": "id",
+          "type": "String",
+        },
+        {
+          "description": "A canonical name for the source this asset is originating from",
+          "fieldName": "name",
+          "type": "String",
+        },
+        {
+          "description": "A URL to find more information about this asset in the originating source",
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityAssetSourceData",
+      "originalName": "sanity.assetSourceData",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "id",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "name",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "name",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityFileAsset",
+      "originalName": "sanity.fileAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadata",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityImageAsset",
+      "originalName": "sanity.imageAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "metadata",
+          "isReference": undefined,
+          "type": "SanityImageMetadataFilter",
+        },
+        {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "uploadId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadataSorting",
+        },
+        {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "uploadId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "bottom",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "left",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "right",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "top",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageCrop",
+      "originalName": "sanity.imageCrop",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "bottom",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "left",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "right",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "top",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "bottom",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "left",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "right",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "top",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "aspectRatio",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageDimensions",
+      "originalName": "sanity.imageDimensions",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "aspectRatio",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "aspectRatio",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "x",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "y",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageHotspot",
+      "originalName": "sanity.imageHotspot",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "x",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "y",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "x",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "y",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensions",
+        },
+        {
+          "description": undefined,
+          "fieldName": "hasAlpha",
+          "type": "Boolean",
+        },
+        {
+          "description": undefined,
+          "fieldName": "isOpaque",
+          "type": "Boolean",
+        },
+        {
+          "fieldName": "location",
+          "type": "Geopoint",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lqip",
+          "type": "String",
+        },
+        {
+          "fieldName": "palette",
+          "type": "SanityImagePalette",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageMetadata",
+      "originalName": "sanity.imageMetadata",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "blurHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "dimensions",
+          "isReference": undefined,
+          "type": "SanityImageDimensionsFilter",
+        },
+        {
+          "fieldName": "hasAlpha",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        {
+          "fieldName": "isOpaque",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        {
+          "fieldName": "location",
+          "isReference": undefined,
+          "type": "GeopointFilter",
+        },
+        {
+          "fieldName": "lqip",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "palette",
+          "isReference": undefined,
+          "type": "SanityImagePaletteFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "blurHash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensionsSorting",
+        },
+        {
+          "fieldName": "hasAlpha",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "isOpaque",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "location",
+          "type": "GeopointSorting",
+        },
+        {
+          "fieldName": "lqip",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "palette",
+          "type": "SanityImagePaletteSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePalette",
+      "originalName": "sanity.imagePalette",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "darkMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "dominant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "lightMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "muted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "vibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "background",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "foreground",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "population",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePaletteSwatch",
+      "originalName": "sanity.imagePaletteSwatch",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "background",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "foreground",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "population",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "background",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "foreground",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "population",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "All documents that are drafts.",
+          "fieldName": "is_draft",
+          "type": "Boolean",
+        },
+        {
+          "description": "All documents referencing the given document ID.",
+          "fieldName": "references",
+          "type": "ID",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "Sanity_DocumentFilter",
+    },
+    {
+      "fields": [],
+      "kind": "Enum",
+      "name": "SortOrder",
+      "values": [
+        {
+          "description": "Sorts on the value in ascending order.",
+          "name": "ASC",
+          "value": 1,
+        },
+        {
+          "description": "Sorts on the value in descending order.",
+          "name": "DESC",
+          "value": 2,
+        },
+      ],
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "marks",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "text",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Span",
+      "originalName": "span",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "String",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "String",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "String",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "StringFilter",
+    },
+    {
+      "children": {
+        "description": undefined,
+        "isReference": true,
+        "references": undefined,
+        "type": "AOrUnion",
+      },
+      "description": undefined,
+      "fields": [],
+      "kind": "List",
+      "name": "Title",
+      "originalName": "title",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "children": {
+            "inlineObjects": undefined,
+            "references": [
+              "A",
+              "B",
+            ],
+            "type": "AOrB",
+          },
+          "description": undefined,
+          "fieldName": "body",
+          "kind": "List",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Union",
+      "originalName": "union",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "UnionFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "UnionSorting",
+    },
+  ],
+}
+`;
+
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+{
+  "generation": "gen3",
+  "interfaces": [
+    {
+      "description": "A Sanity document",
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+      ],
+      "kind": "Interface",
+      "name": "Document",
+    },
+  ],
+  "queries": [
+    {
+      "args": [
+        {
+          "description": "A document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "A",
+      "type": "A",
+    },
+    {
+      "args": [
+        {
+          "description": "B document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "B",
+      "type": "B",
+    },
+    {
+      "args": [
+        {
+          "description": "Document document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Document",
+      "type": "Document",
+    },
+    {
+      "args": [
+        {
+          "description": "SanityFileAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityFileAsset",
+      "type": "SanityFileAsset",
+    },
+    {
+      "args": [
+        {
+          "description": "SanityImageAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityImageAsset",
+      "type": "SanityImageAsset",
+    },
+    {
+      "args": [
+        {
+          "description": "Union document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": [
+        {
+          "comparator": "eq",
+          "field": "_id",
+          "value": {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Union",
+      "type": "Union",
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "ASorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "AFilter",
+        },
+      ],
+      "fieldName": "allA",
+      "filter": "_type == "a"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "A",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "BSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "BFilter",
+        },
+      ],
+      "fieldName": "allB",
+      "filter": "_type == "b"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "B",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "DocumentSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentFilter",
+        },
+      ],
+      "fieldName": "allDocument",
+      "filter": "_type in ["union", "a", "b", "sanity.fileAsset", "sanity.imageAsset"]",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "Document",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "SanityFileAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityFileAssetFilter",
+        },
+      ],
+      "fieldName": "allSanityFileAsset",
+      "filter": "_type == "sanity.fileAsset"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "SanityFileAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "SanityImageAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityImageAssetFilter",
+        },
+      ],
+      "fieldName": "allSanityImageAsset",
+      "filter": "_type == "sanity.imageAsset"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "SanityImageAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    {
+      "args": [
+        {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        {
+          "name": "sort",
+          "type": {
+            "children": {
+              "isNullable": false,
+              "type": "UnionSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "UnionFilter",
+        },
+      ],
+      "fieldName": "allUnion",
+      "filter": "_type == "union"",
+      "type": {
+        "children": {
+          "isNullable": false,
+          "type": "Union",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+  ],
+  "types": [
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "A",
+      "originalName": "a",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "AFilter",
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrB",
+      "types": [
+        "A",
+        "B",
+      ],
+    },
+    {
+      "fields": [],
+      "interfaces": undefined,
+      "kind": "Union",
+      "name": "AOrUnion",
+      "types": [
+        "A",
+        "Union",
+      ],
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ASorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "B",
+      "originalName": "b",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "BFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "BSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "Span",
+          },
+          "description": undefined,
+          "fieldName": "children",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "level",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "listItem",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "style",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Block",
+      "originalName": "block",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Boolean",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "BooleanFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_projectId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_projectId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Date",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Date",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DateFilter",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Datetime",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Datetime",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DatetimeFilter",
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "File",
+      "originalName": "file",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAssetFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Float",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Float",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "FloatFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "alt",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lat",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lng",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "Geopoint",
+      "originalName": "geopoint",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "alt",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "lat",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "lng",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "alt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "lat",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "lng",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "ID",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "ID",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "ID",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IDFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAsset",
+        },
+        {
+          "fieldName": "crop",
+          "type": "SanityImageCrop",
+        },
+        {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspot",
+        },
+      ],
+      "kind": "Type",
+      "name": "Image",
+      "originalName": "image",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAssetFilter",
+        },
+        {
+          "fieldName": "crop",
+          "isReference": undefined,
+          "type": "SanityImageCropFilter",
+        },
+        {
+          "fieldName": "hotspot",
+          "isReference": undefined,
+          "type": "SanityImageHotspotFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "crop",
+          "type": "SanityImageCropSorting",
+        },
+        {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspotSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Int",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Int",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IntFilter",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
+          "fieldName": "id",
+          "type": "String",
+        },
+        {
+          "description": "A canonical name for the source this asset is originating from",
+          "fieldName": "name",
+          "type": "String",
+        },
+        {
+          "description": "A URL to find more information about this asset in the originating source",
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityAssetSourceData",
+      "originalName": "sanity.assetSourceData",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "id",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "name",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "name",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityFileAsset",
+      "originalName": "sanity.fileAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadata",
+        },
+        {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityImageAsset",
+      "originalName": "sanity.imageAsset",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "metadata",
+          "isReference": undefined,
+          "type": "SanityImageMetadataFilter",
+        },
+        {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "uploadId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadataSorting",
+        },
+        {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "uploadId",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "bottom",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "left",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "right",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "top",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageCrop",
+      "originalName": "sanity.imageCrop",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "bottom",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "left",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "right",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "top",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "bottom",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "left",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "right",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "top",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "aspectRatio",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageDimensions",
+      "originalName": "sanity.imageDimensions",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "aspectRatio",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "aspectRatio",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "x",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "y",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageHotspot",
+      "originalName": "sanity.imageHotspot",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "x",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "y",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "x",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "y",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensions",
+        },
+        {
+          "description": undefined,
+          "fieldName": "hasAlpha",
+          "type": "Boolean",
+        },
+        {
+          "description": undefined,
+          "fieldName": "isOpaque",
+          "type": "Boolean",
+        },
+        {
+          "fieldName": "location",
+          "type": "Geopoint",
+        },
+        {
+          "description": undefined,
+          "fieldName": "lqip",
+          "type": "String",
+        },
+        {
+          "fieldName": "palette",
+          "type": "SanityImagePalette",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageMetadata",
+      "originalName": "sanity.imageMetadata",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "blurHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "dimensions",
+          "isReference": undefined,
+          "type": "SanityImageDimensionsFilter",
+        },
+        {
+          "fieldName": "hasAlpha",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        {
+          "fieldName": "isOpaque",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        {
+          "fieldName": "location",
+          "isReference": undefined,
+          "type": "GeopointFilter",
+        },
+        {
+          "fieldName": "lqip",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "palette",
+          "isReference": undefined,
+          "type": "SanityImagePaletteFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "blurHash",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensionsSorting",
+        },
+        {
+          "fieldName": "hasAlpha",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "isOpaque",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "location",
+          "type": "GeopointSorting",
+        },
+        {
+          "fieldName": "lqip",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "palette",
+          "type": "SanityImagePaletteSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePalette",
+      "originalName": "sanity.imagePalette",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "darkMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "dominant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "lightMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "muted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+        {
+          "fieldName": "vibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "background",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "foreground",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "population",
+          "type": "Float",
+        },
+        {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePaletteSwatch",
+      "originalName": "sanity.imagePaletteSwatch",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "background",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "foreground",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "population",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "background",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "foreground",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "population",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchSorting",
+    },
+    {
+      "fields": [
+        {
+          "description": "All documents that are drafts.",
+          "fieldName": "is_draft",
+          "type": "Boolean",
+        },
+        {
+          "description": "All documents referencing the given document ID.",
+          "fieldName": "references",
+          "type": "ID",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "Sanity_DocumentFilter",
+    },
+    {
+      "fields": [],
+      "kind": "Enum",
+      "name": "SortOrder",
+      "values": [
+        {
+          "description": "Sorts on the value in ascending order.",
+          "name": "ASC",
+          "value": 1,
+        },
+        {
+          "description": "Sorts on the value in descending order.",
+          "name": "DESC",
+          "value": 2,
+        },
+      ],
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "children": {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "marks",
+          "kind": "List",
+        },
+        {
+          "description": undefined,
+          "fieldName": "text",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Span",
+      "originalName": "span",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "String",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "String",
+        },
+        {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "String",
+        },
+        {
+          "children": {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "StringFilter",
+    },
+    {
+      "children": {
+        "description": undefined,
+        "isReference": true,
+        "references": undefined,
+        "type": "AOrUnion",
+      },
+      "description": undefined,
+      "fields": [],
+      "kind": "List",
+      "name": "Title",
+      "originalName": "title",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        {
+          "children": {
+            "inlineObjects": undefined,
+            "references": [
+              "A",
+              "B",
+            ],
+            "type": "AOrB",
+          },
+          "description": undefined,
+          "fieldName": "body",
+          "kind": "List",
+        },
+      ],
+      "interfaces": [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Union",
+      "originalName": "union",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "UnionFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "UnionSorting",
+    },
+  ],
+}
+`;

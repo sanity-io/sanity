@@ -47,7 +47,7 @@ const PlaceholderWrapper = styled.span((props) => {
 })
 
 interface EditorProps {
-  elementRef: React.RefObject<HTMLDivElement>
+  elementRef: React.RefObject<HTMLDivElement | null>
   hideToolbar?: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection

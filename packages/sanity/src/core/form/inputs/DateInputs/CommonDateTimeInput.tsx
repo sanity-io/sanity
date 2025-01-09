@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 
-import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -105,9 +104,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       ? formatInputValue(parseResult.date)
       : value
 
-  return readOnly ? (
-    <TextInput value={inputValue} readOnly />
-  ) : (
+  return (
     <DateTimeInput
       {...restProps}
       calendarLabels={props.calendarLabels}

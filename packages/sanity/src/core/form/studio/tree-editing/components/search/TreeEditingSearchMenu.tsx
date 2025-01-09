@@ -24,7 +24,7 @@ interface ResultItemProps {
   isFirst: boolean
 }
 
-function ResultItem(props: ResultItemProps): JSX.Element {
+function ResultItem(props: ResultItemProps): React.JSX.Element {
   const {item, onPathSelect, isFirst} = props
 
   const {value} = useValuePreviewWithFallback({
@@ -61,7 +61,7 @@ interface TreeEditingSearchMenuProps {
   textInputElement: HTMLInputElement | null
 }
 
-export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.Element {
+export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): React.JSX.Element {
   const {items, onPathSelect, textInputElement} = props
   const {t} = useTranslation()
 

@@ -40,7 +40,7 @@ const BLOCKS: CommentMessage = [
   },
 ]
 
-export default function CommentsMessageURLSerializerStory(): JSX.Element {
+export default function CommentsMessageURLSerializerStory(): React.JSX.Element {
   return (
     <Container width={1} padding={4} sizing="border">
       <Stack space={4}>

@@ -1,4 +1,4 @@
-import {type ReactChild, useContext} from 'react'
+import {useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
 import {type Workspace} from '../config'
@@ -6,11 +6,14 @@ import {type Workspace} from '../config'
 /** @internal */
 export interface WorkspaceProviderProps {
   workspace: Workspace
-  children?: ReactChild
+  children: React.ReactNode
 }
 
 /** @internal */
-export function WorkspaceProvider({children, workspace}: WorkspaceProviderProps) {
+export function WorkspaceProvider({
+  children,
+  workspace,
+}: WorkspaceProviderProps): React.JSX.Element {
   return <WorkspaceContext.Provider value={workspace}>{children}</WorkspaceContext.Provider>
 }
 

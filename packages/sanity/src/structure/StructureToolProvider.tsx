@@ -1,4 +1,4 @@
-import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
@@ -21,7 +21,7 @@ export function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
   children,
-}: StructureToolProviderProps): ReactElement {
+}: StructureToolProviderProps): React.JSX.Element {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const source = useSource()
   const configContext = useConfigContextFromSource(source)

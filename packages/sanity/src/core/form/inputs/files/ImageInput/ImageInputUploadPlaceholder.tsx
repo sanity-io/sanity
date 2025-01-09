@@ -10,7 +10,7 @@ function ImageInputUploadPlaceholderComponent(props: {
   handleSelectFiles: (files: File[]) => void
   hoveringFiles: FileInfo[]
   readOnly: boolean | undefined
-  renderBrowser(): JSX.Element | null
+  renderBrowser(): React.JSX.Element | null
   resolveUploader: BaseImageInputProps['resolveUploader']
   schemaType: BaseImageInputProps['schemaType']
 }) {

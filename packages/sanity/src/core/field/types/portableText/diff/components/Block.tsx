@@ -16,8 +16,8 @@ const EMPTY_PATH: Path = []
 export function Block(props: {
   diff: PortableTextDiff
   block: PortableTextTextBlock
-  children: JSX.Element
-}): JSX.Element {
+  children: React.JSX.Element
+}): React.JSX.Element {
   const {diff, block, children} = props
   const color = useDiffAnnotationColor(diff, EMPTY_PATH)
   const {path: fullPath} = useContext(DiffContext)

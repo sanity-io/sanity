@@ -169,6 +169,11 @@ export function DocumentLayout() {
     [onPathOpen, onFocus],
   )
 
+  const portalElements = useMemo(
+    () => ({[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}),
+    [documentPanelPortalElement],
+  )
+
   if (!schemaType) {
     return (
       <DocumentLayoutError
@@ -250,9 +255,7 @@ export function DocumentLayout() {
 
           {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
           {/* The portal element comes from `DocumentPanel`. */}
-          <PortalProvider
-            __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
-          >
+          <PortalProvider __unstable_elements={portalElements}>
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
               {StartInCreateBanner && (
                 <ShowWhenPaneOpen>

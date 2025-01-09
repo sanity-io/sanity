@@ -26,7 +26,7 @@ import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from 
 
 export {BaseImageInputProps, BaseImageInputValue}
 
-function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
+function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element {
   const {
     assetSources,
     client,
@@ -275,7 +275,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
-  const renderPreview = useCallback<() => JSX.Element>(() => {
+  const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
       return <></>
     }

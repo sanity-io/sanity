@@ -1,5 +1,5 @@
 import {Box, type ResponsiveWidthProps} from '@sanity/ui'
-import {type DragEvent, type ReactElement, type ReactNode, useRef, useState} from 'react'
+import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
@@ -28,7 +28,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
 
-export function EditPortal(props: Props): ReactElement {
+export function EditPortal(props: Props): React.JSX.Element {
   const {
     children,
     header,
