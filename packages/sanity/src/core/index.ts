@@ -34,6 +34,7 @@ export {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   LATEST,
+  ReleaseAvatar,
   type ReleaseDocument,
   RELEASES_INTENT,
   useDocumentVersions,
