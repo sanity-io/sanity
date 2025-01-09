@@ -39,7 +39,8 @@ describe('resolveConfig', () => {
 
     const [workspace] = await firstValueFrom(
       resolveConfig({
-        name: 'default',
+        //the default name should be 'default', in both the workspace and the unstable_sources
+        //name: 'default',
         dataset,
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
