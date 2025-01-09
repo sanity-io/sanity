@@ -1,6 +1,6 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {type BadgeTone, Flex, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {memo, useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
@@ -29,7 +29,12 @@ interface DocumentStatusProps {
  *
  * @internal
  */
-export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
+export const DocumentStatus = memo(function DocumentStatus({
+  draft,
+  published,
+  versions,
+  singleLine,
+}: DocumentStatusProps) {
   const {data: releases} = useReleases()
   const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
   const {t} = useTranslation()
@@ -74,7 +79,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
       })}
     </Flex>
   )
-}
+})
 
 type Mode = 'edited' | 'created' | 'draft' | 'published'
 
@@ -85,33 +90,42 @@ const labels: Record<Mode, string> = {
   created: 'document-status.created',
 }
 
-const VersionStatus = ({
-  title,
-  timestamp,
-  mode,
-  tone,
-}: {
-  title: string | undefined
-  mode: Mode
-  timestamp?: string
-  tone: BadgeTone
-}) => {
-  const {t} = useTranslation()
+const VersionStatus = memo(
+  ({
+    title,
+    timestamp,
+    mode,
+    tone,
+  }: {
+    title: string | undefined
+    mode: Mode
+    timestamp?: string
+    tone: BadgeTone
+  }) => {
+    const {t} = useTranslation()
 
-  const relativeTime = useRelativeTime(timestamp || '', {
-    minimal: true,
-    useTemporalPhrase: true,
-  })
+    const relativeTime = useRelativeTime(timestamp || '', {
+      minimal: true,
+      useTemporalPhrase: true,
+    })
 
-  return (
-    <Flex align="center" gap={2}>
-      <ReleaseAvatar tone={tone} padding={0} />
-      <Text size={1}>
-        {title || t('release.placeholder-untitled-release')}{' '}
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t(labels[mode], {date: relativeTime})}
-        </span>
-      </Text>
-    </Flex>
-  )
-}
+    return (
+      <Flex align="center" gap={2}>
+        <ReleaseAvatar tone={tone} padding={0} />
+        <Text size={1}>
+          {title || t('release.placeholder-untitled-release')}{' '}
+          <span style={{color: 'var(--card-muted-fg-color)'}}>
+            {t(labels[mode], {date: relativeTime})}
+          </span>
+        </Text>
+      </Flex>
+    )
+  },
+  (prevProps, nextProps) =>
+    prevProps.title === nextProps.title &&
+    prevProps.timestamp === nextProps.timestamp &&
+    prevProps.mode === nextProps.mode &&
+    prevProps.tone === nextProps.tone,
+)
+
+VersionStatus.displayName = 'VersionStatus'

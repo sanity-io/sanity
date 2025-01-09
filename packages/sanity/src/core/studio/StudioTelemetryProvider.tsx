@@ -127,7 +127,12 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
     })
   }, [props.config, store.logger])
 
-  return <TelemetryProvider store={store}>{props.children}</TelemetryProvider>
+  const memoizedTelemetryProvider = useMemo(
+    () => <TelemetryProvider store={store}>{props.children}</TelemetryProvider>,
+    [store, props.children],
+  )
+
+  return memoizedTelemetryProvider
 }
 
 function getWellKnownName(name: string) {

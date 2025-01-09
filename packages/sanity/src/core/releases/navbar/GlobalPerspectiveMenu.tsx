@@ -1,7 +1,7 @@
 import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
 import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
@@ -44,7 +44,7 @@ const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 const ASAP_RANGE_OFFSET = 2
 
-export function GlobalPerspectiveMenu(): React.JSX.Element {
+export const GlobalPerspectiveMenu = memo(function GlobalPerspectiveMenu(): React.JSX.Element {
   const {loading, data: releases} = useReleases()
   const {selectedReleaseId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
@@ -69,6 +69,7 @@ export function GlobalPerspectiveMenu(): React.JSX.Element {
       orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
         (ReleaseTypeReleases, releaseType) => ({
           ...ReleaseTypeReleases,
+          // eslint-disable-next-line max-nested-callbacks
           [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
         }),
         {} as Record<ReleaseType, ReleaseDocument[]>,
@@ -165,19 +166,24 @@ export function GlobalPerspectiveMenu(): React.JSX.Element {
     t,
   ])
 
+  const memoizedButton = useMemo(
+    () => (
+      <Button
+        data-testid="global-perspective-menu-button"
+        iconRight={ChevronDownIcon}
+        mode="bleed"
+        padding={2}
+        radius="full"
+        space={2}
+      />
+    ),
+    [],
+  )
+
   return (
     <>
       <MenuButton
-        button={
-          <Button
-            data-testid="global-perspective-menu-button"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            padding={2}
-            radius="full"
-            space={2}
-          />
-        }
+        button={memoizedButton}
         id="releases-menu"
         onClose={resetRangeVisibility}
         menu={
@@ -199,4 +205,4 @@ export function GlobalPerspectiveMenu(): React.JSX.Element {
       )}
     </>
   )
-}
+})
