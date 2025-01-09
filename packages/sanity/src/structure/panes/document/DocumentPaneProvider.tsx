@@ -80,7 +80,17 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, perspectiveOverride} = props
+  // TODO: `forcedVersion` and `perspectiveOverride` serve similar purposes. Can they be combined or otherwise refactored?
+  const {
+    children,
+    index,
+    pane,
+    paneKey,
+    onFocusPath,
+    forcedVersion,
+    perspectiveOverride,
+    excludedPerspectivesOverride,
+  } = props
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -114,6 +124,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const perspective = usePerspective({
     perspectiveOverride,
+    excludedPerspectivesOverride,
   })
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {

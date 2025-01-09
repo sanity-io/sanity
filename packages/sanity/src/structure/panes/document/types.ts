@@ -15,6 +15,13 @@ export type DocumentPaneProviderProps = {
    * used to explicitly set the perspective, overriding the perspective provided by the router.
    */
   perspectiveOverride?: string
+
+  /**
+   * The excluded perspective is normally determined by the router. The
+   * `excludedPerspectivesOverride` prop can be used to explicitly set the excluded perspective,
+   * overriding the excluded perspective provided by the router.
+   */
+  excludedPerspectivesOverride?: string[]
 } & BaseStructureToolPaneProps<'document'>
 
 export interface HistoryStoreProps {
