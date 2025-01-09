@@ -126,10 +126,14 @@ describeCliTest('CLI: `sanity init v3`', () => {
         .access(path.join(baseTestPath, outpath, '.env.local'))
         .then(() => true)
         .catch(() => false)
+      const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
 
       expect(hasPackageJson).toBe(true)
       expect(hasSanityConfig).toBe(true)
       expect(hasEnvFile).toBe(true)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_PROJECT_ID=${cliProjectId}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_PROJECT_ID_DUPLICATE=${cliProjectId}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_DATASET=${testRunArgs.dataset}`)
     })
 
     testConcurrent('initializes a project from a GitHub URL', async () => {
