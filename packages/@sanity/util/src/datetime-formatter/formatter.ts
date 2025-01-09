@@ -1,6 +1,5 @@
 /**
  * Returns the long/short/narrow name of the month of `date`.
- * e.g. "January", "Jan", "J"
  */
 function getMonthName(
   date: Date,
@@ -13,7 +12,6 @@ function getMonthName(
 
 /**
  * Returns the long/short/narrow name of the day of week of `date`.
- * e.g. "Monday", "Mon", "M"
  */
 function getDayName(
   date: Date,
@@ -33,7 +31,6 @@ function zeroPad(num: number, length: number): string {
 
 /**
  * Returns an English ordinal for a given day number
- * e.g. 1 = "1st", 2 = "2nd", 3 = "3rd", 4 = "4th", etc.
  */
 function getOrdinal(day: number): string {
   const j = day % 10
@@ -83,7 +80,6 @@ function getLocaleWeekYear(date: Date): number {
 
 /**
  * Returns fractional seconds based on the count of 'S' in the token.
- * e.g. "S" - tenths, "SS" - hundredths, "SSS" - milliseconds, etc.
  */
 function getFractionalSeconds(date: Date, length: number): string {
   const ms = zeroPad(date.getMilliseconds(), 3) // "123"
@@ -100,7 +96,6 @@ function getFractionalSeconds(date: Date, length: number): string {
 
 /**
  * Returns a time zone offset string for the system’s local offset
- * e.g. "+02:00" or "+0200".
  */
 function getTimeZoneOffsetString(date: Date, colon = true): string {
   const offsetMinutes = -date.getTimezoneOffset()
@@ -113,15 +108,6 @@ function getTimeZoneOffsetString(date: Date, colon = true): string {
 
 /**
  * Formats a Date object using many Moment-like tokens.
- *
- * Notable tokens for month/day names now rely on Intl:
- *    dddd - full day name      (e.g. "Monday")
- *    ddd  - short day name     (e.g. "Mon")
- *    dd   - short day name’s first two letters (e.g. "Mo")
- *    MMMM - full month name    (e.g. "January")
- *    MMM  - short month name   (e.g. "Jan")
- *
- * Characters can be escaped using square brackets (e.g. "[MM]" will output "MM" instead of the month number)
  */
 function formatMomentLike(date: Date, formatStr: string): string {
   // Store escaped sequences to restore later
