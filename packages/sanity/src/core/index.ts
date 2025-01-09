@@ -35,6 +35,7 @@ export {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   LATEST,
+  ReleaseAvatar,
   type ReleaseDocument,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
