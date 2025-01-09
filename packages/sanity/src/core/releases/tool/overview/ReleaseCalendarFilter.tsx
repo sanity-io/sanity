@@ -33,7 +33,7 @@ export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (pro
   return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
 }
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 export const DateFilterButton = ({
   filterDate,
