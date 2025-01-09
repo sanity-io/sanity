@@ -129,7 +129,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
   }
 }
 
-validateDocuments()
+main().then(() => process.exit())
 
 async function loadWorkspace() {
   const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})
@@ -302,7 +302,7 @@ async function checkReferenceExistence({
   return {existingIds}
 }
 
-async function validateDocuments() {
+async function main() {
   // note: this is dynamically imported because this module is ESM only and this
   // file gets compiled to CJS at this time
   const {default: pMap} = await import('p-map')
