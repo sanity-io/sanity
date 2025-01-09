@@ -37,7 +37,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
@@ -427,7 +427,7 @@ importers:
         specifier: 3.69.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/color':
         specifier: ^3.0.0
@@ -747,7 +747,7 @@ importers:
         specifier: ^7.23.5
         version: 7.26.4
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/codegen':
         specifier: 3.69.0
@@ -1047,7 +1047,7 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/mutate':
         specifier: ^0.11.1
@@ -1182,7 +1182,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
     devDependencies:
       '@repo/package.config':
@@ -1213,7 +1213,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/types':
         specifier: 3.69.0
@@ -1317,7 +1317,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1410,7 +1410,7 @@ importers:
         specifier: 3.69.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/color':
         specifier: ^3.0.0
@@ -1876,7 +1876,7 @@ importers:
   perf/efps:
     devDependencies:
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@swc-node/register':
         specifier: ^1.10.9
@@ -1966,7 +1966,7 @@ importers:
         specifier: 1.49.1
         version: 1.49.1
       '@sanity/client':
-        specifier: ^6.24.1
+        specifier: ^6.24.3
         version: 6.24.3(debug@4.4.0)
       '@sanity/uuid':
         specifier: ^3.0.1

@@ -160,7 +160,7 @@
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/block-tools": "3.69.0",
     "@sanity/cli": "3.69.0",
-    "@sanity/client": "^6.24.1",
+    "@sanity/client": "^6.24.3",
     "@sanity/color": "^3.0.0",
     "@sanity/diff": "3.69.0",
     "@sanity/diff-match-patch": "^3.1.1",
