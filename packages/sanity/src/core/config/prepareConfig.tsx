@@ -103,7 +103,7 @@ export function prepareConfig(
   const rootPath = getRootPath(options?.basePath)
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
-    : [config]
+    : [{...config, name: config.name ?? 'default'}]
 
   try {
     validateWorkspaces({workspaces: workspaceOptions})
