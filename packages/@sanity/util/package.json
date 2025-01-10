@@ -123,7 +123,6 @@
   "dependencies": {
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
-    "@sanity/client": "^6.24.1",
     "@sanity/types": "3.69.0",
     "date-fns": "4.1.0",
     "get-random-values-esm": "1.0.2",
