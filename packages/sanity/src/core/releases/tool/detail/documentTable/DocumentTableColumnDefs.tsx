@@ -189,8 +189,8 @@ export const getDocumentTableColumnDefs: (
                     <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                     {t(
                       validationErrorCount === 1
-                        ? 'document-validation.error-singular'
-                        : 'document-validation.error',
+                        ? 'document-validation.error_one'
+                        : 'document-validation.error_other',
                       {count: validationErrorCount},
                     )}
                   </Flex>

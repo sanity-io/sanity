@@ -122,21 +122,17 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Discard version',
 
-  /** Label for the count of added documents in to a release */
-  'document-count.added': '{{count}} added documents',
-  /** Label for the count of added documents in to a release when only 1 document added*/
-  'document-count.added-singular': '{{count}} added document',
-  /** Label for the count of changed documents in a release */
-  'document-count.changed': '{{count}} changed documents',
-  /** Label for the count of changed documents in a release when only 1 document changed */
-  'document-count.changed-singular': '{{count}} changed document',
+  /** Label for the count of documents in to a release when only 1 document added */
+  'document-count_one': '{{count}} document',
+  /** Label for the count of documents in to a release */
+  'document-count_other': '{{count}} documents',
 
   /** Text for when documents of a release are loading */
   'document-loading': 'Loading documents',
   /** Label for when a document in a release has multiple validation warnings */
-  'document-validation.error': '{{count}} validation errors',
+  'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
-  'document-validation.error-singular': '{{count}} validation error',
+  'document-validation.error_one': '{{count}} validation error',
 
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
