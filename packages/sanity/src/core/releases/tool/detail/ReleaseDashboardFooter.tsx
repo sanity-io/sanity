@@ -68,7 +68,7 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1} data-testid="release-dashboard-footer-actions">
           {releaseActionButton}
-          <ReleaseMenuButton release={release} ignoreCTA />
+          <ReleaseMenuButton release={release} documentsCount={documents.length} ignoreCTA />
         </Flex>
       </Flex>
     </Card>

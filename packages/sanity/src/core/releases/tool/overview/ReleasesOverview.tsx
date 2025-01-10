@@ -234,7 +234,12 @@ export function ReleasesOverview() {
 
     if (release.isDeleted) return null
 
-    return <ReleaseMenuButton release={release} />
+    return (
+      <ReleaseMenuButton
+        release={release}
+        documentsCount={release.documentsMetadata?.documentCount ?? 0}
+      />
+    )
   }, [])
 
   const filteredReleases = useMemo(() => {

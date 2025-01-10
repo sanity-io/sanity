@@ -1,44 +1,30 @@
 import {ArchiveIcon, CloseCircleIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {useToast} from '@sanity/ui'
 import {
   type Dispatch,
   type MouseEventHandler,
   type SetStateAction,
   useCallback,
   useMemo,
-  useState,
 } from 'react'
-import {useRouter} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {useBundleDocuments} from '../../detail/useBundleDocuments'
 import {type ReleaseAction} from './releaseActions'
 import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 
-export type ReleaseMenuProps = ReleaseMenuButtonProps & {
+export type ReleaseMenuProps = Omit<ReleaseMenuButtonProps, 'documentsCount'> & {
+  disabled: boolean
   setSelectedAction: Dispatch<SetStateAction<ReleaseAction | undefined>>
-  setReleaseDocumentsCount: Dispatch<SetStateAction<number | undefined>>
 }
 
 export const ReleaseMenu = ({
   ignoreCTA,
+  disabled,
   release,
   setSelectedAction,
-  setReleaseDocumentsCount,
 }: ReleaseMenuProps) => {
-  const toast = useToast()
-  const router = useRouter()
-  const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
-  const {loading: isLoadingReleaseDocuments, results: releaseDocuments} = useBundleDocuments(
-    getReleaseIdFromReleaseDocumentId(release._id),
-  )
-  const [isPerformingOperation, setIsPerformingOperation] = useState(false)
-
-  const releaseMenuDisabled = !release || isLoadingReleaseDocuments
+  const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -46,9 +32,8 @@ export const ReleaseMenu = ({
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
 
       setSelectedAction(action)
-      setReleaseDocumentsCount(releaseDocuments.length)
     },
-    [releaseDocuments.length, setReleaseDocumentsCount, setSelectedAction],
+    [setSelectedAction],
   )
 
   const archiveUnarchiveMenuItem = useMemo(() => {
@@ -68,7 +53,7 @@ export const ReleaseMenu = ({
     return (
       <MenuItem
         tooltipProps={{
-          disabled: !['scheduled', 'scheduling'].includes(release.state) || isPerformingOperation,
+          disabled: !['scheduled', 'scheduling'].includes(release.state) || disabled,
           content: t('action.archive.tooltip'),
         }}
         data-value="archive"
@@ -79,7 +64,7 @@ export const ReleaseMenu = ({
         disabled={['scheduled', 'scheduling'].includes(release.state)}
       />
     )
-  }, [handleOnInitiateAction, isPerformingOperation, release.state, t])
+  }, [handleOnInitiateAction, disabled, release.state, t])
 
   const deleteMenuItem = useMemo(() => {
     if (release.state !== 'archived' && release.state !== 'published') return null
@@ -88,13 +73,13 @@ export const ReleaseMenu = ({
       <MenuItem
         data-value="delete"
         onClick={handleOnInitiateAction}
-        disabled={releaseMenuDisabled || isPerformingOperation}
+        disabled={releaseMenuDisabled}
         icon={TrashIcon}
         text={t('action.delete-release')}
         data-testid="delete-release-menu-item"
       />
     )
-  }, [handleOnInitiateAction, isPerformingOperation, release.state, releaseMenuDisabled, t])
+  }, [handleOnInitiateAction, release.state, releaseMenuDisabled, t])
 
   const unscheduleMenuItem = useMemo(() => {
     if (ignoreCTA || (release.state !== 'scheduled' && release.state !== 'scheduling')) return null
@@ -103,20 +88,13 @@ export const ReleaseMenu = ({
       <MenuItem
         data-value="unschedule"
         onClick={handleOnInitiateAction}
-        disabled={releaseMenuDisabled || isPerformingOperation}
+        disabled={releaseMenuDisabled}
         icon={CloseCircleIcon}
         text={t('action.unschedule')}
         data-testid="unschedule-release-menu-item"
       />
     )
-  }, [
-    handleOnInitiateAction,
-    ignoreCTA,
-    isPerformingOperation,
-    release.state,
-    releaseMenuDisabled,
-    t,
-  ])
+  }, [handleOnInitiateAction, ignoreCTA, release.state, releaseMenuDisabled, t])
 
   return (
     <>

@@ -36,11 +36,14 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({release, ignoreCTA = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({release, documentsCount, ignoreCTA = false}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(<ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} />, {wrapper})
+  return render(
+    <ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} documentsCount={documentsCount} />,
+    {wrapper},
+  )
 }
 
 describe('ReleaseMenuButton', () => {
@@ -52,7 +55,7 @@ describe('ReleaseMenuButton', () => {
 
   describe('archive release', () => {
     const openConfirmArchiveDialog = async () => {
-      await renderTest({release: activeScheduledRelease})
+      await renderTest({release: activeScheduledRelease, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -69,7 +72,7 @@ describe('ReleaseMenuButton', () => {
     }
 
     test('does not allow for archiving of archived releases', async () => {
-      await renderTest({release: archivedScheduledRelease})
+      await renderTest({release: archivedScheduledRelease, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -81,7 +84,7 @@ describe('ReleaseMenuButton', () => {
     })
 
     test('does not allow for published of archived releases', async () => {
-      await renderTest({release: publishedASAPRelease})
+      await renderTest({release: publishedASAPRelease, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -95,7 +98,7 @@ describe('ReleaseMenuButton', () => {
     test('does not require confirmation when no documents in release', async () => {
       mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
 
-      await renderTest({release: activeScheduledRelease})
+      await renderTest({release: activeScheduledRelease, documentsCount: 0})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -160,7 +163,7 @@ describe('ReleaseMenuButton', () => {
 
   describe('delete release', () => {
     const openConfirmDeleteDialog = async () => {
-      await renderTest({release: archivedScheduledRelease})
+      await renderTest({release: archivedScheduledRelease, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -177,7 +180,7 @@ describe('ReleaseMenuButton', () => {
     }
 
     test('does not allow for deleting an active release', async () => {
-      await renderTest({release: activeScheduledRelease})
+      await renderTest({release: activeScheduledRelease, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -192,7 +195,7 @@ describe('ReleaseMenuButton', () => {
       mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
 
       // verifying that delete supported for published releases too
-      await renderTest({release: publishedASAPRelease})
+      await renderTest({release: publishedASAPRelease, documentsCount: 0})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -265,7 +268,7 @@ describe('ReleaseMenuButton', () => {
       {state: 'active', fixture: activeScheduledRelease},
       {state: 'published', fixture: publishedASAPRelease},
     ])('will not allow for unscheduling of $state releases', async ({fixture}) => {
-      await renderTest({release: fixture})
+      await renderTest({release: fixture, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -279,7 +282,7 @@ describe('ReleaseMenuButton', () => {
       {state: 'scheduled', fixture: scheduledRelease},
       {state: 'scheduling', fixture: {...scheduledRelease, state: 'scheduling' as ReleaseState}},
     ])('will unschedule a $state release', async ({fixture}) => {
-      await renderTest({release: fixture})
+      await renderTest({release: fixture, documentsCount: 1})
 
       await waitFor(() => {
         screen.getByTestId('release-menu-button')
@@ -298,7 +301,7 @@ describe('ReleaseMenuButton', () => {
     /** @todo update once unarchive has been implemented */
     const archivedRelease: ReleaseDocument = {...activeScheduledRelease, state: 'archived'}
 
-    await renderTest({release: archivedRelease})
+    await renderTest({release: archivedRelease, documentsCount: 1})
 
     fireEvent.click(screen.getByTestId('release-menu-button'))
 
@@ -313,7 +316,7 @@ describe('ReleaseMenuButton', () => {
   })
 
   test('will hide CTAs when ignoreCTA is true', async () => {
-    await renderTest({release: scheduledRelease, ignoreCTA: true})
+    await renderTest({release: scheduledRelease, ignoreCTA: true, documentsCount: 1})
 
     await waitFor(() => {
       screen.getByTestId('release-menu-button')
