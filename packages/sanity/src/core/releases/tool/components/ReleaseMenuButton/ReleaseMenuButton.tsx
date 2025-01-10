@@ -19,16 +19,16 @@ export type ReleaseMenuButtonProps = {
    */
   ignoreCTA?: boolean
   release: ReleaseDocument
+  documentsCount: number
 }
 
-export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) => {
+export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
   const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
-  const [releaseDocumentsCount, setReleaseDocumentsCount] = useState<number>()
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -109,19 +109,19 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
   useEffect(() => {
     if (!selectedAction) return
 
-    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog || !releaseDocumentsCount)
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog || !documentsCount)
       handleAction(selectedAction)
-  }, [handleAction, releaseDocumentsCount, selectedAction])
+  }, [documentsCount, handleAction, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction || !releaseDocumentsCount) return null
+    if (!selectedAction || !documentsCount) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
     if (!confirmDialog) return null
 
     const dialogDescription =
-      releaseDocumentsCount === 1
+      documentsCount === 1
         ? confirmDialog.dialogDescriptionSingularI18nKey
         : confirmDialog.dialogDescriptionMultipleI18nKey
 
@@ -147,14 +147,14 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
               t={t}
               i18nKey={dialogDescription}
               values={{
-                count: releaseDocumentsCount,
+                count: documentsCount,
               }}
             />
           }
         </Text>
       </Dialog>
     )
-  }, [handleAction, isPerformingOperation, releaseTitle, releaseDocumentsCount, selectedAction, t])
+  }, [selectedAction, documentsCount, t, releaseTitle, isPerformingOperation, handleAction])
 
   return (
     <>
@@ -176,7 +176,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release}: ReleaseMenuButtonProps) 
               ignoreCTA={ignoreCTA}
               release={release}
               setSelectedAction={setSelectedAction}
-              setReleaseDocumentsCount={setReleaseDocumentsCount}
+              disabled={isPerformingOperation}
             />
           </Menu>
         }
