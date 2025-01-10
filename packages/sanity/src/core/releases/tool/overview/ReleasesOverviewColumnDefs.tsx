@@ -71,7 +71,7 @@ export const releasesOverviewColumnDefs: (
           <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
         </Flex>
       ),
-      cell: ({datum: {documentsMetadata}, cellProps}) => (
+      cell: ({datum: {documentsMetadata, ...r}, cellProps}) => (
         <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
           <Text muted size={1}>
             {documentsMetadata?.updatedAt ? (
