@@ -756,8 +756,8 @@ importers:
         specifier: ^0.7.7
         version: 0.7.9(react@19.0.0)
       '@sanity/template-validator':
-        specifier: ^2.0.0
-        version: 2.0.0(@types/babel__core@7.20.5)(@types/node@22.10.2)(debug@4.4.0)(typescript@5.7.3)
+        specifier: ^2.3.2
+        version: 2.3.2(@types/babel__core@7.20.5)(@types/node@22.10.2)(debug@4.4.0)(typescript@5.7.3)
       '@sanity/util':
         specifier: 3.69.0
         version: link:../util
@@ -4792,8 +4792,8 @@ packages:
     peerDependencies:
       react: ^18.2 || >=19.0.0-rc
 
-  '@sanity/template-validator@2.0.0':
-    resolution: {integrity: sha512-jg4vRjdVjVHdKfw0WYGAsKxdXIAOJQZno2qHMcWeGFhOBqnamld1iGkU2MGdLb0l7Katx7j6t0ObcUmJF75XAw==}
+  '@sanity/template-validator@2.3.2':
+    resolution: {integrity: sha512-eGWNXVBZbDcCOvmco4kE6gW6BwZUT9necgt8esdUHo5rFUBphAPl26rCzCNHUjjCGWWLs1ExMwtMkRIAxOT2Ow==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -15438,7 +15438,7 @@ snapshots:
       rxjs: 7.8.1
       typeid-js: 0.3.0
 
-  '@sanity/template-validator@2.0.0(@types/babel__core@7.20.5)(@types/node@22.10.2)(debug@4.4.0)(typescript@5.7.3)':
+  '@sanity/template-validator@2.3.2(@types/babel__core@7.20.5)(@types/node@22.10.2)(debug@4.4.0)(typescript@5.7.3)':
     dependencies:
       '@actions/core': 1.11.1
       '@actions/github': 6.0.0
