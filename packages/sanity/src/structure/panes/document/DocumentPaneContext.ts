@@ -23,7 +23,6 @@ import {
 
 import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
-import {type TimelineMode} from './types'
 
 /** @internal */
 export interface DocumentPaneContextValue {
@@ -49,7 +48,6 @@ export interface DocumentPaneContextValue {
   fieldActions: DocumentFieldAction[]
   focusPath: Path
   index: number
-  inspectOpen: boolean
   inspector: DocumentInspector | null
   inspectors: DocumentInspector[]
   menuItemGroups: PaneMenuItemGroup[]
@@ -58,6 +56,14 @@ export interface DocumentPaneContextValue {
   onFocus: (pathOrEvent: Path) => void
   onHistoryClose: () => void
   onHistoryOpen: () => void
+
+  /**
+   * @deprecated use `menuAction` instead
+   */
+  inspectOpen: boolean
+  /**
+   * @deprecated use `menuAction` instead
+   */
   onInspectClose: () => void
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
@@ -72,11 +78,9 @@ export interface DocumentPaneContextValue {
   previewUrl?: string | null
   ready: boolean
   schemaType: ObjectSchemaType
-  setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   timelineError: Error | null
-  timelineMode: TimelineMode
   /**
    * @deprecated use `useEvents()` instead.
    * If you need to use this, opt in by setting the `beta.eventsAPI.enabled` feature flag to `true`.

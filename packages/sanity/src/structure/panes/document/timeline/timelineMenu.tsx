@@ -12,6 +12,7 @@ import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../ui-components'
+import {type TimelineMode} from '../types'
 import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'
@@ -31,7 +32,8 @@ const Root = styled(Popover)`
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
+  const {setTimelineRange, timelineError, ready, timelineStore} = useDocumentPane()
+  const [timelineMode, setTimelineMode] = useState<TimelineMode>('closed')
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
