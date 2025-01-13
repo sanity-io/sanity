@@ -1,0 +1,13 @@
+{
+  "name": "test-template",
+  "version": "1.0.0",
+  "main": "package.json",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "next": "^15",
+    "next-sanity": "^9",
+    "sanity": "^3"
+  }
+}
