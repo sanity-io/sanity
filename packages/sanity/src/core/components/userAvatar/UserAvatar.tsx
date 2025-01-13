@@ -5,13 +5,35 @@ import {
   type AvatarProps,
   type AvatarSize,
   type AvatarStatus,
+  Skeleton,
 } from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useState} from 'react'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store'
 import {useUserColor} from '../../user-color'
 import {isRecord} from '../../util'
+
+interface AvatarSkeletonProps {
+  $size?: AvatarSize
+}
+
+/**
+ * A loading skeleton element representing a user avatar
+ * @beta
+ */
+export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
+  const theme = getTheme_v2(props.theme)
+  const size = props.$size ?? 1
+  return css`
+    border-radius: 50%;
+    width: ${theme.avatar.sizes[size].size}px;
+    height: ${theme.avatar.sizes[size].size}px;
+  `
+})
 
 /**
  * @hidden
@@ -106,11 +128,13 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
 })
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
-  const [value] = useUser(user)
+  const [value, loading] = useUser(user)
 
+  if (loading) {
+    return <AvatarSkeleton $size={loadedProps.size} animated />
+  }
   if (!value) {
-    // @todo How do we handle this?
-    return null
+    return <AvatarSkeleton $size={loadedProps.size} animated={false} />
   }
 
   return <UserAvatar {...loadedProps} user={value} />
