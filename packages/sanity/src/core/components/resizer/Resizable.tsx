@@ -4,10 +4,11 @@ import {styled} from 'styled-components'
 
 import {Resizer} from './Resizer'
 
-export interface ResizableProps {
+interface ResizableProps {
   minWidth: number
   maxWidth: number
-  initialWidth: number
+  initialWidth?: number
+  resizerPosition?: 'left' | 'right'
 }
 
 const Root = styled(Box)`
@@ -16,13 +17,25 @@ const Root = styled(Box)`
   padding-left: 1px;
 `
 
+/**
+ * @internal
+ * Provides a resizable container with a resizer handle.
+ */
 export function Resizable(
   props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
-  const {as: forwardedAs, children, minWidth, maxWidth, initialWidth, ...restProps} = props
+  const {
+    as: forwardedAs,
+    children,
+    minWidth,
+    maxWidth,
+    initialWidth,
+    resizerPosition = 'right',
+    ...restProps
+  } = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const elementWidthRef = useRef<number>(undefined)
-  const [targetWidth, setTargetWidth] = useState<number>(initialWidth)
+  const [targetWidth, setTargetWidth] = useState<number | undefined>(initialWidth)
 
   const handleResizeStart = useCallback(() => {
     elementWidthRef.current = element?.offsetWidth
@@ -31,12 +44,14 @@ export function Resizable(
   const handleResize = useCallback(
     (deltaX: number) => {
       const w = elementWidthRef.current
-
       if (!w) return
-
-      setTargetWidth(Math.min(Math.max(w - deltaX, minWidth), maxWidth))
+      if (resizerPosition === 'right') {
+        setTargetWidth(Math.min(Math.max(w - deltaX, minWidth), maxWidth))
+      } else {
+        setTargetWidth(Math.min(Math.max(w + deltaX, minWidth), maxWidth))
+      }
     },
-    [minWidth, maxWidth],
+    [minWidth, maxWidth, resizerPosition],
   )
 
   const style = useMemo(
@@ -46,8 +61,13 @@ export function Resizable(
 
   return (
     <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
+      {resizerPosition === 'left' && (
+        <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="left" />
+      )}
       {children}
-      <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="right" />
+      {resizerPosition === 'right' && (
+        <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="right" />
+      )}
     </Root>
   )
 }
