@@ -82,6 +82,49 @@ describe('createSearchQuery', () => {
       expect(options.perspective).toBe('published')
     })
 
+    it('should give `perspective` precedence over `includeDrafts`', () => {
+      const {options: optionsIncludeDrafts} = createSearchQuery(
+        {
+          query: 'term0',
+          types: [testType],
+        },
+        '',
+        {
+          includeDrafts: true,
+          perspective: 'published',
+        },
+      )
+
+      expect(optionsIncludeDrafts.perspective).toBe('published')
+
+      const {options: optionsExcludeDrafts} = createSearchQuery(
+        {
+          query: 'term0',
+          types: [testType],
+        },
+        '',
+        {
+          includeDrafts: false,
+          perspective: 'drafts',
+        },
+      )
+
+      expect(optionsExcludeDrafts.perspective).toBe('drafts')
+    })
+
+    it('should add no perspective parameter when `raw` perspective provided', () => {
+      const {options} = createSearchQuery(
+        {
+          query: 'term0',
+          types: [testType],
+        },
+        '',
+        {perspective: 'raw'},
+      )
+
+      expect(options.perspective).toBeUndefined()
+    })
+
     it('should use provided limit (plus one to determine existence of next page)', () => {
       const {params} = createSearchQuery(
         {

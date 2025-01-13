@@ -3,6 +3,7 @@ import {type CrossDatasetType, type SchemaType} from '@sanity/types'
 import {groupBy} from 'lodash'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
+import {isPerspectiveRaw} from '../common/isPerspectiveRaw'
 import {prefixLast} from '../common/token'
 import {
   type SearchFactoryOptions,
@@ -54,7 +55,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
 export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
   searchParams: string | SearchTerms<SchemaType>,
-  {includeDrafts = true, ...options}: SearchOptions & SearchFactoryOptions = {},
+  {includeDrafts = true, perspective, ...options}: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const specs = searchTerms.types
     .map((schemaType) =>
@@ -66,6 +67,8 @@ export function createSearchQuery(
       }),
     )
     .filter(({paths}) => paths.length !== 0)
+
+  const isRaw = isPerspectiveRaw(perspective)
 
   // Note: Computing this is unnecessary when `!isScored`.
   const flattenedSpecs = specs
@@ -96,7 +99,7 @@ export function createSearchQuery(
     isScored ? [] : baseMatch,
     options.filter ? `(${options.filter})` : [],
     searchTerms.filter ? `(${searchTerms.filter})` : [],
-    '!(_id in path("versions.**"))',
+    isRaw ? [] : '!(_id in path("versions.**"))',
     options.cursor ?? [],
   ].flat()
 
@@ -127,11 +130,27 @@ export function createSearchQuery(
     .map((s) => `// ${s}`)
     .join('\n')
 
+  let activePerspective: string | string[] | undefined
+
+  switch (true) {
+    // Raw perspective provided.
+    case isRaw:
+      activePerspective = undefined
+      break
+    // Any other perspective provided.
+    case typeof perspective !== 'undefined':
+      activePerspective = perspective
+      break
+    // No perspective provided.
+    default:
+      activePerspective = includeDrafts ? 'previewDrafts' : 'published'
+  }
+
   return {
     query: [pragma, query].join('\n'),
     options: {
       tag: options.tag,
-      perspective: includeDrafts ? 'previewDrafts' : 'published',
+      perspective: activePerspective,
     },
     params,
     sortOrder,
