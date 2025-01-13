@@ -95,7 +95,7 @@ export function GlobalDocumentReferenceInput(
 
       onChange(
         set({
-          _type: 'reference',
+          _type: schemaType.name,
           _ref: `${schemaType.resourceType}/${schemaType.resourceId}/${getPublishedId(id)}`,
           _weak: schemaType.weak,
           // persist _key between mutations if the value is in an array
@@ -108,6 +108,7 @@ export function GlobalDocumentReferenceInput(
     [
       value?._key,
       searchState.hits,
+      schemaType.name,
       schemaType.resourceType,
       schemaType.resourceId,
       schemaType.weak,

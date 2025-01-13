@@ -18,4 +18,6 @@ export interface GlobalDocumentReferenceDefinition extends BaseSchemaDefinition 
   resourceType: string
   resourceId: string
   options?: ReferenceOptions
+
+  studioUrl?: (document: {id: string; type?: string}) => string | null
 }

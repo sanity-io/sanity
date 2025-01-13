@@ -13,11 +13,11 @@ import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
-import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useFormValue} from '../../../contexts/FormValue'
 import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput'
 import {type ObjectInputProps} from '../../../types'
+import {getReferenceClient} from './datastores/getReferenceClient'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {search} from './datastores/search'
 
@@ -83,7 +83,6 @@ export function StudioGlobalDocumentReferenceInput(
   const client = source.getClient({
     apiVersion: '2023-11-13',
   })
-  const documentPreviewStore = useDocumentPreviewStore()
   const getClient = source.getClient
   const {strategy: searchStrategy} = source.search
 
@@ -102,7 +101,7 @@ export function StudioGlobalDocumentReferenceInput(
             ...schemaType.options,
             filter,
             params,
-            tag: 'search.cross-dataset-reference',
+            tag: 'search.global-document-reference',
             strategy: searchStrategy,
           }),
         ),
@@ -120,8 +119,8 @@ export function StudioGlobalDocumentReferenceInput(
   )
 
   const getReferenceInfo = useMemo(
-    () => createGetReferenceInfo({client: referenceClient, documentPreviewStore}),
-    [referenceClient, documentPreviewStore],
+    () => createGetReferenceInfo({client: referenceClient}),
+    [referenceClient],
   )
 
   return (

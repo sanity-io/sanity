@@ -33,7 +33,12 @@ const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
 // weights.
 //
 // Some types, such as `slug`, may instead determine weights using a specialised implementation.
-const ignoredBuiltInObjectTypes = ['reference', 'crossDatasetReference', 'slug']
+const ignoredBuiltInObjectTypes = [
+  'reference',
+  'crossDatasetReference',
+  'slug',
+  'globalDocumentReference',
+]
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
   type ? [type, ...getTypeChain(type.type)] : []
