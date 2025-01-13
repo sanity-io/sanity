@@ -153,7 +153,7 @@ const sharedSettings = definePlugin({
   ],
 })
 
-const defaultWorkspace = {
+const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
   projectId: 'ppsg7ml5',
@@ -179,7 +179,7 @@ const defaultWorkspace = {
   tasks: {
     enabled: true,
   },
-}
+})
 
 export default defineConfig([
   defaultWorkspace,

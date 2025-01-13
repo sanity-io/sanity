@@ -364,6 +364,29 @@ export const internalTasksReducer = (opts: {
   return result
 }
 
+export const serverDocumentActionsReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean | undefined
+}): boolean | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean | undefined, {config: innerConfig}) => {
+    const enabled = innerConfig.__internal_serverDocumentActions?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`__internal_serverDocumentActions\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const partialIndexingEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
