@@ -19,6 +19,7 @@ export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
 }
 
 const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
+const EMPTY_ARRAY: never[] = []
 
 export const ItemRow = forwardRef(function ItemRow(
   props: DefaultItemProps,
@@ -73,69 +74,76 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const {t} = useTranslation()
 
-  const disableActions = parentSchemaType.options?.disableActions || []
+  const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
-  const menuItems = [
-    !disableActions.includes('remove') && (
-      <MenuItem
-        key="remove"
-        text={t('inputs.array.action.remove')}
-        tone="critical"
-        icon={TrashIcon}
-        onClick={onRemove}
-      />
-    ),
-    !disableActions.includes('copy') && (
-      <MenuItem
-        key="copy"
-        text={t('inputs.array.action.copy')}
-        icon={CopyIcon}
-        onClick={handleCopy}
-      />
-    ),
-    !disableActions.includes('duplicate') && (
-      <MenuItem
-        key="duplicate"
-        text={t('inputs.array.action.duplicate')}
-        icon={AddDocumentIcon}
-        onClick={handleDuplicate}
-      />
-    ),
-    !(disableActions.includes('add') || disableActions.includes('addBefore')) && (
-      <InsertMenuGroup
-        pos="before"
-        types={insertableTypes}
-        onInsert={handleInsert}
-        text={t('inputs.array.action.add-before')}
-        icon={InsertAboveIcon}
-      />
-    ),
-    !disableActions.includes('add') &&
-      !(disableActions.includes('addAfter') && disableActions.includes('addBefore')) && (
-        <InsertMenuGroup
-          pos="after"
-          types={insertableTypes}
-          onInsert={handleInsert}
-          text={t('inputs.array.action.add-after')}
-          icon={InsertBelowIcon}
-        />
-      ),
-  ]
-
-  const menu = (
-    <MenuButton
-      button={<ContextMenuButton />}
-      id={`${inputId}-menuButton`}
-      popover={MENU_BUTTON_POPOVER_PROPS}
-      menu={<Menu>{menuItems}</Menu>}
-    />
+  const menuItems = useMemo(
+    () =>
+      [
+        !disableActions.includes('remove') && (
+          <MenuItem
+            key="remove"
+            text={t('inputs.array.action.remove')}
+            tone="critical"
+            icon={TrashIcon}
+            onClick={onRemove}
+          />
+        ),
+        !disableActions.includes('copy') && (
+          <MenuItem
+            key="copy"
+            text={t('inputs.array.action.copy')}
+            icon={CopyIcon}
+            onClick={handleCopy}
+          />
+        ),
+        !disableActions.includes('duplicate') && (
+          <MenuItem
+            key="duplicate"
+            text={t('inputs.array.action.duplicate')}
+            icon={AddDocumentIcon}
+            onClick={handleDuplicate}
+          />
+        ),
+        !(disableActions.includes('add') || disableActions.includes('addBefore')) && (
+          <InsertMenuGroup
+            pos="before"
+            types={insertableTypes}
+            onInsert={handleInsert}
+            text={t('inputs.array.action.add-before')}
+            icon={InsertAboveIcon}
+          />
+        ),
+        !disableActions.includes('add') &&
+          !(disableActions.includes('addAfter') && disableActions.includes('addBefore')) && (
+            <InsertMenuGroup
+              pos="after"
+              types={insertableTypes}
+              onInsert={handleInsert}
+              text={t('inputs.array.action.add-after')}
+              icon={InsertBelowIcon}
+            />
+          ),
+      ].filter(Boolean),
+    [disableActions, handleCopy, handleDuplicate, handleInsert, insertableTypes, onRemove, t],
   )
 
+  const menu = useMemo(
+    () =>
+      readOnly || menuItems.length === 0 ? null : (
+        <MenuButton
+          button={<ContextMenuButton />}
+          id={`${inputId}-menuButton`}
+          popover={MENU_BUTTON_POPOVER_PROPS}
+          menu={<Menu>{menuItems}</Menu>}
+        />
+      ),
+    [inputId, menuItems, readOnly],
+  )
   return (
     <RowLayout
       tone={tone}
       readOnly={!!readOnly}
-      menu={!readOnly && menu}
+      menu={menu}
       dragHandle={sortable}
       presence={presence.length === 0 ? null : <FieldPresence presence={presence} maxAvatars={1} />}
       validation={
