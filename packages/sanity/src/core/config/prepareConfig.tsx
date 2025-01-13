@@ -39,6 +39,7 @@ import {
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
+  serverDocumentActionsReducer,
   startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
@@ -209,8 +210,6 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      // eslint-disable-next-line camelcase
-      __internal_serverDocumentActions: rawWorkspace.__internal_serverDocumentActions,
       ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
@@ -654,6 +653,10 @@ function resolveSource({
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
+    },
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {
+      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
     },
 
     announcements: {

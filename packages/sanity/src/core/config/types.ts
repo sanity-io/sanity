@@ -407,6 +407,9 @@ export interface PluginOptions {
     enableLegacySearch?: boolean
   }
 
+  /** @internal */
+  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
+
   /** Configuration for studio beta features.
    * @internal
    */
@@ -862,7 +865,6 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       source: Observable<Source>
     }>
   }
-  __internal_serverDocumentActions: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /**
