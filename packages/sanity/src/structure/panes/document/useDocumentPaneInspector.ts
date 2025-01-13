@@ -1,4 +1,3 @@
-import {omit} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource, useUnique} from 'sanity'
 
@@ -131,31 +130,8 @@ export function useDocumentPaneInspector({
     }
   }, [features.reviewChanges, openInspector, resolvedChangesInspector])
 
-  const inspectOpen = params.inspect === 'on'
-
-  const toggleLegacyInspect = useCallback(
-    (toggle = !inspectOpen) => {
-      if (toggle) {
-        setPaneParams({...params, inspect: 'on'})
-      } else {
-        setPaneParams(omit(params, 'inspect'))
-      }
-    },
-    [inspectOpen, params, setPaneParams],
-  )
-
-  const handleLegacyInspectClose = useCallback(
-    () => toggleLegacyInspect(false),
-    [toggleLegacyInspect],
-  )
-
   const handleInspectorAction = useCallback(
     (item: PaneMenuItem) => {
-      if (item.action === 'inspect') {
-        toggleLegacyInspect(true)
-        return true
-      }
-
       if (typeof item.action !== 'string') return false
       const nextInspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
       const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
@@ -170,7 +146,7 @@ export function useDocumentPaneInspector({
       }
       return false
     },
-    [closeInspector, inspectorName, inspectors, openInspector, toggleLegacyInspect],
+    [closeInspector, inspectorName, inspectors, openInspector],
   )
 
   return {
@@ -182,7 +158,5 @@ export function useDocumentPaneInspector({
     handleHistoryClose,
     handleHistoryOpen,
     handleInspectorAction,
-    // TODO: Deprecate this legacy inspect toggle
-    handleLegacyInspectClose,
   }
 }

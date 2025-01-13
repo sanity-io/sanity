@@ -1,26 +1,21 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
-import {type SanityDocument} from '@sanity/types'
 import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {type DocumentInspectorProps, Translate, useTranslation} from 'sanity'
 
-import {Dialog, Tab} from '../../../../ui-components'
-import {DocTitle} from '../../../components'
-import {structureLocaleNamespace} from '../../../i18n'
-import {useStructureToolSetting} from '../../../useStructureToolSetting'
-import {useDocumentPane} from '../useDocumentPane'
+import {Dialog, Tab} from '../../../../../../ui-components'
+import {DocTitle} from '../../../../../components'
+import {structureLocaleNamespace} from '../../../../../i18n'
+import {useStructureToolSetting} from '../../../../../useStructureToolSetting'
+import {useDocumentPane} from '../../../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 
-interface InspectDialogProps {
-  value: Partial<SanityDocument> | null
-}
-
-export function InspectDialog(props: InspectDialogProps) {
-  const {value} = props
-  const {onInspectClose, paneKey} = useDocumentPane()
+export function InspectDialog(props: DocumentInspectorProps) {
+  const {onClose} = props
+  const {paneKey, displayed: value} = useDocumentPane()
   const dialogIdPrefix = `${paneKey}_inspect_`
 
   /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey
@@ -66,8 +61,8 @@ export function InspectDialog(props: InspectDialogProps) {
           <em>{t('document-inspector.dialog.title-no-value')}</em>
         )
       }
-      onClose={onInspectClose}
-      onClickOutside={onInspectClose}
+      onClose={onClose}
+      onClickOutside={onClose}
       padding={false}
       width={2}
     >

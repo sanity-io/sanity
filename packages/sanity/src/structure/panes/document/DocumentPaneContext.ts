@@ -58,13 +58,14 @@ export interface DocumentPaneContextValue {
   onHistoryOpen: () => void
 
   /**
-   * @deprecated use `menuAction` instead
+   * @deprecated uses `inspector` with name "sanity/structure/inspect" now
+   * use inspector?.name === "sanity/structure/inspect" instead
    */
-  inspectOpen: boolean
+  inspectOpen?: undefined
   /**
-   * @deprecated use `menuAction` instead
+   * @deprecated use `closeInspector` instead
    */
-  onInspectClose: () => void
+  onInspectClose?: undefined
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
   onPaneSplit?: () => void

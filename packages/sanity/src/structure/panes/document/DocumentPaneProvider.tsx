@@ -127,7 +127,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     handleHistoryClose,
     handleHistoryOpen,
     handleInspectorAction,
-    handleLegacyInspectClose,
   } = useDocumentPaneInspector({documentId, documentType})
 
   const getComparisonValue = useCallback(
@@ -418,7 +417,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onPathOpen,
         onHistoryClose: handleHistoryClose,
         onHistoryOpen: handleHistoryOpen,
-        onInspectClose: handleLegacyInspectClose,
         onMenuAction: handleMenuAction,
         onPaneClose: handlePaneClose,
         onPaneSplit: handlePaneSplit,
@@ -428,7 +426,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         openInspector,
         openPath,
         index,
-        inspectOpen: params.inspect === 'on',
         validation,
         menuItemGroups: menuItemGroups || [],
         paneKey,
@@ -480,7 +477,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       getIsDeleted,
       handleHistoryClose,
       handleHistoryOpen,
-      handleLegacyInspectClose,
       handleMenuAction,
       handlePaneClose,
       handlePaneSplit,
@@ -502,7 +498,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openInspector,
       openPath,
       paneKey,
-      params.inspect,
       permissions,
       previewUrl,
       ready,

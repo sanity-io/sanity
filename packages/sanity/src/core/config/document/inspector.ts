@@ -52,6 +52,12 @@ export interface DocumentInspector {
   onOpen?: (ctx: {params: Record<string, string | undefined>}) => {
     params: Record<string, string | undefined>
   }
+
+  /**
+   * Defaults to `aside`.
+   * if portal is used, the inspector will be rendered in a portal inside the pane.
+   */
+  location?: 'aside' | 'portal'
 }
 
 /**

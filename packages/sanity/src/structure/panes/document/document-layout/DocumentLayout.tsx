@@ -71,7 +71,6 @@ export function DocumentLayout() {
     documentType,
     fieldActions,
     focusPath,
-    inspectOpen,
     inspector,
     inspectors,
     onFocus,
@@ -122,8 +121,11 @@ export function DocumentLayout() {
   const footerHeight = footerRect?.height
   const headerHeight = headerRect?.height
   const currentMinWidth =
-    DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
-  const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
+    DOCUMENT_PANEL_INITIAL_MIN_WIDTH +
+    (inspector && inspector.location !== 'portal' ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
+  const minWidth =
+    DOCUMENT_PANEL_MIN_WIDTH +
+    (inspector && inspector.location !== 'portal' ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
   const currentInspector = useMemo(
     () => inspectors?.find((i) => i.name === inspector?.name),
@@ -246,7 +248,6 @@ export function DocumentLayout() {
                 <DocumentPanel
                   footerHeight={footerHeight || null}
                   headerHeight={headerHeight || null}
-                  isInspectOpen={inspectOpen}
                   rootElement={rootElement}
                   setDocumentPanelPortalElement={setDocumentPanelPortalElement}
                 />

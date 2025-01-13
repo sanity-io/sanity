@@ -1,4 +1,4 @@
-import {EarthAmericasIcon, JsonIcon, LinkIcon} from '@sanity/icons'
+import {EarthAmericasIcon, LinkIcon} from '@sanity/icons'
 import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
@@ -41,17 +41,6 @@ function getInspectorItems({
     .filter(Boolean) as PaneMenuItem[]
 }
 
-function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
-  return {
-    action: 'inspect',
-    group: 'inspectors',
-    title: t('document-inspector.menu-item.title'),
-    icon: JsonIcon,
-    isDisabled: !hasValue,
-    shortcut: 'Ctrl+Alt+I',
-  }
-}
-
 export function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
@@ -80,10 +69,6 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
       icon: LinkIcon,
     },
     ...inspectorItems,
-
-    // TODO: convert to inspector or document view?
-    getInspectItem(params),
-
     ...items,
   ]
 }

@@ -13,7 +13,6 @@ import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../compo
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanners,
@@ -29,7 +28,6 @@ import {FormView} from './documentViews'
 interface DocumentPanelProps {
   footerHeight: number | null
   headerHeight: number | null
-  isInspectOpen: boolean
   rootElement: HTMLDivElement | null
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
 }
@@ -53,8 +51,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, headerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} =
-    props
+  const {footerHeight, headerHeight, rootElement, setDocumentPanelPortalElement} = props
   const {
     activeViewId,
     displayed,
@@ -135,10 +132,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       setDocumentPanelPortalElement(portalElement)
     }
   }, [portalElement, setDocumentPanelPortalElement])
-
-  const inspectDialog = useMemo(() => {
-    return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
-  }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
@@ -231,8 +224,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                     {activeViewNode}
                   </Scroller>
 
-                  {inspectDialog}
-
                   <div data-testid="document-panel-portal" ref={setPortalElement} />
                 </VirtualizerScrollInstanceProvider>
               </BoundaryElementProvider>
@@ -243,6 +234,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
             <DocumentInspectorPanel
+              portalElement={portalElement}
+              boundaryElement={documentScrollElement}
               documentId={documentId}
               documentType={schemaType.name}
               flex={1}
