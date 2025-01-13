@@ -14,6 +14,7 @@ import {
 import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
 import {isRecord, validateDocument} from 'sanity'
 
+import {withTracingProfiling} from '../debug'
 import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
@@ -129,7 +130,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
   }
 }
 
-validateDocuments()
+withTracingProfiling('validateDocuments', validateDocuments)
 
 async function loadWorkspace() {
   const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})

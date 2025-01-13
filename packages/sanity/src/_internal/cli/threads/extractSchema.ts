@@ -3,6 +3,7 @@ import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_t
 import {extractSchema} from '@sanity/schema/_internal'
 import {type Workspace} from 'sanity'
 
+import {withTracingProfiling} from '../debug'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
@@ -48,7 +49,7 @@ async function main() {
   }
 }
 
-main()
+withTracingProfiling('extractSchema', main)
 
 function getWorkspace({
   workspaces,
