@@ -8,7 +8,7 @@ import {type ObjectSchemaType, type PreviewConfig} from '../schema'
 /** @beta */
 export interface GlobalDocumentReferenceValue {
   _type: string
-  _ref: string
+  _ref: `${string}/${string}/${string}`
   _key?: string
   _weak?: boolean
 }
