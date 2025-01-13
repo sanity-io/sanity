@@ -74,51 +74,19 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         {tag: 'release-docs.fetch'},
       )
       .pipe(
-        switchMap((releaseDocumentIdResponse) => {
-          const getCountKey = (id: string) => `${id}_existing_count`
-          const documentCountQuery = Object.entries(releaseDocumentIdResponse).reduce(
-            (query, releaseMetadata) => {
-              const [releaseId, metadata] = releaseMetadata
-              if (!metadata.documentIds || metadata.documentIds.length === 0) return query
-
-              const documentIds = metadata.documentIds
-                .map((documentId) => `"${documentId}"`)
-                .toString()
-
-              return `${query}"${getCountKey(releaseId)}": count(*[_id in [${documentIds}]]{_id}),`
-            },
-            ``,
-          )
-
-          return client.observable
-            .fetch<
-              Record<string, number | undefined>
-            >(`{${documentCountQuery}}`, {}, {tag: 'release-docs.count'})
-            .pipe(
-              switchMap((releaseDocumentCountResponse) =>
-                of({
-                  data: Object.entries(releaseDocumentIdResponse).reduce(
-                    (existingReleaseMetadata, releaseMetadata) => {
-                      const [releaseId, metadata] = releaseMetadata
-
-                      return {
-                        ...existingReleaseMetadata,
-                        [releaseId]: {
-                          ...metadata,
-                          documentCount: metadata.documentIds?.length || 0,
-                          existingDocumentCount:
-                            releaseDocumentCountResponse[`${getCountKey(releaseId)}`] || 0,
-                        },
-                      }
-                    },
-                    {},
-                  ),
-                  error: null,
-                  loading: false,
-                }),
-              ),
-            )
-        }),
+        switchMap((releaseDocumentIdResponse) =>
+          of({
+            data: Object.entries(releaseDocumentIdResponse).reduce((existing, el) => {
+              const [releaseId, metadata] = el
+              return {
+                ...existing,
+                [releaseId]: {...metadata, documentCount: metadata.documentIds?.length || 0},
+              }
+            }, {}),
+            error: null,
+            loading: false,
+          }),
+        ),
         catchError((error) => {
           console.error('Failed to fetch release metadata', error)
           return of({data: null, error, loading: false})
