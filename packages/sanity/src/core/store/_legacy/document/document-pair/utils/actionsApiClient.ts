@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 
-const ACTIONS_API_MINIMUM_VERSION = '2024-05-23'
+const ACTIONS_API_MINIMUM_VERSION = 'X'
 
 export function actionsApiClient(client: SanityClient): SanityClient {
   return client.withConfig({

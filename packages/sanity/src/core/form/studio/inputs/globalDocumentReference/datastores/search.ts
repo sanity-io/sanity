@@ -1,14 +1,16 @@
-import {type SanityClient} from '@sanity/client'
 import {
   type GlobalDocumentReferenceSchemaType,
+  type GlobalDocumentReferenceType,
   type ReferenceFilterSearchOptions,
   type SanityDocumentLike,
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {createSearch, type Groq2024SearchResults} from '../../../../../search'
+import {type Groq2024SearchResults} from '../../../../../search'
+import {createSearchQuery} from '../../../../../search/groq2024/createSearchQuery'
 import {getNextCursor} from '../../../../../search/groq2024/getNextCursor'
+import {type SearchParams} from '../../../../../search/weighted/createSearchQuery'
 import {collate} from '../../../../../util'
 import {type ReferenceClient} from './getReferenceClient'
 
@@ -21,10 +23,18 @@ interface SearchHit {
 const limit = 10
 
 function doSearch(
-  textTerm: string,
-  client: ReferenceClient<SanityDocumentLike[]>,
-): Groq2024SearchResults {
-  return client(textTerm).pipe(
+  client: ReferenceClient,
+  searchTerm: string,
+  types: GlobalDocumentReferenceType[],
+  searchOptions: ReferenceFilterSearchOptions,
+): Observable<Groq2024SearchResults> {
+  const {query, params, options, sortOrder} = createSearchQuery(
+    {types, query: searchTerm},
+    searchTerm,
+    searchOptions,
+  )
+
+  return client.query<SanityDocumentLike[], SearchParams>(query, params).pipe(
     map((hits) => {
       const hasNextPage = typeof limit !== 'undefined' && hits.length > limit
 
@@ -44,16 +54,12 @@ function doSearch(
 }
 
 export function search(
-  client: SanityClient,
+  client: ReferenceClient,
   textTerm: string,
   type: GlobalDocumentReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
 ): Observable<SearchHit[]> {
-  const searchStrategy = createSearch(type.to, client, {
-    ...options,
-  })
-
-  return doSearch(textTerm).pipe(
+  return doSearch(client, textTerm, type.to, options).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
     map((docs) => collate(docs)),
     map((collated) =>
