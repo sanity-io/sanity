@@ -115,18 +115,15 @@ export default defineType({
     },
   ],
 
-  initialValue: {
+  initialValue: () => ({
     name: 'Foo',
-    bestFriend: {
-      _type: 'reference',
-      _ref: 'foo-bar',
-      _weak: true,
-      _strengthenOnPublish: {
-        type: 'author',
-        template: {
-          id: 'author',
-        },
+    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
+    image: {
+      _type: 'image',
+      asset: {
+        _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
+        _type: 'reference',
       },
     },
-  },
+  }),
 })
