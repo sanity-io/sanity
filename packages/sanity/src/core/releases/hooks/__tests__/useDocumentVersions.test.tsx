@@ -6,8 +6,8 @@ import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
+import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {type ReleaseDocument, useReleases} from '../../store'
-import {RELEASE_DOCUMENTS_PATH} from '../../store/constants'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 vi.mock('../../store', () => ({
@@ -23,35 +23,6 @@ vi.mock('../../../util/draftUtils', async (importOriginal) => ({
   ...(await importOriginal()),
   getPublishedId: vi.fn(),
 }))
-
-const mockReleases = [
-  {
-    _id: `${RELEASE_DOCUMENTS_PATH}.rSpring`,
-    _type: 'system.release',
-    _updatedAt: '2024-07-12T10:39:32Z',
-    _createdAt: '2024-07-02T11:37:51Z',
-    createdBy: 'pzAhBTkNX',
-    state: 'active',
-    metadata: {
-      description: 'What a spring drop, allergies galore 🌸',
-      title: 'Spring Drop',
-      releaseType: 'asap',
-    },
-  },
-  {
-    _id: `${RELEASE_DOCUMENTS_PATH}.rWinter`,
-    _type: 'system.release',
-    _createdAt: '2024-07-02T11:37:51Z',
-    _updatedAt: '2024-07-12T10:39:32Z',
-    createdBy: 'pzAhBTkNX',
-    state: 'active',
-    metadata: {
-      description: 'What a winter drop',
-      title: 'Winter Drop',
-      releaseType: 'asap',
-    },
-  },
-] satisfies ReleaseDocument[]
 
 async function setupMocks({
   releases,
@@ -88,7 +59,7 @@ async function setupMocks({
 
 describe('useDocumentVersions', () => {
   it('should return initial state', async () => {
-    await setupMocks({releases: mockReleases, versionIds: []})
+    await setupMocks({releases: [activeASAPRelease, activeScheduledRelease], versionIds: []})
 
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     expect(result.current.loading).toBe(true)
@@ -97,19 +68,19 @@ describe('useDocumentVersions', () => {
   })
 
   it('should return an empty array if no versions are found', async () => {
-    await setupMocks({releases: mockReleases, versionIds: []})
+    await setupMocks({releases: [activeASAPRelease, activeScheduledRelease], versionIds: []})
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     expect(result.current.data).toEqual([])
   })
 
   it('should return the releases if versions are found', async () => {
     await setupMocks({
-      releases: [mockReleases[0]],
-      versionIds: ['versions.rSpring.document-1'],
+      releases: [activeASAPRelease],
+      versionIds: ['versions.rASAP.document-1'],
     })
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     await waitFor(() => {
-      expect(result.current.data).toEqual([mockReleases[0]])
+      expect(result.current.data).toEqual([activeASAPRelease])
     })
   })
 })
