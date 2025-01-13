@@ -9,11 +9,15 @@ import {type Workspace} from 'sanity'
 import {type SchemaDefinitionish, type TypeResolvedGraphQLAPI} from '../actions/graphql/types'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 
-if (isMainThread || !parentPort) {
-  throw new Error('This module must be run as a worker thread')
+async function main() {
+  if (isMainThread || !parentPort) {
+    throw new Error('This module must be run as a worker thread')
+  }
+
+  await getGraphQLAPIsForked(parentPort)
 }
 
-getGraphQLAPIsForked(parentPort)
+main().then(() => process.exit())
 
 async function getGraphQLAPIsForked(parent: MessagePort): Promise<void> {
   const {cliConfig, cliConfigPath, workDir} = workerData
