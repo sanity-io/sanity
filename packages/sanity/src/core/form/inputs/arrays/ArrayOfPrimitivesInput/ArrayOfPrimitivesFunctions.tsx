@@ -47,7 +47,14 @@ export function ArrayOfPrimitivesFunctions<
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
-          <Button icon={AddIcon} mode="ghost" disabled size="large" text={t(addItemI18nKey)} />
+          <Button
+            data-testid="add-single-primitive-button"
+            icon={AddIcon}
+            mode="ghost"
+            disabled
+            size="large"
+            text={t(addItemI18nKey)}
+          />
         </Grid>
       </Tooltip>
     )
@@ -57,6 +64,7 @@ export function ArrayOfPrimitivesFunctions<
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
       {schemaType.of.length === 1 ? (
         <Button
+          data-testid="add-multiple--primitive-button"
           icon={AddIcon}
           mode="ghost"
           onClick={handleAddBtnClick}

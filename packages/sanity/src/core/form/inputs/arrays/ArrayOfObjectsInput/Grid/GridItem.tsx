@@ -213,6 +213,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
             }}
             button={
               <ContextMenuButton
+                data-testid="array-item-menu-button"
                 selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
               />
             }

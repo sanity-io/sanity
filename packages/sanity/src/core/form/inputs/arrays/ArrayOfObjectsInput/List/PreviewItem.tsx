@@ -208,6 +208,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
             }}
             button={
               <ContextMenuButton
+                data-testid="array-item-menu-button"
                 selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
               />
             }
