@@ -51,6 +51,8 @@ export function getReferenceClient(
         id: string,
         searchParams?: URLSearchParams,
       ): Observable<SanityDocument<R> | null> {
+        const tag = searchParams?.get('tag') || undefined
+        searchParams?.delete('tag')
         return client
           .withConfig({
             useProjectHostname: false,
@@ -60,6 +62,7 @@ export function getReferenceClient(
           .observable.request({
             uri: `/projects/${projectId}/datasets/${datasetName}/doc/${id}?${searchParams?.toString() || ''}`,
             method: 'GET',
+            tag,
           })
           .pipe(map((res) => res.documents[0]))
       },
@@ -70,6 +73,8 @@ export function getReferenceClient(
         documents: SanityDocument<R>[]
         omitted: {id: string; reason: 'existence' | 'permission'}[]
       }> {
+        const tag = searchParams?.get('tag') || undefined
+        searchParams?.delete('tag')
         return client
           .withConfig({
             useProjectHostname: false,
@@ -77,8 +82,9 @@ export function getReferenceClient(
             apiVersion: 'vX',
           })
           .observable.request({
-            uri: `/projects/${projectId}/datasets/${datasetName}/doc/${id}?${searchParams?.toString() || ''}`,
+            uri: `/projects/${projectId}/datasets/${datasetName}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
             method: 'GET',
+            tag,
           })
       },
       query<
@@ -96,6 +102,7 @@ export function getReferenceClient(
             url: `/projects/${projectId}/datasets/${datasetName}/query`,
             method: 'POST',
             body: {query, params},
+            tag: 'gdr.query',
           })
           .pipe(map((res) => res.result))
       },
@@ -131,11 +138,14 @@ export function getReferenceClient(
         id: string,
         searchParams?: URLSearchParams,
       ): Observable<SanityDocument<R> | null> {
+        const tag = searchParams?.get('tag') || undefined
+        searchParams?.delete('tag')
         return client.observable
           .request({
             useGlobalApi: true,
             uri: `/vX/asset-library/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
             method: 'GET',
+            tag,
           })
           .pipe(map((res) => res.documents[0]))
       },
@@ -146,10 +156,13 @@ export function getReferenceClient(
         documents: SanityDocument<R>[]
         omitted: {id: string; reason: 'existence' | 'permission'}[]
       }> {
+        const tag = searchParams?.get('tag') || undefined
+        searchParams?.delete('tag')
         return client.observable.request({
           useGlobalApi: true,
-          uri: `/vX/asset-library/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
+          uri: `/vX/asset-library/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
           method: 'GET',
+          tag,
         })
       },
       query<
@@ -163,6 +176,7 @@ export function getReferenceClient(
             uri: `/vX/asset-library/${schemaType.resourceId}/query`,
             method: 'POST',
             body: {query, params},
+            tag: 'gdr.query',
           })
           .pipe(map((res) => res.result))
       },

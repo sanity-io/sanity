@@ -136,12 +136,12 @@ export function GlobalDocumentReferenceInput(
   )
 
   const refDoc = useMemo(() => {
-    if (!value) {
+    if (!value?._ref) {
       return null
     }
 
     const [, , _id] = value._ref.split('/', 3)
-    return {_id, _type: value._type}
+    return {_id}
   }, [value])
 
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)

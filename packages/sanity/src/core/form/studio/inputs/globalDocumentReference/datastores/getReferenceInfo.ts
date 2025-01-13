@@ -14,7 +14,7 @@ import {isRecord} from '../../../../../util'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
 import {type ReferenceClient} from './getReferenceClient'
 
-const REQUEST_TAG_BASE = 'cross-dataset-refs'
+const REQUEST_TAG_BASE = 'gdr'
 
 const AVAILABILITY_READABLE = {
   available: true,
@@ -45,7 +45,6 @@ export function createGetReferenceInfo(context: {client: ReferenceClient}) {
     doc: {_id: string; _type?: string}, // pass {_id, _type} instead and we can skip the `fetchType`
     referenceType: GlobalDocumentReferenceSchemaType,
   ): Observable<GlobalDocumentReferenceInfo> {
-    return EMPTY
     return (
       doc._type
         ? of(doc)
@@ -143,7 +142,7 @@ function fetchDocumentAvailability(
     tag: `${REQUEST_TAG_BASE}.availability`,
   })
 
-  return client.getDocuments(id, queryParams).pipe(
+  return client.getDocuments([id], queryParams).pipe(
     map((response) => {
       const omitted = keyBy(response.omitted || [], (entry) => entry.id)
       const omittedEntry = omitted[id]
