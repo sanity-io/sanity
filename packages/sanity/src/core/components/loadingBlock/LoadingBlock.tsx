@@ -121,7 +121,7 @@ const StyledText = styled(Text)`
  */
 export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
   return (
-    <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
+    <StyledCard $fill={fill} as={fill ? Layer : 'div'} data-testid="loading-block">
       <StyledSpinner $animatePosition={!!showText} muted />
       {showText && <LoadingText title={title} />}
     </StyledCard>
