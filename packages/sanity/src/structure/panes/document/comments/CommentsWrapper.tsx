@@ -1,11 +1,9 @@
-import {useCallback, useLayoutEffect, useMemo, useRef} from 'react'
+import {useCallback, useLayoutEffect, useRef} from 'react'
 import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
   CommentsProvider,
-  getVersionId,
   useCommentsEnabled,
-  usePerspective,
 } from 'sanity'
 
 import {usePaneRouter} from '../../../components'
@@ -41,11 +39,6 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {connectionState, onPathOpen, inspector, openInspector, selectedReleaseId} =
     useDocumentPane()
   const {params, setParams, createPathWithParams} = usePaneRouter()
-  const {selectedPerspectiveName} = usePerspective()
-  const versionOrPublishedId = useMemo(
-    () => (selectedReleaseId ? getVersionId(documentId, selectedReleaseId) : documentId),
-    [documentId, selectedReleaseId],
-  )
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -87,7 +80,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   return (
     <CommentsProvider
-      documentId={versionOrPublishedId}
+      documentId={documentId}
       documentType={documentType}
       getCommentLink={getCommentLink}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
@@ -98,7 +91,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
-      perspective={selectedPerspectiveName}
+      releaseId={selectedReleaseId}
     >
       {children}
     </CommentsProvider>

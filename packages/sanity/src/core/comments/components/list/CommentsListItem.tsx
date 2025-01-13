@@ -263,9 +263,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     }
   }, [didExpand, replies])
 
-  /* TODO - once we understand how to set up with "finished" releases
-  we need to add a condition to the readOnly prop in this component */
-
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
