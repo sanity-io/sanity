@@ -18,12 +18,14 @@ const DISALLOWED_PATHS = [
 const ENV_VAR = {
   ...REQUIRED_ENV_VAR,
   READ_TOKEN: 'SANITY_API_READ_TOKEN',
+  WRITE_TOKEN: 'SANITY_API_WRITE_TOKEN',
 } as const
 
 type EnvData = {
   projectId: string
   dataset: string
   readToken?: string
+  writeToken?: string
 }
 
 type GithubUrlString =
@@ -191,7 +193,7 @@ export async function downloadAndExtractRepo(
   )
 }
 
-export async function checkNeedsReadToken(root: string): Promise<boolean> {
+export async function checkIfNeedsApiToken(root: string, type: 'read' | 'write'): Promise<boolean> {
   try {
     const templatePath = await Promise.any(
       ENV_TEMPLATE_FILES.map(async (file) => {
@@ -199,9 +201,12 @@ export async function checkNeedsReadToken(root: string): Promise<boolean> {
         return file
       }),
     )
-
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    return templateContent.includes(ENV_VAR.READ_TOKEN)
+    const tokenEnvMap = {
+      read: ENV_VAR.READ_TOKEN,
+      write: ENV_VAR.WRITE_TOKEN,
+    }
+    return templateContent.includes(tokenEnvMap[type])
   } catch {
     return false
   }
@@ -278,8 +283,9 @@ export async function tryApplyPackageName(root: string, name: string): Promise<v
   }
 }
 
-export async function generateSanityApiReadToken(
+export async function generateSanityApiToken(
   label: string,
+  roleName: 'viewer' | 'editor',
   projectId: string,
   apiClient: CliApiClient,
 ): Promise<string> {
@@ -289,8 +295,8 @@ export async function generateSanityApiReadToken(
       uri: `/projects/${projectId}/tokens`,
       method: 'POST',
       body: {
-        label: `${label} (${Date.now()})`, // Add timestamp to ensure uniqueness
-        roleName: 'viewer',
+        label: `${label} (${Date.now()})`,
+        roleName,
       },
     })
   return response.key

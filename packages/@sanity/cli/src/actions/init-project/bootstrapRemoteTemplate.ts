@@ -10,9 +10,9 @@ import {type CliCommandContext} from '../../types'
 import {getDefaultPortForFramework} from '../../util/frameworkPort'
 import {
   applyEnvVariables,
-  checkNeedsReadToken,
+  checkIfNeedsApiToken,
   downloadAndExtractRepo,
-  generateSanityApiReadToken,
+  generateSanityApiToken,
   getGitHubRawContentUrl,
   type RepoInfo,
   setCorsOrigin,
@@ -32,6 +32,7 @@ export interface BootstrapRemoteOptions {
 
 const SANITY_DEFAULT_PORT = 3333
 const READ_TOKEN_LABEL = 'Live Preview API'
+const WRITE_TOKEN_LABEL = 'App Write Token'
 const INITIAL_COMMIT_MESSAGE = 'Initial commit from Sanity CLI'
 
 export async function bootstrapRemoteTemplate(
@@ -65,12 +66,18 @@ export async function bootstrapRemoteTemplate(
 
   debug('Checking if template needs read token')
   const needsReadToken = await Promise.all(
-    (packages ?? ['']).map((pkg) => checkNeedsReadToken(join(outputPath, pkg))),
+    (packages ?? ['']).map((pkg) => checkIfNeedsApiToken(join(outputPath, pkg), 'read')),
+  ).then((results) => results.some(Boolean))
+  const needsWriteToken = await Promise.all(
+    (packages ?? ['']).map((pkg) => checkIfNeedsApiToken(join(outputPath, pkg), 'write')),
   ).then((results) => results.some(Boolean))
 
   debug('Applying environment variables')
   const readToken = needsReadToken
-    ? await generateSanityApiReadToken(READ_TOKEN_LABEL, variables.projectId, apiClient)
+    ? await generateSanityApiToken(READ_TOKEN_LABEL, 'viewer', variables.projectId, apiClient)
+    : undefined
+  const writeToken = needsWriteToken
+    ? await generateSanityApiToken(WRITE_TOKEN_LABEL, 'editor', variables.projectId, apiClient)
     : undefined
 
   for (const pkg of packages ?? ['']) {
@@ -106,7 +113,6 @@ export async function bootstrapRemoteTemplate(
   if (corsAdded.length) {
     output.success(`CORS origins added (${corsAdded.map((p) => `localhost:${p}`).join(', ')})`)
   }
-  if (readToken) {
-    output.success(`API token generated (${READ_TOKEN_LABEL})`)
-  }
+  if (readToken) output.success(`API token generated (${READ_TOKEN_LABEL})`)
+  if (writeToken) output.success(`API token generated (${WRITE_TOKEN_LABEL})`)
 }
