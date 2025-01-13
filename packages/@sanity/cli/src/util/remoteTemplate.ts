@@ -217,9 +217,11 @@ export async function applyEnvVariables(
       await access(join(root, file))
       return file
     }),
-  ).catch(() => {
-    throw new Error('Could not find .env.template, .env.example or .env.local.example file')
-  })
+  ).catch(() => undefined)
+
+  if (!templatePath) {
+    return // No template .env file found, skip
+  }
 
   try {
     const templateContent = await readFile(join(root, templatePath), 'utf8')
@@ -231,13 +233,13 @@ export async function applyEnvVariables(
       value: string,
       useQuotes: boolean,
     ) => {
-      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'm')
+      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'gm')
       const match = content.match(pattern)
       if (!match) return content
 
       const varName = match[0].split('=')[0]
       return content.replace(
-        new RegExp(`${varName}=.*$`, 'm'),
+        new RegExp(`${varName}=.*$`, 'gm'),
         `${varName}=${useQuotes ? `"${value}"` : value}`,
       )
     }

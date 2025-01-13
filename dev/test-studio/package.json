@@ -16,11 +16,11 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/editor": "^1.20.0",
+    "@portabletext/editor": "^1.21.1",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.69.0",
-    "@sanity/client": "^6.24.1",
+    "@sanity/client": "^6.24.3",
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
@@ -35,7 +35,7 @@
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.0.0",
     "@sanity/react-loader": "^1.8.3",
-    "@sanity/tsdoc": "1.0.164",
+    "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.11.1",
     "@sanity/ui-workshop": "^1.0.0",
