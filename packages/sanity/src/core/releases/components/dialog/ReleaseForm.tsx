@@ -147,7 +147,6 @@ export function ReleaseForm(props: {
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"
-                  padding={2}
                   size="default"
                   text={`${timeZone.abbreviation}`}
                   onClick={dialogTimeZoneShow}

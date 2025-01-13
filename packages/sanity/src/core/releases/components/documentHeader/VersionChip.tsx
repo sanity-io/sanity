@@ -1,5 +1,7 @@
 import {LockIcon} from '@sanity/icons'
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   memo,
   type MouseEvent,
@@ -26,13 +28,15 @@ interface ChipStyleProps {
   $isArchived?: boolean
 }
 
-const Chip = styled(Button)<ChipStyleProps>(
-  ({$isArchived}) =>
-    `
+const Chip = styled(Button)<ChipStyleProps>(({$isArchived, theme: themeRaw}) => {
+  const theme = getTheme_v2(themeRaw)
+
+  return css`
     border-radius: 9999px !important;
     transition: none;
     text-decoration: none !important;
     cursor: pointer;
+    padding-right: ${theme.space[3]}px;
 
     // target enabled state
     &:not([data-disabled='true']) {
@@ -44,15 +48,13 @@ const Chip = styled(Button)<ChipStyleProps>(
       cursor: default;
 
       // archived will be disabled but should have bg color
-      ${
-        $isArchived &&
-        css`
-          background-color: var(--card-badge-default-bg-color);
-        `
-      }
+      ${$isArchived &&
+      css`
+        background-color: var(--card-badge-default-bg-color);
+      `}
     }
-  `,
-)
+  `
+})
 
 /**
  * @internal
@@ -190,8 +192,6 @@ export const VersionChip = memo(function VersionChip(props: {
           disabled={disabled}
           mode="bleed"
           onClick={onClick}
-          padding={2}
-          paddingRight={3}
           selected={selected}
           style={{flex: 'none'}}
           text={text}

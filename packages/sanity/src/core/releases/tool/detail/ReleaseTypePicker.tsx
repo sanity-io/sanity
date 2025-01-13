@@ -252,7 +252,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
           disabled={isReleaseScheduled || release.state === 'archived'}
           mode="bleed"
           onClick={handleOnPickerClick}
-          padding={2}
           ref={buttonRef}
           tooltipProps={{
             placement: 'bottom',

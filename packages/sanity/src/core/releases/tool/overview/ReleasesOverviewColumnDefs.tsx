@@ -107,8 +107,7 @@ const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: releas
             mode="bleed"
             data-testid="pin-release-button"
             onClick={handlePinRelease}
-            padding={2}
-            round
+            radius="full"
             selected={isReleasePinned}
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>

@@ -66,7 +66,6 @@ export const DateFilterButton = ({
           iconRight={CloseIcon}
           mode="bleed"
           onClick={() => setIsExiting(true)}
-          padding={2}
           selected
           text={format(filterDate, 'PPP')}
         />

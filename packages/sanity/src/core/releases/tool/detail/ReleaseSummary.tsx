@@ -96,7 +96,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               mode="bleed"
               onClick={() => setAddDocumentDialog(true)}
-              padding={2}
               text={t('action.add-document')}
             />
           </Card>
