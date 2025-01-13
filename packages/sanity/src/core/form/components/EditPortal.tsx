@@ -8,16 +8,23 @@ import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjects
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
-interface Props {
-  type: 'popover' | 'dialog'
-  width: ResponsiveWidthProps['width']
-  header: string
-  id?: string
-  onClose: () => void
+interface SharedProps {
   children?: ReactNode
+  header: string
+  width: ResponsiveWidthProps['width']
+}
+interface DialogProps extends SharedProps {
+  type: 'dialog'
+  id?: string
+  autofocus?: boolean
+  onClose?: () => void
+}
+
+interface PopoverProps extends SharedProps {
+  type: 'popover'
   // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
-  autofocus?: boolean
+  onClose: () => void
 }
 
 function onDragEnter(event: DragEvent<HTMLDivElement>) {
@@ -28,17 +35,13 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
 
-export function EditPortal(props: Props): React.JSX.Element {
-  const {
-    children,
-    header,
-    id,
-    legacy_referenceElement: referenceElement,
-    onClose,
-    type,
-    width,
-    autofocus,
-  } = props
+/**
+ * @internal
+ * Creates a dialog or a popover for editing content.
+ * Handles presence and virtual scrolling.
+ */
+export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element {
+  const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
 
@@ -55,11 +58,11 @@ export function EditPortal(props: Props): React.JSX.Element {
         containerElement={containerElement}
       >
         <Dialog
-          __unstable_autoFocus={autofocus}
+          __unstable_autoFocus={props.autofocus}
           contentRef={setDocumentScrollElement}
           data-testid="edit-portal-dialog"
           header={header}
-          id={id || ''}
+          id={props.id || ''}
           onClickOutside={onClose}
           onClose={onClose}
           onDragEnter={onDragEnter}
@@ -76,7 +79,7 @@ export function EditPortal(props: Props): React.JSX.Element {
     <PopoverDialog
       header={header}
       onClose={onClose}
-      referenceElement={referenceElement}
+      referenceElement={props.legacy_referenceElement}
       width={width}
       containerRef={setDocumentScrollElement}
     >
