@@ -9,5 +9,5 @@ export function isGlobalDocumentReference(
     return false
   }
 
-  return reference._ref.split('.').length === 3
+  return reference._ref.split('/').length === 3
 }
