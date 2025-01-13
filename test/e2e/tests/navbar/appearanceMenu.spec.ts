@@ -15,7 +15,7 @@ test('color scheme changes and persists', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/test/content')
 
   await page.locator(`[id='user-menu']`).click()
-  await expect(await page.getByTestId('user-menu')).toBeVisible({timeout: 4000})
+  await expect(await page.getByTestId('user-menu')).toBeVisible()
   await expect(await page.getByTestId('color-scheme-dark')).toBeVisible()
   await page.getByTestId('color-scheme-dark').click()
 

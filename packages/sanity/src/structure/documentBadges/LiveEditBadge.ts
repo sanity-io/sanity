@@ -2,10 +2,9 @@ import {type DocumentBadgeComponent} from 'sanity'
 
 /** @internal */
 export const LiveEditBadge: DocumentBadgeComponent = (props) => {
-  const {liveEditSchemaType} = props
+  const {liveEdit} = props
 
-  if (liveEditSchemaType) {
-    // TODO: i18n.
+  if (liveEdit) {
     return {
       label: 'Live',
       color: 'danger',

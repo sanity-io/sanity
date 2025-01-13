@@ -80,8 +80,6 @@ export const DocumentPanelHeader = memo(
     // Prevent focus if this is the last (non-collapsed) pane.
     const tabIndex = isLast && !collapsed ? -1 : 0
 
-    const documentPaneHeaderTitle = <DocumentHeaderTitle collapsed={collapsed} />
-
     // there are three kinds of buttons possible:
     //
     // 1. split pane - creates a new split pane
@@ -159,15 +157,13 @@ export const DocumentPanelHeader = memo(
             <PaneHeaderActionButton key={item.key} node={item} />
           ))}
           {editState && (
-            <>
-              <RenderActionCollectionState
-                actions={actions}
-                actionProps={editState}
-                group="paneActions"
-              >
-                {renderPaneActions}
-              </RenderActionCollectionState>
-            </>
+            <RenderActionCollectionState
+              actions={actions}
+              actionProps={editState}
+              group="paneActions"
+            >
+              {renderPaneActions}
+            </RenderActionCollectionState>
           )}
 
           {showSplitPaneButton && (

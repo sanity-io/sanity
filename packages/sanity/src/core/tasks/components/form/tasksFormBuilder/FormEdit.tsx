@@ -5,7 +5,6 @@ import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -103,7 +102,6 @@ function FormEditInner(props: ObjectInputProps) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
-  const router = useRouter()
   const {t} = useTranslation(tasksLocaleNamespace)
   const activityData = useActivityLog(value).changes
   const handleChangeAndSubscribe = useCallback(
