@@ -375,7 +375,30 @@ export const eventsAPIReducer = (opts: {config: PluginOptions; initialValue: boo
     if (typeof enabled === 'boolean') return enabled
 
     throw new Error(
-      `Expected \`beta.eventsAPI.enabled\` to be an object with footerAction, but received ${getPrintableType(
+      `Expected \`beta.eventsAPI.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const serverDocumentActionsReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean | undefined
+}): boolean | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean | undefined, {config: innerConfig}) => {
+    const enabled = innerConfig.__internal_serverDocumentActions?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`__internal_serverDocumentActions\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

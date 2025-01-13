@@ -153,7 +153,7 @@ const sharedSettings = definePlugin({
   ],
 })
 
-const defaultWorkspace = {
+const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
   projectId: 'ppsg7ml5',
@@ -168,11 +168,6 @@ const defaultWorkspace = {
   },
   basePath: '/test',
   icon: SanityMonogram,
-  // eslint-disable-next-line camelcase
-  __internal_serverDocumentActions: {
-    // TODO: Switched off because Actions API doesn't support versions (yet).
-    enabled: false,
-  },
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
@@ -180,8 +175,7 @@ const defaultWorkspace = {
   tasks: {
     enabled: true,
   },
-  beta: {eventsAPI: {enabled: true}},
-}
+})
 
 export default defineConfig([
   defaultWorkspace,
@@ -227,11 +221,6 @@ export default defineConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      // TODO: Switched off because Actions API doesn't support versions (yet).
-      enabled: false,
-    },
     beta: {eventsAPI: {enabled: true}},
   },
   {
@@ -261,11 +250,6 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      // TODO: Switched off because Actions API doesn't support versions (yet).
-      enabled: false,
-    },
     beta: {eventsAPI: {enabled: true}},
     auth: {
       loginMethod: 'token',
@@ -364,11 +348,6 @@ export default defineConfig([
     title: 'Presentation Studio',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      // TODO: Switched off because Actions API doesn't support versions (yet).
-      enabled: false,
-    },
     plugins: [
       debugSecrets(),
       presentationTool({
