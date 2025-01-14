@@ -50,12 +50,7 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   }
 }
 
-function serialize(date: Date) {
-  return date.toISOString()
-}
-
-// deserialize specifically handles the deserialisation of the iso date string from content lake
-const deserialize =
+const getDeserializer =
   (timezone?: string) =>
   (isoString: string): ParseResult => {
     // create a date object respecting the timezone
@@ -80,8 +75,7 @@ function enforceTimeStep(dateString: string, timeStep: number) {
     return serialize(setMinutes(date, minutes - leftOver))
   }
 
-  const serilalised = serialize(date)
-  return serilalised
+  return serialize(date)
 }
 
 /**
@@ -110,42 +104,62 @@ export function DateTimeInput(props: DateTimeInputProps) {
     [dateFormat, timeFormat, displayTimezone],
   )
 
+  const deserialize = useMemo(() => getDeserializer(displayTimezone), [displayTimezone])
+  const serialize = useCallback((date: Date) => {
+    return date.toISOString()
+  }, [])
+
   const parseInputValue = useCallback(
     (inputValue: string): ParseResult =>
       parse(inputValue, `${dateFormat} ${timeFormat}`, displayTimezone),
     [dateFormat, timeFormat, displayTimezone],
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
-  return (
+  const commonProps = useMemo(
+    () => ({
+      ...elementProps,
+      calendarLabels,
+      deserialize,
+      formatInputValue,
+      onChange: handleChange,
+      parseInputValue,
+      placeholder: schemaType.placeholder,
+      serialize,
+      timezone: displayTimezone,
+      timeStep,
+      selectTime: true,
+      value,
+    }),
+    [
+      elementProps,
+      calendarLabels,
+      deserialize,
+      formatInputValue,
+      handleChange,
+      parseInputValue,
+      schemaType.placeholder,
+      serialize,
+      displayTimezone,
+      timeStep,
+      value,
+    ],
+  )
+
+  return displayTimezone ? (
     <Tooltip
       placement="bottom-start"
       content={
-        displayTimezone ? (
-          <Inline space={1}>
-            <EarthGlobeIcon />
-            <Text size={1} muted>
-              {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
-            </Text>
-          </Inline>
-        ) : (
-          ''
-        )
+        <Inline space={1}>
+          <EarthGlobeIcon />
+          <Text size={1} muted>
+            {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
+          </Text>
+        </Inline>
       }
     >
-      <CommonDateTimeInput
-        {...elementProps}
-        calendarLabels={calendarLabels}
-        onChange={handleChange}
-        deserialize={deserialize(displayTimezone)}
-        formatInputValue={formatInputValue}
-        parseInputValue={parseInputValue}
-        placeholder={schemaType.placeholder}
-        selectTime
-        serialize={serialize}
-        timeStep={timeStep}
-        timezone={displayTimezone}
-        value={value}
-      />
+      <CommonDateTimeInput {...commonProps} />
     </Tooltip>
+  ) : (
+    <CommonDateTimeInput {...commonProps} />
   )
 }
