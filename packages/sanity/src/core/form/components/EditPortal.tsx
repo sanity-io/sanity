@@ -36,7 +36,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
 }
 
 /**
- * @internal
+ * @beta
  * Creates a dialog or a popover for editing content.
  * Handles presence and virtual scrolling.
  */

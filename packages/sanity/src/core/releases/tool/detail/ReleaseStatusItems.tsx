@@ -44,7 +44,7 @@ export function ReleaseStatusItems({
     return (
       <Flex flex={1} gap={1}>
         <StatusItem
-          avatar={<AvatarSkeleton size={0} />}
+          avatar={<AvatarSkeleton $size={0} />}
           text={
             <>
               {t(STATUS_TITLE_I18N.createRelease)}{' '}
