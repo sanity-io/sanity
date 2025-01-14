@@ -26,6 +26,14 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with display timezone',
+      options: {
+        displayTimezone: 'Europe/Dublin',
+      },
+    },
+    {
       name: 'justARegularStringFieldInBetween',
       type: 'string',
       title: 'Some string',
