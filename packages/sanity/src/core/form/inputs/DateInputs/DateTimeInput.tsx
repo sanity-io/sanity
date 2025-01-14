@@ -38,6 +38,10 @@ interface SchemaOptions {
  * @beta */
 export type DateTimeInputProps = StringInputProps
 
+const serialize = (date: Date) => {
+  return date.toISOString()
+}
+
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
@@ -105,9 +109,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const deserialize = useMemo(() => getDeserializer(displayTimezone), [displayTimezone])
-  const serialize = useCallback((date: Date) => {
-    return date.toISOString()
-  }, [])
+  const memoizedSerialize = useMemo(() => serialize, [])
 
   const parseInputValue = useCallback(
     (inputValue: string): ParseResult =>
@@ -124,7 +126,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       onChange: handleChange,
       parseInputValue,
       placeholder: schemaType.placeholder,
-      serialize,
+      serialize: memoizedSerialize,
       timezone: displayTimezone,
       timeStep,
       selectTime: true,
@@ -138,7 +140,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       handleChange,
       parseInputValue,
       schemaType.placeholder,
-      serialize,
+      memoizedSerialize,
       displayTimezone,
       timeStep,
       value,
