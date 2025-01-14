@@ -4,9 +4,6 @@ import {type TimelineStore} from 'sanity'
 import {type BaseStructureToolPaneProps} from '../types'
 
 /** @internal */
-export type TimelineMode = 'since' | 'rev' | 'closed'
-
-/** @internal */
 export type DocumentPaneProviderProps = {
   children?: React.ReactNode
   onFocusPath?: (path: Path) => void
