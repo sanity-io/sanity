@@ -233,15 +233,17 @@ export async function applyEnvVariables(
       value: string,
       useQuotes: boolean,
     ) => {
-      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'gm')
-      const match = content.match(pattern)
-      if (!match) return content
-
-      const varName = match[0].split('=')[0]
-      return content.replace(
-        new RegExp(`${varName}=.*$`, 'gm'),
-        `${varName}=${useQuotes ? `"${value}"` : value}`,
-      )
+      const varPattern = typeof varRegex === 'string' ? varRegex : varRegex.source
+      const pattern = new RegExp(`.*${varPattern}=.*$`, 'gm')
+      const matches = content.matchAll(pattern)
+      return Array.from(matches).reduce((updatedContent, match) => {
+        if (!match[0]) return updatedContent
+        const varName = match[0].split('=')[0].trim()
+        return updatedContent.replace(
+          new RegExp(`${varName}=.*$`, 'gm'),
+          `${varName}=${useQuotes ? `"${value}"` : value}`,
+        )
+      }, content)
     }
 
     let envContent = templateContent

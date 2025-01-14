@@ -1,5 +1,9 @@
 # Sanity Block Tools
 
+> **⚠ This package is deprecated**
+>
+> Please note that this package is deprecated and has been replaced by [@portabletext/block-tools](https://www.npmjs.com/package/@portabletext/block-tools)
+
 Various tools for processing Sanity block content. Mostly used internally in the Studio code, but it got some nice functions (especially `htmlToBlocks`) which is handy when you are importing data from HTML into your dataset as block text.
 
 **NOTE:** To use `@sanity/block-tools` in a Node.js script, you will need to provide a `parseHtml` method - generally using `JSDOM`. [Read more](#jsdom-example).
