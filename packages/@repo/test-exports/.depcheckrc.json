@@ -1,7 +1,6 @@
 {
   "ignores": [
     "@repo/test-exports",
-    "@sanity/block-tools",
     "@sanity/cli",
     "@sanity/codegen",
     "@sanity/diff",

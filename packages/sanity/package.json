@@ -159,7 +159,6 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.0.6",
     "@sanity/bifur-client": "^0.4.1",
-    "@sanity/block-tools": "3.70.0",
     "@sanity/cli": "3.70.0",
     "@sanity/client": "^6.24.3",
     "@sanity/color": "^3.0.0",
