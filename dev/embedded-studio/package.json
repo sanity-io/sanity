@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "3.69.0",
+  "version": "3.70.0",
   "private": true,
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",
@@ -15,8 +15,8 @@
     "styled-components": "^6.1.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.3",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "5.7.3",
     "vite": "^5.4.11"
