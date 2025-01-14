@@ -70,7 +70,8 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229"
+    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
+    "react-fast-compare": "^3.2.2"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
