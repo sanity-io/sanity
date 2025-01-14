@@ -4,6 +4,7 @@ import {type ReactNode} from 'react'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 
+import {type PerspectiveStack} from '../../releases/hooks/usePerspective'
 import {
   getDraftId,
   getPublishedId,
@@ -51,7 +52,7 @@ export function getPreviewStateObservable(
      * An array of release ids ordered chronologically to represent the state of documents at the
      * given point in time.
      */
-    bundleStack: string[]
+    bundleStack: PerspectiveStack
 
     /**
      * Perspective to use when fetching versions.

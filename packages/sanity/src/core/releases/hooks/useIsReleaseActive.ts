@@ -1,3 +1,4 @@
+import {isReleaseDocument} from '../store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../util/util'
 import {usePerspective} from './usePerspective'
 
@@ -7,6 +8,7 @@ export const useIsReleaseActive = () => {
 
   return (
     !isPublishedPerspective(selectedPerspective) &&
-    (isDraftPerspective(selectedPerspective) || selectedPerspective.state === 'active')
+    (isDraftPerspective(selectedPerspective) ||
+      (isReleaseDocument(selectedPerspective) && selectedPerspective.state === 'active'))
   )
 }

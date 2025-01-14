@@ -11,6 +11,7 @@ import {ToolLink} from '../../studio'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
+import {isReleaseDocument} from '../store/types'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
@@ -64,10 +65,11 @@ export function ReleasesNav(): React.JSX.Element {
   const currentGlobalPerspectiveLabel = useMemo(() => {
     if (!selectedPerspective || isDraftPerspective(selectedPerspective)) return null
 
-    let displayTitle
+    let displayTitle = t('release.placeholder-untitled-release')
+
     if (isPublishedPerspective(selectedPerspective)) {
       displayTitle = t('release.chip.published')
-    } else {
+    } else if (isReleaseDocument(selectedPerspective)) {
       displayTitle =
         selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')
     }
@@ -94,7 +96,11 @@ export function ReleasesNav(): React.JSX.Element {
         <IntentLink
           {...intentProps}
           intent={RELEASES_INTENT}
-          params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id!)}}
+          params={
+            isReleaseDocument(selectedPerspective)
+              ? {id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}
+              : {}
+          }
         >
           {children}
         </IntentLink>
