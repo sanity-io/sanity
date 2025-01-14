@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
@@ -28,7 +29,7 @@ interface SearchProviderProps {
    * list of perspective ids
    * if provided, then it means that the search is being done using a specific list of perspectives
    */
-  perspective?: string[]
+  perspective?: ClientPerspective
   /**
    * list of document ids that should be be disabled in the search
    * if they are found to exist in the search results
