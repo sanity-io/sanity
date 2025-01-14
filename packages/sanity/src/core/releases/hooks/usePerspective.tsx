@@ -1,4 +1,4 @@
-import {type ReleaseId} from '@sanity/client'
+import {type ClientPerspective, type ReleaseId} from '@sanity/client'
 import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
@@ -16,6 +16,11 @@ import {getReleasesPerspectiveStack} from './utils'
  * @internal
  */
 export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
+
+/**
+ * @internal
+ */
+export type PerspectiveStack = ExtractArray<ClientPerspective>
 
 /**
  * @internal
@@ -39,7 +44,7 @@ export interface PerspectiveValue {
   /**
    * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
    */
-  perspectiveStack: string[]
+  perspectiveStack: PerspectiveStack
 }
 
 const EMPTY_ARRAY: string[] = []
@@ -188,3 +193,5 @@ export function usePerspective(): PerspectiveValue {
     ],
   )
 }
+
+type ExtractArray<Union> = Union extends unknown[] ? Union : never

@@ -10,6 +10,7 @@ import {
   type VersionsRecord,
   type VersionTuple,
 } from '../../../../preview/utils/getPreviewStateObservable'
+import {type PerspectiveStack} from '../../../../releases'
 import {createSearch} from '../../../../search'
 import {
   collate,
@@ -48,7 +49,10 @@ export function getReferenceInfo(
   id: string,
   referenceType: ReferenceSchemaType,
   {version}: {version?: string} = {},
-  perspective: {bundleIds: string[]; bundleStack: string[]} = {bundleIds: [], bundleStack: []},
+  perspective: {bundleIds: string[]; bundleStack: PerspectiveStack} = {
+    bundleIds: [],
+    bundleStack: [],
+  },
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId, versionId} = getIdPair(id, {version})
 

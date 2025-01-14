@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {type ButtonTone, type CardTone} from '@sanity/ui'
 
@@ -88,5 +89,5 @@ export interface SearchState {
   error: Error | null
   options?: SearchOptions
   terms: SearchTerms
-  perspective?: string[]
+  perspective?: ClientPerspective
 }
