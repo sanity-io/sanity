@@ -1,7 +1,7 @@
-import {describe, expect, it, jest} from '@jest/globals'
 import {createClient, type WelcomeEvent} from '@sanity/client'
 import {firstValueFrom, of, skip, Subject} from 'rxjs'
 import {take} from 'rxjs/operators'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createObserveDocument, type ListenerMutationEventLike} from '../createObserveDocument'
 
@@ -14,10 +14,10 @@ describe(createObserveDocument.name, () => {
       useCdn: false,
     })
 
-    jest
-      .spyOn(mockedClient.observable, 'fetch')
-      .mockImplementation(() => of([{_id: 'foo', fetched: true}]) as any)
-    jest.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
+    vi.spyOn(mockedClient.observable, 'fetch').mockImplementation(
+      () => of([{_id: 'foo', fetched: true}]) as any,
+    )
+    vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
     const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
 
@@ -28,7 +28,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome'})
+    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
 
     expect(await initial).toEqual({_id: 'foo', fetched: true})
   })
@@ -41,8 +41,8 @@ describe(createObserveDocument.name, () => {
       useCdn: false,
     })
 
-    jest.spyOn(mockedClient.observable, 'fetch').mockImplementation(() => of([]) as any)
-    jest.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
+    vi.spyOn(mockedClient.observable, 'fetch').mockImplementation(() => of([]) as any)
+    vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
     const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
 
@@ -53,7 +53,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome'})
+    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
 
     expect(await initial).toEqual(undefined)
   })
@@ -66,7 +66,7 @@ describe(createObserveDocument.name, () => {
       useCdn: false,
     })
 
-    jest.spyOn(mockedClient.observable, 'fetch').mockImplementation(
+    vi.spyOn(mockedClient.observable, 'fetch').mockImplementation(
       () =>
         of([
           {
@@ -79,7 +79,7 @@ describe(createObserveDocument.name, () => {
           },
         ]) as any,
     )
-    jest.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
+    vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
     const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
 
@@ -90,7 +90,7 @@ describe(createObserveDocument.name, () => {
 
     const final = firstValueFrom(observeDocument('1c32390c').pipe(skip(1), take(1)))
 
-    mutationChannel.next({type: 'welcome'})
+    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
     mutationChannel.next({
       type: 'mutation',
       documentId: '1c32390c',
