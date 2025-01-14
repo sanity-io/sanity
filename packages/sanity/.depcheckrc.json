@@ -1,6 +1,5 @@
 {
   "ignores": [
-    "@portabletext/block-tools",
     "@repo/tsconfig",
     "@sanity/pkg-utils",
     "globby",

@@ -7,7 +7,6 @@
     "./src",
     "./test",
     "./typings",
-    "./node_modules/@sanity/block-tools/src",
     "./node_modules/@sanity/diff/src",
     "./node_modules/@sanity/cli/src",
     "./node_modules/@sanity/cli/typings/deepSortObject.d.ts",
@@ -23,7 +22,6 @@
   "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
   "compilerOptions": {
     "paths": {
-      "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
       "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
       "@sanity/cli": ["./node_modules/@sanity/cli/src/index.ts"],
       "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],

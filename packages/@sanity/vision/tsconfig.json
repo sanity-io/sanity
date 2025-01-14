@@ -2,7 +2,6 @@
   "extends": "@repo/tsconfig/base.json",
   "include": [
     "./src",
-    "./node_modules/@sanity/block-tools/src",
     "./node_modules/@sanity/diff/src",
     "./node_modules/@sanity/cli/src",
     "./node_modules/@sanity/cli/typings/*.d.ts",
@@ -21,7 +20,6 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
       "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
       "@sanity/cli": ["./node_modules/@sanity/cli/src/index.ts"],
       "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],

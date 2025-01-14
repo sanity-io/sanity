@@ -10,7 +10,6 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
