@@ -15,6 +15,7 @@ export default defineConfig({
      * This alias points to the source of the pte package so the aliases work.
      */
     alias: {
+      '@portabletext/block-tools': path.join(__dirname, './node_modules/@portabletext/block-tools/src'),
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
     },
   },
