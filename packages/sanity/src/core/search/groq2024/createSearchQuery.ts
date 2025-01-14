@@ -75,7 +75,7 @@ export function createSearchQuery(
   // Note: Computing this is unnecessary when `!isScored`.
   const groupedSpecs = groupBy(flattenedSpecs, (entry) => [entry.path, entry.weight].join(':'))
 
-  const baseMatch = '@ match text::query($__query)'
+  const baseMatch = '[@, _id] match text::query($__query)'
 
   // Note: Computing this is unnecessary when `!isScored`.
   const score = Object.entries(groupedSpecs)
