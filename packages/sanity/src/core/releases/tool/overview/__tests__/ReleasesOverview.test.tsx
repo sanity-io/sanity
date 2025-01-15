@@ -26,7 +26,14 @@ import {
   usePerspectiveMockReturn,
 } from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {mockUseArchivedReleases} from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
+import {
+  mockUseAllReleases,
+  useAllReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useAllReleases.mock'
+import {
+  mockUseArchivedReleases,
+  useArchivedReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
 import {
   mockUseReleases,
   useReleasesMockReturn,
@@ -55,6 +62,14 @@ vi.mock('sanity', () => ({
 
 vi.mock('../../../store/useReleases', () => ({
   useReleases: vi.fn(() => useReleasesMockReturn),
+}))
+
+vi.mock('../../../store/useAllReleases', () => ({
+  useAllReleases: vi.fn(() => useAllReleasesMockReturn),
+}))
+
+vi.mock('../../../store/useArchivedReleases', () => ({
+  useArchivedReleases: vi.fn(() => useArchivedReleasesMockReturn),
 }))
 
 vi.mock('../../../store/useReleasesMetadata', () => ({
@@ -204,6 +219,12 @@ describe('ReleasesOverview', () => {
       mockUseReleases.mockReturnValue({
         ...useReleasesMockReturn,
         data: releases,
+      })
+      mockUseAllReleases.mockReturnValue({
+        allReleases: releases,
+      })
+      mockUseArchivedReleases.mockReturnValue({
+        archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
       })
       mockUseReleasesMetadata.mockReturnValue({
         ...useReleasesMetadataMockReturn,
@@ -409,10 +430,6 @@ describe('ReleasesOverview', () => {
     describe('archived releases', () => {
       beforeEach(() => {
         fireEvent.click(screen.getByText('Archived'))
-
-        mockUseArchivedReleases.mockReturnValue({
-          archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
-        })
       })
 
       it('shows published releases', async () => {

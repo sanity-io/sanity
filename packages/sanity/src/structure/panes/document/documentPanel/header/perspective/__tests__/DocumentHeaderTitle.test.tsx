@@ -34,6 +34,10 @@ vi.mock('../../../../../../../core/releases/store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../../../../../core/releases/store/useArchivedReleases', () => ({
+  useArchivedReleases: vi.fn(),
+}))
+
 vi.mock('../../../../useDocumentPane')
 
 vi.mock('sanity', async (importOriginal) => {
