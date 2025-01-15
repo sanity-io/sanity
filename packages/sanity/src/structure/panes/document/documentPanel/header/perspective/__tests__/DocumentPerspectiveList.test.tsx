@@ -5,6 +5,7 @@ import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {mockUseArchivedReleases} from '../../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
@@ -80,9 +81,11 @@ describe('DocumentPerspectiveList', () => {
     mockUseReleases.mockReturnValue({
       loading: false,
       data: [mockCurrent],
-      archivedReleases: [],
       dispatch: vi.fn(),
       releasesIds: [],
+    })
+    mockUseArchivedReleases.mockReturnValue({
+      archivedReleases: [],
     })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [mockCurrent],

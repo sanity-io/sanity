@@ -4,6 +4,7 @@ import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {mockUseArchivedReleases} from '../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
@@ -41,9 +42,11 @@ describe('DeletedDocumentBanners', () => {
     mockUseReleases.mockReturnValue({
       data: [],
       releasesIds: [],
-      archivedReleases: [],
       dispatch: vi.fn(),
       loading: false,
+    })
+    mockUseArchivedReleases.mockReturnValue({
+      archivedReleases: [],
     })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: false,
@@ -64,9 +67,11 @@ describe('DeletedDocumentBanners', () => {
     mockUseReleases.mockReturnValue({
       data: [mockReleaseDocument],
       releasesIds: [mockReleaseDocument._id],
-      archivedReleases: [],
       dispatch: vi.fn(),
       loading: false,
+    })
+    mockUseArchivedReleases.mockReturnValue({
+      archivedReleases: [],
     })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
@@ -87,13 +92,16 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({
       selectedPerspective: LATEST,
       setPerspective: vi.fn(),
-    } as ReturnType<typeof usePerspective>)
+    } as unknown as ReturnType<typeof usePerspective>)
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
       releasesIds: [mockBundleDocument._id],
       dispatch: vi.fn(),
       loading: false,
+    })
+
+    mockUseArchivedReleases.mockReturnValue({
       archivedReleases: [],
     })
 
