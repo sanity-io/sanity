@@ -4,7 +4,6 @@ import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {Translate} from '../../i18n/Translate'
 import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
@@ -51,7 +50,7 @@ const EMPTY_ARRAY: string[] = []
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
   const toast = useToast()
-  const {t} = useTranslation(studioLocaleNamespace)
+  const {t} = useTranslation()
 
   const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
   const selectedPerspectiveName = router.stickyParams.perspective as
@@ -108,7 +107,11 @@ export function usePerspective(): PerspectiveValue {
           <Text muted size={1}>
             <Translate
               t={t}
-              i18nKey={archived ? 'toast.archived-release.title' : 'toast.deleted-release.title'}
+              i18nKey={
+                archived
+                  ? 'release.toast.archived-release.title'
+                  : 'release.toast.not-found-release.title'
+              }
               values={{title: archived?.metadata?.title || selectedPerspectiveName}}
             />
           </Text>

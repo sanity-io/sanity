@@ -1233,7 +1233,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /**The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /**The toast title that will be shown when the user has a release perspective which is now deleted */
-  'release.toast.deleted-release.title': "The '{{title}}' release was deleted",
+  'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
