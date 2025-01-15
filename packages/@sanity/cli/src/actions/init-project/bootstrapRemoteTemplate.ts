@@ -74,10 +74,10 @@ export async function bootstrapRemoteTemplate(
 
   debug('Applying environment variables')
   const readToken = needsReadToken
-    ? await generateSanityApiToken(READ_TOKEN_LABEL, 'viewer', variables.projectId, apiClient)
+    ? await generateSanityApiToken(READ_TOKEN_LABEL, 'read', variables.projectId, apiClient)
     : undefined
   const writeToken = needsWriteToken
-    ? await generateSanityApiToken(WRITE_TOKEN_LABEL, 'editor', variables.projectId, apiClient)
+    ? await generateSanityApiToken(WRITE_TOKEN_LABEL, 'write', variables.projectId, apiClient)
     : undefined
 
   for (const pkg of packages ?? ['']) {

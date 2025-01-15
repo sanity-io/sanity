@@ -21,6 +21,9 @@ const ENV_VAR = {
   WRITE_TOKEN: 'SANITY_API_WRITE_TOKEN',
 } as const
 
+const API_READ_TOKEN_ROLE = 'viewer'
+const API_WRITE_TOKEN_ROLE = 'editor'
+
 type EnvData = {
   projectId: string
   dataset: string
@@ -202,11 +205,7 @@ export async function checkIfNeedsApiToken(root: string, type: 'read' | 'write')
       }),
     )
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    const tokenEnvMap = {
-      read: ENV_VAR.READ_TOKEN,
-      write: ENV_VAR.WRITE_TOKEN,
-    }
-    return templateContent.includes(tokenEnvMap[type])
+    return templateContent.includes(type === 'read' ? ENV_VAR.READ_TOKEN : ENV_VAR.WRITE_TOKEN)
   } catch {
     return false
   }
@@ -285,7 +284,7 @@ export async function tryApplyPackageName(root: string, name: string): Promise<v
 
 export async function generateSanityApiToken(
   label: string,
-  roleName: 'viewer' | 'editor',
+  type: 'read' | 'write',
   projectId: string,
   apiClient: CliApiClient,
 ): Promise<string> {
@@ -296,7 +295,7 @@ export async function generateSanityApiToken(
       method: 'POST',
       body: {
         label: `${label} (${Date.now()})`,
-        roleName,
+        roleName: type === 'read' ? API_READ_TOKEN_ROLE : API_WRITE_TOKEN_ROLE,
       },
     })
   return response.key
