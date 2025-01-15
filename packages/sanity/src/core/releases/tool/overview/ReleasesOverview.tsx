@@ -15,6 +15,7 @@ import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
+import {useAllReleases} from '../../store/useAllReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
@@ -47,7 +48,8 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useReleases()
-  const {archivedReleases} = useArchivedReleases(releases)
+  const {allReleases} = useAllReleases()
+  const {archivedReleases} = useArchivedReleases(allReleases)
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
