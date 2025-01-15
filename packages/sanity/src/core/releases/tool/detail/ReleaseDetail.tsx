@@ -5,6 +5,7 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
+import {useAllReleases} from '../../store/useAllReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleases} from '../../store/useReleases'
 import {type ReleasesRouterState} from '../../types/router'
@@ -41,7 +42,8 @@ export const ReleaseDetail = () => {
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useReleases()
-  const {archivedReleases} = useArchivedReleases(data)
+  const {allReleases} = useAllReleases()
+  const {archivedReleases} = useArchivedReleases(allReleases)
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
