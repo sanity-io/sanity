@@ -15,26 +15,26 @@ import {isSameAnnotation} from './utils'
 
 export type Meta = {chunk: Chunk; transactionIndex: number} | null
 
-export type AnnotationExtractor = {
-  fromValue(value: incremental.Value<Meta>): Annotation
-  fromMeta(meta: Meta): Annotation
+export type AnnotationExtractor<T> = {
+  fromValue(value: incremental.Value<T>): Annotation
+  fromMeta(meta: T): Annotation
 }
 
-class ArrayContentWrapper implements ArrayInput<Annotation> {
+class ArrayContentWrapper<T> implements ArrayInput<Annotation> {
   type = 'array' as const
   value: unknown[]
   length: number
   annotation: Annotation
-  extractor: AnnotationExtractor
+  extractor: AnnotationExtractor<T>
 
-  private content: incremental.ArrayContent<Meta>
+  private content: incremental.ArrayContent<T>
   private elements: Input<Annotation>[] = []
 
   constructor(
-    content: incremental.ArrayContent<Meta>,
+    content: incremental.ArrayContent<T>,
     value: unknown[],
     annotation: Annotation,
-    extractor: AnnotationExtractor,
+    extractor: AnnotationExtractor<T>,
   ) {
     this.content = content
     this.value = value
@@ -62,21 +62,21 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
   }
 }
 
-class ObjectContentWrapper implements ObjectInput<Annotation> {
+class ObjectContentWrapper<T> implements ObjectInput<Annotation> {
   type = 'object' as const
   value: Record<string, unknown>
   keys: string[]
   annotation: Annotation
-  extractor: AnnotationExtractor
+  extractor: AnnotationExtractor<T>
 
-  private content: incremental.ObjectContent<Meta>
+  private content: incremental.ObjectContent<T>
   private fields: Record<string, Input<Annotation>> = {}
 
   constructor(
-    content: incremental.ObjectContent<Meta>,
+    content: incremental.ObjectContent<T>,
     value: Record<string, unknown>,
     annotation: Annotation,
-    extractor: AnnotationExtractor,
+    extractor: AnnotationExtractor<T>,
   ) {
     this.content = content
     this.value = value
@@ -96,19 +96,19 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
   }
 }
 
-class StringContentWrapper implements StringInput<Annotation> {
+class StringContentWrapper<T> implements StringInput<Annotation> {
   type = 'string' as const
   value: string
   annotation: Annotation
-  extractor: AnnotationExtractor
+  extractor: AnnotationExtractor<T>
 
-  private content: incremental.StringContent<Meta>
+  private content: incremental.StringContent<T>
 
   constructor(
-    content: incremental.StringContent<Meta>,
+    content: incremental.StringContent<T>,
     value: string,
     annotation: Annotation,
-    extractor: AnnotationExtractor,
+    extractor: AnnotationExtractor<T>,
   ) {
     this.content = content
     this.value = value
@@ -156,26 +156,26 @@ class StringContentWrapper implements StringInput<Annotation> {
   }
 }
 
-function wrapValue(
-  value: incremental.Value<Meta>,
+export function wrapValue<T>(
+  value: incremental.Value<T>,
   raw: unknown,
-  extractor: AnnotationExtractor,
+  extractor: AnnotationExtractor<T>,
 ): Input<Annotation> {
   const annotation = extractor.fromValue(value)
 
   if (value.content) {
     switch (value.content.type) {
       case 'array':
-        return new ArrayContentWrapper(value.content, raw as unknown[], annotation, extractor)
+        return new ArrayContentWrapper<T>(value.content, raw as unknown[], annotation, extractor)
       case 'object':
-        return new ObjectContentWrapper(
+        return new ObjectContentWrapper<T>(
           value.content,
           raw as Record<string, unknown>,
           annotation,
           extractor,
         )
       case 'string':
-        return new StringContentWrapper(value.content, raw as string, annotation, extractor)
+        return new StringContentWrapper<T>(value.content, raw as string, annotation, extractor)
       default:
       // do nothing
     }
@@ -230,7 +230,7 @@ export function diffValue(
   to: incremental.Value<Meta>,
   toRaw: unknown,
 ): Diff<Annotation> {
-  const fromInput = wrapValue(from, fromRaw, {
+  const fromInput = wrapValue<Meta>(from, fromRaw, {
     fromValue(value) {
       return extractAnnotationForFromInput(timeline, firstChunk, value.endMeta)
     },
@@ -239,7 +239,7 @@ export function diffValue(
     },
   })
 
-  const toInput = wrapValue(to, toRaw, {
+  const toInput = wrapValue<Meta>(to, toRaw, {
     fromValue(value) {
       return extractAnnotationForToInput(timeline, value.startMeta)
     },
