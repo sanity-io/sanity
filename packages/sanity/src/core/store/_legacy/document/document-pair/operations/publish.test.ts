@@ -12,8 +12,7 @@ beforeEach(() => {
   ;(isLiveEditEnabled as Mock).mockClear()
 })
 
-// TODO: Restore this test
-describe.skip('publish', () => {
+describe('publish', () => {
   describe('disabled', () => {
     // kind of a useless test but preserves the order at least
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
