@@ -1,7 +1,11 @@
 import {type ReleaseId} from '@sanity/client'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {Translate} from '../../i18n/Translate'
 import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
@@ -46,6 +50,9 @@ const EMPTY_ARRAY: string[] = []
  */
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
+  const toast = useToast()
+  const {t} = useTranslation(studioLocaleNamespace)
+
   const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
   const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
@@ -90,8 +97,34 @@ export function usePerspective(): PerspectiveValue {
     )
     if (!isCurrentPerspectiveValid) {
       setPerspective(LATEST)
+      const archived = archivedReleases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedPerspectiveName,
+      )
+
+      toast.push({
+        id: `bundle-deleted-toast-${selectedPerspectiveName}`,
+        status: 'warning',
+        title: (
+          <Text muted size={1}>
+            <Translate
+              t={t}
+              i18nKey={archived ? 'toast.archived-release.title' : 'toast.deleted-release.title'}
+              values={{title: archived?.metadata?.title || selectedPerspectiveName}}
+            />
+          </Text>
+        ),
+        duration: 10000,
+      })
     }
-  }, [archivedReleases, selectedPerspectiveName, releases, releasesLoading, setPerspective])
+  }, [
+    archivedReleases,
+    selectedPerspectiveName,
+    releases,
+    releasesLoading,
+    setPerspective,
+    toast,
+    t,
+  ])
 
   const selectedPerspective: SelectedPerspective = useMemo(() => {
     if (!selectedPerspectiveName) return 'drafts'

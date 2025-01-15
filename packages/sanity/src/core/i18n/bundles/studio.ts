@@ -1230,6 +1230,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.tooltip': 'Releases',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
+  /**The toast title that will be shown when the user has a release perspective which is now archived */
+  'release.toast.archived-release.title': "The '{{title}}' release was archived",
+  /**The toast title that will be shown when the user has a release perspective which is now deleted */
+  'release.toast.deleted-release.title': "The '{{title}}' release was deleted",
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
