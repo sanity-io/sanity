@@ -11,6 +11,7 @@ import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} fr
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {mockUseArchivedReleases} from '../../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
@@ -75,8 +76,11 @@ describe('DocumentHeaderTitle', () => {
       data: [],
       loading: false,
       dispatch: vi.fn(),
-      archivedReleases: [],
       releasesIds: [],
+    })
+
+    mockUseArchivedReleases.mockReturnValue({
+      archivedReleases: [],
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()

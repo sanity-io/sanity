@@ -26,6 +26,7 @@ import {
   usePerspectiveMockReturn,
 } from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {mockUseArchivedReleases} from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
 import {
   mockUseReleases,
   useReleasesMockReturn,
@@ -202,7 +203,6 @@ describe('ReleasesOverview', () => {
       mockUseTimeZone.mockRestore()
       mockUseReleases.mockReturnValue({
         ...useReleasesMockReturn,
-        archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
         data: releases,
       })
       mockUseReleasesMetadata.mockReturnValue({
@@ -409,6 +409,10 @@ describe('ReleasesOverview', () => {
     describe('archived releases', () => {
       beforeEach(() => {
         fireEvent.click(screen.getByText('Archived'))
+
+        mockUseArchivedReleases.mockReturnValue({
+          archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
+        })
       })
 
       it('shows published releases', async () => {

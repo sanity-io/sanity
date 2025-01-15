@@ -6,7 +6,7 @@ import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
-import {type ReleaseDocument, useReleases} from '../../store'
+import {type ReleaseDocument, useArchivedReleases, useReleases} from '../../store'
 import {RELEASE_DOCUMENTS_PATH} from '../../store/constants'
 import {useDocumentVersions} from '../useDocumentVersions'
 
@@ -61,13 +61,13 @@ async function setupMocks({
   versionIds: string[]
 }) {
   const mockUseReleases = useReleases as Mock<typeof useReleases>
+  const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
   const mockedGetPublishedId = getPublishedId as Mock<typeof getPublishedId>
 
   mockUseReleases.mockReturnValue({
     data: releases,
     releasesIds: releases.map((release) => release._id),
-    archivedReleases: [],
     loading: false,
     dispatch: vi.fn(),
   })

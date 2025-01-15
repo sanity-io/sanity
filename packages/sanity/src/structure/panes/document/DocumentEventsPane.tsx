@@ -8,6 +8,7 @@ import {
   getVersionId,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
+  useArchivedReleases,
   useEventsStore,
   usePerspective,
   useReleases,
@@ -24,7 +25,9 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const options = usePaneOptions(props.pane.options, params)
 
   const {selectedPerspectiveName} = usePerspective()
-  const {archivedReleases} = useReleases()
+  const {data} = useReleases()
+  const {archivedReleases} = useArchivedReleases(data)
+
   const {rev, since} = params
   const historyVersion = params.historyVersion as ReleaseId | undefined
 

@@ -36,6 +36,7 @@ export {
   LATEST,
   type ReleaseDocument,
   RELEASES_INTENT,
+  useArchivedReleases,
   useDocumentVersions,
   useIsReleaseActive,
   usePerspective,
