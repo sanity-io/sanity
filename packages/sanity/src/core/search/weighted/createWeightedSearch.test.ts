@@ -9,7 +9,11 @@ import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
 vi.mock('../../hooks', () => ({
-  useClient: () => ({observable: {fetch: vi.fn()}}),
+  useClient: () => ({
+    observable: {
+      withConfig: vi.fn().mockReturnValue({fetch: vi.fn()}),
+    },
+  }),
 }))
 
 const mockSchema = Schema.compile({
@@ -32,8 +36,8 @@ const {
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 
 beforeEach(() => {
-  ;(client.observable.fetch as Mock).mockReset()
-  ;(client.observable.fetch as Mock).mockReturnValue(searchHits)
+  ;(client.observable.withConfig as Mock).mockReset()
+  ;(client.observable.withConfig as Mock).mockReturnValue({fetch: () => searchHits})
 })
 
 describe('createWeightedSearch', () => {
