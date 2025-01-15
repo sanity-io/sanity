@@ -6,7 +6,7 @@ import {AnimatePresence, motion} from 'framer-motion'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
-import {Resizable} from '../../../form/studio/tree-editing/components/layout/resizer'
+import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'

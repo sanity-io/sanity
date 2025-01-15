@@ -74,7 +74,6 @@
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
-    "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^6.24.3",
     "@sanity/codegen": "workspace:*",

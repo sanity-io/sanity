@@ -1,11 +1,11 @@
 import {Box} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Resizable} from 'sanity'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
-import {Resizable} from './Resizable'
 
 interface DocumentInspectorPanelProps {
   documentId: string
@@ -38,6 +38,7 @@ export function DocumentInspectorPanel(
         as="aside"
         data-ui="DocumentInspectorPanel"
         flex={flex}
+        resizerPosition="left"
         maxWidth={DOCUMENT_INSPECTOR_MAX_WIDTH}
         minWidth={DOCUMENT_INSPECTOR_MIN_WIDTH}
       >

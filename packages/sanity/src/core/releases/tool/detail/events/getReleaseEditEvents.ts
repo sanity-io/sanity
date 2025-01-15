@@ -17,7 +17,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {getTransactionsLogs} from '../../../../store/translog/getTransactionLogs'
+import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {type ReleasesReducerState} from '../../../store/reducer'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 import {type CreateReleaseEvent, type EditReleaseEvent} from './types'

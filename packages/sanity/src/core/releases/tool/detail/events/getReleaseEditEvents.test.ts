@@ -3,7 +3,7 @@ import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {TestScheduler} from 'rxjs/testing'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {getTransactionsLogs} from '../../../../store/translog/getTransactionLogs'
+import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {type ReleaseDocument} from '../../../store/types'
 import {
   type getReleaseEditEvents as getReleaseEditEventsFunction,
@@ -14,7 +14,7 @@ const mockClient = {
   config: vi.fn().mockReturnValue({dataset: 'testDataset'}),
 } as unknown as SanityClient
 
-vi.mock('../../../../store/translog/getTransactionLogs', () => {
+vi.mock('../../../../store/translog/getTransactionsLogs', () => {
   return {
     getTransactionsLogs: vi.fn(),
   }

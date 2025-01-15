@@ -4,10 +4,10 @@ import {styled} from 'styled-components'
 
 import {Resizer} from './Resizer'
 
-export interface ResizableProps {
+interface ResizableProps {
   minWidth: number
   maxWidth: number
-  initialWidth: number
+  initialWidth?: number
   resizerPosition?: 'left' | 'right'
 }
 
@@ -17,6 +17,10 @@ const Root = styled(Box)`
   padding-left: 1px;
 `
 
+/**
+ * @internal
+ * Provides a resizable container with a resizer handle.
+ */
 export function Resizable(
   props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
@@ -31,7 +35,7 @@ export function Resizable(
   } = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const elementWidthRef = useRef<number>(undefined)
-  const [targetWidth, setTargetWidth] = useState<number>(initialWidth)
+  const [targetWidth, setTargetWidth] = useState<number | undefined>(initialWidth)
 
   const handleResizeStart = useCallback(() => {
     elementWidthRef.current = element?.offsetWidth

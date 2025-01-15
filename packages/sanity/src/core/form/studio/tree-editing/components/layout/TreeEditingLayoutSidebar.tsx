@@ -7,10 +7,10 @@ import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
+import {Resizable} from '../../../../../components/resizer/Resizable'
 import {type TreeEditingMenuItem} from '../../types'
 import {TreeEditingSearch} from '../search'
 import {TreeEditingMenu} from '../tree-menu'
-import {Resizable} from './resizer'
 import {FixedHeightFlex} from './styles'
 
 const ANIMATION_VARIANTS: Variants = {

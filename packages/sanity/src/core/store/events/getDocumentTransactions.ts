@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 
-import {getTransactionsLogs} from '../translog/getTransactionLogs'
+import {getTransactionsLogs} from '../translog/getTransactionsLogs'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 

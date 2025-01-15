@@ -5,7 +5,7 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
-import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionLogs'
+import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionsLogs'
 import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
 import {useDocumentRevertStates} from '../useDocumentRevertStates'
 
@@ -13,7 +13,7 @@ vi.mock('../../../../../../hooks/useClient', () => ({
   useClient: vi.fn(),
 }))
 
-vi.mock('../../../../../../store/translog/getTransactionLogs', () => ({
+vi.mock('../../../../../../store/translog/getTransactionsLogs', () => ({
   getTransactionsLogs: vi.fn(),
 }))
 
