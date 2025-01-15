@@ -6,6 +6,7 @@ import {useRouter} from 'sanity/router'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {Translate} from '../../i18n/Translate'
 import {type ReleaseDocument} from '../store/types'
+import {useArchivedReleases} from '../store/useArchivedReleases'
 import {useReleases} from '../store/useReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -51,8 +52,8 @@ export function usePerspective(): PerspectiveValue {
   const router = useRouter()
   const toast = useToast()
   const {t} = useTranslation()
-
-  const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
+  const {data: releases, loading: releasesLoading} = useReleases()
+  const {archivedReleases} = useArchivedReleases(releases)
   const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
     | ReleaseId

@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
+import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleasesReducerAction} from './reducer'
 import {type ReleaseDocument} from './types'
@@ -16,16 +17,10 @@ interface ReleasesState {
    * Sorted array of release IDs, excluding archived releases
    */
   releasesIds: string[]
-  /**
-   * Array of archived releases
-   */
-  archivedReleases: ReleaseDocument[]
   error?: Error
   loading: boolean
   dispatch: (event: ReleasesReducerAction) => void
 }
-
-const ARCHIVED_RELEASE_STATES = ['archived', 'published']
 
 /**
  * @internal
@@ -42,13 +37,7 @@ export function useReleases(): ReleasesState {
       ).reverse(),
     [state.releases],
   )
-  const archivedReleases = useMemo(
-    () =>
-      Array.from(state.releases.values()).filter((release) =>
-        ARCHIVED_RELEASE_STATES.includes(release.state),
-      ),
-    [state.releases],
-  )
+
   const releasesIds = useMemo(
     () => releasesAsArray.map((release) => getReleaseIdFromReleaseDocumentId(release._id)),
     [releasesAsArray],
@@ -56,7 +45,6 @@ export function useReleases(): ReleasesState {
   return {
     data: releasesAsArray,
     releasesIds: releasesIds,
-    archivedReleases,
     dispatch,
     error: state.error,
     loading: ['loading', 'initialising'].includes(state.state),

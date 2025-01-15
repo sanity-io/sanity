@@ -3,7 +3,12 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
-import {type EditableReleaseDocument, type ReleaseDocument, useReleases} from '../../../store'
+import {
+  type EditableReleaseDocument,
+  type ReleaseDocument,
+  useArchivedReleases,
+  useReleases,
+} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
 import {ReleaseForm} from '../ReleaseForm'
 
@@ -21,6 +26,7 @@ vi.mock('../../../i18n/hooks/useTranslation', () => ({
 }))
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseForm', () => {
@@ -54,6 +60,7 @@ describe('ReleaseForm', () => {
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
           },
+          _rev: '',
         },
         // Add more mock data if needed
       ]
@@ -62,7 +69,6 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        archivedReleases: [],
         releasesIds: [],
       })
 
@@ -136,6 +142,7 @@ describe('ReleaseForm', () => {
         description: 'Summer time',
         releaseType: 'asap',
       },
+      _rev: '',
     }
     beforeEach(async () => {
       onChangeMock.mockClear()
@@ -156,6 +163,7 @@ describe('ReleaseForm', () => {
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
           },
+          _rev: '',
         },
         // Add more mock data if needed
       ]
@@ -164,7 +172,6 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        archivedReleases: [],
         releasesIds: [],
       })
 

@@ -8,6 +8,7 @@ import {
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
   Translate,
+  useArchivedReleases,
   useDateTimeFormat,
   usePerspective,
   useReleases,
@@ -73,7 +74,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {data: releases, loading, archivedReleases} = useReleases()
+  const {data: releases, loading} = useReleases()
+  const {archivedReleases} = useArchivedReleases(releases)
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
