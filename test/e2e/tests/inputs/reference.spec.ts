@@ -82,9 +82,7 @@ withDefaultClient((context) => {
       .click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
-      'New Reference test',
-    )
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // switch to original doc
     page.getByRole('button', {name: originalTitle}).click()
@@ -118,9 +116,7 @@ withDefaultClient((context) => {
     page.getByRole('button', {name: 'Create…'}).first().click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
-      'New Simple references test',
-    )
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // update and publish the reference
     page.getByTestId('string-input').nth(1).fill('Reference test')
@@ -166,9 +162,7 @@ withDefaultClient((context) => {
     page.getByRole('button', {name: 'Create…'}).nth(1).click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
-      'New Simple references test',
-    )
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // update and publish the reference
     page.getByTestId('string-input').nth(1).fill('Reference test')
@@ -193,6 +187,6 @@ withDefaultClient((context) => {
     await expect(
       page.getByText('referenceField._strengthenOnPublish_strengthenOnPublish:{…} 3 properties'),
     ).not.toBeVisible()
-    await expect(page.getByText('referenceField._weak_weak:true')).toBeVisible()
+    await expect(page.getByText('referenceFieldWeak._weak_weak')).toBeVisible()
   })
 })
