@@ -8,11 +8,6 @@ export interface ReleasesMetadata {
    */
   documentCount: number
   /**
-   * The number of subset documents with the release version as a prefix
-   * that are already published
-   */
-  existingDocumentCount: number
-  /**
    * The last time a document in the release was edited
    */
   updatedAt: string | null
