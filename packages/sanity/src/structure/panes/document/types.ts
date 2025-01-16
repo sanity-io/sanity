@@ -20,7 +20,6 @@ export interface HistoryStoreProps {
   ready: boolean
   /**
    * Whether this timeline is fully loaded and completely empty (true for new documents)
-   * It can be `null` when the chunks hasn't loaded / is not known
    */
   isPristine: boolean
   /**
