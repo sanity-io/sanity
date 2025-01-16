@@ -16,9 +16,9 @@ import {
   SanityDefaultPreview,
   usePerspective,
   useReleases,
+  useReleasesIds,
 } from 'sanity'
 
-import {useReleasesIds} from '../../../core/releases/store/useReleasesIds'
 import {TooltipDelayGroupProvider} from '../../../ui-components'
 
 export interface PaneItemPreviewProps {
