@@ -20,13 +20,5 @@ export const simpleReferences = {
       type: 'reference',
       to: [{type: 'simpleReferences'}],
     },
-    {
-      name: 'referenceFieldWeak',
-      title: 'Reference field',
-      description: 'A simple reference field where weak is set to true',
-      type: 'reference',
-      weak: true,
-      to: [{type: 'simpleReferences'}],
-    },
   ],
 }

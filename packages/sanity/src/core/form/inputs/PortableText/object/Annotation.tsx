@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {type ComponentType, useCallback, useMemo, useState} from 'react'
+import {type ComponentType, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -54,7 +54,7 @@ interface AnnotationProps {
   value: PortableTextObject
 }
 
-export function Annotation(props: AnnotationProps): React.JSX.Element {
+export function Annotation(props: AnnotationProps): ReactNode {
   const {
     children,
     editorNodeFocused,
@@ -241,7 +241,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   )
 }
 
-export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.JSX.Element => {
+export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const {
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
@@ -252,8 +252,8 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
     onRemove,
     open,
     readOnly,
-    schemaType,
     selected,
+    schemaType,
     textElement,
     validation,
   } = props
@@ -264,7 +264,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
   const isReady = Boolean(children)
 
   const {t} = useTranslation()
-
   const toneKey = useMemo(() => {
     if (hasError) {
       return 'critical'
@@ -295,11 +294,11 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
         <AnnotationToolbarPopover
           annotationOpen={open}
           floatingBoundary={floatingBoundary}
-          onOpenAnnotation={onOpen}
-          onRemoveAnnotation={onRemove}
+          onOpen={onOpen}
+          onRemove={onRemove}
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
-          annotationTextSelected={selected}
+          selected={selected}
           title={
             schemaType.i18nTitleKey
               ? t(schemaType.i18nTitleKey)
