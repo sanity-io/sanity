@@ -155,7 +155,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-ct-report
+          name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: ${{ github.workspace }}/packages/sanity/blob-report
           retention-days: 30
 
@@ -200,7 +200,8 @@ jobs:
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: playwright-ct-report
+          pattern: playwright-ct-report-*
+          merge-multiple: true
           path: ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report
 
       - name: Merge into HTML Report
@@ -232,7 +233,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-ct-report
+          name: full-playwright-ct-report
           path: |
             ${{ github.workspace }}/packages/sanity/playwright-ct/report
             ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report
