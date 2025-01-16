@@ -14,13 +14,7 @@ export const ReleaseDocumentsCounter = ({documentCount}: Props) => {
   const count = useMemo(() => {
     if (!documentCount) return '-'
 
-    return (
-      <Translate
-        t={t}
-        i18nKey={documentCount > 1 ? `document-count_other` : `document-count_one`}
-        values={{count: documentCount}}
-      />
-    )
+    return <Translate t={t} i18nKey="document-count" values={{count: documentCount}} />
   }, [documentCount, t])
 
   return (
