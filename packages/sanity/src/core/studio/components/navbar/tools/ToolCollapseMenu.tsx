@@ -2,7 +2,7 @@ import {Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {forwardRef, type Ref, useMemo, useState} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button, type MenuButtonProps} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
 import {type Tool} from '../../../../config'
@@ -24,12 +24,13 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
     navigation: ['arrows'],
   })
 
-  const menuButtonProps = useMemo(
+  const menuButtonProps: Partial<MenuButtonProps> = useMemo(
     () => ({
       popover: {
         constrainSize: true,
         portal: true,
         scheme: scheme,
+        tone: 'default',
       },
     }),
     [scheme],
