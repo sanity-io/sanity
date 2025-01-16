@@ -84,7 +84,6 @@ describe('DocumentPerspectiveList', () => {
       loading: false,
       data: [mockCurrent],
       dispatch: vi.fn(),
-      releasesIds: [],
     })
     mockUseArchivedReleases.mockReturnValue({
       archivedReleases: [],

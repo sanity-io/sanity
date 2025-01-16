@@ -8,11 +8,16 @@ import {useDocumentPreviewStore} from '../../../store'
 import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
 import {type ReleaseDocument, useReleases} from '../../store'
 import {RELEASE_DOCUMENTS_PATH} from '../../store/constants'
+import {useReleasesIds} from '../../store/useReleasesIds'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 vi.mock('../../store', () => ({
   useReleasesMetadata: vi.fn(),
   useReleases: vi.fn(),
+}))
+
+vi.mock('../../store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
 }))
 
 vi.mock('../../../store', () => ({
@@ -63,14 +68,18 @@ async function setupMocks({
   versionIds: string[]
 }) {
   const mockUseReleases = useReleases as Mock<typeof useReleases>
+  const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
   const mockedGetPublishedId = getPublishedId as Mock<typeof getPublishedId>
 
   mockUseReleases.mockReturnValue({
     data: releases,
-    releasesIds: releases.map((release) => release._id),
     loading: false,
     dispatch: vi.fn(),
+  })
+
+  mockUseReleasesIds.mockReturnValue({
+    releasesIds: [],
   })
 
   mockedGetPublishedId.mockReturnValue('document-1' as PublishedId)

@@ -7,7 +7,6 @@ export const useReleasesMockReturn: Mocked<ReturnType<typeof useReleases>> = {
   dispatch: vi.fn(),
   error: undefined,
   loading: false,
-  releasesIds: [],
 }
 
 export const mockUseReleases = useReleases as Mock<typeof useReleases>

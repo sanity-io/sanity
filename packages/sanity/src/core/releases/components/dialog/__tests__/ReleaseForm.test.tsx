@@ -3,13 +3,9 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
-import {
-  type EditableReleaseDocument,
-  type ReleaseDocument,
-  useArchivedReleases,
-  useReleases,
-} from '../../../store'
+import {type EditableReleaseDocument, type ReleaseDocument, useReleases} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
+import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
@@ -19,6 +15,10 @@ vi.mock('../../../store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
+}))
+
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslate: vi.fn().mockReturnValue({
     t: vi.fn(),
@@ -26,7 +26,7 @@ vi.mock('../../../i18n/hooks/useTranslation', () => ({
 }))
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
-const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
+const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseForm', () => {
@@ -69,6 +69,9 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
+      })
+
+      mockUseReleasesIds.mockReturnValue({
         releasesIds: [],
       })
 
@@ -172,6 +175,9 @@ describe('ReleaseForm', () => {
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
+      })
+
+      mockUseReleasesIds.mockReturnValue({
         releasesIds: [],
       })
 
