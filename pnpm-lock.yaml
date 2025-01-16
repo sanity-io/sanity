@@ -6,6 +6,7 @@ settings:
 
 overrides:
   '@npmcli/arborist': ^7.5.4
+  '@sanity/ui@2': ^2.11.2
   '@typescript-eslint/eslint-plugin': ^7.18.0
   '@typescript-eslint/parser': ^7.18.0
 
@@ -10574,7 +10575,7 @@ packages:
     resolution: {integrity: sha512-UhPLzUkXy7m6MFPW+zfW/g3WqpdJuj6IBFCEL81VUNUWNRQkuej10WGe41d70iAqAMCG9+ypSWHmBNv9/lhMvA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/ui': ^2.0.0
+      '@sanity/ui': ^2.11.2
       react: ^18
       sanity: ^3.0.0
       styled-components: ^6.1
@@ -10592,7 +10593,7 @@ packages:
     resolution: {integrity: sha512-5RZJyKuN2SuatWjUEr9x+DOZOPg6+ga/6RD+pc8RK3PgviP+945M+E8k93XwnIzSGNFtix8jf0mUbdbCO7HpjA==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@sanity/ui': ^1.0 || ^2.0
+      '@sanity/ui': ^2.11.2
       react: ^18
       react-dom: ^18
       sanity: ^3.0.0
