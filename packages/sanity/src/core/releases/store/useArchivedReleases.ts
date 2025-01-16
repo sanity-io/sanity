@@ -17,7 +17,5 @@ export function useArchivedReleases(releases: ReleaseDocument[]): {
     [releases],
   )
 
-  return {
-    archivedReleases,
-  }
+  return useMemo(() => ({archivedReleases}), [archivedReleases])
 }

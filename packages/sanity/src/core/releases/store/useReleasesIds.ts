@@ -15,7 +15,5 @@ export function useReleasesIds(releases: ReleaseDocument[]): {
     [releases],
   )
 
-  return {
-    releasesIds,
-  }
+  return useMemo(() => ({releasesIds}), [releasesIds])
 }

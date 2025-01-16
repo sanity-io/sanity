@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
@@ -14,7 +15,10 @@ export function useAllReleases(): {
   const {state$} = useReleasesStore()
   const state = useObservable(state$)!
 
-  return {
-    allReleases: sortReleases(Array.from(state.releases.values())),
-  }
+  return useMemo(
+    () => ({
+      allReleases: sortReleases(Array.from(state.releases.values())),
+    }),
+    [state.releases],
+  )
 }
