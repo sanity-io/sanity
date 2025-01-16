@@ -295,26 +295,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [onFocusPath, setFocusPath],
   )
 
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error(
-      'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
-    )
-  })
-  useInsertionEffect(() => {
-    // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
-    // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
-    // Note: although we discourage patch-on-mount, we still support it.
-    patchRef.current = (event: PatchEvent) => {
-      // when creating a new draft
-      if (!editState.draft && !editState.published) {
-        telemetry.log(CreatedDraft)
-      }
-      patch.execute(toMutationPatches(event.patches), initialValue.value)
-    }
-  }, [editState.draft, editState.published, initialValue.value, patch, telemetry])
-
-  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
-
   const closeInspector = useCallback(
     (closeInspectorName?: string) => {
       // inspector?: DocumentInspector
@@ -560,6 +540,34 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isDeleted,
     isCreateLinked,
   ])
+
+  const patchRef = useRef<(event: PatchEvent) => void>(() => {
+    if (readOnly) {
+      throw new Error('Attempted to patch a read-only document')
+    }
+
+    throw new Error(
+      'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
+    )
+  })
+
+  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
+
+  useInsertionEffect(() => {
+    if (readOnly) return
+
+    // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
+    // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
+    // Note: although we discourage patch-on-mount, we still support it.
+    patchRef.current = (event: PatchEvent) => {
+      // when creating a new draft
+      if (!editState.draft && !editState.published) {
+        telemetry.log(CreatedDraft)
+      }
+
+      patch.execute(toMutationPatches(event.patches), initialValue.value)
+    }
+  }, [editState.draft, editState.published, initialValue.value, patch, telemetry, readOnly])
 
   const formState = useFormState({
     schemaType: schemaType!,
