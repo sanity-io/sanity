@@ -18,6 +18,7 @@ interface ReleasesState {
 }
 
 /**
+ * Hook to get the (non archived, non published) releases
  * @internal
  */
 export function useReleases(): ReleasesState {
