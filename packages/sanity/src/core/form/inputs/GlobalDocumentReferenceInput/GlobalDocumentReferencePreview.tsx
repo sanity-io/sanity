@@ -29,7 +29,7 @@ export function GlobalDocumentReferencePreview(props: {
   resourceId: string
   refType?: GlobalDocumentReferenceType
   showTypeLabel: boolean
-}): JSX.Element {
+}): React.JSX.Element {
   const {
     refType,
     showStudioUrlIcon,

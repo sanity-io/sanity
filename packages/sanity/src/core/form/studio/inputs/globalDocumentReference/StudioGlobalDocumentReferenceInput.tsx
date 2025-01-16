@@ -77,7 +77,7 @@ type SearchError = {
  */
 export function StudioGlobalDocumentReferenceInput(
   props: StudioGlobalDocumentReferenceInputProps,
-): JSX.Element {
+): React.JSX.Element {
   const {path, schemaType} = props
   const source = useSource()
   const client = source.getClient({
