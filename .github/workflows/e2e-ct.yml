@@ -152,7 +152,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-ct-report
@@ -198,7 +198,7 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: playwright-ct-report
           path: ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report
@@ -229,7 +229,7 @@ jobs:
           comment_tag: "playwright-ct-report"
           filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-report-pr-comment.md
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-ct-report

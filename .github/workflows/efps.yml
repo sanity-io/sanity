@@ -92,7 +92,7 @@ jobs:
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: efps-report
@@ -138,7 +138,7 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: efps-report
           path: perf/efps/results
