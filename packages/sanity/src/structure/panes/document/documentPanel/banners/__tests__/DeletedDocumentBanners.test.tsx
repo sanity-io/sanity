@@ -1,11 +1,9 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {LATEST, type ReleaseDocument, usePerspective, useReleases} from 'sanity'
+import {LATEST, type ReleaseDocument, usePerspective, useReleases, useReleasesIds} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {mockUseArchivedReleases} from '../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
-import {useReleasesIds} from '../../../../../../core/releases/store/useReleasesIds'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
@@ -57,9 +55,6 @@ describe('DeletedDocumentBanners', () => {
     mockUseReleasesIds.mockReturnValue({
       releasesIds: [],
     })
-    mockUseArchivedReleases.mockReturnValue({
-      archivedReleases: [],
-    })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: false,
       isDeleting: false,
@@ -83,9 +78,6 @@ describe('DeletedDocumentBanners', () => {
     })
     mockUseReleasesIds.mockReturnValue({
       releasesIds: [mockReleaseDocument._id],
-    })
-    mockUseArchivedReleases.mockReturnValue({
-      archivedReleases: [],
     })
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
@@ -116,10 +108,6 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseReleasesIds.mockReturnValue({
       releasesIds: [mockBundleDocument._id],
-    })
-
-    mockUseArchivedReleases.mockReturnValue({
-      archivedReleases: [],
     })
 
     mockUseDocumentPane.mockReturnValue({
