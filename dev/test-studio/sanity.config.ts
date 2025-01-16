@@ -73,6 +73,11 @@ const sharedSettings = definePlugin({
     bundles: testStudioLocaleBundles,
   },
 
+  // eslint-disable-next-line camelcase
+  __internal_serverDocumentActions: {
+    enabled: true,
+  },
+
   beta: {
     treeArrayEditing: {
       enabled: true,
