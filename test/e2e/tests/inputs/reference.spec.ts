@@ -75,11 +75,7 @@ withDefaultClient((context) => {
     page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
-    await page
-      .locator(
-        'div:nth-child(4) > div > div > div > div:nth-child(2) > div > div > div > div > div > div > button',
-      )
-      .click()
+    await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
@@ -112,8 +108,10 @@ withDefaultClient((context) => {
     page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
-    await expect(page.getByRole('button', {name: 'Create…'}).first()).toBeVisible()
-    page.getByRole('button', {name: 'Create…'}).first().click()
+    await expect(
+      page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton'),
+    ).toBeVisible()
+    page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
@@ -158,8 +156,10 @@ withDefaultClient((context) => {
     page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
-    await expect(page.getByRole('button', {name: 'Create…'}).nth(1)).toBeVisible()
-    page.getByRole('button', {name: 'Create…'}).nth(1).click()
+    await expect(
+      page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton'),
+    ).toBeVisible()
+    page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton').click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
