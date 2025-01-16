@@ -117,7 +117,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     if (mutations.patch) {
       return {
         actionType: 'sanity.action.document.edit',
-        draftId: idPair.draftId,
+        draftId: idPair.versionId ?? idPair.draftId,
         publishedId: idPair.publishedId,
         patch: omit(mutations.patch, 'id'),
       }

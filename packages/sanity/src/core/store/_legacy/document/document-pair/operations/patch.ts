@@ -9,9 +9,8 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     patches = [],
     initialDocument,
   ): void => {
-    // TODO: This is exactly the same strategy as live-editing. Can we avoid duplication?
     if (version) {
-      // No drafting, so patch and commit the published document
+      // No drafting, so patch and commit the version document.
       version.mutate([
         version.createIfNotExists({
           _type: typeName,

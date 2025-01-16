@@ -8,10 +8,8 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     patches = [],
     initialDocument,
   ): void => {
-    // TODO: Actions API can't edit versions (yet).
-    // TODO: This is exactly the same strategy as live-editing. Can we avoid duplication?
     if (version) {
-      // No drafting, so patch and commit the published document
+      // No drafting, so patch and commit the version document.
       const patchMutation = version.patch(patches)
       // Note: if the document doesn't exist on the server yet, we need to create it first. We only want to do this if we can't see it locally
       // if it's been deleted on the server we want that to become a mutation error when submitting.
