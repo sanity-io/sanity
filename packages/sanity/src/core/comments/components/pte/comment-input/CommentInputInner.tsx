@@ -128,8 +128,16 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   } = props
 
   const [user] = useUser(currentUser.id)
-  const {canSubmit, expandOnFocus, focused, hasChanges, insertAtChar, openMentions, readOnly} =
-    useCommentInput()
+  const {
+    canSubmit,
+    expandOnFocus,
+    focused,
+    hasChanges,
+    insertAtChar,
+    openMentions,
+    readOnly,
+    mentionOptions,
+  } = useCommentInput()
 
   const {t} = useTranslation(commentsLocaleNamespace)
   const avatar = withAvatar ? (
@@ -179,19 +187,21 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <TooltipDelayGroupProvider>
-              <Button
-                aria-label={t('compose.mention-user-aria-label')}
-                data-testid="comment-input-mention-button"
-                disabled={readOnly}
-                icon={MentionIcon}
-                mode="bleed"
-                type="button"
-                onClick={handleMentionButtonClicked}
-                tooltipProps={{content: t('compose.mention-user-tooltip')}}
-              />
+              {!mentionOptions.disabled && (
+                <Button
+                  aria-label={t('compose.mention-user-aria-label')}
+                  data-testid="comment-input-mention-button"
+                  disabled={readOnly}
+                  icon={MentionIcon}
+                  mode="bleed"
+                  type="button"
+                  onClick={handleMentionButtonClicked}
+                  tooltipProps={{content: t('compose.mention-user-tooltip')}}
+                />
+              )}
               {onSubmit && (
                 <>
-                  <ButtonDivider />
+                  {!mentionOptions.disabled && <ButtonDivider />}
 
                   <Button
                     aria-label={t('compose.send-comment-aria-label')}

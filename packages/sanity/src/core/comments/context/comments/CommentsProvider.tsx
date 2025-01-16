@@ -56,6 +56,8 @@ export interface CommentsProviderProps {
   onPathOpen?: (path: Path) => void
 
   isConnecting?: boolean
+
+  mentionsDisabled?: boolean
 }
 
 type DocumentId = string
@@ -78,6 +80,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
+    mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
@@ -307,7 +310,10 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         remove: operation.remove,
         update: operation.update,
       },
-      mentionOptions,
+      mentionOptions: {
+        ...mentionOptions,
+        disabled: mentionsDisabled,
+      },
     }),
     [
       documentId,
@@ -331,6 +337,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       operation.remove,
       operation.update,
       mentionOptions,
+      mentionsDisabled,
     ],
   )
 
