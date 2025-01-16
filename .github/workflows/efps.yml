@@ -95,7 +95,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: efps-report
+          name: efps-report-${{ matrix.shardIndex }}
           path: ${{ github.workspace }}/perf/efps/results/
           retention-days: 30
 
@@ -140,7 +140,8 @@ jobs:
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: efps-report
+          pattern: efps-report-*
+          merge-multiple: true
           path: perf/efps/results
 
       - name: Write report
