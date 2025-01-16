@@ -173,7 +173,7 @@
     "@sanity/logos": "^2.1.4",
     "@sanity/migrate": "3.70.0",
     "@sanity/mutator": "3.70.0",
-    "@sanity/presentation": "1.21.3",
+    "@sanity/presentation": "1.22.0",
     "@sanity/schema": "3.70.0",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.70.0",
