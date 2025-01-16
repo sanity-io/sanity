@@ -120,6 +120,7 @@ export function CreateButton(props: Props) {
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
       size="large"
+      data-testid={`create-new-document-select-${id}`}
     />
   )
 }
