@@ -272,7 +272,7 @@ jobs:
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: html-report--attempt-${{ github.run_attempt }}
+          name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
 
