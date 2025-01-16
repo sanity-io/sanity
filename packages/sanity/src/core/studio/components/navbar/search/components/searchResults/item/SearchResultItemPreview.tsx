@@ -16,6 +16,7 @@ import {
 } from '../../../../../../../preview'
 import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
 import {useReleases} from '../../../../../../../releases/store/useReleases'
+import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
 import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
 import {isArray} from '../../../../../../../util/isArray'
@@ -54,7 +55,8 @@ export function SearchResultItemPreview({
   showBadge = true,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const releases = useReleases()
+  const {data, loading} = useReleases()
+  const {releasesIds} = useReleasesIds(data)
   const {perspectiveStack} = usePerspective()
   const {state} = useSearchState()
   const isRaw = isPerspectiveRaw(state.perspective)
@@ -62,7 +64,7 @@ export function SearchResultItemPreview({
   const observable = useMemo(() => {
     const bundleStack = state.perspective && !isRaw ? state.perspective : perspectiveStack
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
-      bundleIds: releases.releasesIds,
+      bundleIds: releasesIds,
       /**
        * if the perspective is defined in the state it means that there is a scope to the search
        * and that the preview needs to take that into account
@@ -74,7 +76,7 @@ export function SearchResultItemPreview({
     documentPreviewStore,
     schemaType,
     documentId,
-    releases.releasesIds,
+    releasesIds,
     state.perspective,
     perspectiveStack,
     isRaw,
@@ -94,7 +96,7 @@ export function SearchResultItemPreview({
     versions: {},
   })
 
-  const isLoading = previewIsLoading || releases.loading
+  const isLoading = previewIsLoading || loading
 
   const sanityDocument = useMemo(() => {
     return {

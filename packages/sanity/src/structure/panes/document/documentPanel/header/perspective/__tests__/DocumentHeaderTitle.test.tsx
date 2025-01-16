@@ -12,6 +12,7 @@ import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} fr
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {mockUseArchivedReleases} from '../../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
+import {useReleasesIds} from '../../../../../../../core/releases/store/useReleasesIds'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
@@ -34,6 +35,10 @@ vi.mock('../../../../../../../core/releases/store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../../../../../core/releases/store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
+}))
+
 vi.mock('../../../../../../../core/releases/store/useArchivedReleases', () => ({
   useArchivedReleases: vi.fn(),
 }))
@@ -52,6 +57,7 @@ vi.mock('sanity', async (importOriginal) => {
 vi.mock('sanity/router')
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
@@ -80,6 +86,9 @@ describe('DocumentHeaderTitle', () => {
       data: [],
       loading: false,
       dispatch: vi.fn(),
+    })
+
+    mockUseReleasesIds.mockReturnValue({
       releasesIds: [],
     })
 

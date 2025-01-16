@@ -5,6 +5,7 @@ import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {mockUseArchivedReleases} from '../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
+import {useReleasesIds} from '../../../../../../core/releases/store/useReleasesIds'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
@@ -20,6 +21,10 @@ vi.mock('../../../../../../core/releases/store/useReleases', () => ({
   useReleases: vi.fn(),
 }))
 
+vi.mock('../../../../../../core/releases/store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
+}))
+
 vi.mock('../../../../../../core/releases/store/useArchivedReleases', () => ({
   useArchivedReleases: vi.fn(),
 }))
@@ -29,6 +34,7 @@ vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () =
 }))
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
+const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 const mockUseReleases = useReleases as Mock<typeof useReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 
@@ -45,9 +51,11 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseReleases.mockReturnValue({
       data: [],
-      releasesIds: [],
       dispatch: vi.fn(),
       loading: false,
+    })
+    mockUseReleasesIds.mockReturnValue({
+      releasesIds: [],
     })
     mockUseArchivedReleases.mockReturnValue({
       archivedReleases: [],
@@ -70,9 +78,11 @@ describe('DeletedDocumentBanners', () => {
     >)
     mockUseReleases.mockReturnValue({
       data: [mockReleaseDocument],
-      releasesIds: [mockReleaseDocument._id],
       dispatch: vi.fn(),
       loading: false,
+    })
+    mockUseReleasesIds.mockReturnValue({
+      releasesIds: [mockReleaseDocument._id],
     })
     mockUseArchivedReleases.mockReturnValue({
       archivedReleases: [],
@@ -100,9 +110,12 @@ describe('DeletedDocumentBanners', () => {
 
     mockUseReleases.mockReturnValue({
       data: [mockBundleDocument],
-      releasesIds: [mockBundleDocument._id],
       dispatch: vi.fn(),
       loading: false,
+    })
+
+    mockUseReleasesIds.mockReturnValue({
+      releasesIds: [mockBundleDocument._id],
     })
 
     mockUseArchivedReleases.mockReturnValue({
