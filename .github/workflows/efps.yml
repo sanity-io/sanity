@@ -92,10 +92,10 @@ jobs:
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: efps-report-${{ matrix.shardIndex }}
+          name: efps-report
           path: ${{ github.workspace }}/perf/efps/results/
           retention-days: 30
 
@@ -138,10 +138,9 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
-          pattern: efps-report-*
-          merge-multiple: true
+          name: efps-report
           path: perf/efps/results
 
       - name: Write report

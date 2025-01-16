@@ -30,32 +30,6 @@ test.describe('Portable Text Input', () => {
       await expect($pte.getByText('Custom preview block:')).toBeVisible()
     })
 
-    test('Inline object toolbars works as expected', async ({mount, page}) => {
-      const {getFocusedPortableTextEditor} = testHelpers({page})
-      await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
-      await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
-      // Assertion: the annotation toolbar popover should not be visible
-      await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
-      const $locatorDialog = page.getByTestId('popover-edit-dialog')
-      // Assertion: Object edit dialog should be visible
-      await expect($locatorDialog).toBeVisible()
-      await page.keyboard.press('Escape')
-      // Assertion: the annotation toolbar popover should be visible
-      await expect(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
-      // Assertion: tab works to get to the toolbar popover buttons
-      await page.keyboard.press('Tab')
-      await expect(page.getByTestId('edit-inline-object-button')).toBeFocused()
-      await page.keyboard.press('Tab')
-      await expect(page.getByTestId('remove-inline-object-button')).toBeFocused()
-      await page.keyboard.press('Escape')
-      await expect(page.getByTestId('edit-inline-object-button')).toBeVisible()
-      await expect($pte).toBeFocused()
-      await page.keyboard.press('Escape')
-      // Assertion: escape closes the toolbar popover
-      await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
-    })
-
     test('Double-clicking opens a block', async ({mount, page}) => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)

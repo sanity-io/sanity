@@ -435,7 +435,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           floatingBoundary={__unstable_floatingBoundary}
           defaultType="dialog"
           onClose={onClose}
-          autoFocus
+          autoFocus={focused}
           schemaType={schemaType}
           referenceBoundary={__unstable_referenceBoundary}
           referenceElement={__unstable_referenceElement}
