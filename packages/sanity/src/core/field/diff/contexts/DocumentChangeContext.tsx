@@ -8,9 +8,6 @@ export type DocumentChangeContextInstance = {
   documentId: string
   schemaType: SchemaType
   rootDiff: ObjectDiff | null
-  /**
-   * This decides if the diff shows the reverting changes button or not.
-   */
   isComparingCurrent: boolean
   FieldWrapper: ComponentType<{path: Path; children: ReactNode; hasHover: boolean}>
   value: Partial<SanityDocument>

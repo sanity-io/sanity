@@ -16,6 +16,11 @@ export function useResetHistoryParams() {
   const isMounted = useRef(false)
 
   const updateHistoryParams = useEffectEvent((_perspective?: string) => {
+    // Check if any of the history related params are set, and reset them, don't unnecessarily update the params
+    const PARAMS_TO_UPDATE = ['since', 'historyVersion', 'rev', 'preserveRev']
+    const shouldUpdateParams = PARAMS_TO_UPDATE.some((param) => params[param])
+    if (!shouldUpdateParams) return
+
     setParams({
       ...params,
       // Reset the history related params when the perspective changes, as they don't make sense
