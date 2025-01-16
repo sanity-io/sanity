@@ -3,16 +3,16 @@ import {
   defineConfig,
   type SanityClient,
   unstable_useValuePreview as useValuePreview,
+  useArchivedReleases,
   useDocumentVersions,
   useReleases,
+  useReleasesIds,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {mockUseArchivedReleases} from '../../../../../../../core/releases/store/__tests__/__mocks/useArchivedReleases.mock'
-import {useReleasesIds} from '../../../../../../../core/releases/store/useReleasesIds'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
@@ -57,6 +57,7 @@ vi.mock('sanity', async (importOriginal) => {
 vi.mock('sanity/router')
 
 const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
