@@ -1,5 +1,6 @@
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../i18n'
@@ -19,7 +20,7 @@ export function OptionPreview(props: {
   document: {_id: string; _type: string}
   referenceType: GlobalDocumentReferenceSchemaType
   getReferenceInfo: (doc: {_id: string; _type?: string}) => Observable<GlobalDocumentReferenceInfo>
-}): JSX.Element | null {
+}): ReactNode {
   const {
     isLoading,
     result: referenceInfo,

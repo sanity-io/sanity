@@ -15,7 +15,7 @@ export function PreviewReferenceValue(props: {
   hasStudioUrl?: boolean
   type: GlobalDocumentReferenceSchemaType
   referenceInfo: Loadable<GlobalDocumentReferenceInfo>
-}): JSX.Element {
+}): React.JSX.Element {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
   const {t} = useTranslation()
 

@@ -8,6 +8,7 @@ import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} fr
 import {
   type FocusEvent,
   type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useId,
   useMemo,
@@ -56,9 +57,7 @@ const NO_FILTER = () => true
 const REF_PATH = ['_ref']
 
 /** @internal */
-export function GlobalDocumentReferenceInput(
-  props: GlobalDocumentReferenceInputProps,
-): JSX.Element {
+export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInputProps): ReactNode {
   const {
     changed,
     focused,

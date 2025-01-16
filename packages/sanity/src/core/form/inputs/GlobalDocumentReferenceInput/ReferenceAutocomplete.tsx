@@ -30,7 +30,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     referenceElement: HTMLDivElement | null
     searchString?: string
-    portalRef?: RefObject<HTMLDivElement>
+    portalRef?: RefObject<HTMLDivElement | null>
   },
   ref: ForwardedRef<HTMLInputElement>,
 ) {
