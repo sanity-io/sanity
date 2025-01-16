@@ -18,6 +18,7 @@ import {
   useReleases,
 } from 'sanity'
 
+import {useReleasesIds} from '../../../core/releases/store/useReleasesIds'
 import {TooltipDelayGroupProvider} from '../../../ui-components'
 
 export interface PaneItemPreviewProps {
@@ -45,22 +46,16 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       ? value.title
       : null
 
-  const releases = useReleases()
+  const {data, loading} = useReleases()
+  const {releasesIds} = useReleasesIds(data)
   const {perspectiveStack, selectedPerspectiveName} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
-        bundleIds: releases.releasesIds,
+        bundleIds: releasesIds,
         bundleStack: perspectiveStack,
       }),
-    [
-      props.documentPreviewStore,
-      schemaType,
-      value._id,
-      title,
-      releases.releasesIds,
-      perspectiveStack,
-    ],
+    [props.documentPreviewStore, schemaType, value._id, title, releasesIds, perspectiveStack],
   )
 
   const {
@@ -78,7 +73,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     selectedPerspectiveName,
   })
 
-  const isLoading = previewIsLoading || releases.loading
+  const isLoading = previewIsLoading || loading
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
