@@ -122,7 +122,7 @@ importers:
         version: 9.1.0(eslint@8.57.1)
       eslint-config-sanity:
         specifier: ^7.1.2
-        version: 7.1.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.1))(eslint-plugin-react@7.37.2(eslint@8.57.1))(eslint@8.57.1)
+        version: 7.1.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@4.6.2(eslint@8.57.1))(eslint-plugin-react@7.37.2(eslint@8.57.1))(eslint@8.57.1)
       eslint-config-turbo:
         specifier: ^2.1.2
         version: 2.3.3(eslint@8.57.1)
@@ -131,7 +131,7 @@ importers:
         version: 3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1)
       eslint-plugin-boundaries:
         specifier: ^4.2.2
-        version: 4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1)
+        version: 4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-import:
         specifier: ^2.30.0
         version: 2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
@@ -176,7 +176,7 @@ importers:
         version: 4.1.0
       lerna:
         specifier: ^8.1.9
-        version: 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        version: 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^12.1.2
         version: 12.5.0(enquirer@2.3.6)
@@ -424,7 +424,7 @@ importers:
         specifier: ^3.0.0
         version: 3.2.0(react@19.0.0)
       '@sanity/assist':
-        specifier: ^3.0.2
+        specifier: ^3.1.0
         version: 3.1.0(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0-rc.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/client':
         specifier: ^6.24.3
@@ -469,8 +469,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.5(@sanity/client@6.24.3)
       '@sanity/react-loader':
-        specifier: ^1.8.3
-        version: 1.10.34(react@19.0.0)
+        specifier: ^1.10.35
+        version: 1.10.35(react@19.0.0)
       '@sanity/tsdoc':
         specifier: 1.0.169
         version: 1.0.169(@emotion/is-prop-valid@1.3.1)(@types/babel__core@7.20.5)(@types/node@22.10.2)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0-rc.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.37.0)(yaml@2.6.1)
@@ -1958,7 +1958,7 @@ importers:
         version: 0.21.5
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.10.1)(@types/node@18.19.68)(typescript@5.7.3)
+        version: 10.9.2(@swc/core@1.10.1(@swc/helpers@0.5.15))(@types/node@18.19.68)(typescript@5.7.3)
       typescript:
         specifier: 5.7.3
         version: 5.7.3
@@ -4600,8 +4600,8 @@ packages:
     resolution: {integrity: sha512-R6oUq5GrLIldCCHFpVZbZt4Zuw9QWUeA1A1YhRJxifarTj+RDETIfDGenioKGvUAZeeVhADMooG33xzyQor45w==}
     engines: {node: '>=18'}
 
-  '@sanity/core-loader@1.7.25':
-    resolution: {integrity: sha512-0lj+wLjzaME2RSp1lXbZO3MBAfPCZ2M3rDfseb2S7dltDdhUxsphfobFqGC7DHWiAxKuhm4Ke8jskcejcfctSQ==}
+  '@sanity/core-loader@1.7.26':
+    resolution: {integrity: sha512-wNUYxeLX2lGlplybdQWI705fSmkQhXXwEXeflSwbGDT0dCobfEGStmiLHmq/cgxnOV00u2GVEyZ88q1f07k5wg==}
     engines: {node: '>=18'}
 
   '@sanity/diff-match-patch@3.1.2':
@@ -4748,8 +4748,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^6.24.1
 
-  '@sanity/react-loader@1.10.34':
-    resolution: {integrity: sha512-hr1HTnXIFEyx+ZrHmuvKo9HQeQkK9J4l07/x0oF6BzZsTqpf0J4DIFo7T04WnthSKWEGs1W/hwjdxOoOBUZ/Sw==}
+  '@sanity/react-loader@1.10.35':
+    resolution: {integrity: sha512-6aDRJGJmiCbWciFzXvnOSP0ttvTM9WOdhcwoL4GKMK+zKJvvJwuTDa0R1d/8SRhay9NdMw4OUO40tpR2R4PGbQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
@@ -13799,12 +13799,12 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)':
+  '@lerna/create@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1))
+      '@nx/devkit': 20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15)))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -13843,7 +13843,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)
+      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-queue: 6.6.2
@@ -14338,13 +14338,13 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@nx/devkit@20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1))':
+  '@nx/devkit@20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15)))':
     dependencies:
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.2
       minimatch: 9.0.3
-      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)
+      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))
       semver: 7.6.3
       tmp: 0.2.3
       tslib: 2.8.1
@@ -15005,7 +15005,7 @@ snapshots:
       uuid: 11.0.4
       xstate: 5.19.1
 
-  '@sanity/core-loader@1.7.25':
+  '@sanity/core-loader@1.7.26':
     dependencies:
       '@sanity/client': 6.24.3(debug@4.4.0)
       '@sanity/comlink': 3.0.0
@@ -15379,10 +15379,10 @@ snapshots:
       '@sanity/client': 6.24.3(debug@4.4.0)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/react-loader@1.10.34(react@19.0.0)':
+  '@sanity/react-loader@1.10.35(react@19.0.0)':
     dependencies:
       '@sanity/client': 6.24.3(debug@4.4.0)
-      '@sanity/core-loader': 1.7.25
+      '@sanity/core-loader': 1.7.26
       react: 19.0.0
     transitivePeerDependencies:
       - debug
@@ -16417,14 +16417,6 @@ snapshots:
       '@vitest/utils': 2.1.8
       chai: 5.1.2
       tinyrainbow: 1.2.0
-
-  '@vitest/mocker@2.1.8(vite@5.4.11(@types/node@18.19.68)(terser@5.37.0))':
-    dependencies:
-      '@vitest/spy': 2.1.8
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 5.4.11(@types/node@18.19.68)(terser@5.37.0)
 
   '@vitest/mocker@2.1.8(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))':
     dependencies:
@@ -18288,7 +18280,7 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
-  eslint-config-sanity@7.1.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1))(eslint-plugin-react-hooks@4.6.2(eslint@8.57.1))(eslint-plugin-react@7.37.2(eslint@8.57.1))(eslint@8.57.1):
+  eslint-config-sanity@7.1.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@4.6.2(eslint@8.57.1))(eslint-plugin-react@7.37.2(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
       eslint-plugin-simple-import-sort: 12.1.1(eslint@8.57.1)
@@ -18328,7 +18320,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -18339,7 +18331,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -18350,12 +18342,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-boundaries@4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-boundaries@4.2.2(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       chalk: 4.1.2
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       micromatch: 4.0.7
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
@@ -18379,7 +18371,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.0
       is-glob: 4.0.3
@@ -20205,13 +20197,13 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)
+      '@lerna/create': 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1))
+      '@nx/devkit': 20.2.2(nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15)))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 19.0.11(encoding@0.1.13)
       aproba: 2.0.0
@@ -20256,7 +20248,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1)
+      nx: 20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15))
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-pipe: 3.1.0
@@ -21027,7 +21019,7 @@ snapshots:
 
   nwsapi@2.2.16: {}
 
-  nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1)(typescript@5.7.3))(@swc/core@1.10.1):
+  nx@20.2.2(@swc-node/register@1.10.9(@swc/core@1.10.1(@swc/helpers@0.5.15))(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.1(@swc/helpers@0.5.15)):
     dependencies:
       '@napi-rs/wasm-runtime': 0.2.4
       '@yarnpkg/lockfile': 1.1.0
@@ -23427,7 +23419,7 @@ snapshots:
     dependencies:
       typescript: 5.7.3
 
-  ts-node@10.9.2(@swc/core@1.10.1)(@types/node@18.19.68)(typescript@5.7.3):
+  ts-node@10.9.2(@swc/core@1.10.1(@swc/helpers@0.5.15))(@types/node@18.19.68)(typescript@5.7.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -23898,7 +23890,7 @@ snapshots:
   vitest@2.1.8(@types/node@18.19.68)(jsdom@25.0.1)(terser@5.37.0):
     dependencies:
       '@vitest/expect': 2.1.8
-      '@vitest/mocker': 2.1.8(vite@5.4.11(@types/node@18.19.68)(terser@5.37.0))
+      '@vitest/mocker': 2.1.8(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))
       '@vitest/pretty-format': 2.1.8
       '@vitest/runner': 2.1.8
       '@vitest/snapshot': 2.1.8
