@@ -5,7 +5,7 @@ import {type ReleaseDocument} from './types'
 import {useReleasesStore} from './useReleasesStore'
 
 /**
- * Gets all releases including archived releases
+ * Gets all releases including archived and published releases
  * @internal
  */
 export function useAllReleases(): {
