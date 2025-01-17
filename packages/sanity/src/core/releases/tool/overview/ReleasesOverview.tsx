@@ -48,7 +48,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
-  const {allReleases} = useAllReleases()
+  const {data: allReleases} = useAllReleases()
   const {archivedReleases} = useArchivedReleases(allReleases)
 
   const router = useRouter()
