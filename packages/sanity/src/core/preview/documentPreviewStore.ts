@@ -126,7 +126,6 @@ export function createDocumentPreviewStore({
   )
 
   const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
-
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 

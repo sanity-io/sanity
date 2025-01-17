@@ -23,7 +23,7 @@ export function buildReleaseEditEvents(
     const effect = transaction.effects[release._id]
     if (!effect) continue
     // This will apply the revert effect to the document, so we will get the document from before this change.
-    const before = applyMendozaPatch(currentDocument, effect.revert)
+    const before = applyMendozaPatch(currentDocument, effect.revert, currentDocument._rev)
     const changed: {
       releaseType?: ReleaseType
       intendedPublishDate?: string
@@ -46,7 +46,9 @@ export function buildReleaseEditEvents(
         timestamp: transaction.timestamp,
         releaseName: getReleaseIdFromReleaseDocumentId(release._id),
       })
-      currentDocument = before
+      if (before) {
+        currentDocument = before
+      }
     }
   }
   return releaseEditEvents

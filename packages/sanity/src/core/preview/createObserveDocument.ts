@@ -1,19 +1,29 @@
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {memoize, uniq} from 'lodash'
+import {type RawPatch} from 'mendoza'
 import {EMPTY, finalize, type Observable, of} from 'rxjs'
 import {concatMap, map, scan, shareReplay} from 'rxjs/operators'
 
 import {type ApiConfig} from './types'
-import {applyMendozaPatch} from './utils/applyMendozaPatch'
+import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
+
+export type ListenerMutationEventLike = Pick<
+  MutationEvent,
+  'type' | 'documentId' | 'previousRev' | 'resultRev'
+> & {
+  effects?: {
+    apply: unknown[]
+  }
+}
 
 export function createObserveDocument({
   mutationChannel,
   client,
 }: {
   client: SanityClient
-  mutationChannel: Observable<WelcomeEvent | MutationEvent>
+  mutationChannel: Observable<WelcomeEvent | ListenerMutationEventLike>
 }) {
   const getBatchFetcher = memoize(
     function getBatchFetcher(apiConfig: {dataset: string; projectId: string}) {
@@ -71,7 +81,7 @@ export function createObserveDocument({
   }
 }
 
-function applyMutationEvent(current: SanityDocument | undefined, event: MutationEvent) {
+function applyMutationEvent(current: SanityDocument | undefined, event: ListenerMutationEventLike) {
   if (event.previousRev !== current?._rev) {
     console.warn('Document out of sync, skipping mutation')
     return current
@@ -81,7 +91,8 @@ function applyMutationEvent(current: SanityDocument | undefined, event: Mutation
       'Mutation event is missing effects. Is the listener set up with effectFormat=mendoza?',
     )
   }
-  const next = applyMendozaPatch(current, event.effects.apply)
-  // next will be undefined in case of deletion
-  return next ? {...next, _rev: event.resultRev} : undefined
+  return applyMutationEventEffects(
+    current,
+    event as {effects: {apply: RawPatch}; previousRev: string; resultRev: string},
+  )
 }
