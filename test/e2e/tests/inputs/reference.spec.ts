@@ -155,7 +155,8 @@ withDefaultClient((context) => {
     const documentStatus = page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/test/content/input-debug;simpleReferences')
-    page.getByTestId('string-input').fill(originalTitle)
+    await expect(page.getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
     await expect(
