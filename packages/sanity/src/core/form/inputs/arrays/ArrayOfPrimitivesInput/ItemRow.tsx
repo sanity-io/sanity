@@ -113,16 +113,15 @@ export const ItemRow = forwardRef(function ItemRow(
             icon={InsertAboveIcon}
           />
         ),
-        !disableActions.includes('add') &&
-          !(disableActions.includes('addAfter') && disableActions.includes('addBefore')) && (
-            <InsertMenuGroup
-              pos="after"
-              types={insertableTypes}
-              onInsert={handleInsert}
-              text={t('inputs.array.action.add-after')}
-              icon={InsertBelowIcon}
-            />
-          ),
+        !disableActions.includes('add') && !disableActions.includes('addAfter') && (
+          <InsertMenuGroup
+            pos="after"
+            types={insertableTypes}
+            onInsert={handleInsert}
+            text={t('inputs.array.action.add-after')}
+            icon={InsertBelowIcon}
+          />
+        ),
       ].filter(Boolean),
     [disableActions, handleCopy, handleDuplicate, handleInsert, insertableTypes, onRemove, t],
   )
