@@ -8,12 +8,17 @@ import {
   scheduledRelease,
 } from '../../__fixtures__/release.fixture'
 import {usePerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
+import {useSelectedPerspectivePropsMockReturn} from '../../hooks/__tests__/__mocks__/useSelectedPerspectiveProps.mock'
 import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../hooks/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+vi.mock('../../hooks/useSelectedPerspectiveProps', () => ({
+  useSelectedPerspectiveProps: vi.fn(() => useSelectedPerspectivePropsMockReturn),
 }))
 
 vi.mock('../../store/useActiveReleases', () => ({
@@ -170,7 +175,7 @@ describe('ReleasesNav', () => {
         // since usePerspective is mocked, and the layering exclude toggle is
         // controlled by currentGlobalBundleId, we need to manually set it
         // to the release that will be selected in below tests
-        usePerspectiveMockReturn.selectedReleaseId = 'rScheduled2'
+        useSelectedPerspectivePropsMockReturn.selectedReleaseId = 'rScheduled2'
         // add an undecided release to expand testing
         useActiveReleasesMockReturn.data = [
           ...useActiveReleasesMockReturn.data,

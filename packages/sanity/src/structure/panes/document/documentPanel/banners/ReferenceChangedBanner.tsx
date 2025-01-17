@@ -10,7 +10,7 @@ import {
   type DocumentAvailability,
   getPublishedId,
   useDocumentPreviewStore,
-  usePerspective,
+  useSelectedPerspectiveProps,
   useTranslation,
 } from 'sanity'
 
@@ -33,7 +33,7 @@ interface ParentReferenceInfo {
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined

@@ -44,6 +44,7 @@ import {
   usePerspective,
   usePresenceStore,
   useSchema,
+  useSelectedPerspectiveProps,
   useSource,
   useTemplates,
   useTranslation,
@@ -113,22 +114,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
 
   const perspective = usePerspective()
+  const {
+    selectedPerspectiveName: ogSelectedPerspectiveName,
+    selectedReleaseId: ogSelectedPerspectiveId,
+  } = useSelectedPerspectiveProps()
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     if (forcedVersion) {
       return forcedVersion
     }
     return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
+      selectedPerspectiveName: ogSelectedPerspectiveName,
+      selectedReleaseId: ogSelectedPerspectiveId,
       isReleaseLocked: isReleaseDocument(perspective.selectedPerspective)
         ? isReleaseScheduledOrScheduling(perspective.selectedPerspective)
         : false,
     }
   }, [
     forcedVersion,
-    perspective.selectedPerspectiveName,
-    perspective.selectedReleaseId,
+    ogSelectedPerspectiveName,
+    ogSelectedPerspectiveId,
     perspective.selectedPerspective,
   ])
 

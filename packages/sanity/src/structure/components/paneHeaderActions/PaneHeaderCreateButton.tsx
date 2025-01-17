@@ -9,7 +9,7 @@ import {
   type TemplatePermissionsResult,
   useGetI18nText,
   useIsReleaseActive,
-  usePerspective,
+  useSelectedPerspectiveProps,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
@@ -58,7 +58,7 @@ interface PaneHeaderCreateButtonProps {
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const templates = useTemplates()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
   const isReleaseActive = useIsReleaseActive()
 
   const {t} = useTranslation(structureLocaleNamespace)

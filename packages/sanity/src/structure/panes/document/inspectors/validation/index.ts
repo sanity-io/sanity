@@ -7,7 +7,7 @@ import {
   type FormNodeValidation,
   isValidationError,
   isValidationWarning,
-  usePerspective,
+  useSelectedPerspectiveProps,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -18,7 +18,8 @@ import {ValidationInspector} from './ValidationInspector'
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
+
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,

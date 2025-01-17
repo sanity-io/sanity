@@ -11,6 +11,7 @@ import {useArchivedReleases} from '../store/useArchivedReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../util/util'
+import {useSelectedPerspectiveProps} from './useSelectedPerspectiveProps'
 import {getReleasesPerspectiveStack} from './utils'
 
 /**
@@ -22,13 +23,6 @@ export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
  * @internal
  */
 export interface PerspectiveValue {
-  /* The selected perspective name, it could be a release or Published */
-  selectedPerspectiveName: 'published' | ReleaseId | undefined
-  /**
-   * The releaseId as r<string>; it will be undefined if the selected perspective is `published` or `drafts`
-   */
-  selectedReleaseId: ReleaseId | undefined
-
   /* Return the current global release */
   selectedPerspective: SelectedPerspective
   /* Change the perspective in the studio based on the perspective name */
@@ -54,10 +48,7 @@ export function usePerspective(): PerspectiveValue {
   const {t} = useTranslation()
   const {data: releases, loading: releasesLoading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const selectedPerspectiveName = router.stickyParams.perspective as
-    | 'published'
-    | ReleaseId
-    | undefined
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
 
   const excludedPerspectives = useMemo(
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
@@ -170,9 +161,6 @@ export function usePerspective(): PerspectiveValue {
   return useMemo(
     () => ({
       selectedPerspective,
-      selectedPerspectiveName,
-      selectedReleaseId:
-        selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
       perspectiveStack,
 
       setPerspective,
@@ -180,11 +168,10 @@ export function usePerspective(): PerspectiveValue {
       isPerspectiveExcluded,
     }),
     [
-      selectedPerspectiveName,
-      setPerspective,
-      toggleExcludedPerspective,
       selectedPerspective,
       perspectiveStack,
+      setPerspective,
+      toggleExcludedPerspective,
       isPerspectiveExcluded,
     ],
   )

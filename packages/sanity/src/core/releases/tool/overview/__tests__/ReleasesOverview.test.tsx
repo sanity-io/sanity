@@ -25,6 +25,10 @@ import {
   mockUsePerspective,
   usePerspectiveMockReturn,
 } from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
+import {
+  mockUseSelectedPerspectiveProps,
+  useSelectedPerspectivePropsMockReturn,
+} from '../../../hooks/__tests__/__mocks__/useSelectedPerspectiveProps.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
   mockUseActiveReleases,
@@ -82,11 +86,21 @@ vi.mock('../../detail/useBundleDocuments', () => ({
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
+  useRouter: vi.fn().mockReturnValue({
+    state: {},
+    navigate: vi.fn(),
+    stickyParams: {
+      perspective: vi.fn(),
+    },
+  }),
 }))
 
 vi.mock('../../../hooks/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+vi.mock('../../../hooks/useSelectedPerspectiveProps', () => ({
+  useSelectedPerspectiveProps: vi.fn(() => useSelectedPerspectivePropsMockReturn),
 }))
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
@@ -308,6 +322,10 @@ describe('ReleasesOverview', () => {
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockReturn,
         selectedPerspective: activeASAPRelease,
+      })
+
+      mockUseSelectedPerspectiveProps.mockReturnValue({
+        ...useSelectedPerspectivePropsMockReturn,
         selectedReleaseId: 'rASAP',
       })
 

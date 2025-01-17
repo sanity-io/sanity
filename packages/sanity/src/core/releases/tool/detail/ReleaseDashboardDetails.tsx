@@ -11,7 +11,8 @@ import {
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../hooks'
+import {usePerspective} from '../../hooks/usePerspective'
+import {useSelectedPerspectiveProps} from '../../hooks/useSelectedPerspectiveProps'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -24,7 +25,8 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
-  const {selectedReleaseId, setPerspective} = usePerspective()
+  const {setPerspective} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
 
   const isSelected = releaseId === selectedReleaseId
 

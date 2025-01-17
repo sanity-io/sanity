@@ -8,6 +8,7 @@ import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {usePerspective} from '../hooks/usePerspective'
+import {useSelectedPerspectiveProps} from '../hooks/useSelectedPerspectiveProps'
 import {isReleaseDocument, type ReleaseDocument} from '../store/types'
 import {type LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -85,13 +86,9 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   }
 >((props, ref) => {
   const {release, rangePosition} = props
-  const {
-    setPerspective,
-    selectedPerspective,
-    selectedPerspectiveName,
-    toggleExcludedPerspective,
-    isPerspectiveExcluded,
-  } = usePerspective()
+  const {setPerspective, selectedPerspective, toggleExcludedPerspective, isPerspectiveExcluded} =
+    usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
 
   const releaseId = isReleaseDocument(release)
     ? getReleaseIdFromReleaseDocumentId(release._id)

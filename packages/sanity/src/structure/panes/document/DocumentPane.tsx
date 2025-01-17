@@ -8,7 +8,7 @@ import {
   SourceProvider,
   Translate,
   useDocumentType,
-  usePerspective,
+  useSelectedPerspectiveProps,
   useSource,
   useTemplatePermissions,
   useTemplates,
@@ -46,7 +46,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   const {resolveNewDocumentOptions} = useSource().document
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)

@@ -7,7 +7,7 @@ import {css, styled} from 'styled-components'
 import {MenuButton} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
-import {usePerspective} from '../hooks/usePerspective'
+import {useSelectedPerspectiveProps} from '../hooks/useSelectedPerspectiveProps'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {LATEST} from '../util/const'
@@ -46,7 +46,7 @@ const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): React.JSX.Element {
   const {loading, data: releases} = useActiveReleases()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 

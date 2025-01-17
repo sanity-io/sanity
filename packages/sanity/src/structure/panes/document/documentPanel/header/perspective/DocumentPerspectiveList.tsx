@@ -12,6 +12,7 @@ import {
   useArchivedReleases,
   useDateTimeFormat,
   usePerspective,
+  useSelectedPerspectiveProps,
   useTranslation,
   VersionChip,
   versionDocumentExists,
@@ -66,7 +67,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
 }
 
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
   const {t} = useTranslation()
   const {setPerspective} = usePerspective()
   const {params} = usePaneRouter()

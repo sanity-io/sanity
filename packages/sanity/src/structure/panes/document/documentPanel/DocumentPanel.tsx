@@ -5,6 +5,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   usePerspective,
+  useSelectedPerspectiveProps,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
@@ -141,7 +142,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspective} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
 
   const isScheduledRelease =
     typeof selectedPerspective === 'object' && 'state' in selectedPerspective

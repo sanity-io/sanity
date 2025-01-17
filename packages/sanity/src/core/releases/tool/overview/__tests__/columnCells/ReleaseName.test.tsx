@@ -8,6 +8,10 @@ import {
   mockUsePerspective,
   usePerspectiveMockReturn,
 } from '../../../../hooks/__tests__/__mocks__/usePerspective.mock'
+import {
+  mockUseSelectedPerspectiveProps,
+  useSelectedPerspectivePropsMockReturn,
+} from '../../../../hooks/__tests__/__mocks__/useSelectedPerspectiveProps.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type InjectedTableProps} from '../../../components/Table/types'
 import {ReleaseNameCell} from '../../columnCells/ReleaseName'
@@ -15,6 +19,10 @@ import {type TableRelease} from '../../ReleasesOverview'
 
 vi.mock('../../../../hooks/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+vi.mock('../../../../hooks/useSelectedPerspectiveProps', () => ({
+  useSelectedPerspectiveProps: vi.fn(() => useSelectedPerspectivePropsMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -74,7 +82,11 @@ describe('ReleaseNameCell', () => {
   })
 
   it('handles unpinning a release', async () => {
-    mockUsePerspective.mockReturnValue({...usePerspectiveMockReturn, selectedReleaseId: 'rASAP'})
+    mockUsePerspective.mockReturnValue({...usePerspectiveMockReturn})
+    mockUseSelectedPerspectiveProps.mockReturnValue({
+      ...useSelectedPerspectivePropsMockReturn,
+      selectedReleaseId: 'rASAP',
+    })
     await renderTest(activeASAPRelease)
 
     const pinButton = screen.getByTestId('pin-release-button')

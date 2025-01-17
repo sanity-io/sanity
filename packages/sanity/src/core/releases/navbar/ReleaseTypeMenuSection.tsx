@@ -3,7 +3,7 @@ import {Flex, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../hooks/usePerspective'
+import {useSelectedPerspectiveProps} from '../hooks/useSelectedPerspectiveProps'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {
@@ -32,7 +32,7 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
 }): React.JSX.Element | null {
   const {t} = useTranslation()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
 
   const getMenuItemRef = useCallback(
     (releaseId: ReleaseId) =>

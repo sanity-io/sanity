@@ -27,6 +27,7 @@ import {
   useDataset,
   usePerspective,
   useProjectId,
+  useSelectedPerspectiveProps,
   useUnique,
   useWorkspace,
 } from 'sanity'
@@ -106,7 +107,8 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
-  const {perspectiveStack, selectedPerspectiveName = 'previewDrafts'} = usePerspective()
+  const {perspectiveStack} = usePerspective()
+  const {selectedPerspectiveName = 'previewDrafts'} = useSelectedPerspectiveProps()
   const perspective = (
     selectedPerspectiveName.startsWith('r') ? perspectiveStack : selectedPerspectiveName
   ) as PresentationPerspective

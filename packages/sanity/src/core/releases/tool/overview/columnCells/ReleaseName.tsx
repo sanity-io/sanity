@@ -8,6 +8,7 @@ import {Button, Tooltip} from '../../../../../ui-components'
 import {Translate} from '../../../../i18n'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {usePerspective} from '../../../hooks/usePerspective'
+import {useSelectedPerspectiveProps} from '../../../hooks/useSelectedPerspectiveProps'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
@@ -19,7 +20,9 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {selectedReleaseId, setPerspective} = usePerspective()
+  const {setPerspective} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
+
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const isArchived = state === 'archived'

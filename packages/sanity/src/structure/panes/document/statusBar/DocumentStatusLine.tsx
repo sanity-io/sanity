@@ -11,6 +11,7 @@ import {
   useDocumentPreviewStore,
   usePerspective,
   useSchema,
+  useSelectedPerspectiveProps,
   useSyncState,
 } from 'sanity'
 
@@ -28,7 +29,9 @@ export function DocumentStatusLine() {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
   const releases = useActiveReleases()
-  const {selectedPerspective, selectedReleaseId, perspectiveStack} = usePerspective()
+  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedReleaseId} = useSelectedPerspectiveProps()
+
   const previewStateObservable = useMemo(
     () =>
       schemaType

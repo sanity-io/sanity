@@ -17,6 +17,7 @@ import {
   useActiveReleases,
   usePerspective,
   useReleasesIds,
+  useSelectedPerspectiveProps,
 } from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
@@ -48,7 +49,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const {data, loading} = useActiveReleases()
   const {releasesIds} = useReleasesIds(data)
-  const {perspectiveStack, selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
+  const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {

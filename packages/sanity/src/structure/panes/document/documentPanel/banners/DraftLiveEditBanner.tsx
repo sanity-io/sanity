@@ -8,7 +8,7 @@ import {
   type ObjectSchemaType,
   Translate,
   useDocumentOperation,
-  usePerspective,
+  useSelectedPerspectiveProps,
   useTranslation,
 } from 'sanity'
 
@@ -31,7 +31,7 @@ export function DraftLiveEditBanner({
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
 
   const telemetry = useTelemetry()
 

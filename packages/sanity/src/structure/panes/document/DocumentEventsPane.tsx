@@ -10,7 +10,7 @@ import {
   isDeleteDocumentVersionEvent,
   useArchivedReleases,
   useEventsStore,
-  usePerspective,
+  useSelectedPerspectiveProps,
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
@@ -23,8 +23,8 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
 
-  const {selectedPerspectiveName} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
 
   const {rev, since} = params
   const historyVersion = params.historyVersion as ReleaseId | undefined

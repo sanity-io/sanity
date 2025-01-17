@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {usePerspective} from 'sanity'
+import {useSelectedPerspectiveProps} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {usePaneRouter} from '../../components'
@@ -12,7 +12,7 @@ import {EMPTY_PARAMS} from './constants'
 export function useResetHistoryParams() {
   const {params = EMPTY_PARAMS, setParams} = usePaneRouter()
 
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName} = useSelectedPerspectiveProps()
   const isMounted = useRef(false)
 
   const updateHistoryParams = useEffectEvent((_perspective?: string) => {
