@@ -644,18 +644,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       patchRef.current = () => {
         throw new Error('Attempted to patch a read-only document')
       }
-    }
+    } else {
+      // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
+      // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
+      // Note: although we discourage patch-on-mount, we still support it.
+      patchRef.current = (event: PatchEvent) => {
+        // when creating a new draft
+        if (!editState.draft && !editState.published) {
+          telemetry.log(CreatedDraft)
+        }
 
-    // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
-    // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
-    // Note: although we discourage patch-on-mount, we still support it.
-    patchRef.current = (event: PatchEvent) => {
-      // when creating a new draft
-      if (!editState.draft && !editState.published) {
-        telemetry.log(CreatedDraft)
+        patch.execute(toMutationPatches(event.patches), initialValue.value)
       }
-
-      patch.execute(toMutationPatches(event.patches), initialValue.value)
     }
   }, [editState.draft, editState.published, initialValue.value, patch, telemetry, readOnly])
 
