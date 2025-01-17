@@ -47,8 +47,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.1)(typescript@5.7.3)
       '@sanity/mutate':
-        specifier: ^0.11.1
-        version: 0.11.1(debug@4.4.0)
+        specifier: ^0.12.1
+        version: 0.12.1(debug@4.4.0)
       '@sanity/pkg-utils':
         specifier: 6.13.4
         version: 6.13.4(@types/babel__core@7.20.5)(@types/node@22.10.2)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(typescript@5.7.3)
@@ -1005,8 +1005,8 @@ importers:
         specifier: ^6.25.0
         version: 6.25.0(debug@4.4.0)
       '@sanity/mutate':
-        specifier: ^0.11.1
-        version: 0.11.1(debug@4.4.0)
+        specifier: ^0.12.1
+        version: 0.12.1(debug@4.4.0)
       '@sanity/types':
         specifier: 3.70.0
         version: link:../types
@@ -4599,8 +4599,8 @@ packages:
       xstate:
         optional: true
 
-  '@sanity/mutate@0.11.1':
-    resolution: {integrity: sha512-72chdEK8s9h1BLE/n7tOkCOGnrfFV/cH1fpvH/PpcxhpUY7wg6vvL7/durpXLEchWCO1ToS5DcFrCfmy1iKOrw==}
+  '@sanity/mutate@0.12.1':
+    resolution: {integrity: sha512-SuOpMOEwcTcE5fFHpy44qVuGs8NeBAOF8wwN5DYz0Jl4MJZWGsUS81YUeFwQl0XqBZpfiLVzwutp1KYCZPuqUQ==}
     engines: {node: '>=18'}
 
   '@sanity/pkg-utils@6.13.4':
@@ -14978,10 +14978,11 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.11.1(debug@4.4.0)':
+  '@sanity/mutate@0.12.1(debug@4.4.0)':
     dependencies:
       '@sanity/client': 6.25.0(debug@4.4.0)
       '@sanity/diff-match-patch': 3.1.2
+      '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
       lodash: 4.17.21
       mendoza: 3.0.8
