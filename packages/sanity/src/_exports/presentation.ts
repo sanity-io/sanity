@@ -1,1 +1,1 @@
-export * from '@sanity/presentation'
+export * from '../presentation'
