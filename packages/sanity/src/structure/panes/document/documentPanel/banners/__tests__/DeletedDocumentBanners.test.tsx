@@ -1,5 +1,11 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {LATEST, type ReleaseDocument, usePerspective, useReleases, useReleasesIds} from 'sanity'
+import {
+  LATEST,
+  type ReleaseDocument,
+  useActiveReleases,
+  usePerspective,
+  useReleasesIds,
+} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -15,8 +21,8 @@ vi.mock('../../../../../../core/releases/hooks/usePerspective', () => ({
   usePerspective: vi.fn(),
 }))
 
-vi.mock('../../../../../../core/releases/store/useReleases', () => ({
-  useReleases: vi.fn(),
+vi.mock('../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
 }))
 
 vi.mock('../../../../../../core/releases/store/useReleasesIds', () => ({
@@ -33,7 +39,7 @@ vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () =
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
-const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 
 const renderTest = async () => {
@@ -47,7 +53,7 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({selectedPerspective: {_id: 'test'}} as ReturnType<
       typeof usePerspective
     >)
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       data: [],
       dispatch: vi.fn(),
       loading: false,
@@ -71,7 +77,7 @@ describe('DeletedDocumentBanners', () => {
     mockUsePerspective.mockReturnValue({selectedPerspective: mockReleaseDocument} as ReturnType<
       typeof usePerspective
     >)
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       data: [mockReleaseDocument],
       dispatch: vi.fn(),
       loading: false,
@@ -100,7 +106,7 @@ describe('DeletedDocumentBanners', () => {
       setPerspective: vi.fn(),
     } as unknown as ReturnType<typeof usePerspective>)
 
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       data: [mockBundleDocument],
       dispatch: vi.fn(),
       loading: false,

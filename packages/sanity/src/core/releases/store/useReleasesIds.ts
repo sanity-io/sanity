@@ -4,7 +4,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromRelease
 import {type ReleaseDocument} from './types'
 
 /**
- * Gets all the (filtered, non archived) releases ids
+ * Gets all the releases ids
  * @internal
  */
 export function useReleasesIds(releases: ReleaseDocument[]): {

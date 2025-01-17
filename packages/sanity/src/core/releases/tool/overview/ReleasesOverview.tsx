@@ -15,9 +15,9 @@ import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
+import {useActiveReleases} from '../../store/useActiveReleases'
 import {useAllReleases} from '../../store/useAllReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
-import {useReleases} from '../../store/useReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
@@ -47,7 +47,7 @@ export interface TableRelease extends ReleaseDocument {
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 
 export function ReleasesOverview() {
-  const {data: releases, loading: loadingReleases} = useReleases()
+  const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {allReleases} = useAllReleases()
   const {archivedReleases} = useArchivedReleases(allReleases)
 

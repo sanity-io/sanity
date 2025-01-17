@@ -6,7 +6,7 @@ import {catchError} from 'rxjs/operators'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
-import {type ReleaseDocument, useReleases} from '../store'
+import {type ReleaseDocument, useActiveReleases} from '../store'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 export interface DocumentPerspectiveProps {
@@ -31,7 +31,7 @@ const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const {data: releases} = useReleases()
+  const {data: releases} = useActiveReleases()
   const publishedId = getPublishedId(documentId)
 
   const documentPreviewStore = useDocumentPreviewStore()

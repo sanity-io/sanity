@@ -15,7 +15,7 @@ import {
   SanityDefaultPreview,
 } from '../../../../../../../preview'
 import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
-import {useReleases} from '../../../../../../../releases/store/useReleases'
+import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
 import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
@@ -55,7 +55,7 @@ export function SearchResultItemPreview({
   showBadge = true,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {data, loading} = useReleases()
+  const {data, loading} = useActiveReleases()
   const {releasesIds} = useReleasesIds(data)
   const {perspectiveStack} = usePerspective()
   const {state} = useSearchState()

@@ -18,10 +18,10 @@ interface ReleasesState {
 }
 
 /**
- * Hook to get the (non archived, non published) releases
+ * Hook to get the (non archived, non published) active releases
  * @internal
  */
-export function useReleases(): ReleasesState {
+export function useActiveReleases(): ReleasesState {
   const {state$, dispatch} = useReleasesStore()
   const state = useObservable(state$)!
   const releasesAsArray = useMemo(

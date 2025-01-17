@@ -6,11 +6,11 @@ import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease, publishedASAPRelease} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
-  mockUseReleases,
-  useReleasesMockReturn,
-} from '../../../store/__tests__/__mocks/useReleases.mock'
+  mockUseActiveReleases,
+  useActiveReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useActiveReleases.mock'
+import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {
@@ -31,8 +31,8 @@ vi.mock('sanity/router', async (importOriginal) => {
   }
 })
 
-vi.mock('../../../store/useReleases', () => ({
-  useReleases: vi.fn(() => useReleasesMockReturn),
+vi.mock('../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
 vi.mock('../../../index', () => ({
@@ -102,9 +102,9 @@ describe('ReleaseDetail', () => {
   describe('when loading releases', () => {
     beforeEach(async () => {
       vi.clearAllMocks()
-      mockUseReleases.mockClear()
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
+      mockUseActiveReleases.mockClear()
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
         loading: true,
       })
 
@@ -127,13 +127,13 @@ describe('ReleaseDetail', () => {
     beforeEach(async () => {
       vi.clearAllMocks()
 
-      mockUseReleases.mockClear()
+      mockUseActiveReleases.mockClear()
       mockUseBundleDocuments.mockClear()
 
       mockUseBundleDocuments.mockReturnValue({...useBundleDocumentsMockReturn, loading: true})
 
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
         data: [activeASAPRelease],
       })
 
@@ -277,10 +277,10 @@ describe('after releases have loaded', () => {
 
   describe('with published release', () => {
     beforeEach(async () => {
-      mockUseReleases.mockReset()
+      mockUseActiveReleases.mockReset()
 
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
         data: [publishedASAPRelease],
       })
 
@@ -314,10 +314,10 @@ describe('after releases have loaded', () => {
 
   describe('with missing release', () => {
     beforeEach(async () => {
-      mockUseReleases.mockReset()
+      mockUseActiveReleases.mockReset()
 
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
         data: [activeASAPRelease],
       })
 
