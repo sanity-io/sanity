@@ -1,11 +1,12 @@
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
+import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {createPreviewAvailabilityObserver} from './availability'
 import {createGlobalListener} from './createGlobalListener'
+import {createObserveDocument} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
@@ -56,6 +57,19 @@ export interface DocumentPreviewStore {
     id: string,
     paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
+
+  /**
+   * Observe a complete document with the given ID
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocument: (id: string) => Observable<SanityDocument | undefined>
+  /**
+   * Observe a list of complete documents with the given IDs
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocuments: (ids: string[]) => Observable<(SanityDocument | undefined)[]>
 }
 
 /** @internal */
@@ -79,6 +93,7 @@ export function createDocumentPreviewStore({
     map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
   )
 
+  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 
@@ -110,6 +125,9 @@ export function createDocumentPreviewStore({
     observeForPreview,
     observeDocumentTypeFromId,
 
+    unstable_observeDocument: observeDocument,
+    unstable_observeDocuments: (ids: string[]) =>
+      combineLatest(ids.map((id) => observeDocument(id))),
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
     unstable_observePathsDocumentPair: observePathsDocumentPair,
   }
