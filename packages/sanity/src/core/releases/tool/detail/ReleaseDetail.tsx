@@ -6,7 +6,6 @@ import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
-import {useAllReleases} from '../../store/useAllReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -42,8 +41,7 @@ export const ReleaseDetail = () => {
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
-  const {data: allReleases} = useAllReleases()
-  const {archivedReleases} = useArchivedReleases(allReleases)
+  const {data: archivedReleases} = useArchivedReleases()
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)

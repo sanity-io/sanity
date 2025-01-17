@@ -86,7 +86,9 @@ describe('DocumentPerspectiveList', () => {
       dispatch: vi.fn(),
     })
     mockUseArchivedReleases.mockReturnValue({
-      archivedReleases: [],
+      data: [],
+      loading: false,
+      error: undefined,
     })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [mockCurrent],

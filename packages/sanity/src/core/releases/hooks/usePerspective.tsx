@@ -53,7 +53,7 @@ export function usePerspective(): PerspectiveValue {
   const toast = useToast()
   const {t} = useTranslation()
   const {data: releases, loading: releasesLoading} = useActiveReleases()
-  const {archivedReleases} = useArchivedReleases(releases)
+  const {data: archivedReleases} = useArchivedReleases()
   const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
     | ReleaseId
