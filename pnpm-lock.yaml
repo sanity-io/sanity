@@ -1407,7 +1407,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(@sanity/client@6.25.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^2.0.0
+        specifier: ^2.1.0
         version: 2.1.0(@sanity/client@6.25.0(debug@4.4.0))
       '@sanity/schema':
         specifier: 3.70.0
