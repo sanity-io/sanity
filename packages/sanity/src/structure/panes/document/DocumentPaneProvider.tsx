@@ -22,7 +22,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
+  getVersionFromId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
@@ -37,7 +37,6 @@ import {
   useCopyPaste,
   useDocumentOperation,
   useDocumentValuePermissions,
-  useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -178,7 +177,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType, {
     version: selectedReleaseId,
   })
-  const {data: documentVersions} = useDocumentVersions({documentId})
 
   let value: SanityDocumentLike = initialValue.value
 
@@ -577,11 +575,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
-  const existsInBundle =
-    typeof selectedReleaseId !== 'undefined' &&
-    documentVersions.some(
-      (version) => getReleaseIdFromReleaseDocumentId(version._id) === selectedReleaseId,
-    )
+  const existsInBundle = Boolean(
+    selectedReleaseId &&
+      editState?.version &&
+      getVersionFromId(editState.version._id) === selectedReleaseId,
+  )
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -755,7 +753,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         documentId,
         documentIdRaw,
         documentType,
-        documentVersions,
         editState,
         existsInBundle,
         fieldActions,
@@ -820,7 +817,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
-      documentVersions,
       editState,
       existsInBundle,
       fieldActions,

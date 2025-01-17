@@ -16,7 +16,6 @@ import {
   type EditStateFor,
   type PatchEvent,
   type PermissionCheckResult,
-  type ReleaseDocument,
   type StateTree,
   type TimelineStore,
 } from 'sanity'
@@ -39,7 +38,6 @@ export interface DocumentPaneContextValue {
   documentId: string
   documentIdRaw: string
   documentType: string
-  documentVersions: ReleaseDocument[] | null
   editState: EditStateFor | null
   /**
    * Whether the document being edited exists in the checked-out release.

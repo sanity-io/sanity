@@ -5,16 +5,20 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isDraftId,
+  isPublishedId,
+  isPublishedPerspective,
   isReleaseScheduledOrScheduling,
+  isVersionId,
   type ReleaseDocument,
   Translate,
   useActiveReleases,
   useArchivedReleases,
   useDateTimeFormat,
+  useDocumentVersions,
   usePerspective,
   useTranslation,
   VersionChip,
-  versionDocumentExists,
 } from 'sanity'
 import {usePaneRouter} from 'sanity/structure'
 
@@ -76,16 +80,18 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   })
   const {data: releases, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-
-  const {documentVersions, editState, displayed, documentType} = useDocumentPane()
+  const {editState, displayed, documentType, documentId} = useDocumentPane()
+  const {data: documentVersions} = useDocumentVersions({documentId})
 
   const filteredReleases: FilterReleases = useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
-
-    /** releases that are active in the currently open document */
+    // Gets the releases ids from the document versions, it means, the releases that the document is part of
+    const versionsIds = documentVersions.map((id) => getVersionFromId(id))
     const activeReleases = releases.reduce(
       (acc: FilterReleases, release) => {
-        const versionDocExists = versionDocumentExists(documentVersions, release._id)
+        const versionDocExists = versionsIds.includes(
+          getReleaseIdFromReleaseDocumentId(release._id),
+        )
         if (versionDocExists) {
           acc.currentReleases.push(release)
         } else {
@@ -144,6 +150,44 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     [displayed?._id, params?.historyVersion],
   )
 
+  const isPublishSelected: boolean = useMemo(() => {
+    /** the publish is selected when:
+     * when the document displayed is a published document, but has no draft and the perspective that is
+     * selected is the null perspective - this means that it should be showing draft
+     * when the perspective is published
+     */
+    if (
+      isPublishedId(displayed?._id || '') &&
+      editState?.published &&
+      isPublishedPerspective(selectedPerspectiveName || '')
+    ) {
+      return true
+    }
+    return false
+  }, [displayed, editState, selectedPerspectiveName])
+
+  const isDraftSelected: boolean = useMemo(() => {
+    const displayedId = displayed?._id || ''
+    /** the draft is selected when:
+     * not viewing a historical version,
+     * when the document displayed is a draft,
+     * when the perspective is null,
+     * when the document is not published and the displayed version is draft,
+     * when there is no draft (new document),
+     */
+    if (params?.historyVersion) return false
+    if (isDraftId(displayedId)) return true
+    if (selectedPerspectiveName) return false
+    if (isVersionId(displayedId)) return false
+    if (
+      isPublishedId(displayedId) &&
+      editState?.published &&
+      isPublishedPerspective(selectedPerspectiveName || '')
+    )
+      return false
+    return true
+  }, [displayed?._id, editState, params?.historyVersion, selectedPerspectiveName])
+
   return (
     <>
       <VersionChip
@@ -162,19 +206,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         }
         disabled={isPublishedChipDisabled}
         onClick={handlePerspectiveChange('published')}
-        selected={
-          /** the publish is selected when:
-           * when the document displayed is a published document, but has no draft and the perspective that is
-           * selected is the null perspective - this means that it should be showing draft
-           * when the perspective is published
-           */
-          !!(
-            (editState?.published?._id === displayed?._id &&
-              !editState?.draft &&
-              selectedPerspectiveName) ||
-            selectedPerspectiveName === 'published'
-          )
-        }
+        selected={isPublishSelected}
         text={t('release.chip.published')}
         tone="positive"
         contextValues={{
@@ -212,24 +244,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             )}
           </Text>
         }
-        selected={
-          /** the draft is selected when:
-           * not viewing a historical version,
-           * when the document displayed is a draft,
-           * when the perspective is null,
-           * when the document is not published and the displayed version is draft,
-           * when there is no draft (new document),
-           */
-          !!(
-            !params?.historyVersion &&
-            (editState?.draft?._id === displayed?._id ||
-              !selectedPerspectiveName ||
-              (!editState?.published &&
-                editState?.draft &&
-                editState?.draft?._id === displayed?._id) ||
-              (!editState?.published && !editState?.draft))
-          )
-        }
+        selected={isDraftSelected}
         text={t('release.chip.draft')}
         tone="caution"
         onClick={handlePerspectiveChange('drafts')}
