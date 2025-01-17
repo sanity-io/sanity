@@ -22,30 +22,5 @@
 /packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
-# Internals used by @sanity/presentation
-# See https://github.com/sanity-io/visual-editing/blob/main/packages/presentation/src/internals.ts for exactly which exports
-/packages/sanity/src/_singletons/structure/components/paneRouter/PaneRouterContext.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/comments/context/intent/CommentsIntentProvider.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/comments/types.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/config/document/fieldActions/define.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/config/document/fieldActions/types.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/field/paths/helpers.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/hooks/useEditState.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/preview/components/Preview.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/store/_legacy/datastores.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/store/_legacy/document/document-store.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/studio/activeWorkspaceMatcher/useActiveWorkspace.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/studio/workspace.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/util/draftUtils.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/util/isRecord.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/core/util/useUnique.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/router/utils/jsonParamsEncoding.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/components/pane/PaneLayout.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/components/paneRouter/types.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/panes/document/DocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/panes/document/useDocumentPane.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/panes/documentList/index.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/panes/documentList/pane.ts @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/panes/documentList/PaneContainer.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/StructureToolProvider.tsx @sanity-io/ecosystem @sanity-io/studio
-/packages/sanity/src/structure/types.ts @sanity-io/ecosystem @sanity-io/studio
+# Presentation Tool, which interfaces with Visual Editing libraries
+/packages/sanity/src/presentation/ @sanity-io/ecosystem

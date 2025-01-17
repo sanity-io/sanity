@@ -4,6 +4,12 @@ import {defineConfig} from '@sanity/pkg-utils'
 export default defineConfig({
   ...baseConfig,
 
+  define: {
+    ...baseConfig.define,
+    PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS:
+      process.env.PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'true',
+  },
+
   // Build unexposed bundles for scripts that need to be spawned/used in workers
   bundles: [
     {
