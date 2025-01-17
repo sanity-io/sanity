@@ -42,7 +42,7 @@ export const ReleaseDetail = () => {
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
-  const {allReleases} = useAllReleases()
+  const {data: allReleases} = useAllReleases()
   const {archivedReleases} = useArchivedReleases(allReleases)
 
   const {loading: documentsLoading, results} = useBundleDocuments(releaseId)

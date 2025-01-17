@@ -221,7 +221,9 @@ describe('ReleasesOverview', () => {
         data: releases,
       })
       mockUseAllReleases.mockReturnValue({
-        allReleases: releases,
+        data: releases,
+        error: undefined,
+        loading: false,
       })
       mockUseArchivedReleases.mockReturnValue({
         archivedReleases: [archivedScheduledRelease, publishedASAPRelease],

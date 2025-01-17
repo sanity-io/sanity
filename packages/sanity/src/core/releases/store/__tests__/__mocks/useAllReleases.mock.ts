@@ -3,7 +3,9 @@ import {type Mock, type Mocked} from 'vitest'
 import {useAllReleases} from '../../useAllReleases'
 
 export const useAllReleasesMockReturn: Mocked<ReturnType<typeof useAllReleases>> = {
-  allReleases: [],
+  data: [],
+  error: undefined,
+  loading: false,
 }
 
 export const mockUseAllReleases = useAllReleases as Mock<typeof useAllReleases>

@@ -10,15 +10,19 @@ import {useReleasesStore} from './useReleasesStore'
  * @internal
  */
 export function useAllReleases(): {
-  allReleases: ReleaseDocument[]
+  data: ReleaseDocument[]
+  error?: Error
+  loading: boolean
 } {
   const {state$} = useReleasesStore()
-  const state = useObservable(state$)!
+  const {releases, error, state} = useObservable(state$)!
 
   return useMemo(
     () => ({
-      allReleases: sortReleases(Array.from(state.releases.values())),
+      data: sortReleases(Array.from(releases.values())),
+      error: error,
+      loading: ['loading', 'initialising'].includes(state),
     }),
-    [state.releases],
+    [error, releases, state],
   )
 }

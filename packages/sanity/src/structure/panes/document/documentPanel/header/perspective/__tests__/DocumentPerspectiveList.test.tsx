@@ -12,7 +12,7 @@ import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-  useAllReleases: vi.fn().mockReturnValue({data: []}),
+  useAllReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({archivedReleases: []}),
   SANITY_VERSION: '0.0.0',
 }))
