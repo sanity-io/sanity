@@ -18,6 +18,7 @@ import {type ReleaseDocument, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {ScheduledTimePicker} from '../components/ScheduledTimePicker'
 
 export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.Element {
   const {release} = props
@@ -179,24 +180,25 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
           />
         </TabList>
         {dateInputOpen && (
-          <>
-            <LazyTextInput
-              value={inputValue ? format(inputValue, 'PPp') : undefined}
-              onChange={handleInputChange}
-              readOnly
-            />
+          <ScheduledTimePicker initialValue={inputValue} />
+          // <>
+          //   <LazyTextInput
+          //     value={inputValue ? format(inputValue, 'PPp') : undefined}
+          //     onChange={handleInputChange}
+          //     readOnly
+          //   />
 
-            <DatePicker
-              ref={datePickerRef}
-              monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-              calendarLabels={calendarLabels}
-              selectTime
-              padding={0}
-              value={inputValue}
-              onChange={handleBundlePublishAtChange}
-              showTimezone
-            />
-          </>
+          //   <DatePicker
+          //     ref={datePickerRef}
+          //     monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+          //     calendarLabels={calendarLabels}
+          //     selectTime
+          //     padding={0}
+          //     value={inputValue}
+          //     onChange={handleBundlePublishAtChange}
+          //     showTimezone
+          //   />
+          // </>
         )}
       </Stack>
     )
