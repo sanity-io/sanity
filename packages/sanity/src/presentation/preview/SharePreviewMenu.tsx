@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow,no-negated-condition,no-nested-ternary */
-import {type SyncTag} from '@sanity/client'
+import {type ClientPerspective, type SyncTag} from '@sanity/client'
 import {CopyIcon, ShareIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
@@ -28,6 +28,7 @@ import {styled} from 'styled-components'
 import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
 import {API_VERSION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type PreviewProps} from './Preview'
 
 const QRCodeSVG = lazy(() => import('./QRCodeSVG'))
@@ -37,7 +38,7 @@ export interface SharePreviewMenuProps {
   canUseSharedPreviewAccess: boolean
   previewLocationRoute: string
   initialUrl: PreviewProps['initialUrl']
-  perspective: string
+  perspective: ClientPerspective
 }
 
 const QrCodeLogoSize = 24
@@ -78,7 +79,14 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
   const busy = enabling || disabling || loading
   const url = useMemo(
     () =>
-      secret ? setSecretSearchParams(initialUrl, secret, previewLocationRoute, perspective) : null,
+      secret
+        ? setSecretSearchParams(
+            initialUrl,
+            secret,
+            previewLocationRoute,
+            encodeStudioPerspective(perspective),
+          )
+        : null,
     [initialUrl, perspective, previewLocationRoute, secret],
   )
 

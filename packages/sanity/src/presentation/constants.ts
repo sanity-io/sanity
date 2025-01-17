@@ -10,7 +10,7 @@ export const EDIT_INTENT_MODE = 'presentation'
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
 
 // The API version to use when using `@sanity/client`
-export const API_VERSION = '2023-10-16'
+export const API_VERSION = 'vX'
 
 // Heartbeats shouldn't fire on intervals that are so short it causes performance issues
 export const MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL = 1000 // ms

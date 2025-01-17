@@ -38,6 +38,7 @@ import {
   type PresentationViewport,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
 import {usePresentationPreviewHeader} from './PreviewHeader'
 
@@ -59,7 +60,6 @@ export interface PreviewProps extends Pick<PresentationState, 'iframe' | 'visual
   overlaysConnection: ConnectionStatus
   perspective: PresentationPerspective
   previewUrl?: string
-  setPerspective: (perspective: 'previewDrafts' | 'published') => void
   setViewport: (mode: 'desktop' | 'mobile') => void
   targetOrigin: string
   toggleNavigator?: () => void
@@ -86,7 +86,7 @@ export const Preview = memo(
       const url = new URL(initialUrl)
       // Always set the perspective that's being used, even if preview mode isn't configured
       if (!url.searchParams.get(urlSearchParamPreviewPerspective)) {
-        url.searchParams.set(urlSearchParamPreviewPerspective, perspective)
+        url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
       }
 
       if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
