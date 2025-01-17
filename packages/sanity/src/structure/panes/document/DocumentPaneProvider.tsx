@@ -542,10 +542,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   ])
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    if (readOnly) {
-      throw new Error('Attempted to patch a read-only document')
-    }
-
     throw new Error(
       'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
@@ -554,7 +550,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
   useInsertionEffect(() => {
-    if (readOnly) return
+    if (readOnly) {
+      patchRef.current = () => {
+        throw new Error('Attempted to patch a read-only document')
+      }
+    }
 
     // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
     // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
