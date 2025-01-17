@@ -11,8 +11,8 @@ import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
+import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
-import {useReleases} from '../../store/useReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 
@@ -27,7 +27,7 @@ export function UnpublishVersionDialog(props: {
   const {unpublishVersion} = useVersionOperations()
   const [isUnpublishing, setIsUnpublishing] = useState(false)
 
-  const {data} = useReleases()
+  const {data} = useActiveReleases()
   const {archivedReleases} = useArchivedReleases(data)
 
   const releaseInDetail = data

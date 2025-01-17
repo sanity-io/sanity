@@ -6,11 +6,11 @@ import {useMemo, useState} from 'react'
 import {Button} from '../../../../ui-components'
 import {CalendarDay} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarDay'
 import {type CalendarProps} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
-import {useReleases} from '../../store/useReleases'
+import {useActiveReleases} from '../../store/useActiveReleases'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (props) => {
-  const {data: releases} = useReleases()
+  const {data: releases} = useActiveReleases()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
   const {date} = props

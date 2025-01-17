@@ -9,7 +9,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   ReleaseAvatar,
-  useReleases,
+  useActiveReleases,
 } from '../../releases'
 
 interface DocumentStatusProps {
@@ -30,7 +30,7 @@ interface DocumentStatusProps {
  * @internal
  */
 export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
-  const {data: releases} = useReleases()
+  const {data: releases} = useActiveReleases()
   const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
   const {t} = useTranslation()
 

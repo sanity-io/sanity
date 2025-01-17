@@ -3,9 +3,9 @@ import {
   defineConfig,
   type SanityClient,
   unstable_useValuePreview as useValuePreview,
+  useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
-  useReleases,
   useReleasesIds,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -31,8 +31,8 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
-vi.mock('../../../../../../../core/releases/store/useReleases', () => ({
-  useReleases: vi.fn(),
+vi.mock('../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
 }))
 
 vi.mock('../../../../../../../core/releases/store/useReleasesIds', () => ({
@@ -56,7 +56,7 @@ vi.mock('sanity', async (importOriginal) => {
 
 vi.mock('sanity/router')
 
-const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 
@@ -83,7 +83,7 @@ describe('DocumentHeaderTitle', () => {
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       data: [],
       loading: false,
       dispatch: vi.fn(),

@@ -13,7 +13,7 @@ import {
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
 import {usePerspective} from '../../../releases/hooks/usePerspective'
-import {useReleases} from '../../../releases/store/useReleases'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../releases/store/useReleasesIds'
 import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
@@ -41,7 +41,7 @@ export function useReferenceInput(options: Options) {
   const {path, schemaType, version} = options
   const schema = useSchema()
   const perspective = usePerspective()
-  const {data} = useReleases()
+  const {data} = useActiveReleases()
   const {releasesIds} = useReleasesIds(data)
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =

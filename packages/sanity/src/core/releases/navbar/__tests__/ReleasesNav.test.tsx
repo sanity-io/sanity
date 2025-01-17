@@ -8,7 +8,7 @@ import {
   scheduledRelease,
 } from '../../__fixtures__/release.fixture'
 import {usePerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
-import {useReleasesMockReturn} from '../../store/__tests__/__mocks/useReleases.mock'
+import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
@@ -16,8 +16,8 @@ vi.mock('../../hooks/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
-vi.mock('../../store/useReleases', () => ({
-  useReleases: vi.fn(() => useReleasesMockReturn),
+vi.mock('../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -100,7 +100,7 @@ describe('ReleasesNav', () => {
     }
 
     beforeEach(async () => {
-      useReleasesMockReturn.data = [
+      useActiveReleasesMockReturn.data = [
         activeScheduledRelease,
         {
           ...activeScheduledRelease,
@@ -172,8 +172,8 @@ describe('ReleasesNav', () => {
         // to the release that will be selected in below tests
         usePerspectiveMockReturn.selectedReleaseId = 'rScheduled2'
         // add an undecided release to expand testing
-        useReleasesMockReturn.data = [
-          ...useReleasesMockReturn.data,
+        useActiveReleasesMockReturn.data = [
+          ...useActiveReleasesMockReturn.data,
           {
             ...activeASAPRelease,
             _id: '_.releases.rUndecided',
