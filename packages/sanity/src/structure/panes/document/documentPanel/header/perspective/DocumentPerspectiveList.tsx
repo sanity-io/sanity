@@ -75,13 +75,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     timeStyle: 'short',
   })
   const {data: releases, loading} = useActiveReleases()
-  const {archivedReleases} = useArchivedReleases(releases)
+  const {data: archivedReleases} = useArchivedReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
   const filteredReleases: FilterReleases = useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
 
+    /** releases that are active in the currently open document */
     const activeReleases = releases.reduce(
       (acc: FilterReleases, release) => {
         const versionDocExists = versionDocumentExists(documentVersions, release._id)

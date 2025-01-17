@@ -28,7 +28,7 @@ export function UnpublishVersionDialog(props: {
   const [isUnpublishing, setIsUnpublishing] = useState(false)
 
   const {data} = useActiveReleases()
-  const {archivedReleases} = useArchivedReleases(data)
+  const {data: archivedReleases} = useArchivedReleases()
 
   const releaseInDetail = data
     .concat(archivedReleases)

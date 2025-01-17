@@ -94,7 +94,9 @@ describe('DocumentHeaderTitle', () => {
     })
 
     mockUseArchivedReleases.mockReturnValue({
-      archivedReleases: [],
+      data: [],
+      loading: false,
+      error: undefined,
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()

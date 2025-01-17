@@ -226,7 +226,8 @@ describe('ReleasesOverview', () => {
         loading: false,
       })
       mockUseArchivedReleases.mockReturnValue({
-        archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
+        ...useArchivedReleasesMockReturn,
+        data: [archivedScheduledRelease, publishedASAPRelease],
       })
       mockUseReleasesMetadata.mockReturnValue({
         ...useReleasesMetadataMockReturn,
