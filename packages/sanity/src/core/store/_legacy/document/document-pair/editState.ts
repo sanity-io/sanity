@@ -45,7 +45,7 @@ export interface EditStateFor {
   /**
    * When editing a version, the name of the release the document belongs to.
    */
-  release?: string
+  release: string | undefined
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -98,7 +98,7 @@ export const editState = memoize(
           liveEditSchemaType,
           ready: !fromCache,
           transactionSyncLock: fromCache ? null : transactionSyncLock,
-          bundleId: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+          release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
         }),
       ),
       startWith({
@@ -111,7 +111,7 @@ export const editState = memoize(
         liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
-        bundleId: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       }),
       publishReplay(1),
       refCount(),
