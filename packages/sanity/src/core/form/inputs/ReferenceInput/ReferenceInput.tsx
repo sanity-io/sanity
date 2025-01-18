@@ -8,6 +8,7 @@ import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Button} from '../../../../ui-components'
 import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../releases/hooks/usePerspective'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -58,6 +59,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     elementProps,
     focusPath,
   } = props
+  const {selectedReleaseId} = usePerspective()
 
   const {getReferenceInfo} = useReferenceInput({
     path,
@@ -84,10 +86,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       onChange(patches)
 
-      onEditReference({id: newDocumentId, type: option.type, template: option.template})
+      onEditReference({
+        id: newDocumentId,
+        type: option.type,
+        template: option.template,
+        version: selectedReleaseId,
+      })
       onPathFocus([])
     },
-    [onChange, onEditReference, onPathFocus, schemaType],
+    [onChange, onEditReference, onPathFocus, schemaType.name, schemaType.weak, selectedReleaseId],
   )
 
   const handleChange = useCallback(

@@ -65,7 +65,7 @@ export function getReferenceInfo(
       if (
         !pairAvailability.draft.available &&
         !pairAvailability.published.available &&
-        !pairAvailability.published.available
+        !pairAvailability.version?.available
       ) {
         // combine availability of draft + published
         const availability =

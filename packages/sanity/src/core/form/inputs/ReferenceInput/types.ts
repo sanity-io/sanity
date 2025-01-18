@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {
   type I18nTextRecord,
   type Path,
@@ -39,6 +40,7 @@ export interface EditReferenceEvent {
   id: string
   type: string
   template: ReferenceTemplate
+  version?: ReleaseId
 }
 
 export interface CreateReferenceOption {

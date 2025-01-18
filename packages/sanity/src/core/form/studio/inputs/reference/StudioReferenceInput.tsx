@@ -133,6 +133,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         id: event.id,
         type: event.type,
         template: event.template,
+        version: event.version,
       })
     },
     [onEditReference, path],
