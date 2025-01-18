@@ -160,7 +160,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
-    version: selectedReleaseId,
+    version: params.version,
   })
 
   const initialValue = useUnique(initialValueRaw)
@@ -587,15 +587,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
-    // in cases where the document has drafts but the schema is live edit,
-    // there is a risk of data loss, so we disable editing in this case
-    const isLiveEditAndDraftPerspective = liveEdit && !selectedPerspectiveName
-    const isLiveEditAndPublishedPerspective = liveEdit && selectedPerspectiveName === 'published'
-    const isSystemPerspectiveApplied =
-      isLiveEditAndPublishedPerspective || (selectedPerspectiveName ? existsInBundle : true)
+    // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
+    if (liveEdit && selectedPerspectiveName !== 'published') {
+      return true
+    }
+
+    // If a release is selected, validate that the document id matches the selected release id
+    if (selectedReleaseId && getVersionFromId(value._id) !== selectedReleaseId) {
+      return true
+    }
 
     return (
-      !isSystemPerspectiveApplied ||
       !ready ||
       revisionId !== null ||
       hasNoPermission ||
@@ -605,7 +607,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraftPerspective ||
       isCreateLinked ||
       isReleaseLocked
     )
@@ -618,7 +619,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.transactionSyncLock?.enabled,
     liveEdit,
     selectedPerspectiveName,
-    existsInBundle,
+    value._id,
+    selectedReleaseId,
     ready,
     revisionId,
     isDeleting,

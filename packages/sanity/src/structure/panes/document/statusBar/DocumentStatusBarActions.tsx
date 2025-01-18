@@ -89,7 +89,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions: allActions, connectionState, documentId, editState, displayed} = useDocumentPane()
+  const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])

@@ -1,11 +1,8 @@
-import {LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {
-  formatRelativeLocalePublishDate,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
-  isReleaseScheduledOrScheduling,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -32,10 +29,6 @@ export function AddToReleaseBanner({
 
   const {createVersion} = useVersionOperations()
 
-  const isScheduled =
-    isReleaseScheduledOrScheduling(currentRelease) &&
-    currentRelease.metadata.releaseType === 'scheduled'
-
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
       await createVersion(getReleaseIdFromReleaseDocumentId(currentRelease._id), documentId, value)
@@ -49,56 +42,41 @@ export function AddToReleaseBanner({
       content={
         <Flex align="center" justify="space-between" gap={1} flex={1}>
           <Text size={1}>
-            {isScheduled ? (
-              <Flex align="center" justify="center" gap={2}>
-                <LockIcon />{' '}
-                <Translate
-                  t={tCore}
-                  i18nKey="release.banner.scheduled-for-publishing-on"
-                  values={{
-                    date: formatRelativeLocalePublishDate(currentRelease),
-                  }}
-                />
-              </Flex>
-            ) : (
-              <Translate
-                i18nKey="banners.release.not-in-release"
-                t={t}
-                values={{
-                  title:
-                    currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
-                }}
-                components={{
-                  Label: ({children}) => {
-                    return (
-                      <span
-                        style={
-                          {
-                            color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
-                            backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
-                            borderRadius: 3,
-                            textDecoration: 'none',
-                            padding: '0px 2px',
-                            fontWeight: 500,
-                          } as CSSProperties
-                        }
-                      >
-                        {children}
-                      </span>
-                    )
-                  },
-                }}
-              />
-            )}
+            <Translate
+              i18nKey="banners.release.not-in-release"
+              t={t}
+              values={{
+                title:
+                  currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
+              components={{
+                Label: ({children}) => {
+                  return (
+                    <span
+                      style={
+                        {
+                          color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
+                          backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
+                          borderRadius: 3,
+                          textDecoration: 'none',
+                          padding: '0px 2px',
+                          fontWeight: 500,
+                        } as CSSProperties
+                      }
+                    >
+                      {children}
+                    </span>
+                  )
+                },
+              }}
+            />
           </Text>
 
-          {!isScheduled && (
-            <Button
-              text={t('banners.release.action.add-to-release')}
-              tone={tone}
-              onClick={handleAddToRelease}
-            />
-          )}
+          <Button
+            text={t('banners.release.action.add-to-release')}
+            tone={tone}
+            onClick={handleAddToRelease}
+          />
         </Flex>
       }
     />

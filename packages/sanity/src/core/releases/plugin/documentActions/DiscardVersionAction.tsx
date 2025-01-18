@@ -33,6 +33,7 @@ export const DiscardVersionAction = (
     setDialogOpen(true)
   }, [])
 
+  if (!version) return null
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 
   if (insufficientPermissions) {
@@ -45,17 +46,16 @@ export const DiscardVersionAction = (
   }
 
   return {
-    dialog: dialogOpen &&
-      version && {
-        type: 'custom',
-        component: (
-          <DiscardVersionDialog
-            documentId={version._id}
-            documentType={type}
-            onClose={() => setDialogOpen(false)}
-          />
-        ),
-      },
+    dialog: dialogOpen && {
+      type: 'custom',
+      component: (
+        <DiscardVersionDialog
+          documentId={version._id}
+          documentType={type}
+          onClose={() => setDialogOpen(false)}
+        />
+      ),
+    },
     /** @todo translate */
     label: 'Discard version',
     icon: TrashIcon,

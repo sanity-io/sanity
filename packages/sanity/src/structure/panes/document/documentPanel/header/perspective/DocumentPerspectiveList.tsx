@@ -17,6 +17,7 @@ import {
   useDateTimeFormat,
   useDocumentVersions,
   usePerspective,
+  useSchema,
   useTranslation,
   VersionChip,
 } from 'sanity'
@@ -27,6 +28,7 @@ import {useDocumentPane} from '../../../useDocumentPane'
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
   currentReleases: ReleaseDocument[]
+  inCreation: ReleaseDocument[]
 }
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
@@ -72,7 +74,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
-  const {setPerspective} = usePerspective()
+  const {setPerspective, selectedReleaseId} = usePerspective()
   const {params} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat({
     dateStyle: 'medium',
@@ -80,11 +82,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   })
   const {data: releases, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
+  const schema = useSchema()
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const {data: documentVersions} = useDocumentVersions({documentId})
+  const isCreatingDocument = displayed && !displayed._createdAt
 
   const filteredReleases: FilterReleases = useMemo(() => {
-    if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
+    if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: []}
     // Gets the releases ids from the document versions, it means, the releases that the document is part of
     const versionsIds = documentVersions.map((id) => getVersionFromId(id))
     const activeReleases = releases.reduce(
@@ -92,14 +96,22 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         const versionDocExists = versionsIds.includes(
           getReleaseIdFromReleaseDocumentId(release._id),
         )
-        if (versionDocExists) {
+        const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+        const isCreatingThisVersion =
+          isCreatingDocument &&
+          releaseId === getVersionFromId(displayed._id || '') &&
+          releaseId === selectedReleaseId
+
+        if (isCreatingThisVersion) {
+          acc.inCreation.push(release)
+        } else if (versionDocExists) {
           acc.currentReleases.push(release)
         } else {
           acc.notCurrentReleases.push(release)
         }
         return acc
       },
-      {notCurrentReleases: [], currentReleases: []},
+      {notCurrentReleases: [], currentReleases: [], inCreation: []},
     )
 
     // without historyVersion, version is not in an archived release
@@ -115,7 +127,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     }
 
     return activeReleases
-  }, [archivedReleases, documentVersions, params?.historyVersion, releases])
+  }, [
+    archivedReleases,
+    isCreatingDocument,
+    displayed?._id,
+    documentVersions,
+    params?.historyVersion,
+    releases,
+    selectedReleaseId,
+  ])
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
@@ -125,13 +145,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   )
 
   const isPublishedChipDisabled = useMemo(() => {
+    const schemaType = schema.get(documentType)
     // If it's a live edit document the only option to edit it is through
     // the published perspective, users should be able to select it.
-    if (editState?.liveEdit) return false
+    if (schemaType?.liveEdit) return false
 
     // If it's not live edit, we want to check for the existence of the published doc.
     return !editState?.published
-  }, [editState?.liveEdit, editState?.published])
+  }, [schema, documentType, editState?.published])
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
@@ -245,6 +266,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         selected={isDraftSelected}
+        disabled={!isDraftSelected && !editState?.draft}
         text={t('release.chip.draft')}
         tone="caution"
         onClick={handlePerspectiveChange('drafts')}
@@ -259,6 +281,29 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           disabled: !editState?.draft,
         }}
       />
+      {filteredReleases.inCreation.map((release) => (
+        <VersionChip
+          key={release._id}
+          tooltipContent={<TooltipContent release={release} />}
+          selected
+          // disabled
+          onClick={() => {}}
+          locked={false}
+          tone={getReleaseTone(release)}
+          text={release.metadata.title || t('release.placeholder-untitled-release')}
+          contextValues={{
+            disabled: true, // disable the chip context menu, this one is in creation
+            documentId: displayed?._id || '',
+            menuReleaseId: release._id,
+            releases: filteredReleases.notCurrentReleases,
+            releasesLoading: loading,
+            documentType,
+            fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
+            releaseState: release.state,
+            isVersion: true,
+          }}
+        />
+      ))}
 
       {displayed &&
         filteredReleases.currentReleases?.map((release) => (
