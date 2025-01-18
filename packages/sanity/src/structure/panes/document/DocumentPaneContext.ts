@@ -39,10 +39,6 @@ export interface DocumentPaneContextValue {
   documentIdRaw: string
   documentType: string
   editState: EditStateFor | null
-  /**
-   * Whether the document being edited exists in the checked-out release.
-   */
-  existsInBundle: boolean
   fieldActions: DocumentFieldAction[]
   focusPath: Path
   index: number

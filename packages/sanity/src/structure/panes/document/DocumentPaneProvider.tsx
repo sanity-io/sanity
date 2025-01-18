@@ -575,11 +575,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
-  const existsInBundle = Boolean(
-    selectedReleaseId &&
-      editState?.version &&
-      getVersionFromId(editState.version._id) === selectedReleaseId,
-  )
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -756,7 +751,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         documentIdRaw,
         documentType,
         editState,
-        existsInBundle,
         fieldActions,
         focusPath,
         inspector: currentInspector || null,
@@ -820,7 +814,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentIdRaw,
       documentType,
       editState,
-      existsInBundle,
       fieldActions,
       focusPath,
       currentInspector,
