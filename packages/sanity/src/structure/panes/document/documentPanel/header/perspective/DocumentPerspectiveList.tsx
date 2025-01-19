@@ -15,6 +15,7 @@ import {
   useActiveReleases,
   useArchivedReleases,
   useDateTimeFormat,
+  type UseDateTimeFormatOptions,
   useDocumentVersions,
   usePerspective,
   useSchema,
@@ -71,15 +72,16 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   return null
 }
 
+const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+}
+
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {selectedPerspectiveName} = usePerspective()
+  const {setPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
-  const {setPerspective, selectedReleaseId} = usePerspective()
   const {params} = usePaneRouter()
-  const dateTimeFormat = useDateTimeFormat({
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
+  const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {data: releases, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
   const schema = useSchema()
@@ -148,11 +150,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     const schemaType = schema.get(documentType)
     // If it's a live edit document the only option to edit it is through
     // the published perspective, users should be able to select it.
-    if (schemaType?.liveEdit) return false
+    if (schemaType?.liveEdit && !selectedReleaseId) return false
 
     // If it's not live edit, we want to check for the existence of the published doc.
     return !editState?.published
-  }, [schema, documentType, editState?.published])
+  }, [schema, documentType, editState?.published, selectedReleaseId])
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
@@ -179,13 +181,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
      */
     if (
       isPublishedId(displayed?._id || '') &&
-      editState?.published &&
       isPublishedPerspective(selectedPerspectiveName || '')
     ) {
       return true
     }
     return false
-  }, [displayed, editState, selectedPerspectiveName])
+  }, [displayed, selectedPerspectiveName])
 
   const isDraftSelected: boolean = useMemo(() => {
     const displayedId = displayed?._id || ''
@@ -209,6 +210,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return true
   }, [displayed?._id, editState, params?.historyVersion, selectedPerspectiveName])
 
+  const isDraftDisabled: boolean = useMemo(() => {
+    // Draft is disabled when we are creating a new document inside a release
+    // or when the document is live edit and there is no draft
+    if (editState?.draft) return false
+
+    if (isCreatingDocument && selectedReleaseId) return true
+    const isLiveEdit = schema.get(documentType)?.liveEdit
+    if (isLiveEdit) return true
+    return false
+  }, [documentType, editState?.draft, isCreatingDocument, schema, selectedReleaseId])
   return (
     <>
       <VersionChip
@@ -266,7 +277,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         selected={isDraftSelected}
-        disabled={!isDraftSelected && !editState?.draft}
+        disabled={isDraftDisabled}
         text={t('release.chip.draft')}
         tone="caution"
         onClick={handlePerspectiveChange('drafts')}
