@@ -87,7 +87,7 @@ export function getIdPair(
     draftId: getDraftId(id),
     ...(version
       ? {
-          versionId: isVersionId(id) ? id : getVersionId(id, version),
+          versionId: getVersionId(id, version),
         }
       : {}),
   }
