@@ -1,4 +1,4 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
@@ -11,10 +11,14 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react'
 
-import {Button} from '../../../button'
+import useDialogTimeZone from '../../../../core/scheduledPublishing/hooks/useDialogTimeZone'
+import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
+import {Button} from '../../../button/Button'
+import {TooltipDelayGroupProvider} from '../../../tooltipDelayGroupProvider'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
@@ -22,7 +26,12 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
+export const MONTH_PICKER_VARIANT = {
+  select: 'select',
+  carousel: 'carousel',
+} as const
+
+export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
@@ -30,6 +39,9 @@ type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
+  monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
+  padding?: number
+  showTimezone?: boolean
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -64,8 +76,14 @@ export const Calendar = forwardRef(function Calendar(
     timeStep = 1,
     onSelect,
     labels,
+    monthPickerVariant = 'select',
+    padding = 2,
+    showTimezone = false,
     ...restProps
   } = props
+
+  const {timeZone} = useTimeZone()
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -187,12 +205,87 @@ export const Calendar = forwardRef(function Calendar(
     [handleDateChange],
   )
 
+  const monthPicker = useMemo(() => {
+    if (monthPickerVariant === 'carousel') {
+      return (
+        <Flex
+          align="center"
+          paddingLeft={4}
+          style={{
+            borderBottom: '1px solid var(--card-border-color)',
+            minHeight: `55px`,
+            position: 'sticky',
+            top: 0,
+          }}
+        >
+          <Flex align="center" flex={1} justify="space-between">
+            <Flex align="center" flex={1}>
+              <Text weight="medium" size={1}>
+                {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
+                {(focusedDate || new Date())?.getFullYear()}
+              </Text>
+            </Flex>
+
+            <Flex paddingRight={3} gap={2}>
+              <TooltipDelayGroupProvider>
+                <Button
+                  icon={ChevronLeftIcon}
+                  mode="bleed"
+                  onClick={() => moveFocusedDate(-1)}
+                  tooltipProps={{content: 'Previous month'}}
+                />
+                <Button
+                  icon={ChevronRightIcon}
+                  mode="bleed"
+                  onClick={() => moveFocusedDate(1)}
+                  tooltipProps={{content: 'Next month'}}
+                />
+              </TooltipDelayGroupProvider>
+            </Flex>
+          </Flex>
+        </Flex>
+      )
+    }
+
+    return (
+      <Flex>
+        <Box flex={1}>
+          <CalendarMonthSelect
+            onChange={handleFocusedMonthChange}
+            monthNames={labels.monthNames}
+            value={focusedDate?.getMonth()}
+          />
+        </Box>
+        <Box marginLeft={2}>
+          <CalendarYearSelect
+            moveFocusedDate={moveFocusedDate}
+            labels={{
+              goToNextYear: labels.goToNextYear,
+              goToPreviousYear: labels.goToPreviousYear,
+            }}
+            onChange={setFocusedDateYear}
+            value={focusedDate.getFullYear()}
+          />
+        </Box>
+      </Flex>
+    )
+  }, [
+    focusedDate,
+    handleFocusedMonthChange,
+    labels.goToNextYear,
+    labels.goToPreviousYear,
+    labels.monthNames,
+    monthPickerVariant,
+    moveFocusedDate,
+    setFocusedDateYear,
+  ])
+
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 
   return (
     <Box data-ui="Calendar" {...restProps} ref={ref}>
       {/* Select date */}
-      <Box padding={2}>
+      <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
           <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
@@ -203,32 +296,13 @@ export const Calendar = forwardRef(function Calendar(
         )}
 
         {/* Select month and year */}
-        <Flex>
-          <Box flex={1}>
-            <CalendarMonthSelect
-              onChange={handleFocusedMonthChange}
-              monthNames={labels.monthNames}
-              value={focusedDate?.getMonth()}
-            />
-          </Box>
-          <Box marginLeft={2}>
-            <CalendarYearSelect
-              moveFocusedDate={moveFocusedDate}
-              labels={{
-                goToNextYear: labels.goToNextYear,
-                goToPreviousYear: labels.goToPreviousYear,
-              }}
-              onChange={setFocusedDateYear}
-              value={focusedDate.getFullYear()}
-            />
-          </Box>
-        </Flex>
+        {monthPicker}
 
         {/* Selected month (grid of days) */}
         <Box
           data-calendar-grid
           onKeyDown={handleKeyDown}
-          marginTop={2}
+          marginY={2}
           overflow="hidden"
           tabIndex={0}
         >
@@ -243,74 +317,90 @@ export const Calendar = forwardRef(function Calendar(
         </Box>
       </Box>
 
-      {/* Select time */}
-      {selectTime && (
-        <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
-          <Flex align="center">
-            <Flex align="center" flex={1}>
-              <Box>
-                <Select
-                  aria-label={labels.selectHour}
-                  fontSize={1}
-                  padding={2}
-                  radius={2}
-                  value={selectedDate?.getHours()}
-                  onChange={handleHoursChange}
-                >
-                  {HOURS_24.map((h) => (
-                    <option key={h} value={h}>
-                      {`${h}`.padStart(2, '0')}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
+      <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+        <Flex align="center" justify="space-between">
+          {/* Select time */}
+          {selectTime && (
+            <>
+              <Flex align="center">
+                <Flex align="center" flex={1}>
+                  <Box>
+                    <Select
+                      aria-label={labels.selectHour}
+                      fontSize={1}
+                      padding={2}
+                      radius={2}
+                      value={selectedDate?.getHours()}
+                      onChange={handleHoursChange}
+                    >
+                      {HOURS_24.map((h) => (
+                        <option key={h} value={h}>
+                          {`${h}`.padStart(2, '0')}
+                        </option>
+                      ))}
+                    </Select>
+                  </Box>
 
-              <Box paddingX={1}>
-                <Text size={1}>:</Text>
-              </Box>
+                  <Box paddingX={1}>
+                    <Text size={1}>:</Text>
+                  </Box>
 
-              <Box>
-                <Select
-                  aria-label={labels.selectMinute}
-                  fontSize={1}
-                  padding={2}
-                  radius={2}
-                  value={selectedDate?.getMinutes()}
-                  onChange={handleMinutesChange}
-                >
-                  {range(0, 60, timeStep).map((m) => (
-                    <option key={m} value={m}>
-                      {`${m}`.padStart(2, '0')}
-                    </option>
-                  ))}
-                </Select>
-              </Box>
-            </Flex>
+                  <Box>
+                    <Select
+                      aria-label={labels.selectMinute}
+                      fontSize={1}
+                      padding={2}
+                      radius={2}
+                      value={selectedDate?.getMinutes()}
+                      onChange={handleMinutesChange}
+                    >
+                      {range(0, 60, timeStep).map((m) => (
+                        <option key={m} value={m}>
+                          {`${m}`.padStart(2, '0')}
+                        </option>
+                      ))}
+                    </Select>
+                  </Box>
+                </Flex>
 
-            <Box marginLeft={2}>
-              <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
-            </Box>
-          </Flex>
+                <Box marginLeft={2}>
+                  <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
+                </Box>
+              </Flex>
 
-          {features.timePresets && (
-            <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-              {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
-                const text = formatTime(hours, minutes)
-                return (
-                  <CalendarTimePresetButton
-                    key={`${hours}-${minutes}`}
-                    hours={hours}
-                    minutes={minutes}
-                    onTimeChange={handleTimeChange}
-                    text={text}
-                    aria-label={labels.setToTimePreset(text, selectedDate)}
-                  />
-                )
-              })}
-            </Flex>
+              {showTimezone && (
+                <Button
+                  icon={EarthGlobeIcon}
+                  mode="bleed"
+                  size="default"
+                  text={`${timeZone.abbreviation}`}
+                  onClick={dialogTimeZoneShow}
+                />
+              )}
+
+              {features.timePresets && (
+                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                  {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
+                    const text = formatTime(hours, minutes)
+                    return (
+                      <CalendarTimePresetButton
+                        key={`${hours}-${minutes}`}
+                        hours={hours}
+                        minutes={minutes}
+                        onTimeChange={handleTimeChange}
+                        text={text}
+                        aria-label={labels.setToTimePreset(text, selectedDate)}
+                      />
+                    )
+                  })}
+                </Flex>
+              )}
+            </>
           )}
-        </Box>
-      )}
+
+          {showTimezone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+        </Flex>
+      </Box>
     </Box>
   )
 })
