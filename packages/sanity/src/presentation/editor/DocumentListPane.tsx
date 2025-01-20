@@ -50,7 +50,7 @@ export function DocumentListPane(props: {
     () =>
       refs
         .filter((r) => getPublishedId(r._id) !== mainDocumentState?.document?._id)
-        .map((r) => r._id),
+        .map((r) => getPublishedId(r._id)),
     [mainDocumentState, refs],
   )
 
