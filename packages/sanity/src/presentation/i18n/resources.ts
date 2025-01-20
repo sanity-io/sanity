@@ -51,14 +51,8 @@ export default {
   'preview-frame.overlay.toggle-button.tooltip_disable': 'Disable edit overlay',
   /** The text shown on the overlay toggle tooltip when overlays are disabled */
   'preview-frame.overlay.toggle-button.tooltip_enable': 'Enable edit overlay',
-  /** The text description for the previewDrafts perspective switcher menu item */
-  'preview-frame.perspective.previewDrafts.text': 'View this page with latest draft content',
-  /** The title for the previewDrafts perspective switcher menu item */
-  'preview-frame.perspective.previewDrafts.title': 'Drafts',
   /** The text description for the published perspective switcher menu item */
   'preview-frame.perspective.published.text': 'View this page with published content',
-  /** The title for the published perspective switcher menu item */
-  'preview-frame.perspective.published.title': 'Published',
   /** The `aria-label` for the refresh button */
   'preview-frame.refresh-button.aria-label': 'Refresh preview',
   /** The tooltip text for the refresh button */
