@@ -20,7 +20,7 @@
     "@sanity/icons": "^3.5.7",
     "@sanity/ui": "^2.11.2",
     "@sanity/vision": "3.70.0",
-    "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
+    "babel-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",

@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
+    "babel-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",
     "react": "^18.2.0",
-    "react-compiler-runtime": "19.0.0-beta-55955c9-20241229",
+    "react-compiler-runtime": "19.0.0-beta-decd7b8-20250118",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
     "sanity": "workspace:*",
