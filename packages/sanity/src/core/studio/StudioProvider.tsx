@@ -11,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
@@ -19,7 +20,6 @@ import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
-import {PerspectiveProvider} from './PerspectiveProvider'
 import {
   AuthenticateScreen,
   ConfigErrorsScreen,
@@ -73,7 +73,7 @@ export function StudioProvider({
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
                 <StudioAnnouncementsProvider>
-                  <PerspectiveProvider>{children}</PerspectiveProvider>
+                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
                 </StudioAnnouncementsProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>

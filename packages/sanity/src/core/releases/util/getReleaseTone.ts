@@ -1,6 +1,6 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type SelectedPerspective} from '../hooks/usePerspective'
+import {type SelectedPerspective} from '../../perspective/types'
 import {isReleaseDocument} from '../store/types'
 import {isDraftPerspective, isPublishedPerspective} from './util'
 

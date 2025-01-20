@@ -1,8 +1,9 @@
 import {type Mock, type Mocked, vi} from 'vitest'
 
-import {type PerspectiveValue, usePerspective} from '../../usePerspective'
+import {type PerspectiveContextValue} from '../../../../perspective/types'
+import {usePerspective} from '../../../../perspective/usePerspective'
 
-export const usePerspectiveMockReturn: Mocked<PerspectiveValue> = {
+export const usePerspectiveMockReturn: Mocked<PerspectiveContextValue> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
   setPerspective: vi.fn(),

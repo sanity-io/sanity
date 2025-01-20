@@ -17,25 +17,16 @@ vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
 }))
 
-vi.mock('../../../../../../core/releases/hooks/usePerspective', () => ({
-  usePerspective: vi.fn(),
-}))
-
-vi.mock('../../../../../../core/releases/store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(),
-}))
-
-vi.mock('../../../../../../core/releases/store/useReleasesIds', () => ({
-  useReleasesIds: vi.fn(),
-}))
-
-vi.mock('../../../../../../core/releases/store/useArchivedReleases', () => ({
-  useArchivedReleases: vi.fn(),
-}))
-
-vi.mock('../../../../../../core/store/_legacy/history/useTimelineSelector', () => ({
-  useTimelineSelector: vi.fn(),
-}))
+vi.mock('sanity', async () => {
+  const sanity = await vi.importActual('sanity')
+  return {
+    ...sanity,
+    useReleasesIds: vi.fn(),
+    useActiveReleases: vi.fn(),
+    usePerspective: vi.fn(),
+    useArchivedReleases: vi.fn(),
+  }
+})
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>

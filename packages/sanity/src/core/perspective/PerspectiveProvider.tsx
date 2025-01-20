@@ -1,69 +1,28 @@
-import {type ClientPerspective, type ReleaseId} from '@sanity/client'
-import {useToast} from '@sanity/ui'
+import {type ReleaseId} from '@sanity/client'
 import {useCallback, useMemo} from 'react'
+import {PerspectiveContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {type ReleaseDocument} from '../store/types'
-import {useActiveReleases} from '../store/useActiveReleases'
-import {useArchivedReleases} from '../store/useArchivedReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {getReleasesPerspectiveStack} from './utils'
+import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type PerspectiveContextValue, type SelectedPerspective} from './types'
 
 /**
  * @internal
  */
-export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
+export function PerspectiveProvider({
+  children,
+  selectedPerspectiveName,
+  excludedPerspectives,
+}: {
+  children: React.ReactNode
 
-/**
- * @internal
- */
-export type PerspectiveStack = ExtractArray<ClientPerspective>
-
-/**
- * @internal
- */
-export interface PerspectiveValue {
-  /* The selected perspective name, it could be a release or Published */
   selectedPerspectiveName: 'published' | ReleaseId | undefined
-  /**
-   * The releaseId as r<string>; it will be undefined if the selected perspective is `published` or `drafts`
-   */
-  selectedReleaseId: ReleaseId | undefined
-
-  /* Return the current global release */
-  selectedPerspective: SelectedPerspective
-  /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (perspectiveId: 'published' | 'drafts' | ReleaseId | undefined) => void
-  /* Add/remove excluded perspectives */
-  toggleExcludedPerspective: (perspectiveId: string) => void
-  /* Check if a perspective is excluded */
-  isPerspectiveExcluded: (perspectiveId: string) => boolean
-  /**
-   * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
-   */
-  perspectiveStack: PerspectiveStack
-}
-
-const EMPTY_ARRAY: string[] = []
-
-/**
- * @internal
- */
-export function usePerspective(): PerspectiveValue {
+  excludedPerspectives: string[]
+}) {
   const router = useRouter()
-  const toast = useToast()
-  const {t} = useTranslation()
-  const {data: releases, loading: releasesLoading} = useActiveReleases()
-  const {data: archivedReleases} = useArchivedReleases()
-  const selectedPerspectiveName = router.stickyParams.perspective as
-    | 'published'
-    | ReleaseId
-    | undefined
-
-  const excludedPerspectives = useMemo(
-    () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
-    [router.stickyParams.excludedPerspectives],
-  )
+  const {data: releases} = useActiveReleases()
 
   const setPerspective = useCallback(
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
@@ -122,7 +81,7 @@ export function usePerspective(): PerspectiveValue {
     [excludedPerspectives],
   )
 
-  return useMemo(
+  const value: PerspectiveContextValue = useMemo(
     () => ({
       selectedPerspective,
       selectedPerspectiveName,
@@ -143,6 +102,5 @@ export function usePerspective(): PerspectiveValue {
       isPerspectiveExcluded,
     ],
   )
+  return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }
-
-type ExtractArray<Union> = Union extends unknown[] ? Union : never

@@ -13,7 +13,7 @@ import {type InjectedTableProps} from '../../../components/Table/types'
 import {ReleaseNameCell} from '../../columnCells/ReleaseName'
 import {type TableRelease} from '../../ReleasesOverview'
 
-vi.mock('../../../../hooks/usePerspective', () => ({
+vi.mock('../../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 

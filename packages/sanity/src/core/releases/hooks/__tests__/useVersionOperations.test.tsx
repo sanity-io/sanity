@@ -10,7 +10,7 @@ vi.mock('../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
-vi.mock('../usePerspective', () => ({
+vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 

@@ -33,7 +33,7 @@ import {
   useMemo,
 } from 'react'
 import isEqual from 'react-fast-compare'
-import {type PerspectiveValue, type TFunction, Translate} from 'sanity'
+import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -1116,7 +1116,7 @@ function getActivePerspective({
   pinnedPerspective,
 }: {
   visionPerspective: ClientPerspective | SupportedPerspective
-  pinnedPerspective: PerspectiveValue
+  pinnedPerspective: PerspectiveContextValue
 }): ClientPerspective | undefined {
   if (visionPerspective !== 'pinnedRelease') {
     return visionPerspective
@@ -1134,7 +1134,7 @@ function getActivePerspective({
 }
 
 const PinnedReleasePerspectiveOption: ComponentType<{
-  pinnedPerspective: PerspectiveValue
+  pinnedPerspective: PerspectiveContextValue
   t: TFunction
 }> = ({pinnedPerspective, t}) => {
   const name =
@@ -1158,11 +1158,14 @@ const PinnedReleasePerspectiveOption: ComponentType<{
   )
 }
 
-function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveValue): boolean {
+function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
   return typeof selectedPerspectiveName !== 'undefined'
 }
 
-function hasPinnedPerspectiveChanged(previous: PerspectiveValue, next: PerspectiveValue): boolean {
+function hasPinnedPerspectiveChanged(
+  previous: PerspectiveContextValue,
+  next: PerspectiveContextValue,
+): boolean {
   const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
 
   return (

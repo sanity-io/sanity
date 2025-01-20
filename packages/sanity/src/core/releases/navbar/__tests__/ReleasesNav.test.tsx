@@ -12,7 +12,7 @@ import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActi
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
-vi.mock('../../hooks/usePerspective', () => ({
+vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 

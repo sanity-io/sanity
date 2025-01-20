@@ -1,6 +1,6 @@
+import {usePerspective} from '../../perspective/usePerspective'
 import {isReleaseDocument} from '../store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../util/util'
-import {usePerspective} from './usePerspective'
 
 /** @internal */
 export const useIsReleaseActive = () => {

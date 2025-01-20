@@ -11,7 +11,7 @@ import {
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../hooks'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'

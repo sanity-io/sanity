@@ -1,18 +1,24 @@
+import {type ReleaseId} from '@sanity/client'
 import {Text, useToast} from '@sanity/ui'
-import {type ReactNode, useEffect} from 'react'
+import {type ReactNode, useEffect, useMemo} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
-import {usePerspective} from '../releases/hooks/usePerspective'
-import {useReleases} from '../releases/store/useReleases'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {LATEST} from '../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../releases/util/util'
+import {EMPTY_ARRAY} from '../util/empty'
+import {PerspectiveProvider} from './PerspectiveProvider'
+import {usePerspective} from './usePerspective'
 
-export function PerspectiveProvider({children}: {children: ReactNode}) {
+const ResetPerspectiveHandler = () => {
   const toast = useToast()
   const {t} = useTranslation()
-  const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
+  const {data: releases, loading: releasesLoading} = useActiveReleases()
+  const {data: archivedReleases} = useArchivedReleases()
   const {selectedPerspectiveName, setPerspective} = usePerspective()
 
   useEffect(() => {
@@ -60,6 +66,28 @@ export function PerspectiveProvider({children}: {children: ReactNode}) {
     toast,
     t,
   ])
+  return null
+}
 
-  return <>{children}</>
+export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
+  const router = useRouter()
+
+  const selectedPerspectiveName = router.stickyParams.perspective as
+    | 'published'
+    | ReleaseId
+    | undefined
+
+  const excludedPerspectives = useMemo(
+    () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
+    [router.stickyParams.excludedPerspectives],
+  )
+  return (
+    <PerspectiveProvider
+      selectedPerspectiveName={selectedPerspectiveName}
+      excludedPerspectives={excludedPerspectives}
+    >
+      {children}
+      <ResetPerspectiveHandler />
+    </PerspectiveProvider>
+  )
 }
