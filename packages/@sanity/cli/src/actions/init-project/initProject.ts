@@ -545,7 +545,6 @@ export default async function initSanity(
   // user wants to write environment variables to file
   if (env) {
     await createOrAppendEnvVars(envFilename, detectedFramework)
-    return
   }
 
   // Prompt for template to use
