@@ -122,6 +122,10 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
       comlink.onStatus(onLoadersConnection)
 
       comlink.on('loader/documents', (data) => {
+        // data is not presenting the correct perspective
+        // eg moving from previewDrafts -> published
+        // data.perspective will be previewDrafts
+        // despite props.perspective being published
         if (data.projectId === projectId && data.dataset === dataset) {
           onDocumentsOnPage(
             'loaders',
