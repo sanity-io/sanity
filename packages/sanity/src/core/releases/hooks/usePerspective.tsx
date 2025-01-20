@@ -1,15 +1,10 @@
 import {type ReleaseId} from '@sanity/client'
-import {Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {Translate} from '../../i18n/Translate'
 import {type ReleaseDocument} from '../store/types'
 import {useReleases} from '../store/useReleases'
-import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {isPublishedPerspective} from '../util/util'
 import {getReleasesPerspectiveStack} from './utils'
 
 /**
@@ -49,10 +44,8 @@ const EMPTY_ARRAY: string[] = []
  */
 export function usePerspective(): PerspectiveValue {
   const router = useRouter()
-  const toast = useToast()
-  const {t} = useTranslation()
 
-  const {data: releases, archivedReleases, loading: releasesLoading} = useReleases()
+  const {data: releases} = useReleases()
   const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
     | ReleaseId
@@ -82,52 +75,6 @@ export function usePerspective(): PerspectiveValue {
     },
     [router],
   )
-
-  useEffect(() => {
-    // clear the perspective param when it is not an active release
-    if (
-      releasesLoading ||
-      !selectedPerspectiveName ||
-      isPublishedPerspective(selectedPerspectiveName)
-    )
-      return
-    const isCurrentPerspectiveValid = releases.some(
-      (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
-    )
-    if (!isCurrentPerspectiveValid) {
-      setPerspective(LATEST)
-      const archived = archivedReleases.find(
-        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedPerspectiveName,
-      )
-
-      toast.push({
-        id: `bundle-deleted-toast-${selectedPerspectiveName}`,
-        status: 'warning',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey={
-                archived
-                  ? 'release.toast.archived-release.title'
-                  : 'release.toast.not-found-release.title'
-              }
-              values={{title: archived?.metadata?.title || selectedPerspectiveName}}
-            />
-          </Text>
-        ),
-        duration: 10000,
-      })
-    }
-  }, [
-    archivedReleases,
-    selectedPerspectiveName,
-    releases,
-    releasesLoading,
-    setPerspective,
-    toast,
-    t,
-  ])
 
   const selectedPerspective: SelectedPerspective = useMemo(() => {
     if (!selectedPerspectiveName) return 'drafts'
