@@ -1,5 +1,5 @@
 import {BookIcon, MoonIcon, UserIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const crossDatasetSubtype = defineType({
   type: 'crossDatasetReference',
@@ -185,19 +185,51 @@ export default defineType({
         },
       ],
     },
-    {
+    defineField({
       title: 'Cross Dataset reference in PTE',
       name: 'portableText',
       type: 'array',
       of: [
-        {type: 'block'},
+        defineArrayMember({
+          type: 'block',
+          of: [
+            // This array member was added in order to replicate the issue reported in CRX-981,
+            // in which inline Cross Dataset References added to Portable Text blocks cause a
+            // runtime error. It intentionally **does not use** the `crossDatasetSubtype` aliased
+            // type, because aliased types do not provoke this error.
+            defineArrayMember({
+              type: 'crossDatasetReference',
+              name: 'crossDatasetReferenceInline',
+              title: 'Inline Cross Dataset Reference',
+              dataset: 'playground',
+              to: [
+                {
+                  type: 'book',
+                  icon: BookIcon,
+                  preview: {
+                    select: {
+                      title: 'title',
+                      media: 'coverImage',
+                    },
+                    prepare(val) {
+                      return {
+                        title: val.title,
+                        media: val.coverImage,
+                      }
+                    },
+                  },
+                },
+              ],
+            }),
+          ],
+        }),
         {
           title: 'Cross Dataset reference subtype test',
           name: 'crossDatasetSubtype',
           type: 'crossDatasetSubtype',
         },
       ],
-    },
+    }),
     {
       title: 'Cross Dataset reference in array',
       name: 'array',
