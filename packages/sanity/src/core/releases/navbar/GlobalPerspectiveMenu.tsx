@@ -9,7 +9,7 @@ import {useTranslation} from '../../i18n'
 import {CreateReleaseDialog} from '../components/dialog/CreateReleaseDialog'
 import {usePerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
-import {useReleases} from '../store/useReleases'
+import {useActiveReleases} from '../store/useActiveReleases'
 import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {
@@ -45,7 +45,7 @@ const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 const ASAP_RANGE_OFFSET = 2
 
 export function GlobalPerspectiveMenu(): React.JSX.Element {
-  const {loading, data: releases} = useReleases()
+  const {loading, data: releases} = useActiveReleases()
   const {selectedReleaseId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)

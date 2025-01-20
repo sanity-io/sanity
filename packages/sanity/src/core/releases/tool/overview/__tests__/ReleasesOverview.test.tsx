@@ -27,9 +27,17 @@ import {
 } from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
-  mockUseReleases,
-  useReleasesMockReturn,
-} from '../../../store/__tests__/__mocks/useReleases.mock'
+  mockUseActiveReleases,
+  useActiveReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useActiveReleases.mock'
+import {
+  mockUseAllReleases,
+  useAllReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useAllReleases.mock'
+import {
+  mockUseArchivedReleases,
+  useArchivedReleasesMockReturn,
+} from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
 import {
   mockUseReleasesMetadata,
   useReleasesMetadataMockReturn,
@@ -52,8 +60,16 @@ vi.mock('sanity', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-vi.mock('../../../store/useReleases', () => ({
-  useReleases: vi.fn(() => useReleasesMockReturn),
+vi.mock('../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
+
+vi.mock('../../../store/useAllReleases', () => ({
+  useAllReleases: vi.fn(() => useAllReleasesMockReturn),
+}))
+
+vi.mock('../../../store/useArchivedReleases', () => ({
+  useArchivedReleases: vi.fn(() => useArchivedReleasesMockReturn),
 }))
 
 vi.mock('../../../store/useReleasesMetadata', () => ({
@@ -102,14 +118,14 @@ const TestComponent = () => {
 
 describe('ReleasesOverview', () => {
   beforeEach(() => {
-    mockUseReleases.mockRestore()
+    mockUseActiveReleases.mockRestore()
   })
 
   setupVirtualListEnv()
 
   describe('when loading releases', () => {
     beforeEach(async () => {
-      mockUseReleases.mockReturnValue({...useReleasesMockReturn, loading: true})
+      mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, loading: true})
 
       const wrapper = await createTestProvider({
         resources: [releasesUsEnglishLocaleBundle],
@@ -200,10 +216,18 @@ describe('ReleasesOverview', () => {
 
     beforeEach(async () => {
       mockUseTimeZone.mockRestore()
-      mockUseReleases.mockReturnValue({
-        ...useReleasesMockReturn,
-        archivedReleases: [archivedScheduledRelease, publishedASAPRelease],
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
         data: releases,
+      })
+      mockUseAllReleases.mockReturnValue({
+        data: releases,
+        error: undefined,
+        loading: false,
+      })
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: [archivedScheduledRelease, publishedASAPRelease],
       })
       mockUseReleasesMetadata.mockReturnValue({
         ...useReleasesMetadataMockReturn,

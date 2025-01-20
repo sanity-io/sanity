@@ -4,7 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   Translate,
-  useReleases,
+  useArchivedReleases,
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
@@ -14,7 +14,7 @@ import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
-  const {archivedReleases} = useReleases()
+  const {data: archivedReleases} = useArchivedReleases()
 
   const {params, setParams} = usePaneRouter()
   const handleGoBack = () => {

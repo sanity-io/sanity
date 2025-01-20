@@ -3,8 +3,10 @@ import {
   defineConfig,
   type SanityClient,
   unstable_useValuePreview as useValuePreview,
+  useActiveReleases,
+  useArchivedReleases,
   useDocumentVersions,
-  useReleases,
+  useReleasesIds,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
@@ -29,8 +31,16 @@ function createWrapperComponent(client: SanityClient) {
   })
 }
 
-vi.mock('../../../../../../../core/releases/store/useReleases', () => ({
-  useReleases: vi.fn(),
+vi.mock('../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
+}))
+
+vi.mock('../../../../../../../core/releases/store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
+}))
+
+vi.mock('../../../../../../../core/releases/store/useArchivedReleases', () => ({
+  useArchivedReleases: vi.fn(),
 }))
 
 vi.mock('../../../../useDocumentPane')
@@ -46,7 +56,9 @@ vi.mock('sanity', async (importOriginal) => {
 
 vi.mock('sanity/router')
 
-const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
+const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
@@ -71,12 +83,20 @@ describe('DocumentHeaderTitle', () => {
     // @ts-ignore
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       data: [],
       loading: false,
       dispatch: vi.fn(),
-      archivedReleases: [],
+    })
+
+    mockUseReleasesIds.mockReturnValue({
       releasesIds: [],
+    })
+
+    mockUseArchivedReleases.mockReturnValue({
+      data: [],
+      loading: false,
+      error: undefined,
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()

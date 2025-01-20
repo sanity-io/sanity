@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {type ReleaseDocument, useReleases} from 'sanity'
+import {type ReleaseDocument, useActiveReleases, useArchivedReleases} from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -11,7 +11,9 @@ import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useAllReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useArchivedReleases: vi.fn().mockReturnValue({archivedReleases: []}),
   SANITY_VERSION: '0.0.0',
 }))
 
@@ -42,7 +44,8 @@ vi.mock('../../../../useDocumentPane')
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
-const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
   _id: '_.releases.rSpringDrop',
@@ -77,12 +80,15 @@ describe('DocumentPerspectiveList', () => {
   })
 
   it('should render the release chip when it has a release version', async () => {
-    mockUseReleases.mockReturnValue({
+    mockUseActiveReleases.mockReturnValue({
       loading: false,
       data: [mockCurrent],
-      archivedReleases: [],
       dispatch: vi.fn(),
-      releasesIds: [],
+    })
+    mockUseArchivedReleases.mockReturnValue({
+      data: [],
+      loading: false,
+      error: undefined,
     })
     mockUseDocumentPane.mockReturnValue({
       documentVersions: [mockCurrent],

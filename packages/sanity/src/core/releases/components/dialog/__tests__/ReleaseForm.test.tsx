@@ -3,15 +3,20 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
-import {type EditableReleaseDocument, type ReleaseDocument, useReleases} from '../../../store'
+import {type EditableReleaseDocument, type ReleaseDocument, useActiveReleases} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
+import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: vi.fn(),
 }))
-vi.mock('../../../store/useReleases', () => ({
-  useReleases: vi.fn(),
+vi.mock('../../../store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
+}))
+
+vi.mock('../../../store/useReleasesIds', () => ({
+  useReleasesIds: vi.fn(),
 }))
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
@@ -20,7 +25,8 @@ vi.mock('../../../i18n/hooks/useTranslation', () => ({
   }),
 }))
 
-const mockUseReleases = useReleases as Mock<typeof useReleases>
+const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 const mockUseDateTimeFormat = useDateTimeFormat as Mock
 
 describe('ReleaseForm', () => {
@@ -54,15 +60,18 @@ describe('ReleaseForm', () => {
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
           },
+          _rev: '',
         },
         // Add more mock data if needed
       ]
-      mockUseReleases.mockReturnValue({
+      mockUseActiveReleases.mockReturnValue({
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        archivedReleases: [],
+      })
+
+      mockUseReleasesIds.mockReturnValue({
         releasesIds: [],
       })
 
@@ -136,6 +145,7 @@ describe('ReleaseForm', () => {
         description: 'Summer time',
         releaseType: 'asap',
       },
+      _rev: '',
     }
     beforeEach(async () => {
       onChangeMock.mockClear()
@@ -156,15 +166,18 @@ describe('ReleaseForm', () => {
             title: 'Spring Drop',
             description: 'What a spring drop, allergies galore 🌸',
           },
+          _rev: '',
         },
         // Add more mock data if needed
       ]
-      mockUseReleases.mockReturnValue({
+      mockUseActiveReleases.mockReturnValue({
         data: mockData,
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
-        archivedReleases: [],
+      })
+
+      mockUseReleasesIds.mockReturnValue({
         releasesIds: [],
       })
 

@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
-import {useReleases} from '../../releases/store/useReleases'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 interface DocumentStatusProps {
@@ -46,7 +46,7 @@ type Status = 'not-published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
  * @internal
  */
 export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) {
-  const {data: releases} = useReleases()
+  const {data: releases} = useActiveReleases()
   const versionsList = useMemo(
     () =>
       versions

@@ -26,7 +26,7 @@ vi.mock('../sheetList/useDocumentSheetList', () => ({
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useSearchState: vi.fn(),
-  useReleases: vi.fn(() => ({})),
+  useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn(() => ({perspective: undefined})),
 }))
 vi.mock('sanity/router', async (importOriginal) => ({

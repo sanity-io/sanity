@@ -8,9 +8,10 @@ import {
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
   Translate,
+  useActiveReleases,
+  useArchivedReleases,
   useDateTimeFormat,
   usePerspective,
-  useReleases,
   useTranslation,
   VersionChip,
   versionDocumentExists,
@@ -73,13 +74,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  const {data: releases, loading, archivedReleases} = useReleases()
+  const {data: releases, loading} = useActiveReleases()
+  const {data: archivedReleases} = useArchivedReleases()
 
   const {documentVersions, editState, displayed, documentType} = useDocumentPane()
 
   const filteredReleases: FilterReleases = useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: []}
 
+    /** releases that are active in the currently open document */
     const activeReleases = releases.reduce(
       (acc: FilterReleases, release) => {
         const versionDocExists = versionDocumentExists(documentVersions, release._id)

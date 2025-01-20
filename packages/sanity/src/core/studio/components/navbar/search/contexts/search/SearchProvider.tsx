@@ -6,7 +6,7 @@ import {SearchContext} from 'sanity/_singletons'
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
-import {useReleases} from '../../../../../../releases/store/useReleases'
+import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
 import {isPerspectiveRaw, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
@@ -50,7 +50,7 @@ export function SearchProvider({
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
   const {perspectiveStack} = usePerspective()
-  const {data: releases} = useReleases()
+  const {data: releases} = useActiveReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {

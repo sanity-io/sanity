@@ -13,7 +13,8 @@ import {
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
 import {usePerspective} from '../../../releases/hooks/usePerspective'
-import {useReleases} from '../../../releases/store/useReleases'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {useReleasesIds} from '../../../releases/store/useReleasesIds'
 import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
@@ -40,7 +41,8 @@ export function useReferenceInput(options: Options) {
   const {path, schemaType, version} = options
   const schema = useSchema()
   const perspective = usePerspective()
-  const releases = useReleases()
+  const {data} = useActiveReleases()
+  const {releasesIds} = useReleasesIds(data)
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -128,11 +130,11 @@ export function useReferenceInput(options: Options) {
         schemaType,
         {version},
         {
-          bundleIds: releases.releasesIds,
+          bundleIds: releasesIds,
           bundleStack: perspective.perspectiveStack,
         },
       ),
-    [documentPreviewStore, schemaType, version, releases.releasesIds, perspective.perspectiveStack],
+    [documentPreviewStore, schemaType, version, releasesIds, perspective.perspectiveStack],
   )
 
   return {

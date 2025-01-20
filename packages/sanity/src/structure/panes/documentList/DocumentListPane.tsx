@@ -5,9 +5,9 @@ import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   type GeneralPreviewLayoutKey,
+  useActiveReleases,
   useI18nText,
   usePerspective,
-  useReleases,
   useSchema,
   useTranslation,
   useUnique,
@@ -75,7 +75,7 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
-  const releases = useReleases()
+  const releases = useActiveReleases()
   const {perspectiveStack} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
