@@ -24,26 +24,6 @@ export function PerspectiveProvider({
   const router = useRouter()
   const {data: releases} = useActiveReleases()
 
-  const setPerspective = useCallback(
-    (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
-      let perspectiveParam = ''
-
-      if (!releaseId || releaseId === 'drafts') {
-        perspectiveParam = ''
-      } else if (releaseId === 'published' || releaseId.startsWith('r')) {
-        perspectiveParam = releaseId
-      } else {
-        throw new Error(`Invalid releaseId: ${releaseId}`)
-      }
-
-      router.navigateStickyParams({
-        excludedPerspectives: '',
-        perspective: perspectiveParam,
-      })
-    },
-    [router],
-  )
-
   const selectedPerspective: SelectedPerspective = useMemo(() => {
     if (!selectedPerspectiveName) return 'drafts'
     if (selectedPerspectiveName === 'published') return 'published'
@@ -89,13 +69,11 @@ export function PerspectiveProvider({
         selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
       perspectiveStack,
 
-      setPerspective,
       toggleExcludedPerspective,
       isPerspectiveExcluded,
     }),
     [
       selectedPerspectiveName,
-      setPerspective,
       toggleExcludedPerspective,
       selectedPerspective,
       perspectiveStack,

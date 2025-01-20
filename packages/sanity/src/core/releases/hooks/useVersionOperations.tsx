@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../i18n'
-import {usePerspective} from '../../perspective/usePerspective'
+import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
@@ -23,7 +23,8 @@ export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
   const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
 
-  const {setPerspective} = usePerspective()
+  const setPerspective = useSetPerspective()
+
   const toast = useToast()
   const {t} = useTranslation()
 

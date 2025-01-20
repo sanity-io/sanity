@@ -89,6 +89,11 @@ vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+const mockedSetPerspective = vi.fn()
+vi.mock('../../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
+}))
+
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
   ...(await importOriginal()),
   getLocalTimeZone: vi.fn(() => getLocalTimeZoneMockReturn),
@@ -301,7 +306,7 @@ describe('ReleasesOverview', () => {
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
-      expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
+      expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
     })
 
     it('will show pinned release in release list', async () => {

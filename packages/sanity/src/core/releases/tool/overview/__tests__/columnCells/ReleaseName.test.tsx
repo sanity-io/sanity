@@ -17,6 +17,11 @@ vi.mock('../../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+const mockedSetPerspective = vi.fn()
+vi.mock('../../../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: () => mockUseRouterReturn,
@@ -70,7 +75,7 @@ describe('ReleaseNameCell', () => {
     const pinButton = screen.getByTestId('pin-release-button')
     fireEvent.click(pinButton)
 
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
+    expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
   })
 
   it('handles unpinning a release', async () => {
@@ -80,7 +85,7 @@ describe('ReleaseNameCell', () => {
     const pinButton = screen.getByTestId('pin-release-button')
     fireEvent.click(pinButton)
 
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('drafts')
+    expect(mockedSetPerspective).toHaveBeenCalledWith('drafts')
   })
 
   it('navigates to the release detail page on click', async () => {

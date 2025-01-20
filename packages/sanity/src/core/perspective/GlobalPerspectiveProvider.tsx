@@ -13,13 +13,15 @@ import {isPublishedPerspective} from '../releases/util/util'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {usePerspective} from './usePerspective'
+import {useSetPerspective} from './useSetPerspective'
 
 const ResetPerspectiveHandler = () => {
   const toast = useToast()
   const {t} = useTranslation()
   const {data: releases, loading: releasesLoading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const {selectedPerspectiveName, setPerspective} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
+  const setPerspective = useSetPerspective()
 
   useEffect(() => {
     // clear the perspective param when it is not an active release

@@ -14,6 +14,11 @@ vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+const mockedUseSetPerspective = vi.fn()
+vi.mock('../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedUseSetPerspective),
+}))
+
 describe('useVersionOperations', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -32,7 +37,7 @@ describe('useVersionOperations', () => {
       'documentId',
       undefined,
     )
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('releaseId')
+    expect(mockedUseSetPerspective).toHaveBeenCalledWith('releaseId')
   })
 
   it('should discard a version successfully', async () => {

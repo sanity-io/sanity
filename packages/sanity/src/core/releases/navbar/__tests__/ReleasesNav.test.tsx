@@ -16,6 +16,11 @@ vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+const mockedSetPerspective = vi.fn()
+vi.mock('../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
+}))
+
 vi.mock('../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
@@ -69,7 +74,7 @@ describe('ReleasesNav', () => {
 
     fireEvent.click(screen.getByTestId('clear-perspective-button'))
 
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith(LATEST)
+    expect(mockedSetPerspective).toHaveBeenCalledWith(LATEST)
   })
 
   it('should list the title of the chosen perspective', async () => {
@@ -121,7 +126,7 @@ describe('ReleasesNav', () => {
 
         fireEvent.click(screen.getByText('Published'))
 
-        expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('published')
+        expect(mockedSetPerspective).toHaveBeenCalledWith('published')
       })
 
       it('should list all the releases', async () => {
@@ -195,7 +200,7 @@ describe('ReleasesNav', () => {
         })
 
         it('should set a given perspective from the menu', async () => {
-          expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rScheduled2')
+          expect(mockedSetPerspective).toHaveBeenCalledWith('rScheduled2')
         })
 
         it('should allow for hiding of any deeper layered releases', async () => {

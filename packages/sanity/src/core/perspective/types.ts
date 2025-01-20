@@ -25,8 +25,6 @@ export interface PerspectiveContextValue {
 
   /* Return the current global release */
   selectedPerspective: SelectedPerspective
-  /* Change the perspective in the studio based on the perspective name */
-  setPerspective: (perspectiveId: 'published' | 'drafts' | ReleaseId | undefined) => void
   /* Add/remove excluded perspectives */
   toggleExcludedPerspective: (perspectiveId: string) => void
   /* Check if a perspective is excluded */

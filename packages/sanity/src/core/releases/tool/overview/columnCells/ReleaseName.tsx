@@ -7,6 +7,7 @@ import {useRouter} from 'sanity/router'
 import {Button, Tooltip} from '../../../../../ui-components'
 import {Translate} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
@@ -19,7 +20,8 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {selectedReleaseId, setPerspective} = usePerspective()
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const isArchived = state === 'archived'

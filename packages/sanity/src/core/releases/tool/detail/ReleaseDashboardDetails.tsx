@@ -12,6 +12,7 @@ import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -24,8 +25,8 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
-  const {selectedReleaseId, setPerspective} = usePerspective()
-
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
   const isSelected = releaseId === selectedReleaseId
 
   const handlePinRelease = useCallback(() => {

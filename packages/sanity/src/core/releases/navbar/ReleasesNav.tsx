@@ -8,6 +8,7 @@ import {IntentLink, useRouterState} from 'sanity/router'
 
 import {Tooltip} from '../../../ui-components'
 import {usePerspective} from '../../perspective/usePerspective'
+import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ToolLink} from '../../studio'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {RELEASES_INTENT, RELEASES_TOOL_NAME} from '../plugin'
@@ -38,7 +39,8 @@ export function ReleasesNav(): React.JSX.Element {
     ),
   )
 
-  const {selectedPerspective, setPerspective} = usePerspective()
+  const {selectedPerspective} = usePerspective()
+  const setPerspective = useSetPerspective()
   const {t} = useTranslation()
 
   const handleClearPerspective = () => setPerspective(LATEST)

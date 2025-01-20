@@ -94,7 +94,6 @@ describe('DeletedDocumentBanners', () => {
 
     mockUsePerspective.mockReturnValue({
       selectedPerspective: LATEST,
-      setPerspective: vi.fn(),
     } as unknown as ReturnType<typeof usePerspective>)
 
     mockUseActiveReleases.mockReturnValue({

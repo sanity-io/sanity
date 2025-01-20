@@ -19,6 +19,7 @@ import {
   useDocumentVersions,
   usePerspective,
   useSchema,
+  useSetPerspective,
   useTranslation,
   VersionChip,
 } from 'sanity'
@@ -78,8 +79,9 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 }
 
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {setPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
+  const setPerspective = useSetPerspective()
   const {params} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {data: releases, loading} = useActiveReleases()

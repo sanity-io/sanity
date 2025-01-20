@@ -14,7 +14,7 @@ import {
   type PublishDocumentVersionEvent,
   RELEASES_INTENT,
   Translate,
-  usePerspective,
+  useSetPerspective,
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
@@ -29,7 +29,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   const {t} = useTranslation(structureLocaleNamespace)
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
-  const {setPerspective} = usePerspective()
+  const setPerspective = useSetPerspective()
+
   const handleOpenReleaseDocument = useCallback(() => {
     setParams({
       ...params,

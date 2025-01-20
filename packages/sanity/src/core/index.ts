@@ -26,6 +26,7 @@ export {
   type SelectedPerspective,
 } from './perspective/types'
 export {usePerspective} from './perspective/usePerspective'
+export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {

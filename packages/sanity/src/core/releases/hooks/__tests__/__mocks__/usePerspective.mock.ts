@@ -6,7 +6,6 @@ import {usePerspective} from '../../../../perspective/usePerspective'
 export const usePerspectiveMockReturn: Mocked<PerspectiveContextValue> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  setPerspective: vi.fn(),
   selectedPerspective: 'drafts',
   toggleExcludedPerspective: vi.fn(),
   isPerspectiveExcluded: vi.fn(),
