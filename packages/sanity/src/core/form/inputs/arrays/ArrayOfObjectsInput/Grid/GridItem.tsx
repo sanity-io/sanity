@@ -62,7 +62,7 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-
+const EMPTY_ARRAY: never[] = []
 export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
   const {
     schemaType,
@@ -162,9 +162,48 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     referenceElement: contextMenuButtonElement,
   })
 
+  const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
+
+  const menuItems = useMemo(() => {
+    return [
+      !disableActions.includes('remove') && (
+        <MenuItem
+          text={t('inputs.array.action.remove')}
+          tone="critical"
+          icon={TrashIcon}
+          onClick={onRemove}
+        />
+      ),
+      !disableActions.includes('copy') && (
+        <MenuItem text={t('inputs.array.action.copy')} icon={CopyIcon} onClick={handleCopy} />
+      ),
+      !disableActions.includes('duplicate') && (
+        <MenuItem
+          text={t('inputs.array.action.duplicate')}
+          icon={AddDocumentIcon}
+          onClick={handleDuplicate}
+        />
+      ),
+      !disableActions.includes('add') &&
+        !disableActions.includes('addBefore') &&
+        insertBefore.menuItem,
+      !disableActions.includes('add') &&
+        !disableActions.includes('addAfter') &&
+        insertAfter.menuItem,
+    ].filter(Boolean)
+  }, [
+    disableActions,
+    handleCopy,
+    handleDuplicate,
+    insertAfter.menuItem,
+    insertBefore.menuItem,
+    onRemove,
+    t,
+  ])
+
   const menu = useMemo(
     () =>
-      readOnly ? null : (
+      readOnly || menuItems.length === 0 ? null : (
         <>
           <MenuButton
             ref={setContextMenuButtonElement}
@@ -174,39 +213,19 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
             }}
             button={
               <ContextMenuButton
+                data-testid="array-item-menu-button"
                 selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
               />
             }
             id={`${props.inputId}-menuButton`}
-            menu={
-              <Menu>
-                <MenuItem
-                  text={t('inputs.array.action.remove')}
-                  tone="critical"
-                  icon={TrashIcon}
-                  onClick={onRemove}
-                />
-                <MenuItem
-                  text={t('inputs.array.action.copy')}
-                  icon={CopyIcon}
-                  onClick={handleCopy}
-                />
-                <MenuItem
-                  text={t('inputs.array.action.duplicate')}
-                  icon={AddDocumentIcon}
-                  onClick={handleDuplicate}
-                />
-                {insertBefore.menuItem}
-                {insertAfter.menuItem}
-              </Menu>
-            }
+            menu={<Menu>{menuItems}</Menu>}
             popover={MENU_POPOVER_PROPS}
           />
           {insertBefore.popover}
           {insertAfter.popover}
         </>
       ),
-    [insertBefore, insertAfter, handleCopy, handleDuplicate, onRemove, props.inputId, readOnly, t],
+    [readOnly, insertBefore, insertAfter, props.inputId, menuItems],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})

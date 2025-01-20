@@ -78,6 +78,7 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
     () =>
       types ? (
         <MenuItem
+          key="insertBefore"
           text={
             types.length === 1
               ? t('inputs.array.action.add-before')
@@ -93,6 +94,7 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
     () =>
       types ? (
         <MenuItem
+          key="insertAfter"
           text={
             types.length === 1
               ? t('inputs.array.action.add-after')

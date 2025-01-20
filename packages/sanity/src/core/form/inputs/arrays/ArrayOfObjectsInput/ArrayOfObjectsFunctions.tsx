@@ -65,6 +65,10 @@ export function ArrayOfObjectsFunctions<
     },
   })
 
+  if (schemaType.options?.disableActions?.includes('add')) {
+    return null
+  }
+
   if (readOnly) {
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>

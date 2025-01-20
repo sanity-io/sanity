@@ -81,6 +81,7 @@ export const DEBUG_INPUT_TYPES = [
   'scrollBug',
   'select',
   'simpleArrayOfObjects',
+  'arrayCapabilities',
   'simpleReferences',
   'thesis',
   'typeWithNoToplevelStrings',
