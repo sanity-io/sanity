@@ -416,7 +416,7 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^1.0.2
+        specifier: ^1.1.0
         version: 1.1.0(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
         specifier: ^1.22.0
@@ -1341,7 +1341,7 @@ importers:
         specifier: ^3.3.1
         version: 3.4.0
       '@portabletext/block-tools':
-        specifier: ^1.0.2
+        specifier: ^1.1.0
         version: 1.1.0(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
         specifier: ^1.22.0
