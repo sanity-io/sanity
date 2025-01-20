@@ -109,6 +109,7 @@ const sharedSettings = definePlugin({
     structureTool({
       icon: BookIcon,
       structure,
+      // test
       defaultDocumentNode,
     }),
     languageFilter({
