@@ -12,7 +12,6 @@ import {LATEST} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../util/util'
 import {useSelectedPerspectiveProps} from './useSelectedPerspectiveProps'
-import {getReleasesPerspectiveStack} from './utils'
 
 /**
  * @internal
@@ -27,10 +26,6 @@ export interface PerspectiveValue {
   selectedPerspective: SelectedPerspective
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (perspectiveId: 'published' | 'drafts' | ReleaseId | undefined) => void
-  /**
-   * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
-   */
-  perspectiveStack: string[]
 }
 
 const EMPTY_ARRAY: string[] = []
@@ -45,11 +40,6 @@ export function usePerspective(): PerspectiveValue {
   const {data: releases, loading: releasesLoading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
   const {selectedPerspectiveName} = useSelectedPerspectiveProps()
-
-  const excludedPerspectives = useMemo(
-    () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
-    [router.stickyParams.excludedPerspectives],
-  )
 
   const setPerspective = useCallback(
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
@@ -126,23 +116,11 @@ export function usePerspective(): PerspectiveValue {
     return selectedRelease || 'drafts'
   }, [selectedPerspectiveName, releases])
 
-  const perspectiveStack = useMemo(
-    () =>
-      getReleasesPerspectiveStack({
-        releases,
-        selectedPerspectiveName,
-        excludedPerspectives,
-      }),
-    [releases, selectedPerspectiveName, excludedPerspectives],
-  )
-
   return useMemo(
     () => ({
       selectedPerspective,
-      perspectiveStack,
-
       setPerspective,
     }),
-    [selectedPerspective, perspectiveStack, setPerspective],
+    [selectedPerspective, setPerspective],
   )
 }

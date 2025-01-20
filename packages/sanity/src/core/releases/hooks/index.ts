@@ -1,5 +1,6 @@
 export * from './useDocumentVersions'
 export * from './useIsReleaseActive'
 export * from './usePerspective'
+export * from './usePerspectiveStack'
 export * from './useSelectedPerspectiveProps'
 export * from './useVersionOperations'

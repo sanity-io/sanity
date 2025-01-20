@@ -12,7 +12,7 @@ import {
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
-import {usePerspective} from '../../../releases/hooks/usePerspective'
+import {usePerspectiveStack} from '../../../releases/hooks/usePerspectiveStack'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../releases/store/useReleasesIds'
 import {useDocumentPreviewStore} from '../../../store'
@@ -40,8 +40,8 @@ interface Options {
 export function useReferenceInput(options: Options) {
   const {path, schemaType, version} = options
   const schema = useSchema()
-  const perspective = usePerspective()
   const {data} = useActiveReleases()
+  const {perspectiveStack} = usePerspectiveStack()
   const {releasesIds} = useReleasesIds(data)
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
@@ -131,10 +131,10 @@ export function useReferenceInput(options: Options) {
         {version},
         {
           bundleIds: releasesIds,
-          bundleStack: perspective.perspectiveStack,
+          bundleStack: perspectiveStack,
         },
       ),
-    [documentPreviewStore, schemaType, version, releasesIds, perspective.perspectiveStack],
+    [documentPreviewStore, schemaType, version, releasesIds, perspectiveStack],
   )
 
   return {

@@ -7,7 +7,7 @@ import {
   type GeneralPreviewLayoutKey,
   useActiveReleases,
   useI18nText,
-  usePerspective,
+  usePerspectiveStack,
   useSchema,
   useTranslation,
   useUnique,
@@ -76,7 +76,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack} = usePerspectiveStack()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)

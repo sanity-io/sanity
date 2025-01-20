@@ -10,6 +10,7 @@ import {
   useActiveReleases,
   useDocumentPreviewStore,
   usePerspective,
+  usePerspectiveStack,
   useSchema,
   useSelectedPerspectiveProps,
   useSyncState,
@@ -29,7 +30,9 @@ export function DocumentStatusLine() {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
   const releases = useActiveReleases()
-  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedPerspective} = usePerspective()
+  const {perspectiveStack} = usePerspectiveStack()
+
   const {selectedReleaseId} = useSelectedPerspectiveProps()
 
   const previewStateObservable = useMemo(

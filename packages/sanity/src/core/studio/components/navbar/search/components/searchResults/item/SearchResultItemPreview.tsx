@@ -14,7 +14,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
+import {usePerspectiveStack} from '../../../../../../../releases/hooks/usePerspectiveStack'
 import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
 import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
@@ -57,7 +57,7 @@ export function SearchResultItemPreview({
   const documentPreviewStore = useDocumentPreviewStore()
   const {data, loading} = useActiveReleases()
   const {releasesIds} = useReleasesIds(data)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack} = usePerspectiveStack()
   const {state} = useSearchState()
   const isRaw = isPerspectiveRaw(state.perspective)
 

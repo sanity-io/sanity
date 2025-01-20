@@ -15,7 +15,7 @@ import {
   isRecord,
   SanityDefaultPreview,
   useActiveReleases,
-  usePerspective,
+  usePerspectiveStack,
   useReleasesIds,
   useSelectedPerspectiveProps,
 } from 'sanity'
@@ -50,7 +50,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {data, loading} = useActiveReleases()
   const {releasesIds} = useReleasesIds(data)
   const {selectedPerspectiveName} = useSelectedPerspectiveProps()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack} = usePerspectiveStack()
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {

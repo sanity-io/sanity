@@ -41,6 +41,7 @@ export {
   useDocumentVersions,
   useIsReleaseActive,
   usePerspective,
+  usePerspectiveStack,
   useReleasesIds,
   useSelectedPerspectiveProps,
   useVersionOperations,
