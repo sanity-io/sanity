@@ -19,6 +19,7 @@ import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
+import {PerspectiveProvider} from './PerspectiveProvider'
 import {
   AuthenticateScreen,
   ConfigErrorsScreen,
@@ -71,7 +72,9 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>
+                <StudioAnnouncementsProvider>
+                  <PerspectiveProvider>{children}</PerspectiveProvider>
+                </StudioAnnouncementsProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>
