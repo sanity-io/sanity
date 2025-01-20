@@ -2,7 +2,7 @@ import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, getCalendarLabels, useDateTimeFormat, useTranslation} from 'sanity'
 
-import {DateTimeInput} from '../../../../../ui-components/inputs/DateInputs/DateTimeInput'
+import {DateTimeInput} from '../../../../../core/components/inputs/DateInputs/DateTimeInput'
 import {Timeline} from '../timeline'
 
 const CHUNKS: Chunk[] = [
