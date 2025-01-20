@@ -27,10 +27,6 @@ interface CommentsOnboardingProviderProps {
   children: ReactNode
 }
 
-/**
- * @internal
- * @hidden
- */
 export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProps) {
   const {children} = props
   const [dismissed, setDismissed] = useState<boolean>(getLocalStorage())

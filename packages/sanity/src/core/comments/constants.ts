@@ -8,16 +8,8 @@ import {type CommentReactionOption, type CommentReactionShortNames} from './type
  */
 export const COMMENTS_INSPECTOR_NAME = 'sanity/comments'
 
-/**
- * @internal
- * @hidden
- */
 export const COMMENTS_HIGHLIGHT_HUE_KEY: ColorHueKey = 'yellow'
 
-/**
- * @internal
- * @hidden
- */
 // These should not be alphabetized as the current order is intentional
 export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [
   {

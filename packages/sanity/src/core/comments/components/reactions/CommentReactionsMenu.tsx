@@ -15,10 +15,6 @@ interface CommentReactionsMenuProps {
   onSelect: (option: CommentReactionOption) => void
 }
 
-/**
- * @internal
- * @hidden
- */
 export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
   const {options, onSelect} = props
   const {t} = useTranslation(commentsLocaleNamespace)

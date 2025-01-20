@@ -29,9 +29,6 @@ interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
   onDismiss: () => void
 }
 
-/**
- * @internal
- */
 export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) {
   const {onDismiss, ...rest} = props
   const {t} = useTranslation(commentsLocaleNamespace)

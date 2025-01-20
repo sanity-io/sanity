@@ -4,9 +4,6 @@ import {Fragment, useMemo} from 'react'
 
 import {Tooltip} from '../../../ui-components'
 
-/**
- * @internal
- */
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
   maxLength: number
@@ -30,9 +27,6 @@ const renderItem = (item: string, index: number) => {
   )
 }
 
-/**
- * @internal
- */
 export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
   const {titlePath, maxLength} = props
 

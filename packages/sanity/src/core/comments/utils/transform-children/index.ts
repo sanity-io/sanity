@@ -7,7 +7,6 @@ const middlewares: Middleware[] = [linkMiddleware]
 
 /**
  * A function that transforms a ReactNode using a set of middlewares
- * @internal
  */
 export function transformChildren(node: ReactNode): ReactNode {
   if (!Array.isArray(node)) return node

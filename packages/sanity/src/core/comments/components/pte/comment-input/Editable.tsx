@@ -35,9 +35,6 @@ const PlaceholderWrapper = styled.span((props) => {
   `
 })
 
-/**
- * @internal
- */
 export const StyledPopover = styled(Popover)(({theme}) => {
   const {space, radius} = theme.sanity
 
@@ -72,16 +69,10 @@ interface EditableProps {
   renderBlock: RenderBlockFunction
 }
 
-/**
- * @internal
- */
 export interface EditableHandle {
   setShowMentionOptions: (show: boolean) => void
 }
 
-/**
- * @internal
- */
 export function Editable(props: EditableProps) {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {

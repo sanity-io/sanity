@@ -45,9 +45,6 @@ interface CommentsListItemReferencedValueProps {
   value: CommentDocument['contentSnapshot']
 }
 
-/**
- * @internal
- */
 export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) {
   const {hasReferencedValue, value} = props
 

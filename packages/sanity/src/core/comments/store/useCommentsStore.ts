@@ -9,10 +9,6 @@ import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} 
 type DocumentId = string
 type TransactionId = string
 
-/**
- * @internal
- * @hidden
- */
 export interface CommentsStoreOptions {
   client: SanityClient | null
   documentId: string
@@ -34,14 +30,8 @@ const LISTEN_OPTIONS: ListenOptions = {
   visibility: 'query',
 }
 
-/**
- * @internal
- */
 export const SORT_FIELD = '_createdAt'
 
-/**
- * @internal
- */
 export const SORT_ORDER = 'desc'
 
 const QUERY_FILTERS = [`_type == "comment"`, `target.document._ref == $documentId`]
@@ -66,9 +56,6 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-/**
- * @internal
- */
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
   const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap} = opts
 

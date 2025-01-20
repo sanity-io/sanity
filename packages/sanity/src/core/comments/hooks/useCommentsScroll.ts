@@ -50,8 +50,6 @@ const SCROLL_OPTIONS_BY_TYPE: Record<ScrollTargetTypes, StandardBehaviorOptions>
  *
  * return <div data-field-id={validId}>...</div>
  * ```
- * @internal
- * @hidden
  */
 function generateValidAttrValue(id: string): string {
   const symbolsToRemove = /[[\]_"_=.]/g
@@ -60,37 +58,25 @@ function generateValidAttrValue(id: string): string {
 
   return result
 }
-/**
- * @internal
- * @hidden
- */
+
 export function applyCommentIdAttr(id: string): Record<'data-comments-comment-id', string> {
   return {
     'data-comments-comment-id': generateValidAttrValue(id),
   }
 }
-/**
- * @internal
- * @hidden
- */
+
 export function applyCommentsFieldAttr(id: string): Record<'data-comments-field-id', string> {
   return {
     'data-comments-field-id': generateValidAttrValue(id),
   }
 }
-/**
- * @internal
- * @hidden
- */
+
 export function applyCommentsGroupAttr(id: string): Record<'data-comments-group-id', string> {
   return {
     'data-comments-group-id': generateValidAttrValue(id),
   }
 }
-/**
- * @internal
- * @hidden
- */
+
 export function applyInlineCommentIdAttr(
   id: string,
 ): Record<'data-comments-inline-comment-id', string> {
@@ -128,10 +114,6 @@ interface ScrollTarget {
   id: string
 }
 
-/**
- * @internal
- * @hidden
- */
 export function useCommentsScroll(opts?: CommentsScrollHookOptions): CommentsScrollHookValue {
   const {boundaryElement} = opts || {}
   const [scrollTarget, setScrollTarget] = useState<ScrollTarget | null>(null)

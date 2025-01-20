@@ -102,7 +102,7 @@ interface BuildRangeDecorationsProps {
 /**
  * @internal
  */
-export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
+export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) {
   const {
     comments,
     currentHoveredCommentId,

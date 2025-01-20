@@ -9,10 +9,6 @@ import {CommentReactionsMenu} from './CommentReactionsMenu'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
-/**
- * @internal
- * @hidden
- */
 export interface CommentReactionsMenuButtonProps {
   mode: CommentsUIMode
   onMenuClose?: () => void
@@ -27,10 +23,6 @@ export interface CommentReactionsMenuButtonProps {
   }) => React.JSX.Element
 }
 
-/**
- * @internal
- * @hidden
- */
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
   const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton, mode} = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)

@@ -50,10 +50,6 @@ function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
     .join(CHILD_SYMBOL)
 }
 
-/**
- * @internal
- * @hidden
- */
 export const COMMENT_INDICATORS = ['\uF000', '\uF001']
 const COMMENT_INDICATORS_REGEX = new RegExp(`[${COMMENT_INDICATORS.join('')}]`, 'g')
 
@@ -182,10 +178,6 @@ export function buildRangeDecorationSelectionsFromComments(
   return decorators
 }
 
-/**
- * @internal
- * @hidden
- */
 export interface BuildCommentRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
   comment: CommentDocument
@@ -196,9 +188,6 @@ interface ValidateTextSelectionCommentProps {
   value: PortableTextBlock[]
 }
 
-/**
- * @internal
- */
 export function validateTextSelectionComment(props: ValidateTextSelectionCommentProps): boolean {
   const {comment, value} = props
   if (!isTextSelectionComment(comment)) return false
