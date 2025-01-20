@@ -7,6 +7,7 @@ import {css, styled} from 'styled-components'
 import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
+import {useExcludedPerspective} from '../hooks/useExcludedPerspective'
 import {usePerspective} from '../hooks/usePerspective'
 import {useSelectedPerspectiveProps} from '../hooks/useSelectedPerspectiveProps'
 import {isReleaseDocument, type ReleaseDocument} from '../store/types'
@@ -86,8 +87,8 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   }
 >((props, ref) => {
   const {release, rangePosition} = props
-  const {setPerspective, selectedPerspective, toggleExcludedPerspective, isPerspectiveExcluded} =
-    usePerspective()
+  const {setPerspective, selectedPerspective} = usePerspective()
+  const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
   const {selectedPerspectiveName} = useSelectedPerspectiveProps()
 
   const releaseId = isReleaseDocument(release)

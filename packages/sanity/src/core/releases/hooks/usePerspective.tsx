@@ -27,10 +27,6 @@ export interface PerspectiveValue {
   selectedPerspective: SelectedPerspective
   /* Change the perspective in the studio based on the perspective name */
   setPerspective: (perspectiveId: 'published' | 'drafts' | ReleaseId | undefined) => void
-  /* Add/remove excluded perspectives */
-  toggleExcludedPerspective: (perspectiveId: string) => void
-  /* Check if a perspective is excluded */
-  isPerspectiveExcluded: (perspectiveId: string) => boolean
   /**
    * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
    */
@@ -140,39 +136,13 @@ export function usePerspective(): PerspectiveValue {
     [releases, selectedPerspectiveName, excludedPerspectives],
   )
 
-  const toggleExcludedPerspective = useCallback(
-    (excluded: string) => {
-      const existingPerspectives = excludedPerspectives || []
-
-      const nextExcludedPerspectives = existingPerspectives.includes(excluded)
-        ? existingPerspectives.filter((id) => id !== excluded)
-        : [...existingPerspectives, excluded]
-
-      router.navigateStickyParams({excludedPerspectives: nextExcludedPerspectives.toString()})
-    },
-    [excludedPerspectives, router],
-  )
-
-  const isPerspectiveExcluded = useCallback(
-    (perspectiveId: string) => Boolean(excludedPerspectives?.includes(perspectiveId)),
-    [excludedPerspectives],
-  )
-
   return useMemo(
     () => ({
       selectedPerspective,
       perspectiveStack,
 
       setPerspective,
-      toggleExcludedPerspective,
-      isPerspectiveExcluded,
     }),
-    [
-      selectedPerspective,
-      perspectiveStack,
-      setPerspective,
-      toggleExcludedPerspective,
-      isPerspectiveExcluded,
-    ],
+    [selectedPerspective, perspectiveStack, setPerspective],
   )
 }
