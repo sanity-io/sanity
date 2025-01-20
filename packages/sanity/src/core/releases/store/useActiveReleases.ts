@@ -34,10 +34,13 @@ export function useActiveReleases(): ReleasesState {
     [state.releases],
   )
 
-  return {
-    data: releasesAsArray,
-    dispatch,
-    error: state.error,
-    loading: ['loading', 'initialising'].includes(state.state),
-  }
+  return useMemo(
+    () => ({
+      data: releasesAsArray,
+      dispatch,
+      error: state.error,
+      loading: ['loading', 'initialising'].includes(state.state),
+    }),
+    [releasesAsArray, state.error, state.state, dispatch],
+  )
 }
