@@ -1,6 +1,6 @@
 import {render, waitFor} from '@testing-library/react'
 import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -33,8 +33,8 @@ vi.mock('sanity', async () => {
 })
 
 describe('DocumentHeaderTitle', () => {
-  const mockUseDocumentPane = useDocumentPane as vi.MockedFunction<typeof useDocumentPane>
-  const mockUseValuePreview = useValuePreview as vi.MockedFunction<typeof useValuePreview>
+  const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
 
   const defaultProps = {
     connectionState: 'connected',

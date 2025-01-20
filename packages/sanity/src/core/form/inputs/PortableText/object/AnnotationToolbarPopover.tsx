@@ -1,6 +1,7 @@
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
-import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -9,47 +10,36 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 
 interface AnnotationToolbarPopoverProps {
   annotationOpen: boolean
+  annotationTextSelected: boolean
   floatingBoundary: HTMLElement | null
-  onOpen: () => void
-  onRemove: () => void
+  onOpenAnnotation: () => void
+  onRemoveAnnotation: () => void
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
-  selected: boolean
   title: string
 }
 
-export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
+export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps): ReactNode {
   const {
     annotationOpen,
+    annotationTextSelected,
     floatingBoundary,
-    onOpen,
-    onRemove,
+    onOpenAnnotation,
+    onRemoveAnnotation,
     referenceBoundary,
     referenceElement,
-    selected,
     title,
   } = props
-  const [renderPopover, setRenderPopover] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const {t} = useTranslation()
-  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const editButtonRef = useRef<HTMLButtonElement | null>(null)
+  const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
+  const focusTrappedRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
-
-  //Add separate handler for popover state
-  //to prevent the popover from jumping when opening
-  const handleOpenPopover = useCallback((open: boolean) => {
-    setRenderPopover(open)
-    if (open) {
-      startTransition(() => {
-        setPopoverOpen(open)
-      })
-    } else {
-      setPopoverOpen(open)
-    }
-  }, [])
+  const editor = usePortableTextEditor()
 
   // This is a "virtual element" (supported by Popper.js)
   const cursorElement = useMemo(() => {
@@ -63,6 +53,13 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
   }, [cursorRect]) as HTMLElement
 
+  const handleClosePopover = useCallback(() => {
+    PortableTextEditor.focus(editor)
+    setPopoverOpen(false)
+    focusTrappedRef.current = null
+  }, [editor])
+
+  // Tab to edit button on tab
   // Close floating toolbar on Escape
   useGlobalKeyDown(
     useCallback(
@@ -70,18 +67,38 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         if (!popoverOpen) {
           return
         }
+        if (event.key === 'Tab') {
+          if (
+            annotationTextSelected &&
+            event.target instanceof HTMLElement &&
+            event.target.contentEditable &&
+            focusTrappedRef.current === null
+          ) {
+            event.preventDefault()
+            editButtonRef.current?.focus()
+            focusTrappedRef.current = editButtonRef.current
+            return
+          }
+          if (event.target === deleteButtonRef.current) {
+            event.preventDefault()
+            event.stopPropagation()
+            focusTrappedRef.current = null
+            PortableTextEditor.focus(editor)
+            return
+          }
+        }
         if (event.key === 'Escape') {
-          handleOpenPopover(false)
+          handleClosePopover()
         }
       },
-      [handleOpenPopover, popoverOpen],
+      [editor, handleClosePopover, popoverOpen, annotationTextSelected],
     ),
   )
 
   // Open popover when selection is within the annotation text
   const handleSelectionChange = useCallback(() => {
     if (annotationOpen) {
-      handleOpenPopover(false)
+      setPopoverOpen(false)
       setCursorRect(null)
       return
     }
@@ -90,20 +107,21 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
     if (!sel || sel.rangeCount === 0) return
 
+    focusTrappedRef.current = null
     const range = sel.getRangeAt(0)
     const isWithinRoot = referenceElement?.contains(range.commonAncestorContainer)
 
     if (!isWithinRoot) {
-      handleOpenPopover(false)
+      setPopoverOpen(false)
       setCursorRect(null)
       return
     }
     const rect = range?.getBoundingClientRect()
     if (rect) {
       setCursorRect(rect)
-      handleOpenPopover(true)
+      setPopoverOpen(true)
     }
-  }, [annotationOpen, referenceElement, handleOpenPopover])
+  }, [annotationOpen, referenceElement, setPopoverOpen])
 
   // Detect selection changes
   useEffect(() => {
@@ -114,24 +132,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }, [handleSelectionChange])
 
   const handleEditButtonClicked = useCallback(() => {
-    handleOpenPopover(false)
-    onOpen()
-  }, [onOpen, handleOpenPopover])
-
-  // Open the popover when closing the annotation dialog
-  useEffect(() => {
-    if (!annotationOpen && selected && cursorRect) {
-      handleOpenPopover(true)
-    }
-    if (annotationOpen) {
-      handleOpenPopover(false)
-    }
-  }, [annotationOpen, selected, cursorRect, handleOpenPopover])
+    setPopoverOpen(false)
+    onOpenAnnotation()
+  }, [onOpenAnnotation])
 
   const handleRemoveButtonClicked = useCallback(() => {
-    handleOpenPopover(false)
-    onRemove()
-  }, [onRemove, handleOpenPopover])
+    setPopoverOpen(false)
+    onRemoveAnnotation()
+  }, [onRemoveAnnotation])
 
   const handleScroll = useCallback(() => {
     if (rangeRef.current) {
@@ -147,26 +155,17 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }, [popoverOpen])
 
   useEffect(() => {
-    //Attach and detach scroll event listener for popover to follow the current reference boundary
-    if (popoverOpen && referenceBoundary) {
-      referenceBoundary.addEventListener('scroll', handleScroll)
-      return () => referenceBoundary.removeEventListener('scroll', handleScroll)
+    // Listen for scroll events on the floating boundary and the reference boundary
+    // and move the popover accordingly
+    if (popoverOpen) {
+      floatingBoundary?.addEventListener('scroll', handleScroll)
+      referenceBoundary?.addEventListener('scroll', handleScroll)
     }
-
-    if (!popoverOpen) {
-      return undefined
-    }
-
-    referenceBoundary?.addEventListener('scroll', handleScroll)
-
     return () => {
+      floatingBoundary?.removeEventListener('scroll', handleScroll)
       referenceBoundary?.removeEventListener('scroll', handleScroll)
     }
-  }, [popoverOpen, referenceBoundary, handleScroll])
-
-  if (!renderPopover) {
-    return null
-  }
+  }, [popoverOpen, referenceBoundary, floatingBoundary, handleScroll])
 
   return (
     <Popover
@@ -187,6 +186,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
+              ref={editButtonRef}
               tabIndex={0}
               tooltipProps={null}
             />
@@ -196,6 +196,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               icon={TrashIcon}
               mode="bleed"
               onClick={handleRemoveButtonClicked}
+              ref={deleteButtonRef}
               tabIndex={0}
               tone="critical"
               tooltipProps={null}
@@ -207,7 +208,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       placement="top"
       portal
       preventOverflow
-      ref={popoverRef}
       referenceBoundary={referenceBoundary}
       referenceElement={cursorElement}
       scheme={popoverScheme}

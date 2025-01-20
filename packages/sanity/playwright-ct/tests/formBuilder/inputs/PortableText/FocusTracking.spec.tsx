@@ -117,6 +117,7 @@ test.describe('Portable Text Input', () => {
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
+      await page.keyboard.press('Tab+Tab')
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
       await expect(blockObjectInput).toBeFocused()
     })

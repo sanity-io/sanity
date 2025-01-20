@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@playwright/test": "1.49.1",
-    "@sanity/client": "^6.24.3",
+    "@sanity/client": "^6.25.0",
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
     "execa": "^2.0.0",

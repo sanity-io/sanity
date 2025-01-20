@@ -109,15 +109,15 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.24.3",
+    "@sanity/client": "^6.25.0",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
-    "@sanity/mutate": "^0.11.1",
+    "@sanity/mutate": "^0.12.1",
     "@sanity/pkg-utils": "6.13.4",
     "@sanity/prettier-config": "^1.0.3",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.169",
-    "@sanity/ui": "^2.11.2",
+    "@sanity/ui": "^2.11.3",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.17.7",
@@ -144,7 +144,7 @@
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.36.1",
-    "eslint-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
+    "eslint-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tsdoc": "^0.3.0",
@@ -169,7 +169,7 @@
     "semver": "^7.3.5",
     "turbo": "^2.3.3",
     "typescript": "5.7.3",
-    "vite": "^5.4.11",
+    "vite": "^6.0.7",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.1.8",
     "yargs": "^17.3.0"
@@ -190,7 +190,8 @@
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser",
+      "vite": "$vite"
     }
   },
   "isSanityMonorepo": true

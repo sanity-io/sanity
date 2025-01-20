@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
-    "@sanity/client": "^6.24.3",
+    "@sanity/client": "^6.25.0",
     "@sanity/codegen": "3.70.0",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/template-validator": "^2.3.2",
@@ -125,7 +125,7 @@
     "semver": "^7.3.5",
     "semver-compare": "^1.0.0",
     "tar": "^6.1.11",
-    "vite": "^5.4.11",
+    "vite": "^6.0.7",
     "vitest": "^2.1.8",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
