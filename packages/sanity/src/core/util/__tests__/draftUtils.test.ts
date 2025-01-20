@@ -4,6 +4,7 @@ import {describe, expect, it, test} from 'vitest'
 import {
   collate,
   documentIdEquals,
+  getIdPair,
   getPublishedId,
   getVersionFromId,
   getVersionId,
@@ -80,5 +81,46 @@ describe('getVersionFromId', () => {
 
   it('should return the undefined if no bundle slug is found and document is published', () => {
     expect(getVersionFromId('my-document-id')).toBe(undefined)
+  })
+})
+
+describe('getIdPair', () => {
+  test.each([
+    ['foo', undefined, {draftId: 'drafts.foo', publishedId: 'foo'}],
+    ['drafts.foo', undefined, {draftId: 'drafts.foo', publishedId: 'foo'}],
+    ['versions.r1.foo', undefined, {draftId: 'drafts.foo', publishedId: 'foo'}],
+    [
+      'foo',
+      {version: 'r1'},
+      {draftId: 'drafts.foo', publishedId: 'foo', versionId: 'versions.r1.foo'},
+    ],
+    [
+      'drafts.foo',
+      {version: 'r1'},
+      {draftId: 'drafts.foo', publishedId: 'foo', versionId: 'versions.r1.foo'},
+    ],
+    [
+      'versions.r1.foo',
+      {version: 'r1'},
+      {draftId: 'drafts.foo', publishedId: 'foo', versionId: 'versions.r1.foo'},
+    ],
+    [
+      'versions.r1.foo',
+      {version: 'r2'},
+      // Id is converted to the version specified in the options
+      {draftId: 'drafts.foo', publishedId: 'foo', versionId: 'versions.r2.foo'},
+    ],
+  ])('documentIdEquals(): %s', (id, options, result) => {
+    expect(getIdPair(id, options)).toEqual(result)
+  })
+  it("should return error if version is 'drafts'", () => {
+    expect(() => getIdPair('foo', {version: 'drafts'})).toThrowError(
+      'Version can not be "published" or "drafts"',
+    )
+  })
+  it("should return error if version is 'published'", () => {
+    expect(() => getIdPair('foo', {version: 'published'})).toThrowError(
+      'Version can not be "published" or "drafts"',
+    )
   })
 })
