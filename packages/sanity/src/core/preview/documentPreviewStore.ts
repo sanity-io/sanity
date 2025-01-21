@@ -139,7 +139,9 @@ export function createDocumentPreviewStore({
     )
   }
 
-  const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
+  const observeDocumentIdSet = createDocumentIdSetObserver(
+    versionedClient.withConfig({apiVersion: 'X'}),
+  )
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(
