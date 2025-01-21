@@ -9,12 +9,12 @@ import {
   getVersionId,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
+  PerspectiveProvider,
   useArchivedReleases,
   useEventsStore,
   usePerspective,
 } from 'sanity'
 
-import {PerspectiveProvider} from '../../../core/perspective/PerspectiveProvider'
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from './constants'
 import {usePaneOptions} from './DocumentPane'

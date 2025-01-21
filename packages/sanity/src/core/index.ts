@@ -20,6 +20,7 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,
