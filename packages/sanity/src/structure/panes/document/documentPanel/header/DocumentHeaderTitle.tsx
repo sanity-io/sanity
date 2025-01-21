@@ -1,4 +1,3 @@
-import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -44,29 +43,22 @@ export function DocumentHeaderTitle({collapsed = false}: {collapsed?: boolean}):
     return <>{t('panes.document-header-title.error.text', {error: error.message})}</>
   }
 
-  const Icon = schemaType?.options?.icon || DocumentIcon
-
   return (
-    <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0}>
+    <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0} paddingY={1}>
       {collapsed ? (
-        <>
-          <Text size={1}>
-            <Icon />
-          </Text>
-          <TitleContainer
-            muted={!value?.title}
-            size={1}
-            textOverflow="ellipsis"
-            weight={value?.title ? 'semibold' : undefined}
-            title={value?.title}
-          >
-            {value?.title || (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
-                {t('panes.document-header-title.untitled.text')}
-              </span>
-            )}
-          </TitleContainer>
-        </>
+        <TitleContainer
+          muted={!value?.title}
+          size={1}
+          textOverflow="ellipsis"
+          weight={value?.title ? 'semibold' : undefined}
+          title={value?.title}
+        >
+          {value?.title || (
+            <span style={{color: 'var(--card-muted-fg-color)'}}>
+              {t('panes.document-header-title.untitled.text')}
+            </span>
+          )}
+        </TitleContainer>
       ) : (
         <DocumentPerspectiveList />
       )}
