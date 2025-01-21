@@ -16,7 +16,7 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
-import {usePerspectiveMockReturn} from '../../src/core/releases/hooks/__tests__/__mocks__/usePerspective.mock'
+import {perspectiveContextValueMock} from '../../src/core/releases/hooks/__tests__/__mocks__/usePerspective.mock'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
@@ -64,7 +64,7 @@ export async function createTestProvider({
                             ready: true,
                           }}
                         >
-                          <PerspectiveContext.Provider value={usePerspectiveMockReturn}>
+                          <PerspectiveContext.Provider value={perspectiveContextValueMock}>
                             {children}
                           </PerspectiveContext.Provider>
                         </AddonDatasetContext.Provider>
