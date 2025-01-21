@@ -1,7 +1,7 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 
-import {useCurrentLocale} from '../../../../core/i18n/hooks/useLocale'
+import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'
 import {CalendarDay} from './CalendarDay'
 import {useWeeksOfMonth} from './utils'
 
