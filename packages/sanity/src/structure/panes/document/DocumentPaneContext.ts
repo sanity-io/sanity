@@ -21,7 +21,6 @@ import {
 
 import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
-import {type TimelineMode} from './types'
 
 /** @internal */
 export interface DocumentPaneContextValue {
@@ -65,12 +64,21 @@ export interface DocumentPaneContextValue {
   previewUrl?: string | null
   ready: boolean
   schemaType: ObjectSchemaType
-  setTimelineMode: (mode: TimelineMode) => void
+  /**
+   * @deprecated not used anymore
+   * */
+  setTimelineMode?: undefined
+  /**
+   * @deprecated not used anymore
+   * */
+  timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   timelineError: Error | null
-  timelineMode: TimelineMode
-  timelineStore: TimelineStore
+  /**
+   * Soon to be deprecated with the upcoming `releases` changes.
+   */
+  timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
@@ -85,4 +93,8 @@ export interface DocumentPaneContextValue {
   __internal_tasks?: {
     footerAction: React.ReactNode
   }
+
+  // History specific values
+  revisionId: string | null
+  lastNonDeletedRevId: string | null
 }

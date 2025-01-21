@@ -1,6 +1,6 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
+import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
@@ -61,7 +61,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isPermissionsLoading,
     isDeleting,
     isDeleted,
-    timelineStore,
+    lastNonDeletedRevId,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -113,11 +113,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
     return false
   }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
-
-  const lastNonDeletedRevId = useTimelineSelector(
-    timelineStore,
-    (state) => state.lastNonDeletedRevId,
-  )
 
   const isLiveEdit = isLiveEditEnabled(schemaType)
 

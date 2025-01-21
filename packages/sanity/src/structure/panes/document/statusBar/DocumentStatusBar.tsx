@@ -1,11 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
-import {
-  type CreateLinkMetadata,
-  isSanityCreateLinked,
-  useSanityCreateConfig,
-  useTimelineSelector,
-} from 'sanity'
+import {type CreateLinkMetadata, isSanityCreateLinked, useSanityCreateConfig} from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -26,14 +21,12 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, timelineStore, onChange: onDocumentChange} = useDocumentPane()
+  const {editState, revisionId, onChange: onDocumentChange} = useDocumentPane()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
-  // Subscribe to external timeline state changes
-  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-
+  const showingRevision = Boolean(revisionId)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 

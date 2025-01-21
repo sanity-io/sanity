@@ -1,3 +1,3 @@
 export * from './DocumentPane'
-export * from './DocumentPaneProvider'
+export {DocumentPaneProviderWrapper as DocumentPaneProvider} from './DocumentPaneProviderWrapper'
 export * from './useDocumentTitle'
