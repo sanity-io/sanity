@@ -8,6 +8,7 @@ import {
   ColorSchemeProvider,
   CopyPasteProvider,
   defineConfig,
+  EMPTY_ARRAY,
   ResourceCacheProvider,
   type SchemaTypeDefinition,
   SourceProvider,
@@ -19,6 +20,7 @@ import {
 import {Pane, PaneContent, PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
+import {PerspectiveProvider} from '../../../../src/core/perspective/PerspectiveProvider'
 import {route} from '../../../../src/router'
 import {RouterProvider} from '../../../../src/router/RouterProvider'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
@@ -83,27 +85,32 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
             <LayerProvider>
               <WorkspaceProvider workspace={mockWorkspace}>
                 <ResourceCacheProvider>
-                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                    <CopyPasteProvider>
-                      <ColorSchemeProvider>
-                        <UserColorManagerProvider>
-                          <StyledChangeConnectorRoot
-                            isReviewChangesOpen={false}
-                            onOpenReviewChanges={() => {}}
-                            onSetFocus={() => {}}
-                          >
-                            <PaneLayout height="fill">
-                              <Pane id="test-pane">
-                                <PaneContent>
-                                  <Card padding={3}>{children}</Card>
-                                </PaneContent>
-                              </Pane>
-                            </PaneLayout>
-                          </StyledChangeConnectorRoot>
-                        </UserColorManagerProvider>
-                      </ColorSchemeProvider>
-                    </CopyPasteProvider>
-                  </SourceProvider>
+                  <PerspectiveProvider
+                    selectedPerspectiveName={undefined}
+                    excludedPerspectives={EMPTY_ARRAY}
+                  >
+                    <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                      <CopyPasteProvider>
+                        <ColorSchemeProvider>
+                          <UserColorManagerProvider>
+                            <StyledChangeConnectorRoot
+                              isReviewChangesOpen={false}
+                              onOpenReviewChanges={() => {}}
+                              onSetFocus={() => {}}
+                            >
+                              <PaneLayout height="fill">
+                                <Pane id="test-pane">
+                                  <PaneContent>
+                                    <Card padding={3}>{children}</Card>
+                                  </PaneContent>
+                                </Pane>
+                              </PaneLayout>
+                            </StyledChangeConnectorRoot>
+                          </UserColorManagerProvider>
+                        </ColorSchemeProvider>
+                      </CopyPasteProvider>
+                    </SourceProvider>
+                  </PerspectiveProvider>
                 </ResourceCacheProvider>
               </WorkspaceProvider>
             </LayerProvider>
