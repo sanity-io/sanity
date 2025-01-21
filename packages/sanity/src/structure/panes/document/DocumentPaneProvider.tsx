@@ -37,8 +37,6 @@ import {
   useSchema,
   useSource,
   useTemplates,
-  useTimelineSelector,
-  useTimelineStore,
   useTranslation,
   useUnique,
   useValidationStatus,
@@ -58,15 +56,34 @@ import {
 } from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {type DocumentPaneProviderProps} from './types'
+import {
+  type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
+  type HistoryStoreProps,
+} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
+
+interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
+  historyStore: HistoryStoreProps
+}
 
 /**
  * @internal
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath} = props
+  const {children, index, pane, paneKey, onFocusPath, historyStore} = props
+  const {
+    store: timelineStore,
+    error: timelineError,
+    ready: timelineReady,
+    revisionDocument,
+    onOlderRevision,
+    sinceDocument,
+    isPristine,
+    revisionId,
+    lastNonDeletedRevId,
+  } = historyStore
+
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -152,30 +169,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const focusPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
-  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
-
-  /**
-   * Create an intermediate store which handles document Timeline + TimelineController
-   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
-   * and made available to child components via DocumentPaneContext.
-   */
-  const timelineStore = useTimelineStore({
-    documentId,
-    documentType,
-    onError: setTimelineError,
-    rev: params.rev,
-    since: params.since,
-  })
-
-  // Subscribe to external timeline state changes
-  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
-  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
-  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
-  const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
-  const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
 
   /**
    * Determine if the current document is deleted.
@@ -235,7 +228,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? sinceAttributes
+    ? sinceDocument
     : editState?.published || null
 
   const fieldActions: DocumentFieldAction[] = useMemo(
@@ -261,8 +254,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     (!params.rev || timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
-    [onOlderRevision, timelineDisplayed, value],
+    () => (onOlderRevision ? revisionDocument || {_id: value._id, _type: value._type} : value),
+    [onOlderRevision, revisionDocument, value],
   )
 
   const setTimelineRange = useCallback(
@@ -514,7 +507,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     return (
       !ready ||
-      revTime !== null ||
+      revisionId !== null ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -535,7 +528,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.draft,
     liveEdit,
     ready,
-    revTime,
+    revisionId,
     isDeleting,
     isDeleted,
     isCreateLinked,
@@ -698,22 +691,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,
-      setTimelineMode,
       setTimelineRange,
       setIsDeleting,
       isDeleting,
       isDeleted,
       timelineError,
-      timelineMode,
       timelineStore,
       title,
       value,
       views,
       formState,
       unstable_languageFilter: languageFilter,
+      revisionId,
+      lastNonDeletedRevId,
     }),
     [
-      __internal_tasks,
       actions,
       activeViewId,
       badges,
@@ -723,7 +715,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      currentInspector,
       displayed,
       documentId,
       documentIdRaw,
@@ -731,44 +722,47 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       editState,
       fieldActions,
       focusPath,
-      formState,
+      currentInspector,
+      inspectors,
+      __internal_tasks,
       handleBlur,
       handleChange,
       handleFocus,
+      setOpenPath,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
       handleMenuAction,
-      handleOnSetCollapsedFieldSet,
-      handleOnSetCollapsedPath,
       handlePaneClose,
       handlePaneSplit,
       handleSetActiveFieldGroup,
-      index,
-      inspectOpen,
-      inspectors,
-      isDeleted,
-      isDeleting,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      languageFilter,
-      menuItemGroups,
+      handleOnSetCollapsedPath,
+      handleOnSetCollapsedFieldSet,
       openInspector,
       openPath,
+      index,
+      inspectOpen,
+      validation,
+      menuItemGroups,
       paneKey,
-      permissions,
       previewUrl,
       ready,
       schemaType,
-      setOpenPath,
+      isPermissionsLoading,
+      isInitialValueLoading,
+      permissions,
       setTimelineRange,
+      isDeleting,
+      isDeleted,
       timelineError,
-      timelineMode,
       timelineStore,
       title,
-      validation,
       value,
       views,
+      formState,
+      languageFilter,
+      revisionId,
+      lastNonDeletedRevId,
     ],
   )
 
