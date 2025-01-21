@@ -85,18 +85,18 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
             <LayerProvider>
               <WorkspaceProvider workspace={mockWorkspace}>
                 <ResourceCacheProvider>
-                  <PerspectiveProvider
-                    selectedPerspectiveName={undefined}
-                    excludedPerspectives={EMPTY_ARRAY}
-                  >
-                    <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                      <CopyPasteProvider>
-                        <ColorSchemeProvider>
-                          <UserColorManagerProvider>
-                            <StyledChangeConnectorRoot
-                              isReviewChangesOpen={false}
-                              onOpenReviewChanges={() => {}}
-                              onSetFocus={() => {}}
+                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                    <CopyPasteProvider>
+                      <ColorSchemeProvider>
+                        <UserColorManagerProvider>
+                          <StyledChangeConnectorRoot
+                            isReviewChangesOpen={false}
+                            onOpenReviewChanges={() => {}}
+                            onSetFocus={() => {}}
+                          >
+                            <PerspectiveProvider
+                              selectedPerspectiveName={undefined}
+                              excludedPerspectives={EMPTY_ARRAY}
                             >
                               <PaneLayout height="fill">
                                 <Pane id="test-pane">
@@ -105,12 +105,12 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
                                   </PaneContent>
                                 </Pane>
                               </PaneLayout>
-                            </StyledChangeConnectorRoot>
-                          </UserColorManagerProvider>
-                        </ColorSchemeProvider>
-                      </CopyPasteProvider>
-                    </SourceProvider>
-                  </PerspectiveProvider>
+                            </PerspectiveProvider>
+                          </StyledChangeConnectorRoot>
+                        </UserColorManagerProvider>
+                      </ColorSchemeProvider>
+                    </CopyPasteProvider>
+                  </SourceProvider>
                 </ResourceCacheProvider>
               </WorkspaceProvider>
             </LayerProvider>
