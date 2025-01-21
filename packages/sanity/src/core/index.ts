@@ -25,6 +25,7 @@ export {
   type PerspectiveStack,
   type SelectedPerspective,
 } from './perspective/types'
+export {useExcludedPerspective} from './perspective/useExcludedPerspective'
 export {usePerspective} from './perspective/usePerspective'
 export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'

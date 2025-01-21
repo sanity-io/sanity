@@ -7,6 +7,7 @@ import {
   activeScheduledRelease,
   scheduledRelease,
 } from '../../__fixtures__/release.fixture'
+import {useExcludedPerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/useExcludedPerspective.mock'
 import {usePerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {LATEST} from '../../util/const'
@@ -14,6 +15,10 @@ import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+vi.mock('../../../perspective/useExcludedPerspective', () => ({
+  useExcludedPerspective: vi.fn(() => useExcludedPerspectiveMockReturn),
 }))
 
 const mockedSetPerspective = vi.fn()
@@ -210,11 +215,15 @@ describe('ReleasesNav', () => {
 
           // toggle to hide
           fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('rActive')
+          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'rActive',
+          )
 
           // toggle to include
           fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('rActive')
+          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'rActive',
+          )
         })
 
         it('should not allow for hiding of published perspective', async () => {
@@ -235,11 +244,14 @@ describe('ReleasesNav', () => {
           expect(within(drafts).queryByTestId('release-toggle-visibility')).toBeInTheDocument()
           // toggle to hide
           fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('drafts')
-
+          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'drafts',
+          )
           // toggle to include
           fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
-          expect(usePerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith('drafts')
+          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
+            'drafts',
+          )
         })
 
         it('should not allow hiding of the current perspective', async () => {
@@ -274,7 +286,7 @@ describe('ReleasesNav', () => {
       })
 
       it('applies existing layering when opened', async () => {
-        usePerspectiveMockReturn.isPerspectiveExcluded.mockImplementation((id) => {
+        useExcludedPerspectiveMockReturn.isPerspectiveExcluded.mockImplementation((id) => {
           return id === 'rActive'
         })
 

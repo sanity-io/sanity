@@ -25,14 +25,12 @@ export interface PerspectiveContextValue {
 
   /* Return the current global release */
   selectedPerspective: SelectedPerspective
-  /* Add/remove excluded perspectives */
-  toggleExcludedPerspective: (perspectiveId: string) => void
-  /* Check if a perspective is excluded */
-  isPerspectiveExcluded: (perspectiveId: string) => boolean
   /**
    * The stacked array of releases ids ordered chronologically to represent the state of documents at the given point in time.
    */
   perspectiveStack: PerspectiveStack
+  /* The excluded perspectives */
+  excludedPerspectives: string[]
 }
 
 type ExtractArray<Union> = Union extends unknown[] ? Union : never
