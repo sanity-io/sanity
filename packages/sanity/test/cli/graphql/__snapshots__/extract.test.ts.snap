@@ -1747,17 +1747,16 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
     },
     {
       "fields": [],
-      "interfaces": undefined,
       "kind": "Union",
-      "name": "AOrB",
+      "name": "AOrBOrUnion",
       "types": [
         "A",
         "B",
+        "Union",
       ],
     },
     {
       "fields": [],
-      "interfaces": undefined,
       "kind": "Union",
       "name": "AOrUnion",
       "types": [
@@ -2556,7 +2555,6 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
       "children": {
         "description": undefined,
         "isReference": true,
-        "references": undefined,
         "type": "AOrUnion",
       },
       "description": undefined,
@@ -2609,8 +2607,9 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
             "references": [
               "A",
               "B",
+              "Union",
             ],
-            "type": "AOrB",
+            "type": "AOrBOrUnion",
           },
           "description": undefined,
           "fieldName": "body",

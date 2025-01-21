@@ -22,7 +22,7 @@ export const union = defineType({
       of: [
         {
           type: 'reference',
-          to: [{type: 'a'}, {type: 'b'}],
+          to: [{type: 'a'}, {type: 'b'}, {type: 'union'}],
         },
         {type: 'a'},
       ],
