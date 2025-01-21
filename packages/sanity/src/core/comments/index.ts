@@ -1,5 +1,7 @@
 // this file exports the public api for comments (ends up in the sanity package) – be mindful of what gets re-exported
 export {
+  CommentDeleteDialog,
+  CommentDisabledIcon,
   CommentInlineHighlightSpan,
   CommentInput,
   type CommentInputHandle,
@@ -12,6 +14,7 @@ export {
   CommentsEnabledProvider,
   CommentsIntentProvider,
   CommentsProvider,
+  type CommentsSelectedPath,
   CommentsSelectedPathProvider,
 } from './context'
 export {hasCommentMessageValue, isTextSelectionComment} from './helpers'
