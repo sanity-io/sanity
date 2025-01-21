@@ -1,7 +1,8 @@
 import {useCallback, useState} from 'react'
 
+import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useTimeZone from '../../hooks/useTimeZone'
-import {Calendar} from './Calendar'
+import {CalendarDay} from './CalendarDay'
 
 export interface ToolCalendarProps {
   onSelect: (date?: Date) => void
@@ -24,11 +25,12 @@ export const ToolCalendar = (props: ToolCalendarProps) => {
   )
 
   return (
-    <Calendar
+    <CalendarFilter
       focusedDate={focusedDate}
       onFocusedDateChange={handleFocusDateChange}
       onSelect={onSelect}
       selectedDate={selectedDate}
+      renderCalendarDay={CalendarDay}
     />
   )
 }
