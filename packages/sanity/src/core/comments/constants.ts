@@ -38,10 +38,6 @@ export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [
   },
 ]
 
-/**
- * @internal
- * @hidden
- */
 export const COMMENT_REACTION_EMOJIS: Record<CommentReactionShortNames, string> = {
   ':-1:': '👎',
   ':+1:': '👍',

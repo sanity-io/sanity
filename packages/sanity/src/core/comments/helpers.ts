@@ -4,9 +4,6 @@ import {useMemo, useState} from 'react'
 
 import {type CommentContext, type CommentDocument, type CommentMessage} from './types'
 
-/**
- * @internal
- */
 export function useCommentHasChanged(message: CommentMessage): boolean {
   const [prevMessage] = useState<CommentMessage>(message)
 
@@ -26,9 +23,6 @@ export function hasCommentMessageValue(value: CommentMessage): boolean {
   )
 }
 
-/**
- * @internal
- */
 export function commentIntentIfDiffers(
   parent?: CommentDocument,
   comment?: CommentDocument,
