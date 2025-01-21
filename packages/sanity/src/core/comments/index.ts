@@ -10,6 +10,7 @@ export {COMMENTS_INSPECTOR_NAME} from './constants'
 export {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
+  CommentsIntentProvider,
   CommentsProvider,
   CommentsSelectedPathProvider,
 } from './context'
