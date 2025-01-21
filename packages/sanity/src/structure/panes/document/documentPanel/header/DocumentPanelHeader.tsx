@@ -121,7 +121,7 @@ export const DocumentPanelHeader = memo(
       [contextMenuNodes, referenceElement],
     )
 
-    const title = useMemo(() => <DocumentHeaderTitle />, [])
+    const title = useMemo(() => <DocumentHeaderTitle collapsed={collapsed} />, [collapsed])
     const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
     const backButton = useMemo(
       () =>

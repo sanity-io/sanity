@@ -83,7 +83,7 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // switch to original doc
-    page.getByText('PublishedDraft').first().click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
@@ -127,7 +127,7 @@ withDefaultClient((context) => {
     await expect(documentStatus.nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
-    page.getByText('PublishedDraft').first().click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
@@ -176,7 +176,7 @@ withDefaultClient((context) => {
     await expect(documentStatus.nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
-    page.getByText('PublishedDraft').first().click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
