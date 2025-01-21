@@ -34,7 +34,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
-  // Subscribe to external timeline state changes
   const showingRevision = Boolean(revisionId)
   const showingVersion = editState?.version !== null
 

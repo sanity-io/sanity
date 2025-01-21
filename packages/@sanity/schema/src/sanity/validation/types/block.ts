@@ -23,7 +23,13 @@ const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
 const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
-const supportedBuiltInObjectTypes = ['file', 'image', 'object', 'reference']
+const supportedBuiltInObjectTypes = [
+  'file',
+  'image',
+  'object',
+  'reference',
+  'crossDatasetReference',
+]
 
 export default function validateBlockType(typeDef: any, visitorContext: any) {
   const problems = []

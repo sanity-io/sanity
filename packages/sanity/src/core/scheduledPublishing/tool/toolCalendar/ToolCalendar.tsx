@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-import {CalendarFilter} from '../../../../ui-components/inputs/DateFilters/calendar'
+import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useTimeZone from '../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'
 
