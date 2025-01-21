@@ -263,8 +263,12 @@ const Turbo = memo(function Turbo(props: TurboProps) {
       }
     }
     const nextBatchSlice = [...nextBatch].slice(0, LIVE_QUERY_CACHE_BATCH_SIZE)
-    if (nextBatchSlice.length === 0) return
-    setBatch((prevBatch) => [...prevBatch.slice(-LIVE_QUERY_CACHE_BATCH_SIZE), nextBatchSlice])
+    if (nextBatchSlice.length === 0) return undefined
+    const raf = requestAnimationFrame(() =>
+      // eslint-disable-next-line max-nested-callbacks
+      setBatch((prevBatch) => [...prevBatch.slice(-LIVE_QUERY_CACHE_BATCH_SIZE), nextBatchSlice]),
+    )
+    return () => cancelAnimationFrame(raf)
   }, [batch, cache, turboIds])
 
   // Use the same listen instance and patch documents as they come in

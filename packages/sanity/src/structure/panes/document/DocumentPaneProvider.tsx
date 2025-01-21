@@ -80,7 +80,19 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion} = props
+  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+  const {
+    store: timelineStore,
+    error: timelineError,
+    ready: timelineReady,
+    revisionDocument,
+    onOlderRevision,
+    sinceDocument,
+    isPristine,
+    revisionId,
+    lastNonDeletedRevId,
+  } = historyStore
+
   const schema = useSchema()
   const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
@@ -240,20 +252,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const focusPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
-  // TODO: Deprecate this, it could be replaced by an internal state in the HistorySelector inspector.
-  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-
-  const {
-    store: timelineStore,
-    error: timelineError,
-    ready: timelineReady,
-    revisionId,
-    revisionDocument,
-    onOlderRevision,
-    sinceDocument,
-    isPristine,
-    lastNonDeletedRevId,
-  } = props.historyStore
 
   /**
    * Determine if the current document is deleted.
@@ -791,13 +789,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
-        setTimelineMode,
         setTimelineRange,
         setIsDeleting,
         isDeleting,
         isDeleted,
         timelineError,
-        timelineMode,
         timelineStore,
         title,
         value,
@@ -863,7 +859,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       permissions,
       setTimelineRange,
       timelineError,
-      timelineMode,
       timelineStore,
       title,
       value,

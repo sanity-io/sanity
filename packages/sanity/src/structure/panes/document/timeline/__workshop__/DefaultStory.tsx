@@ -2,7 +2,7 @@ import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
 
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {type DocumentPaneNode} from '../../../../types'
-import {DocumentPaneProvider} from '../../DocumentPaneProvider'
+import {DocumentPaneProviderWrapper} from '../../DocumentPaneProviderWrapper'
 import {TimelineMenu} from '../timelineMenu'
 
 const DOCUMENT_ID = 'test'
@@ -20,7 +20,7 @@ const PANE: DocumentPaneNode = {
 export default function DefaultStory() {
   return (
     <StructureToolProvider>
-      <DocumentPaneProvider index={0} itemId={DOCUMENT_ID} pane={PANE} paneKey={DOCUMENT_ID}>
+      <DocumentPaneProviderWrapper index={0} itemId={DOCUMENT_ID} pane={PANE} paneKey={DOCUMENT_ID}>
         <Box padding={2}>
           <Stack space={2}>
             <Card padding={3} shadow={1} tone="primary">
@@ -44,7 +44,7 @@ export default function DefaultStory() {
             </Card>
           </Stack>
         </Box>
-      </DocumentPaneProvider>
+      </DocumentPaneProviderWrapper>
     </StructureToolProvider>
   )
 }

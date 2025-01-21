@@ -23,7 +23,6 @@ import {
 
 import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
-import {type TimelineMode} from './types'
 
 /** @internal */
 export interface DocumentPaneContextValue {
@@ -72,14 +71,18 @@ export interface DocumentPaneContextValue {
   previewUrl?: string | null
   ready: boolean
   schemaType: ObjectSchemaType
-  setTimelineMode: (mode: TimelineMode) => void
+  /**
+   * @deprecated not used anymore
+   * */
+  setTimelineMode?: undefined
+  /**
+   * @deprecated not used anymore
+   * */
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   timelineError: Error | null
-  timelineMode: TimelineMode
   /**
-   * @deprecated use `useEvents()` instead.
-   * If you need to use this, opt in by setting the `beta.eventsAPI.enabled` feature flag to `true`.
+   * Soon to be deprecated with the upcoming `releases` changes.
    */
   timelineStore?: TimelineStore
   title: string | null
@@ -98,7 +101,7 @@ export interface DocumentPaneContextValue {
     footerAction: React.ReactNode
   }
 
-  // History specific
+  // History specific values
   revisionId: string | null
   lastNonDeletedRevId: string | null
 }

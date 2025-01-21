@@ -31,7 +31,7 @@ const Root = styled(Popover)`
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
+  const {setTimelineRange, timelineError, ready, timelineStore} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
@@ -47,14 +47,12 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const {t} = useTranslation('studio')
 
   const handleOpen = useCallback(() => {
-    setTimelineMode(mode)
     setOpen(true)
-  }, [mode, setTimelineMode])
+  }, [])
 
   const handleClose = useCallback(() => {
-    setTimelineMode('closed')
     setOpen(false)
-  }, [setTimelineMode])
+  }, [])
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -73,7 +71,6 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     (revChunk: Chunk) => {
       try {
         const [sinceId, revId] = timelineStore?.findRangeForRev(revChunk) || [null, null]
-        setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
         toast.push({
@@ -84,14 +81,13 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, t, timelineStore, toast],
+    [setTimelineRange, t, timelineStore, toast],
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
       try {
         const [sinceId, revId] = timelineStore?.findRangeForSince(sinceChunk) || [null, null]
-        setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
         toast.push({
@@ -102,7 +98,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, t, timelineStore, toast],
+    [setTimelineRange, t, timelineStore, toast],
   )
 
   const handleLoadMore = useCallback(() => {

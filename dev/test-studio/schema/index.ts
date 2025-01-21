@@ -6,6 +6,7 @@ import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {collapsibleObjects} from './debug/collapsibleObjects'
@@ -241,6 +242,7 @@ export const schemaTypes = [
   recursivePopover,
   patchOnMountDebug,
   simpleArrayOfObjects,
+  arrayCapabilities,
   simpleReferences,
   reservedFieldNames,
   review,

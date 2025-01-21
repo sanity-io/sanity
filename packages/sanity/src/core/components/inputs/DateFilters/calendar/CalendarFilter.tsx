@@ -12,10 +12,11 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useTranslation} from 'sanity'
 
-import useTimeZone from '../../../../core/scheduledPublishing/hooks/useTimeZone'
-import {Button, TooltipDelayGroupProvider} from '../../..'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
 import {type CalendarDayProps} from './CalendarDay'
 import {CalendarMonth} from './CalendarMonth'

@@ -18,7 +18,7 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
 
-  const timelineStore = useTimelineStore({
+  const store = useTimelineStore({
     documentId: getPublishedId(options.id),
     documentType: options.type,
     onError: setTimelineError,
@@ -27,20 +27,17 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
     version: selectedReleaseId,
   })
 
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
+  const revTime = useTimelineSelector(store, (state) => state.revTime)
   // TODO: Maybe derive this from the `revTime` selector, ifRevTime === onOlderRevision:true?
-  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
-  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
-  const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
-  const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
-  const lastNonDeletedRevId = useTimelineSelector(
-    timelineStore,
-    (state) => state.lastNonDeletedRevId,
-  )
+  const onOlderRevision = useTimelineSelector(store, (state) => state.onOlderRevision)
+  const timelineDisplayed = useTimelineSelector(store, (state) => state.timelineDisplayed)
+  const sinceAttributes = useTimelineSelector(store, (state) => state.sinceAttributes)
+  const timelineReady = useTimelineSelector(store, (state) => state.timelineReady)
+  const isPristine = useTimelineSelector(store, (state) => state.isPristine)
+  const lastNonDeletedRevId = useTimelineSelector(store, (state) => state.lastNonDeletedRevId)
   const historyStoreProps = useMemo(
     () => ({
-      store: timelineStore,
+      store: store,
       error: timelineError,
       revisionId: revTime?.id || null,
       onOlderRevision: onOlderRevision,
@@ -51,7 +48,7 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
       lastNonDeletedRevId,
     }),
     [
-      timelineStore,
+      store,
       timelineError,
       revTime?.id,
       onOlderRevision,

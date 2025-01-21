@@ -7,7 +7,7 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useStat
 import {type SearchParam, useRouter} from 'sanity/router'
 
 import {Button as StudioButton, Tooltip} from '../../../../ui-components'
-import {CalendarFilter} from '../../../../ui-components/inputs/DateFilters/calendar/CalendarFilter'
+import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
