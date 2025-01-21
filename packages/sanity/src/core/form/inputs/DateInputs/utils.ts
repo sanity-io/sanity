@@ -1,4 +1,4 @@
-import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
+import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 
 export function isValidDate(date: Date): boolean {
   return date instanceof Date && !isNaN(date.valueOf())
