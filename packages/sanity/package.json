@@ -156,6 +156,7 @@
     "@portabletext/block-tools": "^1.1.2",
     "@portabletext/editor": "^1.25.0",
     "@portabletext/react": "^3.0.0",
+    "@portabletext/toolkit": "^2.0.16",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.0.6",
     "@sanity/bifur-client": "^0.4.1",
