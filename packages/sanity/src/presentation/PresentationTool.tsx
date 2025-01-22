@@ -281,6 +281,7 @@ export default function PresentationTool(props: {
     })
 
     comlink.on('visual-editing/documents', (data) => {
+      console.log('called visial-editing/documents', {data})
       setDocumentsOnPage(
         'visual-editing',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -495,6 +496,8 @@ export default function PresentationTool(props: {
     },
     [router],
   )
+
+  console.log('in tool', documentsOnPage)
 
   return (
     <>

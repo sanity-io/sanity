@@ -36,6 +36,7 @@ export function useDocumentsOnPage(
   const setDocumentsOnPage = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (key: string, perspective: ClientPerspective, sourceDocuments: DocumentOnPage[] = []) => {
+      // console.log({key, perspective})
       const documents = sourceDocuments.filter((sourceDocument) => {
         if ('_projectId' in sourceDocument && sourceDocument._projectId) {
           // eslint-disable-next-line no-warning-comments
@@ -79,6 +80,7 @@ export function useDocumentsOnPage(
   )
 
   const documentsOnPage = useMemo(() => {
+    // console.log('in the onpage back', {perspective})
     const keyedCache = perspective === 'published' ? published : previewDrafts
     const uniqueDocuments = Object.values(keyedCache).reduce((acc, cache) => {
       Object.values(cache).forEach((doc) => {

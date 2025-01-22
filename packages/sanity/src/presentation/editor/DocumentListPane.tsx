@@ -54,6 +54,8 @@ export function DocumentListPane(props: {
     [mainDocumentState, refs],
   )
 
+  console.log({refs, ids})
+
   const pane: Extract<PaneNode, {type: 'documentList'}> = useMemo(
     () => ({
       id: '$root',
@@ -68,6 +70,8 @@ export function DocumentListPane(props: {
     }),
     [ids, t],
   )
+
+  console.log({pane})
 
   const [errorParams, setErrorParams] = useState<{
     info: ErrorInfo
