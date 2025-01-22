@@ -190,8 +190,7 @@
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
-      "@typescript-eslint/parser": "$@typescript-eslint/parser",
-      "vite": "$vite"
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
     }
   },
   "isSanityMonorepo": true
