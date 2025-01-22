@@ -419,8 +419,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
-        specifier: ^1.24.0
-        version: 1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
+        specifier: ^1.25.0
+        version: 1.25.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.0(react@19.0.0)
@@ -1344,8 +1344,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
-        specifier: ^1.24.0
-        version: 1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^1.25.0
+        version: 1.25.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.0(react@18.3.1)
@@ -4169,24 +4169,18 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@1.1.1':
-    resolution: {integrity: sha512-GOKHPC+PtdXgfBsEcK/xeYA/iqtZUXYJy7KU5eue43a9txMSYp3RRtaXh+m5VZmjjoRRCXJPAW4T4jKiNjPfjQ==}
-    peerDependencies:
-      '@sanity/types': ^3.71.0
-      '@types/react': 18 || 19
-
   '@portabletext/block-tools@1.1.2':
     resolution: {integrity: sha512-JOlcQzvdrgMdOTC7ydlXJYGqq4nx8pnaRjgXtIMFR+uGCzAWPlxnRMpw1g9JnLl9u+366DXUhnHqJHqTw2l6AA==}
     peerDependencies:
       '@sanity/types': ^3.71.1
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.24.0':
-    resolution: {integrity: sha512-CRBdfys/c2p0SbzVIXFXgg4uVu4UbTS497QUgVrPt/q+TIK1uphvGEvveMZu79UypWVOk8ZArTN7mnX9PCFTMQ==}
+  '@portabletext/editor@1.25.0':
+    resolution: {integrity: sha512-rWcjmV8S9S3tnOLBnZF+8+GBIyBRBQPEPmUro0U2gcGwrj2ZfPoTxtWCki/F7/dh4IITazAK2r9j08yUKELX1g==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/schema': ^3.71.0
-      '@sanity/types': ^3.71.0
+      '@sanity/schema': ^3.71.1
+      '@sanity/types': ^3.71.1
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.1
 
@@ -14432,13 +14426,6 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@1.1.1(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)':
-    dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.0.7
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
-
   '@portabletext/block-tools@1.1.2(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
@@ -14446,9 +14433,9 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
+  '@portabletext/editor@1.25.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
     dependencies:
-      '@portabletext/block-tools': 1.1.1(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
+      '@portabletext/block-tools': 1.1.2(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/patches': 1.1.2
       '@portabletext/to-html': 2.0.13
       '@sanity/schema': link:packages/@sanity/schema
@@ -14471,9 +14458,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
+  '@portabletext/editor@1.25.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
     dependencies:
-      '@portabletext/block-tools': 1.1.1(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
+      '@portabletext/block-tools': 1.1.2(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/patches': 1.1.2
       '@portabletext/to-html': 2.0.13
       '@sanity/schema': link:packages/@sanity/schema
