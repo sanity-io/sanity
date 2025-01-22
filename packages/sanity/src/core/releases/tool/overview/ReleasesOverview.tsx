@@ -232,18 +232,21 @@ export function ReleasesOverview() {
     )
   }
 
-  const renderRowActions = useCallback(({datum}: {datum: TableRelease | unknown}) => {
-    const release = datum as TableRelease
+  const renderRowActions = useCallback(
+    ({datum}: {datum: TableRelease | unknown}) => {
+      const release = datum as TableRelease
 
-    if (release.isDeleted) return null
+      if (release.isDeleted) return null
 
-    return (
-      <ReleaseMenuButton
-        release={release}
-        documentsCount={release.documentsMetadata?.documentCount ?? 0}
-      />
-    )
-  }, [])
+      const documentsCount =
+        (releaseGroupMode === 'open'
+          ? release.documentsMetadata?.documentCount
+          : release.finalDocumentStates?.length) ?? 0
+
+      return <ReleaseMenuButton release={release} documentsCount={documentsCount} />
+    },
+    [releaseGroupMode],
+  )
 
   const filteredReleases = useMemo(() => {
     if (!releaseFilterDate) return releaseGroupMode === 'open' ? tableReleases : archivedReleases
