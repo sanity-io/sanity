@@ -2555,6 +2555,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
       "children": {
         "description": undefined,
         "isReference": true,
+        "references": [
+          "A",
+          "Union",
+        ],
         "type": "AOrUnion",
       },
       "description": undefined,

@@ -408,7 +408,7 @@ export function extractFromSanitySchema(
 
     return {
       type: name,
-      // references: targetTypes,
+      ...(targetTypes ? {references: targetTypes} : {}),
       ...base,
     }
   }

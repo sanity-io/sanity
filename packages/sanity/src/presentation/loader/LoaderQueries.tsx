@@ -524,7 +524,6 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   return applySourceDocuments(
     result,
     resultSourceMap,
-    // @ts-expect-error - @TODO fix later
     (sourceDocument) => {
       if (sourceDocument._projectId) {
         // @TODO Handle cross dataset references
