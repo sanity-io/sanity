@@ -272,7 +272,7 @@
     "use-sync-external-store": "^1.2.0",
     "uuid": "^11.0.5",
     "valibot": "0.31.1",
-    "vite": "^5.4.11",
+    "vite": "^6",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
