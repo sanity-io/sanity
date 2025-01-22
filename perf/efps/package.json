@@ -36,7 +36,7 @@
     "sanity": "workspace:*",
     "serve-handler": "^6.1.5",
     "source-map": "^0.7.4",
-    "vite": "^6.0.7",
+    "vite": "^5.4.11",
     "yargs": "17.3.0"
   }
 }
