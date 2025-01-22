@@ -16,7 +16,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       const mutations = snapshots.version
         ? patchMutation
         : [
-            version.createIfNotExists({
+            version.create({
               _type: typeName,
               ...initialDocument,
             }),
