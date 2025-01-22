@@ -9,6 +9,7 @@ import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {type SelectedPerspective} from '../hooks/usePerspective'
 import {RELEASES_INTENT} from '../plugin'
 import {isReleaseDocument} from '../store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {isDraftPerspective, isPublishedPerspective} from '../util/util'
 
@@ -89,7 +90,4 @@ export function CurrentGlobalPerspectiveLabel({
   }
 
   return <AnimatedMotionDiv>{visibleLabelChildren()}</AnimatedMotionDiv>
-}
-function getReleaseIdFromReleaseDocumentId(_id: string): string | undefined {
-  throw new Error('Function not implemented.')
 }
