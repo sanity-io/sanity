@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {AddIcon, ChevronDownIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- MenuItem requires props, only supported by @sanity/ui
 import {Box, Button, Flex, Menu, MenuDivider, MenuItem, Spinner} from '@sanity/ui'
@@ -44,9 +45,12 @@ const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 const ASAP_RANGE_OFFSET = 2
 
-export function GlobalPerspectiveMenu(): React.JSX.Element {
+export function GlobalPerspectiveMenu({
+  selectedReleaseId,
+}: {
+  selectedReleaseId: ReleaseId | undefined
+}): React.JSX.Element {
   const {loading, data: releases} = useActiveReleases()
-  const {selectedReleaseId} = usePerspective()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
 

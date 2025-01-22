@@ -39,7 +39,7 @@ export function ReleasesNav(): React.JSX.Element {
     ),
   )
 
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
   const {t} = useTranslation()
 
@@ -131,7 +131,7 @@ export function ReleasesNav(): React.JSX.Element {
       <Flex gap={0}>
         <Box flex="none">{releasesToolLink}</Box>
         <AnimatePresence>{currentGlobalPerspectiveLabel}</AnimatePresence>
-        <GlobalPerspectiveMenu />
+        <GlobalPerspectiveMenu selectedReleaseId={selectedReleaseId} />
         {!isDraftPerspective(selectedPerspective) && (
           <div>
             <Button
