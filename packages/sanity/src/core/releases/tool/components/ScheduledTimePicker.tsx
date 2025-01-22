@@ -1,9 +1,9 @@
 import {format, isValid} from 'date-fns'
 import {useCallback, useState} from 'react'
 
-import {MONTH_PICKER_VARIANT} from '../../../../ui-components/inputs/DateInputs/calendar/Calendar'
-import {DatePicker} from '../../../../ui-components/inputs/DateInputs/DatePicker'
-import {LazyTextInput} from '../../../../ui-components/inputs/DateInputs/LazyTextInput'
+import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
+import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
+import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput'
 
 type ScheduledTimePickerProps = {
   initialValue?: Date
