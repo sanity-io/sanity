@@ -419,7 +419,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.1(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
-        specifier: ^1.22.0
+        specifier: ^1.24.0
         version: 1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
@@ -1344,7 +1344,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.1(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)
       '@portabletext/editor':
-        specifier: ^1.22.0
+        specifier: ^1.24.0
         version: 1.24.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
