@@ -158,8 +158,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
     if (
-      displayed &&
-      getVersionFromId(displayed?._id || '') !== selectedReleaseId &&
+      displayed?._id &&
+      getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
       !isCreatingDocument
     ) {

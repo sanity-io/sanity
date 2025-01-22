@@ -5,9 +5,9 @@ import {
   getDraftId,
   getVersionId,
   type ReleaseDocument,
+  useActiveReleases,
   useDocumentVersions,
   usePerspective,
-  useActiveReleases,
 } from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {
