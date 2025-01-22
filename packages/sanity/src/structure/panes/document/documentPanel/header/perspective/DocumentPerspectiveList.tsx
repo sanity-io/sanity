@@ -296,7 +296,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         <VersionChip
           tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
           selected
-          // disabled
           onClick={() => {}}
           locked={false}
           tone={getReleaseTone(filteredReleases.inCreation)}
