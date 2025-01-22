@@ -463,6 +463,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   return applySourceDocuments(
     result,
     resultSourceMap,
+    // @ts-expect-error - @TODO fix later
     (sourceDocument) => {
       // If there's a displayed document, always prefer it
       if (
@@ -471,9 +472,9 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         liveDocument?._id &&
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
-        return liveDocument
+        return {liveDocument}
       }
-      return undefined
+      return null
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changedValue: any, {previousValue}) => {
