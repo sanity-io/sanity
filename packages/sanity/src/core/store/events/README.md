@@ -7,7 +7,7 @@ The **Events API** introduces a new mechanism for accessing `DocumentGroupEvent`
 This events are accessible through:
 
 ```
-/data/events/<dataset/documents/<documentId>
+/data/history/<datasetName>/events/documents/<documentsIds>
 ```
 
 This API is designed to be lightweight, providing only the essential data required to render the UI. Additionally, it offers insights into the document variants impacted by each event.

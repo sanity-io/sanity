@@ -4,7 +4,6 @@ import {useObservable} from 'react-rx'
 import {useClient} from '../../../../hooks/useClient'
 import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {useSource} from '../../../../studio/source'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'
 import {EVENTS_INITIAL_VALUE, getReleaseEvents} from './getReleaseEvents'
@@ -19,7 +18,8 @@ export interface ReleaseEvents {
 }
 
 export function useReleaseEvents(releaseId: string): ReleaseEvents {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // Needs vX version of the API
+  const client = useClient({apiVersion: 'X'})
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
   const source = useSource()

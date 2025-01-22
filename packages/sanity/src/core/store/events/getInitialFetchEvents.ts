@@ -47,7 +47,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
         events: Record<string, Omit<DocumentGroupEvent, 'id'>[]>
         nextCursor: string
       }>({
-        url: `/data/events/${client.config().dataset}/documents/${documentId}?${params.toString()}`,
+        url: `/data/history/${client.config().dataset}/events/documents/${documentId}?${params.toString()}`,
         tag: 'get-document-events',
       })
       .pipe(
