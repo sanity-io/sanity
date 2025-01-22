@@ -16,7 +16,7 @@
     "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
   },
   "devDependencies": {
-    "@sanity/client": "^6.27.0",
+    "@sanity/client": "^6.27.1",
     "@swc-node/register": "^1.10.9",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
