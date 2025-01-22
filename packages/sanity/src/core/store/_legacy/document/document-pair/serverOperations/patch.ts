@@ -13,16 +13,21 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       const patchMutation = version.patch(patches)
       // Note: if the document doesn't exist on the server yet, we need to create it first. We only want to do this if we can't see it locally
       // if it's been deleted on the server we want that to become a mutation error when submitting.
-      const mutations = snapshots.version
-        ? patchMutation
+      const ensureVersion = snapshots.version
+        ? version.patch([
+            {
+              unset: ['_empty_action_guard_pseudo_field_'],
+            },
+          ])
         : [
             version.create({
-              _type: typeName,
               ...initialDocument,
+              _id: idPair.draftId,
+              _type: typeName,
             }),
           ]
       // No drafting, so patch and commit the published document
-      version.mutate(mutations)
+      version.mutate([...ensureVersion, ...patchMutation])
 
       return
     }

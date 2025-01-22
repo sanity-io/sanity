@@ -157,6 +157,12 @@ describe('patch', () => {
         {
           patch: {
             id: 'versions.x.my-id',
+            unset: ['_empty_action_guard_pseudo_field_'],
+          },
+        },
+        {
+          patch: {
+            id: 'versions.x.my-id',
             unset: ['newValue'],
           },
         },
