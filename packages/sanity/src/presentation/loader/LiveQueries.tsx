@@ -463,7 +463,6 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   return applySourceDocuments(
     result,
     resultSourceMap,
-    // @ts-expect-error - @TODO fix later
     (sourceDocument) => {
       // If there's a displayed document, always prefer it
       if (
@@ -472,7 +471,14 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         liveDocument?._id &&
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
-        return {liveDocument}
+        if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
+          return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
+        }
+        return {
+          ...liveDocument,
+          _id: liveDocument._id || sourceDocument._id,
+          _type: liveDocument._type || sourceDocument._type,
+        }
       }
       return null
     },
