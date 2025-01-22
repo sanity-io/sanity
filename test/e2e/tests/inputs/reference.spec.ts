@@ -34,9 +34,11 @@ withDefaultClient((context) => {
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
     const authorListbox = page.locator('#author-listbox')
+    const popover = page.locator("[data-ui='Popover']")
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
+    await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
     // Select the first document in the list.
@@ -51,6 +53,7 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
+    await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
     // Select the next document in the list.
