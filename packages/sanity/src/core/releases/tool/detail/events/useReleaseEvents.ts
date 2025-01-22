@@ -23,7 +23,7 @@ export function useReleaseEvents(releaseId: string): ReleaseEvents {
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
   const source = useSource()
-  const eventsAPIEnabled = Boolean(source.beta?.eventsAPI?.enabled)
+  const eventsAPIEnabled = Boolean(source.beta?.eventsAPI?.releases)
 
   const releaseEvents = useMemo(
     () =>

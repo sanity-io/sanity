@@ -79,7 +79,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         hidden={paneRouterTab !== 'history'}
         id="history-panel"
       >
-        {source.beta?.eventsAPI?.enabled ? (
+        {source.beta?.eventsAPI?.documents ? (
           <EventsSelector showList={paneRouterTab === 'history'} />
         ) : (
           <HistorySelector showList={paneRouterTab === 'history'} />
@@ -92,7 +92,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         id="review-panel"
         height="fill"
       >
-        {source.beta?.eventsAPI?.enabled ? (
+        {source.beta?.eventsAPI?.documents ? (
           <>
             {paneRouterTab === 'review' ? (
               <EventsInspector showChanges={paneRouterTab === 'review'} />
