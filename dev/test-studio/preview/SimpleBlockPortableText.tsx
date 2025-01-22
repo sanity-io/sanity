@@ -24,10 +24,11 @@ export function SimpleBlockPortableText(): React.JSX.Element {
     {
       _id: string
       title: string | null
+      bodyString: string
       body: PortableTextBlock[]
       notes: {_key: string; title?: string; minutes?: number; notes?: PortableTextBlock[]}[]
     }[]
-  >(/* groq */ `*[_type == "simpleBlock"]{_id,title,body,notes}`)
+  >(/* groq */ `*[_type == "simpleBlock"]{_id,title,"bodyString":pt::text(body),body,notes}`)
 
   if (error) {
     throw error
@@ -52,6 +53,7 @@ export function SimpleBlockPortableText(): React.JSX.Element {
             }}
           >
             <h1>{item.title || 'Untitled'}</h1>
+            <p>{item.bodyString}</p>
             <PortableText components={components} value={item.body} />
             {item.notes?.map((note) => (
               <div key={note._key}>
