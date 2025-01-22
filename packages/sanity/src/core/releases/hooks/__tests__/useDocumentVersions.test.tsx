@@ -5,10 +5,8 @@ import {describe, expect, it, type Mock, vi} from 'vitest'
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
-import {getPublishedId, type PublishedId} from '../../../util/draftUtils'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {type ReleaseDocument, useActiveReleases} from '../../store'
-import {useReleasesIds} from '../../store/useReleasesIds'
+import {type ReleaseDocument} from '../../store'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 vi.mock('../../store', () => ({
@@ -24,34 +22,8 @@ vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 
-vi.mock('../../../util/draftUtils', async (importOriginal) => ({
-  ...(await importOriginal()),
-  getPublishedId: vi.fn(),
-}))
-
-async function setupMocks({
-  releases,
-  versionIds,
-}: {
-  releases: ReleaseDocument[]
-  versionIds: string[]
-}) {
-  const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-  const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
+async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds: string[]}) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
-  const mockedGetPublishedId = getPublishedId as Mock<typeof getPublishedId>
-
-  mockUseActiveReleases.mockReturnValue({
-    data: releases,
-    loading: false,
-    dispatch: vi.fn(),
-  })
-
-  mockUseReleasesIds.mockReturnValue({
-    releasesIds: [],
-  })
-
-  mockedGetPublishedId.mockReturnValue('document-1' as PublishedId)
 
   mockDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentIdSet: vi
@@ -88,7 +60,7 @@ describe('useDocumentVersions', () => {
     })
     const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
     await waitFor(() => {
-      expect(result.current.data).toEqual([activeASAPRelease])
+      expect(result.current.data).toEqual(['versions.rASAP.document-1'])
     })
   })
 })

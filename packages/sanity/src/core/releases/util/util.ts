@@ -31,14 +31,6 @@ export function getDocumentIsInPerspective(
   return releaseId === perspective
 }
 
-/** @internal */
-export function versionDocumentExists(
-  documentVersions: ReleaseDocument[] = [],
-  releaseId: string,
-): boolean {
-  return documentVersions.some((version) => version._id === releaseId)
-}
-
 export function isDraftOrPublished(versionName: string): boolean {
   return versionName === 'drafts' || versionName === 'published'
 }

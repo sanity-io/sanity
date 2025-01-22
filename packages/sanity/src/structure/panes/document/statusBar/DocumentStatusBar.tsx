@@ -1,13 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
-import {
-  type CreateLinkMetadata,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isSanityCreateLinked,
-  usePerspective,
-  useSanityCreateConfig,
-} from 'sanity'
+import {type CreateLinkMetadata, isSanityCreateLinked, useSanityCreateConfig} from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -28,14 +21,12 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, revisionId, onChange: onDocumentChange, existsInBundle} = useDocumentPane()
-  const {selectedPerspective} = usePerspective()
+  const {editState, revisionId, onChange: onDocumentChange} = useDocumentPane()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
   const showingRevision = Boolean(revisionId)
-  const showingVersion = editState?.version !== null
 
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -60,11 +51,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     )
   } else if (showingRevision) {
     actions = <HistoryStatusBarActions />
-  } else if (
-    (existsInBundle && showingVersion) ||
-    isDraftPerspective(selectedPerspective) ||
-    isPublishedPerspective(selectedPerspective)
-  ) {
+  } else {
     actions = <DocumentStatusBarActions />
   }
 

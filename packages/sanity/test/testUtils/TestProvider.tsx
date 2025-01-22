@@ -20,7 +20,7 @@ import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {
-  config?: SingleWorkspace
+  config?: Partial<SingleWorkspace>
   client?: SanityClient
   resources?: LocaleResourceBundle[]
 }

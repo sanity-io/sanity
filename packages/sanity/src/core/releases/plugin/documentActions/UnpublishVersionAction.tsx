@@ -38,6 +38,8 @@ export const UnpublishVersionAction = (
     setDialogOpen(true)
   }, [])
 
+  if (!version) return null
+
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 
   if (insufficientPermissions) {
@@ -52,17 +54,16 @@ export const UnpublishVersionAction = (
   }
 
   return {
-    dialog: dialogOpen &&
-      version && {
-        type: 'custom',
-        component: (
-          <UnpublishVersionDialog
-            documentVersionId={version._id}
-            documentType={type}
-            onClose={() => setDialogOpen(false)}
-          />
-        ),
-      },
+    dialog: dialogOpen && {
+      type: 'custom',
+      component: (
+        <UnpublishVersionDialog
+          documentVersionId={version._id}
+          documentType={type}
+          onClose={() => setDialogOpen(false)}
+        />
+      ),
+    },
     /** @todo should be switched once we have the document actions updated */
     label: t('action.unpublish-doc-actions'),
     icon: UnpublishIcon,

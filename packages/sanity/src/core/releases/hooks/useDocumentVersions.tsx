@@ -4,17 +4,15 @@ import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../../store'
-import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
+import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
-import {type ReleaseDocument, useActiveReleases} from '../store'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 export interface DocumentPerspectiveProps {
   documentId: string
 }
 
 export interface DocumentPerspectiveState {
-  data: ReleaseDocument[]
+  data: string[]
   error?: unknown
   loading: boolean
 }
@@ -31,7 +29,6 @@ const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
 
-  const {data: releases} = useActiveReleases()
   const publishedId = getPublishedId(documentId)
 
   const documentPreviewStore = useDocumentPreviewStore()
@@ -42,34 +39,17 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       .pipe(
         swr(`${publishedId}`),
         map(({value}) => ({
-          documentIds: value.documentIds,
+          data: value.documentIds,
           loading: false,
           error: null,
         })),
         catchError((error) => {
-          return of({error, documentIds: [] as string[], loading: false})
+          return of({error, data: [] as string[], loading: false})
         }),
       )
   }, [documentPreviewStore, publishedId])
 
-  const result = useObservable(observable, {
-    documentIds: [] as string[],
-    error: null,
-    loading: true,
-  })
-  const filterData = useMemo(
-    () =>
-      result.documentIds.flatMap((docId) => {
-        const matchingBundle = releases?.find(
-          (release) => getVersionFromId(docId) === getReleaseIdFromReleaseDocumentId(release._id),
-        )
-        return matchingBundle || []
-      }),
-    [releases, result.documentIds],
-  )
+  const result = useObservable(observable, {data: [], error: null, loading: true})
 
-  return useMemo(
-    () => ({data: filterData, loading: result.loading, error: result.error}),
-    [filterData, result],
-  )
+  return result
 }

@@ -45,7 +45,6 @@ export {
   useReleasesIds,
   useVersionOperations,
   VersionChip,
-  versionDocumentExists,
   VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'

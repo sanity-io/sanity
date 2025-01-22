@@ -1,6 +1,8 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
+  getVersionFromId,
+  isReleaseDocument,
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
   ScrollContainer,
@@ -24,6 +26,7 @@ import {
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
+import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {FormView} from './documentViews'
 
 interface DocumentPanelProps {
@@ -67,7 +70,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
-    existsInBundle,
   } = useDocumentPane()
   const {params} = usePaneRouter()
   const {collapsed: layoutCollapsed} = usePaneLayout()
@@ -143,16 +145,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
-  const isScheduledRelease =
-    typeof selectedPerspective === 'object' && 'state' in selectedPerspective
-      ? isReleaseScheduledOrScheduling(selectedPerspective)
-      : false
-
   const banners = useMemo(() => {
     if (params?.historyVersion) {
       return <ArchivedReleaseDocumentBanner />
     }
-    if ((!existsInBundle && selectedReleaseId) || isScheduledRelease) {
+    const isCreatingDocument = displayed && !displayed._createdAt
+    const isScheduledRelease =
+      isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
+
+    if (isScheduledRelease) {
+      return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
+    }
+    if (
+      displayed?._id &&
+      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      ready &&
+      !isCreatingDocument
+    ) {
       return (
         <AddToReleaseBanner
           documentId={value._id}
@@ -190,10 +199,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     documentId,
-    existsInBundle,
     isLiveEdit,
     isPermissionsLoading,
-    isScheduledRelease,
     permissions?.granted,
     ready,
     requiredPermission,

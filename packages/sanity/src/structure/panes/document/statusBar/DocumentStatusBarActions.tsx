@@ -2,7 +2,12 @@
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {type DocumentActionComponent, type DocumentActionDescription, Hotkeys} from 'sanity'
+import {
+  type DocumentActionComponent,
+  type DocumentActionDescription,
+  Hotkeys,
+  usePerspective,
+} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -22,8 +27,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, existsInBundle} = useDocumentPane()
-
+  const {__internal_tasks} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -49,36 +54,34 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [firstActionState])
 
   const sideMenuItems = useMemo(() => {
-    return existsInBundle ? [firstActionState, ...menuActionStates] : menuActionStates
-  }, [existsInBundle, firstActionState, menuActionStates])
+    return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
+  }, [selectedReleaseId, firstActionState, menuActionStates])
 
   /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && (
+      {firstActionState && !selectedReleaseId && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
-              {!existsInBundle && (
-                <Button
-                  data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
-                  disabled={disabled || Boolean(firstActionState.disabled)}
-                  icon={firstActionState.icon}
-                  // eslint-disable-next-line react/jsx-handler-names
-                  onClick={firstActionState.onHandle}
-                  ref={setButtonElement}
-                  size="large"
-                  text={firstActionState.label}
-                  tone={firstActionState.tone || 'primary'}
-                />
-              )}
+              <Button
+                data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
+                disabled={disabled || Boolean(firstActionState.disabled)}
+                icon={firstActionState.icon}
+                // eslint-disable-next-line react/jsx-handler-names
+                onClick={firstActionState.onHandle}
+                ref={setButtonElement}
+                size="large"
+                text={firstActionState.label}
+                tone={firstActionState.tone || 'primary'}
+              />
             </Stack>
           </Tooltip>
         </LayerProvider>
       )}
       {/* if it's in version we always only want to show the items on the side menu and not on the main action */}
-      {((showMenu && menuActionStates.length > 0) || existsInBundle) && (
+      {((showMenu && menuActionStates.length > 0) || selectedReleaseId) && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
@@ -89,7 +92,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions: allActions, connectionState, documentId, editState, displayed} = useDocumentPane()
+  const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])

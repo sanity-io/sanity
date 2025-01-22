@@ -35,7 +35,11 @@ export function createObservePathsDocumentPair(options: {
 
     return observeDocumentPairAvailability(draftId, {version}).pipe(
       switchMap((availability) => {
-        if (!availability.draft.available && !availability.published.available) {
+        if (
+          !availability.draft.available &&
+          !availability.published.available &&
+          !availability.version?.available
+        ) {
           // short circuit, neither draft nor published is available so no point in trying to get a snapshot
           return of({
             id: publishedId,

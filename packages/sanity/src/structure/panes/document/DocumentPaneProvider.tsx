@@ -22,7 +22,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
+  getVersionFromId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
@@ -37,7 +37,6 @@ import {
   useCopyPaste,
   useDocumentOperation,
   useDocumentValuePermissions,
-  useDocumentVersions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -161,7 +160,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
-    version: selectedReleaseId,
+    version: params.version,
   })
 
   const initialValue = useUnique(initialValueRaw)
@@ -178,7 +177,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType, {
     version: selectedReleaseId,
   })
-  const {data: documentVersions} = useDocumentVersions({documentId})
 
   let value: SanityDocumentLike = initialValue.value
 
@@ -577,11 +575,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
-  const existsInBundle =
-    typeof selectedReleaseId !== 'undefined' &&
-    documentVersions.some(
-      (version) => getReleaseIdFromReleaseDocumentId(version._id) === selectedReleaseId,
-    )
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -589,15 +582,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
-    // in cases where the document has drafts but the schema is live edit,
-    // there is a risk of data loss, so we disable editing in this case
-    const isLiveEditAndDraftPerspective = liveEdit && !selectedPerspectiveName
-    const isLiveEditAndPublishedPerspective = liveEdit && selectedPerspectiveName === 'published'
-    const isSystemPerspectiveApplied =
-      isLiveEditAndPublishedPerspective || (selectedPerspectiveName ? existsInBundle : true)
+    // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
+    if (liveEdit && selectedPerspectiveName !== 'published') {
+      return true
+    }
+
+    // If a release is selected, validate that the document id matches the selected release id
+    if (selectedReleaseId && getVersionFromId(value._id) !== selectedReleaseId) {
+      return true
+    }
 
     return (
-      !isSystemPerspectiveApplied ||
       !ready ||
       revisionId !== null ||
       hasNoPermission ||
@@ -607,7 +602,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraftPerspective ||
       isCreateLinked ||
       isReleaseLocked
     )
@@ -620,7 +614,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState.transactionSyncLock?.enabled,
     liveEdit,
     selectedPerspectiveName,
-    existsInBundle,
+    value._id,
+    selectedReleaseId,
     ready,
     revisionId,
     isDeleting,
@@ -755,9 +750,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         documentId,
         documentIdRaw,
         documentType,
-        documentVersions,
         editState,
-        existsInBundle,
         fieldActions,
         focusPath,
         inspector: currentInspector || null,
@@ -820,9 +813,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       documentId,
       documentIdRaw,
       documentType,
-      documentVersions,
       editState,
-      existsInBundle,
       fieldActions,
       focusPath,
       currentInspector,
