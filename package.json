@@ -171,7 +171,7 @@
     "typescript": "5.7.3",
     "vite": "^6.0.11",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.9",
+    "vitest": "^3.0.5",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
