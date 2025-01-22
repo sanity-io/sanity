@@ -181,7 +181,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
           </Menu>
         }
         popover={{
-          constrainSize: true,
+          constrainSize: false,
           fallbackPlacements: ['top-end'],
           placement: 'bottom',
           portal: true,
