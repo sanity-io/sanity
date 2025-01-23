@@ -14,7 +14,7 @@ import {
 } from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
 import {ReleasesList} from '../ReleasesList'
 
-vi.mock('../../store/useActiveReleases', () => ({
+vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 

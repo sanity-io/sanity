@@ -13,21 +13,13 @@ import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__m
 import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
-vi.mock('../../../perspective/usePerspective', () => ({
+vi.mock('../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
-vi.mock('../../../perspective/useExcludedPerspective', () => ({
-  useExcludedPerspective: vi.fn(() => useExcludedPerspectiveMockReturn),
-}))
-
 const mockedSetPerspective = vi.fn()
-vi.mock('../../../perspective/useSetPerspective', () => ({
-  useSetPerspective: vi.fn(() => mockedSetPerspective),
-}))
-
-vi.mock('../../store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+vi.mock('../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
