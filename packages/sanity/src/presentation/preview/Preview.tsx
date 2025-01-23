@@ -82,11 +82,13 @@ export const Preview = memo(
       vercelProtectionBypass,
     } = props
 
+    const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
+    const urlPerspective = stablePerspective === null ? perspective : stablePerspective
     const previewUrl = useMemo(() => {
       const url = new URL(initialUrl)
       // Always set the perspective that's being used, even if preview mode isn't configured
       if (!url.searchParams.get(urlSearchParamPreviewPerspective)) {
-        url.searchParams.set(urlSearchParamPreviewPerspective, perspective)
+        url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
       }
 
       if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
@@ -102,7 +104,19 @@ export const Preview = memo(
       }
 
       return url
-    }, [initialUrl, perspective, vercelProtectionBypass])
+    }, [initialUrl, urlPerspective, vercelProtectionBypass])
+
+    useEffect(() => {
+      /**
+       * If the preview iframe is connected to the loader, we know that switching the perspective can be done without reloading the iframe.
+       */
+      if (loadersConnection === 'connected') {
+        /**
+         * Only set the stable perspective if it hasn't been set yet.
+         */
+        setStablePerspective((prev) => (prev === null ? perspective : prev))
+      }
+    }, [loadersConnection, perspective])
 
     const {t} = useTranslation(presentationLocaleNamespace)
     const {devMode} = usePresentationTool()
