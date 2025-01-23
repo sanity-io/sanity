@@ -2,8 +2,8 @@
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {type PropsWithChildren} from 'react'
+import {IntentLink} from 'sanity/router'
 
-import {IntentLink} from '../../../router/IntentLink'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../components/ReleaseAvatar'
 import {type SelectedPerspective} from '../hooks/usePerspective'
