@@ -1,5 +1,5 @@
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -21,36 +21,78 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
 const setCreateBundleDialogOpen = vi.fn()
 
 describe('ReleasesList', () => {
-  beforeEach(async () => {
-    mockUseActiveReleases.mockReturnValue({
-      ...useActiveReleasesMockReturn,
-      data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+  describe('when releases are enabled', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedReleaseId={undefined}
+            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
     })
 
-    const wrapper = await createTestProvider()
-    render(
-      <Menu>
-        <ReleasesList
-          setScrollContainer={vi.fn()}
-          onScroll={vi.fn()}
-          isRangeVisible={false}
-          selectedReleaseId={undefined}
-          setCreateBundleDialogOpen={setCreateBundleDialogOpen}
-          scrollElementRef={{current: null}}
-        />
-      </Menu>,
-      {wrapper},
-    )
+    it('renders releases when not loading', async () => {
+      expect(screen.getByText('active asap Release')).toBeInTheDocument()
+      expect(screen.getByText('active Release')).toBeInTheDocument()
+      expect(screen.getByText('undecided Release')).toBeInTheDocument()
+    })
+
+    it('calls setCreateBundleDialogOpen when create new release button is clicked', () => {
+      fireEvent.click(screen.getByTestId('create-new-release-button'))
+      expect(setCreateBundleDialogOpen).toHaveBeenCalledWith(true)
+    })
   })
 
-  it('renders releases when not loading', async () => {
-    expect(screen.getByText('active asap Release')).toBeInTheDocument()
-    expect(screen.getByText('active Release')).toBeInTheDocument()
-    expect(screen.getByText('undecided Release')).toBeInTheDocument()
-  })
+  describe('when releases are disabled', () => {
+    beforeEach(() => {
+      beforeEach(async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+        })
+        const wrapper = await createTestProvider()
+        render(
+          <Menu>
+            <ReleasesList
+              setScrollContainer={vi.fn()}
+              onScroll={vi.fn()}
+              isRangeVisible={false}
+              selectedReleaseId={undefined}
+              setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+              scrollElementRef={{current: null}}
+              areReleasesEnabled={false}
+            />
+          </Menu>,
+          {wrapper},
+        )
+      })
+    })
 
-  it('calls setCreateBundleDialogOpen when create new release button is clicked', () => {
-    fireEvent.click(screen.getByTestId('release.action.create-new'))
-    expect(setCreateBundleDialogOpen).toHaveBeenCalledWith(true)
+    it('should hide the releases list, but show publish and draft', async () => {
+      waitFor(() => {
+        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
+        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
+        expect(screen.queryByTestId('release-rASAP')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('release-rScheduled')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('release-rActive')).not.toBeInTheDocument()
+      })
+    })
+
+    it('should hide the create new release', async () => {
+      expect(screen.queryByTestId('create-new-release-button')).toBeNull()
+    })
   })
 })

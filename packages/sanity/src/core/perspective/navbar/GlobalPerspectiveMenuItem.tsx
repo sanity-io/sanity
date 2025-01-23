@@ -137,7 +137,12 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       $inRange={Boolean(rangePosition)}
       ref={ref}
     >
-      <MenuItem onClick={handleOnReleaseClick} padding={1} pressed={active}>
+      <MenuItem
+        onClick={handleOnReleaseClick}
+        padding={1}
+        pressed={active}
+        data-testid={`release-${releaseId}`}
+      >
         <Flex align="flex-start" gap={1}>
           <Box
             flex="none"

@@ -54,7 +54,11 @@ export function ReleasesNav(): React.JSX.Element {
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
       <Flex gap={0}>
-        {areReleasesEnabled && <Box flex="none">{releasesToolLink}</Box>}
+        {areReleasesEnabled && (
+          <Box data-testid="releases-tool-link" flex="none">
+            {releasesToolLink}
+          </Box>
+        )}
         <AnimatePresence>
           <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
         </AnimatePresence>

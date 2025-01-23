@@ -30,6 +30,11 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
+const mockedUseWorkspace = vi.fn()
+vi.mock('../../../studio/useWorkspace', () => ({
+  useWorkspace: vi.fn(() => mockedUseWorkspace),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   IntentLink: vi.fn().mockImplementation((props) => <a {...props} />),
@@ -302,6 +307,16 @@ describe('ReleasesNav', () => {
         expect(
           within(activeReleaseMenuItem).queryByTestId('release-avatar-primary'),
         ).not.toBeInTheDocument()
+      })
+
+      describe('when releases are disabled', () => {
+        beforeEach(() => {
+          mockedUseWorkspace.mockReturnValue({releases: {enabled: false}})
+        })
+
+        it('should hide calendar icon', async () => {
+          expect(screen.queryByTestId('releases-tool-link')).toBeNull()
+        })
       })
     })
   })

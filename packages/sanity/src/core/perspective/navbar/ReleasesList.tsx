@@ -148,7 +148,7 @@ export function ReleasesList({
             icon={AddIcon}
             onClick={handleCreateBundleClick}
             text={t('release.action.create-new')}
-            data-testid="release.action.create-new"
+            data-testid="create-new-release-button"
           />
         </>
       )}
