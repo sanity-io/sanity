@@ -230,12 +230,12 @@ export function getReferenceInfo(
                 id: publishedId,
                 availability,
                 preview: {
-                  draft: (isRecord(value.draft.snapshot) ? value.draft : undefined) as
+                  draft: (isRecord(value.draft.snapshot) ? value.draft.snapshot : undefined) as
                     | PreviewDocumentValue
                     | undefined,
-                  published: (isRecord(value.published.snapshot) ? value.published : undefined) as
-                    | PreviewDocumentValue
-                    | undefined,
+                  published: (isRecord(value.published.snapshot)
+                    ? value.published.snapshot
+                    : undefined) as PreviewDocumentValue | undefined,
                   version: (isRecord(value.version?.snapshot)
                     ? value.version.snapshot
                     : undefined) as PreviewDocumentValue | undefined,
