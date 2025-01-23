@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
-import {type RouterContextValue, type RouterState, type SearchParam, useRouter} from 'sanity/router'
+import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'
 
 import {parseRouterState} from './lib/parse'
 import {
@@ -100,16 +100,14 @@ export function useParams({
     params.view,
   ])
 
-  const router = useRouter()
-
   const searchParams = useMemo<PresentationSearchParams>(() => {
     const pruned = pruneObject({
-      perspective: router.stickyParams.perspective,
+      perspective: params.perspective,
       preview: params.preview,
       viewport: params.viewport,
     })
     return pruned
-  }, [params.preview, params.viewport, router.stickyParams.perspective])
+  }, [params.perspective, params.preview, params.viewport])
 
   const routerStateRef = useRef(routerState)
 
@@ -163,8 +161,6 @@ export function useParams({
     },
     [routerNavigate, frameStateRef],
   )
-
-  // console.log({searchParams, params})
 
   return {
     navigate,
