@@ -53,6 +53,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     constrainSize = true,
     monthPickerVariant,
     padding,
+    disableInput,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -104,7 +105,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     <LazyTextInput
       ref={ref}
       {...rest}
-      readOnly={readOnly}
+      readOnly={disableInput || readOnly}
       value={inputValue}
       onChange={onInputChange}
       suffix={
@@ -116,6 +117,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
             <Popover
               constrainSize={constrainSize}
               data-testid="date-input-dialog"
+              referenceElement={ref.current}
               portal
               content={
                 <Box overflow="auto">

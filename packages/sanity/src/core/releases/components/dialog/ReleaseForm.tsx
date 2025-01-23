@@ -1,17 +1,14 @@
-import {EarthGlobeIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
-import {format, isValid} from 'date-fns'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {InfoOutlineIcon} from '@sanity/icons'
+import {Card, Flex, Stack, TabList, Text} from '@sanity/ui'
+import {isValid} from 'date-fns'
+import {useCallback, useEffect, useState} from 'react'
 
-import {Button, Tab, Tooltip} from '../../../../ui-components'
-import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
-import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
-import {DateTimeInput} from '../../../components/inputs/DateInputs/DateTimeInput'
-import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {Tab, Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
+import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
 
 const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
@@ -32,13 +29,11 @@ export function ReleaseForm(props: {
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
+  // const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
 
   const handleBundlePublishAtCalendarChange = useCallback(
-    (date: Date | null) => {
-      if (!date) return
-
+    (date: Date) => {
       setInputValue(date)
       onChange({...value, metadata: {...value.metadata, intendedPublishAt: date.toISOString()}})
     },
@@ -124,35 +119,10 @@ export function ReleaseForm(props: {
             </Flex>
           </Card>
           {buttonReleaseType === 'scheduled' && (
-            <TabPanel
-              aria-labelledby="release-timing-at-time-tab"
-              flex={1}
-              id="release-timing-at-time"
-              style={{outline: 'none'}}
-              tabIndex={-1}
-            >
-              <Flex flex={1} justify="space-between">
-                <DateTimeInput
-                  selectTime
-                  monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                  onChange={handleBundlePublishAtCalendarChange}
-                  calendarLabels={calendarLabels}
-                  value={inputValue}
-                  inputValue={format(inputValue, 'PPp')}
-                  constrainSize={false}
-                  padding={0}
-                  readOnly
-                />
-
-                <Button
-                  icon={EarthGlobeIcon}
-                  mode="bleed"
-                  size="default"
-                  text={`${timeZone.abbreviation}`}
-                  onClick={dialogTimeZoneShow}
-                />
-              </Flex>
-            </TabPanel>
+            <ScheduleDatePicker
+              initialValue={publishAt}
+              onChange={handleBundlePublishAtCalendarChange}
+            />
           )}
         </Flex>
       </Stack>
