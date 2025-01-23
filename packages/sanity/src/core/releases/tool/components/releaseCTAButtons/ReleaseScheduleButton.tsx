@@ -1,7 +1,7 @@
 import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {format, isValid, parse} from 'date-fns'
+import {format, isValid, parse, startOfMinute} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
@@ -84,7 +84,7 @@ export const ReleaseScheduleButton = ({
   const handleBundlePublishAtCalendarChange = useCallback((date: Date | null) => {
     if (!date) return
 
-    setPublishAt(date)
+    setPublishAt(startOfMinute(date))
   }, [])
 
   const handleBundleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
@@ -132,6 +132,7 @@ export const ReleaseScheduleButton = ({
                 calendarLabels={calendarLabels}
                 inputValue={publishAt ? format(publishAt, 'PP HH:mm') : ''}
                 constrainSize={false}
+                isPastDisabled
               />
             </Stack>
           </label>

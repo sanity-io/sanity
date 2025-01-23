@@ -1,7 +1,7 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import {Flex, TabPanel} from '@sanity/ui'
-import {format} from 'date-fns'
-import {useMemo} from 'react'
+import {Flex} from '@sanity/ui'
+import {addMinutes, format, isBefore} from 'date-fns'
+import {useMemo, useState} from 'react'
 
 import {Button} from '../../../ui-components/button'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
@@ -24,9 +24,14 @@ export const ScheduleDatePicker = ({
   const {t} = useTranslation()
   const {timeZone} = useTimeZone()
   const {dialogTimeZoneShow} = useDialogTimeZone()
+  const [isBeforeNow, setIsBeforeNow] = useState(false)
 
   const handleBundlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
+    if (isBefore(date, addMinutes(new Date(), 1))) {
+      setIsBeforeNow(true)
+      return
+    }
 
     onChange(date)
   }
@@ -34,34 +39,27 @@ export const ScheduleDatePicker = ({
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   return (
-    <TabPanel
-      aria-labelledby="release-timing-at-time-tab"
-      flex={1}
-      id="release-timing-at-time"
-      style={{outline: 'none'}}
-      tabIndex={-1}
-    >
-      <Flex flex={1} justify="space-between">
-        <DateTimeInput
-          selectTime
-          monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-          onChange={handleBundlePublishAtCalendarChange}
-          calendarLabels={calendarLabels}
-          value={inputValue}
-          inputValue={format(inputValue, 'PPp')}
-          constrainSize={false}
-          padding={0}
-          disableInput
-        />
+    <Flex flex={1} justify="space-between">
+      <DateTimeInput
+        selectTime
+        monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+        onChange={handleBundlePublishAtCalendarChange}
+        calendarLabels={calendarLabels}
+        value={inputValue}
+        inputValue={format(inputValue, 'PPp')}
+        constrainSize={false}
+        padding={0}
+        isPastDisabled
+        disableInput
+      />
 
-        <Button
-          icon={EarthGlobeIcon}
-          mode="bleed"
-          size="default"
-          text={`${timeZone.abbreviation}`}
-          onClick={dialogTimeZoneShow}
-        />
-      </Flex>
-    </TabPanel>
+      <Button
+        icon={EarthGlobeIcon}
+        mode="bleed"
+        size="default"
+        text={`${timeZone.abbreviation}`}
+        onClick={dialogTimeZoneShow}
+      />
+    </Flex>
   )
 }
