@@ -188,6 +188,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
               padding={0}
               value={inputValue}
               onChange={handleBundlePublishAtChange}
+              isPastDisabled
               showTimezone
             />
           </>

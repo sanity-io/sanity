@@ -42,6 +42,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
   showTimezone?: boolean
+  isPastDisabled?: boolean
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -76,6 +77,7 @@ export const Calendar = forwardRef(function Calendar(
     timeStep = 1,
     onSelect,
     labels,
+    isPastDisabled,
     monthPickerVariant = 'select',
     padding = 2,
     showTimezone = false,
@@ -312,6 +314,7 @@ export const Calendar = forwardRef(function Calendar(
             focused={focusedDate}
             onSelect={handleDateChange}
             selected={selectedDate}
+            isPastDisabled={isPastDisabled}
           />
           {PRESERVE_FOCUS_ELEMENT}
         </Box>
