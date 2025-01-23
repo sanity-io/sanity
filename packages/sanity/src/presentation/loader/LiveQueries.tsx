@@ -197,8 +197,6 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
     if (comlink) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       const {projectId, dataset} = clientConfig
-      // @todo - Can this be migrated/deprecated in favour of emitting
-      // `presentation/perspective` at a higher level?
       comlink.post('loader/perspective', {
         projectId: projectId!,
         dataset: dataset!,
@@ -471,9 +469,16 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         liveDocument?._id &&
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
-        return liveDocument
+        if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
+          return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
+        }
+        return {
+          ...liveDocument,
+          _id: liveDocument._id || sourceDocument._id,
+          _type: liveDocument._type || sourceDocument._type,
+        }
       }
-      return undefined
+      return null
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changedValue: any, {previousValue}) => {
@@ -483,11 +488,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
       }
       return changedValue
     },
-    // TODO: Update applySourceDocuments to support releases.
-    Array.isArray(perspective) &&
-      perspective.some((part) => typeof part === 'string' && part.startsWith('r') && part !== 'raw')
-      ? 'previewDrafts'
-      : (perspective as ClientPerspective),
+    perspective,
   )
 }
 
