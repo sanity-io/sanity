@@ -5,7 +5,8 @@ import {createTestProvider} from '../../../../../../../test/testUtils/TestProvid
 import {type ReleaseDocument} from '../../../../store/types'
 import {VersionContextMenu} from '../VersionContextMenu'
 
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   IntentLink: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
   route: {
     create: vi.fn(),

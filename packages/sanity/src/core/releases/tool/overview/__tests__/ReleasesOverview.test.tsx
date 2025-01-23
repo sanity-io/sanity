@@ -8,6 +8,10 @@ import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQue
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
+  mockUsePerspective,
+  usePerspectiveMockReturn,
+} from '../../../../perspective/__mocks__/usePerspective.mock'
+import {
   getLocalTimeZoneMockReturn,
   mockGetLocaleTimeZone,
   mockUseTimeZone,
@@ -21,10 +25,6 @@ import {
   publishedASAPRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
-import {
-  mockUsePerspective,
-  usePerspectiveMockReturn,
-} from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
   mockUseActiveReleases,
@@ -85,8 +85,13 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-vi.mock('../../../hooks/usePerspective', () => ({
+vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+const mockedSetPerspective = vi.fn()
+vi.mock('../../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
@@ -301,7 +306,7 @@ describe('ReleasesOverview', () => {
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
-      expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
+      expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
     })
 
     it('will show pinned release in release list', async () => {

@@ -1,9 +1,9 @@
 import {type ClientPerspective, type ReleaseId} from '@sanity/client'
 
+import {type PerspectiveStack} from '../../perspective/types'
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {type ReleaseDocument} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {type PerspectiveStack} from '.'
 
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:

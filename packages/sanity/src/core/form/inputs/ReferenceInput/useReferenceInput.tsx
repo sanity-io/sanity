@@ -12,7 +12,7 @@ import {
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
-import {usePerspective} from '../../../releases/hooks/usePerspective'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../releases/store/useReleasesIds'
 import {useDocumentPreviewStore} from '../../../store'

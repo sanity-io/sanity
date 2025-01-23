@@ -8,13 +8,13 @@ import {styled} from 'styled-components'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
+import {usePerspective} from '../../../../../../../perspective/usePerspective'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {usePerspective} from '../../../../../../../releases/hooks/usePerspective'
 import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
 import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
 import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'

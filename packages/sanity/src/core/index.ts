@@ -20,6 +20,15 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {PerspectiveProvider} from './perspective/PerspectiveProvider'
+export {
+  type PerspectiveContextValue,
+  type PerspectiveStack,
+  type SelectedPerspective,
+} from './perspective/types'
+export {useExcludedPerspective} from './perspective/useExcludedPerspective'
+export {usePerspective} from './perspective/usePerspective'
+export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {
@@ -34,14 +43,12 @@ export {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   LATEST,
-  type PerspectiveValue,
   type ReleaseDocument,
   RELEASES_INTENT,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
   useIsReleaseActive,
-  usePerspective,
   useReleasesIds,
   useVersionOperations,
   VersionChip,

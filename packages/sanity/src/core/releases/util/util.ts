@@ -1,5 +1,5 @@
+import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type SelectedPerspective} from '../hooks/usePerspective'
 import {type ReleaseDocument} from '../store/types'
 import {LATEST} from './const'
 

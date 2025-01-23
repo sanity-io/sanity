@@ -5,12 +5,12 @@ import {omit} from 'lodash'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith, switchMap} from 'rxjs/operators'
 
+import {type PerspectiveStack} from '../../../../perspective/types'
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
 import {
   type VersionsRecord,
   type VersionTuple,
 } from '../../../../preview/utils/getPreviewStateObservable'
-import {type PerspectiveStack} from '../../../../releases'
 import {createSearch} from '../../../../search'
 import {
   collate,

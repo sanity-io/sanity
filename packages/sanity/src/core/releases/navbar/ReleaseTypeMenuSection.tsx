@@ -3,7 +3,7 @@ import {Flex, Label} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../hooks/usePerspective'
+import {usePerspective} from '../../perspective/usePerspective'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {

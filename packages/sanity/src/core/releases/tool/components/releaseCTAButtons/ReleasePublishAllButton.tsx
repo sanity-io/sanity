@@ -6,9 +6,10 @@ import {useCallback, useMemo, useState} from 'react'
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
+import {usePerspective} from '../../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
-import {usePerspective} from '../../../hooks/usePerspective'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -29,6 +30,7 @@ export const ReleasePublishAllButton = ({
   const {publishRelease} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
+  const setPerspective = useSetPerspective()
   const telemetry = useTelemetry()
   const publish2 = useMemo(() => {
     if (supportsLocalStorage) {
@@ -71,7 +73,7 @@ export const ReleasePublishAllButton = ({
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
       ) {
-        perspective.setPerspective('drafts')
+        setPerspective('drafts')
       }
     } catch (publishingError) {
       toast.push({
@@ -90,7 +92,16 @@ export const ReleasePublishAllButton = ({
     } finally {
       setPublishBundleStatus('idle')
     }
-  }, [release, publishBundleStatus, publishRelease, telemetry, toast, t, perspective])
+  }, [
+    release,
+    publishBundleStatus,
+    publishRelease,
+    telemetry,
+    toast,
+    t,
+    perspective.selectedPerspective,
+    setPerspective,
+  ])
 
   const confirmPublishDialog = useMemo(() => {
     if (publishBundleStatus === 'idle') return null

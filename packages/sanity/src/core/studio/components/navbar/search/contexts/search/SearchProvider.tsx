@@ -5,7 +5,7 @@ import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
-import {usePerspective} from '../../../../../../releases/hooks/usePerspective'
+import {usePerspective} from '../../../../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
 import {isPerspectiveRaw, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'

@@ -1,6 +1,7 @@
 import {type ReleaseId} from '@sanity/client'
 import {useMemo} from 'react'
 import {
+  EMPTY_ARRAY,
   EventsProvider,
   getDraftId,
   getPublishedId,
@@ -8,6 +9,7 @@ import {
   getVersionId,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
+  PerspectiveProvider,
   useArchivedReleases,
   useEventsStore,
   usePerspective,
@@ -72,24 +74,18 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
 
   const value = useMemo(() => eventsStore, [eventsStore])
 
-  const forcedProviderVersion = useMemo(() => {
-    if (historyVersion) {
-      return {
-        selectedPerspectiveName: historyVersion,
-        selectedReleaseId: historyVersion,
-        isReleaseLocked: true,
-      }
-    }
-    return undefined
-  }, [historyVersion])
-
   return (
     <EventsProvider value={value}>
-      <DocumentPaneProvider
-        {...props}
-        historyStore={historyStoreProps}
-        forcedVersion={forcedProviderVersion}
-      />
+      {historyVersion ? (
+        <PerspectiveProvider
+          selectedPerspectiveName={historyVersion}
+          excludedPerspectives={EMPTY_ARRAY}
+        >
+          <DocumentPaneProvider {...props} historyStore={historyStoreProps} />
+        </PerspectiveProvider>
+      ) : (
+        <DocumentPaneProvider {...props} historyStore={historyStoreProps} />
+      )}
     </EventsProvider>
   )
 }

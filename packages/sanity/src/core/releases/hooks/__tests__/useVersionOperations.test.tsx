@@ -2,16 +2,21 @@ import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {useReleaseOperationsMockReturn} from '../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useVersionOperations} from '../useVersionOperations'
-import {usePerspectiveMockReturn} from './__mocks__/usePerspective.mock'
 
 vi.mock('../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
-vi.mock('../usePerspective', () => ({
+vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+const mockedUseSetPerspective = vi.fn()
+vi.mock('../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedUseSetPerspective),
 }))
 
 describe('useVersionOperations', () => {
@@ -32,7 +37,7 @@ describe('useVersionOperations', () => {
       'documentId',
       undefined,
     )
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('releaseId')
+    expect(mockedUseSetPerspective).toHaveBeenCalledWith('releaseId')
   })
 
   it('should discard a version successfully', async () => {

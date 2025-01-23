@@ -4,7 +4,7 @@ import {type ReactNode} from 'react'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 
-import {type PerspectiveStack} from '../../releases/hooks/usePerspective'
+import {type PerspectiveStack} from '../../perspective/types'
 import {
   getDraftId,
   getPublishedId,

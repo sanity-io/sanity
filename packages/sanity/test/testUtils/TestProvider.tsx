@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
-import {AddonDatasetContext} from 'sanity/_singletons'
+import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 
 import {
   CopyPasteProvider,
@@ -16,6 +16,7 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
+import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
@@ -63,7 +64,9 @@ export async function createTestProvider({
                             ready: true,
                           }}
                         >
-                          {children}
+                          <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                            {children}
+                          </PerspectiveContext.Provider>
                         </AddonDatasetContext.Provider>
                       </ResourceCacheProvider>
                     </CopyPasteProvider>

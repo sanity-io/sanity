@@ -3,18 +3,23 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease, archivedScheduledRelease} from '../../../../__fixtures__/release.fixture'
 import {
   mockUsePerspective,
   usePerspectiveMockReturn,
-} from '../../../../hooks/__tests__/__mocks__/usePerspective.mock'
+} from '../../../../../perspective/__mocks__/usePerspective.mock'
+import {activeASAPRelease, archivedScheduledRelease} from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type InjectedTableProps} from '../../../components/Table/types'
 import {ReleaseNameCell} from '../../columnCells/ReleaseName'
 import {type TableRelease} from '../../ReleasesOverview'
 
-vi.mock('../../../../hooks/usePerspective', () => ({
+vi.mock('../../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
+}))
+
+const mockedSetPerspective = vi.fn()
+vi.mock('../../../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -70,7 +75,7 @@ describe('ReleaseNameCell', () => {
     const pinButton = screen.getByTestId('pin-release-button')
     fireEvent.click(pinButton)
 
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('rASAP')
+    expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
   })
 
   it('handles unpinning a release', async () => {
@@ -80,7 +85,7 @@ describe('ReleaseNameCell', () => {
     const pinButton = screen.getByTestId('pin-release-button')
     fireEvent.click(pinButton)
 
-    expect(usePerspectiveMockReturn.setPerspective).toHaveBeenCalledWith('drafts')
+    expect(mockedSetPerspective).toHaveBeenCalledWith('drafts')
   })
 
   it('navigates to the release detail page on click', async () => {
