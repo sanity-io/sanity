@@ -35,6 +35,7 @@ export interface DateTimeInputProps {
   monthPickerVariant?: CalendarProps['monthPickerVariant']
   padding?: number
   disableInput?: boolean
+  isPastDisabled?: boolean
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -54,6 +55,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     monthPickerVariant,
     padding,
     disableInput,
+    isPastDisabled,
     ...rest
   } = props
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -129,6 +131,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       timeStep={timeStep}
                       onKeyUp={handleKeyUp}
                       value={value}
+                      isPastDisabled={isPastDisabled}
                       onChange={onChange}
                       padding={padding}
                     />

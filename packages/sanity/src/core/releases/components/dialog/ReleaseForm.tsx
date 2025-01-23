@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, TabList, Text} from '@sanity/ui'
+import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
 import {isValid} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 
@@ -118,10 +118,18 @@ export function ReleaseForm(props: {
             </Flex>
           </Card>
           {buttonReleaseType === 'scheduled' && (
-            <ScheduleDatePicker
-              initialValue={inputValue}
-              onChange={handleBundlePublishAtCalendarChange}
-            />
+            <TabPanel
+              aria-labelledby="release-timing-at-time-tab"
+              flex={1}
+              id="release-timing-at-time"
+              style={{outline: 'none'}}
+              tabIndex={-1}
+            >
+              <ScheduleDatePicker
+                initialValue={inputValue}
+                onChange={handleBundlePublishAtCalendarChange}
+              />
+            </TabPanel>
           )}
         </Flex>
       </Stack>

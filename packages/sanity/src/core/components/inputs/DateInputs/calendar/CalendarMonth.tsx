@@ -11,6 +11,7 @@ interface CalendarMonthProps {
   selected?: Date
   onSelect: (date: Date) => void
   hidden?: boolean
+  isPastDisabled?: boolean
   weekDayNames: [
     mon: string,
     tue: string,
@@ -62,6 +63,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
                 key={`${weekIdx}-${dayIdx}`}
                 onSelect={props.onSelect}
                 selected={selected}
+                isPastDisabled={props.isPastDisabled}
               />
             )
           }),
