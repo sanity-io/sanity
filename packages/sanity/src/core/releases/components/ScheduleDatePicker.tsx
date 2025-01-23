@@ -1,7 +1,7 @@
 import {EarthGlobeIcon} from '@sanity/icons'
 import {Flex, TabPanel} from '@sanity/ui'
 import {format} from 'date-fns'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
@@ -13,22 +13,21 @@ import useDialogTimeZone from '../../scheduledPublishing/hooks/useDialogTimeZone
 import useTimeZone from '../../scheduledPublishing/hooks/useTimeZone'
 
 interface ScheduleDatePickerProps {
-  initialValue?: string
+  initialValue: Date
   onChange: (date: Date) => void
 }
 
-export const ScheduleDatePicker = ({initialValue, onChange}: ScheduleDatePickerProps) => {
+export const ScheduleDatePicker = ({
+  initialValue: inputValue,
+  onChange,
+}: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
   const {timeZone} = useTimeZone()
   const {dialogTimeZoneShow} = useDialogTimeZone()
 
-  const [inputValue, setInputValue] = useState<Date>(
-    initialValue ? new Date(initialValue) : new Date(),
-  )
-
   const handleBundlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
-    setInputValue(date)
+
     onChange(date)
   }
 

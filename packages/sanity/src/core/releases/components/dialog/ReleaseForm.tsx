@@ -23,13 +23,12 @@ export function ReleaseForm(props: {
   const publishAt = value.metadata.intendedPublishAt
   const {t} = useTranslation()
 
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+  const {DialogTimeZone, dialogProps} = useDialogTimeZone()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
-  // const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const [inputValue, setInputValue] = useState<Date>(publishAt ? new Date(publishAt) : new Date())
 
   const handleBundlePublishAtCalendarChange = useCallback(
@@ -120,7 +119,7 @@ export function ReleaseForm(props: {
           </Card>
           {buttonReleaseType === 'scheduled' && (
             <ScheduleDatePicker
-              initialValue={publishAt}
+              initialValue={inputValue}
               onChange={handleBundlePublishAtCalendarChange}
             />
           )}
