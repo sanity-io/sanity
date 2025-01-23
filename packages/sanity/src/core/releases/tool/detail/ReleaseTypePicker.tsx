@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isBefore, isValid} from 'date-fns'
+import {format, isBefore, isValid, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -123,21 +123,21 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     setDateInputOpen(pickedReleaseType === 'scheduled')
 
     setReleaseType(pickedReleaseType)
-    const nextPublishAt = pickedReleaseType === 'scheduled' ? new Date() : undefined
+    const nextPublishAt = pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : undefined
     setInputValue(nextPublishAt)
   }, [])
 
   const handleBundlePublishAtChange = useCallback((date: Date | null) => {
     if (!date) return
 
-    setInputValue(new Date(date))
+    setInputValue(startOfMinute(new Date(date)))
   }, [])
 
   const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedDate = new Date(event.currentTarget.value)
 
     if (isValid(parsedDate)) {
-      setInputValue(parsedDate)
+      setInputValue(startOfMinute(parsedDate))
     }
   }, [])
 
