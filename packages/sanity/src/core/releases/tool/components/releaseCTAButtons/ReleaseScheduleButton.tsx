@@ -1,7 +1,7 @@
 import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {format, isValid, parse, startOfMinute} from 'date-fns'
+import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
@@ -37,7 +37,7 @@ export const ReleaseScheduleButton = ({
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
-  const isScheduleButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
+  const isScheduleButtonDisabled = disabled || isValidatingDocuments
 
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
@@ -99,6 +99,8 @@ export const ReleaseScheduleButton = ({
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
 
+    const isScheduledDateInPast = isBefore(publishAt || new Date(), new Date())
+
     return (
       <Dialog
         id="confirm-schedule-dialog"
@@ -113,11 +115,16 @@ export const ReleaseScheduleButton = ({
             tone: 'default',
             onClick: handleConfirmSchedule,
             loading: status === 'scheduling',
-            disabled: status === 'scheduling',
+            disabled: isScheduledDateInPast || status === 'scheduling',
           },
         }}
       >
         <Stack space={3}>
+          {isScheduledDateInPast && (
+            <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
+              <Text size={1}>{t('schedule-dialog.publish-date-in-past-warning')}</Text>
+            </Card>
+          )}
           <label>
             <Stack space={3}>
               <Text size={1} weight="semibold">
