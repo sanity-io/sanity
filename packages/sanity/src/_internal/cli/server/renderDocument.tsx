@@ -48,12 +48,20 @@ interface RenderDocumentOptions {
   importMap?: {
     imports?: Record<string, string>
   }
+  isStudioApp?: boolean
 }
 
 export function renderDocument(options: RenderDocumentOptions): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!useThreads) {
-      resolve(getDocumentHtml(options.studioRootPath, options.props, options.importMap))
+      resolve(
+        getDocumentHtml(
+          options.studioRootPath,
+          options.props,
+          options.importMap,
+          options.isStudioApp,
+        ),
+      )
       return
     }
 
@@ -150,7 +158,8 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap}: RenderDocumentOptions = workerData || {}
+  const {monorepo, studioRootPath, props, importMap, isStudioApp}: RenderDocumentOptions =
+    workerData || {}
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
@@ -200,7 +209,7 @@ function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = getDocumentHtml(studioRootPath, props, importMap)
+  const html = getDocumentHtml(studioRootPath, props, importMap, isStudioApp)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -213,6 +222,7 @@ function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
+  isStudioApp?: boolean,
 ): string {
   const Document = getDocumentComponent(studioRootPath)
 
@@ -234,7 +244,10 @@ function getDocumentHtml(
     importMap,
   )
 
-  return `<!DOCTYPE html>${result}`
+  // Only modify the root element ID for non-Studio apps
+  const rootElementId = isStudioApp ? 'sanity' : 'root'
+  // TODO: actually intervene using html methods
+  return `<!DOCTYPE html>${result.replace('id="sanity"', `id="${rootElementId}"`)}`
 }
 
 /**

@@ -344,6 +344,8 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   studioHost?: string
+
+  isStudioApp?: boolean
 }
 
 export type UserViteConfig =

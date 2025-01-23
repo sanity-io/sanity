@@ -20,6 +20,7 @@ export interface RuntimeOptions {
   reactStrictMode: boolean
   watch: boolean
   basePath?: string
+  isStudioApp?: boolean
 }
 
 /**
@@ -34,13 +35,14 @@ export async function writeSanityRuntime({
   reactStrictMode,
   watch,
   basePath,
+  isStudioApp = true,
 }: RuntimeOptions): Promise<void> {
-  debug('Resolving Sanity monorepo information')
-  const monorepo = await loadSanityMonorepo(cwd)
-  const runtimeDir = path.join(cwd, '.sanity', 'runtime')
-
   debug('Making runtime directory')
+  const runtimeDir = path.join(cwd, '.sanity', 'runtime')
   await fs.mkdir(runtimeDir, {recursive: true})
+
+  // Only load monorepo info for Studio apps
+  const monorepo = isStudioApp ? await loadSanityMonorepo(cwd) : undefined
 
   async function renderAndWriteDocument() {
     debug('Rendering document template')
@@ -49,9 +51,12 @@ export async function writeSanityRuntime({
         studioRootPath: cwd,
         monorepo,
         props: {
-          entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
+          entryPath: isStudioApp
+            ? `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`
+            : '/src/main.tsx', // TODO: change to be more like studio, possibly dyanmic
           basePath: basePath || '/',
         },
+        isStudioApp,
       }),
     )
 
@@ -67,14 +72,17 @@ export async function writeSanityRuntime({
 
   await renderAndWriteDocument()
 
-  debug('Writing app.js to runtime directory')
-  const studioConfigPath = await getSanityStudioConfigPath(cwd)
-  const relativeConfigLocation = studioConfigPath
-    ? path.relative(runtimeDir, studioConfigPath)
-    : null
+  // Only generate app.js for Studio apps
+  if (isStudioApp) {
+    debug('Writing app.js to runtime directory')
+    const studioConfigPath = await getSanityStudioConfigPath(cwd)
+    const relativeConfigLocation = studioConfigPath
+      ? path.relative(runtimeDir, studioConfigPath)
+      : null
 
-  await fs.writeFile(
-    path.join(runtimeDir, 'app.js'),
-    getEntryModule({reactStrictMode, relativeConfigLocation, basePath}),
-  )
+    await fs.writeFile(
+      path.join(runtimeDir, 'app.js'),
+      getEntryModule({reactStrictMode, relativeConfigLocation, basePath}),
+    )
+  }
 }

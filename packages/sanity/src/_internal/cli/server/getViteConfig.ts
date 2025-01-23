@@ -53,6 +53,7 @@ export interface ViteOptions {
 
   importMap?: {imports?: Record<string, string>}
   reactCompiler: ReactCompilerConfig | undefined
+  isStudioApp?: boolean
 }
 
 /**
@@ -72,27 +73,24 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     basePath: rawBasePath = '/',
     importMap,
     reactCompiler,
+    isStudioApp = true, // default to true for backwards compatibility
   } = options
 
-  const monorepo = await loadSanityMonorepo(cwd)
+  // we may eventually load an example sdk app in the monorepo, but there's none right now
+  const monorepo = isStudioApp ? await loadSanityMonorepo(cwd) : undefined
   const basePath = normalizeBasePath(rawBasePath)
+  const runtimeDir = path.join(cwd, '.sanity', 'runtime')
 
-  const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
-  if (!sanityPkgPath) {
+  const sanityPkgPath = isStudioApp ? (await readPkgUp({cwd: __dirname}))?.path : null
+  if (isStudioApp && !sanityPkgPath) {
     throw new Error('Unable to resolve `sanity` module root')
   }
 
-  const customFaviconsPath = path.join(cwd, 'static')
-  const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
-  const staticPath = `${basePath}static`
-
   const {default: viteReact} = await import('@vitejs/plugin-react')
   const viteConfig: InlineConfig = {
-    // Define a custom cache directory so that sanity's vite cache
-    // does not conflict with any potential local vite projects
-    cacheDir: 'node_modules/.sanity/vite',
-    root: cwd,
+    root: runtimeDir,
     base: basePath,
+    cacheDir: 'node_modules/.sanity/vite',
     build: {
       outDir: outputDir || path.resolve(cwd, 'dist'),
       sourcemap: sourceMap,
@@ -105,22 +103,39 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
-      viteReact(
+      (await import('@vitejs/plugin-react')).default(
         reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
       ),
+    ],
+    resolve: {
+      alias: {
+        // Map /src to the actual source directory
+        '/src': path.join(cwd, 'src'),
+      },
+    },
+    appType: 'spa',
+  }
+
+  // Add Studio-specific configuration
+  if (isStudioApp) {
+    const customFaviconsPath = path.join(cwd, 'static')
+    const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath!), 'static', 'favicons')
+    const staticPath = `${basePath}static`
+
+    viteConfig.plugins!.push(
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo, importMap}),
-    ],
-    envPrefix: 'SANITY_STUDIO_',
-    logLevel: mode === 'production' ? 'silent' : 'info',
-    resolve: {
+    )
+
+    viteConfig.resolve = {
       alias: monorepo?.path
         ? await getMonorepoAliases(monorepo.path)
-        : getSanityPkgExportAliases(sanityPkgPath),
+        : getSanityPkgExportAliases(sanityPkgPath!),
       dedupe: ['styled-components'],
-    },
-    define: {
+    }
+
+    viteConfig.define = {
       // eslint-disable-next-line no-process-env
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
@@ -135,23 +150,20 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
        */
       'process.env.SC_DISABLE_SPEEDY': JSON.stringify('false'),
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
-    },
+    }
   }
 
   if (mode === 'production') {
     viteConfig.build = {
       ...viteConfig.build,
-
       assetsDir: 'static',
       minify: minify ? 'esbuild' : false,
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
         onwarn: onRollupWarn,
-        external: createExternalFromImportMap(importMap),
-        input: {
-          sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
-        },
+        external: isStudioApp ? createExternalFromImportMap(importMap) : undefined,
+        input: isStudioApp ? {sanity: path.join(cwd, '.sanity', 'runtime', 'app.js')} : undefined,
       },
     }
   }

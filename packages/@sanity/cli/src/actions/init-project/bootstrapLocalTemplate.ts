@@ -12,6 +12,7 @@ import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {createCliConfig} from './createCliConfig'
 import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
+import {determineStudioTemplate} from './determineStudioTemplate'
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
@@ -36,9 +37,9 @@ export async function bootstrapLocalTemplate(
   const {apiClient, cliRoot, output} = context
   const templatesDir = path.join(cliRoot, 'templates')
   const {outputPath, templateName, useTypeScript, packageName, variables} = opts
-  const {projectId} = variables
   const sourceDir = path.join(templatesDir, templateName)
   const sharedDir = path.join(templatesDir, 'shared')
+  const isStudioTemplate = determineStudioTemplate(templateName)
 
   // Check that we have a template info file (dependencies, plugins etc)
   const template = templates[templateName]
@@ -84,6 +85,7 @@ export async function bootstrapLocalTemplate(
     ...studioDependencies.dependencies,
     ...studioDependencies.devDependencies,
     ...(template.dependencies || {}),
+    ...(template.devDependencies || {}),
   })
   spinner.succeed()
 
@@ -133,15 +135,21 @@ export async function bootstrapLocalTemplate(
 
   // Write non-template files to disc
   const codeExt = useTypeScript ? 'ts' : 'js'
-  await Promise.all([
-    writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig),
-    writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
-    writeFileIfNotExists('package.json', packageManifest),
-    writeFileIfNotExists(
-      'eslint.config.mjs',
-      `import studio from '@sanity/eslint-config-studio'\n\nexport default [...studio]\n`,
-    ),
-  ])
+  await Promise.all(
+    [
+      ...[
+        isStudioTemplate
+          ? writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig)
+          : Promise.resolve(null),
+      ],
+      writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
+      writeFileIfNotExists('package.json', packageManifest),
+      writeFileIfNotExists(
+        'eslint.config.mjs',
+        `import studio from '@sanity/eslint-config-studio'\n\nexport default [...studio]\n`,
+      ),
+    ].filter(Boolean),
+  )
 
   debug('Updating initial template metadata')
   await updateInitialTemplateMetadata(apiClient, variables.projectId, `cli-${templateName}`)

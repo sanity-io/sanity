@@ -1,10 +1,14 @@
+import path from 'node:path'
+
 import {
   type CliCommandArguments,
   type CliCommandContext,
   type CliCommandDefinition,
+  type CliConfig,
 } from '@sanity/cli'
 
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
+import {startDevServer} from '../../server'
 
 const helpText = `
 Notes
@@ -27,6 +31,24 @@ const devCommand: CliCommandDefinition = {
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,
   ) => {
+    const {workDir, cliConfig} = context
+
+    // if not studio app, skip all Studio-specific initialization
+    if (!(cliConfig && 'isStudioApp' in cliConfig)) {
+      // non-studio apps were not possible in v2
+      const config = cliConfig as CliConfig | undefined
+      return startDevServer({
+        cwd: workDir,
+        basePath: '/',
+        staticPath: path.join(workDir, 'static'),
+        httpPort: Number(args.extOptions?.port) || 3333,
+        httpHost: args.extOptions?.host,
+        reactStrictMode: true,
+        reactCompiler: config?.reactCompiler,
+        vite: config?.vite,
+        isStudioApp: false,
+      })
+    }
     const devAction = await getDevAction()
 
     return devAction(args, context)

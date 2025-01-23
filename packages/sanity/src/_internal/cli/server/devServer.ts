@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
 
@@ -17,6 +19,7 @@ export interface DevServerOptions {
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
+  isStudioApp?: boolean
 }
 
 export interface DevServer {
@@ -32,21 +35,42 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactStrictMode,
     vite: extendViteConfig,
     reactCompiler,
+    isStudioApp = true, // default to true for backwards compatibility
   } = options
 
   const startTime = Date.now()
+
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, isStudioApp})
 
   debug('Resolving vite config')
-  const mode = 'development'
   let viteConfig = await getViteConfig({
     basePath,
     mode: 'development',
     server: {port: httpPort, host: httpHost},
     cwd,
     reactCompiler,
+    isStudioApp,
   })
+
+  if (isStudioApp) {
+    debug('Writing Sanity runtime files')
+    await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
+  } else {
+    // For non-Studio apps, we need to set the entry point
+    viteConfig = {
+      ...viteConfig,
+      build: {
+        ...viteConfig.build,
+        rollupOptions: {
+          input: path.join(cwd, 'src', 'main.tsx'),
+        },
+      },
+    }
+  }
+
+  debug('Resolving vite config')
+  const mode = 'development'
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
@@ -67,8 +91,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
   const startupDuration = Date.now() - startTime
   const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
+  const appType = isStudioApp ? 'Sanity Studio' : 'Application'
   info(
-    `Sanity Studio ` +
+    `${appType} ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
       `and running at ${chalk.cyan(url)}`,
