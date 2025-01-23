@@ -35,13 +35,12 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const [dateInputOpen, setDateInputOpen] = useState(release.metadata.releaseType === 'scheduled')
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
   const publishDate = useMemo(() => getPublishDateFromRelease(release) || new Date(), [release])
-
-  const [updatedDate, setUpdatedDate] = useState<string | undefined>(publishDate.toDateString())
   const [isUpdating, setIsUpdating] = useState(false)
 
   const [inputValue, setInputValue] = useState<Date | undefined>(
     publishDate ? new Date(publishDate) : undefined,
   )
+  const updatedDate = inputValue?.toISOString()
 
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
@@ -125,7 +124,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
 
     setReleaseType(pickedReleaseType)
     const nextPublishAt = pickedReleaseType === 'scheduled' ? new Date() : undefined
-    setUpdatedDate(nextPublishAt?.toISOString())
     setInputValue(nextPublishAt)
   }, [])
 
@@ -133,8 +131,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     if (!date) return
 
     setInputValue(new Date(date))
-
-    setUpdatedDate(date ? date.toISOString() : undefined)
   }, [])
 
   const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
@@ -142,8 +138,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
 
     if (isValid(parsedDate)) {
       setInputValue(parsedDate)
-
-      setUpdatedDate(parsedDate.toISOString())
     }
   }, [])
 
