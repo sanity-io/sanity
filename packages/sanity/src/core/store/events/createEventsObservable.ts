@@ -6,6 +6,7 @@ import {type EventsObservableValue} from './getInitialFetchEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 import {
   addParentToEvents,
+  sortEvents,
   squashLiveEditEvents,
   updatePublishedEvents,
   updateVersionEvents,
@@ -29,10 +30,7 @@ export function createEventsObservable({
   const documentVariantType = getDocumentVariantType(documentId)
   return combineLatest([releases$, events$, remoteEdits$, expandedEvents$]).pipe(
     map(([releases, {events, nextCursor, loading, error}, remoteEdits, expandedEvents]) => {
-      const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
-        // Sort by timestamp, newest first
-        (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
-      )
+      const eventsWithRemoteEdits = sortEvents({remoteEdits, events, expandedEvents})
 
       if (documentVariantType === 'published') {
         return {
