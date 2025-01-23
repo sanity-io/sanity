@@ -288,6 +288,13 @@ export function referenceSearch(
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
+    map((docs) =>
+      docs.map((doc) => ({
+        ...doc,
+        // Pass the original id if available, it could be a `draftId` or a `versionId` , the _id will be the published one when using perspectives to query the data.
+        _id: (doc._originalId as string) || doc._id,
+      })),
+    ),
     map((docs) => collate(docs)),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),
