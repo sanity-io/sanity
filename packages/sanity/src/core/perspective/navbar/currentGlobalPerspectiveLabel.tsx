@@ -6,12 +6,12 @@ import {IntentLink} from 'sanity/router'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
-import {type SelectedPerspective} from '../../releases/hooks/usePerspective'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {type SelectedPerspective} from '../types'
 
 const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
   <motion.div
