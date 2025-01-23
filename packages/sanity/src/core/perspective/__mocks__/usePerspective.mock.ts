@@ -1,7 +1,7 @@
 import {type Mock, type Mocked} from 'vitest'
 
-import {type PerspectiveContextValue} from '../../../../perspective/types'
-import {usePerspective} from '../../../../perspective/usePerspective'
+import {type PerspectiveContextValue} from '../types'
+import {usePerspective} from '../usePerspective'
 
 export const perspectiveContextValueMock: Mocked<PerspectiveContextValue> = {
   selectedPerspectiveName: undefined,

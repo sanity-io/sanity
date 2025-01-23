@@ -2,13 +2,13 @@ import {fireEvent, render, type RenderResult, screen, waitFor, within} from '@te
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {useExcludedPerspectiveMockReturn} from '../../../perspective/__mocks__/useExcludedPerspective.mock'
+import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {
   activeASAPRelease,
   activeScheduledRelease,
   scheduledRelease,
 } from '../../__fixtures__/release.fixture'
-import {useExcludedPerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/useExcludedPerspective.mock'
-import {usePerspectiveMockReturn} from '../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {LATEST} from '../../util/const'
 import {ReleasesNav} from '../ReleasesNav'

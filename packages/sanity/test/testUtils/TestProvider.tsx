@@ -16,7 +16,7 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
-import {perspectiveContextValueMock} from '../../src/core/releases/hooks/__tests__/__mocks__/usePerspective.mock'
+import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 

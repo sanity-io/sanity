@@ -8,6 +8,10 @@ import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQue
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
+  mockUsePerspective,
+  usePerspectiveMockReturn,
+} from '../../../../perspective/__mocks__/usePerspective.mock'
+import {
   getLocalTimeZoneMockReturn,
   mockGetLocaleTimeZone,
   mockUseTimeZone,
@@ -21,10 +25,6 @@ import {
   publishedASAPRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
-import {
-  mockUsePerspective,
-  usePerspectiveMockReturn,
-} from '../../../hooks/__tests__/__mocks__/usePerspective.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
   mockUseActiveReleases,
