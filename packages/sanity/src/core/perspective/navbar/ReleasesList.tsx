@@ -5,10 +5,10 @@ import {css, styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type ReleaseDocument, type ReleaseType} from '../store/types'
-import {useActiveReleases} from '../store/useActiveReleases'
-import {LATEST} from '../util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {LATEST} from '../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,

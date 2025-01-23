@@ -9,17 +9,17 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {ReleaseAvatar} from '../components/ReleaseAvatar'
-import {isReleaseDocument, type ReleaseDocument} from '../store/types'
-import {type LATEST} from '../util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../util/getReleaseTone'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {isReleaseDocument, type ReleaseDocument} from '../../releases/store/types'
+import {type LATEST} from '../../releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
-} from '../util/util'
+} from '../../releases/util/util'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {

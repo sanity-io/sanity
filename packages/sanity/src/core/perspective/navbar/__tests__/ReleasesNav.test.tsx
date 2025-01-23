@@ -8,9 +8,9 @@ import {
   activeASAPRelease,
   activeScheduledRelease,
   scheduledRelease,
-} from '../../__fixtures__/release.fixture'
-import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
-import {LATEST} from '../../util/const'
+} from '../../../releases/__fixtures__/release.fixture'
+import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
+import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../../perspective/usePerspective', () => ({

@@ -5,13 +5,13 @@ import {type PropsWithChildren} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {ReleaseAvatar} from '../components/ReleaseAvatar'
-import {type SelectedPerspective} from '../hooks/usePerspective'
-import {RELEASES_INTENT} from '../plugin'
-import {isReleaseDocument} from '../store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../util/getReleaseTone'
-import {isDraftPerspective, isPublishedPerspective} from '../util/util'
+import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {type SelectedPerspective} from '../../releases/hooks/usePerspective'
+import {RELEASES_INTENT} from '../../releases/plugin'
+import {isReleaseDocument} from '../../releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 
 const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
   <motion.div

@@ -7,11 +7,11 @@ import {
   activeASAPRelease,
   activeScheduledRelease,
   activeUndecidedRelease,
-} from '../../__fixtures__/release.fixture'
+} from '../../../releases/__fixtures__/release.fixture'
 import {
   mockUseActiveReleases,
   useActiveReleasesMockReturn,
-} from '../../store/__tests__/__mocks/useActiveReleases.mock'
+} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
 import {ReleasesList} from '../ReleasesList'
 
 vi.mock('../../store/useActiveReleases', () => ({
