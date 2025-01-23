@@ -12,11 +12,13 @@ import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {RELEASES_TOOL_NAME} from '../../releases/plugin'
 import {LATEST} from '../../releases/util/const'
 import {isDraftPerspective} from '../../releases/util/util'
-import {ToolLink} from '../../studio'
+import {ToolLink, useWorkspace} from '../../studio'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
 export function ReleasesNav(): React.JSX.Element {
+  const areReleasesEnabled = !!useWorkspace().releases?.enabled
+
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
@@ -52,11 +54,14 @@ export function ReleasesNav(): React.JSX.Element {
   return (
     <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
       <Flex gap={0}>
-        <Box flex="none">{releasesToolLink}</Box>
+        {areReleasesEnabled && <Box flex="none">{releasesToolLink}</Box>}
         <AnimatePresence>
           <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
         </AnimatePresence>
-        <GlobalPerspectiveMenu selectedReleaseId={selectedReleaseId} />
+        <GlobalPerspectiveMenu
+          selectedReleaseId={selectedReleaseId}
+          areReleasesEnabled={areReleasesEnabled}
+        />
         {!isDraftPerspective(selectedPerspective) && (
           <div>
             <Button

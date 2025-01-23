@@ -19,6 +19,7 @@ import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
+import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
@@ -280,6 +281,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
                 )}
 
+                <ReleasesNav />
                 {actionNodes}
 
                 {shouldRender.tools && (

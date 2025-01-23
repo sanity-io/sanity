@@ -37,6 +37,7 @@ const StyledPublishedBox = styled(Box)<{$removePadding: boolean}>(
 )
 
 export function ReleasesList({
+  areReleasesEnabled,
   setScrollContainer,
   onScroll,
   isRangeVisible,
@@ -44,6 +45,7 @@ export function ReleasesList({
   setCreateBundleDialogOpen,
   scrollElementRef,
 }: {
+  areReleasesEnabled: boolean
   setScrollContainer: (el: HTMLDivElement) => void
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void
   isRangeVisible: boolean
@@ -115,7 +117,7 @@ export function ReleasesList({
   return (
     <Box>
       <StyledBox ref={setScrollContainer} onScroll={onScroll}>
-        <StyledPublishedBox $removePadding={!releases.length}>
+        <StyledPublishedBox $removePadding={!releases.length || !areReleasesEnabled}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
@@ -125,25 +127,31 @@ export function ReleasesList({
             release={LATEST}
           />
         </StyledPublishedBox>
-        <>
-          {orderedReleaseTypes.map((releaseType) => (
-            <ReleaseTypeMenuSection
-              key={releaseType}
-              releaseType={releaseType}
-              releases={sortedReleaseTypeReleases[releaseType]}
-              range={range}
-              currentGlobalBundleMenuItemRef={scrollElementRef}
-            />
-          ))}
-        </>
+        {areReleasesEnabled && (
+          <>
+            {orderedReleaseTypes.map((releaseType) => (
+              <ReleaseTypeMenuSection
+                key={releaseType}
+                releaseType={releaseType}
+                releases={sortedReleaseTypeReleases[releaseType]}
+                range={range}
+                currentGlobalBundleMenuItemRef={scrollElementRef}
+              />
+            ))}
+          </>
+        )}
       </StyledBox>
-      <MenuDivider />
-      <MenuItem
-        icon={AddIcon}
-        onClick={handleCreateBundleClick}
-        text={t('release.action.create-new')}
-        data-testid="release.action.create-new"
-      />
+      {areReleasesEnabled && (
+        <>
+          <MenuDivider />
+          <MenuItem
+            icon={AddIcon}
+            onClick={handleCreateBundleClick}
+            text={t('release.action.create-new')}
+            data-testid="release.action.create-new"
+          />
+        </>
+      )}
     </Box>
   )
 }

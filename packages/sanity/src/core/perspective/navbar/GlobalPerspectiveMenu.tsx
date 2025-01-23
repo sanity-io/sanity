@@ -17,8 +17,10 @@ const StyledMenu = styled(Menu)`
 
 export function GlobalPerspectiveMenu({
   selectedReleaseId,
+  areReleasesEnabled = true,
 }: {
   selectedReleaseId: ReleaseId | undefined
+  areReleasesEnabled: boolean
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -48,6 +50,7 @@ export function GlobalPerspectiveMenu({
         menu={
           <StyledMenu data-testid="release-menu" ref={styledMenuRef}>
             <ReleasesList
+              areReleasesEnabled={areReleasesEnabled}
               setScrollContainer={setScrollContainer}
               onScroll={onScroll}
               isRangeVisible={isRangeVisible}

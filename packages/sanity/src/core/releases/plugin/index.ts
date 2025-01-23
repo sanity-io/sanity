@@ -1,7 +1,6 @@
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
-import {ReleasesStudioNavbar} from '../../perspective/navbar/ReleasesStudioNavbar'
 import {releasesUsEnglishLocaleBundle} from '../i18n'
 import {ReleasesTool} from '../tool/ReleasesTool'
 import resolveDocumentActions from './documentActions'
@@ -30,7 +29,6 @@ export const releases = definePlugin({
   studio: {
     components: {
       layout: ReleasesStudioLayout,
-      navbar: ReleasesStudioNavbar,
     },
   },
   tools: [
