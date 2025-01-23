@@ -13,13 +13,21 @@ import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__m
 import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
-vi.mock('../../perspective/usePerspective', () => ({
+vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+vi.mock('../../../perspective/useExcludedPerspective', () => ({
+  useExcludedPerspective: vi.fn(() => useExcludedPerspectiveMockReturn),
+}))
+
 const mockedSetPerspective = vi.fn()
-vi.mock('../../perspective/useSetPerspective', () => ({
-  useSetPerspective: vi.fn(),
+vi.mock('../../../perspective/useSetPerspective', () => ({
+  useSetPerspective: vi.fn(() => mockedSetPerspective),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -66,6 +74,7 @@ describe('ReleasesNav', () => {
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
@@ -76,6 +85,7 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
@@ -84,6 +94,7 @@ describe('ReleasesNav', () => {
 
   it('should show release avatar for chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
