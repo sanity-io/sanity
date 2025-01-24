@@ -1,6 +1,5 @@
 /**
  * @internal
- * @hidden
  */
 export interface CommentsSelectedPath {
   origin: 'form' | 'inspector' | 'url'
@@ -10,7 +9,6 @@ export interface CommentsSelectedPath {
 
 /**
  * @internal
- * @hidden
  */
 export interface CommentsSelectedPathContextValue {
   setSelectedPath: (nextSelectedPath: CommentsSelectedPath | null) => void

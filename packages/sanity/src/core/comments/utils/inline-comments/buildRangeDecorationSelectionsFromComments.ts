@@ -39,10 +39,6 @@ function diffApply(current: string, patches: Patch[]) {
   })[0]
 }
 
-/**
- * @internal
- * @hidden
- */
 export const CHILD_SYMBOL = '\uF0D0'
 function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
   return inputBlock.children
