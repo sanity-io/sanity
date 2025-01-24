@@ -71,17 +71,20 @@ export const releasesOverviewColumnDefs: (
           <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
         </Flex>
       ),
-      cell: ({datum: {documentsMetadata}, cellProps}) => (
-        <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-          <Text muted size={1}>
-            {documentsMetadata?.updatedAt ? (
-              <RelativeTime time={documentsMetadata.updatedAt} useTemporalPhrase minimal />
-            ) : (
-              '-'
-            )}
-          </Text>
-        </Flex>
-      ),
+      cell: ({datum: {documentsMetadata, _updatedAt}, cellProps}) => {
+        const updatedAtDate = documentsMetadata?.updatedAt ?? _updatedAt
+        return (
+          <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
+            <Text muted size={1}>
+              {updatedAtDate ? (
+                <RelativeTime time={updatedAtDate} useTemporalPhrase minimal />
+              ) : (
+                '-'
+              )}
+            </Text>
+          </Flex>
+        )
+      },
     },
     {
       id: 'documentCount',
