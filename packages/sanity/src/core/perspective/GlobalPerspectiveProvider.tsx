@@ -71,6 +71,13 @@ const ResetPerspectiveHandler = () => {
   return null
 }
 
+/**
+ * This component is not meant to be exported by `sanity`, it's meant only for internal use from the `<StudioProvider>` file.
+ * It sets the `<PerspectiveProvider>` listening to the changes happening in the router.
+ *
+ * If you need to add the PerspectiveProvider you should use that component directly.
+ * It's up to you to define how the selectedPerspectiveName and excludedPerspectives should worl.
+ */
 export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   const router = useRouter()
 
