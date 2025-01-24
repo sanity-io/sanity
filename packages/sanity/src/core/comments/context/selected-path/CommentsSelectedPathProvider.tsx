@@ -10,7 +10,6 @@ interface CommentsSelectedPathProviderProps {
 
 /**
  * @internal
- * @hidden
  */
 export const CommentsSelectedPathProvider = memo(function CommentsSelectedPathProvider(
   props: CommentsSelectedPathProviderProps,
