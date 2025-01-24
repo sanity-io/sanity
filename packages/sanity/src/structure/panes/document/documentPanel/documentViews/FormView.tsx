@@ -218,7 +218,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                   // but these should be compatible
                   formState.value as FormDocumentValue
                 }
-                version={selectedReleaseId}
               />
             </>
           )}

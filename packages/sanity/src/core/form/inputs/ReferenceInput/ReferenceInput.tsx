@@ -197,7 +197,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderOption = useCallback(
     (option: AutocompleteOption) => {
-      // TODO: Account for checked-out version.
       const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
 
       return (
