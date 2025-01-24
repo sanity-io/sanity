@@ -1188,6 +1188,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
+  /** Label for Draft chip in global header */
+  'release.chip.global.drafts': 'Drafts',
   /** Label for Published chip in document header */
   'release.chip.published': 'Published',
   /** Label for tooltip in chip with the created date */

@@ -179,6 +179,9 @@ const defaultWorkspace = defineConfig({
   tasks: {
     enabled: true,
   },
+  releases: {
+    enabled: false,
+  },
 })
 
 export default defineConfig([
