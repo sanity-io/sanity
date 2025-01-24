@@ -19,12 +19,7 @@ export function createObservePathsDocumentPair(options: {
 ) => Observable<DraftsModelDocument<T>> {
   const {observeDocumentPairAvailability, observePaths} = options
 
-  const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [
-    ['_updatedAt'],
-    ['_createdAt'],
-    ['_type'],
-    ['_version'],
-  ]
+  const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [['_updatedAt'], ['_createdAt'], ['_type']]
 
   return function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
     id: string,

@@ -13,9 +13,7 @@ import {ChangesWrapper, FieldWrapper} from './DocumentDiff.styled'
 
 const buildDocumentForDiffInput = (document: Partial<SanityDocument>) => {
   // Remove internal fields and undefined values
-  const {_id, _rev, _createdAt, _updatedAt, _type, _version, ...rest} = JSON.parse(
-    JSON.stringify(document),
-  )
+  const {_id, _rev, _createdAt, _updatedAt, _type, ...rest} = JSON.parse(JSON.stringify(document))
 
   return rest
 }

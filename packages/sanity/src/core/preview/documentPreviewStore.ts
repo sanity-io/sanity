@@ -133,7 +133,7 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type', '_version'], apiConfig).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )

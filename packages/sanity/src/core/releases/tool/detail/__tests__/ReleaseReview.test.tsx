@@ -49,7 +49,6 @@ const MOCKED_DOCUMENTS: DocumentInRelease[] = [
       values: {
         _createdAt: '2024-07-10T12:10:38Z',
         _updatedAt: '2024-07-15T10:46:02Z',
-        _version: {},
         title: 'William Faulkner added',
         subtitle: 'Designer',
       },
@@ -77,7 +76,6 @@ const MOCKED_DOCUMENTS: DocumentInRelease[] = [
       values: {
         _createdAt: '2024-07-10T12:10:38Z',
         _updatedAt: '2024-07-15T10:46:02Z',
-        _version: {},
         title: 'Virginia Woolf test',
         subtitle: 'Developer',
       },
