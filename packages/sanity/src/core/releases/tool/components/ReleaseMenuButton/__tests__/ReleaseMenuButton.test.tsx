@@ -95,7 +95,7 @@ describe('ReleaseMenuButton', () => {
       expect(screen.queryByTestId('archive-release-menu-item-menu-item')).not.toBeInTheDocument()
     })
 
-    test('does not require confirmation when no documents in release', async () => {
+    test('requires confirmation when no documents in release', async () => {
       mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
 
       await renderTest({release: activeScheduledRelease, documentsCount: 0})
@@ -111,8 +111,13 @@ describe('ReleaseMenuButton', () => {
         fireEvent.click(screen.getByTestId('archive-release-menu-item'))
       })
 
-      expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
-      expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
+      expect(screen.queryByTestId('confirm-archive-dialog')).toBeInTheDocument()
+      await act(() => {
+        fireEvent.click(screen.getByTestId('confirm-button'))
+      })
+      expect(useReleaseOperationsMockReturn.archive).toHaveBeenCalledWith(
+        activeScheduledRelease._id,
+      )
     })
 
     test('can reject archiving', async () => {
@@ -191,7 +196,7 @@ describe('ReleaseMenuButton', () => {
       expect(screen.queryByTestId('delete-release-menu-item')).not.toBeInTheDocument()
     })
 
-    test('does not require confirmation when no documents in release', async () => {
+    test('requires confirmation when no documents in release', async () => {
       mockUseBundleDocuments.mockReturnValue(useBundleDocumentsMockReturn)
 
       // verifying that delete supported for published releases too
@@ -208,8 +213,13 @@ describe('ReleaseMenuButton', () => {
         fireEvent.click(screen.getByTestId('delete-release-menu-item'))
       })
 
-      expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
-      expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(publishedASAPRelease._id)
+      expect(screen.queryByTestId('confirm-delete-dialog')).toBeInTheDocument()
+      await act(() => {
+        fireEvent.click(screen.getByTestId('confirm-button'))
+      })
+      expect(useReleaseOperationsMockReturn.deleteRelease).toHaveBeenCalledWith(
+        publishedASAPRelease._id,
+      )
     })
 
     test('can reject deleting', async () => {

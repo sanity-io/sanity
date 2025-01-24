@@ -109,21 +109,15 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   useEffect(() => {
     if (!selectedAction) return
 
-    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog || !documentsCount)
-      handleAction(selectedAction)
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
   }, [documentsCount, handleAction, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction || !documentsCount) return null
+    if (!selectedAction) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
     if (!confirmDialog) return null
-
-    const dialogDescription =
-      documentsCount === 1
-        ? confirmDialog.dialogDescriptionSingularI18nKey
-        : confirmDialog.dialogDescriptionMultipleI18nKey
 
     return (
       <Dialog
@@ -145,7 +139,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
           {
             <Translate
               t={t}
-              i18nKey={dialogDescription}
+              i18nKey={confirmDialog.dialogDescriptionI18nKey}
               values={{
                 count: documentsCount,
               }}

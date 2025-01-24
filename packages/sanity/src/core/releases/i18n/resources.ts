@@ -77,6 +77,8 @@ const releasesLocaleStrings = {
   /** Title for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
+  /** Description for the dialog confirming the archive of a release with no documents */
+  'archive-dialog.confirm-archive-description_zero': 'This will not archive any documents.',
   /** Description for the dialog confirming the archive of a release with one document */
   'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
   /** Description for the dialog confirming the archive of a release with more than one document */
@@ -103,6 +105,8 @@ const releasesLocaleStrings = {
 
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': "Are you sure you want to delete the '{{title}}' release?",
+  /** Description for the dialog confirming the deleting of a release with no documents */
+  'delete-dialog.confirm-delete-description_zero': 'This will not delete any documents.',
   /** Description for the dialog confirming the deleting of a release with one document */
   'delete-dialog.confirm-delete-description_one': 'This will delete 1 document version.',
   /** Description for the dialog confirming the deleting of a release with more than one document */
