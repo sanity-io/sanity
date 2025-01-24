@@ -33,7 +33,7 @@ import {
   type CommentUpdatePayload,
 } from '../../../types'
 import {
-  buildRangeDecorations,
+  buildCommentRangeDecorations,
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
 } from '../../../utils'
@@ -373,7 +373,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       if (!editorRef.current) return EMPTY_ARRAY
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
-      return buildRangeDecorations({
+      return buildCommentRangeDecorations({
         comments: commentsToDecorate,
         currentHoveredCommentId,
         onDecorationClick: handleDecoratorClick,
