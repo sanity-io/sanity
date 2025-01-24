@@ -13,6 +13,7 @@ export {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
   CommentsIntentProvider,
+  type CommentsIntentProviderProps,
   CommentsProvider,
   type CommentsSelectedPath,
   CommentsSelectedPathProvider,
