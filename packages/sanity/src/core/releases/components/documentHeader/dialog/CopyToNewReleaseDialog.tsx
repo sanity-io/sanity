@@ -8,11 +8,12 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
+import {releasesLocaleNamespace} from '../../../i18n'
 import {type EditableReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
 import {createReleaseId} from '../../../util/createReleaseId'
-import {ReleaseForm} from '../../dialog/ReleaseForm'
+import {getIsScheduledDateInPast, ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export function CopyToNewReleaseDialog(props: {
@@ -25,6 +26,7 @@ export function CopyToNewReleaseDialog(props: {
 }): React.JSX.Element {
   const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
   const {t} = useTranslation()
+  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
 
   const schema = useSchema()
@@ -44,6 +46,10 @@ export function CopyToNewReleaseDialog(props: {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [isScheduledDateInPast, setIsScheduledDateInPast] = useState(() =>
+    getIsScheduledDateInPast(value),
+  )
+
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
 
@@ -51,6 +57,9 @@ export function CopyToNewReleaseDialog(props: {
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
+
+    // when the value changes, re-evaluate if the scheduled date is in the past
+    setIsScheduledDateInPast(getIsScheduledDateInPast(changedValue))
   }, [])
 
   const handleAddVersion = useCallback(async () => {
@@ -58,6 +67,15 @@ export function CopyToNewReleaseDialog(props: {
   }, [onCreateVersion, newReleaseId])
 
   const handleCreateRelease = useCallback(async () => {
+    if (isScheduledDateInPast) {
+      toast.push({
+        closable: true,
+        status: 'warning',
+        title: tRelease('schedule-dialog.publish-date-in-past-warning'),
+      })
+      return // do not submit if date is in past
+    }
+
     try {
       setIsSubmitting(true)
 
@@ -76,7 +94,9 @@ export function CopyToNewReleaseDialog(props: {
     } finally {
       setIsSubmitting(false)
     }
-  }, [createRelease, handleAddVersion, telemetry, toast, value])
+  }, [createRelease, handleAddVersion, isScheduledDateInPast, tRelease, telemetry, toast, value])
+
+  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(value))
 
   return (
     <Dialog
@@ -94,7 +114,9 @@ export function CopyToNewReleaseDialog(props: {
         confirmButton: {
           text: 'Add to release',
           onClick: handleCreateRelease,
-          disabled: isSubmitting,
+          onMouseEnter: handleOnMouseEnter,
+          onFocus: handleOnMouseEnter,
+          disabled: isSubmitting || isScheduledDateInPast,
           tone: 'primary',
         },
       }}
