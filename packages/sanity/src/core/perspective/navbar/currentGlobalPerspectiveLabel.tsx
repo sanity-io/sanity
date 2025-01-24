@@ -57,7 +57,11 @@ export function CurrentGlobalPerspectiveLabel({
     )
 
     if (isPublishedPerspective(selectedPerspective)) {
-      return <Card tone="inherit">{labelContent}</Card>
+      return (
+        <Card tone="inherit" radius={5}>
+          {labelContent}
+        </Card>
+      )
     }
 
     const releasesIntentLink = ({children, ...intentProps}: PropsWithChildren) => (
