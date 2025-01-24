@@ -136,9 +136,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       },
       types: getDocumentTypeConfiguration(searchOptions, searchTerms),
       ...(searchOptions.sort ? {order: getOrder(searchOptions.sort)} : {}),
-      // Note: Text Search API does not currently expose fields containing an empty object, so
-      // we're not yet able to retrieve `_version` here.
-      includeAttributes: ['_id', '_type', '_version'],
+      includeAttributes: ['_id', '_type'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
     }

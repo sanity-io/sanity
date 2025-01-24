@@ -1,6 +1,6 @@
 import {type PreviewableType, type PreviewPath} from '../types'
 
-const DEFAULT_PREVIEW_PATHS: PreviewPath[] = [['_createdAt'], ['_updatedAt'], ['_version']]
+const DEFAULT_PREVIEW_PATHS: PreviewPath[] = [['_createdAt'], ['_updatedAt']]
 
 /** @internal */
 export function getPreviewPaths(preview: PreviewableType['preview']): PreviewPath[] | undefined {

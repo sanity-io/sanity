@@ -152,7 +152,7 @@ export function createSearchQuery(
   // Default to `_id asc` (GROQ default) if no search sort is provided
   const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
 
-  const projectionFields = ['_type', '_id', '_version']
+  const projectionFields = ['_type', '_id']
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
   const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
