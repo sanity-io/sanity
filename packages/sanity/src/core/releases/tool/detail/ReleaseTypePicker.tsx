@@ -19,6 +19,8 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 
+const dateInputFormat = 'PP HH:mm'
+
 export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.Element {
   const {release} = props
 
@@ -134,7 +136,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   }, [])
 
   const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const parsedDate = parse(event.currentTarget.value, 'PP HH:mm', new Date())
+    const parsedDate = parse(event.currentTarget.value, dateInputFormat, new Date())
 
     if (isValid(parsedDate)) {
       setIsIntendedScheduleDateInPast(isBefore(parsedDate, new Date()))
@@ -182,7 +184,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
               </Card>
             )}
             <LazyTextInput
-              value={inputValue ? format(inputValue, 'PP HH:mm') : undefined}
+              value={inputValue ? format(inputValue, dateInputFormat) : undefined}
               onChange={handleInputChange}
             />
             <DatePicker

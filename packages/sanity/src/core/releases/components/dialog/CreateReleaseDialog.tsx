@@ -28,7 +28,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
-  const [value, setValue] = useState((): EditableReleaseDocument => {
+  const [release, setRelease] = useState((): EditableReleaseDocument => {
     return {
       _id: createReleaseId(),
       metadata: {
@@ -41,7 +41,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [isScheduledDateInPast, setIsScheduledDateInPast] = useState(() =>
-    getIsScheduledDateInPast(value),
+    getIsScheduledDateInPast(release),
   )
 
   const handleOnSubmit = useCallback(
@@ -60,8 +60,8 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         setIsSubmitting(true)
 
         const submitValue = {
-          ...value,
-          metadata: {...value.metadata, title: value.metadata?.title?.trim()},
+          ...release,
+          metadata: {...release.metadata, title: release.metadata?.title?.trim()},
         }
         await createRelease(submitValue)
         telemetry.log(CreatedRelease, {origin})
@@ -78,20 +78,20 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         // TODO: Remove the upper part
 
         setIsSubmitting(false)
-        onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
+        onSubmit(getReleaseIdFromReleaseDocumentId(release._id))
       }
     },
-    [isScheduledDateInPast, toast, tRelease, value, createRelease, telemetry, origin, onSubmit],
+    [isScheduledDateInPast, toast, tRelease, release, createRelease, telemetry, origin, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
-    setValue(changedValue)
+    setRelease(changedValue)
 
     // when the value changes, re-evaluate if the scheduled date is in the past
     setIsScheduledDateInPast(getIsScheduledDateInPast(changedValue))
   }, [])
 
-  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(value))
+  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(release))
 
   const dialogTitle = t('release.dialog.create.title')
 
@@ -105,7 +105,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     >
       <form onSubmit={handleOnSubmit}>
         <Box paddingX={4} paddingBottom={4}>
-          <ReleaseForm onChange={handleOnChange} value={value} />
+          <ReleaseForm onChange={handleOnChange} value={release} />
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button

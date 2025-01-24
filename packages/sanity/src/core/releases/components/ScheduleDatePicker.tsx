@@ -17,6 +17,8 @@ interface ScheduleDatePickerProps {
   onChange: (date: Date) => void
 }
 
+const inputDateFormat = 'PP HH:mm'
+
 export const ScheduleDatePicker = ({
   initialValue: inputValue,
   onChange,
@@ -25,20 +27,18 @@ export const ScheduleDatePicker = ({
   const {timeZone} = useTimeZone()
   const {dialogTimeZoneShow} = useDialogTimeZone()
 
-  const handleBundlePublishAtCalendarChange = (date: Date | null) => {
+  const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
 
     onChange(date)
   }
 
-  const handleBundlePublishAtInputChange = useCallback(
+  const handlePublishAtInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
       const date = event.currentTarget.value
-      const parsedDate = parse(date, 'PP HH:mm', new Date())
+      const parsedDate = parse(date, inputDateFormat, new Date())
 
-      if (isValid(parsedDate)) {
-        onChange(parsedDate)
-      }
+      if (isValid(parsedDate)) onChange(parsedDate)
     },
     [onChange],
   )
@@ -50,11 +50,11 @@ export const ScheduleDatePicker = ({
       <DateTimeInput
         selectTime
         monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-        onChange={handleBundlePublishAtCalendarChange}
-        onInputChange={handleBundlePublishAtInputChange}
+        onChange={handlePublishAtCalendarChange}
+        onInputChange={handlePublishAtInputChange}
         calendarLabels={calendarLabels}
         value={inputValue}
-        inputValue={format(inputValue, 'PP HH:mm')}
+        inputValue={format(inputValue, inputDateFormat)}
         constrainSize={false}
         padding={0}
         isPastDisabled
