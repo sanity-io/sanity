@@ -234,12 +234,14 @@ export const Calendar = forwardRef(function Calendar(
                   icon={ChevronLeftIcon}
                   mode="bleed"
                   onClick={() => moveFocusedDate(-1)}
+                  data-testid="calendar-prev-month"
                   tooltipProps={{content: 'Previous month'}}
                 />
                 <Button
                   icon={ChevronRightIcon}
                   mode="bleed"
                   onClick={() => moveFocusedDate(1)}
+                  data-testid="calendar-next-month"
                   tooltipProps={{content: 'Next month'}}
                 />
               </TooltipDelayGroupProvider>

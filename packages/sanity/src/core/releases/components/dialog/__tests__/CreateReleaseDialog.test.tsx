@@ -22,6 +22,10 @@ describe('CreateReleaseDialog', () => {
 
       const wrapper = await createTestProvider()
       render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+      })
     })
 
     it('should render the dialog', () => {

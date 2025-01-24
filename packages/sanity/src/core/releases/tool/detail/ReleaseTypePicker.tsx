@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isAfter, isBefore, isValid, parse, startOfMinute} from 'date-fns'
+import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -62,7 +62,9 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
         metadata: {...release.metadata, intendedPublishAt: updatedDate, releaseType},
       }
 
-      if (!isEqual(newRelease, release) && inputValue && isAfter(inputValue, new Date())) {
+      if (!isEqual(newRelease, release)) {
+        if (releaseType === 'scheduled' && inputValue && isBefore(inputValue, new Date())) return
+
         setIsUpdating(true)
         updateRelease(newRelease).then(() => {
           setIsUpdating(false)
@@ -128,14 +130,14 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     setInputValue(nextPublishAt)
   }, [])
 
-  const handleBundlePublishAtChange = useCallback((date: Date | null) => {
+  const handlePublishAtCalendarChange = useCallback((date: Date | null) => {
     if (!date) return
 
     setIsIntendedScheduleDateInPast(isBefore(date, new Date()))
     setInputValue(startOfMinute(new Date(date)))
   }, [])
 
-  const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+  const handlePublishAtInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedDate = parse(event.currentTarget.value, dateInputFormat, new Date())
 
     if (isValid(parsedDate)) {
@@ -185,7 +187,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
             )}
             <LazyTextInput
               value={inputValue ? format(inputValue, dateInputFormat) : undefined}
-              onChange={handleInputChange}
+              onChange={handlePublishAtInputChange}
             />
             <DatePicker
               ref={datePickerRef}
@@ -194,7 +196,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
               selectTime
               padding={0}
               value={inputValue}
-              onChange={handleBundlePublishAtChange}
+              onChange={handlePublishAtCalendarChange}
               isPastDisabled
               showTimezone
             />
