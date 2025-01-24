@@ -43,7 +43,7 @@ function getPairPermissions({
   draft,
   published,
   liveEdit,
-}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>] | null> {
+}: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
   // this was introduced because we ran into a bug where a user with publish
   // access was marked as not allowed to duplicate a document unless it had a
   // draft variant. this would happen in non-live edit cases where the document
@@ -223,9 +223,9 @@ export function getDocumentPairPermissions({
         draft,
         published,
         liveEdit,
-      }).map(([label, observable]: any) =>
+      }).map(([label, observable]) =>
         observable.pipe(
-          map(({granted, reason}: any) => ({
+          map(({granted, reason}) => ({
             granted,
             reason: granted ? '' : `not allowed to ${label}: ${reason}`,
             label,
@@ -237,7 +237,7 @@ export function getDocumentPairPermissions({
       if (!pairPermissions.length) return of({granted: true, reason: ''})
 
       return combineLatest(pairPermissions).pipe(
-        map((permissionResults: any[]) => {
+        map((permissionResults) => {
           const granted = permissionResults.every((permissionResult) => permissionResult.granted)
           const reason = granted
             ? ''
