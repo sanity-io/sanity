@@ -1,5 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, LayerProvider, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
+import {isPast} from 'date-fns'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -14,6 +15,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -58,6 +60,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     isPastDisabled,
     ...rest
   } = props
+  const {t} = useTranslation()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
@@ -124,6 +127,11 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               content={
                 <Box overflow="auto">
                   <FocusLock onDeactivation={handleDeactivation}>
+                    {inputValue && isPastDisabled && isPast(new Date(inputValue)) && (
+                      <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+                        <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
+                      </Card>
+                    )}
                     <DatePicker
                       monthPickerVariant={monthPickerVariant}
                       calendarLabels={calendarLabels}

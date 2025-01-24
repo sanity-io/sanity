@@ -559,6 +559,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Tooltip content when boolean input is disabled */
   'inputs.boolean.disabled': 'Disabled',
+  /** Warning label when selected datetime is in the past */
+  'inputs.dateTime.past-date-warning': 'Select a date in the future.',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */

@@ -6,12 +6,13 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {releasesLocaleNamespace} from '../../i18n'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 import {createReleaseId} from '../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {ReleaseForm} from './ReleaseForm'
+import {getIsScheduledDateInPast, ReleaseForm} from './ReleaseForm'
 
 interface CreateReleaseDialogProps {
   onCancel: () => void
@@ -24,6 +25,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const toast = useToast()
   const {createRelease} = useReleaseOperations()
   const {t} = useTranslation()
+  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
 
   const [value, setValue] = useState((): EditableReleaseDocument => {
@@ -38,10 +40,23 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [isScheduledDateInPast, setIsScheduledDateInPast] = useState(() =>
+    getIsScheduledDateInPast(value),
+  )
+
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      if (isScheduledDateInPast) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: tRelease('schedule-dialog.publish-date-in-past-warning'),
+        })
+        return // do not submit if date is in past
+      }
+
       try {
-        event.preventDefault()
         setIsSubmitting(true)
 
         const submitValue = {
@@ -66,12 +81,17 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
       }
     },
-    [value, createRelease, telemetry, origin, toast, onSubmit],
+    [isScheduledDateInPast, toast, tRelease, value, createRelease, telemetry, origin, onSubmit],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
     setValue(changedValue)
+
+    // when the value changes, re-evaluate if the scheduled date is in the past
+    setIsScheduledDateInPast(getIsScheduledDateInPast(changedValue))
   }, [])
+
+  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(value))
 
   const dialogTitle = t('release.dialog.create.title')
 
@@ -89,8 +109,16 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         </Box>
         <Flex justify="flex-end" paddingTop={5}>
           <Button
+            tooltipProps={{
+              disabled: !isScheduledDateInPast,
+              content: tRelease('schedule-dialog.publish-date-in-past-warning'),
+            }}
+            // to handle cases where the dialog is open for some time
+            // and so the validity of the date needs to be checked again
+            onMouseEnter={handleOnMouseEnter}
+            onFocus={handleOnMouseEnter}
             size="large"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isScheduledDateInPast}
             iconRight={ArrowRightIcon}
             type="submit"
             text={dialogTitle}
