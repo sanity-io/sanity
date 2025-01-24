@@ -112,7 +112,7 @@ const getTimelineController = ({
 }): TimelineController => {
   const timeline = new Timeline({
     enableTrace: isDev,
-    documentId,
+    publishedId: documentId,
   })
   return new TimelineController({
     client,
