@@ -57,8 +57,19 @@ describe('ReleaseDashboardFooter', () => {
   })
 
   describe('for a published release', () => {
-    test('shows revert button', async () => {
+    test('shows revert button for asap release', async () => {
       await renderTest({release: publishedASAPRelease})
+
+      expect(screen.getByText('Revert release')).toBeInTheDocument()
+    })
+
+    test('shows revert button for scheduled release', async () => {
+      await renderTest({
+        release: {
+          ...publishedASAPRelease,
+          metadata: {...publishedASAPRelease.metadata, releaseType: 'scheduled'},
+        },
+      })
 
       expect(screen.getByText('Revert release')).toBeInTheDocument()
     })

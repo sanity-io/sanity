@@ -22,15 +22,9 @@ export function ReleaseDashboardFooter(props: {
   const releaseActionButton = useMemo(() => {
     if (release.state === 'archived') return null
 
-    if (release.metadata.releaseType === 'scheduled') {
-      return isReleaseScheduledOrScheduling(release) ? (
+    if (isReleaseScheduledOrScheduling(release)) {
+      return (
         <ReleaseUnscheduleButton
-          release={release}
-          documents={documents}
-          disabled={!documents.length}
-        />
-      ) : (
-        <ReleaseScheduleButton
           release={release}
           documents={documents}
           disabled={!documents.length}
@@ -39,6 +33,16 @@ export function ReleaseDashboardFooter(props: {
     }
 
     if (release.state === 'active') {
+      if (release.metadata.releaseType === 'scheduled') {
+        return (
+          <ReleaseScheduleButton
+            release={release}
+            documents={documents}
+            disabled={!documents.length}
+          />
+        )
+      }
+
       return (
         <ReleasePublishAllButton
           release={release}
