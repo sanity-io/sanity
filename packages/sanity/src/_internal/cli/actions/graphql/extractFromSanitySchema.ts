@@ -393,8 +393,24 @@ export function extractFromSanitySchema(
       return {type: getTypeName(candidates[0].type.name), ...base}
     }
 
-    const unionDefinition = getUnionDefinition(candidates, def, {grandParent: parent})
-    return {...unionDefinition, ...base}
+    const allTypeNames = candidates.map((c) => getTypeName(c.type.name))
+    const targetTypes = [...new Set(allTypeNames)].sort()
+    const name = targetTypes.join('Or')
+
+    // Register the union type if we haven't seen it before
+    if (!unionTypes.some((item) => item.name === name)) {
+      unionTypes.push({
+        kind: 'Union',
+        name,
+        types: targetTypes,
+      })
+    }
+
+    return {
+      type: name,
+      ...(targetTypes ? {references: targetTypes} : {}),
+      ...base,
+    }
   }
 
   function getArrayDefinition(
@@ -481,9 +497,7 @@ export function extractFromSanitySchema(
     }
 
     try {
-      if (guardPathName !== 'reference') {
-        unionRecursionGuards.add(guardPathName)
-      }
+      unionRecursionGuards.add(guardPathName)
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
