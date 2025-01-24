@@ -8,9 +8,9 @@ import {
   activeASAPRelease,
   activeScheduledRelease,
   scheduledRelease,
-} from '../../__fixtures__/release.fixture'
-import {useActiveReleasesMockReturn} from '../../store/__tests__/__mocks/useActiveReleases.mock'
-import {LATEST} from '../../util/const'
+} from '../../../releases/__fixtures__/release.fixture'
+import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
+import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../../perspective/usePerspective', () => ({
@@ -26,8 +26,13 @@ vi.mock('../../../perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
-vi.mock('../../store/useActiveReleases', () => ({
+vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
+
+const mockedUseWorkspace = vi.fn()
+vi.mock('../../../studio/useWorkspace', () => ({
+  useWorkspace: vi.fn(() => mockedUseWorkspace),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -74,6 +79,7 @@ describe('ReleasesNav', () => {
 
   it('should have clear button to unset perspective when a perspective is chosen', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
@@ -84,6 +90,7 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
@@ -92,6 +99,7 @@ describe('ReleasesNav', () => {
 
   it('should show release avatar for chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
+    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
 
     await renderTest()
 
@@ -299,6 +307,16 @@ describe('ReleasesNav', () => {
         expect(
           within(activeReleaseMenuItem).queryByTestId('release-avatar-primary'),
         ).not.toBeInTheDocument()
+      })
+
+      describe('when releases are disabled', () => {
+        beforeEach(() => {
+          mockedUseWorkspace.mockReturnValue({releases: {enabled: false}})
+        })
+
+        it('should hide calendar icon', async () => {
+          expect(screen.queryByTestId('releases-tool-link')).toBeNull()
+        })
       })
     })
   })

@@ -826,6 +826,9 @@ export interface Source {
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
+  /** @beta */
+  releases?: WorkspaceOptions['releases']
+
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.

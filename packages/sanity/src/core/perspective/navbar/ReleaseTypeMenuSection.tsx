@@ -4,8 +4,8 @@ import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
-import {type ReleaseDocument, type ReleaseType} from '../store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
