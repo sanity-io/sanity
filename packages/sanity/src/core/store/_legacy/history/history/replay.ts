@@ -18,7 +18,7 @@ export function replay(events: TraceEvent[]): Timeline {
   if (fst?.type !== 'initial') throw new Error('no initial event')
 
   const timeline = new Timeline({
-    documentId: fst.publishedId,
+    publishedId: fst.publishedId,
   })
 
   /* eslint-disable no-console */
