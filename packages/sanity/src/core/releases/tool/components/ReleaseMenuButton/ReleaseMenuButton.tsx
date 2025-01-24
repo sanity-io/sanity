@@ -109,12 +109,11 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   useEffect(() => {
     if (!selectedAction) return
 
-    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog || !documentsCount)
-      handleAction(selectedAction)
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
   }, [documentsCount, handleAction, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction || !documentsCount) return null
+    if (!selectedAction) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
