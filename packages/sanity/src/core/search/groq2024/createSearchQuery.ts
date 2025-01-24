@@ -100,7 +100,7 @@ export function createSearchQuery(
     options.cursor ?? [],
   ].flat()
 
-  const projectionFields = sortOrder.map(({field}) => field).concat('_type', '_id')
+  const projectionFields = sortOrder.map(({field}) => field).concat('_type', '_id', '_originalId')
   const projection = projectionFields.join(', ')
 
   const query = [
