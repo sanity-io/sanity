@@ -32,12 +32,14 @@ export function CurrentGlobalPerspectiveLabel({
 }): React.JSX.Element | null {
   const {t} = useTranslation()
 
-  if (!selectedPerspective || isDraftPerspective(selectedPerspective)) return null
+  if (!selectedPerspective) return null
 
   let displayTitle = t('release.placeholder-untitled-release')
 
   if (isPublishedPerspective(selectedPerspective)) {
     displayTitle = t('release.chip.published')
+  } else if (isDraftPerspective(selectedPerspective)) {
+    displayTitle = t('release.chip.global.drafts')
   } else if (isReleaseDocument(selectedPerspective)) {
     displayTitle = selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')
   }
