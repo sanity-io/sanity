@@ -64,7 +64,6 @@ export interface FormBuilderProps
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
   value: FormDocumentValue | undefined
-  version?: string
 }
 
 /**
@@ -96,7 +95,6 @@ export function FormBuilder(props: FormBuilderProps) {
     schemaType,
     validation,
     value,
-    version,
   } = props
 
   const handleCollapseField = useCallback(
@@ -275,7 +273,6 @@ export function FormBuilder(props: FormBuilderProps) {
       validation={validation}
       readOnly={readOnly}
       schemaType={schemaType}
-      version={version}
     >
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
