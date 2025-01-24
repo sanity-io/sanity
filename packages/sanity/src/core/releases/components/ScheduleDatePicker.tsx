@@ -1,7 +1,7 @@
 import {EarthGlobeIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import {addMinutes, format, isBefore} from 'date-fns'
-import {useMemo, useState} from 'react'
+import {format, isValid, parse} from 'date-fns'
+import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
@@ -24,17 +24,24 @@ export const ScheduleDatePicker = ({
   const {t} = useTranslation()
   const {timeZone} = useTimeZone()
   const {dialogTimeZoneShow} = useDialogTimeZone()
-  const [isBeforeNow, setIsBeforeNow] = useState(false)
 
   const handleBundlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
-    if (isBefore(date, addMinutes(new Date(), 1))) {
-      setIsBeforeNow(true)
-      return
-    }
 
     onChange(date)
   }
+
+  const handleBundlePublishAtInputChange = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      const date = event.currentTarget.value
+      const parsedDate = parse(date, 'PP HH:mm', new Date())
+
+      if (isValid(parsedDate)) {
+        onChange(parsedDate)
+      }
+    },
+    [onChange],
+  )
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
@@ -44,13 +51,13 @@ export const ScheduleDatePicker = ({
         selectTime
         monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
         onChange={handleBundlePublishAtCalendarChange}
+        onInputChange={handleBundlePublishAtInputChange}
         calendarLabels={calendarLabels}
         value={inputValue}
-        inputValue={format(inputValue, 'PPp')}
+        inputValue={format(inputValue, 'PP HH:mm')}
         constrainSize={false}
         padding={0}
         isPastDisabled
-        disableInput
       />
 
       <Button
