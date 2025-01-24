@@ -46,7 +46,7 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 
 ## Key Features
 
-![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/634bd76e8333f9c824a3f09ff563b5373bcfac3a-7684x4322.png?w=2000&fit=max&auto=format&dpr=2)
+![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/0eef48a15688916111a14cae008b0d5bd73865a5-2880x1000.png?w=2000&fit=max&auto=format&dpr=2)
 
 ### [Sanity Studio](https://www.sanity.io/studio)
 

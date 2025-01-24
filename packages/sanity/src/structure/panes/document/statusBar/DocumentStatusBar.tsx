@@ -27,7 +27,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
   const showingRevision = Boolean(revisionId)
-
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 

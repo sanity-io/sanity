@@ -41,7 +41,7 @@ import {
   type PresentationPerspective,
 } from '../types'
 import {type DocumentOnPage} from '../useDocumentsOnPage'
-import {useQueryParams, useRevalidate} from './utils'
+import {mapChangedValue, useQueryParams, useRevalidate} from './utils'
 
 export interface LoaderQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
@@ -480,14 +480,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
       }
       return null
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (changedValue: any, {previousValue}) => {
-      if (typeof changedValue === 'number' && typeof previousValue === 'string') {
-        // If the string() function was used in the query, we need to convert the source value to a string as well
-        return `${changedValue}`
-      }
-      return changedValue
-    },
+    mapChangedValue,
     perspective,
   )
 }

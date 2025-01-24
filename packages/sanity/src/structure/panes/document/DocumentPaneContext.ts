@@ -72,6 +72,7 @@ export interface DocumentPaneContextValue {
   /**
    * @deprecated not used anymore
    * */
+  timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   timelineError: Error | null
