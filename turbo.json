@@ -17,8 +17,7 @@
     "EXTRACT_SANITY_PROJECT_ID",
     "EXTRACT_SANITY_DATASET",
     "EXTRACT_SANITY_API_TOKEN",
-    "PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS",
-    "SANITY_STUDIO_PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS"
+    "PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS"
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [
