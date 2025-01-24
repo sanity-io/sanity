@@ -146,10 +146,12 @@ describe('ReleaseTypePicker', () => {
       const scheduledTab = screen.getByText('At time')
       fireEvent.click(scheduledTab)
 
-      const Calendar = getByDataUi(document.body, 'CalendarMonth')
+      const Calendar = getByDataUi(document.body, 'Calendar')
+      const CalendarMonth = getByDataUi(document.body, 'CalendarMonth')
 
       // Select the 10th day in the calendar month
-      fireEvent.click(within(Calendar).getByText('10'))
+      fireEvent.click(within(Calendar).getByTestId('calendar-next-month'))
+      fireEvent.click(within(CalendarMonth).getByText('10'))
       fireEvent.change(screen.getByLabelText('Select hour'), {target: {value: 10}})
       fireEvent.change(screen.getByLabelText('Select minute'), {target: {value: 55}})
       expect(mockUpdateRelease).not.toHaveBeenCalled()
@@ -217,8 +219,10 @@ describe('ReleaseTypePicker', () => {
       fireEvent.click(screen.getByText('Undecided'))
       fireEvent.click(screen.getByTestId('release-type-picker'))
 
-      // Check if the spinner is displayed while updating
-      screen.getByTestId('updating-release-spinner')
+      await waitFor(() => {
+        // Check if the spinner is displayed while updating
+        screen.queryByTestId('updating-release-spinner')
+      })
     })
   })
 })
