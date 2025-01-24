@@ -468,7 +468,7 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^2.1.2
-        version: 2.1.2(@sanity/client@6.27.1(debug@4.4.0))
+        version: 2.1.3(@sanity/client@6.27.1(debug@4.4.0))
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.10.39(@sanity/types@packages+@sanity+types)(react@19.0.0)
@@ -1410,8 +1410,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(@sanity/client@6.27.1(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^2.1.2
-        version: 2.1.2(@sanity/client@6.27.1(debug@4.4.0))
+        specifier: ^2.1.3
+        version: 2.1.3(@sanity/client@6.27.1(debug@4.4.0))
       '@sanity/schema':
         specifier: 3.71.2
         version: link:../@sanity/schema
@@ -4631,11 +4631,11 @@ packages:
     peerDependencies:
       prettier: ^3.2.5
 
-  '@sanity/preview-url-secret@2.1.2':
-    resolution: {integrity: sha512-oKxb5ugvTrwNePr9in7QdoXgORggj/ghWE74jykI89i8g5VbrAAM6Mp0p0K43o8/gPhEvqtja4GGzJpf4iBH5A==}
+  '@sanity/preview-url-secret@2.1.3':
+    resolution: {integrity: sha512-bTKldUIXoUP2PLz2yRY4dFL/wOinEB/Tn1DS1SD9Acy3oDpmXI4WOPeo0kw5uDHBN3rNZV+nAkNk1tPvIjVtgg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.27.0
+      '@sanity/client': ^6.27.1
 
   '@sanity/react-loader@1.10.39':
     resolution: {integrity: sha512-dkWpQ2Ihv7DwK5mRKhBqypui3UcNWE+ozHCksifHmk6IKKNgIDoq+0d9Bh4FIsizwya1YmyupS8nhsZgCMyPew==}
@@ -15149,7 +15149,7 @@ snapshots:
       prettier: 3.4.2
       prettier-plugin-packagejson: 2.5.6(prettier@3.4.2)
 
-  '@sanity/preview-url-secret@2.1.2(@sanity/client@6.27.1(debug@4.4.0))':
+  '@sanity/preview-url-secret@2.1.3(@sanity/client@6.27.1(debug@4.4.0))':
     dependencies:
       '@sanity/client': 6.27.1(debug@4.4.0)
       '@sanity/uuid': 3.0.2
@@ -15485,7 +15485,7 @@ snapshots:
       '@sanity/comlink': 3.0.1
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.19.2)
       '@sanity/presentation-comlink': 1.0.3(@sanity/client@6.27.1(debug@4.4.0))(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 2.1.2(@sanity/client@6.27.1(debug@4.4.0))
+      '@sanity/preview-url-secret': 2.1.3(@sanity/client@6.27.1(debug@4.4.0))
       '@sanity/visual-editing-csm': 2.0.1(@sanity/client@6.27.1(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
