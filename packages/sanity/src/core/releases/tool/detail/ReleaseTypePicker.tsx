@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isBefore, isValid, startOfMinute} from 'date-fns'
+import {format, isAfter, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -36,6 +36,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
   const publishDate = useMemo(() => getPublishDateFromRelease(release) || new Date(), [release])
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(false)
 
   const [inputValue, setInputValue] = useState<Date | undefined>(
     publishDate ? new Date(publishDate) : undefined,
@@ -58,7 +59,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
         metadata: {...release.metadata, intendedPublishAt: updatedDate, releaseType},
       }
 
-      if (!isEqual(newRelease, release)) {
+      if (!isEqual(newRelease, release) && inputValue && isAfter(inputValue, new Date())) {
         setIsUpdating(true)
         updateRelease(newRelease).then(() => {
           setIsUpdating(false)
@@ -67,7 +68,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       }
       setOpen(false)
     }
-  }, [open, updateRelease, release, updatedDate, releaseType])
+  }, [open, release, updatedDate, releaseType, inputValue, updateRelease])
 
   useClickOutsideEvent(close, () => [
     popoverRef.current,
@@ -130,13 +131,16 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const handleBundlePublishAtChange = useCallback((date: Date | null) => {
     if (!date) return
 
+    setIsIntendedScheduleDateInPast(isBefore(date, new Date()))
     setInputValue(startOfMinute(new Date(date)))
   }, [])
 
   const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const parsedDate = new Date(event.currentTarget.value)
+    const parsedDate = parse(event.currentTarget.value, 'PP HH:mm', new Date())
 
     if (isValid(parsedDate)) {
+      setIsIntendedScheduleDateInPast(isBefore(parsedDate, new Date()))
+
       setInputValue(startOfMinute(parsedDate))
     }
   }, [])
@@ -174,12 +178,16 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
         </TabList>
         {dateInputOpen && (
           <>
+            {isIntendedScheduleDateInPast && (
+              <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+                <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+              </Card>
+            )}
             <LazyTextInput
-              value={inputValue ? format(inputValue, 'PPp') : undefined}
+              value={inputValue ? format(inputValue, 'PP HH:mm') : undefined}
               onChange={handleInputChange}
-              readOnly
+              // readOnly
             />
-
             <DatePicker
               ref={datePickerRef}
               monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
