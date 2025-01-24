@@ -20,7 +20,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanners,
   DeprecatedDocumentTypeBanner,
-  PermissionCheckBanner,
+  InsufficientPermissionBanner,
   ReferenceChangedBanner,
 } from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
@@ -185,10 +185,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     return (
       <>
-        <PermissionCheckBanner
-          granted={Boolean(permissions?.granted)}
-          requiredPermission={requiredPermission}
-        />
+        {!permissions?.granted && (
+          <InsufficientPermissionBanner requiredPermission={requiredPermission} />
+        )}
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <DeletedDocumentBanners />
