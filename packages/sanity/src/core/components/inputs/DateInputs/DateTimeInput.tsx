@@ -7,6 +7,7 @@ import {
   forwardRef,
   type KeyboardEvent,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -65,10 +66,14 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
 
+  const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
+
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     forwardedRef,
     () => ref.current,
   )
+
+  useEffect(() => setReferenceElement(ref.current), [])
 
   const [isPickerOpen, setPickerOpen] = useState(false)
 
@@ -122,7 +127,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
             <Popover
               constrainSize={constrainSize}
               data-testid="date-input-dialog"
-              referenceElement={ref.current}
+              referenceElement={referenceElement}
               portal
               content={
                 <Box overflow="auto">

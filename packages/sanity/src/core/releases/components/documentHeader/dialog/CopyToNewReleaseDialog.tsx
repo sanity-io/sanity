@@ -32,9 +32,9 @@ export function CopyToNewReleaseDialog(props: {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
 
-  const [newReleaseId] = useState(createReleaseId())
+  const [newReleaseId] = useState(createReleaseId)
 
-  const [value, setValue] = useState((): EditableReleaseDocument => {
+  const [release, setRelease] = useState((): EditableReleaseDocument => {
     return {
       _id: newReleaseId,
       metadata: {
@@ -47,7 +47,7 @@ export function CopyToNewReleaseDialog(props: {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [isScheduledDateInPast, setIsScheduledDateInPast] = useState(() =>
-    getIsScheduledDateInPast(value),
+    getIsScheduledDateInPast(release),
   )
 
   const telemetry = useTelemetry()
@@ -56,7 +56,7 @@ export function CopyToNewReleaseDialog(props: {
   const displayTitle = title || t('release.placeholder-untitled-release')
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
-    setValue(changedValue)
+    setRelease(changedValue)
 
     // when the value changes, re-evaluate if the scheduled date is in the past
     setIsScheduledDateInPast(getIsScheduledDateInPast(changedValue))
@@ -79,7 +79,7 @@ export function CopyToNewReleaseDialog(props: {
     try {
       setIsSubmitting(true)
 
-      await createRelease(value)
+      await createRelease(release)
 
       await handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
@@ -94,9 +94,9 @@ export function CopyToNewReleaseDialog(props: {
     } finally {
       setIsSubmitting(false)
     }
-  }, [createRelease, handleAddVersion, isScheduledDateInPast, tRelease, telemetry, toast, value])
+  }, [createRelease, handleAddVersion, isScheduledDateInPast, tRelease, telemetry, toast, release])
 
-  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(value))
+  const handleOnMouseEnter = () => setIsScheduledDateInPast(getIsScheduledDateInPast(release))
 
   return (
     <Dialog
@@ -155,7 +155,7 @@ export function CopyToNewReleaseDialog(props: {
       </Box>
 
       <Box paddingX={5} paddingY={3}>
-        <ReleaseForm onChange={handleOnChange} value={value} />
+        <ReleaseForm onChange={handleOnChange} value={release} />
       </Box>
     </Dialog>
   )
