@@ -19,8 +19,7 @@ interface DialogActionsMap extends BaseReleaseActionsMap {
   confirmDialog: {
     dialogId: string
     dialogHeaderI18nKey: string
-    dialogDescriptionSingularI18nKey: string
-    dialogDescriptionMultipleI18nKey: string
+    dialogDescriptionI18nKey: string
     dialogConfirmButtonI18nKey: string
   }
 }
@@ -33,8 +32,7 @@ export const RELEASE_ACTION_MAP: Record<
     confirmDialog: {
       dialogId: 'confirm-delete-dialog',
       dialogHeaderI18nKey: 'delete-dialog.confirm-delete.header',
-      dialogDescriptionSingularI18nKey: 'delete-dialog.confirm-delete-description_one',
-      dialogDescriptionMultipleI18nKey: 'delete-dialog.confirm-delete-description_other',
+      dialogDescriptionI18nKey: 'delete-dialog.confirm-delete-description',
       dialogConfirmButtonI18nKey: 'delete-dialog.confirm-delete-button',
     },
     toastSuccessI18nKey: 'toast.delete.success',
@@ -45,8 +43,7 @@ export const RELEASE_ACTION_MAP: Record<
     confirmDialog: {
       dialogId: 'confirm-archive-dialog',
       dialogHeaderI18nKey: 'archive-dialog.confirm-archive-header',
-      dialogDescriptionSingularI18nKey: 'archive-dialog.confirm-archive-description_one',
-      dialogDescriptionMultipleI18nKey: 'archive-dialog.confirm-archive-description_other',
+      dialogDescriptionI18nKey: 'archive-dialog.confirm-archive-description',
       dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
     },
     toastSuccessI18nKey: 'toast.archive.success',
