@@ -13,6 +13,7 @@ import {
   PresenceOverlay,
   useDocumentPresence,
   useDocumentStore,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
@@ -41,7 +42,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     editState,
     documentId,
     documentType,
-    selectedReleaseId,
     fieldActions,
     onChange,
     validation,
@@ -56,6 +56,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetActiveFieldGroup,
     openPath,
   } = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
