@@ -42,6 +42,8 @@ export function createPreviewObserver(context: {
     value: Previewable,
     type: PreviewableType,
     options: {
+      // TODO: COREL - Is this missing somehow? Maybe it was implemented and we lost this
+      // Is perspective preview value working correctly?
       perspective?: string
       viewOptions?: PrepareViewOptions
       apiConfig?: ApiConfig
