@@ -24,6 +24,9 @@ const SAVED_TIMEOUT = 3000
 export function DocumentStatusLine() {
   const {documentId, documentType, editState, value} = useDocumentPane()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+
+  const syncState = useSyncState(documentId, documentType, {version: editState?.release})
+
   const documentPreviewStore = useDocumentPreviewStore()
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -42,8 +45,6 @@ export function DocumentStatusLine() {
     [documentPreviewStore, schemaType, value._id, releases.data, perspectiveStack],
   )
   const {versions} = useObservable(previewStateObservable, {versions: {}})
-
-  const syncState = useSyncState(documentId, documentType, {version: editState?.release})
 
   const lastUpdated = value?._updatedAt
 

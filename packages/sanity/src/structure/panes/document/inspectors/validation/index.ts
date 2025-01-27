@@ -18,11 +18,11 @@ import {ValidationInspector} from './ValidationInspector'
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId} = usePerspective()
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,
-    selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
+    selectedReleaseId,
   )
 
   const validation: FormNodeValidation[] = useMemo(

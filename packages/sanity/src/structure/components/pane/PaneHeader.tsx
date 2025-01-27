@@ -76,6 +76,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleCard
                 __unstable_focusRing
                 flex={1}
+                forwardedAs="button"
                 onClick={handleTitleClick}
                 paddingLeft={backButton ? 1 : 2}
                 padding={2}

@@ -25,17 +25,17 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
     since: params.since,
   })
 
-  const revTime = useTimelineSelector(store, (state) => state.revTime)
-  // TODO: Maybe derive this from the `revTime` selector, ifRevTime === onOlderRevision:true?
   const onOlderRevision = useTimelineSelector(store, (state) => state.onOlderRevision)
-  const timelineDisplayed = useTimelineSelector(store, (state) => state.timelineDisplayed)
+  const revTime = useTimelineSelector(store, (state) => state.revTime)
   const sinceAttributes = useTimelineSelector(store, (state) => state.sinceAttributes)
+  const timelineDisplayed = useTimelineSelector(store, (state) => state.timelineDisplayed)
   const timelineReady = useTimelineSelector(store, (state) => state.timelineReady)
   const isPristine = useTimelineSelector(store, (state) => state.isPristine)
   const lastNonDeletedRevId = useTimelineSelector(store, (state) => state.lastNonDeletedRevId)
+
   const historyStoreProps = useMemo(
     () => ({
-      store: store,
+      store,
       error: timelineError,
       revisionId: revTime?.id || null,
       onOlderRevision: onOlderRevision,
