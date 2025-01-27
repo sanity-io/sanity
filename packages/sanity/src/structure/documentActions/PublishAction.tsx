@@ -44,21 +44,16 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 
-/**
- * TODO: Verify how this should work with versions, if it's needed at all.
- *
- *@internal
- */
+/** @internal */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish} = useDocumentOperation(id, type, release)
-  const validationStatus = useValidationStatus(id, type, release)
-  const syncState = useSyncState(id, type, {version: release})
-  const {changesOpen, onHistoryOpen, documentId, documentType, displayed} = useDocumentPane()
-
-  const editState = useEditState(documentId, documentType, 'default', release)
+  const {publish} = useDocumentOperation(id, type)
+  const validationStatus = useValidationStatus(id, type)
+  const syncState = useSyncState(id, type)
+  const {changesOpen, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
@@ -71,7 +66,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
     permission: 'publish',
   })
 
@@ -85,9 +79,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
       : ''
 
   const hasDraft = Boolean(draft)
-
-  /** detect if the displayed document is published, if it is the publish action should be disabled */
-  const isDisplayedPublished = displayed?._id === documentId
 
   const doPublish = useCallback(() => {
     publish.execute()
@@ -157,7 +148,10 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
-    // TODO: Check whether live edit is enabled because we're editing a version.
+    if (release) {
+      // Version documents are not publishable by this action, they should be published as part of a release
+      return null
+    }
     if (liveEdit) {
       return {
         tone: 'default',
@@ -186,8 +180,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
         publishState === 'publishing' ||
         publishState === 'published' ||
         hasValidationErrors ||
-        publish.disabled ||
-        isDisplayedPublished,
+        publish.disabled,
     )
 
     return {
@@ -213,11 +206,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
       onHandle: handle,
     }
   }, [
+    release,
     currentUser,
     editState?.transactionSyncLock?.enabled,
     handle,
     hasValidationErrors,
-    isDisplayedPublished,
     isPermissionsLoading,
     liveEdit,
     permissions?.granted,
