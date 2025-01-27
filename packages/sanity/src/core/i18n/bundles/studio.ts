@@ -1718,6 +1718,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-title':
     'An error occurred whilst retrieving document changes.',
+  /** Description for error when the timeline for the given document can't be loaded */
+  'timeline.error.load-document-changes-version-description':
+    'Enable the events API through the Studio config to view document history.',
+  /** Title for error when the timeline for the given version document can't be loaded */
+  'timeline.error.load-document-changes-version-title':
+    'Version documents history is only available through the Events API.',
   /** Error description for when the document doesn't have history */
   'timeline.error.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',

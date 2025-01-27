@@ -90,7 +90,7 @@ function getChunkState(effect?: MendozaEffectPair): ChunkState {
  * | published upsert   | liveEdit       | publish       | liveEdit     |
  */
 function getChunkType(transaction: Transaction): ChunkType {
-  const draftState = getChunkState(transaction.versionEffect)
+  const draftState = getChunkState(transaction.draftEffect)
   const publishedState = getChunkState(transaction.publishedEffect)
 
   if (publishedState === 'unedited') {
@@ -125,10 +125,10 @@ function getChunkType(transaction: Transaction): ChunkType {
 }
 
 export function chunkFromTransaction(transaction: Transaction): Chunk {
-  const modifiedDraft = Boolean(transaction.versionEffect)
+  const modifiedDraft = Boolean(transaction.draftEffect)
   const modifiedPublished = Boolean(transaction.publishedEffect)
 
-  const draftDeleted = transaction.versionEffect && isDeletePatch(transaction.versionEffect.apply)
+  const draftDeleted = transaction.draftEffect && isDeletePatch(transaction.draftEffect.apply)
   const publishedDeleted =
     transaction.publishedEffect && isDeletePatch(transaction.publishedEffect.apply)
 

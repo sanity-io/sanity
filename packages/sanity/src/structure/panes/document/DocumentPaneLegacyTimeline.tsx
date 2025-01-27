@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
-import {getPublishedId, usePerspective, useTimelineSelector, useTimelineStore} from 'sanity'
+import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
 
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from './constants'
@@ -11,7 +11,6 @@ import {type DocumentPaneProviderProps} from './types'
 export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
   const {pane} = props
   const paneRouter = usePaneRouter()
-  const {selectedReleaseId} = usePerspective()
   const options = usePaneOptions(pane.options, paneRouter.params)
 
   const params = paneRouter.params || EMPTY_PARAMS
@@ -24,7 +23,6 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
     onError: setTimelineError,
     rev: params.rev,
     since: params.since,
-    version: selectedReleaseId,
   })
 
   const onOlderRevision = useTimelineSelector(store, (state) => state.onOlderRevision)
