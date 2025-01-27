@@ -126,6 +126,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const perspective = usePerspective()
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
+    // * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
@@ -794,8 +795,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         views,
         formState,
         unstable_languageFilter: languageFilter,
-
-        // History specific
         revisionId,
         lastNonDeletedRevId,
       }) satisfies DocumentPaneContextValue,
@@ -836,19 +835,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openPath,
       index,
       inspectOpen,
-      isDeleted,
-      isDeleting,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      languageFilter,
       validation,
       menuItemGroups,
       paneKey,
       previewUrl,
       ready,
       schemaType,
+      isPermissionsLoading,
+      isInitialValueLoading,
       permissions,
       setTimelineRange,
+      isDeleting,
+      isDeleted,
       timelineError,
       timelineStore,
       title,
@@ -856,6 +854,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       selectedReleaseId,
       views,
       formState,
+      languageFilter,
       revisionId,
       lastNonDeletedRevId,
     ],

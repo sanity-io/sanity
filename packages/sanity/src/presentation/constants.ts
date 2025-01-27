@@ -10,6 +10,7 @@ export const EDIT_INTENT_MODE = 'presentation'
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
 
 // The API version to use when using `@sanity/client`
+// TODO: COREL - Replace once releases API are stable.
 export const API_VERSION = 'vX'
 
 // Heartbeats shouldn't fire on intervals that are so short it causes performance issues

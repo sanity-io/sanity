@@ -10,5 +10,6 @@ import {type SourceClientOptions} from './config'
  * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
+  // TODO: COREL - Replace once releases API are stable.
   apiVersion: 'X',
 }
