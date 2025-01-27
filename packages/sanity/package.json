@@ -249,7 +249,7 @@
     "react-i18next": "14.0.2",
     "react-is": "^18.2.0",
     "react-refractor": "^2.1.6",
-    "react-rx": "^4.1.16",
+    "react-rx": "^4.1.17",
     "read-pkg-up": "^7.0.1",
     "refractor": "^3.6.0",
     "resolve-from": "^5.0.0",
