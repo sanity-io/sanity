@@ -126,7 +126,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const perspective = usePerspective()
 
   const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
-    // * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
+    // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
