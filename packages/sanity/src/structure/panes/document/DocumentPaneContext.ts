@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {
   type ObjectSchemaType,
   type Path,
@@ -84,6 +85,12 @@ export interface DocumentPaneContextValue {
   value: SanityDocumentLike
   views: View[]
   formState: DocumentFormNode | null
+  /**
+   * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
+   *
+   * @deprecated use `usePerspective()`ﬁ instead
+   */
+  selectedReleaseId: ReleaseId | undefined
   permissions?: PermissionCheckResult | null
   isDeleting: boolean
   isDeleted: boolean
