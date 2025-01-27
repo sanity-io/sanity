@@ -30,6 +30,7 @@ export type ReferenceFilterSearchOptions = {
   tag?: string
   maxFieldDepth?: number
   strategy?: SearchStrategy
+  perspective?: string | string[]
 }
 
 /** @public */
