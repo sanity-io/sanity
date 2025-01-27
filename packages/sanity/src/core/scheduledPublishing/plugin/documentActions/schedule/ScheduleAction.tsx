@@ -44,13 +44,12 @@ const debug = debugWithName('ScheduleAction')
  * @beta
  */
 export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
-  const {draft, id, liveEdit, onComplete, published, type, release} = props
-  const currentUser = useCurrentUser()
+  const {draft, id, liveEdit, onComplete, published, type} = props
 
+  const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
     permission: 'publish',
   })
   const {createSchedule} = useScheduleOperation()

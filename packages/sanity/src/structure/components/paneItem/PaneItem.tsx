@@ -116,13 +116,13 @@ export function PaneItem(props: PaneItemProps) {
       />
     )
   }, [
-    value,
+    documentPreviewStore,
+    hasSchemaType,
     icon,
+    layout,
     schemaType,
     title,
-    hasSchemaType,
-    documentPreviewStore,
-    layout,
+    value,
     documentPresence,
   ])
 
