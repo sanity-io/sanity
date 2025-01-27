@@ -1,10 +1,9 @@
+import {type ReleaseId} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
-  isPublishedPerspective,
-  LATEST,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
@@ -32,23 +31,22 @@ const POPOVER_PROPS: PopoverProps = {
 const getIntent = (
   templates: Template[],
   item: InitialValueTemplateItem,
-  version?: string,
+  version?: ReleaseId,
 ): PaneHeaderIntentProps | null => {
-  const isBundleIntent = version && version !== LATEST && !isPublishedPerspective(version)
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 
   const baseParams = {
     template: item.templateId,
     type: typeName,
-    version: isBundleIntent ? version : undefined,
+    version,
     id: item.initialDocumentId,
   }
 
   return {
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
-    searchParams: isBundleIntent ? [['perspective', version]] : undefined,
+    searchParams: version ? [['perspective', version]] : undefined,
   }
 }
 
@@ -116,7 +114,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
     return (
       <InsufficientPermissionsMessageTooltip
-        reveal={!permissions?.granted}
+        reveal={disabled}
         loading={isTemplatePermissionsLoading}
         context="create-document-type"
       >
