@@ -281,7 +281,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         selected={isDraftSelected}
         disabled={isDraftDisabled}
         text={t('release.chip.draft')}
-        tone="caution"
+        tone={editState?.draft ? 'caution' : 'neutral'}
         onClick={handlePerspectiveChange('drafts')}
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
