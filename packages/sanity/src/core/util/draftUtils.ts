@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
 import {isNonNullable} from './isNonNullable'
@@ -62,6 +63,15 @@ export function isDraftId(id: string): id is DraftId {
 /** @internal */
 export function isVersionId(id: string): boolean {
   return id.startsWith(VERSION_PREFIX)
+}
+
+/** @internal */
+export function isReleaseId(maybeReleaseId: unknown): maybeReleaseId is ReleaseId {
+  return (
+    typeof maybeReleaseId === 'string' &&
+    maybeReleaseId.startsWith('r') &&
+    maybeReleaseId.length > 1
+  )
 }
 
 /**
