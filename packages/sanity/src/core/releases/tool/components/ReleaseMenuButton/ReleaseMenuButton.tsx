@@ -6,6 +6,7 @@ import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
+import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -34,6 +35,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
+  const {execIfNotUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   const handleDelete = useCallback(async () => {
@@ -43,6 +45,10 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
     router.navigate({})
   }, [deleteRelease, release._id, router])
 
+  const handleUnarchive = useCallback(async () => {
+    return execIfNotUpsell(() => unarchive(release._id))
+  }, [execIfNotUpsell, release._id, unarchive])
+
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
       if (releaseMenuDisabled) return
@@ -50,14 +56,16 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       const actionLookup = {
         delete: handleDelete,
         archive,
-        unarchive,
+        unarchive: handleUnarchive,
         unschedule,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
       try {
         setIsPerformingOperation(true)
-        await actionLookup[action](release._id)
+        const isExec = await actionLookup[action](release._id)
+        if (action === 'unarchive' && !isExec) return
+
         telemetry.log(actionValues.telemetry)
         toast.push({
           closable: true,
@@ -95,7 +103,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       releaseMenuDisabled,
       handleDelete,
       archive,
-      unarchive,
+      handleUnarchive,
       unschedule,
       release._id,
       telemetry,

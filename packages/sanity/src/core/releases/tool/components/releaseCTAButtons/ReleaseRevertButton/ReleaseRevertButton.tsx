@@ -6,8 +6,10 @@ import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog'
+import {useProjectSubscriptions} from '../../../../../hooks/useProjectSubscriptions'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
+import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -214,13 +216,24 @@ export const ReleaseRevertButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {execIfNotUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
+  const {projectSubscriptions, isLoading: isLoadingProjectSubscriptions} = useProjectSubscriptions()
+
+  const isRevertEnabled = projectSubscriptions?.plan.planTypeId === 'enterprise'
+
+  const handleMoveToConfirmStatus = useCallback(
+    () => execIfNotUpsell(() => setRevertReleaseStatus('confirm')),
+    [execIfNotUpsell],
+  )
+
+  if (isLoadingProjectSubscriptions || !isRevertEnabled) return null
 
   return (
     <>
       <Button
         icon={RestoreIcon}
-        onClick={() => setRevertReleaseStatus('confirm')}
+        onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
         disabled={disabled}

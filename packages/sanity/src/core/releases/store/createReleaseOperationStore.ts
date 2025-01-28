@@ -33,6 +33,7 @@ export interface ReleaseOperationsStore {
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
+  checkReleaseLimit: () => Promise<boolean>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -196,6 +197,23 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const handleCheckReleaseLimit = async () => {
+    try {
+      await requestAction(
+        client,
+        {
+          actionType: 'sanity.action.release.create',
+          releaseId: 'pseudo-id',
+          [METADATA_PROPERTY_NAME]: {},
+        },
+        true,
+      )
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -209,6 +227,7 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    checkReleaseLimit: handleCheckReleaseLimit,
   }
 }
 
@@ -280,13 +299,18 @@ type ReleaseAction =
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
 
-export function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
+export function requestAction(
+  client: SanityClient,
+  actions: ReleaseAction | ReleaseAction[],
+  dryRun?: boolean,
+) {
   const {dataset} = client.config()
   return client.request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: Array.isArray(actions) ? actions : [actions],
+      dryRun,
     },
   })
 }

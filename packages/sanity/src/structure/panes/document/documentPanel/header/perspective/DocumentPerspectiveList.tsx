@@ -25,6 +25,7 @@ import {
 } from 'sanity'
 import {usePaneRouter} from 'sanity/structure'
 
+import {ReleasesUpsellProvider} from '../../../../../../core/releases/contexts/upsell/ReleasesUpsellProvider'
 import {useDocumentPane} from '../../../useDocumentPane'
 
 type FilterReleases = {
@@ -223,7 +224,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return false
   }, [documentType, editState?.draft, isCreatingDocument, schema, selectedReleaseId])
   return (
-    <>
+    <ReleasesUpsellProvider>
       <VersionChip
         tooltipContent={
           <Text size={1}>
@@ -340,6 +341,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             }}
           />
         ))}
-    </>
+    </ReleasesUpsellProvider>
   )
 })

@@ -4,6 +4,8 @@ import {Box, Button, type ButtonMode, Card, Container, Flex, Stack, Text} from '
 import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useFeatureEnabled} from 'sanity'
+// import {useClient} from 'sanity'
 import {type SearchParam, useRouter} from 'sanity/router'
 
 import {Button as StudioButton, Tooltip} from '../../../../ui-components'
@@ -13,6 +15,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
+import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -48,6 +51,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
+  const {execIfNotUpsell} = useReleasesUpsell()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -65,6 +69,7 @@ export function ReleasesOverview() {
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+  const {enabled: isReleasesEnabled} = useFeatureEnabled('contentReleases')
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
@@ -200,16 +205,21 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
+  const handleOnClickCreateRelease = useCallback(
+    () => execIfNotUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    [execIfNotUpsell],
+  )
+
   const createReleaseButton = useMemo(
     () => (
       <Button
         icon={AddIcon}
         disabled={isCreateReleaseDialogOpen}
-        onClick={() => setIsCreateReleaseDialogOpen(true)}
+        onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
       />
     ),
-    [isCreateReleaseDialogOpen, tCore],
+    [handleOnClickCreateRelease, isCreateReleaseDialogOpen, tCore],
   )
 
   const handleOnCreateRelease = useCallback(
@@ -322,21 +332,28 @@ export function ReleasesOverview() {
                 </Stack>
               </Container>
             ) : (
-              <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-                loading={loadingTableData}
-                data={filteredReleases}
-                columnDefs={releasesOverviewColumnDefs(t)}
-                emptyState={t('no-releases')}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="_id"
-                rowActions={renderRowActions}
-                rowProps={getRowProps}
-                scrollContainerRef={scrollContainerRef}
-                hideTableInlinePadding
-              />
+              <>
+                {!isReleasesEnabled && (
+                  <Card marginX={3} padding={3} radius={2} shadow={1} tone="suggest">
+                    <Text>You need to upgrade to Growth to use releases</Text>
+                  </Card>
+                )}
+                <Table<TableRelease>
+                  // for resetting filter and sort on table when filer changed
+                  key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                  defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                  loading={loadingTableData}
+                  data={filteredReleases}
+                  columnDefs={releasesOverviewColumnDefs(t)}
+                  emptyState={t('no-releases')}
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                  rowId="_id"
+                  rowActions={renderRowActions}
+                  rowProps={getRowProps}
+                  scrollContainerRef={scrollContainerRef}
+                  hideTableInlinePadding
+                />
+              </>
             )}
           </Box>
           {renderCreateReleaseDialog()}
