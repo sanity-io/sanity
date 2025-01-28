@@ -227,7 +227,6 @@
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.0",
-    "mnemonist": "0.39.8",
     "module-alias": "^2.2.2",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.1.30",
