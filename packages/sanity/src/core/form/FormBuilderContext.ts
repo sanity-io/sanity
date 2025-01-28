@@ -58,5 +58,4 @@ export interface FormBuilderContextValue {
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
-  version?: string
 }

@@ -17,6 +17,7 @@ import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-co
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormField} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
@@ -25,7 +26,6 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
 import {type ObjectFieldProps, type RenderPreviewCallback} from '../../types'
-import {useFormBuilder} from '../../useFormBuilder'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
@@ -63,7 +63,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, open, inputId, children, inputProps} = props
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
-  const {version} = useFormBuilder()
+  const {selectedReleaseId} = usePerspective()
 
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
   const documentId = usePublishedId()
@@ -76,7 +76,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       path,
       schemaType,
       value,
-      version,
+      version: selectedReleaseId,
     })
 
   // this is here to make sure the item is visible if it's being edited behind a modal
