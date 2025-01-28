@@ -84,7 +84,7 @@ export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEv
     if (isPublishDocumentVersionEvent(event)) {
       event.documentId = event.versionId
       // Find the creation event and edit events for this published event
-      for (let i = index; i <= eventsWithParent.length; i++) {
+      for (let i = index; i < eventsWithParent.length; i++) {
         const nextEvent = eventsWithParent[i]
         if (isEditDocumentVersionEvent(nextEvent)) {
           nextEvent.parentId = event.id
