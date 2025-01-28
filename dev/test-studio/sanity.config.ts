@@ -225,7 +225,11 @@ export default defineConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
-    beta: {eventsAPI: {enabled: true}},
+    beta: {
+      eventsAPI: {
+        releases: true,
+      },
+    },
   },
   {
     name: 'listener-events',
@@ -254,7 +258,6 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
-    beta: {eventsAPI: {enabled: true}},
     auth: {
       loginMethod: 'token',
     },

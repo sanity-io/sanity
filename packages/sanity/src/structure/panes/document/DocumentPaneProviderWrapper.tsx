@@ -10,7 +10,7 @@ import {type DocumentPaneProviderProps} from './types'
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   const source = useSource()
-  if (source.beta?.eventsAPI?.enabled) {
+  if (source.beta?.eventsAPI?.documents) {
     return <DocumentEventsPane {...props} />
   }
   return <DocumentPaneWithLegacyTimelineStore {...props} />

@@ -59,7 +59,7 @@ export function getReleaseActivityEvents({client, releaseId}: InitialFetchEvents
         events: Omit<ReleaseEvent, 'id' | 'origin'>[]
         nextCursor: string
       }>({
-        url: `/data/events/${client.config().dataset}/releases/${getReleaseIdFromReleaseDocumentId(releaseId)}?${params.toString()}`,
+        url: `/data/history/${client.config().dataset}/events/releases/${getReleaseIdFromReleaseDocumentId(releaseId)}?${params.toString()}`,
         tag: 'get-release-events',
       })
       .pipe(
