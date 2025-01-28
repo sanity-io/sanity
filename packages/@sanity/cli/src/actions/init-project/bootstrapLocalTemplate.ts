@@ -10,6 +10,7 @@ import {copy} from '../../util/copy'
 import {getAndWriteJourneySchemaWorker} from '../../util/journeyConfig'
 import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {createCliConfig} from './createCliConfig'
+import {createCoreAppCliConfig} from './createCoreAppCliConfig'
 import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
 import {determineStudioTemplate} from './determineStudioTemplate'
@@ -82,8 +83,8 @@ export async function bootstrapLocalTemplate(
   // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
   const dependencyVersions = await resolveLatestVersions({
-    ...studioDependencies.dependencies,
-    ...studioDependencies.devDependencies,
+    ...(isStudioTemplate ? studioDependencies.dependencies : {}),
+    ...(isStudioTemplate ? studioDependencies.devDependencies : {}),
     ...(template.dependencies || {}),
     ...(template.devDependencies || {}),
   })
@@ -91,7 +92,7 @@ export async function bootstrapLocalTemplate(
 
   // Use the resolved version for the given dependency
   const dependencies = Object.keys({
-    ...studioDependencies.dependencies,
+    ...(isStudioTemplate ? studioDependencies.dependencies : {}),
     ...template.dependencies,
   }).reduce(
     (deps, dependency) => {
@@ -102,7 +103,7 @@ export async function bootstrapLocalTemplate(
   )
 
   const devDependencies = Object.keys({
-    ...studioDependencies.devDependencies,
+    ...(isStudioTemplate ? studioDependencies.devDependencies : {}),
     ...template.devDependencies,
   }).reduce(
     (deps, dependency) => {
@@ -121,17 +122,19 @@ export async function bootstrapLocalTemplate(
   })
 
   // ...and a studio config (`sanity.config.[ts|js]`)
-  const studioConfig = await createStudioConfig({
+  const studioConfig = createStudioConfig({
     template: template.configTemplate,
     variables,
   })
 
   // ...and a CLI config (`sanity.cli.[ts|js]`)
-  const cliConfig = await createCliConfig({
-    projectId: variables.projectId,
-    dataset: variables.dataset,
-    autoUpdates: variables.autoUpdates,
-  })
+  const cliConfig = isStudioTemplate
+    ? createCliConfig({
+        projectId: variables.projectId,
+        dataset: variables.dataset,
+        autoUpdates: variables.autoUpdates,
+      })
+    : createCoreAppCliConfig({appLocation: template.appLocation!})
 
   // Write non-template files to disc
   const codeExt = useTypeScript ? 'ts' : 'js'

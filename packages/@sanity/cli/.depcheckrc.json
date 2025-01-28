@@ -8,7 +8,6 @@
     "vite",
     "@portabletext/toolkit",
     "react",
-    "react-dom",
     "@sanity/ui",
     "lodash.get",
     "@portabletext/types",

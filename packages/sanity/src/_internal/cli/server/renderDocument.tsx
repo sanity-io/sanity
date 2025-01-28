@@ -158,8 +158,13 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap, isStudioApp}: RenderDocumentOptions =
-    workerData || {}
+  const {
+    monorepo,
+    studioRootPath,
+    props,
+    importMap,
+    isStudioApp = true,
+  }: RenderDocumentOptions = workerData || {}
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
@@ -222,9 +227,9 @@ function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
-  isStudioApp?: boolean,
+  isStudioApp = true,
 ): string {
-  const Document = getDocumentComponent(studioRootPath)
+  const Document = getDocumentComponent(studioRootPath, isStudioApp)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -244,10 +249,7 @@ function getDocumentHtml(
     importMap,
   )
 
-  // Only modify the root element ID for non-Studio apps
-  const rootElementId = isStudioApp ? 'sanity' : 'root'
-  // TODO: actually intervene using html methods
-  return `<!DOCTYPE html>${result.replace('id="sanity"', `id="${rootElementId}"`)}`
+  return `<!DOCTYPE html>${result}`
 }
 
 /**
@@ -283,18 +285,25 @@ export function addTimestampedImportMapScriptToHtml(
   return root.outerHTML
 }
 
-function getDocumentComponent(studioRootPath: string) {
+function getDocumentComponent(studioRootPath: string, isStudioApp = true) {
   debug('Loading default document component from `sanity` module')
+
+  const {BasicDocument} = __DEV__
+    ? require('../../../core/components/BasicDocument')
+    : require('sanity')
+
   const {DefaultDocument} = __DEV__
     ? require('../../../core/components/DefaultDocument')
     : require('sanity')
+
+  const Document = isStudioApp ? DefaultDocument : BasicDocument
 
   debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)
 
   if (!userDefined) {
     debug('Using default document component')
-    return DefaultDocument
+    return Document
   }
 
   debug('Found user defined document component at %s', userDefined.path)

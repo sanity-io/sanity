@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
 
@@ -19,6 +17,7 @@ export interface DevServerOptions {
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
+  appLocation?: string
   isStudioApp?: boolean
 }
 
@@ -35,15 +34,17 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactStrictMode,
     vite: extendViteConfig,
     reactCompiler,
-    isStudioApp = true, // default to true for backwards compatibility
+    appLocation,
+    isStudioApp = true,
   } = options
 
   const startTime = Date.now()
-
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, isStudioApp})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isStudioApp})
 
   debug('Resolving vite config')
+  const mode = 'development'
+
   let viteConfig = await getViteConfig({
     basePath,
     mode: 'development',
@@ -52,25 +53,6 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactCompiler,
     isStudioApp,
   })
-
-  if (isStudioApp) {
-    debug('Writing Sanity runtime files')
-    await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
-  } else {
-    // For non-Studio apps, we need to set the entry point
-    viteConfig = {
-      ...viteConfig,
-      build: {
-        ...viteConfig.build,
-        rollupOptions: {
-          input: path.join(cwd, 'src', 'main.tsx'),
-        },
-      },
-    }
-  }
-
-  debug('Resolving vite config')
-  const mode = 'development'
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {

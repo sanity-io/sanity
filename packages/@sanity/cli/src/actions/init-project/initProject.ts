@@ -49,6 +49,7 @@ import {createProject} from '../project/createProject'
 import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
 import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
+import {determineStudioTemplate} from './determineStudioTemplate'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -97,6 +98,7 @@ export interface ProjectTemplate {
   importPrompt?: string
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
   typescriptOnly?: boolean
+  appLocation?: string
 }
 
 export interface ProjectOrganization {
@@ -271,6 +273,9 @@ export default async function initSanity(
   print('')
 
   const flags = await prepareFlags()
+  // skip project / dataset prompting
+  const isStudioTemplate = cliFlags.template ? determineStudioTemplate(cliFlags.template) : true // Default to true
+
   // We're authenticated, now lets select or create a project
   const {projectId, displayName, isFirstProject, datasetName, schemaUrl} = await getProjectDetails()
 
@@ -655,11 +660,15 @@ export default async function initSanity(
   const isCurrentDir = outputPath === process.cwd()
   if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(`${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
+    print(
+      `${chalk.cyan(devCommand)} - to run ${isStudioTemplate ? 'Sanity Studio' : 'your Sanity application'}\n`,
+    )
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
-    print(`Then: ${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
+    print(
+      `Then: ${chalk.cyan(devCommand)} -to run ${isStudioTemplate ? 'Sanity Studio' : 'your Sanity application'}\n`,
+    )
   }
 
   print(`Other helpful commands`)
@@ -718,6 +727,16 @@ export default async function initSanity(
         isFirstProject: data.isFirstProject,
       })
       return data
+    }
+
+    // For non-studio templates, return empty strings but maintain the structure
+    if (!isStudioTemplate) {
+      return {
+        projectId: '',
+        displayName: '',
+        isFirstProject: false,
+        datasetName: '',
+      }
     }
 
     debug('Prompting user to select or create a project')

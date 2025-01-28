@@ -57,6 +57,7 @@ export default async function buildSanityStudio(
   }
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const isStudioApp = !(cliConfig && '__experimental_coreAppConfiguration' in cliConfig)
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
@@ -146,7 +147,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner('Build Sanity Studio').start()
+  spin = output.spinner(`Build Sanity ${isStudioApp ? 'Studio' : 'application'}`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -175,6 +176,11 @@ export default async function buildSanityStudio(
       importMap,
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
+      appLocation:
+        cliConfig && '__experimental_coreAppConfiguration' in cliConfig
+          ? cliConfig.__experimental_coreAppConfiguration?.appLocation
+          : undefined,
+      isStudioApp,
     })
 
     trace.log({
@@ -184,7 +190,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity ${isStudioApp ? 'Studio' : 'application'} (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()

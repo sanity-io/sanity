@@ -25,12 +25,37 @@ renderStudio(
 )
 `
 
+const coreAppEntryModule = `
+// This file is auto-generated on 'sanity dev'
+// Modifications to this file is automatically discarded
+import {createRoot} from 'react-dom/client'
+import {createElement} from 'react'
+import App from %APP_LOCATION%
+
+const root = createRoot(document.getElementById('root'))
+const element = createElement(App)
+root.render(element)
+`
+
 export function getEntryModule(options: {
   reactStrictMode: boolean
   relativeConfigLocation: string | null
   basePath?: string
+  appLocation?: string
+  isStudioApp?: boolean
 }): string {
-  const {reactStrictMode, relativeConfigLocation, basePath} = options
+  const {
+    reactStrictMode,
+    relativeConfigLocation,
+    basePath,
+    appLocation,
+    isStudioApp = true,
+  } = options
+
+  if (!isStudioApp) {
+    return coreAppEntryModule.replace(/%APP_LOCATION%/, JSON.stringify(appLocation || './src/App'))
+  }
+
   const sourceModule = relativeConfigLocation ? entryModule : noConfigEntryModule
 
   return sourceModule

@@ -345,7 +345,15 @@ export interface CliConfig {
 
   studioHost?: string
 
-  isStudioApp?: boolean
+  /**
+   * Parameter used to configure other kinds of applications.
+   * Signals to `sanity` commands that this is not a studio.
+   * @internal
+   */
+  __experimental_coreAppConfiguration?: {
+    framework: 'vite' // add others as we make them available, e.g., 'vite' | 'vue'
+    appLocation?: string
+  }
 }
 
 export type UserViteConfig =
