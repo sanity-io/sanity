@@ -8,6 +8,7 @@ import {
 import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {isReleaseLimitError} from './isReleaseLimitError'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
@@ -41,8 +42,11 @@ const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
+  onLimitReached: (limit: number) => void
 }): ReleaseOperationsStore {
   const {client} = options
+  const requestAction = createRequestAction(options.onLimitReached)
+
   const handleCreateRelease = (release: EditableReleaseDocument) =>
     requestAction(client, {
       actionType: 'sanity.action.release.create',
@@ -197,25 +201,6 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
-  const handleCheckReleaseLimit = async () => {
-    try {
-      await requestAction(
-        client,
-        {
-          actionType: 'sanity.action.release.create',
-          releaseId: 'pseudo-id',
-          [METADATA_PROPERTY_NAME]: {},
-        },
-        true,
-      )
-      return true
-    } catch (e) {
-      if ('details' in e) {
-        return {limit: e.details?.value?.Kind?.number_value || 0}
-      }
-    }
-  }
-
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -229,7 +214,7 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
-    checkReleaseLimit: handleCheckReleaseLimit,
+    checkReleaseLimit: () => undefined,
   }
 }
 
@@ -301,25 +286,28 @@ type ReleaseAction =
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
 
-export function requestAction(
-  client: SanityClient,
-  actions: ReleaseAction | ReleaseAction[],
-  dryRun?: boolean,
-) {
-  const {dataset} = client.config()
-  try {
-    return client.request({
-      uri: `/data/actions/${dataset}`,
-      method: 'POST',
-      body: {
-        actions: Array.isArray(actions) ? actions : [actions],
-        dryRun,
-      },
-    })
-  } catch (e) {
-    if (e?.details?.type === 'releaseLimitExceeded') {
+export function createRequestAction(onLimitReached: (limit: number) => void) {
+  return async function requestAction(
+    client: SanityClient,
+    actions: ReleaseAction | ReleaseAction[],
+    dryRun?: boolean,
+  ): Promise<void> {
+    const {dataset} = client.config()
+    try {
+      return await client.request({
+        uri: `/data/actions/${dataset}`,
+        method: 'POST',
+        body: {
+          actions: Array.isArray(actions) ? actions : [actions],
+          dryRun,
+        },
+      })
+    } catch (e) {
+      if (isReleaseLimitError(e)) {
+        onLimitReached(e.details.limit)
+      }
+
       throw e
     }
-    throw e
   }
 }

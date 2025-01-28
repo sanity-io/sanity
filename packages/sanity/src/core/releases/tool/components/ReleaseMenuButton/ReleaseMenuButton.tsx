@@ -8,6 +8,7 @@ import {Button, Dialog, MenuButton} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
@@ -46,7 +47,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   }, [deleteRelease, release._id, router])
 
   const handleUnarchive = useCallback(async () => {
-    return execIfNotUpsell(() => unarchive(release._id))
+    return execIfNotUpsell(() => unarchive(release._id), true)
   }, [execIfNotUpsell, release._id, unarchive])
 
   const handleAction = useCallback(
@@ -63,8 +64,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
 
       try {
         setIsPerformingOperation(true)
-        const isExec = await actionLookup[action](release._id)
-        if (action === 'unarchive' && !isExec) return
+        await actionLookup[action](release._id)
 
         telemetry.log(actionValues.telemetry)
         toast.push({
@@ -81,6 +81,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
           ),
         })
       } catch (actionError) {
+        if (isReleaseLimitError(actionError)) return
+
         toast.push({
           status: 'error',
           title: (

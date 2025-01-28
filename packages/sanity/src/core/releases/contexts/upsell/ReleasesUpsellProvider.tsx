@@ -10,15 +10,25 @@ import {
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
-  type UpsellDialogViewedInfo,
 } from '../../../studio'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {type ReleasesUpsellContextValue} from './types'
 
-const FEATURE = 'tasks'
+class StudioReleaseLimitExceededError extends Error {
+  details: {type: 'releaseLimitExceededError'}
+
+  constructor() {
+    super('StudioReleaseLimitExceeded')
+    this.name = 'StudioReleaseLimitExceededError'
+    this.details = {
+      type: 'releaseLimitExceededError',
+    }
+  }
+}
+
+const FEATURE = 'content-releases'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 const BASE_URL = 'www.sanity.io'
 // Date when the change from array to object in the data returned was introduced.
@@ -109,7 +119,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const {projectSubscriptions} = useProjectSubscriptions()
   const client = useClient({apiVersion: API_VERSION})
   const upsellExperienceClient = client.withConfig({projectId: 'pyrmmpch', dataset: 'development'})
-  const {checkReleaseLimit} = useReleaseOperations()
 
   const telemetryLogs = useMemo(
     (): ReleasesUpsellContextValue['telemetryLogs'] => ({
@@ -197,47 +206,46 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     }
   }, [client, projectId, projectSubscriptions?.plan.planTypeId, upsellExperienceClient.observable])
 
-  const handleOpenDialog = useCallback(
-    (source: UpsellDialogViewedInfo['source']) => {
-      setUpsellDialogOpen(true)
+  const handleOpenDialog = useCallback(() => {
+    setUpsellDialogOpen(true)
 
-      telemetry.log(UpsellDialogViewed, {
-        feature: FEATURE,
-        type: 'modal',
-        source,
-      })
-    },
-    [telemetry],
-  )
+    telemetry.log(UpsellDialogViewed, {
+      feature: FEATURE,
+      type: 'modal',
+      source: 'navbar',
+    })
+  }, [telemetry])
 
   const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
 
-  const handleCheckReleaseLimit = useCallback(async () => {
-    if (releaseLimit !== undefined) {
-      return releaseLimit > (activeReleases?.length || 0)
-    }
-
-    const isAllowedToCreate = await checkReleaseLimit()
-    if (isAllowedToCreate === true) {
-      return true
-    }
-
-    setReleaseLimit(isAllowedToCreate.limit)
-    return false
-  }, [activeReleases?.length, checkReleaseLimit, releaseLimit])
-
   const execIfNotUpsell = useCallback(
-    async (cb: () => void) => {
-      const isAllowedToCreate = await handleCheckReleaseLimit()
+    async (cb: () => void, throwError: boolean = false) => {
+      const isAllowedToCreate =
+        releaseLimit === undefined || releaseLimit > (activeReleases?.length || 0)
+
       if (isAllowedToCreate) {
-        cb()
-        return true
+        return cb()
       }
-      handleOpenDialog('document_action')
+
+      handleOpenDialog()
+      if (throwError) {
+        throw new StudioReleaseLimitExceededError()
+      }
       return false
     },
-    [handleCheckReleaseLimit, handleOpenDialog],
+    [activeReleases?.length, handleOpenDialog, releaseLimit],
+  )
+
+  const setUpsellLimit = useCallback(
+    (limit: number) => {
+      setReleaseLimit(limit)
+
+      if ((activeReleases?.length || 0) >= limit) {
+        handleOpenDialog()
+      }
+    },
+    [activeReleases?.length, handleOpenDialog],
   )
 
   const ctxValue = useMemo<ReleasesUpsellContextValue>(
@@ -245,10 +253,18 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       upsellDialogOpen,
       handleOpenDialog,
       execIfNotUpsell,
+      setUpsellLimit,
       upsellData,
       telemetryLogs,
     }),
-    [upsellDialogOpen, handleOpenDialog, execIfNotUpsell, upsellData, telemetryLogs],
+    [
+      upsellDialogOpen,
+      handleOpenDialog,
+      execIfNotUpsell,
+      setUpsellLimit,
+      upsellData,
+      telemetryLogs,
+    ],
   )
 
   return (

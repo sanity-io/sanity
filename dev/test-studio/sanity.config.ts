@@ -179,6 +179,7 @@ const defaultWorkspace = defineConfig({
   tasks: {
     enabled: true,
   },
+  // releases: {enabled: false},
 })
 
 export default defineConfig([
@@ -216,6 +217,25 @@ export default defineConfig([
     dataset: 'tsdoc-2',
     plugins: [sharedSettings()],
     basePath: '/tsdoc',
+  },
+  {
+    name: 'jordan-free-expired',
+    title: 'Jordan Free Expired',
+    projectId: 'xn286m5b',
+    dataset: 'production',
+    plugins: [sharedSettings()],
+    basePath: '/jordan-free-expired',
+    beta: {eventsAPI: {enabled: true}},
+    // releases: {enabled: false},
+  },
+  {
+    name: 'jordan-free-trial',
+    title: 'Jordan Free Trial',
+    projectId: '37b78w9p',
+    dataset: 'production',
+    plugins: [sharedSettings()],
+    basePath: '/jordan-free-trial',
+    beta: {eventsAPI: {enabled: true}},
   },
   {
     name: 'playground',

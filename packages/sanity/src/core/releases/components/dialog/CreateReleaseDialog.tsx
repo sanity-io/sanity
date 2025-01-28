@@ -6,6 +6,7 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../util/const'
@@ -50,7 +51,14 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         }
         await createRelease(submitValue)
         telemetry.log(CreatedRelease, {origin})
+        // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        // TODO: Remove the upper part
+
+        onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
       } catch (err) {
+        if (isReleaseLimitError(err)) return onCancel()
+
         console.error(err)
         toast.push({
           closable: true,
@@ -58,15 +66,10 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
           title: `Failed to create release`,
         })
       } finally {
-        // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        // TODO: Remove the upper part
-
         setIsSubmitting(false)
-        onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
       }
     },
-    [value, createRelease, telemetry, origin, toast, onSubmit],
+    [value, createRelease, telemetry, origin, onSubmit, toast, onCancel],
   )
 
   const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {

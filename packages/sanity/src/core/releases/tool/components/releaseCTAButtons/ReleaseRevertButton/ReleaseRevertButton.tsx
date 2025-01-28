@@ -11,6 +11,7 @@ import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../../i18n'
+import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../../util/createReleaseId'
@@ -125,6 +126,8 @@ const ConfirmReleaseDialog = ({
         })
       }
     } catch (revertError) {
+      if (isReleaseLimitError(revertError)) return
+
       toast.push({
         status: 'error',
         title: (
