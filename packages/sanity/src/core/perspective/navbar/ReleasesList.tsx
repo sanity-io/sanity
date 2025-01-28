@@ -54,14 +54,13 @@ export function ReleasesList({
   setCreateBundleDialogOpen: (open: boolean) => void
   scrollElementRef: RefObject<ScrollElement>
 }): React.JSX.Element {
-  const {execIfNotUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const {loading, data: releases} = useActiveReleases()
   const {t} = useTranslation()
 
-  /* create new release */
   const handleCreateBundleClick = useCallback(
-    () => execIfNotUpsell(() => setCreateBundleDialogOpen(true)),
-    [execIfNotUpsell, setCreateBundleDialogOpen],
+    () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
+    [guardWithReleaseLimitUpsell, setCreateBundleDialogOpen],
   )
 
   const sortedReleaseTypeReleases = useMemo(

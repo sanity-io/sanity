@@ -4,12 +4,11 @@ import {Box, Button, type ButtonMode, Card, Container, Flex, Stack, Text} from '
 import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useFeatureEnabled} from 'sanity'
-// import {useClient} from 'sanity'
 import {type SearchParam, useRouter} from 'sanity/router'
 
 import {Button as StudioButton, Tooltip} from '../../../../ui-components'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
@@ -51,7 +50,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const {execIfNotUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -69,7 +68,7 @@ export function ReleasesOverview() {
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
-  const {enabled: isReleasesEnabled} = useFeatureEnabled('contentReleases')
+  const {enabled: isReleasesEnabledForPlan} = useFeatureEnabled('contentReleases')
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
@@ -206,8 +205,8 @@ export function ReleasesOverview() {
   ])
 
   const handleOnClickCreateRelease = useCallback(
-    () => execIfNotUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [execIfNotUpsell],
+    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    [guardWithReleaseLimitUpsell],
   )
 
   const createReleaseButton = useMemo(
@@ -333,8 +332,9 @@ export function ReleasesOverview() {
               </Container>
             ) : (
               <>
-                {!isReleasesEnabled && (
+                {!isReleasesEnabledForPlan && (
                   <Card marginX={3} padding={3} radius={2} shadow={1} tone="suggest">
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
                     <Text>You need to upgrade to Growth to use releases</Text>
                   </Card>
                 )}

@@ -219,7 +219,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
 
-  const execIfNotUpsell = useCallback(
+  const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
       const isAllowedToCreate =
         releaseLimit === undefined || releaseLimit > (activeReleases?.length || 0)
@@ -251,20 +251,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const ctxValue = useMemo<ReleasesUpsellContextValue>(
     () => ({
       upsellDialogOpen,
-      handleOpenDialog,
-      execIfNotUpsell,
+      guardWithReleaseLimitUpsell,
       setUpsellLimit,
-      upsellData,
       telemetryLogs,
     }),
-    [
-      upsellDialogOpen,
-      handleOpenDialog,
-      execIfNotUpsell,
-      setUpsellLimit,
-      upsellData,
-      telemetryLogs,
-    ],
+    [upsellDialogOpen, guardWithReleaseLimitUpsell, setUpsellLimit, telemetryLogs],
   )
 
   return (

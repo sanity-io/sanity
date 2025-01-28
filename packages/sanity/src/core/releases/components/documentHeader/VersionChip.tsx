@@ -107,7 +107,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
-  const {execIfNotUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -152,8 +152,8 @@ export const VersionChip = memo(function VersionChip(props: {
   }, [setIsDiscardDialogOpen])
 
   const openCreateReleaseDialog = useCallback(
-    () => execIfNotUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [execIfNotUpsell],
+    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    [guardWithReleaseLimitUpsell],
   )
 
   const handleAddVersion = useCallback(

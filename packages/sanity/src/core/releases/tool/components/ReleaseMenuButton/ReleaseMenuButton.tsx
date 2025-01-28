@@ -36,7 +36,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
-  const {execIfNotUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   const handleDelete = useCallback(async () => {
@@ -47,8 +47,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   }, [deleteRelease, release._id, router])
 
   const handleUnarchive = useCallback(async () => {
-    return execIfNotUpsell(() => unarchive(release._id), true)
-  }, [execIfNotUpsell, release._id, unarchive])
+    return guardWithReleaseLimitUpsell(() => unarchive(release._id), true)
+  }, [guardWithReleaseLimitUpsell, release._id, unarchive])
 
   const handleAction = useCallback(
     async (action: ReleaseAction) => {

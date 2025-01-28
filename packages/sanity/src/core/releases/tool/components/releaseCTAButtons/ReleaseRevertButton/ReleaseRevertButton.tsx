@@ -219,15 +219,15 @@ export const ReleaseRevertButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {execIfNotUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
   const {projectSubscriptions, isLoading: isLoadingProjectSubscriptions} = useProjectSubscriptions()
 
   const isRevertEnabled = projectSubscriptions?.plan.planTypeId === 'enterprise'
 
   const handleMoveToConfirmStatus = useCallback(
-    () => execIfNotUpsell(() => setRevertReleaseStatus('confirm')),
-    [execIfNotUpsell],
+    () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
+    [guardWithReleaseLimitUpsell],
   )
 
   if (isLoadingProjectSubscriptions || !isRevertEnabled) return null
