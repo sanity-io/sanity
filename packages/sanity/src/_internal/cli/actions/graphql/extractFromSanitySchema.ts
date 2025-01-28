@@ -408,7 +408,6 @@ export function extractFromSanitySchema(
 
     return {
       type: name,
-      ...(targetTypes ? {references: targetTypes} : {}),
       ...base,
     }
   }
