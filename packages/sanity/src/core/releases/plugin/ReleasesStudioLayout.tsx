@@ -1,18 +1,25 @@
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
 import {type LayoutProps} from '../../config'
-import {AddonDatasetProvider} from '../../studio'
+import {AddonDatasetProvider, useWorkspace} from '../../studio'
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
+import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
-  // TODO: Replace for useReleasesEnabled
-  const {enabled} = {enabled: true}
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
 
-  if (!enabled) {
+  if (!isReleasesEnabled) {
     return props.renderDefault(props)
   }
 
   return (
-    <AddonDatasetProvider>
-      <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
-    </AddonDatasetProvider>
+    <ConditionalWrapper
+      condition={isReleasesEnabled}
+      // eslint-disable-next-line react/jsx-no-bind
+      wrapper={(children) => <ReleasesUpsellProvider>{children}</ReleasesUpsellProvider>}
+    >
+      <AddonDatasetProvider>
+        <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
+      </AddonDatasetProvider>
+    </ConditionalWrapper>
   )
 }

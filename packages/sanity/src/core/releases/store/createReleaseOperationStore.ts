@@ -33,7 +33,7 @@ export interface ReleaseOperationsStore {
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
-  checkReleaseLimit: () => Promise<boolean>
+  checkReleaseLimit: () => Promise<true | {limit: number}>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -210,7 +210,9 @@ export function createReleaseOperationsStore(options: {
       )
       return true
     } catch (e) {
-      return false
+      if ('details' in e) {
+        return {limit: e.details?.value?.Kind?.number_value || 0}
+      }
     }
   }
 
@@ -305,12 +307,19 @@ export function requestAction(
   dryRun?: boolean,
 ) {
   const {dataset} = client.config()
-  return client.request({
-    uri: `/data/actions/${dataset}`,
-    method: 'POST',
-    body: {
-      actions: Array.isArray(actions) ? actions : [actions],
-      dryRun,
-    },
-  })
+  try {
+    return client.request({
+      uri: `/data/actions/${dataset}`,
+      method: 'POST',
+      body: {
+        actions: Array.isArray(actions) ? actions : [actions],
+        dryRun,
+      },
+    })
+  } catch (e) {
+    if (e?.details?.type === 'releaseLimitExceeded') {
+      throw e
+    }
+    throw e
+  }
 }

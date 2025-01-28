@@ -1,9 +1,8 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
-import {type FC, type PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {ReleasesUpsellContext} from '../../../../_singletons/context/ReleasesUpsellContext'
-import {ConditionalWrapper} from '../../../../ui-components'
 import {useClient, useProjectId} from '../../../hooks'
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {
@@ -12,10 +11,10 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-  useWorkspace,
 } from '../../../studio'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
+import {useActiveReleases} from '../../store/useActiveReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {type ReleasesUpsellContextValue} from './types'
 
@@ -28,13 +27,88 @@ const API_VERSION = '2024-04-19'
 const FREE_UPSELL = '72a9d606-0f49-45ca-9cf8-e7ed0ba888b7'
 const NOT_FREE_UPSELL = 'bb41ee22-4b30-4bc8-81fc-035948a1555a'
 
-function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
+const FALLBACK_DIALOG: Pick<
+  UpsellData,
+  'ctaButton' | 'descriptionText' | 'image' | 'secondaryButton'
+> = {
+  ctaButton: {
+    text: 'Upgrade plan',
+    url: 'https://www.sanity.io/manage',
+  },
+  descriptionText: [
+    {
+      _key: '35d801e98e2c',
+      _type: 'block',
+      children: [
+        {
+          _key: '61915fa6a0d1',
+          _type: 'span',
+          marks: [],
+          text: '',
+        },
+        {
+          _key: '43dd4b01f229',
+          _type: 'inlineIcon',
+          accent: true,
+          sanityIcon: 'add-circle',
+        },
+        {
+          _key: 'c9b0fe28bbea',
+          _type: 'span',
+          marks: [],
+          text: '',
+        },
+      ],
+      markDefs: [],
+      style: 'normal',
+    },
+    {
+      _key: 'f2a2e1e9fd8c',
+      _type: 'block',
+      children: [
+        {
+          _key: '4882487a1882',
+          _type: 'span',
+          marks: [],
+          text: "You are on the free trial, you can't make releases.",
+        },
+      ],
+      markDefs: [],
+      style: 'normal',
+    },
+    {
+      _key: '7a49a331826d',
+      _type: 'block',
+      children: [
+        {
+          _key: '5f3a55c1d503',
+          _type: 'span',
+          marks: [],
+          text: "Upgrade to growth to make FALL BACK 'em",
+        },
+      ],
+      markDefs: [],
+      style: 'normal',
+    },
+  ],
+  secondaryButton: {
+    text: 'Learn more',
+    url: 'https://www.sanity.io/docs/comments',
+  },
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
   const {projectSubscriptions} = useProjectSubscriptions()
   const client = useClient({apiVersion: API_VERSION})
+  const upsellExperienceClient = client.withConfig({projectId: 'pyrmmpch', dataset: 'development'})
   const {checkReleaseLimit} = useReleaseOperations()
 
   const telemetryLogs = useMemo(
@@ -96,6 +170,8 @@ function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
       projectSubscriptions?.plan.planTypeId === 'free' ? FREE_UPSELL : NOT_FREE_UPSELL,
     )
 
+    // const data$ = throwError(() => new Error('Simulated error for testing'))
+
     const sub = data$.subscribe({
       next: (data) => {
         if (!data) return
@@ -111,7 +187,8 @@ function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
         }
       },
       error: () => {
-        // silently fail
+        const data = FALLBACK_DIALOG
+        setUpsellData(data)
       },
     })
 
@@ -133,9 +210,26 @@ function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
     [telemetry],
   )
 
+  const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
+  const {data: activeReleases} = useActiveReleases()
+
+  const handleCheckReleaseLimit = useCallback(async () => {
+    if (releaseLimit !== undefined) {
+      return releaseLimit > (activeReleases?.length || 0)
+    }
+
+    const isAllowedToCreate = await checkReleaseLimit()
+    if (isAllowedToCreate === true) {
+      return true
+    }
+
+    setReleaseLimit(isAllowedToCreate.limit)
+    return false
+  }, [activeReleases?.length, checkReleaseLimit, releaseLimit])
+
   const execIfNotUpsell = useCallback(
     async (cb: () => void) => {
-      const isAllowedToCreate = await checkReleaseLimit()
+      const isAllowedToCreate = await handleCheckReleaseLimit()
       if (isAllowedToCreate) {
         cb()
         return true
@@ -143,7 +237,7 @@ function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
       handleOpenDialog('document_action')
       return false
     },
-    [checkReleaseLimit, handleOpenDialog],
+    [handleCheckReleaseLimit, handleOpenDialog],
   )
 
   const ctxValue = useMemo<ReleasesUpsellContextValue>(
@@ -169,23 +263,5 @@ function ReleasesUpsellProviderInner(props: {children: React.ReactNode}) {
         />
       )}
     </ReleasesUpsellContext.Provider>
-  )
-}
-
-/**
- * @beta
- * @hidden
- */
-export const ReleasesUpsellProvider: FC<PropsWithChildren> = (props) => {
-  const isReleasesEnabled = !!useWorkspace().releases?.enabled
-
-  return (
-    <ConditionalWrapper
-      condition={isReleasesEnabled}
-      // eslint-disable-next-line react/jsx-no-bind
-      wrapper={(children) => <ReleasesUpsellProviderInner>{children}</ReleasesUpsellProviderInner>}
-    >
-      {props.children}
-    </ConditionalWrapper>
   )
 }

@@ -5,7 +5,6 @@ import {AnimatePresence} from 'framer-motion'
 
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {ReleasesUpsellProvider} from '../../releases/contexts/upsell/ReleasesUpsellProvider'
 import {LATEST} from '../../releases/util/const'
 import {isDraftPerspective} from '../../releases/util/util'
 import {useWorkspace} from '../../studio'
@@ -22,35 +21,33 @@ export function ReleasesNav(): React.JSX.Element {
   const handleClearPerspective = () => setPerspective(LATEST)
 
   return (
-    <ReleasesUpsellProvider>
-      <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
-        <Flex gap={0}>
-          {areReleasesEnabled && (
-            <Box data-testid="releases-tool-link" flex="none">
-              <ReleasesToolLink />
-            </Box>
-          )}
-          <AnimatePresence>
-            <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-          </AnimatePresence>
-          <GlobalPerspectiveMenu
-            selectedReleaseId={selectedReleaseId}
-            areReleasesEnabled={areReleasesEnabled}
-          />
-          {!isDraftPerspective(selectedPerspective) && (
-            <div>
-              <Button
-                icon={CloseIcon}
-                mode="bleed"
-                onClick={handleClearPerspective}
-                data-testid="clear-perspective-button"
-                padding={2}
-                radius="full"
-              />
-            </div>
-          )}
-        </Flex>
-      </Card>
-    </ReleasesUpsellProvider>
+    <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
+      <Flex gap={0}>
+        {areReleasesEnabled && (
+          <Box data-testid="releases-tool-link" flex="none">
+            <ReleasesToolLink />
+          </Box>
+        )}
+        <AnimatePresence>
+          <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+        </AnimatePresence>
+        <GlobalPerspectiveMenu
+          selectedReleaseId={selectedReleaseId}
+          areReleasesEnabled={areReleasesEnabled}
+        />
+        {!isDraftPerspective(selectedPerspective) && (
+          <div>
+            <Button
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={handleClearPerspective}
+              data-testid="clear-perspective-button"
+              padding={2}
+              radius="full"
+            />
+          </div>
+        )}
+      </Flex>
+    </Card>
   )
 }
