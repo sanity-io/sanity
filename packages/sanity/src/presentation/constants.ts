@@ -32,4 +32,4 @@ declare global {
 export const LIVE_DRAFT_EVENTS_ENABLED =
   typeof PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'string'
     ? PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'true'
-    : process.env.SANITY_STUDIO_PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'true'
+    : false
