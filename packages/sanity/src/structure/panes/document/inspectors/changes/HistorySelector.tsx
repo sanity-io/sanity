@@ -27,12 +27,13 @@ export function HistorySelector({showList}: {showList: boolean}) {
   const [listHeight, setListHeight] = useState(0)
 
   const getScrollerRef = useCallback((el: HTMLDivElement | null) => {
+    if (!el?.clientHeight) return
     /**
      * Hacky solution, the list height needs to be defined, it cannot be obtained from the parent using a `max-height: 100%`
      * Because the scroller won't work properly and it won't scroll to the selected element on mount.
      * To fix this, this component will set the list height to the height of the parent element - 1px, to avoid a double scroll line.
      */
-    setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
+    setListHeight(el.clientHeight - 1)
     setScrollRef(el)
   }, [])
 
