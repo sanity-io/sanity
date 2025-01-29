@@ -35,7 +35,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 
   const observable = useMemo(() => {
     return documentPreviewStore
-      .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`)
+      .unstable_observeDocumentIdSet(`sanity::versionsOf("${publishedId}")`)
       .pipe(
         swr(`${publishedId}`),
         map(({value}) => ({
