@@ -32,6 +32,12 @@ export function removeDupes(
         // Replaces the edit event with the none edit event, the publish event and the last edit event before the publish have the same id.
         acc.set(event.id, event)
       }
+
+      if (existingEvent.type !== event.type) {
+        // In the strange case two events got the same id but different types, we need to add a unique key to the map so both events are available
+        // This could happen with a document that is created and published with the same revision id, for example in our e2e tests.
+        acc.set(`${event.id}-${event.type}`, event)
+      }
       return acc
     }
     return acc.set(event.id, event)

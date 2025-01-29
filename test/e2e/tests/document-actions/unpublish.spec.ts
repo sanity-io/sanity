@@ -35,7 +35,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await page.getByTestId('confirm-button').click()
 
   // Check the published button is disabled that is the reference to determine the published document doesn't exist.
-  const button = await page.getByRole('button', {name: 'Published'})
+  const button = await page.getByRole('button', {name: 'Published', exact: true})
   await expect(button).toBeDisabled()
-  await expect(documentStatus).toContainText('Draft Edited just now')
+  await expect(documentStatus).toContainText('Unpublished just now')
 })

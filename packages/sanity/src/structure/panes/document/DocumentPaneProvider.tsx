@@ -23,6 +23,7 @@ import {
   getExpandOperations,
   getPublishedId,
   getVersionFromId,
+  isPublishedPerspective,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
@@ -178,19 +179,30 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType, {
     version: selectedReleaseId,
   })
+  const liveEdit = Boolean(schemaType?.liveEdit)
 
-  let value: SanityDocumentLike = initialValue.value
-
-  switch (true) {
-    case typeof selectedReleaseId !== 'undefined':
-      value = editState.version || editState.draft || editState.published || value
-      break
-    case selectedPerspectiveName === 'published':
-      value = editState.published || editState.draft || value
-      break
-    default:
-      value = editState?.draft || editState?.published || value
-  }
+  const value: SanityDocumentLike = useMemo(() => {
+    if (selectedReleaseId) {
+      return editState.version || editState.draft || editState.published || initialValue.value
+    }
+    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
+      return (
+        editState.published ||
+        (liveEdit ? initialValue.value : {_id: documentId, _type: documentType})
+      )
+    }
+    return editState.draft || editState.published || initialValue.value
+  }, [
+    documentId,
+    documentType,
+    editState.draft,
+    editState.published,
+    editState.version,
+    initialValue.value,
+    liveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+  ])
 
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -560,7 +572,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = Boolean(schemaType?.liveEdit)
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {
@@ -585,6 +596,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && selectedPerspectiveName !== 'published') {
+      return true
+    }
+    if (!liveEdit && selectedPerspectiveName === 'published') {
       return true
     }
 
