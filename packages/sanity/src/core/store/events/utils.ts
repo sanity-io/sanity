@@ -7,6 +7,7 @@ import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../_legacy'
 import {
   type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
   isCreateDocumentVersionEvent,
   isCreateLiveDocumentEvent,
   isDeleteDocumentGroupEvent,
@@ -17,6 +18,7 @@ import {
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
   isUpdateLiveDocumentEvent,
+  type UpdateLiveDocumentEvent,
 } from './types'
 
 export function removeDupes(
@@ -81,18 +83,24 @@ export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEv
   eventsWithParent.forEach((event, index) => {
     if (isPublishDocumentVersionEvent(event)) {
       event.documentId = event.versionId
-      // Find the creation event for this published event
-      const creationEvent = events.slice(index + 1).find((e) => isCreateDocumentVersionEvent(e))
-      if (creationEvent) {
-        // If we found a creation event, we should add it to the publish event
-        event.creationEvent = creationEvent
-        creationEvent.parentId = event.id
+      // Find the creation event and edit events for this published event
+      for (let i = index; i < eventsWithParent.length; i++) {
+        const nextEvent = eventsWithParent[i]
+        if (isEditDocumentVersionEvent(nextEvent)) {
+          nextEvent.parentId = event.id
+        }
+        if (isCreateDocumentVersionEvent(nextEvent)) {
+          event.creationEvent = nextEvent
+          nextEvent.parentId = event.id
+          // When we find the create event we should stop the loop. Events are ordered
+          break
+        }
       }
     }
     if (isEditDocumentVersionEvent(event)) {
       // If it's the first edit event after expanding a publish, the id of this event will be shared with the id of the published event, we need to use the following transaction id.
       if (event.parentId === event.id && event.transactions[1]?.revisionId) {
-        event.id = event.transactions[1]?.revisionId
+        event.id = event.transactions[1].revisionId
       }
     }
   })
@@ -174,4 +182,37 @@ export function updatePublishedEvents(
     }
     return event
   })
+}
+
+export function sortEvents({
+  remoteEdits,
+  events,
+  expandedEvents,
+}: {
+  remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[]
+  events: DocumentGroupEvent[]
+  expandedEvents: EditDocumentVersionEvent[]
+}): DocumentGroupEvent[] {
+  const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
+    // Sort by timestamp, newest first unless is an edit event that has a corresponding publish event
+    (a, b) => {
+      if (
+        isPublishDocumentVersionEvent(a) &&
+        isEditDocumentVersionEvent(b) &&
+        a.versionRevisionId === b.revisionId
+      ) {
+        return -1
+      }
+      if (
+        isPublishDocumentVersionEvent(b) &&
+        isEditDocumentVersionEvent(a) &&
+        b.versionRevisionId === a.revisionId
+      ) {
+        return +1
+      }
+
+      return Date.parse(b.timestamp) - Date.parse(a.timestamp)
+    },
+  )
+  return eventsWithRemoteEdits
 }

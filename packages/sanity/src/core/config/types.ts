@@ -1020,6 +1020,7 @@ export interface BetaFeatures {
    * If it is not enabled, it will continue using the legacy Timeline.
    */
   eventsAPI?: {
-    enabled: boolean
+    documents?: boolean
+    releases?: boolean
   }
 }

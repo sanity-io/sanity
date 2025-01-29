@@ -647,7 +647,8 @@ function resolveSource({
 
     beta: {
       eventsAPI: {
-        enabled: eventsAPIReducer({config, initialValue: false}),
+        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+        releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
       treeArrayEditing: {
         // This beta feature is no longer available.

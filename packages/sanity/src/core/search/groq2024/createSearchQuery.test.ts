@@ -44,7 +44,7 @@ describe('createSearchQuery', () => {
       expect(query).toMatchInlineSnapshot(
         `
         "// findability-mvi:5
-        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id}"
+        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
       `,
       )
 
@@ -188,7 +188,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && [@, _id] match text::query($__query) && !(_id in path("versions.**"))] | order(exampleField desc) [0...$__limit] {exampleField, _type, _id}"
+        *[_type in $__types && [@, _id] match text::query($__query) && !(_id in path("versions.**"))] | order(exampleField desc) [0...$__limit] {exampleField, _type, _id, _originalId}"
       `)
 
       expect(query).toContain('| order(exampleField desc)')
@@ -222,7 +222,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && [@, _id] match text::query($__query) && !(_id in path("versions.**"))] | order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc) [0...$__limit] {exampleField, anotherExampleField, mapWithField, _type, _id}"
+        *[_type in $__types && [@, _id] match text::query($__query) && !(_id in path("versions.**"))] | order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc) [0...$__limit] {exampleField, anotherExampleField, mapWithField, _type, _id, _originalId}"
       `)
 
       expect(query).toContain(
@@ -241,7 +241,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id}"
+        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
       `)
 
       expect(query).toContain('| order(_score desc)')
@@ -319,7 +319,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toMatchInlineSnapshot(`
         "// findability-mvi:5
-        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id}"
+        *[_type in $__types && !(_id in path("versions.**"))] | score(boost(_type in ["numbers-in-path"] && cover[].cards[].title match text::query($__query), 5), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
       `)
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')

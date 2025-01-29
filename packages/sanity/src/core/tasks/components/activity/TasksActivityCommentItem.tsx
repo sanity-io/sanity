@@ -2,7 +2,7 @@
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {CommentsListItem, type CommentsListItemProps} from '../../../comments'
+import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
 import {useTasksEnabled} from '../../context'
 import {ActivityItem} from './TasksActivityItem'
 

@@ -25,7 +25,12 @@ type Loadable<T> = {
  * @beta
  * @hidden
  */
-export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]>
+export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]> & {
+  /** when true, comments has mention feature disabled
+   * @internal
+   * */
+  disabled?: boolean
+}
 
 /**
  * @beta

@@ -23,13 +23,13 @@ export function useInitialValue(props: {
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
 
-  const defaultValue: SanityDocumentLike = useMemo(() => {
-    const base: SanityDocumentLike = {_id: documentId, _type: documentType}
-    if (version) {
-      base._id = getVersionId(documentId, version)
-    }
-    return base
-  }, [documentId, documentType, version])
+  const defaultValue: SanityDocumentLike = useMemo(
+    () => ({
+      _id: version ? getVersionId(documentId, version) : documentId,
+      _type: documentType,
+    }),
+    [documentId, documentType, version],
+  )
 
   const [state, setState] = useState<InitialValueState>({
     loading: false,

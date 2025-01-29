@@ -99,7 +99,10 @@ interface BuildRangeDecorationsProps {
   value: PortableTextBlock[] | undefined
 }
 
-export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
+/**
+ * @internal
+ */
+export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) {
   const {
     comments,
     currentHoveredCommentId,

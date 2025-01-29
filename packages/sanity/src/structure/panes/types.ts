@@ -11,7 +11,10 @@ export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
   isActive?: boolean
   pane: Extract<PaneNode, {type: T}>
   /**
+   * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
+   *
    * Allows to override the global version with a specific version or release.
+   * @deprecated use <PerspectiveProvider> instead
    * @beta
    */
   forcedVersion?: {

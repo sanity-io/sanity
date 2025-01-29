@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.71.2",
+  "version": "3.72.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.27.1"
+    "@sanity/client": "^6.27.2"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",

@@ -140,6 +140,7 @@ export function createDocumentPreviewStore({
   }
 
   const observeDocumentIdSet = createDocumentIdSetObserver(
+    // TODO: COREL - Replace once releases API are stable.
     versionedClient.withConfig({apiVersion: 'X'}),
   )
 

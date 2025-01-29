@@ -1,6 +1,12 @@
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type Chunk, ScrollContainer, useTimelineSelector, useTranslation} from 'sanity'
+import {
+  type Chunk,
+  ScrollContainer,
+  usePerspective,
+  useTimelineSelector,
+  useTranslation,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Timeline} from '../../timeline'
@@ -16,16 +22,18 @@ const Scroller = styled(ScrollContainer)`
 
 export function HistorySelector({showList}: {showList: boolean}) {
   const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
 
   const getScrollerRef = useCallback((el: HTMLDivElement | null) => {
+    if (!el?.clientHeight) return
     /**
      * Hacky solution, the list height needs to be defined, it cannot be obtained from the parent using a `max-height: 100%`
      * Because the scroller won't work properly and it won't scroll to the selected element on mount.
      * To fix this, this component will set the list height to the height of the parent element - 1px, to avoid a double scroll line.
      */
-    setListHeight(el?.clientHeight ? el.clientHeight - 1 : 0)
+    setListHeight(el.clientHeight - 1)
     setScrollRef(el)
   }, [])
 
@@ -63,8 +71,8 @@ export function HistorySelector({showList}: {showList: boolean}) {
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill">
       <Card flex={1} padding={2} paddingTop={0}>
-        {timelineError ? (
-          <TimelineError />
+        {timelineError || selectedReleaseId ? (
+          <TimelineError versionError={Boolean(selectedReleaseId)} />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
             <Scroller data-ui="Scroller" ref={getScrollerRef}>
