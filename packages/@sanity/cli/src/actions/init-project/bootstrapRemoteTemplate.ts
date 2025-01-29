@@ -97,7 +97,7 @@ export async function bootstrapRemoteTemplate(
     debug('Applying environment variables to %s', pkg)
     // Next.js uses `.env.local` for local environment variables
     const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
-    await applyEnvVariables(packagePath, {...variables, readToken}, envName)
+    await applyEnvVariables(packagePath, {...variables, readToken, writeToken}, envName)
   }
 
   debug('Setting package name to %s', packageName)
