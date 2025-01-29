@@ -65,7 +65,7 @@ type Plan = {
   featureTypes: Record<string, FeatureType>
 }
 
-type ProjectSubscriptionsResponse = {
+export type ProjectSubscriptionsResponse = {
   id: string
   projectId: string
   productType: string
