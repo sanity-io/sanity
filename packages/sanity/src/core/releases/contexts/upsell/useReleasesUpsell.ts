@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {ReleasesUpsellContext} from 'sanity/_singletons'
 
-import {ReleasesUpsellContext} from '../../../../_singletons/context/ReleasesUpsellContext'
 import {type ReleasesUpsellContextValue} from './types'
 
 /**
@@ -17,7 +17,7 @@ export function useReleasesUpsell(): ReleasesUpsellContextValue {
 
 const FALLBACK_CONTEXT_VALUE = {
   upsellDialogOpen: false,
-  setUpsellLimit: () => null,
+  onReleaseLimitReached: () => null,
   guardWithReleaseLimitUpsell: () => Promise.resolve(false),
   telemetryLogs: {
     dialogSecondaryClicked: () => null,

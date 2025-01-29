@@ -1,8 +1,8 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {ReleasesUpsellContext} from 'sanity/_singletons'
 
-import {ReleasesUpsellContext} from '../../../../_singletons/context/ReleasesUpsellContext'
 import {useClient, useProjectId} from '../../../hooks'
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {
@@ -237,7 +237,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [activeReleases?.length, handleOpenDialog, releaseLimit],
   )
 
-  const setUpsellLimit = useCallback(
+  const onReleaseLimitReached = useCallback(
     (limit: number) => {
       setReleaseLimit(limit)
 
@@ -252,10 +252,10 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     () => ({
       upsellDialogOpen,
       guardWithReleaseLimitUpsell,
-      setUpsellLimit,
+      onReleaseLimitReached,
       telemetryLogs,
     }),
-    [upsellDialogOpen, guardWithReleaseLimitUpsell, setUpsellLimit, telemetryLogs],
+    [upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
   return (

@@ -57,14 +57,16 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
 
         onSubmit(getReleaseIdFromReleaseDocumentId(value._id))
       } catch (err) {
-        if (isReleaseLimitError(err)) return onCancel()
-
-        console.error(err)
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: `Failed to create release`,
-        })
+        if (isReleaseLimitError(err)) {
+          onCancel()
+        } else {
+          console.error(err)
+          toast.push({
+            closable: true,
+            status: 'error',
+            title: `Failed to create release`,
+          })
+        }
       } finally {
         setIsSubmitting(false)
       }

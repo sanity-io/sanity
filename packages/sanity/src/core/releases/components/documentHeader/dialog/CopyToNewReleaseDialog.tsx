@@ -67,14 +67,17 @@ export function CopyToNewReleaseDialog(props: {
       await handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
     } catch (err) {
-      if (isReleaseLimitError(err)) return onClose()
-      console.error(err)
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: `Failed to create release`,
-        description: err.message,
-      })
+      if (isReleaseLimitError(err)) {
+        onClose()
+      } else {
+        console.error(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: `Failed to create release`,
+          description: err.message,
+        })
+      }
     } finally {
       setIsSubmitting(false)
     }

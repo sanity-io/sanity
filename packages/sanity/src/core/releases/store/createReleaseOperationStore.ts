@@ -34,7 +34,6 @@ export interface ReleaseOperationsStore {
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
-  checkReleaseLimit: () => Promise<true | {limit: number}>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -42,10 +41,10 @@ const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
-  onLimitReached: (limit: number) => void
+  onReleaseLimitReached: (limit: number) => void
 }): ReleaseOperationsStore {
   const {client} = options
-  const requestAction = createRequestAction(options.onLimitReached)
+  const requestAction = createRequestAction(options.onReleaseLimitReached)
 
   const handleCreateRelease = (release: EditableReleaseDocument) =>
     requestAction(client, {
@@ -214,7 +213,6 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
-    checkReleaseLimit: () => undefined,
   }
 }
 
@@ -286,7 +284,7 @@ type ReleaseAction =
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
 
-export function createRequestAction(onLimitReached: (limit: number) => void) {
+export function createRequestAction(onReleaseLimitReached: (limit: number) => void) {
   return async function requestAction(
     client: SanityClient,
     actions: ReleaseAction | ReleaseAction[],
@@ -304,7 +302,7 @@ export function createRequestAction(onLimitReached: (limit: number) => void) {
       })
     } catch (e) {
       if (isReleaseLimitError(e)) {
-        onLimitReached(e.details.limit)
+        onReleaseLimitReached(e.details.limit)
       }
 
       throw e
