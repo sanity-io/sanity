@@ -59,6 +59,7 @@ const DocumentStatusButton = ({
 
   return (
     <MotionButton
+      data-testid="pane-footer-document-status"
       animate={{opacity: 1}}
       initial={{opacity: 0}} // Width of the skeleton
       mode="bleed"

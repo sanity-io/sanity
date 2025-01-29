@@ -37,7 +37,6 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
-      data-testid="pane-footer-document-status"
       direction={singleLine ? 'row' : 'column'}
       gap={3}
       wrap="nowrap"
