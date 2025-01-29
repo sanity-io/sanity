@@ -35,7 +35,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
 
   const [open, setOpen] = useState(false)
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
-  const publishDate = useMemo(() => getPublishDateFromRelease(release) || new Date(), [release])
+  const publishDate = useMemo(() => getPublishDateFromRelease(release), [release])
   const [isUpdating, setIsUpdating] = useState(false)
   const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(
     publishDate && isBefore(new Date(publishDate), new Date()),
