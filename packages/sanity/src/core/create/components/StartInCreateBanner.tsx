@@ -15,6 +15,7 @@ import {useCallback, useState} from 'react'
 import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
+import {usePerspective} from '../../perspective/usePerspective'
 import {useWorkspace} from '../../studio'
 import {useSanityCreateConfig} from '../context'
 import {getCreateLinkUrl} from '../createDocumentUrls'
@@ -33,12 +34,16 @@ import {StartInCreateDevInfoButton} from './StartInCreateDevInfoButton'
 export function StartInCreateBanner(props: StartInCreateBannerProps) {
   const {document, isInitialValueLoading} = props
   const {appIdCache, startInCreateEnabled} = useSanityCreateConfig()
-
+  const {selectedPerspectiveName} = usePerspective()
   const isExcludedByOption = isSanityCreateExcludedType(props.documentType)
   const isNewPristineDoc = !document._createdAt
   const isStartCreateCompatible = isSanityCreateStartCompatibleDoc(props.document)
 
+  const liveEdit = Boolean(props.documentType?.liveEdit)
+
+  const excludeOnPublished = selectedPerspectiveName === 'published' && !liveEdit
   if (
+    excludeOnPublished ||
     !isNewPristineDoc ||
     !startInCreateEnabled ||
     isExcludedByOption ||

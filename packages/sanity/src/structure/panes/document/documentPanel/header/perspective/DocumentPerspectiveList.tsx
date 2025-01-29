@@ -200,9 +200,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
      * when there is no draft (new document),
      */
     if (params?.historyVersion) return false
-    if (isDraftId(displayedId)) return true
     if (selectedPerspectiveName) return false
     if (isVersionId(displayedId)) return false
+    if (isDraftId(displayedId)) return true
     if (
       isPublishedId(displayedId) &&
       editState?.published &&
@@ -281,7 +281,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         selected={isDraftSelected}
         disabled={isDraftDisabled}
         text={t('release.chip.draft')}
-        tone="caution"
+        tone={editState?.draft ? 'caution' : 'neutral'}
         onClick={handlePerspectiveChange('drafts')}
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',

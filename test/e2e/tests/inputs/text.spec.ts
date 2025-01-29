@@ -85,7 +85,11 @@ test.describe('inputs: text', () => {
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
     await titleInput.fill('Title A')
-    await expect(paneFooter).toHaveText(/draft Edited just now/i)
+    // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
+    await expect(paneFooter).toHaveText(/Created just now/i)
+    await titleInput.fill('Title A updated')
+    // A subsequent edit will show that the document was edited just now.
+    await expect(paneFooter).toHaveText(/Edited just now/i)
 
     // Wait for the document to be published.
     publishButton.click()
@@ -93,7 +97,7 @@ test.describe('inputs: text', () => {
 
     // Change the title.
     await titleInput.fill('Title B')
-    await expect(paneFooter).toHaveText(/draft Edited just now/i)
+    await expect(paneFooter).toHaveText(/Created just now/i)
 
     // Wait for the document to be published.
     publishButton.click()
