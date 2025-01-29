@@ -6,11 +6,13 @@ import {
   Text,
 } from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useEffect, useLayoutEffect, useState} from 'react'
+import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import {
   AvatarSkeleton,
+  isPublishedPerspective,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   useEvents,
+  usePerspective,
   UserAvatar,
   useRelativeTime,
   useSource,
@@ -65,14 +67,66 @@ const DocumentStatusButton = ({
       muted
     >
       <Flex align="center" flex="none" gap={3}>
-        <div style={{margin: -5}}>
-          <UserAvatar user={author} size={0} />
-        </div>
+        {author && (
+          <div style={{margin: -5}}>
+            <UserAvatar user={author} size={0} />
+          </div>
+        )}
         <Text muted size={1}>
           {t(translationKey)} {relativeTime}
         </Text>
       </Flex>
     </MotionButton>
+  )
+}
+
+const FallbackStatus = () => {
+  const {editState} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
+
+  const status = useMemo(() => {
+    if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
+      return {
+        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion,
+        timestamp: editState.published._updatedAt,
+      }
+    }
+    if (editState?.version?._updatedAt) {
+      return {
+        translationKey:
+          editState?.version?._updatedAt === editState?.version?._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+        timestamp: editState.version._updatedAt,
+      }
+    }
+    if (editState?.draft?._updatedAt) {
+      return {
+        translationKey:
+          editState?.draft?._updatedAt === editState?.draft?._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+        timestamp: editState.draft._updatedAt,
+      }
+    }
+    return null
+  }, [
+    selectedPerspective,
+    editState?.published?._updatedAt,
+    editState?.version?._updatedAt,
+    editState?.version?._createdAt,
+    editState?.draft?._updatedAt,
+    editState?.draft?._createdAt,
+  ])
+  if (!status) {
+    return null
+  }
+  return (
+    <DocumentStatusButton
+      author=""
+      translationKey={status.translationKey}
+      timestamp={status.timestamp}
+    />
   )
 }
 
@@ -84,7 +138,7 @@ const EventsStatus = () => {
     return <ButtonSkeleton />
   }
   if (!event) {
-    return null
+    return <FallbackStatus />
   }
 
   return (
@@ -106,7 +160,7 @@ const TimelineStatus = () => {
     return <ButtonSkeleton />
   }
   if (!event) {
-    return null
+    return <FallbackStatus />
   }
 
   const author = Array.from(event.authors)[0]
