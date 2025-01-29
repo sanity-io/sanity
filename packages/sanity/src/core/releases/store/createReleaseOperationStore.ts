@@ -302,7 +302,8 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
       })
     } catch (e) {
       if (isReleaseLimitError(e)) {
-        onReleaseLimitReached(e.details.limit)
+        // free accounts do not return limit, 0 is implied
+        onReleaseLimitReached(e.details.limit || 0)
       }
 
       throw e
