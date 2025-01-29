@@ -587,6 +587,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (liveEdit && selectedPerspectiveName !== 'published') {
       return true
     }
+    if (!liveEdit && selectedPerspectiveName === 'published') {
+      return true
+    }
 
     // If a release is selected, validate that the document id matches the selected release id
     if (selectedReleaseId && getVersionFromId(value._id) !== selectedReleaseId) {
