@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
@@ -9,6 +9,7 @@ import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {Event} from '../components/Event'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -46,7 +47,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack space={2}>
+    <Stack space={2} style={{minWidth: '240px'}} paddingTop={1}>
       <Text muted size={1} weight="medium">
         {description || t('changes.changed-label')}
       </Text>
@@ -75,26 +76,35 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {t} = useTranslation()
 
   return (
-    <Inline space={2}>
-      <Flex
-        align="center"
-        paddingRight={3}
-        style={{
-          backgroundColor: color.background,
-          color: color.text,
-          borderRadius: 'calc(23px / 2)',
-        }}
-      >
-        <UserAvatar user={author} />
-        <Inline paddingLeft={2}>
-          <Text muted size={1} style={{color: color.text}}>
-            {user ? user.displayName : t('changes.loading-author')}
+    <>
+      {annotation.event ? (
+        <>
+          <Card borderBottom marginBottom={2} />
+          <Event event={annotation.event} showChangesBy="inline" />
+        </>
+      ) : (
+        <Inline space={2}>
+          <Flex
+            align="center"
+            paddingRight={3}
+            style={{
+              backgroundColor: color.background,
+              color: color.text,
+              borderRadius: 'calc(23px / 2)',
+            }}
+          >
+            <UserAvatar user={author} />
+            <Inline paddingLeft={2}>
+              <Text muted size={1} style={{color: color.text}}>
+                {user ? user.displayName : t('changes.loading-author')}
+              </Text>
+            </Inline>
+          </Flex>
+          <Text as="time" muted size={1} dateTime={timestamp}>
+            {timeAgo}
           </Text>
         </Inline>
-      </Flex>
-      <Text as="time" muted size={1} dateTime={timestamp}>
-        {timeAgo}
-      </Text>
-    </Inline>
+      )}
+    </>
   )
 }

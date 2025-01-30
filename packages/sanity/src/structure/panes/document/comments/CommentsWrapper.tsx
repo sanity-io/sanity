@@ -4,6 +4,7 @@ import {
   CommentsEnabledProvider,
   CommentsProvider,
   useCommentsEnabled,
+  usePerspective,
 } from 'sanity'
 
 import {usePaneRouter} from '../../../components'
@@ -37,6 +38,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const {params, setParams, createPathWithParams} = usePaneRouter()
 
   const selectedCommentId = params?.comment
@@ -90,6 +92,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
+      releaseId={selectedReleaseId}
     >
       {children}
     </CommentsProvider>

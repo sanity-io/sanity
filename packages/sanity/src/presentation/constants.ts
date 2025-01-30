@@ -1,5 +1,4 @@
 import {ComposeIcon} from '@sanity/icons'
-import {apiVersion} from '@sanity/preview-url-secret/constants'
 
 export const DEFAULT_TOOL_ICON = ComposeIcon
 export const DEFAULT_TOOL_NAME = 'presentation'
@@ -11,13 +10,27 @@ export const EDIT_INTENT_MODE = 'presentation'
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
 
 // The API version to use when using `@sanity/client`
-export const API_VERSION = apiVersion
+// TODO: COREL - Replace once releases API are stable.
+export const API_VERSION = 'vX'
 
 // Heartbeats shouldn't fire on intervals that are so short it causes performance issues
 export const MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL = 1000 // ms
 
-// How often the list over loader queries should be garbage collected
-export const LOADER_QUERY_GC_INTERVAL = 30_000 // ms
+// Batch size for fetching documents building up the cache
+export const LIVE_QUERY_CACHE_BATCH_SIZE = 100
+
+// Total cache size for documents that are live queried
+export const LIVE_QUERY_CACHE_SIZE = 2048
 
 // The interval at which we check if existing popups have been closed
 export const POPUP_CHECK_INTERVAL = 1000 // ms
+
+declare global {
+  const PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS: unknown
+}
+
+// Feature flag that uses the new Live Draft Content API instead of the Listen API + Mendoza events
+export const LIVE_DRAFT_EVENTS_ENABLED =
+  typeof PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'string'
+    ? PRESENTATION_ENABLE_LIVE_DRAFT_EVENTS === 'true'
+    : false

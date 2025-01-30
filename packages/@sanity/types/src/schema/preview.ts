@@ -10,6 +10,9 @@ export interface PrepareViewOptions {
 
 /** @public */
 export interface PreviewValue {
+  _id?: string
+  _createdAt?: string
+  _updatedAt?: string
   title?: string
   subtitle?: string
   description?: string

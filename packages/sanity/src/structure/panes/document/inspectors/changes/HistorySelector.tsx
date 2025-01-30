@@ -1,6 +1,12 @@
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type Chunk, ScrollContainer, useTimelineSelector, useTranslation} from 'sanity'
+import {
+  type Chunk,
+  ScrollContainer,
+  usePerspective,
+  useTimelineSelector,
+  useTranslation,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Timeline} from '../../timeline'
@@ -16,6 +22,7 @@ const Scroller = styled(ScrollContainer)`
 
 export function HistorySelector({showList}: {showList: boolean}) {
   const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
 
@@ -64,8 +71,8 @@ export function HistorySelector({showList}: {showList: boolean}) {
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill">
       <Card flex={1} padding={2} paddingTop={0}>
-        {timelineError ? (
-          <TimelineError />
+        {timelineError || selectedReleaseId ? (
+          <TimelineError versionError={Boolean(selectedReleaseId)} />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
             <Scroller data-ui="Scroller" ref={getScrollerRef}>

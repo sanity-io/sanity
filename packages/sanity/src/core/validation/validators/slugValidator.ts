@@ -10,6 +10,8 @@ import {
 } from '@sanity/types'
 import {memoize} from 'lodash'
 
+import {VERSION_FOLDER} from '../../util/draftUtils'
+
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
 function getDocumentIds(id: string) {
@@ -53,6 +55,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   const constraints = [
     '_type == $docType',
     `!(_id in [$draft, $published])`,
+    `!(_id in path("${VERSION_FOLDER}.**.${published}"))`,
     `${atPath} == $slug`,
   ].join(' && ')
 

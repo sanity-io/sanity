@@ -5,7 +5,6 @@ import {styled} from 'styled-components'
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
 import {useTranslation} from '../../../../../../i18n'
 import {type WeightedHit} from '../../../../../../search'
-import {getPublishedId} from '../../../../../../util/draftUtils'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
@@ -72,7 +71,7 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
         <>
           <SearchResultItem
             disableIntentLink={disableIntentLink}
-            documentId={getPublishedId(item.hit._id) || ''}
+            documentId={item.hit._id || ''}
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
             onItemSelect={onItemSelect}

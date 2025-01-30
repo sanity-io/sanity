@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 
@@ -46,6 +47,7 @@ export interface EditReferenceOptions {
   parentRefPath: Path
   id: string
   type: string
+  version?: ReleaseId
   template: {id: string; params?: Record<string, string | number | boolean>}
 }
 

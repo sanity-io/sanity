@@ -252,7 +252,7 @@ export type PresentationNavigate = (
 ) => void
 
 /** @public */
-export type PresentationPerspective = Extract<'published' | 'previewDrafts', ClientPerspective>
+export type PresentationPerspective = Exclude<ClientPerspective, 'raw'>
 
 /** @public */
 export type PresentationViewport = 'desktop' | 'mobile'

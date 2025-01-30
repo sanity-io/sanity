@@ -19,6 +19,9 @@ import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
+import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -82,6 +85,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchFullscreenPortalEl,
     searchOpen,
   } = useContext(NavbarContext)
+
+  const {selectedPerspective} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -185,6 +190,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
+          tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -275,6 +281,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
                 )}
 
+                <ReleasesNav />
                 {actionNodes}
 
                 {shouldRender.tools && (

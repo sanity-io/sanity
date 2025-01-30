@@ -5,12 +5,13 @@ import {type SanityClient, useActiveWorkspace, useClient, useCurrentUser} from '
 import {suspend} from 'suspend-react'
 
 import {API_VERSION} from './constants'
-import {type PreviewUrlOption} from './types'
+import {type PresentationPerspective, type PreviewUrlOption} from './types'
+import {encodeStudioPerspective} from './util/encodeStudioPerspective'
 
 export function usePreviewUrl(
   previewUrl: PreviewUrlOption,
   toolName: string,
-  studioPreviewPerspective: 'published' | 'previewDrafts',
+  studioPreviewPerspective: PresentationPerspective,
   previewSearchParam: string | null,
   canCreateUrlPreviewSecrets: boolean,
 ): URL {
@@ -53,7 +54,7 @@ export function usePreviewUrl(
     const resolvedUrl = await resolvePreviewUrl({
       client,
       previewUrlSecret: previewUrlSecret!,
-      studioPreviewPerspective,
+      studioPreviewPerspective: encodeStudioPerspective(studioPreviewPerspective),
       previewSearchParam,
       studioBasePath: basePath,
     })

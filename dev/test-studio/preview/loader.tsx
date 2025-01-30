@@ -6,7 +6,7 @@ const client = createClient({
   projectId: 'ppsg7ml5',
   dataset: 'playground',
   useCdn: true,
-  apiVersion: '2023-02-06',
+  apiVersion: 'X',
   stega: {
     enabled: true,
     studioUrl: '/presentation',

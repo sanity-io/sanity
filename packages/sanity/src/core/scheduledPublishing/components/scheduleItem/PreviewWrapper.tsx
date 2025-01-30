@@ -154,6 +154,7 @@ const PreviewWrapper = (props: Props) => {
                     <DocumentStatusIndicator
                       draft={previewState?.draft}
                       published={previewState?.published}
+                      versions={undefined}
                     />
                   ) : (
                     <StatusDotPlaceholder />

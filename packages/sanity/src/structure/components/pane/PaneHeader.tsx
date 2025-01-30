@@ -76,24 +76,29 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleCard
                 __unstable_focusRing
                 flex={1}
-                forwardedAs="button"
                 onClick={handleTitleClick}
                 paddingLeft={backButton ? 1 : 2}
                 padding={2}
                 tabIndex={tabIndex}
               >
-                {loading && <TitleTextSkeleton animated radius={1} size={1} />}
+                {loading && (
+                  <Box padding={2}>
+                    <TitleTextSkeleton animated radius={1} size={1} />
+                  </Box>
+                )}
                 {!loading && (
                   <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    {title}
+                    <Box flex={1} overflow="auto">
+                      {title}
+                    </Box>
                   </TitleText>
                 )}
               </TitleCard>
 
               {actions && (
-                <Flex align="center" hidden={collapsed}>
+                <Box hidden={collapsed}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Flex>
+                </Box>
               )}
             </Layout>
 

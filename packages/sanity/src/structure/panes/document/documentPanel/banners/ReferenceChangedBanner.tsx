@@ -10,6 +10,7 @@ import {
   type DocumentAvailability,
   getPublishedId,
   useDocumentPreviewStore,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -21,13 +22,18 @@ import {Banner} from './Banner'
 interface ParentReferenceInfo {
   loading: boolean
   result?: {
-    availability: {draft: DocumentAvailability; published: DocumentAvailability}
+    availability: {
+      draft: DocumentAvailability
+      published: DocumentAvailability
+      version?: DocumentAvailability
+    }
     refValue: string | undefined
   }
 }
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
+  const {selectedReleaseId} = usePerspective()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
@@ -74,6 +80,9 @@ export const ReferenceChangedBanner = memo(() => {
         .unstable_observePathsDocumentPair(
           publishedId,
           (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
+          {
+            version: selectedReleaseId,
+          },
         )
         .pipe(
           // this debounce time is needed to prevent flashing banners due to
@@ -82,21 +91,28 @@ export const ReferenceChangedBanner = memo(() => {
           // initially could be stale.
           debounceTime(750),
           map(
-            ({draft, published}): ParentReferenceInfo => ({
+            ({draft, published, version}): ParentReferenceInfo => ({
               loading: false,
               result: {
                 availability: {
                   draft: draft.availability,
                   published: published.availability,
+                  ...(version?.availability
+                    ? {
+                        version: version.availability,
+                      }
+                    : {}),
                 },
-                refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
-                  ?._ref,
+                refValue: pathGet<Reference>(
+                  version?.snapshot || draft.snapshot || published.snapshot,
+                  parentRefPath,
+                )?._ref,
               },
             }),
           ),
         ),
     )
-  }, [documentPreviewStore, parentId, parentRefPath])
+  }, [selectedReleaseId, documentPreviewStore, parentId, parentRefPath])
   const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {

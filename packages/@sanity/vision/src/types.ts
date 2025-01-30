@@ -1,9 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
+import {type PerspectiveContextValue} from 'sanity'
 
 export interface VisionProps {
   client: SanityClient
   config: VisionConfig
+  pinnedPerspective: PerspectiveContextValue
 }
 
 export interface VisionConfig {
