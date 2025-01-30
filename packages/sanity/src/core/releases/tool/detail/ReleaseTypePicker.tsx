@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
-import {format, isBefore, isValid} from 'date-fns'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -16,8 +16,11 @@ import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+
+const dateInputFormat = 'PP HH:mm'
 
 export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.Element {
   const {release} = props
@@ -30,18 +33,20 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
+  const toast = useToast()
 
   const [open, setOpen] = useState(false)
-  const [dateInputOpen, setDateInputOpen] = useState(release.metadata.releaseType === 'scheduled')
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
-  const publishDate = useMemo(() => getPublishDateFromRelease(release) || new Date(), [release])
-
-  const [updatedDate, setUpdatedDate] = useState<string | undefined>(publishDate.toDateString())
+  const publishDate = useMemo(() => getPublishDateFromRelease(release), [release])
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(
+    publishDate && isBefore(new Date(publishDate), new Date()),
+  )
 
-  const [inputValue, setInputValue] = useState<Date | undefined>(
+  const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>(
     publishDate ? new Date(publishDate) : undefined,
   )
+  const updatedDate = intendedPublishAt?.toISOString()
 
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
@@ -60,15 +65,34 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       }
 
       if (!isEqual(newRelease, release)) {
-        setIsUpdating(true)
-        updateRelease(newRelease).then(() => {
-          setIsUpdating(false)
-        })
-        setDateInputOpen(releaseType === 'scheduled')
+        /**
+         * If in past, the reset type and intendedPublish to the actual release values
+         * and discard the changes made
+         */
+        if (getIsScheduledDateInPast(newRelease)) {
+          setReleaseType(release.metadata.releaseType)
+          setIntendedPublishAt(
+            release.metadata.intendedPublishAt
+              ? new Date(release.metadata.intendedPublishAt)
+              : undefined,
+          )
+
+          toast.push({
+            closable: true,
+            status: 'warning',
+            title: tRelease('schedule-dialog.publish-date-in-past-warning'),
+          })
+        } else {
+          setIsUpdating(true)
+          updateRelease(newRelease).then(() => {
+            setIsUpdating(false)
+          })
+        }
       }
+
       setOpen(false)
     }
-  }, [open, updateRelease, release, updatedDate, releaseType])
+  }, [open, release, updatedDate, releaseType, toast, tRelease, updateRelease])
 
   useClickOutsideEvent(close, () => [
     popoverRef.current,
@@ -85,10 +109,10 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       setCurrentTimezone(timeZone.name)
       if (updatedDate && isValid(new Date(updatedDate))) {
         const currentZoneDate = utcToCurrentZoneDate(new Date(updatedDate))
-        setInputValue(currentZoneDate)
+        setIntendedPublishAt(currentZoneDate)
       }
     }
-  }, [currentTimezone, inputValue, timeZone, updatedDate, utcToCurrentZoneDate])
+  }, [currentTimezone, intendedPublishAt, timeZone, updatedDate, utcToCurrentZoneDate])
 
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
@@ -105,12 +129,12 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
 
     if (releaseType === 'asap') return t('release.type.asap')
     if (releaseType === 'undecided') return t('release.type.undecided')
-    const labelDate = publishDate || inputValue
+    const labelDate = publishDate || intendedPublishAt
     if (!labelDate) return null
 
     return format(new Date(labelDate), `PPpp`)
   }, [
-    inputValue,
+    intendedPublishAt,
     isPublishDateInPast,
     publishDate,
     release.publishAt,
@@ -121,29 +145,27 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   ])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
-    setDateInputOpen(pickedReleaseType === 'scheduled')
-
     setReleaseType(pickedReleaseType)
-    const nextPublishAt = pickedReleaseType === 'scheduled' ? new Date() : undefined
-    setUpdatedDate(nextPublishAt?.toISOString())
-    setInputValue(nextPublishAt)
+    const nextPublishAt = pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : undefined
+    setIntendedPublishAt(nextPublishAt)
+    setIsIntendedScheduleDateInPast(true)
   }, [])
 
-  const handleBundlePublishAtChange = useCallback((date: Date | null) => {
+  const handlePublishAtCalendarChange = useCallback((date: Date | null) => {
     if (!date) return
 
-    setInputValue(new Date(date))
-
-    setUpdatedDate(date ? date.toISOString() : undefined)
+    const cleanDate = startOfMinute(new Date(date))
+    setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
+    setIntendedPublishAt(cleanDate)
   }, [])
 
-  const handleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const parsedDate = new Date(event.currentTarget.value)
+  const handlePublishAtInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
+    const parsedDate = parse(event.currentTarget.value, dateInputFormat, new Date())
 
     if (isValid(parsedDate)) {
-      setInputValue(parsedDate)
+      setIsIntendedScheduleDateInPast(isBefore(parsedDate, new Date()))
 
-      setUpdatedDate(parsedDate.toISOString())
+      setIntendedPublishAt(startOfMinute(parsedDate))
     }
   }, [])
 
@@ -178,22 +200,26 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
             label={t('release.type.undecided')}
           />
         </TabList>
-        {dateInputOpen && (
+        {releaseType === 'scheduled' && (
           <>
+            {isIntendedScheduleDateInPast && (
+              <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+                <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+              </Card>
+            )}
             <LazyTextInput
-              value={inputValue ? format(inputValue, 'PPp') : undefined}
-              onChange={handleInputChange}
-              readOnly
+              value={intendedPublishAt ? format(intendedPublishAt, dateInputFormat) : undefined}
+              onChange={handlePublishAtInputChange}
             />
-
             <DatePicker
               ref={datePickerRef}
               monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
               calendarLabels={calendarLabels}
               selectTime
               padding={0}
-              value={inputValue}
-              onChange={handleBundlePublishAtChange}
+              value={intendedPublishAt}
+              onChange={handlePublishAtCalendarChange}
+              isPastDisabled
               showTimezone
             />
           </>

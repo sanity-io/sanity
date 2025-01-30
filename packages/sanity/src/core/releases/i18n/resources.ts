@@ -247,6 +247,9 @@ const releasesLocaleStrings = {
   /** Description shown in unschedule relaease dialog */
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
+  /** Description for warning that the published schedule time is in the past */
+  'schedule-dialog.publish-date-in-past-warning':
+    'Schedule this release for a future time and date.',
 
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',

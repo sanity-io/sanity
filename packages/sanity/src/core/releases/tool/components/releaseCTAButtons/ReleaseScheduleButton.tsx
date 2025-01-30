@@ -1,7 +1,7 @@
 import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {format, isValid, parse} from 'date-fns'
+import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
@@ -34,13 +34,30 @@ export const ReleaseScheduleButton = ({
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
+  /**
+   * This state supports the scenario of:
+   * publishAt is set to a valid future date; but at time of submit it is in the past
+   * Without an update on this state, ReleaseScheduledButton would not rerender
+   * and so date in past warning ui elements wouldn't show
+   */
+  const [rerenderDialog, setRerenderDialog] = useState(0)
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
-  const isScheduleButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
+  const isScheduleButtonDisabled = disabled || isValidatingDocuments
+
+  const isScheduledDateInPast = useCallback(() => {
+    return isBefore(publishAt || new Date(), new Date())
+  }, [publishAt])
 
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
+
+    if (isScheduledDateInPast()) {
+      // rerender dialog to recalculate isScheduledDateInPast
+      setRerenderDialog((cur) => cur + 1)
+      return
+    }
 
     try {
       setStatus('scheduling')
@@ -76,7 +93,16 @@ export const ReleaseScheduleButton = ({
     } finally {
       setStatus('idle')
     }
-  }, [schedule, release._id, release.metadata.title, publishAt, telemetry, toast, t])
+  }, [
+    publishAt,
+    isScheduledDateInPast,
+    schedule,
+    release._id,
+    release.metadata.title,
+    telemetry,
+    toast,
+    t,
+  ])
 
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
@@ -84,7 +110,7 @@ export const ReleaseScheduleButton = ({
   const handleBundlePublishAtCalendarChange = useCallback((date: Date | null) => {
     if (!date) return
 
-    setPublishAt(date)
+    setPublishAt(startOfMinute(date))
   }, [])
 
   const handleBundleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
@@ -99,9 +125,17 @@ export const ReleaseScheduleButton = ({
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
 
+    const _isScheduledDateInPast = isScheduledDateInPast()
+
     return (
       <Dialog
         id="confirm-schedule-dialog"
+        /**
+         * rerenderDialog should force this function to rerun
+         * since the selected scheduled date was in the future when selected
+         * but at time of submit it is in the past
+         */
+        key={rerenderDialog}
         header={t('schedule-dialog.confirm-title', {
           documentsLength: documents.length,
           count: documents.length,
@@ -113,11 +147,16 @@ export const ReleaseScheduleButton = ({
             tone: 'default',
             onClick: handleConfirmSchedule,
             loading: status === 'scheduling',
-            disabled: status === 'scheduling',
+            disabled: _isScheduledDateInPast || status === 'scheduling',
           },
         }}
       >
         <Stack space={3}>
+          {_isScheduledDateInPast && (
+            <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
+              <Text size={1}>{t('schedule-dialog.publish-date-in-past-warning')}</Text>
+            </Card>
+          )}
           <label>
             <Stack space={3}>
               <Text size={1} weight="semibold">
@@ -132,6 +171,7 @@ export const ReleaseScheduleButton = ({
                 calendarLabels={calendarLabels}
                 inputValue={publishAt ? format(publishAt, 'PP HH:mm') : ''}
                 constrainSize={false}
+                isPastDisabled
               />
             </Stack>
           </label>
@@ -150,6 +190,7 @@ export const ReleaseScheduleButton = ({
     )
   }, [
     status,
+    isScheduledDateInPast,
     t,
     documents.length,
     handleConfirmSchedule,
@@ -158,6 +199,7 @@ export const ReleaseScheduleButton = ({
     publishAt,
     calendarLabels,
     release.metadata.title,
+    rerenderDialog,
   ])
 
   const handleOnInitialSchedule = useCallback(() => {
