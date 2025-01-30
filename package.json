@@ -169,7 +169,7 @@
     "semver": "^7.3.5",
     "turbo": "^2.3.4",
     "typescript": "5.7.3",
-    "vite": "^5.4.11",
+    "vite": "^6.0.11",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.1.8",
     "yargs": "^17.3.0"
