@@ -20,7 +20,6 @@ import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
-import {createRequestAction} from './createReleaseOperationStore'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 import {type ReleaseDocument, type ReleaseStore} from './types'
 
