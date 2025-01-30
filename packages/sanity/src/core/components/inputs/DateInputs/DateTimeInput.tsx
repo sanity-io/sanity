@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -73,6 +74,10 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     () => ref.current,
   )
 
+  /**
+   * Setting referenceElement in effect makes sure it's up to date after the initial render
+   * cycle - avoiding referenceElement used byPopover from being out of sync with render state
+   */
   useEffect(() => setReferenceElement(ref.current), [])
 
   const [isPickerOpen, setPickerOpen] = useState(false)
@@ -94,6 +99,11 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   }, [])
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
+
+  const isDateInPastWarningShown = useMemo(
+    () => inputValue && isPastDisabled && isPast(new Date(inputValue)),
+    [inputValue, isPastDisabled],
+  )
 
   const suffix = readOnly ? null : (
     <Flex style={{padding: '5px'}}>
@@ -132,7 +142,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               content={
                 <Box overflow="auto">
                   <FocusLock onDeactivation={handleDeactivation}>
-                    {inputValue && isPastDisabled && isPast(new Date(inputValue)) && (
+                    {isDateInPastWarningShown && (
                       <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
                         <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
                       </Card>
