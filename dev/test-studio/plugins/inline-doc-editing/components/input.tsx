@@ -5,7 +5,6 @@ import {
   createPatchChannel,
   type DocumentDefinition,
   type DocumentPresence,
-  type FieldDefinition,
   FormBuilder,
   type FormDocumentValue,
   type ObjectInputProps,
@@ -23,10 +22,7 @@ import {
   useSchema,
 } from 'sanity'
 
-export const AssetLibraryAssetInput = (
-  props: ObjectInputProps,
-  customFields: FieldDefinition[],
-) => {
+export const AssetLibraryAssetInput = (props: ObjectInputProps) => {
   const documentId = useMemo(() => {
     return props.value?.asset?._ref || uuid()
   }, [props.value?.asset?._ref])
@@ -34,7 +30,6 @@ export const AssetLibraryAssetInput = (
 
   const {onChange, changed} = props
   const schema = useSchema()
-  const [isReferenced, setIsReferenced] = useState(Boolean(props.value?.asset?._ref))
   const editState = useEditState(documentId, documentType)
   const [isPublished, setIsPublished] = useState(Boolean(props.value?.asset?._ref) || false)
   const initialValue = useMemo(() => ({}), [])
@@ -51,13 +46,13 @@ export const AssetLibraryAssetInput = (
     }
     const customTypeDef = {
       ...usageDocumentSchemaTypeBase,
-      fields: [...(usageDocumentSchemaTypeBase as DocumentDefinition).fields, ...customFields],
+      fields: (usageDocumentSchemaTypeBase as DocumentDefinition).fields,
     }
     return Schema.compile({
       types: [customTypeDef],
       name: 'assetLibraryUsageType',
     }).get(documentType)
-  }, [customFields, schema?._original?.types])
+  }, [schema?._original?.types])
 
   const [focusPath, setFocusPath] = useState<Path>([])
   const [openPath, setOpenPath] = useState<Path>([])
