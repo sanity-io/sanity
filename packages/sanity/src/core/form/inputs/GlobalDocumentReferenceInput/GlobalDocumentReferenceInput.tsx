@@ -95,7 +95,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
       onChange(
         set({
           _type: schemaType.name,
-          _ref: `${schemaType.resourceType}/${schemaType.resourceId}/${getPublishedId(id)}`,
+          _ref: `${schemaType.resourceType}:${schemaType.resourceId}:${getPublishedId(id)}`,
           _weak: schemaType.weak,
           // persist _key between mutations if the value is in an array
           _key: value?._key,
@@ -139,7 +139,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
       return null
     }
 
-    const [, , _id] = value._ref.split('/', 3)
+    const [, , _id] = value._ref.split(':', 3)
     return {_id}
   }, [value])
 
