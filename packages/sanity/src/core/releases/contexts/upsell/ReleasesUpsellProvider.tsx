@@ -4,7 +4,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
-import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -47,7 +46,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   > | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
-  const {projectSubscriptions} = useProjectSubscriptions()
   const client = useClient({apiVersion: API_VERSION})
   const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
@@ -134,7 +132,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     return () => {
       sub.unsubscribe()
     }
-  }, [client, projectId, projectSubscriptions?.plan.planTypeId])
+  }, [client, projectId])
 
   const handleOpenDialog = useCallback(() => {
     setUpsellDialogOpen(true)
@@ -153,11 +151,10 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
        * plan is free, ie releases is not feature enabled
        * there is a limit and the limit is reached or exceeded
        */
-      const isAllowedToCreate =
-        isReleasesFeatureEnabled &&
-        (releaseLimit === undefined || releaseLimit > (activeReleases?.length || 0))
+      const isAtReleaseLimit =
+        !isReleasesFeatureEnabled || (releaseLimit && (activeReleases?.length || 0) >= releaseLimit)
 
-      if (isAllowedToCreate) {
+      if (!isAtReleaseLimit) {
         return cb()
       }
 
