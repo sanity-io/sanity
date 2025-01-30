@@ -6,9 +6,12 @@ import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog'
+import {useProjectSubscriptions} from '../../../../../hooks/useProjectSubscriptions'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
+import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../../i18n'
+import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../../util/createReleaseId'
@@ -123,6 +126,8 @@ const ConfirmReleaseDialog = ({
         })
       }
     } catch (revertError) {
+      if (isReleaseLimitError(revertError)) return
+
       toast.push({
         status: 'error',
         title: (
@@ -214,13 +219,24 @@ export const ReleaseRevertButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
+  const {projectSubscriptions, isLoading: isLoadingProjectSubscriptions} = useProjectSubscriptions()
+
+  const isRevertEnabled = projectSubscriptions?.plan.planTypeId === 'enterprise'
+
+  const handleMoveToConfirmStatus = useCallback(
+    () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
+    [guardWithReleaseLimitUpsell],
+  )
+
+  if (isLoadingProjectSubscriptions || !isRevertEnabled) return null
 
   return (
     <>
       <Button
         icon={RestoreIcon}
-        onClick={() => setRevertReleaseStatus('confirm')}
+        onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
         disabled={disabled}
