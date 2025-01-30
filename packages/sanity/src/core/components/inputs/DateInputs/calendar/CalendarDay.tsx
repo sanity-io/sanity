@@ -1,4 +1,5 @@
 import {Card, Text} from '@sanity/ui'
+import {isPast} from 'date-fns'
 import {useCallback} from 'react'
 
 interface CalendarDayProps {
@@ -8,10 +9,11 @@ interface CalendarDayProps {
   isCurrentMonth?: boolean
   isToday: boolean
   selected?: boolean
+  isPastDisabled?: boolean
 }
 
 export function CalendarDay(props: CalendarDayProps) {
-  const {date, focused, isCurrentMonth, isToday, onSelect, selected} = props
+  const {date, focused, isCurrentMonth, isToday, onSelect, selected, isPastDisabled} = props
 
   const handleClick = useCallback(() => {
     onSelect(date)
@@ -28,6 +30,7 @@ export function CalendarDay(props: CalendarDayProps) {
         data-focused={focused ? 'true' : ''}
         role="button"
         tabIndex={-1}
+        disabled={isPastDisabled && !isToday && isPast(date)}
         onClick={handleClick}
         padding={2}
         radius={2}
