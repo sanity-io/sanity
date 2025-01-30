@@ -16,6 +16,7 @@ import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {TEMPLATE_OPTIONS} from '../constants'
 import {transformBlocks} from './helpers'
 
+/** @internal */
 export type InterpolationProp = {[key: string]: string | number}
 
 const Divider = styled(Box)`
