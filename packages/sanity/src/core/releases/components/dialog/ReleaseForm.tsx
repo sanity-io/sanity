@@ -1,6 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
-import {addMinutes, isPast, isValid} from 'date-fns'
+import {addMinutes, isValid} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
@@ -12,14 +12,6 @@ import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
 
 const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
-
-/** @internal */
-export const getIsScheduledDateInPast = (value: EditableReleaseDocument) =>
-  Boolean(
-    value.metadata.releaseType === 'scheduled' &&
-      value.metadata.intendedPublishAt &&
-      isPast(new Date(value.metadata.intendedPublishAt)),
-  )
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -36,11 +28,11 @@ export function ReleaseForm(props: {
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
 
-  const [inputValue, setInputValue] = useState<Date | undefined>()
+  const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
-      setInputValue(date)
+      setIntendedPublishAt(date)
       onChange({...value, metadata: {...value.metadata, intendedPublishAt: date.toISOString()}})
     },
     [onChange, value],
@@ -49,9 +41,11 @@ export function ReleaseForm(props: {
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: ReleaseType) => {
       setButtonReleaseType(pickedReleaseType)
+      // select time 1 minute from now so that form doesn't immediately
+      // evaluate to error
       const nextInputValue = addMinutes(new Date().setSeconds(0, 0), 1)
       if (pickedReleaseType === 'scheduled') {
-        setInputValue(nextInputValue)
+        setIntendedPublishAt(nextInputValue)
       }
 
       onChange({
@@ -87,12 +81,12 @@ export function ReleaseForm(props: {
      */
     if (timeZone.name !== currentTimezone) {
       setCurrentTimezone(timeZone.name)
-      if (inputValue && isValid(inputValue)) {
-        const currentZoneDate = utcToCurrentZoneDate(inputValue)
-        setInputValue(currentZoneDate)
+      if (intendedPublishAt && isValid(intendedPublishAt)) {
+        const currentZoneDate = utcToCurrentZoneDate(intendedPublishAt)
+        setIntendedPublishAt(currentZoneDate)
       }
     }
-  }, [currentTimezone, inputValue, timeZone, utcToCurrentZoneDate])
+  }, [currentTimezone, intendedPublishAt, timeZone, utcToCurrentZoneDate])
 
   return (
     <Stack space={5}>
@@ -149,7 +143,7 @@ export function ReleaseForm(props: {
               tabIndex={-1}
             >
               <ScheduleDatePicker
-                initialValue={inputValue || new Date()}
+                initialValue={intendedPublishAt || new Date()}
                 onChange={handleBundlePublishAtCalendarChange}
               />
             </TabPanel>

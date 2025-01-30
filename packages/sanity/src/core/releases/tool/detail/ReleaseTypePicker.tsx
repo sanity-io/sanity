@@ -1,5 +1,5 @@
 import {LockIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -16,6 +16,7 @@ import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 
@@ -32,6 +33,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
+  const toast = useToast()
 
   const [open, setOpen] = useState(false)
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
@@ -63,21 +65,34 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       }
 
       if (!isEqual(newRelease, release)) {
-        if (
-          releaseType === 'scheduled' &&
-          intendedPublishAt &&
-          isBefore(intendedPublishAt, new Date())
-        )
-          return
+        /**
+         * If in past, the reset type and intendedPublish to the actual release values
+         * and discard the changes made
+         */
+        if (getIsScheduledDateInPast(newRelease)) {
+          setReleaseType(release.metadata.releaseType)
+          setIntendedPublishAt(
+            release.metadata.intendedPublishAt
+              ? new Date(release.metadata.intendedPublishAt)
+              : undefined,
+          )
 
-        setIsUpdating(true)
-        updateRelease(newRelease).then(() => {
-          setIsUpdating(false)
-        })
+          toast.push({
+            closable: true,
+            status: 'warning',
+            title: tRelease('schedule-dialog.publish-date-in-past-warning'),
+          })
+        } else {
+          setIsUpdating(true)
+          updateRelease(newRelease).then(() => {
+            setIsUpdating(false)
+          })
+        }
       }
+
       setOpen(false)
     }
-  }, [open, release, updatedDate, releaseType, intendedPublishAt, updateRelease])
+  }, [open, release, updatedDate, releaseType, toast, tRelease, updateRelease])
 
   useClickOutsideEvent(close, () => [
     popoverRef.current,
@@ -133,13 +148,15 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     setReleaseType(pickedReleaseType)
     const nextPublishAt = pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : undefined
     setIntendedPublishAt(nextPublishAt)
+    setIsIntendedScheduleDateInPast(true)
   }, [])
 
   const handlePublishAtCalendarChange = useCallback((date: Date | null) => {
     if (!date) return
 
-    setIsIntendedScheduleDateInPast(isBefore(date, new Date()))
-    setIntendedPublishAt(startOfMinute(new Date(date)))
+    const cleanDate = startOfMinute(new Date(date))
+    setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
+    setIntendedPublishAt(cleanDate)
   }, [])
 
   const handlePublishAtInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {

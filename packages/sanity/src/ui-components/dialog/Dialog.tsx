@@ -2,13 +2,14 @@
 import {
   Box,
   type BoxHeight,
-  Button as UIButton,
   Dialog as UIDialog,
   type DialogProps as UIDialogProps,
   Flex,
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
 import {useTranslation} from 'react-i18next'
+
+import {Button} from '../button'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -34,8 +35,8 @@ export type DialogProps = Pick<
   bodyHeight?: BoxHeight
   children?: ReactNode
   footer?: {
-    cancelButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
-    confirmButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
+    cancelButton?: Omit<ComponentProps<typeof Button>, 'fontSize' | 'padding'>
+    confirmButton?: Omit<ComponentProps<typeof Button>, 'fontSize' | 'padding'>
   }
   /**
    * If enabled, removes all default padding from dialog content.
@@ -69,9 +70,9 @@ export const Dialog = forwardRef(function Dialog(
         (footer?.confirmButton || footer?.cancelButton) && (
           <Flex width="full" gap={3} justify="flex-end" padding={3}>
             {props.onClose && (
-              <UIButton
+              <Button
                 mode="bleed"
-                padding={2}
+                style={{padding: 2}}
                 text={t('common.dialog.cancel-button.text')}
                 tone="default"
                 onClick={props.onClose}
@@ -80,9 +81,9 @@ export const Dialog = forwardRef(function Dialog(
               />
             )}
             {footer.confirmButton && (
-              <UIButton
+              <Button
                 mode="default"
-                padding={2}
+                style={{padding: 2}}
                 text={t('common.dialog.confirm-button.text')}
                 tone="critical"
                 data-testid="confirm-button"

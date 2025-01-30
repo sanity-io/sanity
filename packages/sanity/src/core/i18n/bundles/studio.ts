@@ -1162,6 +1162,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
 
+  /** Action message to add document to new release */
+  'release.action.add-to-new-release': 'Add to release',
   /** Action message to add document to release */
   'release.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
@@ -1212,6 +1214,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */
   'release.deleted-tooltip': 'This release has been deleted',
+  /** Title for copying version to a new release dialog */
+  'release.dialog.copy-to-release.title': 'Copy version to new release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'Create release',
   /** Label for description in tooltip to explain release types */
@@ -1234,8 +1238,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.tooltip': 'Releases',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
-  /**The toast title that will be shown when the user has a release perspective which is now archived */
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
+  /** The toast tiele that will be shown the creating a release fails */
+  'release.toast.create-release-error.title': 'Failed to create release',
   /**The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Label for when a version of a document has already been added to the release */
