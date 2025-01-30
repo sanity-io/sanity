@@ -28,14 +28,14 @@ export function AddDocumentSearch({
   const idsInRelease: string[] = results.map((doc) => doc.document._id)
 
   const addDocument = useCallback(
-    async (item: Pick<SanityDocumentLike, '_id' | '_type'>) => {
+    async (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => {
       try {
         await createVersion(getReleaseIdFromReleaseDocumentId(releaseId), item._id)
 
         toast.push({
           closable: true,
           status: 'success',
-          title: 'Document added to release',
+          title: `${item.title} added to release`,
         })
 
         const origin = getDocumentVariantType(item._id)
