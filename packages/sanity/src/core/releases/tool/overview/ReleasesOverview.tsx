@@ -13,6 +13,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
+import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -48,6 +49,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -200,16 +202,21 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
+  const handleOnClickCreateRelease = useCallback(
+    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    [guardWithReleaseLimitUpsell],
+  )
+
   const createReleaseButton = useMemo(
     () => (
       <Button
         icon={AddIcon}
         disabled={isCreateReleaseDialogOpen}
-        onClick={() => setIsCreateReleaseDialogOpen(true)}
+        onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
       />
     ),
-    [isCreateReleaseDialogOpen, tCore],
+    [handleOnClickCreateRelease, isCreateReleaseDialogOpen, tCore],
   )
 
   const handleOnCreateRelease = useCallback(
@@ -322,21 +329,23 @@ export function ReleasesOverview() {
                 </Stack>
               </Container>
             ) : (
-              <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-                loading={loadingTableData}
-                data={filteredReleases}
-                columnDefs={releasesOverviewColumnDefs(t)}
-                emptyState={t('no-releases')}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="_id"
-                rowActions={renderRowActions}
-                rowProps={getRowProps}
-                scrollContainerRef={scrollContainerRef}
-                hideTableInlinePadding
-              />
+              <>
+                <Table<TableRelease>
+                  // for resetting filter and sort on table when filer changed
+                  key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                  defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                  loading={loadingTableData}
+                  data={filteredReleases}
+                  columnDefs={releasesOverviewColumnDefs(t)}
+                  emptyState={t('no-releases')}
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                  rowId="_id"
+                  rowActions={renderRowActions}
+                  rowProps={getRowProps}
+                  scrollContainerRef={scrollContainerRef}
+                  hideTableInlinePadding
+                />
+              </>
             )}
           </Box>
           {renderCreateReleaseDialog()}

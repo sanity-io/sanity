@@ -9,9 +9,14 @@ import {
   activeScheduledRelease,
   scheduledRelease,
 } from '../../../releases/__fixtures__/release.fixture'
+import {useReleasesUpsellMockReturn} from '../../../releases/contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
 import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
+
+vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
+}))
 
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
