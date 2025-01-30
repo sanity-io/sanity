@@ -8,11 +8,16 @@ import {
   activeScheduledRelease,
   activeUndecidedRelease,
 } from '../../../releases/__fixtures__/release.fixture'
+import {useReleasesUpsellMockReturn} from '../../../releases/contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {
   mockUseActiveReleases,
   useActiveReleasesMockReturn,
 } from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
 import {ReleasesList} from '../ReleasesList'
+
+vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
+}))
 
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
