@@ -7,7 +7,6 @@ export const useProjectSubscriptionsMockReturn: Mocked<ReturnType<typeof useProj
     error: null,
     isLoading: false,
     projectSubscriptions: null,
-    // projectSubscriptions: {plan: {planTypeId: 'enterprise'}},
   }
 
 export const mockUseProjectSubscriptions = useProjectSubscriptions as Mock<

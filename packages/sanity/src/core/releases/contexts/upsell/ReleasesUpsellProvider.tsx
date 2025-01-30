@@ -15,6 +15,7 @@ import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
+import {FALLBACK_DIALOG} from './fallbackDialogData'
 import {type ReleasesUpsellContextValue} from './types'
 
 class StudioReleaseLimitExceededError extends Error {
@@ -36,76 +37,6 @@ const API_VERSION = '2024-04-19'
 
 const FREE_UPSELL = '72a9d606-0f49-45ca-9cf8-e7ed0ba888b7'
 const NOT_FREE_UPSELL = 'bb41ee22-4b30-4bc8-81fc-035948a1555a'
-
-const FALLBACK_DIALOG: Pick<
-  UpsellData,
-  'ctaButton' | 'descriptionText' | 'image' | 'secondaryButton'
-> = {
-  ctaButton: {
-    text: 'Upgrade plan',
-    url: 'https://www.sanity.io/manage',
-  },
-  descriptionText: [
-    {
-      _key: '35d801e98e2c',
-      _type: 'block',
-      children: [
-        {
-          _key: '61915fa6a0d1',
-          _type: 'span',
-          marks: [],
-          text: '',
-        },
-        {
-          _key: '43dd4b01f229',
-          _type: 'inlineIcon',
-          accent: true,
-          sanityIcon: 'add-circle',
-        },
-        {
-          _key: 'c9b0fe28bbea',
-          _type: 'span',
-          marks: [],
-          text: '',
-        },
-      ],
-      markDefs: [],
-      style: 'normal',
-    },
-    {
-      _key: 'f2a2e1e9fd8c',
-      _type: 'block',
-      children: [
-        {
-          _key: '4882487a1882',
-          _type: 'span',
-          marks: [],
-          text: "You are on the free trial, you can't make releases.",
-        },
-      ],
-      markDefs: [],
-      style: 'normal',
-    },
-    {
-      _key: '7a49a331826d',
-      _type: 'block',
-      children: [
-        {
-          _key: '5f3a55c1d503',
-          _type: 'span',
-          marks: [],
-          text: "Upgrade to growth to make FALL BACK 'em",
-        },
-      ],
-      markDefs: [],
-      style: 'normal',
-    },
-  ],
-  secondaryButton: {
-    text: 'Learn more',
-    url: 'https://www.sanity.io/docs/comments',
-  },
-}
 
 /**
  * @beta
@@ -194,12 +125,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
           setUpsellData(data)
         } catch (e) {
-          // silently fail
+          setUpsellData(FALLBACK_DIALOG)
         }
       },
       error: () => {
-        const data = FALLBACK_DIALOG
-        setUpsellData(data)
+        setUpsellData(FALLBACK_DIALOG)
       },
     })
 
