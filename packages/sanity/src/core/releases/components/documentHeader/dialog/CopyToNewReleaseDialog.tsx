@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Flex, Text, useToast} from '@sanity/ui'
+import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -46,7 +46,13 @@ export function CopyToNewReleaseDialog(props: {
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [_, setRerenderDialog] = useState(0)
+  /**
+   * This state supports the scenario of:
+   * release.intendedPublishAt is set to a valid future date; but at time of submit it is in the past
+   * Without an update on this state, CopyToNewReleaseDialog would not rerender
+   * and so date in past warning ui elements wouldn't show
+   */
+  const [, setRerenderDialog] = useState(0)
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
@@ -67,11 +73,6 @@ export function CopyToNewReleaseDialog(props: {
     // re-evaluate if date is in past
     // as dialog could have been left idle for a while
     if (getIsScheduledDateInPast(release)) {
-      toast.push({
-        closable: true,
-        status: 'warning',
-        title: tRelease('schedule-dialog.publish-date-in-past-warning'),
-      })
       setRerenderDialog((cur) => cur + 1)
       return // do not submit if date is in past
     }
@@ -94,7 +95,7 @@ export function CopyToNewReleaseDialog(props: {
     } finally {
       setIsSubmitting(false)
     }
-  }, [release, toast, tRelease, createRelease, handleAddVersion, telemetry, t])
+  }, [release, toast, createRelease, handleAddVersion, telemetry, t])
 
   return (
     <Dialog
@@ -111,10 +112,6 @@ export function CopyToNewReleaseDialog(props: {
         },
         confirmButton: {
           text: t('release.action.add-to-new-release'),
-          tooltipProps: {
-            disabled: !isScheduledDateInPast,
-            content: tRelease('schedule-dialog.publish-date-in-past-warning'),
-          },
           onClick: handleCreateRelease,
           disabled: isSubmitting || isScheduledDateInPast,
           tone: 'primary',
@@ -155,6 +152,11 @@ export function CopyToNewReleaseDialog(props: {
       </Box>
 
       <Box paddingX={5} paddingY={3}>
+        {isScheduledDateInPast && (
+          <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
+            <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+          </Card>
+        )}
         <ReleaseForm onChange={handleOnChange} value={release} />
       </Box>
     </Dialog>

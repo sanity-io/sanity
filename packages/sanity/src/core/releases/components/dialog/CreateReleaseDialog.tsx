@@ -40,7 +40,13 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     } as const
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [_, setRerenderDialog] = useState(0)
+  /**
+   * This state supports the scenario of:
+   * release.intendedPublishAt is set to a valid future date; but at time of submit it is in the past
+   * Without an update on this state, CreateReleaseDialog would not rerender
+   * and so date in past warning ui elements wouldn't show
+   */
+  const [, setRerenderDialog] = useState(0)
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
 

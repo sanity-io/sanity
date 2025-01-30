@@ -34,6 +34,12 @@ export const ReleaseScheduleButton = ({
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
+  /**
+   * This state supports the scenario of:
+   * publishAt is set to a valid future date; but at time of submit it is in the past
+   * Without an update on this state, ReleaseScheduledButton would not rerender
+   * and so date in past warning ui elements wouldn't show
+   */
   const [rerenderDialog, setRerenderDialog] = useState(0)
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
