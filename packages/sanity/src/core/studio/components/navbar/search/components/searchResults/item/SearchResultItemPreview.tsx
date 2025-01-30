@@ -8,16 +8,23 @@ import {styled} from 'styled-components'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
+import {usePerspective} from '../../../../../../../perspective/usePerspective'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
+import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
+import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
+import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {isArray} from '../../../../../../../util/isArray'
+import {useSearchState} from '../../../contexts/search/useSearchState'
 
 interface SearchResultItemPreviewProps {
   documentId: string
+  perspective?: string
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
@@ -42,21 +49,54 @@ const SearchResultItemPreviewBox = styled(Box)`
 export function SearchResultItemPreview({
   documentId,
   layout,
+  perspective,
   presence,
   schemaType,
   showBadge = true,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
+  const {data, loading} = useActiveReleases()
+  const {releasesIds} = useReleasesIds(data)
+  const {perspectiveStack} = usePerspective()
+  const {state} = useSearchState()
+  const isRaw = isPerspectiveRaw(state.perspective)
 
-  const observable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId, ''),
-    [documentId, documentPreviewStore, schemaType],
-  )
-  const {draft, published, isLoading} = useObservable(observable, {
+  const observable = useMemo(() => {
+    const bundleStack = state.perspective && !isRaw ? state.perspective : perspectiveStack
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
+      bundleIds: releasesIds,
+      /**
+       * if the perspective is defined in the state it means that there is a scope to the search
+       * and that the preview needs to take that into account
+       */
+      bundleStack: Array.isArray(bundleStack) ? bundleStack : [],
+      isRaw: isRaw,
+    })
+  }, [
+    documentPreviewStore,
+    schemaType,
+    documentId,
+    releasesIds,
+    state.perspective,
+    perspectiveStack,
+    isRaw,
+  ])
+
+  const {
+    draft,
+    published,
+    isLoading: previewIsLoading,
+    version,
+    versions,
+  } = useObservable(observable, {
     draft: null,
     isLoading: true,
     published: null,
+    version: null,
+    versions: {},
   })
+
+  const isLoading = previewIsLoading || loading
 
   const sanityDocument = useMemo(() => {
     return {
@@ -71,12 +111,12 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} versions={versions} />
       </Flex>
     )
-  }, [draft, isLoading, presence, published, schemaType.title, showBadge])
+  }, [draft, isLoading, presence, published, schemaType.title, showBadge, versions])
 
-  const tooltip = <DocumentStatus draft={draft} published={published} />
+  const tooltip = <DocumentStatus draft={draft} published={published} versions={versions} />
 
   return (
     <SearchResultItemPreviewBox>
@@ -84,7 +124,9 @@ export function SearchResultItemPreview({
         {...getPreviewValueWithFallback({
           draft,
           published,
+          version,
           value: sanityDocument,
+          perspective: isArray(perspective) ? perspective[0] : perspective,
         })}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}

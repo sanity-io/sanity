@@ -1,7 +1,7 @@
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from '@sanity/client'
 import {type FunctionComponent, memo, useEffect} from 'react'
 import {filter, first, merge, shareReplay} from 'rxjs'
-import {useClient} from 'sanity'
+import {isDraftId, useClient} from 'sanity'
 
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
@@ -79,7 +79,17 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
 
   useEffect(() => {
     return comlink.on('visual-editing/fetch-snapshot', async (data) => {
-      const snapshot = await client.getDocument(data.documentId, {
+      /**
+       * This is a temporary hack to get around the fact that the `drafts.versions.versionName.id` format is not supported
+       * `versions.` don't have draft documents.
+       *
+       * Where is the drafts. prefix coming from and why it's added to the `versions.` documents?
+       * */
+      const cleanId =
+        data.documentId.includes('versions.') && isDraftId(data.documentId)
+          ? data.documentId.replace('drafts.', '')
+          : data.documentId
+      const snapshot = await client.getDocument(cleanId, {
         tag: 'document.snapshots',
       })
       return {snapshot}

@@ -483,6 +483,10 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  /**
+   * @internal
+   */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
 
   /**
    * @hidden
@@ -546,9 +550,21 @@ export interface ResolveProductionUrlContext extends ConfigContext {
  * @hidden
  * @beta
  */
+
+export type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version'
+
+/**
+ * @hidden
+ * @beta
+ */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /** releaseId of the open document, it's undefined if it's published or the draft */
+  releaseId?: string
+  /** the type of the currently active document. */
+  versionType?: DocumentActionsVersionType
 }
 
 /**
@@ -810,6 +826,9 @@ export interface Source {
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
+  /** @beta */
+  releases?: WorkspaceOptions['releases']
+
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
@@ -937,6 +956,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
+  releases: {enabled: boolean}
 }
 
 /**
@@ -991,5 +1011,16 @@ export interface BetaFeatures {
      * @see #startInCreateEnabled
      */
     fallbackStudioOrigin?: string
+  }
+  /**
+   * Config for the history events API .
+   *
+   * If enabled, it will use the new events API to fetch document history.
+   *
+   * If it is not enabled, it will continue using the legacy Timeline.
+   */
+  eventsAPI?: {
+    documents?: boolean
+    releases?: boolean
   }
 }

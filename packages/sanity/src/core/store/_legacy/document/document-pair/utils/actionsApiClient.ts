@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 
-const ACTIONS_API_MINIMUM_VERSION = '2024-05-23'
+// TODO: COREL - Replace once releases API are stable.
+const ACTIONS_API_MINIMUM_VERSION = 'vX'
 
 export function actionsApiClient(client: SanityClient): SanityClient {
   return client.withConfig({

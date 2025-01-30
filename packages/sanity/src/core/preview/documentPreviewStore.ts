@@ -57,11 +57,13 @@ export interface DocumentPreviewStore {
    */
   unstable_observeDocumentPairAvailability: (
     id: string,
+    options?: {version?: string},
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    options?: {version?: string},
   ) => Observable<DraftsModelDocument<T>>
 
   /**
@@ -137,7 +139,10 @@ export function createDocumentPreviewStore({
     )
   }
 
-  const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
+  const observeDocumentIdSet = createDocumentIdSetObserver(
+    // TODO: COREL - Replace once releases API are stable.
+    versionedClient.withConfig({apiVersion: 'X'}),
+  )
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(

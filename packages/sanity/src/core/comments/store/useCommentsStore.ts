@@ -1,8 +1,13 @@
-import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {
+  type ListenEvent,
+  type ListenOptions,
+  type ReleaseId,
+  type SanityClient,
+} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {getPublishedId} from '../../util'
+import {getPublishedId, getVersionId} from '../../util'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
@@ -14,6 +19,7 @@ export interface CommentsStoreOptions {
   documentId: string
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
   transactionsIdMap: Map<DocumentId, TransactionId>
+  releaseId?: ReleaseId
 }
 
 interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
@@ -57,7 +63,7 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap} = opts
+  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap, releaseId} = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(client !== null)
@@ -65,7 +71,12 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
   const didInitialFetch = useRef<boolean>(false)
 
-  const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
+  const params = useMemo(
+    () => ({
+      documentId: releaseId ? getVersionId(documentId, releaseId) : getPublishedId(documentId),
+    }),
+    [documentId, releaseId],
+  )
 
   const initialFetch = useCallback(async () => {
     if (!client) {

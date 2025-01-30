@@ -8,6 +8,7 @@ import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Button} from '../../../../ui-components'
 import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -52,16 +53,19 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
+    version,
     renderPreview,
     path,
     elementProps,
     focusPath,
   } = props
+  const {selectedReleaseId} = usePerspective()
 
   const {getReferenceInfo} = useReferenceInput({
     path,
     schemaType,
     value,
+    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -82,10 +86,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       onChange(patches)
 
-      onEditReference({id: newDocumentId, type: option.type, template: option.template})
+      onEditReference({
+        id: newDocumentId,
+        type: option.type,
+        template: option.template,
+        version: selectedReleaseId,
+      })
       onPathFocus([])
     },
-    [onChange, onEditReference, onPathFocus, schemaType],
+    [onChange, onEditReference, onPathFocus, schemaType.name, schemaType.weak, selectedReleaseId],
   )
 
   const handleChange = useCallback(
@@ -206,6 +215,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderValue = useCallback(() => {
     return (
+      loadableReferenceInfo.result?.preview.version?.title ||
       loadableReferenceInfo.result?.preview.draft?.title ||
       loadableReferenceInfo.result?.preview.published?.title ||
       ''
@@ -213,6 +223,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   }, [
     loadableReferenceInfo.result?.preview.draft?.title,
     loadableReferenceInfo.result?.preview.published?.title,
+    loadableReferenceInfo.result?.preview.version?.title,
   ])
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])

@@ -59,6 +59,18 @@ window.matchMedia = vi.fn().mockImplementation((query) => ({
   dispatchEvent: vi.fn(),
 }))
 
+window.Promise.withResolvers = <T>() => {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (reason?: any) => void = () => {}
+
+  const promise: Promise<T> = new Promise((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+
+  return {promise, resolve, reject}
+}
+
 // Resets the matchMedia mock
 beforeEach(() => {
   window.matchMedia = vi.fn().mockImplementation((query) => ({
