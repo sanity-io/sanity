@@ -3,7 +3,7 @@ import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
-import {useClient, useProjectId} from '../../../hooks'
+import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {
   UpsellDialogDismissed,
@@ -49,9 +49,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const telemetry = useTelemetry()
   const {projectSubscriptions} = useProjectSubscriptions()
   const client = useClient({apiVersion: API_VERSION})
-  const upsellExperienceClient = client.withConfig({projectId: 'pyrmmpch', dataset: 'development'})
   const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
+  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
 
   const telemetryLogs = useMemo(
     (): ReleasesUpsellContextValue['telemetryLogs'] => ({
@@ -134,7 +134,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     return () => {
       sub.unsubscribe()
     }
-  }, [client, projectId, projectSubscriptions?.plan.planTypeId, upsellExperienceClient.observable])
+  }, [client, projectId, projectSubscriptions?.plan.planTypeId])
 
   const handleOpenDialog = useCallback(() => {
     setUpsellDialogOpen(true)
@@ -148,8 +148,14 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     (cb: () => void, throwError: boolean = false) => {
+      /**
+       * upsell if:
+       * plan is free, ie releases is not feature enabled
+       * there is a limit and the limit is reached or exceeded
+       */
       const isAllowedToCreate =
-        releaseLimit === undefined || releaseLimit > (activeReleases?.length || 0)
+        isReleasesFeatureEnabled &&
+        (releaseLimit === undefined || releaseLimit > (activeReleases?.length || 0))
 
       if (isAllowedToCreate) {
         return cb()
@@ -161,7 +167,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       }
       return false
     },
-    [activeReleases?.length, handleOpenDialog, releaseLimit],
+    [activeReleases?.length, handleOpenDialog, isReleasesFeatureEnabled, releaseLimit],
   )
 
   const onReleaseLimitReached = useCallback(
