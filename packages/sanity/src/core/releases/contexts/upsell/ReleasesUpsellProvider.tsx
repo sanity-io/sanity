@@ -11,6 +11,7 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
 } from '../../../studio'
+import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -29,7 +30,6 @@ class StudioReleaseLimitExceededError extends Error {
 }
 
 const FEATURE = 'content-releases'
-const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 const BASE_URL = 'www.sanity.io'
 // Date when the change from array to object in the data returned was introduced.
 const API_VERSION = '2024-04-19'
@@ -119,6 +119,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const {projectSubscriptions} = useProjectSubscriptions()
   const client = useClient({apiVersion: API_VERSION})
   const upsellExperienceClient = client.withConfig({projectId: 'pyrmmpch', dataset: 'development'})
+  const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
+  const {data: activeReleases} = useActiveReleases()
 
   const telemetryLogs = useMemo(
     (): ReleasesUpsellContextValue['telemetryLogs'] => ({
@@ -216,9 +218,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
-  const {data: activeReleases} = useActiveReleases()
-
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
       const isAllowedToCreate =
@@ -258,11 +257,14 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
+  const interpolation = releaseLimit ? {releaseLimit} : undefined
+
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
       {upsellData && upsellDialogOpen && (
         <UpsellDialog
+          interpolation={interpolation}
           data={upsellData}
           onClose={handleClose}
           onPrimaryClick={handlePrimaryButtonClick}
