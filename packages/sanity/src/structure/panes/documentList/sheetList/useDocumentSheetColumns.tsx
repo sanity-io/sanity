@@ -53,7 +53,7 @@ const PreviewCell = (props: {
   const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
   return (
     <Flex align="center" gap={3}>
-      <DocumentStatusIndicator draft={draft} published={published} />
+      <DocumentStatusIndicator draft={draft} published={published} versions={undefined} />
       <Text size={1}>{displayValue}</Text>
     </Flex>
   )

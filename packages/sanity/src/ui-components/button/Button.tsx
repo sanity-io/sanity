@@ -25,6 +25,7 @@ type BaseButtonProps = Pick<
   | 'width'
 > & {
   size?: 'default' | 'large'
+  radius?: 'full'
 }
 
 type ButtonWithText = {

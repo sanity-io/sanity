@@ -33,7 +33,7 @@ import {
 import {useEffectEvent} from 'use-effect-event'
 
 // import {useEffectEvent} from 'use-effect-event'
-import {MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
+import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {
   type LiveQueriesState,
   type LiveQueriesStateValue,
@@ -184,7 +184,7 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
 
   const [syncTagsInUse] = useState(() => new Set<SyncTag[]>())
   const [lastLiveEventId, setLastLiveEventId] = useState<string | null>(null)
-  const studioClient = useClient({apiVersion: '2023-10-16'})
+  const studioClient = useClient({apiVersion: API_VERSION})
   const clientConfig = useMemo(() => studioClient.config(), [studioClient])
   const client = useMemo(
     () =>

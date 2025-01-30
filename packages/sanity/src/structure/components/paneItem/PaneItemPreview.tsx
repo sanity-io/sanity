@@ -14,6 +14,9 @@ import {
   getPreviewValueWithFallback,
   isRecord,
   SanityDefaultPreview,
+  useActiveReleases,
+  usePerspective,
+  useReleasesIds,
 } from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
@@ -43,30 +46,56 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       ? value.title
       : null
 
+  const {data, loading} = useActiveReleases()
+  const {releasesIds} = useReleasesIds(data)
+  const {perspectiveStack, selectedPerspectiveName} = usePerspective()
+
   const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
-    [props.documentPreviewStore, schemaType, title, value._id],
+    () =>
+      getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
+        bundleIds: releasesIds,
+        bundleStack: perspectiveStack,
+      }),
+    [props.documentPreviewStore, schemaType, value._id, title, releasesIds, perspectiveStack],
   )
-  const {draft, published, isLoading} = useObservable(previewStateObservable, {
+
+  const {
+    draft,
+    published,
+    version,
+    versions,
+    isLoading: previewIsLoading,
+  } = useObservable(previewStateObservable, {
     draft: null,
     isLoading: true,
     published: null,
+    version: null,
+    versions: {},
+    selectedPerspectiveName,
   })
+
+  const isLoading = previewIsLoading || loading
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} versions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentStatus draft={draft} published={published} />
+  const tooltip = <DocumentStatus draft={draft} published={published} versions={versions} />
 
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({value, draft, published})}
+      {...getPreviewValueWithFallback({
+        value,
+        draft,
+        published,
+        version,
+        perspective: selectedPerspectiveName,
+      })}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

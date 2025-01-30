@@ -9,7 +9,15 @@ import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
 vi.mock('../../hooks', () => ({
-  useClient: () => ({observable: {fetch: vi.fn()}}),
+  useClient: () => ({
+    observable: {
+      /** @todo revert to this once releases is stable in
+       * non-experimental content lake API
+       */
+      //fetch: vi.fn()
+      withConfig: vi.fn().mockReturnValue({fetch: vi.fn()}),
+    },
+  }),
 }))
 
 const mockSchema = Schema.compile({
@@ -32,11 +40,17 @@ const {
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 
 beforeEach(() => {
-  ;(client.observable.fetch as Mock).mockReset()
-  ;(client.observable.fetch as Mock).mockReturnValue(searchHits)
+  ;(client.observable.withConfig as Mock).mockReset()
+  ;(client.observable.withConfig as Mock).mockReturnValue({fetch: () => searchHits})
 })
 
 describe('createWeightedSearch', () => {
+  it('overrides to use vX api version', async () => {
+    await lastValueFrom(search({query: 'harry', types: []} as SearchTerms))
+
+    expect(client.observable.withConfig).toHaveBeenCalledWith({apiVersion: 'vX'})
+  })
+
   it('should order hits by score by default', async () => {
     const result = await lastValueFrom(search({query: 'harry', types: []} as SearchTerms))
 

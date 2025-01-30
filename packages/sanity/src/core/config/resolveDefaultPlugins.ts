@@ -1,5 +1,6 @@
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
+import {releases, RELEASES_NAME} from '../releases/plugin'
 import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
@@ -10,7 +11,7 @@ import {
   type WorkspaceOptions,
 } from './types'
 
-const defaultPlugins = [comments(), tasks(), scheduledPublishing(), createIntegration()]
+const defaultPlugins = [comments(), tasks(), scheduledPublishing(), createIntegration(), releases()]
 
 export function getDefaultPlugins(
   options: DefaultPluginsWorkspaceOptions,
@@ -23,6 +24,9 @@ export function getDefaultPlugins(
     }
     if (plugin.name === TASKS_NAME) {
       return options.tasks.enabled
+    }
+    if (plugin.name === RELEASES_NAME) {
+      return options.releases.enabled
     }
     return true
   })
@@ -40,6 +44,10 @@ export function getDefaultPluginsOptions(
     scheduledPublishing: {
       ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,
       ...workspace.scheduledPublishing,
+    },
+    releases: {
+      enabled: true,
+      ...workspace.releases,
     },
   }
 }

@@ -29,8 +29,8 @@ vi.mock('../useDocumentSheetList', () => ({
   }),
 }))
 
-vi.mock('sanity', async () => ({
-  ...((await vi.importActual('sanity')) || {}),
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentPreviewStore: vi.fn().mockReturnValue({
     observeForPreview: vi.fn().mockReturnValue([]),
   }),

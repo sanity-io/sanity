@@ -64,11 +64,30 @@ export function isVersionId(id: string): boolean {
   return id.startsWith(VERSION_PREFIX)
 }
 
-/** @internal */
-export function getIdPair(id: string): {draftId: DraftId; publishedId: PublishedId} {
+/**
+ * TODO: Improve return type based on presence of `version` option.
+ *
+ * @internal
+ */
+export function getIdPair(
+  id: string,
+  {version}: {version?: string} = {},
+): {
+  draftId: DraftId
+  publishedId: PublishedId
+  versionId?: string
+} {
+  if (version === 'drafts' || version === 'published') {
+    throw new Error('Version can not be "published" or "drafts"')
+  }
   return {
-    draftId: getDraftId(id),
     publishedId: getPublishedId(id),
+    draftId: getDraftId(id),
+    ...(version
+      ? {
+          versionId: getVersionId(id, version),
+        }
+      : {}),
   }
 }
 
@@ -79,20 +98,21 @@ export function isPublishedId(id: string): id is PublishedId {
 
 /** @internal */
 export function getDraftId(id: string): DraftId {
+  if (isVersionId(id)) {
+    const publishedId = getPublishedId(id)
+    return (DRAFTS_PREFIX + publishedId) as DraftId
+  }
+
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
 /**  @internal */
-export function getVersionId(id: string, bundle: string): string {
-  if (isVersionId(id)) {
-    const [_versionPrefix, versionId, ...publishedId] = id.split(PATH_SEPARATOR)
-    if (versionId === bundle) return id
-    return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+export function getVersionId(id: string, version: string): string {
+  if (version === 'drafts' || version === 'published') {
+    throw new Error('Version can not be "published" or "drafts"')
   }
 
-  const publishedId = getPublishedId(id)
-
-  return `${VERSION_PREFIX}${bundle}${PATH_SEPARATOR}${publishedId}`
+  return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${getPublishedId(id)}`
 }
 
 /**

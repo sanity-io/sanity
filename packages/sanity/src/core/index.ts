@@ -11,12 +11,44 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {PerspectiveProvider} from './perspective/PerspectiveProvider'
+export {
+  type PerspectiveContextValue,
+  type PerspectiveStack,
+  type SelectedPerspective,
+} from './perspective/types'
+export {useExcludedPerspective} from './perspective/useExcludedPerspective'
+export {usePerspective} from './perspective/usePerspective'
+export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
+export {
+  AddedVersion,
+  DiscardVersionDialog,
+  formatRelativeLocalePublishDate,
+  getPublishDateFromRelease,
+  getReleaseIdFromReleaseDocumentId,
+  getReleaseTone,
+  isDraftPerspective,
+  isPublishedPerspective,
+  isReleaseDocument,
+  isReleaseScheduledOrScheduling,
+  LATEST,
+  type ReleaseDocument,
+  RELEASES_INTENT,
+  useActiveReleases,
+  useArchivedReleases,
+  useDocumentVersions,
+  useIsReleaseActive,
+  useReleasesIds,
+  useVersionOperations,
+  VersionChip,
+  VersionInlineBadge,
+} from './releases'
 export * from './scheduledPublishing'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
-export {createSearch, getSearchableTypes} from './search'
+export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
 export * from './store'
 export * from './studio'
 export * from './studioClient'

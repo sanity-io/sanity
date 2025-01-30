@@ -21,6 +21,7 @@ import {
   getSearchableTypes,
   type SanityDocumentLike,
   type Schema,
+  type SearchOptions,
   type SearchStrategy,
 } from 'sanity'
 
@@ -35,6 +36,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
+  perspective?: string | string[]
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   searchStrategy?: SearchStrategy
@@ -52,6 +54,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     client,
     schema,
     sort,
+    perspective,
     limit,
     params,
     filter,
@@ -94,7 +97,15 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
 
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
-  const swrKey = JSON.stringify({filter, limit, params, searchQuery, sort, staticTypeNames})
+  const swrKey = JSON.stringify({
+    filter,
+    limit,
+    params,
+    searchQuery,
+    perspective,
+    sort,
+    staticTypeNames,
+  })
 
   return merge(
     welcome$.pipe(take(1)),
@@ -134,12 +145,13 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               types,
             }
 
-            const searchOptions = {
+            const searchOptions: SearchOptions = {
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
               skipSortByScore: true,
               sort: sortBy,
+              perspective,
             }
 
             return search(searchTerms, searchOptions).pipe(

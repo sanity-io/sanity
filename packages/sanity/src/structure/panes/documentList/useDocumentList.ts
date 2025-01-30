@@ -30,6 +30,7 @@ import {type DocumentListPaneItem, type SortOrder} from './types'
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
+  perspective?: string | string[]
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
@@ -60,7 +61,14 @@ interface UseDocumentListHookValue extends DocumentListState {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookValue {
-  const {filter: searchFilter, params: paramsProp, sortOrder, searchQuery, apiVersion} = opts
+  const {
+    filter: searchFilter,
+    params: paramsProp,
+    sortOrder,
+    searchQuery,
+    perspective,
+    apiVersion,
+  } = opts
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -85,6 +93,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       limit: PARTIAL_PAGE_LIMIT,
       params: paramsProp,
       schema,
+      perspective,
       searchQuery: searchQuery || '',
       sort: sortOrder || DEFAULT_ORDERING,
       staticTypeNames: typeNameFromFilter,
@@ -166,6 +175,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     searchFilter,
     paramsProp,
     schema,
+    perspective,
     searchQuery,
     sortOrder,
     typeNameFromFilter,

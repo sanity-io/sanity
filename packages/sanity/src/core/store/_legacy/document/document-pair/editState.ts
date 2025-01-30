@@ -1,8 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable} from 'rxjs'
+import {combineLatest, type Observable, of} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
+import {getVersionFromId} from '../../../../util'
 import {createSWR} from '../../../../util/rxSwr'
 import {type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'
@@ -15,7 +16,9 @@ interface TransactionSyncLockState {
   enabled: boolean
 }
 
-const swr = createSWR<[SanityDocument, SanityDocument, TransactionSyncLockState]>({maxSize: 50})
+const swr = createSWR<
+  [SanityDocument, SanityDocument, TransactionSyncLockState, SanityDocument | null]
+>({maxSize: 50})
 
 /**
  * @hidden
@@ -26,8 +29,23 @@ export interface EditStateFor {
   transactionSyncLock: TransactionSyncLockState | null
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
+  /**
+   * Whether live edit is enabled. This may be true for various reasons:
+   *
+   * - The schema type has live edit enabled.
+   * - A version of the document is checked out.
+   */
   liveEdit: boolean
+  /**
+   * Whether the schema type has live edit enabled.
+   */
+  liveEditSchemaType: boolean
   ready: boolean
+  /**
+   * When editing a version, the name of the release the document belongs to.
+   */
+  release: string | undefined
 }
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -44,7 +62,8 @@ export const editState = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<EditStateFor> => {
-    const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
+    const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
+    const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
 
     return snapshotPair(
       ctx.client,
@@ -61,26 +80,38 @@ export const editState = memoize(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
             startWith(NOT_LOCKED),
           ),
+          typeof versions.version === 'undefined' ? of(null) : versions.version.snapshots$,
         ]),
       ),
-      swr(`${idPair.publishedId}-${idPair.draftId}`),
-      map(({value: [draftSnapshot, publishedSnapshot, transactionSyncLock], fromCache}) => ({
-        id: idPair.publishedId,
-        type: typeName,
-        draft: draftSnapshot,
-        published: publishedSnapshot,
-        liveEdit,
-        ready: !fromCache,
-        transactionSyncLock: fromCache ? null : transactionSyncLock,
-      })),
+      swr(`${idPair.publishedId}-${idPair.draftId}-${idPair.versionId}`),
+      map(
+        ({
+          value: [draftSnapshot, publishedSnapshot, transactionSyncLock, versionSnapshot],
+          fromCache,
+        }) => ({
+          id: idPair.publishedId,
+          type: typeName,
+          draft: draftSnapshot,
+          published: publishedSnapshot,
+          version: typeof idPair.versionId === 'undefined' ? null : versionSnapshot,
+          liveEdit,
+          liveEditSchemaType,
+          ready: !fromCache,
+          transactionSyncLock: fromCache ? null : transactionSyncLock,
+          release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
+        }),
+      ),
       startWith({
         id: idPair.publishedId,
         type: typeName,
         draft: null,
         published: null,
+        version: null,
         liveEdit,
+        liveEditSchemaType,
         ready: false,
         transactionSyncLock: null,
+        release: idPair.versionId ? getVersionFromId(idPair.versionId) : undefined,
       }),
       publishReplay(1),
       refCount(),

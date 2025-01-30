@@ -47,12 +47,12 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published} = props
+  const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
+  const {changesOpen, documentId, documentType} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -148,6 +148,10 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
+    if (release) {
+      // Version documents are not publishable by this action, they should be published as part of a release
+      return null
+    }
     if (liveEdit) {
       return {
         tone: 'default',
@@ -202,6 +206,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       onHandle: handle,
     }
   }, [
+    release,
     currentUser,
     editState?.transactionSyncLock?.enabled,
     handle,

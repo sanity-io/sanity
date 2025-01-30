@@ -38,14 +38,28 @@ export const operationArgs = memoize(
           versions.draft.snapshots$,
           versions.published.snapshots$,
           ctx.serverActionsEnabled,
+          ...(typeof versions.version === 'undefined' ? [] : [versions.version.snapshots$]),
         ]).pipe(
           map(
-            ([draft, published, canUseServerActions]): OperationArgs => ({
+            ([draft, published, canUseServerActions, version]): OperationArgs => ({
               ...ctx,
               serverActionsEnabled: canUseServerActions,
               idPair,
               typeName,
-              snapshots: {draft, published},
+              snapshots: {
+                published,
+                draft,
+                ...(version
+                  ? {
+                      version,
+                    }
+                  : {}),
+              },
+              ...(versions.version
+                ? {
+                    version: versions.version,
+                  }
+                : {}),
               draft: versions.draft,
               published: versions.published,
             }),

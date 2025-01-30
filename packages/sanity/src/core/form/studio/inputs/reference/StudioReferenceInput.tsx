@@ -14,6 +14,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
@@ -61,9 +62,11 @@ type SearchError = {
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const {perspectiveStack} = usePerspective()
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
+  const {selectedReleaseId} = usePerspective()
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -90,6 +93,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             tag: 'search.reference',
             maxFieldDepth,
             strategy: searchStrategy,
+            perspective: perspectiveStack,
           }),
         ),
 
@@ -102,7 +106,16 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }),
       ),
 
-    [schemaType, documentRef, path, getClient, searchClient, maxFieldDepth, searchStrategy],
+    [
+      schemaType,
+      documentRef,
+      path,
+      getClient,
+      searchClient,
+      maxFieldDepth,
+      searchStrategy,
+      perspectiveStack,
+    ],
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -131,6 +144,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         id: event.id,
         type: event.type,
         template: event.template,
+        version: event.version,
       })
     },
     [onEditReference, path],
@@ -190,6 +204,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
+      version={selectedReleaseId}
     />
   )
 }

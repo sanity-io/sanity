@@ -1,1 +1,1 @@
-export const STICKY_PARAMS: string[] = []
+export const STICKY_PARAMS: string[] = ['perspective', 'excludedPerspectives']

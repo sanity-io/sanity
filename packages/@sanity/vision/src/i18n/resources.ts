@@ -74,6 +74,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Description for popover that explains what "Perspectives" are */
   'settings.perspectives.description':
     'Perspectives allow your query to run against different "views" of the content in your dataset',
+  /** Label for the pinned release perspective */
+  'settings.perspectives.pinned-release-label': 'pinned release',
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 } as const)

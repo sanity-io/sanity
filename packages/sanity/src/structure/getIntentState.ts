@@ -27,6 +27,7 @@ export function getIntentState(
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || uuid()
   const isTemplate = intent === 'create' && params.template
+  const isVersion = intent === 'create' && params.version
 
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
@@ -46,7 +47,12 @@ export function getIntentState(
         pane.schemaTypeName === params.type &&
         pane.options.filter === '_type == $type')
     ) {
-      const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS
+      const paneParams: {
+        template?: string
+        version?: string
+      } = EMPTY_PARAMS
+      if (isTemplate) paneParams.template = params.template
+      if (isVersion) paneParams.version = params.version
 
       return {
         panes: panes

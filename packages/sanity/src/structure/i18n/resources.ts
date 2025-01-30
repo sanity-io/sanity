@@ -88,7 +88,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
   'action.unpublish.live-edit.disabled':
     'This document has live edit enabled and cannot be unpublished',
-
+  /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
+  'banners.archived-release.description':
+    "You are viewing a read-only document that was archived as part of <VersionBadge> a release</VersionBadge>. It can't be edited",
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
@@ -97,8 +99,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
   /** The text for publish action for discarding the version */
   'banners.live-edit-draft-banner.discard.tooltip': 'Discard draft',
+  /** The text content for the live edit document when viewed from the draft perspective */
+  'banners.live-edit-draft-banner.draft-perspective':
+    'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, select the published document to edit it.',
   /** The text for publish action for the draft banner */
   'banners.live-edit-draft-banner.publish.tooltip': 'Publish to continue editing',
+
   /** The text content for the live edit document when it's a draft */
   'banners.live-edit-draft-banner.text':
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
@@ -118,6 +124,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
+  /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
+  'banners.published-release.description':
+    "You are viewing a read-only document that was published as part of <VersionBadge> a release</VersionBadge>. It can't be edited",
   /** The text for the reload button */
   'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
   /** The text for the reference change banner if the reason is that the reference has been changed */
@@ -128,6 +137,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the reference change banner if the reason is that the reference has been deleted */
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
+  /** The text that appears for the action button to add the current document to the global release */
+  'banners.release.action.add-to-release': 'Add to release',
+  /** The text for the banner that appears when a document is not in the current global release */
+  'banners.release.not-in-release': 'Not in the <Label>{{title}}</Label> release.',
 
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
@@ -284,6 +297,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
 
+  /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
+  'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
+  /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/
+  'events.open.draft': 'Open <VersionBadge>draft</VersionBadge> document',
+  /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
+  'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
@@ -370,6 +389,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-operation-results.operation-success': 'Successfully performed {{op}} on document',
   /** The text when copy URL operation succeeded  */
   'panes.document-operation-results.operation-success_copy-url': 'Document URL copied to clipboard',
+  /**  */
+  'panes.document-operation-results.operation-success_createVersion':
+    '<Strong>{{title}}</Strong> was added to the release',
   /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',

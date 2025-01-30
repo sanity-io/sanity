@@ -30,6 +30,7 @@ import {
 } from 'sanity'
 
 import {
+  API_VERSION,
   LIVE_QUERY_CACHE_BATCH_SIZE,
   LIVE_QUERY_CACHE_SIZE,
   MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL,
@@ -161,7 +162,7 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
   }, [controller, dataset, onDocumentsOnPage, onLoadersConnection, projectId])
 
   const [cache] = useState(() => new LRUCache<string, SanityDocument>(LIVE_QUERY_CACHE_SIZE))
-  const studioClient = useClient({apiVersion: '2023-10-16'})
+  const studioClient = useClient({apiVersion: API_VERSION})
   const clientConfig = useMemo(() => studioClient.config(), [studioClient])
   const client = useMemo(
     () =>
