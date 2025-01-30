@@ -177,7 +177,7 @@ export default defineType({
       ],
       initialValue: () => ({
         _type: 'reference',
-        _ref: 'dataset/exx11uqh.blog/4203c6bd-98c2-418e-9558-3ed56ebaf1d8',
+        _ref: 'dataset:exx11uqh.blog:4203c6bd-98c2-418e-9558-3ed56ebaf1d8',
         _weak: true,
       }),
     },
