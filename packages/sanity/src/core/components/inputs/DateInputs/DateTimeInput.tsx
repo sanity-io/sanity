@@ -1,12 +1,15 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, LayerProvider, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
+import {isPast} from 'date-fns'
 import {
   type FocusEvent,
   type ForwardedRef,
   forwardRef,
   type KeyboardEvent,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -14,6 +17,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -35,6 +39,7 @@ export interface DateTimeInputProps {
   monthPickerVariant?: CalendarProps['monthPickerVariant']
   padding?: number
   disableInput?: boolean
+  isPastDisabled?: boolean
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -53,16 +58,27 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     constrainSize = true,
     monthPickerVariant,
     padding,
+    disableInput,
+    isPastDisabled,
     ...rest
   } = props
+  const {t} = useTranslation()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
+
+  const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     forwardedRef,
     () => ref.current,
   )
+
+  /**
+   * Setting referenceElement in effect makes sure it's up to date after the initial render
+   * cycle - avoiding referenceElement used byPopover from being out of sync with render state
+   */
+  useEffect(() => setReferenceElement(ref.current), [])
 
   const [isPickerOpen, setPickerOpen] = useState(false)
 
@@ -84,6 +100,11 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
+  const isDateInPastWarningShown = useMemo(
+    () => inputValue && isPastDisabled && isPast(new Date(inputValue)),
+    [inputValue, isPastDisabled],
+  )
+
   const suffix = readOnly ? null : (
     <Flex style={{padding: '5px'}}>
       <Button
@@ -104,7 +125,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     <LazyTextInput
       ref={ref}
       {...rest}
-      readOnly={readOnly}
+      readOnly={disableInput || readOnly}
       value={inputValue}
       onChange={onInputChange}
       suffix={
@@ -116,10 +137,16 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
             <Popover
               constrainSize={constrainSize}
               data-testid="date-input-dialog"
+              referenceElement={referenceElement}
               portal
               content={
                 <Box overflow="auto">
                   <FocusLock onDeactivation={handleDeactivation}>
+                    {isDateInPastWarningShown && (
+                      <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+                        <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
+                      </Card>
+                    )}
                     <DatePicker
                       monthPickerVariant={monthPickerVariant}
                       calendarLabels={calendarLabels}
@@ -127,6 +154,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       timeStep={timeStep}
                       onKeyUp={handleKeyUp}
                       value={value}
+                      isPastDisabled={isPastDisabled}
                       onChange={onChange}
                       padding={padding}
                     />
