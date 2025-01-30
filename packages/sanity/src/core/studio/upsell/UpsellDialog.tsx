@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
 import {type UpsellData} from './types'
-import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
+import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -42,10 +42,11 @@ interface UpsellDialogProps {
   onClose: () => void
   onPrimaryClick: () => void
   onSecondaryClick: () => void
+  interpolation?: InterpolationProp
 }
 
 export function UpsellDialog(props: UpsellDialogProps) {
-  const {data, onClose, onPrimaryClick, onSecondaryClick} = props
+  const {data, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
 
   return (
     <Dialog
@@ -96,7 +97,10 @@ export function UpsellDialog(props: UpsellDialogProps) {
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
       <Box padding={3} marginTop={2}>
         <Stack space={4} paddingBottom={2}>
-          <UpsellDescriptionSerializer blocks={data.descriptionText} />
+          <UpsellDescriptionSerializer
+            blocks={data.descriptionText}
+            interpolation={interpolation}
+          />
         </Stack>
       </Box>
     </Dialog>
