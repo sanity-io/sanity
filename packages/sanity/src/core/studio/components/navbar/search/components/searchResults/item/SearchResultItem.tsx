@@ -7,12 +7,13 @@ import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
+import {unstable_useValuePreview as useValuePreview} from '../../../../../../../preview/useValuePreview'
 import {useDocumentPresence} from '../../../../../../../store'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 
-export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type'>) => void
+export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => void
 
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   disableIntentLink?: boolean
@@ -52,15 +53,21 @@ export function SearchResultItem({
     id.includes(getPublishedId(documentId)),
   )
 
+  const preview = useValuePreview({
+    enabled: true,
+    schemaType: type,
+    value: {_id: documentId},
+  })
+
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      onItemSelect?.({_id: documentId, _type: documentType})
+      onItemSelect?.({_id: documentId, _type: documentType, title: preview.value?.title})
       if (!disableIntentLink) {
         onIntentClick(e)
       }
       onClick?.(e)
     },
-    [onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
+    [preview, onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
   )
 
   if (!type) return null
