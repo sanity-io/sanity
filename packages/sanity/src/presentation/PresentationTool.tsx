@@ -33,7 +33,7 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'
 
-import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, LIVE_DRAFT_EVENTS_ENABLED} from './constants'
+import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {debounce} from './lib/debounce'
 import {SharedStateProvider} from './overlays/SharedStateProvider'
@@ -70,7 +70,6 @@ import {usePopups} from './usePopups'
 import {usePreviewUrl} from './usePreviewUrl'
 import {useStatus} from './useStatus'
 
-const LoaderQueries = lazy(() => import('./loader/LoaderQueries'))
 const LiveQueries = lazy(() => import('./loader/LiveQueries'))
 const PostMessageDocuments = lazy(() => import('./overlays/PostMessageDocuments'))
 const PostMessageRefreshMutations = lazy(() => import('./editor/PostMessageRefreshMutations'))
@@ -582,25 +581,15 @@ export default function PresentationTool(props: {
         </PresentationNavigateProvider>
       </PresentationProvider>
       <Suspense>
-        {controller &&
-          (LIVE_DRAFT_EVENTS_ENABLED ? (
-            <LiveQueries
-              controller={controller}
-              perspective={perspective}
-              liveDocument={displayedDocument}
-              onDocumentsOnPage={setDocumentsOnPage}
-              onLoadersConnection={setLoadersConnection}
-            />
-          ) : (
-            <LoaderQueries
-              controller={controller}
-              perspective={perspective}
-              liveDocument={displayedDocument}
-              onDocumentsOnPage={setDocumentsOnPage}
-              onLoadersConnection={setLoadersConnection}
-              documentsOnPage={documentsOnPage}
-            />
-          ))}
+        {controller && (
+          <LiveQueries
+            controller={controller}
+            perspective={perspective}
+            liveDocument={displayedDocument}
+            onDocumentsOnPage={setDocumentsOnPage}
+            onLoadersConnection={setLoadersConnection}
+          />
+        )}
         {visualEditingComlink && params.id && params.type && (
           <PostMessageRefreshMutations
             comlink={visualEditingComlink}
