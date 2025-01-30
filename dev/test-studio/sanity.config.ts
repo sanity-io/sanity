@@ -45,6 +45,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {inlineDocumentEditingPlugin} from './plugins/inline-doc-editing'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
@@ -150,6 +151,7 @@ const sharedSettings = definePlugin({
     tsdoc(),
     media(),
     markdownSchema(),
+    inlineDocumentEditingPlugin(),
   ],
 })
 

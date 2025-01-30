@@ -460,6 +460,7 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
       S.divider(),
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
       S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),
+      // S.documentTypeListItem('testInline').icon(BinaryDocumentIcon),
     ])
 }
 
