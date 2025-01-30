@@ -14,7 +14,6 @@ import {
   type Path,
   set,
   setAtPath,
-  setIfMissing,
   type StateTree,
   toMutationPatches,
   useConnectionState,
@@ -126,45 +125,32 @@ export const AssetLibraryAssetInput = (
     [],
   )
 
-  useEffect(() => {
-    if (isPublished && !isReferenced) {
-      // eslint-disable-next-line no-console
-      console.log(`Writing host document reference to usage document ${documentId}`)
-      onChange([setIfMissing({_type: 'reference', _ref: documentId}, ['asset'])])
-      setIsReferenced(true)
-    }
-  }, [documentId, isPublished, isReferenced, onChange])
-
+  // The usage document must be published before we can reference it properly
+  // TODO: can this be done in a more elegant way? For example using strengthenOnPublish?
   useEffect(() => {
     if (editState.published) {
       setIsPublished(true)
-      // eslint-disable-next-line no-console
-      console.log(`Usage document ${documentId} is published`)
-      if (!changed) {
-        // Touch main document so that it can be published if there are no other changes
-        // onChange([set({_type: 'reference', _ref: documentId}, ['asset'])])
-        console.log('must change main document')
-      }
+      return
     }
-    if (editState.draft && !isReferenced && !isPublished) {
+    if (editState.draft && !isPublished) {
       // eslint-disable-next-line no-console
       console.log(`Publishing usage document ${documentId}`)
       publish.execute()
     }
-  }, [
-    changed,
-    documentId,
-    editState.draft,
-    editState.published,
-    isPublished,
-    isReferenced,
-    onChange,
-    publish,
-  ])
+  }, [documentId, editState.draft, editState.published, isPublished, publish])
 
-  const handleChange = useCallback(async (event: PatchEvent) => {
-    patchRef.current(event)
-  }, [])
+  const handleChange = useCallback(
+    async (event: PatchEvent) => {
+      patchRef.current(event)
+      if (!changed) {
+        // Touch main document so that it can be published if there are no other changes to it
+        // eslint-disable-next-line no-console
+        console.log('Touching main document')
+        onChange([set({_type: 'reference', _ref: documentId}, ['asset'])])
+      }
+    },
+    [changed, documentId, onChange],
+  )
 
   const [patchChannel] = useState(() => createPatchChannel())
   if (formState === null || !ready) {
