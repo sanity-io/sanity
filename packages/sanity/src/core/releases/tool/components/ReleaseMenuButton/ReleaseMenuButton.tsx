@@ -6,7 +6,9 @@ import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
+import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
@@ -34,6 +36,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   const handleDelete = useCallback(async () => {
@@ -43,6 +46,10 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
     router.navigate({})
   }, [deleteRelease, release._id, router])
 
+  const handleUnarchive = useCallback(async () => {
+    return guardWithReleaseLimitUpsell(() => unarchive(release._id), true)
+  }, [guardWithReleaseLimitUpsell, release._id, unarchive])
+
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
       if (releaseMenuDisabled) return
@@ -50,7 +57,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       const actionLookup = {
         delete: handleDelete,
         archive,
-        unarchive,
+        unarchive: handleUnarchive,
         unschedule,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
@@ -58,6 +65,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       try {
         setIsPerformingOperation(true)
         await actionLookup[action](release._id)
+
         telemetry.log(actionValues.telemetry)
         toast.push({
           closable: true,
@@ -73,6 +81,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
           ),
         })
       } catch (actionError) {
+        if (isReleaseLimitError(actionError)) return
+
         toast.push({
           status: 'error',
           title: (
@@ -95,7 +105,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       releaseMenuDisabled,
       handleDelete,
       archive,
-      unarchive,
+      handleUnarchive,
       unschedule,
       release._id,
       telemetry,
