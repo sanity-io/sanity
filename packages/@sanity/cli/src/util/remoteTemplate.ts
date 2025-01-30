@@ -229,7 +229,7 @@ export async function applyEnvVariables(
 
   try {
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    const {projectId, dataset, readToken = ''} = envData
+    const {projectId, dataset, readToken = '', writeToken = ''} = envData
 
     const findAndReplaceVariable = (
       content: string,
@@ -255,6 +255,7 @@ export async function applyEnvVariables(
       {pattern: ENV_VAR.PROJECT_ID, value: projectId},
       {pattern: ENV_VAR.DATASET, value: dataset},
       {pattern: ENV_VAR.READ_TOKEN, value: readToken},
+      {pattern: ENV_VAR.WRITE_TOKEN, value: writeToken},
     ]
     const useQuotes = templateContent.includes('="')
 
