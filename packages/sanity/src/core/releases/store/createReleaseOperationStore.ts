@@ -288,7 +288,6 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
   return async function requestAction(
     client: SanityClient,
     actions: ReleaseAction | ReleaseAction[],
-    dryRun?: boolean,
   ): Promise<void> {
     const {dataset} = client.config()
     try {
@@ -297,7 +296,6 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
         method: 'POST',
         body: {
           actions: Array.isArray(actions) ? actions : [actions],
-          dryRun,
         },
       })
     } catch (e) {
