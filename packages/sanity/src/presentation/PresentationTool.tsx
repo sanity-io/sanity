@@ -25,6 +25,7 @@ import {
   type SanityDocument,
   type Tool,
   useDataset,
+  usePerspective,
   useProjectId,
   useUnique,
   useWorkspace,
@@ -52,7 +53,6 @@ import {
   presentationReducer,
   presentationReducerInit,
 } from './reducers/presentationReducer'
-import {RevisionSwitcher} from './RevisionSwitcher'
 import {
   type FrameState,
   type PresentationNavigate,
@@ -105,11 +105,15 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
+  const {perspectiveStack, selectedPerspectiveName = 'previewDrafts'} = usePerspective()
+  const perspective = (
+    selectedPerspectiveName.startsWith('r') ? perspectiveStack : selectedPerspectiveName
+  ) as PresentationPerspective
 
   const initialPreviewUrl = usePreviewUrl(
     _previewUrl || '/',
     name,
-    routerSearchParams.perspective === 'published' ? 'published' : 'previewDrafts',
+    perspective,
     routerSearchParams.preview || null,
     canCreateUrlPreviewSecrets,
   )
@@ -178,11 +182,6 @@ export default function PresentationTool(props: {
   const navigate = useMemo(() => debounce<PresentationNavigate>(_navigate, 50), [_navigate])
 
   const [state, dispatch] = useReducer(presentationReducer, {}, presentationReducerInit)
-
-  const perspective = useMemo(
-    () => (params.perspective ? 'published' : 'previewDrafts'),
-    [params.perspective],
-  )
 
   const viewport = useMemo(() => (params.viewport ? 'mobile' : 'desktop'), [params.viewport])
 
@@ -307,7 +306,6 @@ export default function PresentationTool(props: {
 
     const stop = comlink.start()
     setVisualEditingComlink(comlink)
-
     return () => {
       stop()
       setVisualEditingComlink(null)
@@ -435,15 +433,6 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  // Handle edge case where the `&rev=` parameter gets "stuck"
-  const idRef = useRef<string | undefined>(params.id)
-  useEffect(() => {
-    if (params.rev && idRef.current && params.id !== idRef.current) {
-      navigate({}, {rev: undefined})
-    }
-    idRef.current = params.id
-  })
-
   const refreshRef = useRef<number>(undefined)
   const handleRefresh = useCallback(
     (fallback: () => void) => {
@@ -497,16 +486,6 @@ export default function PresentationTool(props: {
     [navigate],
   )
 
-  const setPerspective = useCallback(
-    (next: PresentationPerspective) => {
-      // Omit the perspective URL search param if the next perspective state is
-      // the default: 'previewDrafts'
-      const perspective = next === 'previewDrafts' ? undefined : next
-      navigate({}, {perspective})
-    },
-    [navigate],
-  )
-
   return (
     <>
       <PresentationProvider
@@ -550,7 +529,6 @@ export default function PresentationTool(props: {
                           previewUrl={params.preview}
                           perspective={perspective}
                           ref={iframeRef}
-                          setPerspective={setPerspective}
                           setViewport={setViewport}
                           targetOrigin={targetOrigin}
                           toggleNavigator={toggleNavigator}
@@ -615,15 +593,6 @@ export default function PresentationTool(props: {
           <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
         )}
         {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}
-        {params.id && params.type && (
-          <RevisionSwitcher
-            documentId={params.id}
-            documentRevision={params.rev}
-            documentType={params.type}
-            navigate={navigate}
-            perspective={perspective}
-          />
-        )}
       </Suspense>
     </>
   )

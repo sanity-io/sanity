@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
@@ -6,7 +7,7 @@ import {CommentsContext} from 'sanity/_singletons'
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
 import {useCurrentUser} from '../../../store'
 import {useAddonDataset, useWorkspace} from '../../../studio'
-import {getPublishedId} from '../../../util'
+import {getPublishedId, getVersionId} from '../../../util'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
@@ -43,6 +44,7 @@ export interface CommentsProviderProps {
   children: ReactNode
   documentId: string
   documentType: string
+  releaseId?: ReleaseId
   type: CommentsType
   sortOrder: 'asc' | 'desc'
 
@@ -80,21 +82,24 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
+    releaseId,
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
-  const editState = useEditState(publishedId, documentType, 'low')
+  const versionOrPublishedId = releaseId ? getVersionId(documentId, releaseId) : publishedId
+  const editState = useEditState(publishedId, documentType, 'low', releaseId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   const documentValue = useMemo(() => {
+    if (releaseId) return editState.version
     return editState.draft || editState.published
-  }, [editState.draft, editState.published])
+  }, [editState.version, editState.draft, editState.published, releaseId])
 
   const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
@@ -115,7 +120,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     error,
     loading,
   } = useCommentsStore({
-    documentId: publishedId,
+    documentId,
+    releaseId,
     client,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
@@ -232,7 +238,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         client,
         currentUser,
         dataset,
-        documentId: publishedId,
+        documentId: versionOrPublishedId,
         documentRevisionId,
         documentType,
         getComment,
@@ -260,7 +266,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         client,
         currentUser,
         dataset,
-        publishedId,
+        versionOrPublishedId,
         documentRevisionId,
         documentType,
         getComment,
@@ -280,7 +286,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      documentId,
+      documentId: versionOrPublishedId,
       documentType,
 
       isCreatingDataset,
@@ -316,7 +322,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       },
     }),
     [
-      documentId,
+      versionOrPublishedId,
       documentType,
       isCreatingDataset,
       status,

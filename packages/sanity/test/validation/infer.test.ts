@@ -146,7 +146,7 @@ describe('schema validation inference', () => {
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
-        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && slugField.current == $slug][0]._id)',
+        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && !(_id in path("versions.**.mockDocument")) && slugField.current == $slug][0]._id)',
         {
           docType: 'documentWithSlug',
           draft: 'drafts.mockDocument',
@@ -185,7 +185,7 @@ describe('schema validation inference', () => {
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
-        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && slugField.current == $slug][0]._id)',
+        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && !(_id in path("versions.**.mockDocument")) && slugField.current == $slug][0]._id)',
         {
           docType: 'documentWithSlug',
           draft: 'drafts.mockDocument',

@@ -225,6 +225,11 @@ export default defineConfig([
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+    beta: {
+      eventsAPI: {
+        releases: true,
+      },
+    },
   },
   {
     name: 'listener-events',

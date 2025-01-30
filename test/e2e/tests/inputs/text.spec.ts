@@ -85,21 +85,22 @@ test.describe('inputs: text', () => {
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
     await titleInput.fill('Title A')
-
-    // generally waiting for timeouts is not a good idea but for this specific instance
-    // since we are using `.fill` and `.click` they can cause the draft creation and publish to happen at the same exact time.
-    // We are waiting for 1s to make sure the draft actually gets created and click action is not too eager
-    await page.waitForTimeout(1000)
+    // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
+    await expect(paneFooter).toHaveText(/Created just now/i)
+    await titleInput.fill('Title A updated')
+    // A subsequent edit will show that the document was edited just now.
+    await expect(paneFooter).toHaveText(/Edited just now/i)
 
     // Wait for the document to be published.
     publishButton.click()
-    expect(await paneFooter.textContent()).toMatch(/published/i)
+    await expect(paneFooter).toHaveText(/published/i)
 
     // Change the title.
     await titleInput.fill('Title B')
+    await expect(paneFooter).toHaveText(/Created just now/i)
 
     // Wait for the document to be published.
     publishButton.click()
-    expect(await paneFooter.textContent()).toMatch(/published/i)
+    await expect(paneFooter).toHaveText(/published/i)
   })
 })

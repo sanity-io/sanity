@@ -8,6 +8,7 @@ import {
   type ObjectSchemaType,
   Translate,
   useDocumentOperation,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -30,6 +31,8 @@ export function DraftLiveEditBanner({
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
+  const {selectedPerspectiveName} = usePerspective()
+
   const telemetry = useTelemetry()
 
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
@@ -53,10 +56,10 @@ export function DraftLiveEditBanner({
     }
   })
 
-  if (displayed && displayed._id && !isDraftId(displayed._id)) {
+  const hasDraft = displayed && displayed._id && isDraftId(displayed._id)
+  if (selectedPerspectiveName && !hasDraft) {
     return null
   }
-
   return (
     <Banner
       content={
@@ -64,23 +67,31 @@ export function DraftLiveEditBanner({
           <Text size={1} weight="medium">
             <Translate
               t={t}
-              i18nKey={'banners.live-edit-draft-banner.text'}
+              i18nKey={
+                hasDraft
+                  ? 'banners.live-edit-draft-banner.text'
+                  : 'banners.live-edit-draft-banner.draft-perspective'
+              }
               values={{schemaType: schemaType.title}}
             />
           </Text>
-          <Button
-            onClick={handlePublish}
-            text={t('action.publish.live-edit.label')}
-            tooltipProps={{content: t('banners.live-edit-draft-banner.publish.tooltip')}}
-            loading={isPublishing}
-          />
+          {hasDraft && (
+            <>
+              <Button
+                onClick={handlePublish}
+                text={t('action.publish.live-edit.label')}
+                tooltipProps={{content: t('banners.live-edit-draft-banner.publish.tooltip')}}
+                loading={isPublishing}
+              />
 
-          <Button
-            onClick={handleDiscard}
-            text={t('banners.live-edit-draft-banner.discard.tooltip')}
-            tooltipProps={{content: t('banners.live-edit-draft-banner.discard.tooltip')}}
-            loading={isDiscarding}
-          />
+              <Button
+                onClick={handleDiscard}
+                text={t('banners.live-edit-draft-banner.discard.tooltip')}
+                tooltipProps={{content: t('banners.live-edit-draft-banner.discard.tooltip')}}
+                loading={isDiscarding}
+              />
+            </>
+          )}
         </Flex>
       }
       data-testid="live-edit-type-banner"

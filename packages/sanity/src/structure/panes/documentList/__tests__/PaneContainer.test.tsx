@@ -23,13 +23,20 @@ vi.mock('../sheetList/useDocumentSheetList', () => ({
   useDocumentSheetList: vi.fn().mockReturnValue({data: [], isLoading: false}),
 }))
 
-vi.mock('sanity', async () => {
-  const actual = await vi.importActual('sanity')
-  return {
-    ...actual,
-    useSearchState: vi.fn(),
-  }
-})
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useSearchState: vi.fn(),
+  useActiveReleases: vi.fn(() => ({})),
+  usePerspective: vi.fn(() => ({perspective: undefined})),
+}))
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useRouter: vi.fn().mockReturnValue({
+    stickyParams: {},
+    state: {},
+    navigate: vi.fn(),
+  }),
+}))
 
 const mockUseSearchState = useSearchState as Mock
 

@@ -425,7 +425,7 @@ importers:
         specifier: ^3.0.0
         version: 3.2.0(react@19.0.0)
       '@sanity/assist':
-        specifier: ^3.0.2
+        specifier: ^3.1.0
         version: 3.1.0(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0-rc.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.14(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/client':
         specifier: ^6.27.2
@@ -470,7 +470,7 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(@sanity/client@6.27.2(debug@4.4.0))
       '@sanity/react-loader':
-        specifier: ^1.8.3
+        specifier: ^1.10.35
         version: 1.10.40(@sanity/types@packages+@sanity+types)(react@19.0.0)
       '@sanity/tsdoc':
         specifier: 1.0.169
@@ -1261,6 +1261,9 @@ importers:
       react-compiler-runtime:
         specifier: 19.0.0-beta-27714ef-20250124
         version: 19.0.0-beta-27714ef-20250124(react@18.3.1)
+      react-fast-compare:
+        specifier: ^3.2.2
+        version: 3.2.2
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*

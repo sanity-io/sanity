@@ -2,7 +2,7 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {Flex, Stack} from '@sanity/ui'
 import {TextWithTone, useTranslation} from 'sanity'
 
-export function TimelineError() {
+export function TimelineError({versionError}: {versionError?: boolean}) {
   const {t} = useTranslation('studio')
 
   return (
@@ -12,10 +12,14 @@ export function TimelineError() {
       </TextWithTone>
       <Stack space={4}>
         <TextWithTone size={1} tone="critical" weight="medium">
-          {t('timeline.error.load-document-changes-title')}
+          {versionError
+            ? t('timeline.error.load-document-changes-version-title')
+            : t('timeline.error.load-document-changes-title')}
         </TextWithTone>
         <TextWithTone size={1} tone="critical">
-          {t('timeline.error.load-document-changes-description')}
+          {versionError
+            ? t('timeline.error.load-document-changes-version-description')
+            : t('timeline.error.load-document-changes-description')}
         </TextWithTone>
       </Stack>
     </Flex>

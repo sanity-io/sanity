@@ -8,6 +8,7 @@ import {
   SourceProvider,
   Translate,
   useDocumentType,
+  usePerspective,
   useSource,
   useTemplatePermissions,
   useTemplates,
@@ -23,6 +24,7 @@ import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
+import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -44,10 +46,11 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   const {resolveNewDocumentOptions} = useSource().document
+  const {selectedPerspectiveName} = usePerspective()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
-
+  useResetHistoryParams()
   const DocumentLayout = useDocumentLayoutComponent()
 
   // The templates that should be creatable from inside this document pane.
@@ -130,7 +133,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}`}
+      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}

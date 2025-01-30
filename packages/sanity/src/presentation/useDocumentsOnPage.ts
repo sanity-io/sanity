@@ -1,4 +1,4 @@
-import {type ClientPerspective} from '@sanity/client'
+import {validateApiPerspective} from '@sanity/client'
 import isEqual from 'fast-deep-equal'
 import {type MutableRefObject, useCallback, useMemo, useRef, useState} from 'react'
 
@@ -15,6 +15,10 @@ type KeyedDocumentCache = Record<string, DocumentCache>
 
 const warnOnceAboutCrossDatasetReference = defineWarnOnce()
 
+/**
+ * @TODO should be refactored to an lru-cache that is keyed by the perspective, which could be an array (if it is, it should use consistent sorting),
+ *       and the url path (optionally the origin too), so that swapping between perspectives and urls is fast.
+ */
 export function useDocumentsOnPage(
   perspective: PresentationPerspective,
   frameStateRef: MutableRefObject<FrameState>,
@@ -22,9 +26,7 @@ export function useDocumentsOnPage(
   DocumentOnPage[],
   (key: string, perspective: PresentationPerspective, state: DocumentOnPage[]) => void,
 ] {
-  if (perspective !== 'published' && perspective !== 'previewDrafts') {
-    throw new Error(`Invalid perspective: ${perspective}`)
-  }
+  validateApiPerspective(perspective)
 
   const [published, setPublished] = useState<KeyedDocumentCache>({})
   const [previewDrafts, setPreviewDrafts] = useState<KeyedDocumentCache>({})
@@ -35,7 +37,7 @@ export function useDocumentsOnPage(
 
   const setDocumentsOnPage = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    (key: string, perspective: ClientPerspective, sourceDocuments: DocumentOnPage[] = []) => {
+    (key: string, perspective: PresentationPerspective, sourceDocuments: DocumentOnPage[] = []) => {
       const documents = sourceDocuments.filter((sourceDocument) => {
         if ('_projectId' in sourceDocument && sourceDocument._projectId) {
           // eslint-disable-next-line no-warning-comments

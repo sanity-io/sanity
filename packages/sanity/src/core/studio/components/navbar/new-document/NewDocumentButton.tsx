@@ -16,6 +16,7 @@ import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
+import {useIsReleaseActive} from '../../../../releases/hooks/useIsReleaseActive'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
@@ -46,6 +47,7 @@ interface NewDocumentButtonProps {
 export function NewDocumentButton(props: NewDocumentButtonProps) {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
+  const isReleaseActive = useIsReleaseActive()
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -60,7 +62,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const schema = useSchema()
 
   const hasNewDocumentOptions = options.length > 0
-  const disabled = !canCreateDocument || !hasNewDocumentOptions
+  const disabled = !canCreateDocument || !hasNewDocumentOptions || !isReleaseActive
   const placeholder = t('new-document.filter-placeholder')
   const title = t('new-document.title')
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
@@ -163,17 +165,20 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       'data-testid': 'new-document-button',
       'disabled': disabled || loading,
       'icon': AddIcon,
-      'text': t('new-document.button'),
-      'mode': 'ghost',
+      'text': '',
+      'mode': 'bleed',
       'onClick': handleToggleOpen,
       'ref': setButtonElement,
       'selected': open,
     }),
-    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel, t],
+    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel],
   )
 
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
+    if (!isReleaseActive) {
+      return <Text size={1}>{t('new-document.disabled-release.tooltip')}</Text>
+    }
     if (!hasNewDocumentOptions) {
       return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
     }
@@ -185,7 +190,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     return (
       <InsufficientPermissionsMessage currentUser={currentUser} context="create-any-document" />
     )
-  }, [canCreateDocument, currentUser, hasNewDocumentOptions, t])
+  }, [canCreateDocument, currentUser, hasNewDocumentOptions, isReleaseActive, t])
 
   // Shared tooltip props for the popover and dialog
   const sharedTooltipProps: TooltipProps = useMemo(

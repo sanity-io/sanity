@@ -26,6 +26,7 @@ import {
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
@@ -645,6 +646,10 @@ function resolveSource({
     },
 
     beta: {
+      eventsAPI: {
+        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+        releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+      },
       treeArrayEditing: {
         // This beta feature is no longer available.
         enabled: false,

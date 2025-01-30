@@ -6,6 +6,7 @@ import {defer, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
+import {getVersionFromId} from '../../../util'
 import {debug} from './debug'
 import {
   type IdPair,
@@ -19,6 +20,7 @@ import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentialize
 interface Snapshots {
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
 }
 
 /** @internal */
@@ -74,15 +76,19 @@ export function getPairListener(
   idPair: IdPair,
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
-  const {publishedId, draftId} = idPair
-
+  const {publishedId, draftId, versionId} = idPair
+  if (
+    (idPair.versionId && getVersionFromId(idPair.versionId) === 'published') ||
+    (idPair.versionId && getVersionFromId(idPair.versionId) === 'drafts')
+  ) {
+    throw new Error('VersionId cannot be "published" or "drafts"')
+  }
   const sharedEvents = defer(() =>
     client.observable
       .listen(
-        `*[_id == $publishedId || _id == $draftId]`,
+        `*[_id in $ids]`,
         {
-          publishedId,
-          draftId,
+          ids: [publishedId, draftId, versionId].filter((id) => typeof id !== 'undefined'),
         },
         {
           includeResult: false,
@@ -103,9 +109,10 @@ export function getPairListener(
     concatMap((event) => {
       return event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
-            mergeMap(({draft, published}) => [
+            mergeMap(({draft, published, version}) => [
               createSnapshotEvent(draftId, draft),
               createSnapshotEvent(publishedId, published),
+              ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
             ]),
           )
         : of(event)
@@ -168,7 +175,16 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
-  return merge(draftEvents$, publishedEvents$).pipe(
+  const versionEvents$ = pairEvents$.pipe(
+    filter((event) =>
+      event.type === 'mutation' || event.type === 'snapshot'
+        ? event.documentId === versionId
+        : true,
+    ),
+    sequentializeListenerEvents(),
+  )
+
+  return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
         debug('Recovering from OutOfSyncError: %s', OutOfSyncError.name)
@@ -186,11 +202,15 @@ export function getPairListener(
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     return client.observable
-      .getDocuments<SanityDocument>([draftId, publishedId], {tag: 'document.snapshots'})
+      .getDocuments<SanityDocument>(
+        [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
+        {tag: 'document.snapshots'},
+      )
       .pipe(
-        map(([draft, published]) => ({
+        map(([published, draft, version]) => ({
           draft,
           published,
+          version,
         })),
       )
   }

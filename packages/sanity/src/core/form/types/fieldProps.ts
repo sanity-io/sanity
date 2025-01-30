@@ -60,6 +60,7 @@ export interface BaseFieldProps {
   index: number
   changed: boolean
   children: ReactNode
+  version?: string
   renderDefault: (props: FieldProps) => React.JSX.Element
 }
 
