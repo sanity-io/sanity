@@ -28,17 +28,15 @@ import {
   getPreviewValueWithFallback,
   prepareForPreview,
 } from '../../../preview'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type ReleaseDocument,
-  useDocumentPreviewStore,
-} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
