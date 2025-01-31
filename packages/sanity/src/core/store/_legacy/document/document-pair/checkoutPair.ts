@@ -16,6 +16,7 @@ import {
 import {getPairListener, type ListenerEvent, type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
+import {operationsApiClient} from './utils/operationsApiClient'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -146,7 +147,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
 
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
-    return commitMutations(client, mutationParams)
+    return commitMutations(client, idPair, mutationParams)
   }
 
   return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
@@ -155,9 +156,9 @@ function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mut
   })
 }
 
-function commitMutations(client: SanityClient, mutationParams: Mutation['params']) {
+function commitMutations(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   const {resultRev, ...mutation} = mutationParams
-  return client.dataRequest('mutate', mutation, {
+  return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
     tag: 'document.commit',
@@ -176,7 +177,7 @@ function submitCommitRequest(
   return from(
     serverActionsEnabled
       ? commitActions(client, idPair, request.mutation.params)
-      : commitMutations(client, request.mutation.params),
+      : commitMutations(client, idPair, request.mutation.params),
   ).pipe(
     tap({
       error: (error) => {
