@@ -1,5 +1,6 @@
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useState} from 'react'
+import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
@@ -18,6 +19,7 @@ export const DiscardVersionAction = (
 ): DocumentActionDescription | null => {
   const {id, type, release, version} = props
   const currentUser = useCurrentUser()
+  const {t} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -56,11 +58,9 @@ export const DiscardVersionAction = (
         />
       ),
     },
-    /** @todo translate */
-    label: 'Discard version',
+    label: t('release.action.discard-version'),
     icon: TrashIcon,
     onHandle: handleDialogOpen,
-    /** @todo translate */
-    title: 'Discard version',
+    title: t('release.action.discard-version'),
   }
 }
