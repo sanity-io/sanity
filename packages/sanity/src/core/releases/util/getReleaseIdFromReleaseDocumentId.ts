@@ -15,8 +15,5 @@ export function getReleaseIdFromReleaseDocumentId(releaseDocumentId: string): Re
     )
   }
   const releaseId = releaseDocumentId.slice(PATH_ID_PREFIX.length)
-  if (!releaseId.startsWith('r')) {
-    throw new Error(`Release id was ${releaseId} but should start with "r"`)
-  }
   return releaseId as ReleaseId
 }
