@@ -47,7 +47,7 @@ export function AddToReleaseBanner({
               t={t}
               values={{
                 title:
-                  currentRelease.metadata.title || tCore('release.placeholder-untitled-release'),
+                  currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
               }}
               components={{
                 Label: ({children}) => {
