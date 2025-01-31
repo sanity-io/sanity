@@ -21,14 +21,21 @@ const INITIAL_VALUE = {loading: true, documents: []}
 export function useLiveDocumentSet(
   groqFilter: string,
   params?: QueryParams,
+  options: {
+    // how to insert new document ids. Defaults to `sorted`
+    insert?: 'sorted' | 'prepend' | 'append'
+  } = {},
+  apiVersion?: string,
 ): {loading: boolean; documents: SanityDocument[]} {
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(() => {
-    return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter, params).pipe(
-      map((state) => (state.documentIds || []) as string[]),
-      mergeMapArray((id) => documentPreviewStore.unstable_observeDocument(id)),
-      map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
-    )
-  }, [documentPreviewStore, groqFilter, params])
+    return documentPreviewStore
+      .unstable_observeDocumentIdSet(groqFilter, params, options, apiVersion)
+      .pipe(
+        map((state) => (state.documentIds || []) as string[]),
+        mergeMapArray((id) => documentPreviewStore.unstable_observeDocument(id)),
+        map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
+      )
+  }, [documentPreviewStore, groqFilter, params, options, apiVersion])
   return useObservable(observable, INITIAL_VALUE)
 }

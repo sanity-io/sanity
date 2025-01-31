@@ -28,11 +28,12 @@ export function useLiveDocumentIdSet(
     // how to insert new document ids. Defaults to `sorted`
     insert?: 'sorted' | 'prepend' | 'append'
   } = {},
+  apiVersion?: string,
 ) {
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(
     () =>
-      documentPreviewStore.unstable_observeDocumentIdSet(filter, params, options).pipe(
+      documentPreviewStore.unstable_observeDocumentIdSet(filter, params, options, apiVersion).pipe(
         scan(
           (currentState: LiveDocumentSetState, nextState) => ({
             ...currentState,
@@ -41,7 +42,7 @@ export function useLiveDocumentIdSet(
           INITIAL_STATE,
         ),
       ),
-    [documentPreviewStore, filter, params, options],
+    [documentPreviewStore, filter, params, options, apiVersion],
   )
   return useObservable(observable, INITIAL_STATE)
 }

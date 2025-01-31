@@ -15,6 +15,7 @@ import {
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type ReleasesReducerState} from '../../../store/reducer'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {getReleaseActivityEvents} from './getReleaseActivityEvents'
 import {getReleaseEditEvents} from './getReleaseEditEvents'
 import {isCreateReleaseEvent, isEventsAPIEvent, isTranslogEvent, type ReleaseEvent} from './types'
@@ -70,13 +71,20 @@ export function getReleaseEvents({
   )
 
   const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
-  const documentsCount$ = documentPreviewStore.unstable_observeDocumentIdSet(groqFilter).pipe(
-    filter(({status}) => status === 'connected'),
-    map(({documentIds}) => documentIds.length),
-    distinctUntilChanged(),
-    // Emit only when count changes, after first non null value.
-    skip(1),
-  )
+  const documentsCount$ = documentPreviewStore
+    .unstable_observeDocumentIdSet(
+      groqFilter,
+      undefined,
+      undefined,
+      RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    )
+    .pipe(
+      filter(({status}) => status === 'connected'),
+      map(({documentIds}) => documentIds.length),
+      distinctUntilChanged(),
+      // Emit only when count changes, after first non null value.
+      skip(1),
+    )
 
   const sideEffects$ = merge(releaseRev$, documentsCount$).pipe(
     tap(() => {

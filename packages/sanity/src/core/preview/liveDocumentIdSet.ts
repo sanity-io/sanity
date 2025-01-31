@@ -3,6 +3,9 @@ import {sortedIndex} from 'lodash'
 import {of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
 
+import {type SourceClientOptions} from '../config/types'
+import {versionedClient} from '../studioClient'
+
 export type DocumentIdSetObserverState = {
   status: 'reconnecting' | 'connected'
   documentIds: string[]
@@ -17,13 +20,14 @@ export function createDocumentIdSetObserver(client: SanityClient) {
     queryFilter: string,
     params?: QueryParams,
     options: LiveDocumentIdSetOptions = {},
+    apiVersion?: SourceClientOptions['apiVersion'],
   ) {
     const {insert: insertOption = 'sorted'} = options
 
     const query = `*[${queryFilter}]._id`
     function fetchFilter() {
-      return client.observable
-        .fetch(query, params, {
+      return versionedClient(client, apiVersion)
+        .observable.fetch(query, params, {
           tag: 'preview.observe-document-set.fetch',
         })
         .pipe(
@@ -36,8 +40,8 @@ export function createDocumentIdSetObserver(client: SanityClient) {
           }),
         )
     }
-    return client.observable
-      .listen(query, params, {
+    return versionedClient(client, apiVersion)
+      .observable.listen(query, params, {
         visibility: 'transaction',
         events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,
