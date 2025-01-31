@@ -105,9 +105,13 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
-  const {perspectiveStack, selectedPerspectiveName = 'previewDrafts'} = usePerspective()
+  const {
+    perspectiveStack,
+    selectedPerspectiveName = 'previewDrafts',
+    selectedReleaseId,
+  } = usePerspective()
   const perspective = (
-    selectedPerspectiveName.startsWith('r') ? perspectiveStack : selectedPerspectiveName
+    selectedReleaseId ? perspectiveStack : selectedPerspectiveName
   ) as PresentationPerspective
 
   const initialPreviewUrl = usePreviewUrl(
