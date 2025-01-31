@@ -46,8 +46,8 @@ export function getDefaultPluginsOptions(
       ...workspace.scheduledPublishing,
     },
     releases: {
-      enabled: true,
       ...workspace.releases,
+      enabled: workspace.releases?.enabled ?? false,
     },
   }
 }
