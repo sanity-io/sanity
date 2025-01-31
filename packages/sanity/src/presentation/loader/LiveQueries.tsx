@@ -19,7 +19,15 @@ import {
 } from '@sanity/presentation-comlink'
 import isEqual from 'fast-deep-equal'
 import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
-import {type SanityClient, type SanityDocument, useClient, useDataset, useProjectId} from 'sanity'
+import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+  type SanityClient,
+  type SanityDocument,
+  useClient,
+  useDataset,
+  useProjectId,
+} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
@@ -104,7 +112,11 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
     return () => undefined
   }, [controller, dataset, liveQueriesDispatch, onDocumentsOnPage, onLoadersConnection, projectId])
 
-  const studioClient = useClient({apiVersion: API_VERSION})
+  const studioClient = useClient(
+    isReleasePerspective(activePerspective)
+      ? RELEASES_STUDIO_CLIENT_OPTIONS
+      : {apiVersion: API_VERSION},
+  )
   const client = useMemo(
     () =>
       studioClient.withConfig({

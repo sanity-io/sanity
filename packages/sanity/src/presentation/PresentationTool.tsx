@@ -587,7 +587,9 @@ export default function PresentationTool(props: {
             refs={documentsOnPage}
           />
         )}
-        {visualEditingComlink && <PostMessageDocuments comlink={visualEditingComlink} />}
+        {visualEditingComlink && (
+          <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
+        )}
         {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
         {visualEditingComlink && (
           <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />

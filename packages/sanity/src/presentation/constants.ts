@@ -1,5 +1,5 @@
 import {ComposeIcon} from '@sanity/icons'
-// import {apiVersion} from '@sanity/preview-url-secret/constants'
+import {apiVersion} from '@sanity/preview-url-secret/constants'
 
 export const DEFAULT_TOOL_ICON = ComposeIcon
 export const DEFAULT_TOOL_NAME = 'presentation'
@@ -11,9 +11,7 @@ export const EDIT_INTENT_MODE = 'presentation'
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
 
 // The API version to use when using `@sanity/client`
-// TODO: COREL - Replace once releases API are stable.
-export const API_VERSION = 'vX'
-// export const API_VERSION = apiVersion
+export const API_VERSION = apiVersion
 
 // Heartbeats shouldn't fire on intervals that are so short it causes performance issues
 export const MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL = 1000 // ms
