@@ -55,8 +55,4 @@ export const releases = definePlugin({
   document: {
     actions: (actions, context) => resolveDocumentActions(actions, context),
   },
-  // eslint-disable-next-line camelcase
-  __internal_serverDocumentActions: {
-    enabled: false,
-  },
 })
