@@ -52,12 +52,6 @@ vi.mock('../events/useReleaseEvents', () => ({
   useReleaseEvents: vi.fn(() => useReleaseEventsMockReturn),
 }))
 
-vi.mock('../../components/ReleasePublishAllButton/useObserveDocumentRevisions', () => ({
-  useObserveDocumentRevisions: vi.fn().mockReturnValue({
-    '123': 'mock revision id',
-  }),
-}))
-
 vi.mock('../ReleaseSummary', () => ({
   ReleaseSummary: () => <div data-testid="mocked-release-summary" />,
 }))
