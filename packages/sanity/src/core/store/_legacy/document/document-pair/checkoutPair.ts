@@ -149,7 +149,7 @@ function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mut
     return commitMutations(client, mutationParams)
   }
 
-  return actionsApiClient(client).observable.action(toActions(idPair, mutationParams), {
+  return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })

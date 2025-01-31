@@ -1,9 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 
-// TODO: COREL - Replace once releases API are stable.
-const ACTIONS_API_MINIMUM_VERSION = 'vX'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../../releases/util/releasesClient'
+import {type IdPair} from '../../types'
 
-export function actionsApiClient(client: SanityClient): SanityClient {
+const ACTIONS_API_MINIMUM_VERSION = '2024-05-23'
+
+export function actionsApiClient(client: SanityClient, idPair: IdPair): SanityClient {
+  if (idPair.versionId) {
+    return client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS)
+  }
   return client.withConfig({
     apiVersion: ACTIONS_API_MINIMUM_VERSION,
   })
