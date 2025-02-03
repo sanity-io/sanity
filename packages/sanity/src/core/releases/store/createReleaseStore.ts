@@ -45,6 +45,12 @@ const QUERY_PROJECTION = `{
     "title": "",
     "releaseType": "${DEFAULT_RELEASE_TYPE}",
   }),
+  // Content Lake initially encoded non-error states as {error: {message: ""}}. This projection
+  // ensures the error field only appears if the document has a non-empty error message.
+  ...select(
+    length(error.message) > 0 => { error },
+    {}
+  ),
 }`
 
 // Newest releases first

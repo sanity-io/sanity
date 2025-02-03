@@ -38,6 +38,9 @@ export interface ReleaseDocument extends SanityDocument {
   _updatedAt: string
   _rev: string
   state: ReleaseState
+  error?: {
+    message: string
+  }
   finalDocumentStates?: ReleaseFinalDocumentState[]
   /**
    * If defined, it takes precedence over the intendedPublishAt, the state should be 'scheduled'
