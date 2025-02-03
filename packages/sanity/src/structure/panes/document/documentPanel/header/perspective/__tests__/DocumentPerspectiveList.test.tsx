@@ -295,10 +295,14 @@ describe('DocumentPerspectiveList', () => {
         )
         const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
-        // draft is selected because no perspective is set
-        expect(screen.getByRole('button', {name: 'Draft'})).toHaveAttribute('data-selected')
-        // Published is not disabled because the user is creating a live edit document
-        expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
+        const draftChip = screen.getByRole('button', {name: 'Draft'})
+        const publishedChip = screen.getByRole('button', {name: 'Published'})
+        // draft is not selected and disabled, the document is live edit and draft doesn't exist.
+        expect(draftChip).not.toHaveAttribute('data-selected')
+        expect(draftChip).toBeDisabled()
+        // Published is selected because the user is creating a live edit document
+        expect(publishedChip).not.toBeDisabled()
+        expect(publishedChip).toHaveAttribute('data-selected')
       })
       it('no draft and no published - perspective is published', async () => {
         mockUseDocumentPane.mockReturnValue(
@@ -314,9 +318,14 @@ describe('DocumentPerspectiveList', () => {
         })
         const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
-        // Perspective is published and the user is creating a live edit document, so the draft chip should be disabled
-        expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()
-        expect(screen.getByRole('button', {name: 'Published'})).toHaveAttribute('data-selected')
+        const draftChip = screen.getByRole('button', {name: 'Draft'})
+        const publishedChip = screen.getByRole('button', {name: 'Published'})
+        // draft is not selected and disabled, the document is live edit and draft doesn't exist.
+        expect(draftChip).not.toHaveAttribute('data-selected')
+        expect(draftChip).toBeDisabled()
+        // Published is selected because the user is creating a live edit document
+        expect(publishedChip).not.toBeDisabled()
+        expect(publishedChip).toHaveAttribute('data-selected')
       })
       it('no draft and no published - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(

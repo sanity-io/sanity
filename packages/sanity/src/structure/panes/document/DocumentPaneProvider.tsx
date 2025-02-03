@@ -595,7 +595,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
-    if (liveEdit && selectedPerspectiveName !== 'published') {
+    if (liveEdit && editState.draft?._id) {
       return true
     }
     if (!liveEdit && selectedPerspectiveName === 'published') {
@@ -627,10 +627,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isNonExistent,
     connectionState,
     editState.transactionSyncLock?.enabled,
+    editState.draft?._id,
     liveEdit,
     selectedPerspectiveName,
-    value._id,
     selectedReleaseId,
+    value._id,
     ready,
     revisionId,
     isDeleting,

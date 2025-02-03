@@ -25,6 +25,7 @@ import {
 } from 'sanity'
 import {usePaneRouter} from 'sanity/structure'
 
+import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {useDocumentPane} from '../../../useDocumentPane'
 
 type FilterReleases = {
@@ -148,15 +149,17 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     [setPerspective],
   )
 
+  const schemaType = schema.get(documentType)
+  const isLiveEdit = schemaType ? isLiveEditEnabled(schemaType) : false
+
   const isPublishedChipDisabled = useMemo(() => {
-    const schemaType = schema.get(documentType)
     // If it's a live edit document the only option to edit it is through
     // the published perspective, users should be able to select it.
-    if (schemaType?.liveEdit && !selectedReleaseId) return false
+    if (isLiveEdit && !selectedReleaseId) return false
 
     // If it's not live edit, we want to check for the existence of the published doc.
     return !editState?.published
-  }, [schema, documentType, editState?.published, selectedReleaseId])
+  }, [isLiveEdit, selectedReleaseId, editState?.published])
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
@@ -176,11 +179,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   )
 
   const isPublishSelected: boolean = useMemo(() => {
-    /** the publish is selected when:
-     * when the document displayed is a published document, but has no draft and the perspective that is
-     * selected is the null perspective - this means that it should be showing draft
-     * when the perspective is published
+    /**
+     * The publish perspective is selected when:
+     *  - the document is live edit and there is no draft
+     *  - the document is published and the selected perspective is published
      */
+    if (isLiveEdit && !editState?.draft?._id && !selectedReleaseId) return true
     if (
       isPublishedId(displayed?._id || '') &&
       isPublishedPerspective(selectedPerspectiveName || '')
@@ -188,7 +192,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       return true
     }
     return false
-  }, [displayed, selectedPerspectiveName])
+  }, [
+    displayed?._id,
+    editState?.draft?._id,
+    isLiveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+  ])
 
   const isDraftSelected: boolean = useMemo(() => {
     const displayedId = displayed?._id || ''
@@ -199,6 +209,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
      * when the document is not published and the displayed version is draft,
      * when there is no draft (new document),
      */
+    if (isPublishSelected) return false
     if (params?.historyVersion) return false
     if (selectedPerspectiveName) return false
     if (isVersionId(displayedId)) return false
@@ -210,7 +221,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     )
       return false
     return true
-  }, [displayed?._id, editState, params?.historyVersion, selectedPerspectiveName])
+  }, [
+    displayed?._id,
+    editState?.published,
+    isPublishSelected,
+    params?.historyVersion,
+    selectedPerspectiveName,
+  ])
 
   const isDraftDisabled: boolean = useMemo(() => {
     // Draft is disabled when we are creating a new document inside a release
@@ -218,10 +235,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     if (editState?.draft) return false
 
     if (isCreatingDocument && selectedReleaseId) return true
-    const isLiveEdit = schema.get(documentType)?.liveEdit
     if (isLiveEdit) return true
     return false
-  }, [documentType, editState?.draft, isCreatingDocument, schema, selectedReleaseId])
+  }, [editState?.draft, isCreatingDocument, isLiveEdit, selectedReleaseId])
+
   return (
     <>
       <VersionChip
@@ -274,7 +291,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 )}
               </>
             ) : (
-              <>{t('release.chip.tooltip.no-edits')}</>
+              <>
+                {isLiveEdit
+                  ? t('release.chip.tooltip.draft-disabled.live-edit')
+                  : t('release.chip.tooltip.no-edits')}
+              </>
             )}
           </Text>
         }
