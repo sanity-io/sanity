@@ -54,7 +54,7 @@ export function ReleasesList({
   setCreateBundleDialogOpen: (open: boolean) => void
   scrollElementRef: RefObject<ScrollElement>
 }): React.JSX.Element {
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const {loading, data: releases} = useActiveReleases()
   const {t} = useTranslation()
 
@@ -149,6 +149,7 @@ export function ReleasesList({
           <MenuDivider />
           <MenuItem
             icon={AddIcon}
+            disabled={mode === 'disabled'}
             onClick={handleCreateBundleClick}
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"

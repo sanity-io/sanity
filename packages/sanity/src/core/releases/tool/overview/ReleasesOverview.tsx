@@ -49,7 +49,7 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -211,12 +211,12 @@ export function ReleasesOverview() {
     () => (
       <Button
         icon={AddIcon}
-        disabled={isCreateReleaseDialogOpen}
+        disabled={isCreateReleaseDialogOpen || mode === 'disabled'}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
       />
     ),
-    [handleOnClickCreateRelease, isCreateReleaseDialogOpen, tCore],
+    [handleOnClickCreateRelease, isCreateReleaseDialogOpen, tCore, mode],
   )
 
   const handleOnCreateRelease = useCallback(

@@ -14,7 +14,6 @@ import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
-import {FALLBACK_DIALOG} from './fallbackDialogData'
 import {type ReleasesUpsellContextValue} from './types'
 
 class StudioReleaseLimitExceededError extends Error {
@@ -50,6 +49,23 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
+
+  const mode = useMemo(() => {
+    /**
+     * upsell if:
+     * plan is free, ie releases is not feature enabled
+     * there is a limit and the limit is reached or exceeded
+     */
+    const isAtReleaseLimit =
+      !isReleasesFeatureEnabled || (releaseLimit && (activeReleases?.length || 0) >= releaseLimit)
+    if (isAtReleaseLimit && upsellData) {
+      return 'upsell'
+    }
+    if (isAtReleaseLimit && !upsellData) {
+      return 'disabled'
+    }
+    return 'default'
+  }, [activeReleases?.length, isReleasesFeatureEnabled, releaseLimit, upsellData])
 
   const telemetryLogs = useMemo(
     (): ReleasesUpsellContextValue['telemetryLogs'] => ({
@@ -107,7 +123,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   useEffect(() => {
     // @todo: once personalization forge deployed to prod, remove the `vX`
     const data$ = client.withConfig({apiVersion: 'vX'}).observable.request<UpsellData | null>({
-      uri: '/journey/content-releases',
+      uri: '/journey/content-releases2',
     })
 
     const sub = data$.subscribe({
@@ -121,11 +137,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
           setUpsellData(data)
         } catch (e) {
-          setUpsellData(FALLBACK_DIALOG)
+          // silently fail
         }
       },
       error: () => {
-        setUpsellData(FALLBACK_DIALOG)
+        setUpsellData(null)
       },
     })
 
@@ -146,15 +162,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     (cb: () => void, throwError: boolean = false) => {
-      /**
-       * upsell if:
-       * plan is free, ie releases is not feature enabled
-       * there is a limit and the limit is reached or exceeded
-       */
-      const isAtReleaseLimit =
-        !isReleasesFeatureEnabled || (releaseLimit && (activeReleases?.length || 0) >= releaseLimit)
-
-      if (!isAtReleaseLimit) {
+      if (mode === 'default') {
         return cb()
       }
 
@@ -164,7 +172,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       }
       return false
     },
-    [activeReleases?.length, handleOpenDialog, isReleasesFeatureEnabled, releaseLimit],
+    [handleOpenDialog, mode],
   )
 
   const onReleaseLimitReached = useCallback(
@@ -180,12 +188,13 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const ctxValue = useMemo<ReleasesUpsellContextValue>(
     () => ({
+      mode,
       upsellDialogOpen,
       guardWithReleaseLimitUpsell,
       onReleaseLimitReached,
       telemetryLogs,
     }),
-    [upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
+    [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
   const interpolation = releaseLimit ? {releaseLimit} : undefined
