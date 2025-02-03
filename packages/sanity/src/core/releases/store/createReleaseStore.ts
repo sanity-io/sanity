@@ -94,14 +94,6 @@ export function createReleaseStore(context: {
     concatWith(
       listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
         tap(() => fetchPending$.next(false)),
-        map((releases) =>
-          releases.map(
-            (releaseDoc: ReleaseDocument): ReleaseDocument => ({
-              ...releaseDoc,
-              metadata: {...(releaseDoc as any).userMetadata, ...releaseDoc.metadata},
-            }),
-          ),
-        ),
         map((releases) => ({response: releases})),
       ),
     ),
