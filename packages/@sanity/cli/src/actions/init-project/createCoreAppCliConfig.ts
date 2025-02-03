@@ -5,7 +5,6 @@ import {defineCliConfig} from 'sanity/cli'
 
 export default defineCliConfig({
   __experimental_coreAppConfiguration: {
-    framework: 'vite',
     appLocation: '%appLocation%'
   },
 })

@@ -31,9 +31,11 @@ export default async function startSanityDevServer(
   timers.end('checkStudioDependencyVersions')
 
   // If the check resulted in a dependency install, the CLI command will be re-run,
-  // thus we want to exit early
-  if ((await checkRequiredDependencies(context)).didInstall) {
-    return
+  // thus we want to exit early (only for studios)
+  if (!(cliConfig && '__experimental_coreAppConfiguration' in cliConfig)) {
+    if ((await checkRequiredDependencies(context)).didInstall) {
+      return
+    }
   }
 
   // Try to load CLI configuration from sanity.cli.(js|ts)

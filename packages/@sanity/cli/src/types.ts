@@ -351,7 +351,6 @@ export interface CliConfig {
    * @internal
    */
   __experimental_coreAppConfiguration?: {
-    framework: 'vite' // add others as we make them available, e.g., 'vite' | 'vue'
     appLocation?: string
   }
 }
