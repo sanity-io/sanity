@@ -81,6 +81,11 @@ export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
  */
 export interface ReleaseStore {
   state$: Observable<ReleasesReducerState>
+  /**
+   * Counts all loaded release documents that are in an active state and have an error recorded.
+   * This is determined by the presence of the `error` field in the release document.
+   */
+  errorCount$: Observable<number>
   getMetadataStateForSlugs$: (slugs: string[]) => Observable<MetadataWrapper>
   dispatch: Dispatch<ReleasesReducerAction>
 }
