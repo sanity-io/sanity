@@ -7,19 +7,9 @@ interface BundleDeletedAction {
   type: 'BUNDLE_DELETED'
 }
 
-interface BundleUpdatedAction {
-  payload: ReleaseDocument
-  type: 'BUNDLE_UPDATED'
-}
-
 interface ReleasesSetAction {
   payload: ReleaseDocument[] | null
   type: 'RELEASES_SET'
-}
-
-interface BundleReceivedAction {
-  payload: ReleaseDocument
-  type: 'BUNDLE_RECEIVED'
 }
 
 interface LoadingStateChangedAction {
@@ -32,9 +22,7 @@ interface LoadingStateChangedAction {
 
 export type ReleasesReducerAction =
   | BundleDeletedAction
-  | BundleUpdatedAction
   | ReleasesSetAction
-  | BundleReceivedAction
   | LoadingStateChangedAction
 
 export interface ReleasesReducerState {
@@ -70,29 +58,6 @@ export function releasesReducer(
       return {
         ...state,
         releases: releasesById,
-      }
-    }
-
-    case 'BUNDLE_RECEIVED': {
-      const receivedBundle = action.payload as ReleaseDocument
-      const currentReleases = new Map(state.releases)
-      currentReleases.set(receivedBundle._id, receivedBundle)
-
-      return {
-        ...state,
-        releases: currentReleases,
-      }
-    }
-
-    case 'BUNDLE_UPDATED': {
-      const updatedBundle = action.payload
-      const id = updatedBundle._id as string
-      const currentReleases = new Map(state.releases)
-      currentReleases.set(id, updatedBundle)
-
-      return {
-        ...state,
-        releases: currentReleases,
       }
     }
 
