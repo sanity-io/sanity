@@ -8,6 +8,7 @@ import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
+import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
@@ -43,6 +44,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     locked,
   } = props
   const {t} = useTranslation()
+  const {mode} = useReleasesUpsell()
   const isPublished = isPublishedId(documentId) && !isVersion
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -91,6 +93,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             onClick={onCreateRelease}
             text={t('release.action.new-release')}
             icon={AddIcon}
+            disabled={mode === 'disabled'}
           />
         </MenuGroup>
         {!isPublished && (

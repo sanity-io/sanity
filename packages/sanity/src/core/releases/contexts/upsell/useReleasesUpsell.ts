@@ -17,6 +17,7 @@ export function useReleasesUpsell(): ReleasesUpsellContextValue {
 
 const FALLBACK_CONTEXT_VALUE = {
   upsellDialogOpen: false,
+  mode: 'default' as const,
   onReleaseLimitReached: () => null,
   guardWithReleaseLimitUpsell: () => undefined,
   telemetryLogs: {

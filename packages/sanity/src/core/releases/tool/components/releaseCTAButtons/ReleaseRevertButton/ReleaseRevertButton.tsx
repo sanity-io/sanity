@@ -218,7 +218,7 @@ export const ReleaseRevertButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
 
   const isRevertEnabled = false
@@ -237,7 +237,7 @@ export const ReleaseRevertButton = ({
         onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
-        disabled={disabled}
+        disabled={disabled || mode === 'disabled'}
       />
       {revertReleaseStatus !== 'idle' && (
         <ConfirmReleaseDialog
