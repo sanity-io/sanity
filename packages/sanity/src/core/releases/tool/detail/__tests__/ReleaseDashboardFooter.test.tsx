@@ -1,12 +1,7 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
+import {describe, expect, test} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {
-  mockUseProjectSubscriptions,
-  useProjectSubscriptionsMockReturn,
-} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
-import {type ProjectSubscriptionsResponse} from '../../../../hooks/useProjectSubscriptions'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -16,10 +11,6 @@ import {
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDashboardFooter} from '../ReleaseDashboardFooter'
-
-vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
-  useProjectSubscriptions: vi.fn(() => useProjectSubscriptionsMockReturn),
-}))
 
 const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDashboardFooter>>) => {
   const wrapper = await createTestProvider({
@@ -49,10 +40,6 @@ const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDas
 }
 
 describe('ReleaseDashboardFooter', () => {
-  beforeEach(() => {
-    mockUseProjectSubscriptions.mockRestore()
-  })
-
   describe('for an active asap release', () => {
     test('shows publish all button', async () => {
       await renderTest()
@@ -70,49 +57,23 @@ describe('ReleaseDashboardFooter', () => {
   })
 
   describe('for a published release', () => {
-    describe('for enterprise project', () => {
-      beforeEach(() => {
-        mockUseProjectSubscriptions.mockReturnValue({
-          ...useProjectSubscriptionsMockReturn,
-          projectSubscriptions: {plan: {planTypeId: 'enterprise'}} as ProjectSubscriptionsResponse,
-        })
-      })
+    // Revert button is now hidden in the UI until feature flag is added
+    test.skip('shows revert button for asap release', async () => {
+      await renderTest({release: publishedASAPRelease})
 
-      test('shows revert button for asap release', async () => {
-        await renderTest({release: publishedASAPRelease})
-
-        expect(screen.getByText('Revert release')).toBeInTheDocument()
-      })
-
-      test('shows revert button for scheduled release', async () => {
-        await renderTest({
-          release: {
-            ...publishedASAPRelease,
-            metadata: {...publishedASAPRelease.metadata, releaseType: 'scheduled'},
-          },
-        })
-
-        expect(screen.getByText('Revert release')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Revert release')).toBeInTheDocument()
     })
 
-    describe('for non-enterprise project', () => {
-      test('shows revert button for asap release', async () => {
-        await renderTest({release: publishedASAPRelease})
-
-        expect(screen.queryByText('Revert release')).not.toBeInTheDocument()
+    // Revert button is now hidden in the UI until feature flag is added
+    test.skip('shows revert button for scheduled release', async () => {
+      await renderTest({
+        release: {
+          ...publishedASAPRelease,
+          metadata: {...publishedASAPRelease.metadata, releaseType: 'scheduled'},
+        },
       })
 
-      test('does not show revert button', async () => {
-        await renderTest({
-          release: {
-            ...publishedASAPRelease,
-            metadata: {...publishedASAPRelease.metadata, releaseType: 'scheduled'},
-          },
-        })
-
-        expect(screen.queryByText('Revert release')).not.toBeInTheDocument()
-      })
+      expect(screen.getByText('Revert release')).toBeInTheDocument()
     })
   })
 
