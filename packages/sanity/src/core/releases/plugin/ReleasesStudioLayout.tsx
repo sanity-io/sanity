@@ -1,8 +1,7 @@
 import {type ComponentType} from 'react'
 
-import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
 import {type LayoutProps} from '../../config'
-import {AddonDatasetProvider, useWorkspace} from '../../studio'
+import {useWorkspace} from '../../studio'
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
 
@@ -14,14 +13,8 @@ export const ReleasesStudioLayout: ComponentType<LayoutProps> = (props) => {
   }
 
   return (
-    <ConditionalWrapper
-      condition={isReleasesEnabled}
-      // eslint-disable-next-line react/jsx-no-bind
-      wrapper={(children) => <ReleasesUpsellProvider>{children}</ReleasesUpsellProvider>}
-    >
-      <AddonDatasetProvider>
-        <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
-      </AddonDatasetProvider>
-    </ConditionalWrapper>
+    <ReleasesUpsellProvider>
+      <ReleasesMetadataProvider>{props.renderDefault(props)}</ReleasesMetadataProvider>
+    </ReleasesUpsellProvider>
   )
 }
