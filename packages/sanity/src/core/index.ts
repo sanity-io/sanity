@@ -23,10 +23,7 @@ export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {
-  AddedVersion,
-  DiscardVersionDialog,
   formatRelativeLocalePublishDate,
-  getPublishDateFromRelease,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isDraftPerspective,
