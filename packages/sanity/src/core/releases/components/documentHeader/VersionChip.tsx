@@ -187,20 +187,23 @@ export const VersionChip = memo(function VersionChip(props: {
   return (
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
-        <Chip
-          ref={chipRef}
-          disabled={disabled}
-          mode="bleed"
-          onClick={onClick}
-          selected={selected}
-          style={{flex: 'none'}}
-          text={text}
-          tone={tone}
-          icon={<ReleaseAvatar padding={1} tone={tone} />}
-          iconRight={locked && LockIcon}
-          onContextMenu={contextMenuHandler}
-          $isArchived={releaseState === 'archived'}
-        />
+        {/* This span is needed to make the tooltip work in disabled buttons */}
+        <span style={{display: 'inline-flex'}}>
+          <Chip
+            ref={chipRef}
+            disabled={disabled}
+            mode="bleed"
+            onClick={onClick}
+            selected={selected}
+            style={{flex: 'none'}}
+            text={text}
+            tone={tone}
+            icon={<ReleaseAvatar padding={1} tone={tone} />}
+            iconRight={locked && LockIcon}
+            onContextMenu={contextMenuHandler}
+            $isArchived={releaseState === 'archived'}
+          />
+        </span>
       </Tooltip>
 
       <Popover
