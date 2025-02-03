@@ -7,6 +7,7 @@ const ACTIONS_API_MINIMUM_VERSION = '2024-05-23'
 
 export function actionsApiClient(client: SanityClient, idPair: IdPair): SanityClient {
   if (idPair.versionId) {
+    // TODO: Remove after API version is stable and support releases
     return client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS)
   }
   return client.withConfig({
