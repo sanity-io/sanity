@@ -218,7 +218,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <PaneContent>
-      {banners}
       <Flex height="fill">
         {(features.resizablePanes || !showInspector) && (
           <DocumentBox flex={2} overflow="hidden">
@@ -231,6 +230,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
+                  {banners}
                   <Scroller
                     $disabled={layoutCollapsed || false}
                     data-testid="document-panel-scroller"
