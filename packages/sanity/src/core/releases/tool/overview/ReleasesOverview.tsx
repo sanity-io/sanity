@@ -329,23 +329,21 @@ export function ReleasesOverview() {
                 </Stack>
               </Container>
             ) : (
-              <>
-                <Table<TableRelease>
-                  // for resetting filter and sort on table when filer changed
-                  key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                  defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
-                  loading={loadingTableData}
-                  data={filteredReleases}
-                  columnDefs={releasesOverviewColumnDefs(t)}
-                  emptyState={t('no-releases')}
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                  rowId="_id"
-                  rowActions={renderRowActions}
-                  rowProps={getRowProps}
-                  scrollContainerRef={scrollContainerRef}
-                  hideTableInlinePadding
-                />
-              </>
+              <Table<TableRelease>
+                // for resetting filter and sort on table when filer changed
+                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                loading={loadingTableData}
+                data={filteredReleases}
+                columnDefs={releasesOverviewColumnDefs(t)}
+                emptyState={t('no-releases')}
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="_id"
+                rowActions={renderRowActions}
+                rowProps={getRowProps}
+                scrollContainerRef={scrollContainerRef}
+                hideTableInlinePadding
+              />
             )}
           </Box>
           {renderCreateReleaseDialog()}
