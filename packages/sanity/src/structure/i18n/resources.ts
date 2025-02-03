@@ -99,9 +99,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
   /** The text for publish action for discarding the version */
   'banners.live-edit-draft-banner.discard.tooltip': 'Discard draft',
-  /** The text content for the live edit document when viewed from the draft perspective */
-  'banners.live-edit-draft-banner.draft-perspective':
-    'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, select the published document to edit it.',
   /** The text for publish action for the draft banner */
   'banners.live-edit-draft-banner.publish.tooltip': 'Publish to continue editing',
 

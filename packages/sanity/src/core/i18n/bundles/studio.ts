@@ -1198,6 +1198,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.published': 'Published',
   /** Label for tooltip in chip with the created date */
   'release.chip.tooltip.created-date': 'Created {{date}}',
+  /** Label for tooltip in draft chip when it's a live edit document */
+  'release.chip.tooltip.draft-disabled.live-edit':
+    'This document is in live edit mode, drafts are disabled',
   /** Label for tooltip in chip with the lasted edited date */
   'release.chip.tooltip.edited-date': 'Edited {{date}}',
   /** Label for tooltip in chip when document is intended for a future release that hasn't been scheduled */
