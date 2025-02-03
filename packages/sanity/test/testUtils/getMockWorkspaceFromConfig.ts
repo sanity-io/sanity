@@ -41,6 +41,7 @@ const defaultMockConfig: SingleWorkspace = {
   dataset: 'mock-data-set',
   schema: defaultMockSchema,
   scheduledPublishing: {enabled: false},
+  releases: {enabled: true},
 }
 
 export interface MockWorkspaceOptions {
