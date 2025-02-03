@@ -212,6 +212,7 @@ const ConfirmReleaseDialog = ({
   )
 }
 
+const isRevertEnabled = false // This is going to be disabled until we have the proper "releases plus" flag
 export const ReleaseRevertButton = ({
   release,
   documents,
@@ -220,8 +221,6 @@ export const ReleaseRevertButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
-
-  const isRevertEnabled = false
 
   const handleMoveToConfirmStatus = useCallback(
     () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
