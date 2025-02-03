@@ -171,7 +171,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (activeView.type === 'form' && isLiveEdit && ready) {
+    if (
+      activeView.type === 'form' &&
+      isLiveEdit &&
+      ready &&
+      editState?.draft?._id &&
+      !selectedReleaseId
+    ) {
       return (
         <DraftLiveEditBanner
           displayed={displayed}
@@ -194,24 +200,24 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       </>
     )
   }, [
-    activeView.type,
-    selectedPerspective,
+    params?.historyVersion,
     displayed,
-    documentId,
+    selectedPerspective,
+    selectedReleaseId,
+    ready,
+    activeView.type,
     isLiveEdit,
+    editState?.draft?._id,
     isPermissionsLoading,
     permissions?.granted,
-    ready,
     requiredPermission,
-    schemaType,
-    selectedReleaseId,
     value._id,
-    params,
+    documentId,
+    schemaType,
   ])
 
   return (
     <PaneContent>
-      {banners}
       <Flex height="fill">
         {(features.resizablePanes || !showInspector) && (
           <DocumentBox flex={2} overflow="hidden">
@@ -224,6 +230,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
+                  {banners}
                   <Scroller
                     $disabled={layoutCollapsed || false}
                     data-testid="document-panel-scroller"
