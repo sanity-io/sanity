@@ -157,6 +157,9 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [mockPlugin()],
+        releases: {
+          enabled: true,
+        },
       }),
     )
     expect(workspace.__internal.options.plugins).toMatchObject([
@@ -186,6 +189,9 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [], // No plugins
+        releases: {
+          enabled: true,
+        },
       }),
     )
 
