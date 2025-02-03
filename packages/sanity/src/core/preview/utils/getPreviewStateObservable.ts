@@ -1,7 +1,7 @@
 import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
 import {omit} from 'lodash'
 import {type ReactNode} from 'react'
-import {combineLatest, from, type Observable, of} from 'rxjs'
+import {combineLatest, from, type Observable} from 'rxjs'
 import {map, mergeMap, scan, startWith} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../../perspective/types'
@@ -66,9 +66,7 @@ export function getPreviewStateObservable(
     isRaw: false,
   },
 ): Observable<PreviewState> {
-  const draft$ = isLiveEditEnabled(schemaType)
-    ? of({snapshot: null})
-    : documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
+  const draft$ = documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
   const versions$ = from(perspective.bundleIds).pipe(
     mergeMap<string, Observable<VersionTuple>>((bundleId) =>
