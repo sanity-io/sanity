@@ -6,7 +6,6 @@ import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog'
-import {useProjectSubscriptions} from '../../../../../hooks/useProjectSubscriptions'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
@@ -221,16 +220,15 @@ export const ReleaseRevertButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
-  const {projectSubscriptions, isLoading: isLoadingProjectSubscriptions} = useProjectSubscriptions()
 
-  const isRevertEnabled = projectSubscriptions?.plan.planTypeId === 'enterprise'
+  const isRevertEnabled = false
 
   const handleMoveToConfirmStatus = useCallback(
     () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
     [guardWithReleaseLimitUpsell],
   )
 
-  if (isLoadingProjectSubscriptions || !isRevertEnabled) return null
+  if (!isRevertEnabled) return null
 
   return (
     <>
