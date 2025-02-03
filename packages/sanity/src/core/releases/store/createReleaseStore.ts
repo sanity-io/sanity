@@ -4,17 +4,21 @@ import {
   catchError,
   concat,
   concatWith,
+  count,
   filter,
+  from,
   merge,
   type Observable,
   of,
+  type OperatorFunction,
+  pipe,
   scan,
   shareReplay,
   Subject,
   switchMap,
   tap,
 } from 'rxjs'
-import {map, startWith} from 'rxjs/operators'
+import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
@@ -141,11 +145,30 @@ export function createReleaseStore(context: {
     shareReplay(1),
   )
 
+  const errorCount$ = state$.pipe(releaseStoreErrorCount(), shareReplay(1))
+
   const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 
   return {
     state$,
+    errorCount$,
     getMetadataStateForSlugs$,
     dispatch,
   }
+}
+
+/**
+ * @internal
+ */
+export function releaseStoreErrorCount(): OperatorFunction<ReleasesReducerState, number> {
+  return pipe(
+    switchMap(({releases}) =>
+      from(releases.values()).pipe(
+        filter((release) => release.state === 'active'),
+        filter((release) => typeof release.error !== 'undefined'),
+        count(),
+      ),
+    ),
+    distinctUntilChanged(),
+  )
 }
