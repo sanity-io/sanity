@@ -31,9 +31,21 @@ export const SORT_ORDER = 'desc'
 
 const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}" && _id in path("${RELEASE_DOCUMENTS_PATH}.*")`
 
-// TODO: Extend the projection with the fields needed
 const QUERY_PROJECTION = `{
-  ...,
+  _id,
+  _type,
+  _rev,
+  _createdAt,
+  _updatedAt,
+  state,
+  finalDocumentStates,
+  publishAt,
+  metadata {
+    title,
+    description,
+    intendedPublishAt,
+    releaseType
+  }
 }`
 
 // Newest releases first
