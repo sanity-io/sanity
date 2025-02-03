@@ -13,6 +13,7 @@ export type DocumentIdSetObserverState = {
 
 interface LiveDocumentIdSetOptions {
   insert?: 'sorted' | 'prepend' | 'append'
+  apiVersion?: SourceClientOptions['apiVersion']
 }
 
 export function createDocumentIdSetObserver(client: SanityClient) {
@@ -20,9 +21,8 @@ export function createDocumentIdSetObserver(client: SanityClient) {
     queryFilter: string,
     params?: QueryParams,
     options: LiveDocumentIdSetOptions = {},
-    apiVersion?: SourceClientOptions['apiVersion'],
   ) {
-    const {insert: insertOption = 'sorted'} = options
+    const {insert: insertOption = 'sorted', apiVersion} = options
 
     const query = `*[${queryFilter}]._id`
     function fetchFilter() {

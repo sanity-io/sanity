@@ -72,12 +72,9 @@ export function getReleaseEvents({
 
   const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
   const documentsCount$ = documentPreviewStore
-    .unstable_observeDocumentIdSet(
-      groqFilter,
-      undefined,
-      undefined,
-      RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    )
+    .unstable_observeDocumentIdSet(groqFilter, undefined, {
+      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
     .pipe(
       filter(({status}) => status === 'connected'),
       map(({documentIds}) => documentIds.length),

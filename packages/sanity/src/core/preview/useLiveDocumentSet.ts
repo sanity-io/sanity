@@ -24,18 +24,16 @@ export function useLiveDocumentSet(
   options: {
     // how to insert new document ids. Defaults to `sorted`
     insert?: 'sorted' | 'prepend' | 'append'
+    apiVersion?: string
   } = {},
-  apiVersion?: string,
 ): {loading: boolean; documents: SanityDocument[]} {
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(() => {
-    return documentPreviewStore
-      .unstable_observeDocumentIdSet(groqFilter, params, options, apiVersion)
-      .pipe(
-        map((state) => (state.documentIds || []) as string[]),
-        mergeMapArray((id) => documentPreviewStore.unstable_observeDocument(id)),
-        map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
-      )
-  }, [documentPreviewStore, groqFilter, params, options, apiVersion])
+    return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter, params, options).pipe(
+      map((state) => (state.documentIds || []) as string[]),
+      mergeMapArray((id) => documentPreviewStore.unstable_observeDocument(id)),
+      map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
+    )
+  }, [documentPreviewStore, groqFilter, params, options])
   return useObservable(observable, INITIAL_VALUE)
 }

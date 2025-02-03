@@ -70,12 +70,9 @@ const getActiveReleaseDocumentsObservable = ({
   const groqFilter = `_id in path("versions.${releaseId}.*")`
 
   return documentPreviewStore
-    .unstable_observeDocumentIdSet(
-      groqFilter,
-      undefined,
-      undefined,
-      RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    )
+    .unstable_observeDocumentIdSet(groqFilter, undefined, {
+      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
       mergeMapArray((id) => {

@@ -88,8 +88,8 @@ export interface DocumentPreviewStore {
        * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
        */
       insert?: 'sorted' | 'prepend' | 'append'
+      apiVersion?: string
     },
-    apiVersion?: string,
   ) => Observable<DocumentIdSetObserverState>
 
   /**
