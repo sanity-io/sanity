@@ -28,17 +28,15 @@ import {
   getPreviewValueWithFallback,
   prepareForPreview,
 } from '../../../preview'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type ReleaseDocument,
-  useDocumentPreviewStore,
-} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
@@ -66,96 +64,100 @@ const getActiveReleaseDocumentsObservable = ({
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
 }): ReleaseDocumentsObservableResult => {
-  const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
 
   const groqFilter = `_id in path("versions.${releaseId}.*")`
 
-  return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter).pipe(
-    map((state) => (state.documentIds || []) as string[]),
-    mergeMapArray((id) => {
-      const ctx = {
-        observeDocument: documentPreviewStore.unstable_observeDocument,
-        observeDocumentPairAvailability:
-          documentPreviewStore.unstable_observeDocumentPairAvailability,
-        i18n,
-        getClient,
-        schema,
-      }
+  return documentPreviewStore
+    .unstable_observeDocumentIdSet(groqFilter, undefined, {
+      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
+    .pipe(
+      map((state) => (state.documentIds || []) as string[]),
+      mergeMapArray((id) => {
+        const ctx = {
+          observeDocument: documentPreviewStore.unstable_observeDocument,
+          observeDocumentPairAvailability:
+            documentPreviewStore.unstable_observeDocumentPairAvailability,
+          i18n,
+          getClient,
+          schema,
+        }
 
-      const document$ = documentPreviewStore.unstable_observeDocument(id).pipe(
-        filter(Boolean),
-        switchMap((doc) =>
-          observableClient
-            .fetch(
-              `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
-              {},
-              {tag: 'release-documents.check-existing'},
-            )
-            .pipe(
-              switchMap((publishedDocumentExists) =>
-                of({
-                  ...doc,
-                  publishedDocumentExists: !!publishedDocumentExists.length,
-                }),
+        const document$ = documentPreviewStore.unstable_observeDocument(id).pipe(
+          filter(Boolean),
+          switchMap((doc) =>
+            observableClient
+              .fetch(
+                `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
+                {},
+                {tag: 'release-documents.check-existing'},
+              )
+              .pipe(
+                switchMap((publishedDocumentExists) =>
+                  of({
+                    ...doc,
+                    publishedDocumentExists: !!publishedDocumentExists.length,
+                  }),
+                ),
               ),
-            ),
-        ),
-      )
-      const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
-        map((validationStatus) => ({
-          ...validationStatus,
-          hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
-        })),
-      )
+          ),
+        )
+        const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
+          map((validationStatus) => ({
+            ...validationStatus,
+            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
+          })),
+        )
 
-      const previewValues$ = document$.pipe(
-        map((document) => {
-          const schemaType = schema.get(document._type)
-          if (!schemaType) {
-            console.error(
-              `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
+        const previewValues$ = document$.pipe(
+          map((document) => {
+            const schemaType = schema.get(document._type)
+            if (!schemaType) {
+              console.error(
+                `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
+              )
+              return of({
+                isLoading: false,
+                values: {
+                  _id: document._id,
+                  title: `Document type "${document._type}" not found`,
+                  _createdAt: document._createdAt,
+                  _updatedAt: document._updatedAt,
+                } satisfies PreviewValue,
+              })
+            }
+
+            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
+              map((version) => ({
+                isLoading: false,
+                values: prepareForPreview(
+                  getPreviewValueWithFallback({
+                    value: document,
+                    version: version.snapshot,
+                    perspective: releaseId,
+                  }),
+                  schemaType,
+                ),
+              })),
+              startWith({isLoading: true, values: {}}),
             )
-            return of({
-              isLoading: false,
-              values: {
-                _id: document._id,
-                title: `Document type "${document._type}" not found`,
-                _createdAt: document._createdAt,
-                _updatedAt: document._updatedAt,
-              } satisfies PreviewValue,
-            })
-          }
+          }),
+          switchAll(),
+        )
 
-          return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-            map((version) => ({
-              isLoading: false,
-              values: prepareForPreview(
-                getPreviewValueWithFallback({
-                  value: document,
-                  version: version.snapshot,
-                  perspective: releaseId,
-                }),
-                schemaType,
-              ),
-            })),
-            startWith({isLoading: true, values: {}}),
-          )
-        }),
-        switchAll(),
-      )
-
-      return combineLatest([document$, validation$, previewValues$]).pipe(
-        map(([document, validation, previewValues]) => ({
-          document,
-          validation,
-          previewValues,
-          memoKey: uuid(),
-        })),
-      )
-    }),
-    map((results) => ({loading: false, results})),
-  )
+        return combineLatest([document$, validation$, previewValues$]).pipe(
+          map(([document, validation, previewValues]) => ({
+            document,
+            validation,
+            previewValues,
+            memoKey: uuid(),
+          })),
+        )
+      }),
+      map((results) => ({loading: false, results})),
+    )
 }
 
 const getPublishedArchivedReleaseDocumentsObservable = ({
@@ -169,7 +171,7 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
   documentPreviewStore: DocumentPreviewStore
   release: ReleaseDocument
 }): ReleaseDocumentsObservableResult => {
-  const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
   const dataset = client.config().dataset
 

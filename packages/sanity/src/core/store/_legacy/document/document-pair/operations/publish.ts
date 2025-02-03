@@ -2,6 +2,7 @@ import {isReference} from '@sanity/types'
 import {omit} from 'lodash'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './index'
 
 function strengthenOnPublish<T = any>(obj: T): T {
@@ -38,7 +39,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
       throw new Error('cannot execute "publish" when draft is missing')
     }
     const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
-    const tx = client.observable.transaction()
+    const tx = operationsApiClient(client, idPair).observable.transaction()
     if (!snapshots.draft) {
       throw new Error('cannot execute "publish" when draft is missing')
     }

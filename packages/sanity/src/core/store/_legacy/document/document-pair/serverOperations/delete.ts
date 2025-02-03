@@ -12,7 +12,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
 
     //the delete action requires a published doc -- discard if not present
     if (!snapshots.published) {
-      return actionsApiClient(client).observable.action(
+      return actionsApiClient(client, idPair).observable.action(
         {
           actionType: 'sanity.action.document.discard',
           draftId: idPair.draftId,
@@ -21,7 +21,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
       )
     }
 
-    return actionsApiClient(client).observable.action(
+    return actionsApiClient(client, idPair).observable.action(
       {
         actionType: 'sanity.action.document.delete',
         includeDrafts: snapshots.draft ? [idPair.draftId] : [],

@@ -1,18 +1,27 @@
-import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from '@sanity/client'
+import {
+  type ClientPerspective,
+  type MutationEvent,
+  type ReconnectEvent,
+  type WelcomeEvent,
+} from '@sanity/client'
 import {type FunctionComponent, memo, useEffect} from 'react'
 import {filter, first, merge, shareReplay} from 'rxjs'
-import {isDraftId, useClient} from 'sanity'
+import {isDraftId, isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
 
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
 
 interface PostMessageDocumentsProps {
   comlink: VisualEditingConnection
+  perspective: ClientPerspective
 }
 
 const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (props) => {
-  const {comlink} = props
-  const client = useClient({apiVersion: API_VERSION})
+  const {comlink, perspective} = props
+
+  const client = useClient(
+    isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
+  )
 
   useEffect(() => {
     const listener = client

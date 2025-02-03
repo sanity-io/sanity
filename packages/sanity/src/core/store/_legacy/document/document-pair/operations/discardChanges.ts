@@ -1,3 +1,4 @@
+import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './types'
 
 type DisabledReason = 'NO_CHANGES' | 'NOT_PUBLISHED'
@@ -13,8 +14,8 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
     return false
   },
   execute: ({client, idPair}) => {
-    return client.observable
-      .transaction()
+    return operationsApiClient(client, idPair)
+      .observable.transaction()
       .delete(idPair.draftId)
       .commit({tag: 'document.discard-changes'})
   },

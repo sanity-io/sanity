@@ -2,6 +2,11 @@ import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@
 import {sortBy} from 'lodash'
 import {map, tap} from 'rxjs/operators'
 
+import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+} from '../../releases/util/releasesClient'
+import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
 import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
 import {applyWeights} from './applyWeights'
@@ -38,14 +43,12 @@ export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResults> 
       ...searchOptions,
     })
 
-    return client.observable
-      .withConfig({
-        /** @todo remove defined apiVersion once perspective is supported in
-         * non-experimental content lake API
-         */
-        apiVersion: 'vX',
-      })
-      .fetch<SanityDocumentLike[]>(query, params, options)
+    const apiVersion = isReleasePerspective(options?.perspective as string | string[] | undefined)
+      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+      : undefined
+
+    return versionedClient(client, apiVersion)
+      .observable.fetch<SanityDocumentLike[]>(query, params, options)
       .pipe(
         factoryOptions.unique ? map(removeDupes) : tap(),
         // Assign weighting and scores based on current search terms.

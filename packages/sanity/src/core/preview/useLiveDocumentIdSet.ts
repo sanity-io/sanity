@@ -27,6 +27,7 @@ export function useLiveDocumentIdSet(
   options: {
     // how to insert new document ids. Defaults to `sorted`
     insert?: 'sorted' | 'prepend' | 'append'
+    apiVersion?: string
   } = {},
 ) {
   const documentPreviewStore = useDocumentPreviewStore()

@@ -29,10 +29,12 @@ export {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
+  isReleasePerspective,
   isReleaseScheduledOrScheduling,
   LATEST,
   type ReleaseDocument,
   RELEASES_INTENT,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
@@ -48,7 +50,7 @@ export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from 
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
 export * from './store'
 export * from './studio'
-export * from './studioClient'
+export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
 export {IsLastPaneProvider} from './tasks'
 export * from './templates'
 export * from './theme'

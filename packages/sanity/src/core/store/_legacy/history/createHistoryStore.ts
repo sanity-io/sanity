@@ -10,7 +10,7 @@ import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../../environment'
-import {getDraftId, getPublishedId, isRecord} from '../../../util'
+import {getDraftId, getIdPair, getPublishedId, getVersionFromId, isRecord} from '../../../util'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
 import {Timeline, TimelineController} from './history'
 
@@ -216,7 +216,10 @@ function restore(
           publishedId: documentId,
           attributes: restoredDraft,
         }
-        return actionsApiClient(client).observable.action(
+        return actionsApiClient(
+          client,
+          getIdPair(documentId, {version: getVersionFromId(documentId)}),
+        ).observable.action(
           options.fromDeleted
             ? [
                 {
