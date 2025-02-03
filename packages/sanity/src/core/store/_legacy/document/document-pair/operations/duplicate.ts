@@ -3,6 +3,7 @@ import {omit} from 'lodash'
 
 import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './types'
 
 const omitProps = ['_createdAt', '_updatedAt']
@@ -36,7 +37,7 @@ export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPL
       ? false
       : 'NOTHING_TO_DUPLICATE'
   },
-  execute: ({schema, client, snapshots, typeName}, dupeId) => {
+  execute: ({schema, client, snapshots, typeName, idPair}, dupeId) => {
     const source = snapshots.version || snapshots.draft || snapshots.published
 
     if (!source) {
@@ -49,7 +50,7 @@ export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPL
       liveEdit: isLiveEditEnabled(schema, typeName),
     })
 
-    return client.observable.create(
+    return operationsApiClient(client, idPair).observable.create(
       {
         ...omit(source, omitProps),
         _id,

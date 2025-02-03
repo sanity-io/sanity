@@ -6,8 +6,9 @@ import {IntentLink} from 'sanity/router'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
 import {getPublishedId} from '../../../util/draftUtils'
-import {type ReleaseState, useDocumentPresence} from '../../index'
+import {type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 interface ReleaseDocumentPreviewProps {

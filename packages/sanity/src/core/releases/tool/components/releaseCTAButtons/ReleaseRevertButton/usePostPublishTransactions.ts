@@ -4,12 +4,12 @@ import {catchError, from, map, of} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
-import {API_VERSION} from '../../../../../tasks/constants'
 import {getPublishedId} from '../../../../../util/draftUtils'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
 export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
-  const client = useClient({apiVersion: API_VERSION})
+  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const transactionId = documents[0]?.document._rev
 
   const memoHasPostPublishTransactions = useMemo(() => {

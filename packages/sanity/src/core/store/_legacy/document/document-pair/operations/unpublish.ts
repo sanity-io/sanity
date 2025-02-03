@@ -1,6 +1,7 @@
 import {omit} from 'lodash'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './types'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
@@ -13,7 +14,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({client, idPair, snapshots}) => {
-    let tx = client.observable.transaction().delete(idPair.publishedId)
+    let tx = operationsApiClient(client, idPair).observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {
       tx = tx.createIfNotExists({

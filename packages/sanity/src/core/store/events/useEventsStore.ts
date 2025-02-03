@@ -5,6 +5,7 @@ import {of} from 'rxjs'
 
 import {useClient, useSchema} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
@@ -44,8 +45,7 @@ export function useEventsStore({
   rev?: string | '@lastEdited'
   since?: string | '@lastPublished'
 }): EventsStore {
-  // Needs vX version of the API to get the events
-  const client = useClient({apiVersion: 'X'})
+  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const {state$: releases$} = useReleasesStore()
   const workspace = useWorkspace()
 

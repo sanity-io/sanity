@@ -6,6 +6,7 @@ import {catchError} from 'rxjs/operators'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -35,7 +36,9 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 
   const observable = useMemo(() => {
     return documentPreviewStore
-      .unstable_observeDocumentIdSet(`sanity::versionsOf("${publishedId}")`)
+      .unstable_observeDocumentIdSet(`sanity::versionsOf("${publishedId}")`, undefined, {
+        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      })
       .pipe(
         swr(`${publishedId}`),
         map(({value}) => ({

@@ -78,6 +78,7 @@ export interface DocumentPreviewStore {
    * @param filter - A groq filter to use for the document set
    * @param params - Parameters to use with the groq filter
    * @param options - Options for the observer
+   * @param apiVersion - Specify the API version to use for the query
    */
   unstable_observeDocumentIdSet: (
     filter: string,
@@ -87,6 +88,7 @@ export interface DocumentPreviewStore {
        * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
        */
       insert?: 'sorted' | 'prepend' | 'append'
+      apiVersion?: string
     },
   ) => Observable<DocumentIdSetObserverState>
 
@@ -139,10 +141,7 @@ export function createDocumentPreviewStore({
     )
   }
 
-  const observeDocumentIdSet = createDocumentIdSetObserver(
-    // TODO: COREL - Replace once releases API are stable.
-    versionedClient.withConfig({apiVersion: 'X'}),
-  )
+  const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(

@@ -3,7 +3,13 @@ import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
 import {useRootTheme} from '@sanity/ui'
 import {memo, useEffect} from 'react'
-import {getPublishedId, useClient, useWorkspace} from 'sanity'
+import {
+  getPublishedId,
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useWorkspace,
+} from 'sanity'
 
 import {API_VERSION} from '../../constants'
 import {type VisualEditingConnection} from '../../types'
@@ -56,7 +62,9 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
     }
   }, [comlink, theme, workspace])
 
-  const client = useClient({apiVersion: API_VERSION})
+  const client = useClient(
+    isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
+  )
 
   // Resolve union types from an array of unresolved paths
   useEffect(() => {

@@ -6,6 +6,7 @@ import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {useSource} from '../../../../studio/source'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {EVENTS_INITIAL_VALUE, getReleaseEvents} from './getReleaseEvents'
 import {type ReleaseEvent} from './types'
 
@@ -18,8 +19,7 @@ export interface ReleaseEvents {
 }
 
 export function useReleaseEvents(releaseId: string): ReleaseEvents {
-  // Needs vX version of the API
-  const client = useClient({apiVersion: 'X'})
+  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
   const source = useSource()

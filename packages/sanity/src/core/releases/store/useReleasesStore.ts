@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useClient} from '../../hooks'
 import {useDocumentPreviewStore, useResourceCache} from '../../store'
 import {useWorkspace} from '../../studio'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 import {createReleaseStore} from './createReleaseStore'
 import {type ReleaseStore} from './types'
 
@@ -12,7 +12,7 @@ export function useReleasesStore(): ReleaseStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const previewStore = useDocumentPreviewStore()
-  const studioClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const studioClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const releaseStore =
