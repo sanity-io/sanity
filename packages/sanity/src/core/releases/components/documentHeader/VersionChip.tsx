@@ -1,7 +1,14 @@
 import {LockIcon} from '@sanity/icons'
-import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {
+  type BadgeTone,
+  Box,
+  Button, // eslint-disable-line no-restricted-imports
+  Flex,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 // eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
 import {
   memo,
   type MouseEvent,
@@ -14,7 +21,7 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button, Popover, Tooltip} from '../../../../ui-components'
+import {Popover, Tooltip} from '../../../../ui-components'
 import {getVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {type ReleaseDocument, type ReleaseState} from '../../store/types'
@@ -28,15 +35,11 @@ interface ChipStyleProps {
   $isArchived?: boolean
 }
 
-const Chip = styled(Button)<ChipStyleProps>(({$isArchived, theme: themeRaw}) => {
-  const theme = getTheme_v2(themeRaw)
-
+const ChipButton = styled(Button)<ChipStyleProps>(({$isArchived}) => {
   return css`
-    border-radius: 9999px !important;
+    flex: none;
     transition: none;
-    text-decoration: none !important;
     cursor: pointer;
-    padding-right: ${theme.space[3]}px;
 
     // target enabled state
     &:not([data-disabled='true']) {
@@ -189,20 +192,27 @@ export const VersionChip = memo(function VersionChip(props: {
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         {/* This span is needed to make the tooltip work in disabled buttons */}
         <span style={{display: 'inline-flex'}}>
-          <Chip
+          <ChipButton
             ref={chipRef}
             disabled={disabled}
             mode="bleed"
             onClick={onClick}
             selected={selected}
-            style={{flex: 'none'}}
-            text={text}
             tone={tone}
-            icon={<ReleaseAvatar padding={1} tone={tone} />}
             iconRight={locked && LockIcon}
             onContextMenu={contextMenuHandler}
+            padding={1}
+            paddingRight={2}
+            radius="full"
             $isArchived={releaseState === 'archived'}
-          />
+          >
+            <Flex align="center" gap={0}>
+              <ReleaseAvatar padding={1} tone={tone} />
+              <Box flex="none" padding={1}>
+                <Text size={1}>{text}</Text>
+              </Box>
+            </Flex>
+          </ChipButton>
         </span>
       </Tooltip>
 
