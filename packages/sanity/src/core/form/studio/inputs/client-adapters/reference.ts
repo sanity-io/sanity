@@ -49,9 +49,9 @@ export function getReferenceInfo(
   id: string,
   referenceType: ReferenceSchemaType,
   {version}: {version?: string} = {},
-  perspective: {bundleIds: string[]; bundleStack: PerspectiveStack} = {
-    bundleIds: [],
-    bundleStack: [],
+  perspective: {ids: string[]; stack: PerspectiveStack} = {
+    ids: [],
+    stack: [],
   },
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId, versionId} = getIdPair(id, {version})
@@ -148,7 +148,7 @@ export function getReferenceInfo(
             refSchemaType,
           )
 
-          const versions$ = from(perspective.bundleIds).pipe(
+          const versions$ = from(perspective.ids).pipe(
             mergeMap<string, Observable<VersionTuple>>((bundleId) =>
               documentPreviewStore
                 .observePaths({_id: getVersionId(id, bundleId)}, previewPaths)
@@ -187,7 +187,7 @@ export function getReferenceInfo(
           const versionPreview$ = versionId
             ? versions$.pipe(
                 map((versions) => {
-                  for (const bundleId of perspective.bundleStack) {
+                  for (const bundleId of perspective.stack) {
                     if (bundleId in versions) {
                       return versions[bundleId]
                     }

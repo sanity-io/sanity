@@ -53,8 +53,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const previewStateObservable = useMemo(
     () =>
       getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title, {
-        bundleIds: releasesIds,
-        bundleStack: perspectiveStack,
+        ids: releasesIds,
+        stack: perspectiveStack,
       }),
     [props.documentPreviewStore, schemaType, value._id, title, releasesIds, perspectiveStack],
   )

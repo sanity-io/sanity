@@ -17,7 +17,7 @@ const NOT_SYNCING = {isSyncing: false}
 export function useSyncState(
   publishedDocId: string,
   documentType: string,
-  {version}: {version?: string} = {},
+  version?: string,
 ): SyncState {
   const documentStore = useDocumentStore()
 

@@ -130,8 +130,8 @@ export function useReferenceInput(options: Options) {
         schemaType,
         {version},
         {
-          bundleIds: releasesIds,
-          bundleStack: perspective.perspectiveStack,
+          ids: releasesIds,
+          stack: perspective.perspectiveStack,
         },
       ),
     [documentPreviewStore, schemaType, version, releasesIds, perspective.perspectiveStack],
