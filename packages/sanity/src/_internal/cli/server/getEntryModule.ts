@@ -42,17 +42,11 @@ export function getEntryModule(options: {
   relativeConfigLocation: string | null
   basePath?: string
   appLocation?: string
-  isStudioApp?: boolean
+  isCoreApp?: boolean
 }): string {
-  const {
-    reactStrictMode,
-    relativeConfigLocation,
-    basePath,
-    appLocation,
-    isStudioApp = true,
-  } = options
+  const {reactStrictMode, relativeConfigLocation, basePath, appLocation, isCoreApp} = options
 
-  if (!isStudioApp) {
+  if (isCoreApp) {
     return coreAppEntryModule.replace(/%APP_LOCATION%/, JSON.stringify(appLocation || './src/App'))
   }
 

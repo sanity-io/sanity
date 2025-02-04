@@ -13,13 +13,11 @@ const coreAppTemplate: ProjectTemplate = {
      *  eslint.config generation will be a fast follow
      */
     '@sanity/eslint-config-studio': '^5.0.1',
-    'sanity': '^3',
-    '@vitejs/plugin-react': '^4.3.4',
     '@types/react': '^18.0.25',
     'eslint': '^9.9.0',
     'prettier': '^3.0.2',
+    'sanity': '^3',
     'typescript': '^5.1.6',
-    'vite': '^6',
   },
   appLocation: './src/App.tsx',
 }

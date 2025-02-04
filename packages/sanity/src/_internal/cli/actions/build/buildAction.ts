@@ -46,6 +46,7 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
+  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
 
   await checkStudioDependencyVersions(workDir)
 
@@ -57,7 +58,6 @@ export default async function buildSanityStudio(
   }
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
-  const isStudioApp = !(cliConfig && '__experimental_coreAppConfiguration' in cliConfig)
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
@@ -147,7 +147,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner(`Build Sanity ${isStudioApp ? 'Studio' : 'application'}`).start()
+  spin = output.spinner(`Build Sanity ${isCoreApp ? 'application' : 'Studio'}`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -180,7 +180,7 @@ export default async function buildSanityStudio(
         cliConfig && '__experimental_coreAppConfiguration' in cliConfig
           ? cliConfig.__experimental_coreAppConfiguration?.appLocation
           : undefined,
-      isStudioApp,
+      isCoreApp,
     })
 
     trace.log({
@@ -190,7 +190,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity ${isStudioApp ? 'Studio' : 'application'} (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity ${isCoreApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()

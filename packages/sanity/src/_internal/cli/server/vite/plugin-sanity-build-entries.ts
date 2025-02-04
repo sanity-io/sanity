@@ -29,9 +29,9 @@ export function sanityBuildEntries(options: {
   monorepo: SanityMonorepo | undefined
   basePath: string
   importMap?: {imports?: Record<string, string>}
-  isStudioApp?: boolean
+  isCoreApp?: boolean
 }): Plugin {
-  const {cwd, monorepo, basePath, importMap, isStudioApp = true} = options
+  const {cwd, monorepo, basePath, importMap, isCoreApp} = options
 
   return {
     name: 'sanity/server/build-entries',
@@ -95,7 +95,7 @@ export function sanityBuildEntries(options: {
             entryPath,
             css,
           },
-          isStudioApp,
+          isCoreApp,
         }),
       })
     },

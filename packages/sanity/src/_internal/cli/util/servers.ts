@@ -49,7 +49,7 @@ export function getSharedServerConfig({
   basePath: string
   vite: CliConfig['vite']
   appLocation?: string
-  isStudioApp: boolean
+  isCoreApp?: boolean
 } {
   // Order of preference: CLI flags, environment variables, user build config, default config
   const env = process.env // eslint-disable-line no-process-env
@@ -66,7 +66,7 @@ export function getSharedServerConfig({
     env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/'),
   )
 
-  const isStudioApp = !(cliConfig && '__experimental_coreAppConfiguration' in cliConfig)
+  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
   const appLocation = cliConfig?.__experimental_coreAppConfiguration?.appLocation
 
   return {
@@ -76,7 +76,7 @@ export function getSharedServerConfig({
     basePath,
     vite: cliConfig?.vite,
     appLocation,
-    isStudioApp,
+    isCoreApp,
   }
 }
 

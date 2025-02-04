@@ -13,7 +13,7 @@ import {createCliConfig} from './createCliConfig'
 import {createCoreAppCliConfig} from './createCoreAppCliConfig'
 import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
-import {determineStudioTemplate} from './determineStudioTemplate'
+import {determineCoreAppTemplate} from './determineCoreAppTemplate'
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
@@ -40,7 +40,7 @@ export async function bootstrapLocalTemplate(
   const {outputPath, templateName, useTypeScript, packageName, variables} = opts
   const sourceDir = path.join(templatesDir, templateName)
   const sharedDir = path.join(templatesDir, 'shared')
-  const isStudioTemplate = determineStudioTemplate(templateName)
+  const isCoreAppTemplate = determineCoreAppTemplate(templateName)
 
   // Check that we have a template info file (dependencies, plugins etc)
   const template = templates[templateName]
@@ -83,8 +83,8 @@ export async function bootstrapLocalTemplate(
   // Resolve latest versions of Sanity-dependencies
   spinner = output.spinner('Resolving latest module versions').start()
   const dependencyVersions = await resolveLatestVersions({
-    ...(isStudioTemplate ? studioDependencies.dependencies : {}),
-    ...(isStudioTemplate ? studioDependencies.devDependencies : {}),
+    ...(isCoreAppTemplate ? {} : studioDependencies.dependencies),
+    ...(isCoreAppTemplate ? {} : studioDependencies.devDependencies),
     ...(template.dependencies || {}),
     ...(template.devDependencies || {}),
   })
@@ -92,7 +92,7 @@ export async function bootstrapLocalTemplate(
 
   // Use the resolved version for the given dependency
   const dependencies = Object.keys({
-    ...(isStudioTemplate ? studioDependencies.dependencies : {}),
+    ...(isCoreAppTemplate ? {} : studioDependencies.dependencies),
     ...template.dependencies,
   }).reduce(
     (deps, dependency) => {
@@ -103,7 +103,7 @@ export async function bootstrapLocalTemplate(
   )
 
   const devDependencies = Object.keys({
-    ...(isStudioTemplate ? studioDependencies.devDependencies : {}),
+    ...(isCoreAppTemplate ? {} : studioDependencies.devDependencies),
     ...template.devDependencies,
   }).reduce(
     (deps, dependency) => {
@@ -128,22 +128,22 @@ export async function bootstrapLocalTemplate(
   })
 
   // ...and a CLI config (`sanity.cli.[ts|js]`)
-  const cliConfig = isStudioTemplate
-    ? createCliConfig({
+  const cliConfig = isCoreAppTemplate
+    ? createCoreAppCliConfig({appLocation: template.appLocation!})
+    : createCliConfig({
         projectId: variables.projectId,
         dataset: variables.dataset,
         autoUpdates: variables.autoUpdates,
       })
-    : createCoreAppCliConfig({appLocation: template.appLocation!})
 
   // Write non-template files to disc
   const codeExt = useTypeScript ? 'ts' : 'js'
   await Promise.all(
     [
       ...[
-        isStudioTemplate
-          ? writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig)
-          : Promise.resolve(null),
+        isCoreAppTemplate
+          ? Promise.resolve(null)
+          : writeFileIfNotExists(`sanity.config.${codeExt}`, studioConfig),
       ],
       writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
       writeFileIfNotExists('package.json', packageManifest),

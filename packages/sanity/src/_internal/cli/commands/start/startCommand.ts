@@ -33,11 +33,11 @@ const startCommand: CliCommandDefinition = {
     const {output, chalk, prompt} = context
     const previewAction = await getPreviewAction()
     const {cliConfig} = context
-    const isStudioApp = !(cliConfig && '__experimental_coreAppConfiguration' in cliConfig)
+    const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
 
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
     const error = (msg: string) => output.warn(chalk.red.bgBlack(msg))
-    if (isStudioApp) {
+    if (!isCoreApp) {
       warn('╭───────────────────────────────────────────────────────────╮')
       warn('│                                                           │')
       warn("│  You're running Sanity Studio v3. In this version the     │")
