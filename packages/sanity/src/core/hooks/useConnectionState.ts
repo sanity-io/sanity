@@ -14,7 +14,7 @@ const INITIAL: ConnectionState = 'connecting'
 export function useConnectionState(
   publishedDocId: string,
   docTypeName: string,
-  {version}: {version?: string} = {},
+  version?: string,
 ): ConnectionState {
   const documentStore = useDocumentStore()
 

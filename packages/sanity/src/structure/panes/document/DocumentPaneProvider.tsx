@@ -176,9 +176,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     selectedReleaseId,
   )
-  const connectionState = useConnectionState(documentId, documentType, {
-    version: selectedReleaseId,
-  })
+  const connectionState = useConnectionState(documentId, documentType, selectedReleaseId)
   const liveEdit = Boolean(schemaType?.liveEdit)
 
   const value: SanityDocumentLike = useMemo(() => {

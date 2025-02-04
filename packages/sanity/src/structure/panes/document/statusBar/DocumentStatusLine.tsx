@@ -183,7 +183,7 @@ export function DocumentStatusLine() {
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents
 
-  const syncState = useSyncState(documentId, documentType, {version: editState?.release})
+  const syncState = useSyncState(documentId, documentType, editState?.release)
 
   const lastUpdated = value?._updatedAt
 
