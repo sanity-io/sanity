@@ -6,7 +6,6 @@ import {GlobalStyle} from './GlobalStyle'
 import {type RouterHistory} from './router'
 import {StudioLayout} from './StudioLayout'
 import {StudioProvider} from './StudioProvider'
-import {Bridge} from './Bridge'
 
 /**
  * @hidden
@@ -113,7 +112,6 @@ export function Studio(props: StudioProps): React.JSX.Element {
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
     >
-      <Bridge />
       {globalStyles && <GlobalStyle />}
       <StudioLayout />
     </StudioProvider>
