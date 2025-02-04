@@ -9,7 +9,12 @@ import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
 vi.mock('../../hooks', () => ({
-  useClient: () => ({observable: {fetch: vi.fn()}}),
+  useClient: () => ({
+    observable: {
+      fetch: vi.fn(),
+    },
+    withConfig: vi.fn().mockReturnValue({observable: {fetch: vi.fn().mockReturnValue(searchHits)}}),
+  }),
 }))
 
 const mockSchema = Schema.compile({
@@ -37,6 +42,14 @@ beforeEach(() => {
 })
 
 describe('createWeightedSearch', () => {
+  it('overrides to use vX api version', async () => {
+    await lastValueFrom(
+      search({query: 'harry', types: []} as SearchTerms, {perspective: ['r123', 'drafts']}),
+    )
+
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'X'})
+  })
+
   it('should order hits by score by default', async () => {
     const result = await lastValueFrom(search({query: 'harry', types: []} as SearchTerms))
 

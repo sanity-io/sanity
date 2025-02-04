@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import {
   type ForwardedRef,
   forwardRef,
@@ -30,6 +30,7 @@ import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {
@@ -217,6 +218,18 @@ export const DocumentPanelHeader = memo(
 
     return (
       <TooltipDelayGroupProvider>
+        <Card hidden={collapsed} style={{lineHeight: 0}}>
+          <Flex>
+            <Flex flex={1} wrap="wrap" gap={1} padding={3} paddingBottom={0}>
+              <DocumentPerspectiveList />
+            </Flex>
+
+            <Box flex="none" padding={3} paddingBottom={0}>
+              {renderedActions}
+            </Box>
+          </Flex>
+        </Card>
+
         <PaneHeader
           border
           ref={ref}
@@ -225,7 +238,6 @@ export const DocumentPanelHeader = memo(
           tabs={tabs}
           tabIndex={tabIndex}
           backButton={backButton}
-          actions={renderedActions}
         />
       </TooltipDelayGroupProvider>
     )

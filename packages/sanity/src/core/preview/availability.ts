@@ -6,7 +6,7 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {createSWR, getDraftId, getPublishedId, isRecord} from '../util'
+import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
@@ -146,18 +146,26 @@ export function createPreviewAvailabilityObserver(
    */
   return function observeDocumentPairAvailability(
     id: string,
+    {version}: {version?: string} = {},
   ): Observable<DraftsModelDocumentAvailability> {
     const draftId = getDraftId(id)
     const publishedId = getPublishedId(id)
+    const versionId = version ? getVersionId(id, version) : undefined
     return combineLatest([
       observeDocumentAvailability(draftId),
       observeDocumentAvailability(publishedId),
+      ...(versionId ? [observeDocumentAvailability(versionId)] : []),
     ]).pipe(
       distinctUntilChanged(shallowEquals),
-      map(([draftReadability, publishedReadability]) => {
+      map(([draftReadability, publishedReadability, versionReadability]) => {
         return {
           draft: draftReadability,
           published: publishedReadability,
+          ...(versionReadability
+            ? {
+                version: versionReadability,
+              }
+            : {}),
         }
       }),
     )

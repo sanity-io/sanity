@@ -2,9 +2,15 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
 
+import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+} from '../../releases/util/releasesClient'
+import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
 import {
   deriveSearchWeightsFromType,
+  isPerspectiveRaw,
   type SearchOptions,
   type SearchPath,
   type SearchSort,
@@ -103,6 +109,8 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
   client,
   factoryOptions,
 ) => {
+  const {perspective} = factoryOptions
+  const isRaw = isPerspectiveRaw(perspective)
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOptions = {}) {
@@ -114,10 +122,14 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       searchOptions.includeDrafts === false && "!(_id in path('drafts.**'))",
       factoryOptions.filter ? `(${factoryOptions.filter})` : false,
       searchTerms.filter ? `(${searchTerms.filter})` : false,
-      '!(_id in path("versions.**"))',
+      // Versions are collated server-side using the `perspective` option. Therefore, they
+      // must not be fetched individually.
+      // This should only be added if the search needs to be narrow to the perspective
+      isRaw ? '' : '!(_id in path("versions.**"))',
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
+      perspective: isRaw ? undefined : searchOptions.perspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },
@@ -133,9 +145,12 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
     }
+    const apiVersion = isReleasePerspective(searchOptions.perspective)
+      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+      : undefined
 
-    return client.observable
-      .request<TextSearchResponse<SanityDocumentLike>>({
+    return versionedClient(client, apiVersion)
+      .observable.request<TextSearchResponse<SanityDocumentLike>>({
         uri: `/data/textsearch/${client.config().dataset}`,
         method: 'POST',
         json: true,

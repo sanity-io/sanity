@@ -5,6 +5,7 @@ import {omit} from 'lodash'
 import {EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
+import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
   type CommitRequest,
@@ -15,6 +16,7 @@ import {
 import {getPairListener, type ListenerEvent, type PairListenerOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
+import {operationsApiClient} from './utils/operationsApiClient'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -27,7 +29,7 @@ const isMutationEventForDocId =
 /**
  * @hidden
  * @beta */
-export type WithVersion<T> = T & {version: 'published' | 'draft'}
+export type WithVersion<T> = T & {version: DocumentVariantType}
 
 /**
  * @hidden
@@ -60,15 +62,16 @@ export interface DocumentVersion {
 /**
  * @hidden
  * @beta */
-export interface Pair {
+export type Pair = {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
+  version?: DocumentVersion
 }
 
-function setVersion<T>(version: 'draft' | 'published') {
-  return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
+function setVersion<T>(version: 'draft' | 'published' | 'version') {
+  return (ev: T): T & {version: 'draft' | 'published' | 'version'} => ({...ev, version})
 }
 
 function requireId<T extends {_id?: string; _type: string}>(
@@ -115,7 +118,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     if (mutations.patch) {
       return {
         actionType: 'sanity.action.document.edit',
-        draftId: idPair.draftId,
+        draftId: idPair.versionId ?? idPair.draftId,
         publishedId: idPair.publishedId,
         patch: omit(mutations.patch, 'id'),
       }
@@ -144,18 +147,18 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
 
 function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
-    return commitMutations(client, mutationParams)
+    return commitMutations(client, idPair, mutationParams)
   }
 
-  return actionsApiClient(client).observable.action(toActions(idPair, mutationParams), {
+  return actionsApiClient(client, idPair).observable.action(toActions(idPair, mutationParams), {
     tag: 'document.commit',
     transactionId: mutationParams.transactionId,
   })
 }
 
-function commitMutations(client: SanityClient, mutationParams: Mutation['params']) {
+function commitMutations(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   const {resultRev, ...mutation} = mutationParams
-  return client.dataRequest('mutate', mutation, {
+  return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
     tag: 'document.commit',
@@ -174,7 +177,7 @@ function submitCommitRequest(
   return from(
     serverActionsEnabled
       ? commitActions(client, idPair, request.mutation.params)
-      : commitMutations(client, request.mutation.params),
+      : commitMutations(client, idPair, request.mutation.params),
   ).pipe(
     tap({
       error: (error) => {
@@ -201,7 +204,7 @@ export function checkoutPair(
   serverActionsEnabled: Observable<boolean>,
   pairListenerOptions?: PairListenerOptions,
 ): Pair {
-  const {publishedId, draftId} = idPair
+  const {publishedId, draftId, versionId} = idPair
 
   const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(share())
 
@@ -214,6 +217,14 @@ export function checkoutPair(
     listenerEvents$.pipe(filter(isMutationEventForDocId(draftId))),
   )
 
+  const version =
+    typeof versionId === 'undefined'
+      ? undefined
+      : createBufferedDocument(
+          versionId,
+          listenerEvents$.pipe(filter(isMutationEventForDocId(versionId))),
+        )
+
   const published = createBufferedDocument(
     publishedId,
     listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId))),
@@ -224,7 +235,11 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
+  const commits$ = merge(
+    draft.commitRequest$,
+    published.commitRequest$,
+    version ? version.commitRequest$ : EMPTY,
+  ).pipe(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
@@ -242,13 +257,20 @@ export function checkoutPair(
     draft: {
       ...draft,
       events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
-      consistency$: draft.consistency$,
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
+    ...(typeof version === 'undefined'
+      ? {}
+      : {
+          version: {
+            ...version,
+            events: merge(commits$, reconnect$, version.events).pipe(map(setVersion('version'))),
+            remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
+          },
+        }),
     published: {
       ...published,
       events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
-      consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
   }

@@ -15,7 +15,7 @@ test('toFetchOptions', () => {
     init: {
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': '@sanity/migrate@3.72.1',
+        'User-Agent': expect.stringMatching(/^@sanity\/migrate@3\./),
       },
       method: 'GET',
     },

@@ -26,6 +26,7 @@ export const UnpublishAction: DocumentActionComponent = ({
   draft,
   onComplete,
   liveEdit,
+  release,
 }) => {
   const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -70,6 +71,10 @@ export const UnpublishAction: DocumentActionComponent = ({
   }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
 
   return useMemo(() => {
+    if (release) {
+      // Version documents cannot be unpublished by this action, they should be unpublished as part of a release
+      return null
+    }
     if (liveEdit) {
       return null
     }
@@ -96,6 +101,7 @@ export const UnpublishAction: DocumentActionComponent = ({
       dialog,
     }
   }, [
+    release,
     currentUser,
     dialog,
     isPermissionsLoading,

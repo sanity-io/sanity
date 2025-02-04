@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {
   type CrossDatasetType,
   type SanityDocumentLike,
@@ -70,6 +70,7 @@ export interface SearchFactoryOptions {
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
   strategy?: SearchStrategy
+  perspective?: ClientPerspective
 }
 
 /**
@@ -122,6 +123,7 @@ export type SearchOptions = {
   sort?: SearchSort[]
   cursor?: string
   limit?: number
+  perspective?: ClientPerspective
   isCrossDataset?: boolean
   queryType?: 'prefixLast' | 'prefixNone'
 }
@@ -204,6 +206,7 @@ export type TextSearchParams = {
    * Result ordering.
    */
   order?: TextSearchOrder[]
+  perspective?: ClientPerspective
 }
 
 export type TextSearchResponse<Attributes = Record<string, unknown>> = {

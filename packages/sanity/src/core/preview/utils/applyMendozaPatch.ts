@@ -15,11 +15,11 @@ function omitRev(document: SanityDocument | undefined) {
  * @param patch - The mendoza patch to apply
  * @param baseRev - The revision of the document that the patch is calculated from. This is used to ensure that the patch is applied to the correct revision of the document
  */
-export function applyMendozaPatch(
-  document: SanityDocument | undefined,
+export function applyMendozaPatch<T extends SanityDocument | undefined>(
+  document: T,
   patch: RawPatch,
   baseRev: string,
-): SanityDocument | undefined {
+): T | undefined {
   if (baseRev !== document?._rev) {
     throw new Error(
       'Invalid document revision. The provided patch is calculated from a different revision than the current document',

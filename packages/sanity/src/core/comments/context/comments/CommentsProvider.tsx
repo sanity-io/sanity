@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
@@ -43,6 +44,7 @@ export interface CommentsProviderProps {
   children: ReactNode
   documentId: string
   documentType: string
+  releaseId?: ReleaseId
   type: CommentsType
   sortOrder: 'asc' | 'desc'
 
@@ -80,21 +82,24 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
+    releaseId,
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
-  const editState = useEditState(publishedId, documentType, 'low')
+
+  const editState = useEditState(publishedId, documentType, 'low', releaseId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   const documentValue = useMemo(() => {
+    if (releaseId) return editState.version
     return editState.draft || editState.published
-  }, [editState.draft, editState.published])
+  }, [editState.version, editState.draft, editState.published, releaseId])
 
   const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
@@ -115,7 +120,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     error,
     loading,
   } = useCommentsStore({
-    documentId: publishedId,
+    documentId,
+    releaseId,
     client,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
@@ -233,6 +239,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         currentUser,
         dataset,
         documentId: publishedId,
+        // use the current release id as document version id of the target
+        documentVersionId: releaseId,
         documentRevisionId,
         documentType,
         getComment,
@@ -261,6 +269,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         currentUser,
         dataset,
         publishedId,
+        releaseId,
         documentRevisionId,
         documentType,
         getComment,

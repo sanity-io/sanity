@@ -40,4 +40,5 @@ export interface PendingMutationsEvent {
 export interface IdPair {
   draftId: string
   publishedId: string
+  versionId?: string
 }

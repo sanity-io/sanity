@@ -88,6 +88,7 @@ export default function ChangeListStory() {
       rootDiff: diff,
       schemaType,
       value: {name: 'Test'},
+      showFromValue: true,
     }),
     [diff, documentId, FieldWrapper, schemaType],
   )

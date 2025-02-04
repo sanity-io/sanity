@@ -157,6 +157,9 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [mockPlugin()],
+        releases: {
+          enabled: true,
+        },
       }),
     )
     expect(workspace.__internal.options.plugins).toMatchObject([
@@ -165,6 +168,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/tasks'},
       {name: 'sanity/scheduled-publishing'},
       {name: 'sanity/create-integration'},
+      {name: 'sanity/releases'},
     ])
   })
 
@@ -185,6 +189,9 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [], // No plugins
+        releases: {
+          enabled: true,
+        },
       }),
     )
 
@@ -192,6 +199,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/comments'},
       {name: 'sanity/tasks'},
       {name: 'sanity/create-integration'},
+      {name: 'sanity/releases'},
     ])
   })
 })

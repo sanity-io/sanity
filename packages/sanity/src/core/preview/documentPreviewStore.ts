@@ -57,11 +57,13 @@ export interface DocumentPreviewStore {
    */
   unstable_observeDocumentPairAvailability: (
     id: string,
+    options?: {version?: string},
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    options?: {version?: string},
   ) => Observable<DraftsModelDocument<T>>
 
   /**
@@ -76,6 +78,7 @@ export interface DocumentPreviewStore {
    * @param filter - A groq filter to use for the document set
    * @param params - Parameters to use with the groq filter
    * @param options - Options for the observer
+   * @param apiVersion - Specify the API version to use for the query
    */
   unstable_observeDocumentIdSet: (
     filter: string,
@@ -85,6 +88,7 @@ export interface DocumentPreviewStore {
        * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
        */
       insert?: 'sorted' | 'prepend' | 'append'
+      apiVersion?: string
     },
   ) => Observable<DocumentIdSetObserverState>
 

@@ -1,24 +1,189 @@
-import {Flex} from '@sanity/ui'
-import {useEffect, useLayoutEffect, useState} from 'react'
-import {DocumentStatus, DocumentStatusIndicator, useSyncState} from 'sanity'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  Flex,
+  Skeleton,
+  Text,
+} from '@sanity/ui'
+import {motion} from 'framer-motion'
+import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {
+  AvatarSkeleton,
+  isPublishedPerspective,
+  TIMELINE_ITEM_I18N_KEY_MAPPING,
+  useEvents,
+  usePerspective,
+  UserAvatar,
+  useRelativeTime,
+  useSource,
+  useSyncState,
+  useTimelineSelector,
+  useTranslation,
+} from 'sanity'
 
-import {Tooltip} from '../../../../ui-components'
+import {HISTORY_INSPECTOR_NAME} from '../constants'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
+
+const RELATIVE_TIME_OPTIONS = {
+  minimal: true,
+  useTemporalPhrase: true,
+} as const
+
+const MotionButton = motion(Button)
+
+const ButtonSkeleton = () => {
+  return (
+    <Flex align="center" gap={3} paddingLeft={1} paddingRight={2} paddingY={2}>
+      <div style={{margin: -5}}>
+        <AvatarSkeleton $size={0} animated />
+      </div>
+      <Skeleton animated style={{width: '80px', height: '15px'}} radius={2} />
+    </Flex>
+  )
+}
+
+const DocumentStatusButton = ({
+  author,
+  translationKey,
+  timestamp = '',
+}: {
+  author: string
+  translationKey: string
+  timestamp?: string
+}) => {
+  const {onHistoryOpen, inspector, onHistoryClose} = useDocumentPane()
+  const {t} = useTranslation()
+  const relativeTime = useRelativeTime(timestamp, RELATIVE_TIME_OPTIONS)
+
+  return (
+    <MotionButton
+      data-testid="pane-footer-document-status"
+      animate={{opacity: 1}}
+      initial={{opacity: 0}} // Width of the skeleton
+      mode="bleed"
+      onClick={inspector?.name === HISTORY_INSPECTOR_NAME ? onHistoryClose : onHistoryOpen}
+      padding={2}
+      muted
+    >
+      <Flex align="center" flex="none" gap={3}>
+        {author && (
+          <div style={{margin: -5}}>
+            <UserAvatar user={author} size={0} />
+          </div>
+        )}
+        <Text muted size={1}>
+          {t(translationKey)} {relativeTime}
+        </Text>
+      </Flex>
+    </MotionButton>
+  )
+}
+
+const FallbackStatus = () => {
+  const {editState} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
+
+  const status = useMemo(() => {
+    if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
+      return {
+        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion,
+        timestamp: editState.published._updatedAt,
+      }
+    }
+    if (editState?.version?._updatedAt) {
+      return {
+        translationKey:
+          editState?.version?._updatedAt === editState?.version?._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+        timestamp: editState.version._updatedAt,
+      }
+    }
+    if (editState?.draft?._updatedAt) {
+      return {
+        translationKey:
+          editState?.draft?._updatedAt === editState?.draft?._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+        timestamp: editState.draft._updatedAt,
+      }
+    }
+    return null
+  }, [
+    selectedPerspective,
+    editState?.published?._updatedAt,
+    editState?.version?._updatedAt,
+    editState?.version?._createdAt,
+    editState?.draft?._updatedAt,
+    editState?.draft?._createdAt,
+  ])
+  if (!status) {
+    return null
+  }
+  return (
+    <DocumentStatusButton
+      author=""
+      translationKey={status.translationKey}
+      timestamp={status.timestamp}
+    />
+  )
+}
+
+const EventsStatus = () => {
+  const {events, loading} = useEvents()
+  const event = events?.[0]
+
+  if (!event && loading) {
+    return <ButtonSkeleton />
+  }
+  if (!event) {
+    return <FallbackStatus />
+  }
+
+  return (
+    <DocumentStatusButton
+      author={event.author}
+      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING[event.type]}
+      timestamp={event.timestamp}
+    />
+  )
+}
+
+const TimelineStatus = () => {
+  const {timelineStore} = useDocumentPane()
+  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
+  const loading = useTimelineSelector(timelineStore, (state) => state.isLoading)
+  const event = chunks?.[0]
+
+  if (!event && loading) {
+    return <ButtonSkeleton />
+  }
+  if (!event) {
+    return <FallbackStatus />
+  }
+
+  const author = Array.from(event.authors)[0]
+  return (
+    <DocumentStatusButton
+      author={author}
+      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type]}
+      timestamp={event.endTimestamp}
+    />
+  )
+}
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
-interface DocumentStatusLineProps {
-  singleLine?: boolean
-}
-
-export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
+export function DocumentStatusLine() {
   const {documentId, documentType, editState, value} = useDocumentPane()
-
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+  const source = useSource()
+  const eventsEnabled = source.beta?.eventsAPI?.documents
 
-  const syncState = useSyncState(documentId, documentType)
+  const syncState = useSyncState(documentId, documentType, editState?.release)
 
   const lastUpdated = value?._updatedAt
 
@@ -53,21 +218,9 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
     return <DocumentStatusPulse status={status || undefined} />
   }
 
-  return (
-    <Tooltip
-      content={
-        <DocumentStatus absoluteDate draft={editState?.draft} published={editState?.published} />
-      }
-      placement="top"
-    >
-      <Flex align="center" gap={3}>
-        <DocumentStatusIndicator draft={editState?.draft} published={editState?.published} />
-        <DocumentStatus
-          draft={editState?.draft}
-          published={editState?.published}
-          singleLine={singleLine}
-        />
-      </Flex>
-    </Tooltip>
-  )
+  if (eventsEnabled) {
+    return <EventsStatus />
+  }
+
+  return <TimelineStatus />
 }

@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {
   type I18nTextRecord,
   type Path,
@@ -9,6 +10,7 @@ import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type DocumentAvailability} from '../../../preview'
+import {type VersionsRecord} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -24,6 +26,8 @@ export interface ReferenceInfo {
   preview: {
     draft: PreviewDocumentValue | undefined
     published: PreviewDocumentValue | undefined
+    version: PreviewDocumentValue | undefined
+    versions: VersionsRecord
   }
 }
 
@@ -36,6 +40,7 @@ export interface EditReferenceEvent {
   id: string
   type: string
   template: ReferenceTemplate
+  version?: ReleaseId
 }
 
 export interface CreateReferenceOption {
@@ -82,4 +87,5 @@ export interface ReferenceInputProps<Value = Reference>
 
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
+  version?: string
 }

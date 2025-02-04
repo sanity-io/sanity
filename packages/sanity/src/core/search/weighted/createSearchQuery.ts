@@ -4,6 +4,7 @@ import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
 import {
   deriveSearchWeightsFromType,
+  isPerspectiveRaw,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
@@ -127,6 +128,8 @@ export function createSearchQuery(
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
+  const {perspective} = searchOpts
+  const isRaw = isPerspectiveRaw(perspective)
 
   // Construct search filters used in this GROQ query
   const filters = [
@@ -135,7 +138,9 @@ export function createSearchQuery(
     ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
-    '!(_id in path("versions.**"))',
+    // Versions are collated server-side using the `perspective` option. Therefore, they must
+    // not be fetched individually. This should only be added if the search needs to be narrow to the perspective
+    isRaw ? '' : '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
   const selections = specs.map((spec) => {
@@ -147,7 +152,7 @@ export function createSearchQuery(
   // Default to `_id asc` (GROQ default) if no search sort is provided
   const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
 
-  const projectionFields = ['_type', '_id']
+  const projectionFields = ['_type', '_id', '_originalId']
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
   const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
@@ -187,7 +192,10 @@ export function createSearchQuery(
       __limit: limit,
       ...(params || {}),
     },
-    options: {tag},
+    options: {
+      tag,
+      perspective: isRaw ? undefined : searchOpts.perspective,
+    },
     searchSpec: specs,
     terms,
   }

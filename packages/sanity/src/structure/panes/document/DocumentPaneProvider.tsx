@@ -13,6 +13,8 @@ import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
+  type DocumentActionsContext,
+  type DocumentActionsVersionType,
   type DocumentFieldAction,
   type DocumentInspector,
   type DocumentPresence,
@@ -20,8 +22,14 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  getVersionFromId,
+  isPublishedPerspective,
+  isReleaseDocument,
+  isReleaseScheduledOrScheduling,
   isSanityCreateLinkedDocument,
+  isVersionId,
   type OnPathFocusPayload,
+  type PartialContext,
   type PatchEvent,
   setAtPath,
   type StateTree,
@@ -33,6 +41,7 @@ import {
   useEditState,
   useFormState,
   useInitialValue,
+  usePerspective,
   usePresenceStore,
   useSchema,
   useSource,
@@ -71,7 +80,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, historyStore} = props
+  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -114,6 +123,28 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
+
+  const perspective = usePerspective()
+
+  const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
+    // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
+    if (forcedVersion) {
+      return forcedVersion
+    }
+    return {
+      selectedPerspectiveName: perspective.selectedPerspectiveName,
+      selectedReleaseId: perspective.selectedReleaseId,
+      isReleaseLocked: isReleaseDocument(perspective.selectedPerspective)
+        ? isReleaseScheduledOrScheduling(perspective.selectedPerspective)
+        : false,
+    }
+  }, [
+    forcedVersion,
+    perspective.selectedPerspectiveName,
+    perspective.selectedReleaseId,
+    perspective.selectedPerspective,
+  ])
+
   const panePayload = useUnique(paneRouter.payload)
   const {templateName, templateParams} = useMemo(
     () =>
@@ -131,22 +162,83 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentType,
     templateName,
     templateParams,
+    version: params.version,
   })
+
   const initialValue = useUnique(initialValueRaw)
   const isInitialValueLoading = initialValue.loading
 
-  const {patch} = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
-  const connectionState = useConnectionState(documentId, documentType)
+  const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
+  const {validation: validationRaw} = useValidationStatus(
+    documentId,
+    documentType,
+    selectedReleaseId,
+  )
+  const connectionState = useConnectionState(documentId, documentType, selectedReleaseId)
+  const liveEdit = Boolean(schemaType?.liveEdit)
+
+  const value: SanityDocumentLike = useMemo(() => {
+    if (selectedReleaseId) {
+      return editState.version || editState.draft || editState.published || initialValue.value
+    }
+    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
+      return (
+        editState.published ||
+        (liveEdit ? initialValue.value : {_id: documentId, _type: documentType})
+      )
+    }
+    return editState.draft || editState.published || initialValue.value
+  }, [
+    documentId,
+    documentType,
+    editState.draft,
+    editState.published,
+    editState.version,
+    initialValue.value,
+    liveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+  ])
+
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const getDocumentVersionType = useCallback(() => {
+    let version: DocumentActionsVersionType
+    switch (true) {
+      case Boolean(params.rev):
+        version = 'revision'
+        break
+      case selectedReleaseId && isVersionId(value._id):
+        version = 'version'
+        break
+      case selectedPerspectiveName === 'published':
+        version = 'published'
+        break
+      default:
+        version = 'draft'
+    }
+
+    return version
+  }, [selectedPerspectiveName, selectedReleaseId, params, value._id])
+
+  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
+
+  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
+    () => ({
+      schemaType: documentType,
+      documentId,
+      versionType: actionsPerspective,
+      ...(selectedReleaseId && {versionName: selectedReleaseId}),
+    }),
+    [documentType, documentId, actionsPerspective, selectedReleaseId],
+  )
 
   // Resolve document actions
   const actions = useMemo(
-    () => documentActions({schemaType: documentType, documentId}),
-    [documentActions, documentId, documentType],
+    () => documentActions(documentActionsProps),
+    [documentActions, documentActionsProps],
   )
 
   // Resolve document badges
@@ -186,8 +278,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (!timelineReady) {
       return false
     }
-    return Boolean(!editState?.draft && !editState?.published) && !isPristine
-  }, [editState?.draft, editState?.published, isPristine, timelineReady])
+    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+  }, [editState?.draft, editState?.published, editState?.version, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -195,13 +287,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
-    const subscription = presenceStore.documentPresence(documentId).subscribe((nextPresence) => {
+    const subscription = presenceStore.documentPresence(value._id).subscribe((nextPresence) => {
       setPresence(nextPresence)
     })
     return () => {
       subscription.unsubscribe()
     }
-  }, [documentId, presenceStore])
+  }, [presenceStore, value._id])
 
   const inspectors: DocumentInspector[] = useMemo(
     () => inspectorsResolver({documentId, documentType}),
@@ -478,7 +570,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = Boolean(schemaType?.liveEdit)
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {
@@ -501,9 +592,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
-    // in cases where the document has drafts but the schema is live edit,
-    // there is a risk of data loss, so we disable editing in this case
-    const isLiveEditAndDraft = Boolean(liveEdit && editState.draft)
+    // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
+    if (liveEdit && editState.draft?._id) {
+      return true
+    }
+    if (!liveEdit && selectedPerspectiveName === 'published') {
+      return true
+    }
+
+    // If a release is selected, validate that the document id matches the selected release id
+    if (selectedReleaseId && getVersionFromId(value._id) !== selectedReleaseId) {
+      return true
+    }
 
     return (
       !ready ||
@@ -515,8 +615,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isLocked ||
       isDeleting ||
       isDeleted ||
-      isLiveEditAndDraft ||
-      isCreateLinked
+      isCreateLinked ||
+      isReleaseLocked
     )
   }, [
     isPermissionsLoading,
@@ -525,13 +625,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isNonExistent,
     connectionState,
     editState.transactionSyncLock?.enabled,
-    editState.draft,
+    editState.draft?._id,
     liveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+    value._id,
     ready,
     revisionId,
     isDeleting,
     isDeleted,
     isCreateLinked,
+    isReleaseLocked,
   ])
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
@@ -615,14 +719,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       presenceStore.setLocation([
         {
           type: 'document',
-          documentId,
+          documentId: value._id,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
           selection: payload?.selection,
         },
       ])
     },
-    [documentId, presenceStore],
+    [presenceStore, value._id],
   )
 
   const updatePresenceThrottled = useMemo(
@@ -645,66 +749,68 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const documentPane: DocumentPaneContextValue = useMemo(
-    () => ({
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      closeInspector,
-      collapsedFieldSets,
-      collapsedPaths,
-      compareValue,
-      connectionState,
-      displayed,
-      documentId,
-      documentIdRaw,
-      documentType,
-      editState,
-      fieldActions,
-      focusPath,
-      inspector: currentInspector || null,
-      inspectors,
-      __internal_tasks,
-      onBlur: handleBlur,
-      onChange: handleChange,
-      onFocus: handleFocus,
-      onPathOpen: setOpenPath,
-      onHistoryClose: handleHistoryClose,
-      onHistoryOpen: handleHistoryOpen,
-      onInspectClose: handleLegacyInspectClose,
-      onMenuAction: handleMenuAction,
-      onPaneClose: handlePaneClose,
-      onPaneSplit: handlePaneSplit,
-      onSetActiveFieldGroup: handleSetActiveFieldGroup,
-      onSetCollapsedPath: handleOnSetCollapsedPath,
-      onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-      openInspector,
-      openPath,
-      index,
-      inspectOpen,
-      validation,
-      menuItemGroups: menuItemGroups || [],
-      paneKey,
-      previewUrl,
-      ready,
-      schemaType: schemaType!,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      permissions,
-      setTimelineRange,
-      setIsDeleting,
-      isDeleting,
-      isDeleted,
-      timelineError,
-      timelineStore,
-      title,
-      value,
-      views,
-      formState,
-      unstable_languageFilter: languageFilter,
-      revisionId,
-      lastNonDeletedRevId,
-    }),
+    () =>
+      ({
+        actions,
+        activeViewId,
+        badges,
+        changesOpen,
+        closeInspector,
+        collapsedFieldSets,
+        collapsedPaths,
+        compareValue,
+        connectionState,
+        displayed,
+        documentId,
+        documentIdRaw,
+        documentType,
+        editState,
+        fieldActions,
+        focusPath,
+        inspector: currentInspector || null,
+        inspectors,
+        __internal_tasks,
+        onBlur: handleBlur,
+        onChange: handleChange,
+        onFocus: handleFocus,
+        onPathOpen: setOpenPath,
+        onHistoryClose: handleHistoryClose,
+        onHistoryOpen: handleHistoryOpen,
+        onInspectClose: handleLegacyInspectClose,
+        onMenuAction: handleMenuAction,
+        onPaneClose: handlePaneClose,
+        onPaneSplit: handlePaneSplit,
+        onSetActiveFieldGroup: handleSetActiveFieldGroup,
+        onSetCollapsedPath: handleOnSetCollapsedPath,
+        onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+        openInspector,
+        openPath,
+        index,
+        inspectOpen,
+        validation,
+        menuItemGroups: menuItemGroups || [],
+        paneKey,
+        previewUrl,
+        ready,
+        schemaType: schemaType!,
+        isPermissionsLoading,
+        isInitialValueLoading,
+        permissions,
+        setTimelineRange,
+        setIsDeleting,
+        isDeleting,
+        isDeleted,
+        timelineError,
+        timelineStore,
+        title,
+        value,
+        selectedReleaseId,
+        views,
+        formState,
+        unstable_languageFilter: languageFilter,
+        revisionId,
+        lastNonDeletedRevId,
+      }) satisfies DocumentPaneContextValue,
     [
       actions,
       activeViewId,
@@ -758,6 +864,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       timelineStore,
       title,
       value,
+      selectedReleaseId,
       views,
       formState,
       languageFilter,

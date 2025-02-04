@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type SanityClient} from '@sanity/client'
 
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
@@ -30,6 +30,7 @@ export type ReferenceFilterSearchOptions = {
   tag?: string
   maxFieldDepth?: number
   strategy?: SearchStrategy
+  perspective?: ClientPerspective
 }
 
 /** @public */

@@ -12,6 +12,9 @@ import {
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {useReleasesIds} from '../../../releases/store/useReleasesIds'
 import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
@@ -31,11 +34,15 @@ interface Options {
   path: Path
   schemaType: ReferenceSchemaType
   value?: Reference
+  version?: string
 }
 
 export function useReferenceInput(options: Options) {
-  const {path, schemaType} = options
+  const {path, schemaType, version} = options
   const schema = useSchema()
+  const perspective = usePerspective()
+  const {data} = useActiveReleases()
+  const {releasesIds} = useReleasesIds(data)
   const documentPreviewStore = useDocumentPreviewStore()
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -116,8 +123,18 @@ export function useReferenceInput(options: Options) {
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
-    (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType),
-    [documentPreviewStore, schemaType],
+    (id: string) =>
+      adapter.getReferenceInfo(
+        documentPreviewStore,
+        id,
+        schemaType,
+        {version},
+        {
+          ids: releasesIds,
+          stack: perspective.perspectiveStack,
+        },
+      ),
+    [documentPreviewStore, schemaType, version, releasesIds, perspective.perspectiveStack],
   )
 
   return {

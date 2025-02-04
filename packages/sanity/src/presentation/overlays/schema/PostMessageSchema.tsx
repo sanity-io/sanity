@@ -3,7 +3,13 @@ import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
 import {useRootTheme} from '@sanity/ui'
 import {memo, useEffect} from 'react'
-import {useClient, useWorkspace} from 'sanity'
+import {
+  getPublishedId,
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useWorkspace,
+} from 'sanity'
 
 import {API_VERSION} from '../../constants'
 import {type VisualEditingConnection} from '../../types'
@@ -56,7 +62,9 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
     }
   }, [comlink, theme, workspace])
 
-  const client = useClient({apiVersion: API_VERSION})
+  const client = useClient(
+    isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
+  )
 
   // Resolve union types from an array of unresolved paths
   useEffect(() => {
@@ -67,7 +75,14 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
           const arr = Array.from(paths)
           const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
           const query = `*[_id == $id][0]{${projection}}`
-          const result = await client.fetch(query, {id}, {perspective, tag: 'presentation-schema'})
+          const result = await client.fetch(
+            query,
+            {id: getPublishedId(id)},
+            {
+              tag: 'presentation-schema',
+              perspective,
+            },
+          )
           const mapped = arr.map((path, i) => ({path: path, type: result[i]}))
           return {id, paths: mapped}
         }),

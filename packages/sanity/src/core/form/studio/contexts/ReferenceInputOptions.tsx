@@ -1,3 +1,4 @@
+import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {type ComponentType, type HTMLProps, type ReactNode, useContext, useMemo} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
@@ -18,6 +19,7 @@ export interface EditReferenceOptions {
   type: string
   parentRefPath: Path
   template: TemplateOption
+  version?: ReleaseId
 }
 
 /** @internal */

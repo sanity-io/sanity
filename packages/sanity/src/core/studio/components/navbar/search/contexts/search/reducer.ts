@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
 
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
@@ -41,6 +42,8 @@ export type SearchReducerState = PaginationState & {
   result: SearchResult
   terms: RecentSearch | SearchTerms
   strategy?: SearchStrategy
+  disabledDocumentIds?: string[]
+  perspective?: ClientPerspective
 }
 
 export interface SearchDefinitions {

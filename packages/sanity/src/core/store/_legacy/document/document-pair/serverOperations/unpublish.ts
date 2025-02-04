@@ -12,7 +12,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({client, idPair}) =>
-    actionsApiClient(client).observable.action(
+    actionsApiClient(client, idPair).observable.action(
       {
         // This operation is run when "unpublish anyway" is clicked
         actionType: 'sanity.action.document.unpublish',
