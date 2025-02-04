@@ -240,7 +240,7 @@ export default defineConfig([
       },
     },
     releases: {
-      enabled: true,
+      enabled: false,
     },
   },
   {

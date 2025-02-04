@@ -86,6 +86,18 @@ const FallbackStatus = () => {
   const {selectedPerspective} = usePerspective()
 
   const status = useMemo(() => {
+    if (editState?.liveEditSchemaType && !editState.version && !editState.draft) {
+      if (!editState.published?._updatedAt && !editState.published?._createdAt) {
+        return null
+      }
+      return {
+        translationKey:
+          editState?.published?._updatedAt === editState?.published?._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+        timestamp: editState.published?._updatedAt || editState.published?._createdAt,
+      }
+    }
     if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
       return {
         translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion,
@@ -112,12 +124,12 @@ const FallbackStatus = () => {
     }
     return null
   }, [
-    selectedPerspective,
+    editState?.liveEditSchemaType,
+    editState?.version,
+    editState?.draft,
     editState?.published?._updatedAt,
-    editState?.version?._updatedAt,
-    editState?.version?._createdAt,
-    editState?.draft?._updatedAt,
-    editState?.draft?._createdAt,
+    editState?.published?._createdAt,
+    selectedPerspective,
   ])
   if (!status) {
     return null
