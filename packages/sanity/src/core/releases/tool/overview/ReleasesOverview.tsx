@@ -1,6 +1,17 @@
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
-import {Box, Button, type ButtonMode, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  type ButtonMode,
+  Card,
+  Container,
+  Flex,
+  Inline,
+  Stack,
+  Text,
+  useMediaIndex,
+} from '@sanity/ui'
 import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -22,6 +33,7 @@ import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
+import {CalendarPopover} from './CalendarPopover'
 import {
   DATE_SEARCH_PARAM_KEY,
   getInitialFilterDate,
@@ -65,6 +77,8 @@ export function ReleasesOverview() {
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+
+  const mediaIndex = useMediaIndex()
 
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
@@ -147,6 +161,8 @@ export function ReleasesOverview() {
   useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  const showCalendar = mediaIndex > 2
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
@@ -268,27 +284,37 @@ export function ReleasesOverview() {
     getTimezoneAdjustedDateTimeRange,
   ])
 
+  const renderCalendarFilter = useMemo(() => {
+    return (
+      <Flex flex="none">
+        <Card borderRight flex="none" disabled>
+          <CalendarFilter
+            disabled={loading || releases.length === 0}
+            renderCalendarDay={ReleaseCalendarFilterDay}
+            selectedDate={releaseFilterDate}
+            onSelect={handleSelectFilterDate}
+          />
+        </Card>
+      </Flex>
+    )
+  }, [loading, releases, releaseFilterDate, handleSelectFilterDate])
+
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        <Flex flex="none">
-          <Card borderRight flex="none" disabled>
-            <CalendarFilter
-              disabled={loading || releases.length === 0}
-              renderCalendarDay={ReleaseCalendarFilterDay}
-              selectedDate={releaseFilterDate}
-              onSelect={handleSelectFilterDate}
-            />
-          </Card>
-        </Flex>
+        {showCalendar && renderCalendarFilter}
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
-              <Stack padding={2} space={4}>
-                <Text as="h1" size={1} weight="semibold">
-                  {t('overview.title')}
-                </Text>
-              </Stack>
+              <Inline>
+                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
+                <Stack padding={2} space={4}>
+                  <Text as="h1" size={1} weight="semibold">
+                    {t('overview.title')}
+                  </Text>
+                </Stack>
+              </Inline>
+
               <Flex flex={1} gap={1}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (

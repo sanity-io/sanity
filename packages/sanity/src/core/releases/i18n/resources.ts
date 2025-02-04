@@ -170,6 +170,8 @@ const releasesLocaleStrings = {
   /** Text for when a release is not found */
   'not-found': 'Release not found: {{releaseId}}',
 
+  /** Text for when a release is not found */
+  'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
   'overview.description':
     'Releases are collections of document versions which can be managed and published together.',
