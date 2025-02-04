@@ -141,6 +141,8 @@ const releasesLocaleStrings = {
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
 
+  /** Title text displayed for technical error details */
+  'error-details-title': 'Error details',
   /** Title text when error during release update */
   'failed-edit-title': 'Failed to save changes',
   /** Title text displayed for releases that failed to publish  */
