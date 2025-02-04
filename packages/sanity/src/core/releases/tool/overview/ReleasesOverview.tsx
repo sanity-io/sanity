@@ -284,7 +284,7 @@ export function ReleasesOverview() {
     getTimezoneAdjustedDateTimeRange,
   ])
 
-  const RenderCalendarFilter = () => {
+  const renderCalendarFilter = useMemo(() => {
     return (
       <Flex flex="none">
         <Card borderRight flex="none" disabled>
@@ -297,17 +297,17 @@ export function ReleasesOverview() {
         </Card>
       </Flex>
     )
-  }
+  }, [loading, releases, releaseFilterDate, handleSelectFilterDate])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        {showCalendar && <RenderCalendarFilter />}
+        {showCalendar && renderCalendarFilter}
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
               <Inline>
-                {!showCalendar && <CalendarPopover content={<RenderCalendarFilter />} />}
+                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
                 <Stack padding={2} space={4}>
                   <Text as="h1" size={1} weight="semibold">
                     {t('overview.title')}
