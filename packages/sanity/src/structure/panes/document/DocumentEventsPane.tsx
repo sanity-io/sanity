@@ -1,4 +1,5 @@
 import {type ReleaseId} from '@sanity/client'
+import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
   EMPTY_ARRAY,
@@ -11,8 +12,10 @@ import {
   isDeleteDocumentVersionEvent,
   PerspectiveProvider,
   useArchivedReleases,
+  useEditState,
   useEventsStore,
   usePerspective,
+  useSchema,
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
@@ -24,14 +27,28 @@ import {type DocumentPaneProviderProps} from './types'
 export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
+  const schema = useSchema()
+  const documentType = options.type
+  const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
+  const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedPerspective} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
+  const editState = useEditState(
+    getPublishedId(options.id),
+    documentType,
+    'default',
+    selectedReleaseId,
+  )
 
+  const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !editState?.draft
   const {rev, since} = params
   const historyVersion = params.historyVersion as ReleaseId | undefined
 
   const documentId = useMemo(() => {
+    if (showingPublishedOnDraft) {
+      return getPublishedId(options.id)
+    }
     if (
       historyVersion &&
       archivedReleases.some(
@@ -47,11 +64,18 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     if (selectedPerspectiveName === 'published') {
       return getPublishedId(options.id)
     }
-    if (selectedPerspectiveName.startsWith('r')) {
+    if (selectedReleaseId) {
       return getVersionId(options.id, selectedPerspectiveName)
     }
     return options.id
-  }, [archivedReleases, historyVersion, selectedPerspectiveName, options.id])
+  }, [
+    archivedReleases,
+    historyVersion,
+    selectedPerspectiveName,
+    options.id,
+    showingPublishedOnDraft,
+    selectedReleaseId,
+  ])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})
 
