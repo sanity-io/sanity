@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
@@ -36,7 +36,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
-  perspective?: string | string[]
+  perspective?: ClientPerspective
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   searchStrategy?: SearchStrategy

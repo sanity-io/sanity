@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -30,7 +31,7 @@ import {type DocumentListPaneItem, type SortOrder} from './types'
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
-  perspective?: string | string[]
+  perspective?: ClientPerspective
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
