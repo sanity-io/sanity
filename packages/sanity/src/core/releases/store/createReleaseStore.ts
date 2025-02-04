@@ -21,7 +21,7 @@ import {listenQuery} from '../../store/_legacy'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type ReleaseDocument, type ReleaseStore} from './types'
+import {type ReleaseDocument, type ReleaseStore, type ReleaseType} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
 type ResponseWrapper = {response: ReleaseDocument[]}
@@ -31,6 +31,7 @@ export const SORT_ORDER = 'desc'
 
 const QUERY_FILTER = `_type=="${RELEASE_DOCUMENT_TYPE}" && _id in path("${RELEASE_DOCUMENTS_PATH}.*")`
 
+const DEFAULT_RELEASE_TYPE: ReleaseType = 'undecided'
 const QUERY_PROJECTION = `{
   _id,
   _type,
@@ -40,12 +41,10 @@ const QUERY_PROJECTION = `{
   state,
   finalDocumentStates,
   publishAt,
-  metadata {
-    title,
-    description,
-    intendedPublishAt,
-    releaseType
-  }
+  "metadata": coalesce(metadata, {
+    "title": "",
+    "releaseType": "${DEFAULT_RELEASE_TYPE}",
+  }),
 }`
 
 // Newest releases first
