@@ -243,6 +243,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 />
               )}
             </Flex>
+
             {/** Right flex */}
             <TooltipDelayGroupProvider>
               <Flex align="center" gap={1} justify="flex-end">
