@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.73.0",
+  "version": "3.74.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
