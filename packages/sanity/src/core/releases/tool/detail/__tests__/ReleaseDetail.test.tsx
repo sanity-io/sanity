@@ -4,7 +4,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease, publishedASAPRelease} from '../../../__fixtures__/release.fixture'
+import {
+  activeASAPRelease,
+  activeUndecidedErrorRelease,
+  publishedASAPRelease,
+} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
   mockUseActiveReleases,
@@ -324,6 +328,27 @@ describe('after releases have loaded', () => {
 
     it('should show missing release message', () => {
       screen.getByText(activeASAPRelease.metadata.title)
+    })
+  })
+
+  describe('with release in error state', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReset()
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeUndecidedErrorRelease],
+      })
+
+      mockUseRouterReturn.state = {
+        releaseId: getReleaseIdFromReleaseDocumentId(activeUndecidedErrorRelease._id),
+      }
+
+      await renderTest()
+    })
+
+    it('should show error message', () => {
+      screen.getByTestId('release-error-details')
     })
   })
 })
