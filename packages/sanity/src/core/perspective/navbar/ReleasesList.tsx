@@ -26,15 +26,19 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const StyledPublishedBox = styled(Box)<{$removePadding: boolean}>(
-  ({$removePadding}) => css`
+const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(({
+  $reducePadding,
+  $removePadding,
+}) => {
+  const padding = $reducePadding ? '4px' : '16px'
+  return css`
     position: sticky;
     top: 0;
     background-color: var(--card-bg-color);
     z-index: 10;
-    padding-bottom: ${$removePadding ? '4px' : '16px'};
-  `,
-)
+    padding-bottom: ${$removePadding ? '0px' : padding};
+  `
+})
 
 export function ReleasesList({
   areReleasesEnabled,
@@ -117,7 +121,10 @@ export function ReleasesList({
   return (
     <Box>
       <StyledBox ref={setScrollContainer} onScroll={onScroll}>
-        <StyledPublishedBox $removePadding={!releases.length || !areReleasesEnabled}>
+        <StyledPublishedBox
+          $reducePadding={!releases.length || !areReleasesEnabled}
+          $removePadding={!areReleasesEnabled}
+        >
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
