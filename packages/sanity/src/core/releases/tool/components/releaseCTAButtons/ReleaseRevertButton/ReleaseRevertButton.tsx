@@ -212,7 +212,9 @@ const ConfirmReleaseDialog = ({
   )
 }
 
-const isRevertEnabled = false // This is going to be disabled until we have the proper "releases plus" flag
+// TODO:  This is going to be disabled until we have the proper "releases plus" flag
+const isRevertEnabled = false
+
 export const ReleaseRevertButton = ({
   release,
   documents,

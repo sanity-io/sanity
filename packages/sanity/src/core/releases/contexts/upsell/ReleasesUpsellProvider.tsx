@@ -39,10 +39,7 @@ const API_VERSION = '2024-04-19'
  */
 export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const [upsellData, setUpsellData] = useState<Pick<
-    UpsellData,
-    'ctaButton' | 'descriptionText' | 'image' | 'secondaryButton'
-  > | null>(null)
+  const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
   const client = useClient({apiVersion: API_VERSION})
@@ -121,8 +118,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetry])
 
   useEffect(() => {
-    // @todo: once personalization forge deployed to prod, remove the `vX`
-    const data$ = client.withConfig({apiVersion: 'vX'}).observable.request<UpsellData | null>({
+    const data$ = client.observable.request<UpsellData | null>({
       uri: '/journey/content-releases',
     })
 
@@ -141,7 +137,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         }
       },
       error: () => {
-        setUpsellData(null)
+        // silently fail
       },
     })
 

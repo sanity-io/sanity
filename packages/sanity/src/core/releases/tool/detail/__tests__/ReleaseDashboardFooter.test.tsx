@@ -57,14 +57,14 @@ describe('ReleaseDashboardFooter', () => {
   })
 
   describe('for a published release', () => {
-    // Revert button is now hidden in the UI until feature flag is added
+    // Revert button is now hidden in the UI until feature flag "releases plus" is added - see ReleasesRevert component
     test.skip('shows revert button for asap release', async () => {
       await renderTest({release: publishedASAPRelease})
 
       expect(screen.getByText('Revert release')).toBeInTheDocument()
     })
 
-    // Revert button is now hidden in the UI until feature flag is added
+    // Revert button is now hidden in the UI until feature flag "releases plus" is added - see ReleasesRevert component
     test.skip('shows revert button for scheduled release', async () => {
       await renderTest({
         release: {

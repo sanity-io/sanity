@@ -3,6 +3,7 @@ import {type Mocked, vi} from 'vitest'
 import {type useReleasesUpsell} from '../useReleasesUpsell'
 
 export const useReleasesUpsellMockReturn: Mocked<ReturnType<typeof useReleasesUpsell>> = {
+  mode: 'default',
   guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
   onReleaseLimitReached: vi.fn(),
   upsellDialogOpen: false,
