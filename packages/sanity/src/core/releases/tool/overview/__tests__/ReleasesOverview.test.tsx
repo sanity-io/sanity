@@ -305,6 +305,11 @@ describe('ReleasesOverview', () => {
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
     })
 
+    it('shows error indicator next to active releases in error state', () => {
+      const row = screen.getAllByTestId('table-row')[4]
+      within(row).getByTestId('error-indicator')
+    })
+
     it('allows for switching between history modes', () => {
       expect(screen.getByText('Open').closest('button')).not.toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()

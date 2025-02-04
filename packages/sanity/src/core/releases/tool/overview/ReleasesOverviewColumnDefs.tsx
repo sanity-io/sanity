@@ -1,7 +1,10 @@
-import {LockIcon} from '@sanity/icons'
+import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import {type TFunction} from 'i18next'
+import {Fragment} from 'react'
 
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {Headers} from '../components/Table/TableHeader'
@@ -89,9 +92,33 @@ export const releasesOverviewColumnDefs: (
       },
     },
     {
+      id: 'error',
+      sorting: false,
+      width: 40,
+      header: () => <Fragment />,
+      cell: ({datum: {error, state}, cellProps}) => (
+        <Flex
+          {...cellProps}
+          align="center"
+          paddingX={2}
+          paddingY={3}
+          sizing="border"
+          data-testid="error-indicator"
+        >
+          {typeof error !== 'undefined' && state === 'active' && (
+            <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
+              <Text size={1}>
+                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+              </Text>
+            </Tooltip>
+          )}
+        </Flex>
+      ),
+    },
+    {
       id: 'documentCount',
       sorting: false,
-      width: 100,
+      width: 120,
       header: ({headerProps}) => (
         <Flex {...headerProps} paddingY={3} sizing="border">
           <Headers.BasicHeader text="" />
