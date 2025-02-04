@@ -1,16 +1,9 @@
-import {Flex, Text} from '@sanity/ui'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
-const TitleContainer = styled(Text)`
-  max-width: 100%;
-  min-width: 0;
-`
-export function DocumentHeaderTitle({collapsed = false}: {collapsed?: boolean}): React.JSX.Element {
+export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue)
 
@@ -44,24 +37,12 @@ export function DocumentHeaderTitle({collapsed = false}: {collapsed?: boolean}):
   }
 
   return (
-    <Flex flex={1} align="center" gap={collapsed ? 3 : 1} paddingX={collapsed ? 2 : 0} paddingY={1}>
-      {collapsed ? (
-        <TitleContainer
-          muted={!value?.title}
-          size={1}
-          textOverflow="ellipsis"
-          weight={value?.title ? 'semibold' : undefined}
-          title={value?.title}
-        >
-          {value?.title || (
-            <span style={{color: 'var(--card-muted-fg-color)'}}>
-              {t('panes.document-header-title.untitled.text')}
-            </span>
-          )}
-        </TitleContainer>
-      ) : (
-        <DocumentPerspectiveList />
+    <>
+      {value?.title || (
+        <span style={{color: 'var(--card-muted-fg-color)'}}>
+          {t('panes.document-header-title.untitled.text')}
+        </span>
       )}
-    </Flex>
+    </>
   )
 }
