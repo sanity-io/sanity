@@ -46,29 +46,29 @@ export function getPreviewStateObservable(
     /**
      * An array of all existing bundle ids.
      */
-    bundleIds: string[]
+    ids: string[]
 
     /**
      * An array of release ids ordered chronologically to represent the state of documents at the
      * given point in time.
      */
-    bundleStack: PerspectiveStack
+    stack: PerspectiveStack
 
     /**
      * Perspective to use when fetching versions.
-     * Sometimes we want to fetch versions from a perspective not bound by the bundleStack
+     * Sometimes we want to fetch versions from a perspective not bound by the stack
      * (e.g. raw).
      */
     isRaw?: boolean
   } = {
-    bundleIds: [],
-    bundleStack: [],
+    ids: [],
+    stack: [],
     isRaw: false,
   },
 ): Observable<PreviewState> {
   const draft$ = documentPreviewStore.observeForPreview({_id: getDraftId(documentId)}, schemaType)
 
-  const versions$ = from(perspective.bundleIds).pipe(
+  const versions$ = from(perspective.ids).pipe(
     mergeMap<string, Observable<VersionTuple>>((bundleId) =>
       documentPreviewStore
         .observeForPreview({_id: getVersionId(documentId, bundleId)}, schemaType)
@@ -87,7 +87,7 @@ export function getPreviewStateObservable(
     startWith<VersionsRecord>({}),
   )
 
-  const list = perspective.isRaw ? perspective.bundleIds : perspective.bundleStack
+  const list = perspective.isRaw ? perspective.ids : perspective.stack
   // Iterate the release stack in descending precedence, returning the highest precedence existing
   // version document.
   const version$ = versions$.pipe(

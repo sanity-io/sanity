@@ -62,14 +62,14 @@ export function SearchResultItemPreview({
   const isRaw = isPerspectiveRaw(state.perspective)
 
   const observable = useMemo(() => {
-    const bundleStack = state.perspective && !isRaw ? state.perspective : perspectiveStack
+    const stack = state.perspective && !isRaw ? state.perspective : perspectiveStack
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
-      bundleIds: releasesIds,
+      ids: releasesIds,
       /**
        * if the perspective is defined in the state it means that there is a scope to the search
        * and that the preview needs to take that into account
        */
-      bundleStack: Array.isArray(bundleStack) ? bundleStack : [],
+      stack: Array.isArray(stack) ? stack : [],
       isRaw: isRaw,
     })
   }, [
