@@ -64,7 +64,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     if (selectedPerspectiveName === 'published') {
       return getPublishedId(options.id)
     }
-    if (selectedPerspectiveName.startsWith('r')) {
+    if (selectedReleaseId) {
       return getVersionId(options.id, selectedPerspectiveName)
     }
     return options.id
@@ -74,6 +74,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     selectedPerspectiveName,
     options.id,
     showingPublishedOnDraft,
+    selectedReleaseId,
   ])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})
