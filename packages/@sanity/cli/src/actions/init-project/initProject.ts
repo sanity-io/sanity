@@ -99,6 +99,7 @@ export interface ProjectTemplate {
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
   typescriptOnly?: boolean
   appLocation?: string
+  scripts?: Record<string, string>
 }
 
 export interface ProjectOrganization {

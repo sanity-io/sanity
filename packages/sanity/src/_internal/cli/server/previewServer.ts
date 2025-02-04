@@ -28,7 +28,7 @@ export interface PreviewServerOptions {
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
-  const {httpPort, httpHost, root, vite: extendViteConfig, isCoreApp = true} = options
+  const {httpPort, httpHost, root, vite: extendViteConfig, isCoreApp} = options
   const startTime = Date.now()
 
   const indexPath = path.join(root, 'index.html')

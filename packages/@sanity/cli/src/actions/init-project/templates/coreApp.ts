@@ -20,6 +20,12 @@ const coreAppTemplate: ProjectTemplate = {
     'typescript': '^5.1.6',
   },
   appLocation: './src/App.tsx',
+  scripts: {
+    // this will eventually run a concurrently process with another in-flight utility
+    dev: 'sanity app dev',
+    build: 'sanity app build',
+    start: 'sanity app start',
+  },
 }
 
 export default coreAppTemplate

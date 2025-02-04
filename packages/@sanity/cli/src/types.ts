@@ -24,6 +24,7 @@ export interface SanityModuleInternal {
 export interface PackageJson {
   name: string
   version: string
+  scripts?: Record<string, string>
 
   description?: string
   author?: string
