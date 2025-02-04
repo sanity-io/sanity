@@ -8,6 +8,7 @@ import {
 import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {isReleaseLimitError} from './isReleaseLimitError'
 import {type EditableReleaseDocument} from './types'
 
 export interface ReleaseOperationsStore {
@@ -40,8 +41,11 @@ const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
+  onReleaseLimitReached: (limit: number) => void
 }): ReleaseOperationsStore {
   const {client} = options
+  const requestAction = createRequestAction(options.onReleaseLimitReached)
+
   const handleCreateRelease = (release: EditableReleaseDocument) =>
     requestAction(client, {
       actionType: 'sanity.action.release.create',
@@ -280,13 +284,27 @@ type ReleaseAction =
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
 
-export function requestAction(client: SanityClient, actions: ReleaseAction | ReleaseAction[]) {
-  const {dataset} = client.config()
-  return client.request({
-    uri: `/data/actions/${dataset}`,
-    method: 'POST',
-    body: {
-      actions: Array.isArray(actions) ? actions : [actions],
-    },
-  })
+export function createRequestAction(onReleaseLimitReached: (limit: number) => void) {
+  return async function requestAction(
+    client: SanityClient,
+    actions: ReleaseAction | ReleaseAction[],
+  ): Promise<void> {
+    const {dataset} = client.config()
+    try {
+      return await client.request({
+        uri: `/data/actions/${dataset}`,
+        method: 'POST',
+        body: {
+          actions: Array.isArray(actions) ? actions : [actions],
+        },
+      })
+    } catch (e) {
+      if (isReleaseLimitError(e)) {
+        // free accounts do not return limit, 0 is implied
+        onReleaseLimitReached(e.details.limit || 0)
+      }
+
+      throw e
+    }
+  }
 }

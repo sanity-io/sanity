@@ -9,6 +9,7 @@ import {
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type ReleaseAction} from './releaseActions'
 import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
@@ -26,7 +27,7 @@ export const ReleaseMenu = ({
 }: ReleaseMenuProps) => {
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
-
+  const {mode} = useReleasesUpsell()
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
@@ -43,6 +44,7 @@ export const ReleaseMenu = ({
       return (
         <MenuItem
           data-value="unarchive"
+          disabled={mode === 'disabled'}
           onClick={handleOnInitiateAction}
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
@@ -64,7 +66,7 @@ export const ReleaseMenu = ({
         disabled={['scheduled', 'scheduling'].includes(release.state)}
       />
     )
-  }, [handleOnInitiateAction, disabled, release.state, t])
+  }, [handleOnInitiateAction, disabled, release.state, t, mode])
 
   const deleteMenuItem = useMemo(() => {
     if (release.state !== 'archived' && release.state !== 'published') return null

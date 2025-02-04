@@ -23,6 +23,7 @@ import {css, styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {getVersionId} from '../../../util/draftUtils'
+import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {type ReleaseDocument, type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -109,6 +110,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -152,9 +154,10 @@ export const VersionChip = memo(function VersionChip(props: {
     setIsDiscardDialogOpen(true)
   }, [setIsDiscardDialogOpen])
 
-  const openCreateReleaseDialog = useCallback(() => {
-    setIsCreateReleaseDialogOpen(true)
-  }, [setIsCreateReleaseDialogOpen])
+  const openCreateReleaseDialog = useCallback(
+    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    [guardWithReleaseLimitUpsell],
+  )
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {

@@ -9,6 +9,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
@@ -85,17 +86,21 @@ export function CopyToNewReleaseDialog(props: {
       await handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
     } catch (err) {
-      console.error(err)
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('release.toast.create-release-error.title'),
-        description: err.message,
-      })
+      if (isReleaseLimitError(err)) {
+        onClose()
+      } else {
+        console.error(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.toast.create-release-error.title'),
+          description: err.message,
+        })
+      }
     } finally {
       setIsSubmitting(false)
     }
-  }, [release, toast, createRelease, handleAddVersion, telemetry, t])
+  }, [release, createRelease, handleAddVersion, telemetry, onClose, toast, t])
 
   return (
     <Dialog

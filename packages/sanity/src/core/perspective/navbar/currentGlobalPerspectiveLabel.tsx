@@ -16,6 +16,7 @@ import {type SelectedPerspective} from '../types'
 const AnimatedMotionDiv = ({children, ...props}: PropsWithChildren<any>) => (
   <motion.div
     {...props}
+    layout="preserve-aspect"
     initial={{width: 0, opacity: 0}}
     animate={{width: 'auto', opacity: 1}}
     exit={{width: 0, opacity: 0}}

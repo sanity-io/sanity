@@ -5,6 +5,7 @@ import {css, styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST} from '../../releases/util/const'
@@ -57,12 +58,14 @@ export function ReleasesList({
   setCreateBundleDialogOpen: (open: boolean) => void
   scrollElementRef: RefObject<ScrollElement>
 }): React.JSX.Element {
+  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const {loading, data: releases} = useActiveReleases()
   const {t} = useTranslation()
-  /* create new release */
-  const handleCreateBundleClick = useCallback(() => {
-    setCreateBundleDialogOpen(true)
-  }, [setCreateBundleDialogOpen])
+
+  const handleCreateBundleClick = useCallback(
+    () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
+    [guardWithReleaseLimitUpsell, setCreateBundleDialogOpen],
+  )
 
   const sortedReleaseTypeReleases = useMemo(
     () =>
@@ -153,6 +156,7 @@ export function ReleasesList({
           <MenuDivider />
           <MenuItem
             icon={AddIcon}
+            disabled={mode === 'disabled'}
             onClick={handleCreateBundleClick}
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"
