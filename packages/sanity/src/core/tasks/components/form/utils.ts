@@ -1,6 +1,6 @@
 import {isPortableTextTextBlock} from '@sanity/types'
 
-import {getPublishedId, isVersionId} from '../../../util'
+import {getPublishedId} from '../../../util'
 import {type TaskDocument, type TaskTarget} from '../../types'
 
 interface GetTargetValueOptions {
@@ -16,10 +16,9 @@ export function getTargetValue({
   projectId,
 }: GetTargetValueOptions): TaskTarget {
   return {
-    documentType: documentType,
+    documentType,
     document: {
-      // Version documents should be referenced by their version id.
-      _ref: isVersionId(documentId) ? documentId : getPublishedId(documentId),
+      _ref: getPublishedId(documentId),
       _type: 'crossDatasetReference',
       _dataset: dataset,
       _projectId: projectId,
