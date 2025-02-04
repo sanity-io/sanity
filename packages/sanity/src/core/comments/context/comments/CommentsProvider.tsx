@@ -7,7 +7,7 @@ import {CommentsContext} from 'sanity/_singletons'
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
 import {useCurrentUser} from '../../../store'
 import {useAddonDataset, useWorkspace} from '../../../studio'
-import {getPublishedId, getVersionId} from '../../../util'
+import {getPublishedId} from '../../../util'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
@@ -89,7 +89,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
-  const versionOrPublishedId = releaseId ? getVersionId(documentId, releaseId) : publishedId
+
   const editState = useEditState(publishedId, documentType, 'low', releaseId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
@@ -238,7 +238,9 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         client,
         currentUser,
         dataset,
-        documentId: versionOrPublishedId,
+        documentId: publishedId,
+        // use the current release id as document version id of the target
+        documentVersionId: releaseId,
         documentRevisionId,
         documentType,
         getComment,
@@ -266,7 +268,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         client,
         currentUser,
         dataset,
-        versionOrPublishedId,
+        publishedId,
+        releaseId,
         documentRevisionId,
         documentType,
         getComment,
@@ -286,7 +289,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      documentId: versionOrPublishedId,
+      documentId,
       documentType,
 
       isCreatingDataset,
@@ -322,7 +325,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       },
     }),
     [
-      versionOrPublishedId,
+      documentId,
       documentType,
       isCreatingDataset,
       status,
