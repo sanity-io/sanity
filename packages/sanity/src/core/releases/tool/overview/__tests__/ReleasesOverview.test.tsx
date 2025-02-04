@@ -60,6 +60,13 @@ vi.mock('sanity', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
+vi.mock('@sanity/ui', async (importOriginal) => {
+  return {
+    ...(await importOriginal()),
+    useMediaIndex: vi.fn().mockReturnValue(3),
+  }
+})
+
 vi.mock('../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
