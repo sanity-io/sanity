@@ -7,6 +7,7 @@ import {
   Card,
   Container,
   Flex,
+  Inline,
   Stack,
   Text,
   useMediaIndex,
@@ -32,6 +33,7 @@ import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
+import {CalendarPopover} from './CalendarPopover'
 import {
   DATE_SEARCH_PARAM_KEY,
   getInitialFilterDate,
@@ -282,29 +284,36 @@ export function ReleasesOverview() {
     getTimezoneAdjustedDateTimeRange,
   ])
 
+  const RenderCalendarFilter = () => {
+    return (
+      <Flex flex="none">
+        <Card borderRight flex="none" disabled>
+          <CalendarFilter
+            disabled={loading || releases.length === 0}
+            renderCalendarDay={ReleaseCalendarFilterDay}
+            selectedDate={releaseFilterDate}
+            onSelect={handleSelectFilterDate}
+          />
+        </Card>
+      </Flex>
+    )
+  }
+
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
-        {showCalendar && (
-          <Flex flex="none">
-            <Card borderRight flex="none" disabled>
-              <CalendarFilter
-                disabled={loading || releases.length === 0}
-                renderCalendarDay={ReleaseCalendarFilterDay}
-                selectedDate={releaseFilterDate}
-                onSelect={handleSelectFilterDate}
-              />
-            </Card>
-          </Flex>
-        )}
+        {showCalendar && <RenderCalendarFilter />}
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
             <Flex align="flex-start" flex={1} gap={3}>
-              <Stack padding={2} space={4}>
-                <Text as="h1" size={1} weight="semibold">
-                  {t('overview.title')}
-                </Text>
-              </Stack>
+              <Inline>
+                {!showCalendar && <CalendarPopover content={<RenderCalendarFilter />} />}
+                <Stack padding={2} space={4}>
+                  <Text as="h1" size={1} weight="semibold">
+                    {t('overview.title')}
+                  </Text>
+                </Stack>
+              </Inline>
 
               <Flex flex={1} gap={1}>
                 {loadingOrHasReleases &&
