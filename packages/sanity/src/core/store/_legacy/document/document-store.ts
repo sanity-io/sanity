@@ -52,7 +52,13 @@ function getIdPairFromPublished(publishedId: string, version?: string): IdPair {
  * @hidden
  * @beta */
 export interface DocumentStore {
-  /** @internal */
+  /**
+   * Checks out a document (with its published and draft version) for real-time editing.
+   * Note that every call to this function will open a new listener to the server.
+   * It's recommended to use the helper functions on `pair` below which will re-use a single connection.
+   *
+   * @internal
+   **/
   checkoutPair: (idPair: IdPair) => Pair
   initialValue: (
     opts: InitialValueOptions,
