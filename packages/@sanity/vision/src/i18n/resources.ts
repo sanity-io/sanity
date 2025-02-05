@@ -76,9 +76,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Description for popover that explains what "Perspectives" are */
   'settings.perspectives.description':
     'Perspectives allow your query to run against different "views" of the content in your dataset',
-  /***/
-  'settings.perspectives.new-default': 'New default in v[TBD]',
-  /***/
+  /** Description for upcoming default perspective change */
   'settings.perspectives.new-default.description':
     'The default perspective is changing from "<code>raw</code>" to "<code>published</code>" starting from v[TBD]',
   /** Label for the pinned release perspective */
