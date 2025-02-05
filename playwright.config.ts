@@ -59,6 +59,7 @@ const playwrightConfig = createPlaywrightConfig({
 
     return {
       ...config,
+      retries: process.env.CI ? 4 : 0,
       reporter: excludeGithub(config.reporter),
       use: {
         ...config.use,
