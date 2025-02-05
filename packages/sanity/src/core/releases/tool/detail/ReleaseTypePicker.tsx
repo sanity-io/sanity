@@ -84,7 +84,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
           })
         } else {
           setIsUpdating(true)
-          updateRelease(newRelease).then(() => {
+          updateRelease(newRelease).finally(() => {
             setIsUpdating(false)
           })
         }
