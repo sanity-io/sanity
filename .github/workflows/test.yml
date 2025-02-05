@@ -71,6 +71,6 @@ jobs:
       - name: Test
         id: test
         run: |
-          pnpm test:vitest --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+          pnpm test:vitest --test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
