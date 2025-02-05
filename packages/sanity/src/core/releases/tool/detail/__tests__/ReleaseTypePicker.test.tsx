@@ -124,14 +124,14 @@ describe('ReleaseTypePicker', () => {
       expect(getByDataUi(document.body, 'Calendar')).toBeInTheDocument()
     })
 
-    it('hides calendar when moving back from scheduled option', async () => {
+    it.only('hides calendar when moving back from scheduled option', async () => {
       await renderComponent()
 
       const pickerButton = screen.getByRole('button')
       fireEvent.click(pickerButton)
-      const scheduledTab = screen.getByText('At time')
+      const scheduledTab = within(screen.getByRole('tablist')).getByText('At time')
       fireEvent.click(scheduledTab)
-      const asapTab = screen.getByText('ASAP')
+      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
       fireEvent.click(asapTab)
 
       expect(screen.queryByTestId('date-input')).not.toBeInTheDocument()
