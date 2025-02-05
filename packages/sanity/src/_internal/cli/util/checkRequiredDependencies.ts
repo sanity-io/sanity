@@ -31,6 +31,13 @@ interface CheckResult {
  * Additionally, returns the version of the 'sanity' dependency from the package.json.
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
+  // currently there's no check needed for core apps,
+  // but this should be removed once they are more mature
+  const isCoreApp = context.cliConfig && '__experimental_coreAppConfiguration' in context.cliConfig
+  if (isCoreApp) {
+    return {didInstall: false, installedSanityVersion: ''}
+  }
+
   const {workDir: studioPath, output} = context
   const [studioPackageManifest, installedStyledComponentsVersion, installedSanityVersion] =
     await Promise.all([

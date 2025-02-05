@@ -53,6 +53,7 @@ export interface ViteOptions {
 
   importMap?: {imports?: Record<string, string>}
   reactCompiler: ReactCompilerConfig | undefined
+  isCoreApp?: boolean
 }
 
 /**
@@ -72,6 +73,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     basePath: rawBasePath = '/',
     importMap,
     reactCompiler,
+    isCoreApp,
   } = options
 
   const monorepo = await loadSanityMonorepo(cwd)
@@ -110,9 +112,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
-      sanityBuildEntries({basePath, cwd, monorepo, importMap}),
+      sanityBuildEntries({basePath, cwd, monorepo, importMap, isCoreApp}),
     ],
-    envPrefix: 'SANITY_STUDIO_',
+    envPrefix: isCoreApp ? 'VITE_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
       alias: monorepo?.path

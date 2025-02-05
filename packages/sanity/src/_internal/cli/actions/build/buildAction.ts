@@ -46,6 +46,7 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
+  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
 
   await checkStudioDependencyVersions(workDir)
 
@@ -146,7 +147,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner('Build Sanity Studio').start()
+  spin = output.spinner(`Build Sanity ${isCoreApp ? 'application' : 'Studio'}`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -175,6 +176,11 @@ export default async function buildSanityStudio(
       importMap,
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
+      appLocation:
+        cliConfig && '__experimental_coreAppConfiguration' in cliConfig
+          ? cliConfig.__experimental_coreAppConfiguration?.appLocation
+          : undefined,
+      isCoreApp,
     })
 
     trace.log({
@@ -184,7 +190,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity ${isCoreApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()

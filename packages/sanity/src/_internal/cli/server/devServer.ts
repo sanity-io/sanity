@@ -17,6 +17,8 @@ export interface DevServerOptions {
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
+  appLocation?: string
+  isCoreApp?: boolean
 }
 
 export interface DevServer {
@@ -32,20 +34,24 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactStrictMode,
     vite: extendViteConfig,
     reactCompiler,
+    appLocation,
+    isCoreApp,
   } = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isCoreApp})
 
   debug('Resolving vite config')
   const mode = 'development'
+
   let viteConfig = await getViteConfig({
     basePath,
     mode: 'development',
     server: {port: httpPort, host: httpHost},
     cwd,
     reactCompiler,
+    isCoreApp,
   })
 
   // Extend Vite configuration with user-provided config
@@ -67,8 +73,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
 
   const startupDuration = Date.now() - startTime
   const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
+  const appType = isCoreApp ? 'Sanity application' : 'Sanity Studio'
   info(
-    `Sanity Studio ` +
+    `${appType} ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
       `and running at ${chalk.cyan(url)}`,

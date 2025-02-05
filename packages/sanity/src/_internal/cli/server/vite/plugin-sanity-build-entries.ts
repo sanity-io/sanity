@@ -19,6 +19,7 @@ interface ViteRenderedChunk {
   code: string
   imports: string[]
   viteMetadata: ChunkMetadata
+  isEntry: boolean
 }
 
 const entryChunkId = '.sanity/runtime/app.js'
@@ -28,8 +29,9 @@ export function sanityBuildEntries(options: {
   monorepo: SanityMonorepo | undefined
   basePath: string
   importMap?: {imports?: Record<string, string>}
+  isCoreApp?: boolean
 }): Plugin {
-  const {cwd, monorepo, basePath, importMap} = options
+  const {cwd, monorepo, basePath, importMap, isCoreApp} = options
 
   return {
     name: 'sanity/server/build-entries',
@@ -93,6 +95,7 @@ export function sanityBuildEntries(options: {
             entryPath,
             css,
           },
+          isCoreApp,
         }),
       })
     },

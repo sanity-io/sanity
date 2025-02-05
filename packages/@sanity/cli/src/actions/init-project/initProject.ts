@@ -49,6 +49,7 @@ import {createProject} from '../project/createProject'
 import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
 import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
+import {determineCoreAppTemplate} from './determineCoreAppTemplate'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -97,6 +98,8 @@ export interface ProjectTemplate {
   importPrompt?: string
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
   typescriptOnly?: boolean
+  appLocation?: string
+  scripts?: Record<string, string>
 }
 
 export interface ProjectOrganization {
@@ -271,6 +274,9 @@ export default async function initSanity(
   print('')
 
   const flags = await prepareFlags()
+  // skip project / dataset prompting
+  const isCoreAppTemplate = cliFlags.template ? determineCoreAppTemplate(cliFlags.template) : false // Default to false
+
   // We're authenticated, now lets select or create a project
   const {projectId, displayName, isFirstProject, datasetName, schemaUrl} = await getProjectDetails()
 
@@ -655,11 +661,15 @@ export default async function initSanity(
   const isCurrentDir = outputPath === process.cwd()
   if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(`${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
+    print(
+      `${chalk.cyan(devCommand)} - to run ${isCoreAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
+    )
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
-    print(`Then: ${chalk.cyan(devCommand)} - to run Sanity Studio\n`)
+    print(
+      `Then: ${chalk.cyan(devCommand)} -to run ${isCoreAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
+    )
   }
 
   print(`Other helpful commands`)
@@ -718,6 +728,15 @@ export default async function initSanity(
         isFirstProject: data.isFirstProject,
       })
       return data
+    }
+
+    if (isCoreAppTemplate) {
+      return {
+        projectId: '',
+        displayName: '',
+        isFirstProject: false,
+        datasetName: '',
+      }
     }
 
     debug('Prompting user to select or create a project')
