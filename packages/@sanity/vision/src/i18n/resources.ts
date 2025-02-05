@@ -71,11 +71,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'settings.perspective-label': 'Perspective',
   /** Call to action to read the docs related to "Perspectives" */
   'settings.perspectives.action.docs-link': 'Read docs',
+  /** Option for selecting default perspective */
+  'settings.perspectives.default': 'No perspective (API default)',
   /** Description for popover that explains what "Perspectives" are */
   'settings.perspectives.description':
     'Perspectives allow your query to run against different "views" of the content in your dataset',
+  /***/
+  'settings.perspectives.new-default': 'New default in v[TBD]',
+  /***/
+  'settings.perspectives.new-default.description':
+    'The default perspective is changing from "<code>raw</code>" to "<code>published</code>" starting from v[TBD]',
   /** Label for the pinned release perspective */
-  'settings.perspectives.pinned-release-label': 'pinned release',
+  'settings.perspectives.pinned-release-label': 'Pinned release',
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 } as const)

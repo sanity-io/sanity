@@ -20,8 +20,6 @@ export const VIRTUAL_PERSPECTIVES = ['pinnedRelease'] as const
 
 export type VirtualPerspective = (typeof VIRTUAL_PERSPECTIVES)[number]
 
-export const DEFAULT_PERSPECTIVE: SupportedPerspective = 'raw'
-
 export function isSupportedPerspective(p: string): p is SupportedPerspective {
   return SUPPORTED_PERSPECTIVES.includes(p as SupportedPerspective)
 }

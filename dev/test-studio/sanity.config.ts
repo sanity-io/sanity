@@ -140,7 +140,8 @@ const sharedSettings = definePlugin({
       ],
     }),
     visionTool({
-      defaultApiVersion: '2022-08-08',
+      // uncomment to test
+      //defaultApiVersion: '2025-02-05',
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
