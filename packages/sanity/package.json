@@ -305,6 +305,7 @@
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/expect": "^3.0.5",
     "@vvo/tzdb": "6.137.0",
     "babel-plugin-react-compiler": "19.0.0-beta-714736e-20250131",
     "blob-polyfill": "^9.0.20240710",

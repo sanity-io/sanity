@@ -6,7 +6,13 @@ import './clipboardItemPolyfill'
 import '@testing-library/jest-dom/vitest'
 
 import {cleanup} from '@testing-library/react'
-import {afterEach, beforeEach, vi} from 'vitest'
+import {afterEach, beforeEach, expect, vi} from 'vitest'
+
+import {toMatchEmissions} from '../matchers/toMatchEmissions'
+
+expect.extend({
+  toMatchEmissions,
+})
 
 afterEach(() => cleanup())
 
