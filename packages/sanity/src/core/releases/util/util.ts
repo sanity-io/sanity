@@ -69,5 +69,8 @@ export function isDraftPerspective(
 
 /** @internal */
 export function isReleaseScheduledOrScheduling(release: ReleaseDocument): boolean {
-  return release.state === 'scheduled' || release.state === 'scheduling'
+  return (
+    release.metadata.releaseType === 'scheduled' &&
+    (release.state === 'scheduled' || release.state === 'scheduling')
+  )
 }
