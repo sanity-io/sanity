@@ -5,7 +5,6 @@ import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
@@ -22,7 +21,6 @@ export function ReleaseForm(props: {
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
 
-  const {DialogTimeZone, dialogProps} = useDialogTimeZone()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
@@ -151,8 +149,6 @@ export function ReleaseForm(props: {
         </Flex>
       </Stack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
-
-      {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
     </Stack>
   )
 }

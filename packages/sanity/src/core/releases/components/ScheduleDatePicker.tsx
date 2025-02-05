@@ -25,7 +25,7 @@ export const ScheduleDatePicker = ({
 }: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
   const {timeZone} = useTimeZone()
-  const {dialogTimeZoneShow} = useDialogTimeZone()
+  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone()
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
@@ -67,6 +67,7 @@ export const ScheduleDatePicker = ({
         text={`${timeZone.abbreviation}`}
         onClick={dialogTimeZoneShow}
       />
+      {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
     </Flex>
   )
 }
