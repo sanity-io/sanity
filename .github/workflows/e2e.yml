@@ -215,10 +215,10 @@ jobs:
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: blob-report
           retention-days: 30
   merge-reports:
@@ -260,18 +260,19 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: playwright-report
+          pattern: playwright-report-*
+          merge-multiple: true
           path: playwright-report
 
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter html ./playwright-report
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: html-report--attempt-${{ github.run_attempt }}
+          name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
 

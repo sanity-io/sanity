@@ -15,7 +15,7 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function HistorySelector({showList}: {showList: boolean}) {
-  const {timelineError, setTimelineMode, setTimelineRange, timelineStore} = useDocumentPane()
+  const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
 
@@ -39,8 +39,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
   const selectRev = useCallback(
     (revChunk: Chunk) => {
       try {
-        const [sinceId, revId] = timelineStore.findRangeForRev(revChunk)
-        setTimelineMode('closed')
+        const [sinceId, revId] = timelineStore?.findRangeForRev(revChunk) || [null, null]
         setTimelineRange(sinceId, revId)
       } catch (err) {
         toast.push({
@@ -51,13 +50,13 @@ export function HistorySelector({showList}: {showList: boolean}) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, t, timelineStore, toast],
+    [setTimelineRange, t, timelineStore, toast],
   )
 
   const handleLoadMore = useCallback(() => {
     // If updated, be sure to update the TimeLineMenu component as well
     if (!loading) {
-      timelineStore.loadMore()
+      timelineStore?.loadMore()
     }
   }, [loading, timelineStore])
 

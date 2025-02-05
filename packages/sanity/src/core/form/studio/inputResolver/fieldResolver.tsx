@@ -5,7 +5,7 @@ import {
   isReferenceSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import {type ComponentType, useState} from 'react'
+import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
@@ -81,11 +81,24 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
 
+  const disableActions = field.schemaType.options?.disableActions || EMPTY_ARRAY
+
+  const actions = useMemo(() => {
+    return field.actions?.filter((a) => {
+      if (a.name === 'pasteField') {
+        return !disableActions.includes('add')
+      }
+      if (a.name === 'copyField') {
+        return !disableActions.includes('copy')
+      }
+      return true
+    })
+  }, [disableActions, field.actions])
   return (
     <>
       {documentId && field.actions && field.actions.length > 0 && (
         <FieldActionsResolver
-          actions={field.actions}
+          actions={actions || EMPTY_ARRAY}
           documentId={documentId}
           documentType={field.schemaType.name}
           onActions={setFieldActionNodes}

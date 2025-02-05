@@ -17,6 +17,38 @@ import {
 
 export type {InsertMenuOptions}
 
+/**
+ * Types of array actions that can be performed
+ * @beta
+ */
+export type ArrayActionName =
+  /**
+   * Add any item to the array at any position
+   */
+  | 'add'
+  /**
+   * Add item after an existing item
+   */
+  | 'addBefore'
+
+  /**
+   * Add item after an existing item
+   */
+  | 'addAfter'
+  /**
+   * Remove any item
+   */
+  | 'remove'
+  /**
+   * Duplicate item
+   */
+  | 'duplicate'
+
+  /**
+   * Copy item
+   */
+  | 'copy'
+
 /** @public */
 export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSchemaTypeOptions {
   list?: TitledListValue<V>[] | V[]
@@ -35,6 +67,13 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSche
    * @deprecated tree editing beta feature has been disabled
    */
   treeEditing?: boolean
+
+  /**
+   * A list of array actions to disable
+   * Possible options are defined by {@link ArrayActionName}
+   * @beta
+   */
+  disableActions?: ArrayActionName[]
 }
 
 /** @public */

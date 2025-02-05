@@ -1,5 +1,5 @@
 import {defineField, defineType} from '@sanity/types'
-import {beforeEach, expect, test, vi} from 'vitest'
+import {beforeEach, expect, type Mock, test, vi} from 'vitest'
 
 import {createSchema} from '../../../../schema/createSchema'
 import {createImmutableReconcile} from '../immutableReconcile'
@@ -7,7 +7,7 @@ import {createImmutableReconcile} from '../immutableReconcile'
 const immutableReconcile = createImmutableReconcile({decorator: vi.fn})
 
 beforeEach(() => {
-  ;(immutableReconcile as vi.Mock).mockClear()
+  ;(immutableReconcile as Mock).mockClear()
 })
 
 test('it preserves previous value if shallow equal', () => {

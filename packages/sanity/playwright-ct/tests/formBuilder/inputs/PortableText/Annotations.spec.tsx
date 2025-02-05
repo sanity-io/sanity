@@ -48,8 +48,25 @@ test.describe('Portable Text Input', () => {
       // Expect the editor to have focus after closing the popover
       await expect($pte).toBeFocused()
 
+      const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
+
       // Assertion: the annotation toolbar popover should be visible
       await expect(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+      await expect($toolbarPopover).toBeVisible()
+
+      // Assertion: tab works to get to the toolbar popover buttons
+      await page.keyboard.press('Tab')
+      await expect(page.getByTestId('edit-annotation-button')).toBeFocused()
+      await page.keyboard.press('Tab')
+      await expect(page.getByTestId('remove-annotation-button')).toBeFocused()
+      await page.keyboard.press('Escape')
+      await expect($pte).toBeFocused()
+      await expect($toolbarPopover).toBeVisible()
+      await page.waitForTimeout(100)
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(100)
+      // Assertion: escape closes the toolbar popover
+      await expect($toolbarPopover).not.toBeVisible()
     })
 
     test('Can create, and then open the existing annotation again for editing', async ({

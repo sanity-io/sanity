@@ -408,7 +408,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // string/number array in the schema normalization/compilation step
   // a path segment is a number when specified like array.0.prop in preview config.
   /** @deprecated Unused. Use the new field-level search config. */
-  __experimental_search: {path: (string | number)[]; weight: number; mapWith?: string}[]
+  __experimental_search?: {path: (string | number)[]; weight: number; mapWith?: string}[]
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
   /** @alpha */
