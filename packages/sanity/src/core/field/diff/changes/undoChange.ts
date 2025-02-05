@@ -1,4 +1,11 @@
 import {
+  diffItem,
+  type DiffOptions,
+  type InsertAfterPatch,
+  type SetPatch,
+  type UnsetPatch,
+} from '@sanity/diff-patch'
+import {
   isIndexSegment,
   isKeyedObject,
   isKeySegment,
@@ -6,13 +13,6 @@ import {
   type PatchOperations,
   type Path,
 } from '@sanity/types'
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from 'sanity-diff-patch'
 
 import {isRecord} from '../../../util'
 import {
