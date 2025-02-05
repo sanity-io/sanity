@@ -18,6 +18,7 @@ import FocusLock from 'react-focus-lock'
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n'
+import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -66,6 +67,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
+  const {zoneDateToUtc} = useTimeZone()
 
   const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
 
@@ -101,8 +103,8 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
   const isDateInPastWarningShown = useMemo(
-    () => inputValue && isPastDisabled && isPast(new Date(inputValue)),
-    [inputValue, isPastDisabled],
+    () => inputValue && isPastDisabled && isPast(zoneDateToUtc(new Date(inputValue))),
+    [inputValue, isPastDisabled, zoneDateToUtc],
   )
 
   const suffix = readOnly ? null : (

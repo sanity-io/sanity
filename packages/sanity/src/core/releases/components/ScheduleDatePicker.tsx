@@ -24,23 +24,25 @@ export const ScheduleDatePicker = ({
   onChange,
 }: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
-  const {timeZone} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
   const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone()
+
+  const timezoneAdjustedValue = utcToCurrentZoneDate(inputValue)
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
 
-    onChange(date)
+    onChange(zoneDateToUtc(date))
   }
 
   const handlePublishAtInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
       const date = event.currentTarget.value
-      const parsedDate = parse(date, inputDateFormat, new Date())
+      const parsedDate = zoneDateToUtc(parse(date, inputDateFormat, new Date()))
 
       if (isValid(parsedDate)) onChange(parsedDate)
     },
-    [onChange],
+    [onChange, zoneDateToUtc],
   )
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
@@ -53,8 +55,8 @@ export const ScheduleDatePicker = ({
         onChange={handlePublishAtCalendarChange}
         onInputChange={handlePublishAtInputChange}
         calendarLabels={calendarLabels}
-        value={inputValue}
-        inputValue={format(inputValue, inputDateFormat)}
+        value={timezoneAdjustedValue}
+        inputValue={format(timezoneAdjustedValue, inputDateFormat)}
         constrainSize={false}
         padding={0}
         isPastDisabled
