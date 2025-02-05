@@ -16,8 +16,7 @@ export const ScheduledBadge: DocumentBadgeComponent = (props) => {
   debug('schedules', schedules)
 
   const upcomingSchedule = schedules?.[0]
-
-  if (!upcomingSchedule || !upcomingSchedule.executeAt) {
+  if (!upcomingSchedule || !upcomingSchedule.executeAt || !upcomingSchedule.action) {
     return null
   }
 
