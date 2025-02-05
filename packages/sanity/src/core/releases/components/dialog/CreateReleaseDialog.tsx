@@ -6,6 +6,7 @@ import {type FormEvent, useCallback, useState} from 'react'
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../store/types'
@@ -29,6 +30,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {t} = useTranslation()
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
+  const createReleaseMetadata = useCreateReleaseMetadata()
 
   const [release, setRelease] = useState((): EditableReleaseDocument => {
     return {
@@ -70,11 +72,9 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       try {
         setIsSubmitting(true)
 
-        const submitValue = {
-          ...release,
-          metadata: {...release.metadata, title: release.metadata?.title?.trim()},
-        }
-        await createRelease(submitValue)
+        const releaseValue = createReleaseMetadata(release)
+
+        await createRelease(releaseValue)
         telemetry.log(CreatedRelease, {origin})
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
@@ -97,11 +97,22 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         setIsSubmitting(false)
       }
     },
-    [release, toast, tRelease, createRelease, telemetry, origin, onCancel, t, onSubmit],
+    [
+      release,
+      toast,
+      tRelease,
+      createReleaseMetadata,
+      createRelease,
+      telemetry,
+      origin,
+      onSubmit,
+      onCancel,
+      t,
+    ],
   )
 
-  const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
-    setRelease(changedValue)
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+    setRelease(releaseMetadata)
   }, [])
 
   const dialogTitle = t('release.dialog.create.title')

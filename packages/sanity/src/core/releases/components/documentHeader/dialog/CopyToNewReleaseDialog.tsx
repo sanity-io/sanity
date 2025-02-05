@@ -8,6 +8,7 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
+import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../../store/types'
@@ -30,6 +31,7 @@ export function CopyToNewReleaseDialog(props: {
   const {t} = useTranslation()
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
+  const createReleaseMetadata = useCreateReleaseMetadata()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -62,8 +64,8 @@ export function CopyToNewReleaseDialog(props: {
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
 
-  const handleOnChange = useCallback((changedValue: EditableReleaseDocument) => {
-    setRelease(changedValue)
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+    setRelease(releaseMetadata)
   }, [])
 
   const handleAddVersion = useCallback(async () => {
@@ -81,7 +83,9 @@ export function CopyToNewReleaseDialog(props: {
     try {
       setIsSubmitting(true)
 
-      await createRelease(release)
+      const releaseValue = createReleaseMetadata(release)
+
+      await createRelease(releaseValue)
 
       await handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
@@ -100,7 +104,16 @@ export function CopyToNewReleaseDialog(props: {
     } finally {
       setIsSubmitting(false)
     }
-  }, [release, createRelease, handleAddVersion, telemetry, onClose, toast, t])
+  }, [
+    release,
+    createReleaseMetadata,
+    createRelease,
+    handleAddVersion,
+    telemetry,
+    onClose,
+    toast,
+    t,
+  ])
 
   return (
     <Dialog
