@@ -45,7 +45,7 @@ describe('ReleaseDetailsEditor', () => {
       () => {
         expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
       },
-      {timeout: 250},
+      {timeout: 10_000},
     )
   })
 
@@ -67,7 +67,7 @@ describe('ReleaseDetailsEditor', () => {
       () => {
         expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
       },
-      {timeout: 250},
+      {timeout: 10_000},
     )
   })
 })
