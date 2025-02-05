@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
@@ -35,9 +34,5 @@ export const ReleaseTime = ({release}: {release: TableRelease}) => {
       : null
   }, [metadata.releaseType, release, utcToCurrentZoneDate, getTimezoneAbbreviation, t])
 
-  return (
-    <Text muted size={1}>
-      {timeString}
-    </Text>
-  )
+  return timeString
 }

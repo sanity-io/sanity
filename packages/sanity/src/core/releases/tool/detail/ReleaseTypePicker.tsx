@@ -19,6 +19,7 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {ReleaseTime} from '../overview/columnCells/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
 
@@ -127,22 +128,8 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       return tRelease('dashboard.details.published-asap')
     }
 
-    if (releaseType === 'asap') return t('release.type.asap')
-    if (releaseType === 'undecided') return t('release.type.undecided')
-    const labelDate = publishDate || intendedPublishAt
-    if (!labelDate) return null
-
-    return format(new Date(labelDate), `PPpp`)
-  }, [
-    intendedPublishAt,
-    isPublishDateInPast,
-    publishDate,
-    release.publishAt,
-    release.state,
-    releaseType,
-    t,
-    tRelease,
-  ])
+    return <ReleaseTime release={release} />
+  }, [isPublishDateInPast, publishDate, release, tRelease])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
     setReleaseType(pickedReleaseType)

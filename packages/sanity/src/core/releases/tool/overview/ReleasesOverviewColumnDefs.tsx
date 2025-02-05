@@ -53,7 +53,9 @@ export const releasesOverviewColumnDefs: (
       ),
       cell: ({cellProps, datum: release}) => (
         <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-          <ReleaseTime release={release} />
+          <Text muted size={1}>
+            <ReleaseTime release={release} />
+          </Text>
           {isReleaseScheduledOrScheduling(release) && (
             <Text size={1} data-testid="release-lock-icon">
               <LockIcon />
