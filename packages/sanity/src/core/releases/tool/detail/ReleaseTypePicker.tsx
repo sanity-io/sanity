@@ -2,7 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
@@ -35,6 +35,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
   const toast = useToast()
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
 
   const [open, setOpen] = useState(false)
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
@@ -48,9 +49,9 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     publishDate ? new Date(publishDate) : undefined,
   )
   const updatedDate = intendedPublishAt?.toISOString()
-
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
-  const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
+  const intendedPublishAtTimezoneAdjusted = intendedPublishAt
+    ? utcToCurrentZoneDate(intendedPublishAt)
+    : intendedPublishAt
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
@@ -102,19 +103,6 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     datePickerRef.current,
   ])
 
-  useEffect(() => {
-    /** makes sure to wait for the useTimezone has enough time to update
-     * and based on that it will update the input value to the current timezone
-     */
-    if (timeZone.name !== currentTimezone) {
-      setCurrentTimezone(timeZone.name)
-      if (updatedDate && isValid(new Date(updatedDate))) {
-        const currentZoneDate = utcToCurrentZoneDate(new Date(updatedDate))
-        setIntendedPublishAt(currentZoneDate)
-      }
-    }
-  }, [currentTimezone, intendedPublishAt, timeZone, updatedDate, utcToCurrentZoneDate])
-
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
@@ -138,23 +126,31 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     setIsIntendedScheduleDateInPast(true)
   }, [])
 
-  const handlePublishAtCalendarChange = useCallback((date: Date | null) => {
-    if (!date) return
+  const handlePublishAtCalendarChange = useCallback(
+    (date: Date | null) => {
+      if (!date) return
 
-    const cleanDate = startOfMinute(new Date(date))
-    setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
-    setIntendedPublishAt(cleanDate)
-  }, [])
+      const cleanDate = zoneDateToUtc(startOfMinute(new Date(date)))
+      setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
+      setIntendedPublishAt(cleanDate)
+    },
+    [zoneDateToUtc],
+  )
 
-  const handlePublishAtInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const parsedDate = parse(event.currentTarget.value, dateInputFormat, new Date())
+  const handlePublishAtInputChange = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      const parsedDate = zoneDateToUtc(
+        parse(event.currentTarget.value, dateInputFormat, new Date()),
+      )
 
-    if (isValid(parsedDate)) {
-      setIsIntendedScheduleDateInPast(isBefore(parsedDate, new Date()))
+      if (isValid(parsedDate)) {
+        setIsIntendedScheduleDateInPast(isBefore(parsedDate, new Date()))
 
-      setIntendedPublishAt(startOfMinute(parsedDate))
-    }
-  }, [])
+        setIntendedPublishAt(startOfMinute(parsedDate))
+      }
+    },
+    [zoneDateToUtc],
+  )
 
   const handleOnPickerClick = () => {
     if (open) close()
@@ -195,7 +191,11 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
               </Card>
             )}
             <LazyTextInput
-              value={intendedPublishAt ? format(intendedPublishAt, dateInputFormat) : undefined}
+              value={
+                intendedPublishAtTimezoneAdjusted
+                  ? format(intendedPublishAtTimezoneAdjusted, dateInputFormat)
+                  : undefined
+              }
               onChange={handlePublishAtInputChange}
             />
             <DatePicker
@@ -204,7 +204,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
               calendarLabels={calendarLabels}
               selectTime
               padding={0}
-              value={intendedPublishAt}
+              value={intendedPublishAtTimezoneAdjusted}
               onChange={handlePublishAtCalendarChange}
               isPastDisabled
               showTimezone
