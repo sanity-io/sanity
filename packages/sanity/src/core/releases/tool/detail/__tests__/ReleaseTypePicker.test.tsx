@@ -124,7 +124,7 @@ describe('ReleaseTypePicker', () => {
       expect(getByDataUi(document.body, 'Calendar')).toBeInTheDocument()
     })
 
-    it.only('hides calendar when moving back from scheduled option', async () => {
+    it('hides calendar when moving back from scheduled option', async () => {
       await renderComponent()
 
       const pickerButton = screen.getByRole('button')
