@@ -147,6 +147,83 @@ describe('searchReducer', () => {
       }
     `)
   })
+  it('should not merge results after fetching an additional page when not using `textSearch` strategy', () => {
+    const {result} = renderHook(() => useReducer(searchReducer, initialState))
+    const [, dispatch] = result.current
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorA',
+        hits: [
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personA',
+            },
+          },
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personB',
+            },
+          },
+        ],
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: undefined,
+        hits: [
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personB',
+            },
+          },
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personC',
+            },
+          },
+        ],
+      }),
+    )
+
+    const [state] = result.current
+
+    expect(state.result.hits).toMatchInlineSnapshot(`
+      [
+        {
+          "hit": {
+            "_id": "personA",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personB",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personB",
+            "_type": "person",
+          },
+        },
+        {
+          "hit": {
+            "_id": "personC",
+            "_type": "person",
+          },
+        },
+      ]
+    `)
+  })
 
   it.each<SearchAction>([
     {
