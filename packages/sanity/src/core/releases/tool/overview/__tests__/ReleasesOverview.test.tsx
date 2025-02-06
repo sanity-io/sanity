@@ -20,6 +20,7 @@ import {
 import {
   activeASAPRelease,
   activeScheduledRelease,
+  activeUndecidedErrorRelease,
   activeUndecidedRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
@@ -214,6 +215,7 @@ describe('ReleasesOverview', () => {
       activeASAPRelease,
       activeUndecidedRelease,
       scheduledRelease,
+      activeUndecidedErrorRelease,
     ]
 
     let activeRender: ReturnType<typeof render>
@@ -262,7 +264,7 @@ describe('ReleasesOverview', () => {
 
     it('shows each open release', () => {
       const releaseRows = screen.getAllByTestId('table-row')
-      expect(releaseRows).toHaveLength(4)
+      expect(releaseRows).toHaveLength(5)
 
       const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] = releaseRows
 
@@ -371,7 +373,7 @@ describe('ReleasesOverview', () => {
           fireEvent.click(todayTile!)
 
           await waitFor(() => {
-            expect(screen.getAllByTestId('table-row')).toHaveLength(4)
+            expect(screen.getAllByTestId('table-row')).toHaveLength(5)
           })
         })
 
@@ -379,7 +381,7 @@ describe('ReleasesOverview', () => {
           fireEvent.click(screen.getByTestId('selected-date-filter'))
 
           await waitFor(() => {
-            expect(screen.getAllByTestId('table-row')).toHaveLength(4)
+            expect(screen.getAllByTestId('table-row')).toHaveLength(5)
           })
         })
       })
@@ -466,23 +468,32 @@ describe('ReleasesOverview', () => {
     })
 
     it('sorts the list of releases', () => {
-      const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] =
-        screen.getAllByTestId('table-row')
+      const [
+        unsortedFirstRelease,
+        unsortedSecondRelease,
+        unsortedThirdRelease,
+        unsortedFourthRelease,
+        unsortedFifthRelease,
+      ] = screen.getAllByTestId('table-row')
 
       // default sort asap, then scheduled by publish asc
       within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
       within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
       within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
+      within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
       // sort by asc publish at
       fireEvent.click(screen.getByText('Time'))
       const [
-        // first release is undecided
-        _,
         descPublishSortedFirstRelease,
         descPublishSortedSecondRelease,
         descPublishSortedThirdRelease,
-      ] = screen.getAllByTestId('table-row')
+      ] = screen
+        .getAllByTestId('table-row')
+        // first two releases are undecided
+        .slice(2)
+
       within(descPublishSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
       within(descPublishSortedSecondRelease).getByText(scheduledRelease.metadata.title)
       within(descPublishSortedThirdRelease).getByText(activeASAPRelease.metadata.title)

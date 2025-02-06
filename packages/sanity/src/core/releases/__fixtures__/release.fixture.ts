@@ -87,3 +87,20 @@ export const activeUndecidedRelease: ReleaseDocument = {
     description: 'undecided Release description',
   },
 }
+
+export const activeUndecidedErrorRelease: ReleaseDocument = {
+  _rev: 'undecidedErrorRev',
+  _id: '_.releases.rUndecidedError',
+  _type: 'system.release',
+  _createdAt: '2023-10-10T08:00:00Z',
+  _updatedAt: '2023-10-10T09:00:00Z',
+  state: 'active',
+  metadata: {
+    title: 'undecided Error Release',
+    releaseType: 'undecided',
+    description: 'undecided Error Release description',
+  },
+  error: {
+    message: 'An unexpected error occurred during publication.',
+  },
+}
