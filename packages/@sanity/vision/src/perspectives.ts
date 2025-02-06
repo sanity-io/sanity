@@ -1,10 +1,4 @@
-export const SUPPORTED_PERSPECTIVES = [
-  'pinnedRelease',
-  'raw',
-  'previewDrafts',
-  'published',
-  'drafts',
-] as const
+export const SUPPORTED_PERSPECTIVES = ['pinnedRelease', 'raw', 'published', 'drafts'] as const
 
 export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
 

@@ -1,6 +1,7 @@
 import {HelpCircleIcon} from '@sanity/icons'
 import {
   Badge,
+  Box,
   Button,
   Card,
   type CardTone,
@@ -24,6 +25,8 @@ const Dot = styled.div<{tone: CardTone}>`
   box-shadow: 0 0 0 1px var(--card-bg-color);
   background-color: ${({tone}) => `var(--card-badge-${tone}-dot-color)`};
 `
+
+const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
 
 export function PerspectivePopover() {
   const [open, setOpen] = useState(false)
@@ -52,13 +55,28 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Badge tone="caution">{t('label.new')}</Badge>
-              <Card>
+              <Stack space={2}>
+                <Box>
+                  <Badge tone="primary">{t('label.new')}</Badge>
+                </Box>
                 <Text muted>
-                  <Translate t={t} i18nKey="settings.perspectives.new-default.description" />
+                  <Translate
+                    t={t}
+                    i18nKey="settings.perspective.preview-drafts-renamed-to-drafts.description"
+                  />
                 </Text>
-              </Card>
+              </Stack>
             </Card>
+            {SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? (
+              <Card>
+                <Badge tone="caution">{t('label.new')}</Badge>
+                <Card>
+                  <Text muted>
+                    <Translate t={t} i18nKey="settings.perspectives.new-default.description" />
+                  </Text>
+                </Card>
+              </Card>
+            ) : null}
 
             <Card>
               <Text>
@@ -87,7 +105,7 @@ export function PerspectivePopover() {
         onClick={handleClick}
         selected={open}
       >
-        <Dot tone="caution" />
+        <Dot tone={SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? 'caution' : 'primary'} />
       </Button>
     </Popover>
   )
