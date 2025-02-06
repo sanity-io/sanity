@@ -6,7 +6,6 @@ import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type EditableReleaseDocument} from '../../index'
-import {DEFAULT_RELEASE_TYPE} from '../../util/const'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
@@ -98,8 +97,6 @@ export function TitleDescriptionForm({
       metadata: {
         title: release?.metadata.title,
         description: release?.metadata.description,
-        intendedPublishAt: release?.metadata?.intendedPublishAt,
-        releaseType: release?.metadata.releaseType || DEFAULT_RELEASE_TYPE,
       },
     } as const
   })
@@ -116,20 +113,20 @@ export function TitleDescriptionForm({
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault()
       const title = event.target.value
-      onChange({...value, metadata: {...value.metadata, title}})
+      onChange({...value, metadata: {...release.metadata, title}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...value.metadata, title}})
+      setValue({...value, metadata: {...release.metadata, title}})
     },
-    [onChange, value],
+    [onChange, release.metadata, value],
   )
 
   const handleDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
       const description = event.target.value
-      onChange({...value, metadata: {...value.metadata, description}})
+      onChange({...value, metadata: {...release.metadata, description}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...value.metadata, description}})
+      setValue({...value, metadata: {...release.metadata, description}})
 
       /** we must reset the height in order to make sure that if the text area shrinks,
        * that the actual input will change height as well */
@@ -145,7 +142,7 @@ export function TitleDescriptionForm({
 
       setScrollHeight(event.currentTarget.scrollHeight)
     },
-    [onChange, value],
+    [onChange, release.metadata, value],
   )
 
   return (

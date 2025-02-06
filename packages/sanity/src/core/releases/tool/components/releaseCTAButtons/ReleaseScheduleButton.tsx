@@ -11,6 +11,7 @@ import {type CalendarLabels} from '../../../../components/inputs/DateInputs/cale
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {Translate, useTranslation} from '../../../../i18n'
+import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
@@ -32,6 +33,7 @@ export const ReleaseScheduleButton = ({
   const {schedule} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
   /**
@@ -42,13 +44,15 @@ export const ReleaseScheduleButton = ({
    */
   const [rerenderDialog, setRerenderDialog] = useState(0)
 
+  const timezoneAdjustedPublishAt = publishAt ? utcToCurrentZoneDate(publishAt) : undefined
+
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
   const isScheduleButtonDisabled = disabled || isValidatingDocuments
 
   const isScheduledDateInPast = useCallback(() => {
-    return isBefore(publishAt || new Date(), new Date())
-  }, [publishAt])
+    return isBefore(zoneDateToUtc(publishAt || new Date()), new Date())
+  }, [publishAt, zoneDateToUtc])
 
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
@@ -107,20 +111,26 @@ export const ReleaseScheduleButton = ({
   const {t: coreT} = useTranslation()
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
 
-  const handleBundlePublishAtCalendarChange = useCallback((date: Date | null) => {
-    if (!date) return
+  const handleBundlePublishAtCalendarChange = useCallback(
+    (date: Date | null) => {
+      if (!date) return
 
-    setPublishAt(startOfMinute(date))
-  }, [])
+      setPublishAt(zoneDateToUtc(startOfMinute(date)))
+    },
+    [zoneDateToUtc],
+  )
 
-  const handleBundleInputChange = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
-    const date = event.currentTarget.value
-    const parsedDate = parse(date, 'PP HH:mm', new Date())
+  const handleBundleInputChange = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      const date = event.currentTarget.value
+      const parsedDate = zoneDateToUtc(parse(date, 'PP HH:mm', new Date()))
 
-    if (isValid(parsedDate)) {
-      setPublishAt(parsedDate)
-    }
-  }, [])
+      if (isValid(parsedDate)) {
+        setPublishAt(parsedDate)
+      }
+    },
+    [zoneDateToUtc],
+  )
 
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
@@ -167,9 +177,11 @@ export const ReleaseScheduleButton = ({
                 monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
                 onChange={handleBundlePublishAtCalendarChange}
                 onInputChange={handleBundleInputChange}
-                value={publishAt}
+                value={timezoneAdjustedPublishAt}
                 calendarLabels={calendarLabels}
-                inputValue={publishAt ? format(publishAt, 'PP HH:mm') : ''}
+                inputValue={
+                  timezoneAdjustedPublishAt ? format(timezoneAdjustedPublishAt, 'PP HH:mm') : ''
+                }
                 constrainSize={false}
                 isPastDisabled
               />
@@ -191,15 +203,15 @@ export const ReleaseScheduleButton = ({
   }, [
     status,
     isScheduledDateInPast,
+    rerenderDialog,
     t,
     documents.length,
     handleConfirmSchedule,
     handleBundlePublishAtCalendarChange,
     handleBundleInputChange,
-    publishAt,
+    timezoneAdjustedPublishAt,
     calendarLabels,
     release.metadata.title,
-    rerenderDialog,
   ])
 
   const handleOnInitialSchedule = useCallback(() => {

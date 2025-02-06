@@ -129,9 +129,9 @@ describe('ReleaseTypePicker', () => {
 
       const pickerButton = screen.getByRole('button')
       fireEvent.click(pickerButton)
-      const scheduledTab = screen.getByText('At time')
+      const scheduledTab = within(screen.getByRole('tablist')).getByText('At time')
       fireEvent.click(scheduledTab)
-      const asapTab = screen.getByText('ASAP')
+      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
       fireEvent.click(asapTab)
 
       expect(screen.queryByTestId('date-input')).not.toBeInTheDocument()
