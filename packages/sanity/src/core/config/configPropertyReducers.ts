@@ -458,7 +458,7 @@ export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigCo
  * `enableLegacySearch` option.
  *
  * If the project currently enables the Text Search API search strategy by setting
- * `enableLegacySearch` to `false`, this is mapped to the `textSearch` strategy.
+ * `enableLegacySearch` to `false`, this is mapped to the `groq2024` strategy.
  *
  * Any explicitly defined `strategy` value will take precedence over the value inferred from
  * `enableLegacySearch`.
@@ -496,7 +496,7 @@ export const searchStrategyReducer = ({
 
       // The strategy has been implicitly defined.
       if (typeof enableLegacySearch === 'boolean') {
-        return [enableLegacySearch ? 'groqLegacy' : 'textSearch', currentExplicit]
+        return [enableLegacySearch ? 'groqLegacy' : 'groq2024', currentExplicit]
       }
 
       return [currentImplicit, currentExplicit]

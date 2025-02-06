@@ -1,1 +1,0 @@
-export {createTextSearch} from './createTextSearch'

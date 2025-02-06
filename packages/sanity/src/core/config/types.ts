@@ -393,7 +393,6 @@ export interface PluginOptions {
      *
      * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
      *   using the GROQ Query API.
-     * - `"textSearch"` (deprecated): Perform full text searching using the Text Search API.
      * - `"groq2024"`: (experimental) Perform full text searching using the GROQ Query API and its
      *   new `text::matchQuery` function.
      */
