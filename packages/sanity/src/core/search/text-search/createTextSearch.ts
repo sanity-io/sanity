@@ -2,11 +2,6 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
 
-import {
-  isReleasePerspective,
-  RELEASES_STUDIO_CLIENT_OPTIONS,
-} from '../../releases/util/releasesClient'
-import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
 import {
   deriveSearchWeightsFromType,
@@ -129,7 +124,6 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
-      perspective: isRaw ? undefined : searchOptions.perspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },
@@ -145,12 +139,9 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
     }
-    const apiVersion = isReleasePerspective(searchOptions.perspective)
-      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
-      : undefined
 
-    return versionedClient(client, apiVersion)
-      .observable.request<TextSearchResponse<SanityDocumentLike>>({
+    return client.observable
+      .request<TextSearchResponse<SanityDocumentLike>>({
         uri: `/data/textsearch/${client.config().dataset}`,
         method: 'POST',
         json: true,
