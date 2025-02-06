@@ -1,10 +1,4 @@
-export const SUPPORTED_PERSPECTIVES = [
-  'pinnedRelease',
-  'raw',
-  'previewDrafts',
-  'published',
-  'drafts',
-] as const
+export const SUPPORTED_PERSPECTIVES = ['pinnedRelease', 'raw', 'published', 'drafts'] as const
 
 export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
 
@@ -19,8 +13,6 @@ export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
 export const VIRTUAL_PERSPECTIVES = ['pinnedRelease'] as const
 
 export type VirtualPerspective = (typeof VIRTUAL_PERSPECTIVES)[number]
-
-export const DEFAULT_PERSPECTIVE: SupportedPerspective = 'raw'
 
 export function isSupportedPerspective(p: string): p is SupportedPerspective {
   return SUPPORTED_PERSPECTIVES.includes(p as SupportedPerspective)
