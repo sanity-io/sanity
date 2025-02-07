@@ -7,11 +7,11 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
-import {ReleaseTime} from './columnCells/useReleaseTime'
 import {type TableRelease} from './ReleasesOverview'
 
 export const releasesOverviewColumnDefs: (
