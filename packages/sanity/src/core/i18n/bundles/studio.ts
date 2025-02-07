@@ -1220,7 +1220,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
   /** Title for creating releases dialog */
-  'release.dialog.create.title': 'Create release',
+  'release.dialog.create.title': 'New release',
   /** Label for description in tooltip to explain release types */
   'release.dialog.tooltip.description':
     'This makes it possible to show whether documents are in conflict when working on multiple versions.',
