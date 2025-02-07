@@ -147,6 +147,7 @@ export interface CommandRunnerOptions {
   workDir: string
   corePath: string | undefined
   telemetry: TelemetryLogger<TelemetryUserProperties>
+  isCoreApp: boolean
 }
 
 export interface CliOutputter {
@@ -183,6 +184,7 @@ export type CliStubbedYarn = (args: string[], options?: CliYarnOptions) => Promi
 export interface CliApiConfig {
   projectId?: string
   dataset?: string
+  organizationId?: string
 }
 
 export interface SanityJson {
@@ -354,6 +356,7 @@ export interface CliConfig {
   __experimental_coreAppConfiguration?: {
     organizationId?: string
     appLocation?: string
+    appHost?: string
   }
 }
 

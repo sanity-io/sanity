@@ -47,16 +47,17 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
+  const isCoreApp = args.groupOrCommand === 'app'
   const cwd = getCurrentWorkingDirectory()
   let workDir: string | undefined
   try {
-    workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+    workDir = isInit ? process.cwd() : resolveRootDir(cwd, isCoreApp)
   } catch (err) {
     console.error(chalk.red(err.message))
     process.exit(1)
   }
 
-  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand})
+  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand, isCoreApp})
   maybeFixMissingWindowsEnvVar()
 
   // Check if there are updates available for the CLI, and notify if there is
@@ -99,6 +100,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     corePath: await getCoreModulePath(workDir, cliConfig),
     cliConfig,
     telemetry,
+    isCoreApp,
   }
 
   warnOnNonProductionEnvironment()
@@ -274,14 +276,22 @@ function warnOnNonProductionEnvironment(): void {
   )
 }
 
-function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: string}) {
+function loadAndSetEnvFromDotEnvFiles({
+  workDir,
+  cmd,
+  isCoreApp,
+}: {
+  workDir: string
+  cmd: string
+  isCoreApp: boolean
+}) {
   /* eslint-disable no-process-env */
 
   // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
   // and apply the old behavior for environment variables. Otherwise, use the Vite-style
   // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
   // may be used in the configuration file, meaning we'd have to load the config twice.
-  if (existsSync(path.join(workDir, 'sanity.json'))) {
+  if (existsSync(path.join(workDir, 'sanity.json')) && !isCoreApp) {
     // v2
     debug('sanity.json exists, assuming v2 project and loading .env files using old behavior')
     const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
@@ -309,7 +319,7 @@ function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: str
 
   debug('Loading environment files using %s mode', mode)
 
-  const studioEnv = loadEnv(mode, workDir, ['SANITY_STUDIO_'])
+  const studioEnv = loadEnv(mode, workDir, isCoreApp ? ['VITE_'] : ['SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
   /* eslint-disable no-process-env */
 }

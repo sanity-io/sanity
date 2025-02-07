@@ -6,9 +6,13 @@ import {type Gzip} from 'node:zlib'
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import FormData from 'form-data'
+import {customAlphabet} from 'nanoid'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
+
+// appHosts have some restrictions (no uppercase for example)
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 12)
 
 export const debug = debugIt.extend('deploy')
 
@@ -42,26 +46,35 @@ export interface UserApplication {
   urlType: 'internal' | 'external'
   createdAt: string
   updatedAt: string
-  type: 'studio'
+  type: 'studio' | 'coreApp'
   activeDeployment?: ActiveDeployment | null
 }
 
 export interface GetUserApplicationsOptions {
   client: SanityClient
+  organizationId?: string
 }
 
 export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
   appHost?: string
 }
-
 export async function getUserApplication({
   client,
   appHost,
+  organizationId,
 }: GetUserApplicationOptions): Promise<UserApplication | null> {
+  let query
+  if (organizationId) {
+    query = {organizationId, appHost: appHost ?? '', appType: 'coreApp'}
+  } else if (appHost) {
+    query = {appHost}
+  } else {
+    query = {default: 'true'}
+  }
   try {
     return await client.request({
       uri: '/user-applications',
-      query: appHost ? {appHost} : {default: 'true'},
+      query,
     })
   } catch (e) {
     if (e?.statusCode === 404) {
@@ -75,38 +88,86 @@ export async function getUserApplication({
 
 export async function getUserApplications({
   client,
+  organizationId,
 }: GetUserApplicationsOptions): Promise<UserApplication[] | null> {
+  const query = organizationId ? {organizationId: organizationId, appType: 'coreApp'} : undefined
   try {
     return await client.request({
       uri: '/user-applications',
+      query,
     })
   } catch (e) {
     if (e?.statusCode === 404) {
       return null
     }
 
-    debug('Error getting user application', e)
+    debug('Error getting user applications', e)
     throw e
   }
 }
 
 function createUserApplication(
   client: SanityClient,
-  body: Pick<UserApplication, 'appHost' | 'urlType'> & {
+  body: Pick<UserApplication, 'appHost' | 'urlType' | 'type'> & {
     title?: string
   },
+  organizationId?: string,
 ): Promise<UserApplication> {
-  return client.request({uri: '/user-applications', method: 'POST', body})
+  const query = organizationId ? {organizationId, appType: 'coreApp'} : undefined
+  return client.request({uri: '/user-applications', method: 'POST', body, query})
+}
+
+interface SelectApplicationOptions {
+  client: SanityClient
+  prompt: GetOrCreateUserApplicationOptions['context']['prompt']
+  message: string
+  createNewLabel: string
+  organizationId?: string
+}
+
+/**
+ * Shared utility for selecting an existing application or opting to create a new one
+ * @internal
+ */
+async function selectExistingApplication({
+  client,
+  prompt,
+  message,
+  createNewLabel,
+  organizationId,
+}: SelectApplicationOptions): Promise<UserApplication | null> {
+  const userApplications = await getUserApplications({client, organizationId})
+
+  if (!userApplications?.length) {
+    return null
+  }
+
+  const choices = userApplications.map((app) => ({
+    value: app.appHost,
+    name: app.title ?? app.appHost,
+  }))
+
+  const selected = await prompt.single({
+    message,
+    type: 'list',
+    choices: [{value: 'new', name: createNewLabel}, new prompt.Separator(), ...choices],
+  })
+
+  if (selected === 'new') {
+    return null
+  }
+
+  return userApplications.find((app) => app.appHost === selected)!
 }
 
 export interface GetOrCreateUserApplicationOptions {
   client: SanityClient
-  context: Pick<CliCommandContext, 'output' | 'prompt'>
+  context: Pick<CliCommandContext, 'output' | 'prompt' | 'cliConfig'>
   spinner: ReturnType<CliOutputter['spinner']>
 }
 
 /**
- * This function handles the logic for managing user applications when
+ * These functions handle the logic for managing user applications when
  * studioHost is not provided in the CLI config.
  *
  * @internal
@@ -135,7 +196,7 @@ export interface GetOrCreateUserApplicationOptions {
  *   | prompt selection   |  | and create new app     |
  *   +--------------------+  +------------------------+
  */
-export async function getOrCreateUserApplication({
+export async function getOrCreateStudio({
   client,
   spinner,
   context,
@@ -151,28 +212,15 @@ export async function getOrCreateUserApplication({
     return existingUserApplication
   }
 
-  const userApplications = await getUserApplications({client})
+  const selectedApp = await selectExistingApplication({
+    client,
+    prompt,
+    message: 'Select existing studio hostname',
+    createNewLabel: 'Create new studio hostname',
+  })
 
-  if (userApplications?.length) {
-    const choices = userApplications.map((app) => ({
-      value: app.appHost,
-      name: app.appHost,
-    }))
-
-    const selected = await prompt.single({
-      message: 'Select existing studio hostname',
-      type: 'list',
-      choices: [
-        {value: 'new', name: 'Create new studio hostname'},
-        new prompt.Separator(),
-        ...choices,
-      ],
-    })
-
-    // if the user selected an existing app, return it
-    if (selected !== 'new') {
-      return userApplications.find((app) => app.appHost === selected)!
-    }
+  if (selectedApp) {
+    return selectedApp
   }
 
   // otherwise, prompt the user for a hostname
@@ -193,6 +241,7 @@ export async function getOrCreateUserApplication({
         const response = await createUserApplication(client, {
           appHost,
           urlType: 'internal',
+          type: 'studio',
         })
         resolve(response)
         return true
@@ -213,6 +262,87 @@ export async function getOrCreateUserApplication({
 }
 
 /**
+ * Creates a core application with an auto-generated hostname
+ *
+ * @internal
+ */
+export async function getOrCreateCoreApplication({
+  client,
+  context,
+  spinner,
+}: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
+  const {output, prompt, cliConfig} = context
+  const organizationId = cliConfig?.api?.organizationId
+
+  // Complete the spinner so prompt can properly work
+  spinner.succeed()
+
+  const selectedApp = await selectExistingApplication({
+    client,
+    prompt,
+    message: 'Select an existing deployed application',
+    createNewLabel: 'Create new deployed application',
+    organizationId,
+  })
+
+  if (selectedApp) {
+    return selectedApp
+  }
+
+  // First get the title from the user
+  const title = await prompt.single({
+    type: 'input',
+    message: 'Enter a title for your application:',
+    validate: (input: string) => input.length > 0 || 'Title is required',
+  })
+
+  const {promise, resolve, reject} = promiseWithResolvers<UserApplication>()
+
+  // Try to create the application, retrying with new hostnames if needed
+  const tryCreateApp = async () => {
+    // we will likely prepend this with app ID or other parameter in the future
+    const appHost = nanoid()
+
+    try {
+      const response = await createUserApplication(
+        client,
+        {
+          appHost,
+          urlType: 'internal',
+          title,
+          type: 'coreApp',
+        },
+        organizationId,
+      )
+      resolve(response)
+      return true
+    } catch (e) {
+      // if the name is taken, generate a new one and try again
+      if ([402, 409].includes(e?.statusCode)) {
+        debug('App host taken, retrying with new host')
+        return tryCreateApp()
+      }
+
+      debug('Error creating core application', e)
+      reject(e)
+      // otherwise, it's a fatal error
+      throw e
+    }
+  }
+
+  spinner.start('Creating application')
+
+  await tryCreateApp()
+  const response = await promise
+
+  spinner.succeed()
+  // Placeholder -- not sure what ultimate URL will be
+  output.print(`Deployed application to CORE`)
+
+  return response
+}
+
+/**
  * This function handles the logic for managing user applications when
  * studioHost is provided in the CLI config.
  *
@@ -226,15 +356,25 @@ export async function getOrCreateUserApplicationFromConfig({
 }: GetOrCreateUserApplicationOptions & {
   appHost: string
 }): Promise<UserApplication> {
-  const {output} = context
+  const {output, cliConfig} = context
+  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
+  const organizationId = isCoreApp ? cliConfig?.api?.organizationId : undefined
   // if there is already an existing user-app, then just return it
-  const existingUserApplication = await getUserApplication({client, appHost})
+  const existingUserApplication = await getUserApplication({client, appHost, organizationId})
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
 
   if (existingUserApplication) {
     return existingUserApplication
+  }
+
+  // core apps cannot arbitrarily create their own appHosts,
+  // so send the user to a get or create function
+  if (isCoreApp) {
+    output.print('The appHost provided in your configuration is not recognized.')
+    output.print('Checking existing applications...')
+    getOrCreateCoreApplication({client, context, spinner})
   }
 
   output.print('Your project has not been assigned a studio hostname.')
@@ -246,6 +386,7 @@ export async function getOrCreateUserApplicationFromConfig({
     const response = await createUserApplication(client, {
       appHost,
       urlType: 'internal',
+      type: 'studio',
     })
     spinner.succeed()
 
@@ -262,13 +403,13 @@ export async function getOrCreateUserApplicationFromConfig({
     throw e
   }
 }
-
 export interface CreateDeploymentOptions {
   client: SanityClient
   applicationId: string
   version: string
   isAutoUpdating: boolean
   tarball: Gzip
+  isCoreApp?: boolean
 }
 
 export async function createDeployment({
@@ -277,6 +418,7 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
+  isCoreApp,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
@@ -288,6 +430,7 @@ export async function createDeployment({
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
+    query: isCoreApp ? {appType: 'coreApp'} : undefined,
   })
 }
 

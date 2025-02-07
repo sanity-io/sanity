@@ -71,7 +71,7 @@ describe('deployStudioAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.getOrCreateStudio.mockResolvedValueOnce(mockApplication)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
@@ -99,7 +99,7 @@ describe('deployStudioAction', () => {
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateUserApplication).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
@@ -111,6 +111,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      isCoreApp: false,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
@@ -167,6 +168,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      isCoreApp: false,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
@@ -183,7 +185,7 @@ describe('deployStudioAction', () => {
       true,
     ) // User confirms to proceed
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.getOrCreateStudio.mockResolvedValueOnce(mockApplication)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
@@ -267,7 +269,7 @@ describe('deployStudioAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplication.mockRejectedValueOnce({
+    helpers.getOrCreateStudio.mockRejectedValueOnce({
       statusCode: 402,
       message: 'Application limit reached',
       error: 'Payment Required',
@@ -289,7 +291,7 @@ describe('deployStudioAction', () => {
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateUserApplication).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),

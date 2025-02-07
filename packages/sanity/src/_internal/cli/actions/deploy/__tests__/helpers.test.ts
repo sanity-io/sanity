@@ -13,7 +13,7 @@ import {
   createDeployment,
   deleteUserApplication,
   dirIsEmptyOrNonExistent,
-  getOrCreateUserApplication,
+  getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
 } from '../helpers'
 
@@ -35,6 +35,7 @@ const mockOutput = {
   error: vi.fn(),
   warn: vi.fn(),
   spinner: vi.fn(),
+  success: vi.fn(),
 } as CliCommandContext['output']
 const mockPrompt = {
   single: vi.fn(),
@@ -60,7 +61,7 @@ describe('getOrCreateUserApplication', () => {
       id: 'default-app',
     })
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       spinner: mockSpinner,
       context,
@@ -90,7 +91,7 @@ describe('getOrCreateUserApplication', () => {
     )
     mockClientRequest.mockResolvedValueOnce(newApp)
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       context,
       spinner: mockSpinner,
@@ -117,7 +118,7 @@ describe('getOrCreateUserApplication', () => {
       return Promise.resolve(choices[2].value)
     })
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       context,
       spinner: mockSpinner,
@@ -186,7 +187,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
     expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
       uri: '/user-applications',
       method: 'POST',
-      body: {appHost: 'newhost', urlType: 'internal'},
+      body: {appHost: 'newhost', urlType: 'internal', type: 'studio'},
     })
     expect(result).toEqual(newApp)
   })
