@@ -1,10 +1,9 @@
 import {format} from 'date-fns'
 import {useCallback} from 'react'
 
-import {useTranslation} from '../../../../i18n'
-import useTimeZone, {getLocalTimeZone} from '../../../../scheduledPublishing/hooks/useTimeZone'
-import {getPublishDateFromRelease} from '../../../util/util'
-import {type TableRelease} from '../ReleasesOverview'
+import useTimeZone, {getLocalTimeZone} from '../../scheduledPublishing/hooks/useTimeZone'
+import {type TableRelease} from '../tool/overview/ReleasesOverview'
+import {getPublishDateFromRelease} from '../util/util'
 
 export const useReleaseTime = (): ((release: TableRelease) => string | null) => {
   const {timeZone, utcToCurrentZoneDate} = useTimeZone()
@@ -26,20 +25,4 @@ export const useReleaseTime = (): ((release: TableRelease) => string | null) => 
     },
     [getTimezoneAbbreviation, utcToCurrentZoneDate],
   )
-}
-
-export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
-  const {t} = useTranslation()
-  const getReleaseTime = useReleaseTime()
-
-  const {metadata} = release
-
-  if (metadata.releaseType === 'asap') {
-    return t('release.type.asap')
-  }
-  if (metadata.releaseType === 'undecided') {
-    return t('release.type.undecided')
-  }
-
-  return getReleaseTime(release)
 }

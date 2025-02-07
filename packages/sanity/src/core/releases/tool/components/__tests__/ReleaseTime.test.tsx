@@ -2,17 +2,17 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {type ComponentProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {getByDataUi} from '../../../../../../../test/setup/customQueries'
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {useTimeZoneMockReturn} from '../../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
+import {getByDataUi} from '../../../../../../test/setup/customQueries'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useTimeZoneMockReturn} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeUndecidedRelease,
   scheduledRelease,
-} from '../../../../__fixtures__/release.fixture'
-import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {ReleaseTime} from '../../columnCells/useReleaseTime'
-import {type TableRelease} from '../../ReleasesOverview'
+} from '../../../__fixtures__/release.fixture'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {type TableRelease} from '../../overview/ReleasesOverview'
+import {ReleaseTime} from '../ReleaseTime'
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', () => useTimeZoneMockReturn)
 
