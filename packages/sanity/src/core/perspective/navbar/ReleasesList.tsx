@@ -122,7 +122,7 @@ export function ReleasesList({
   }
 
   return (
-    <Box>
+    <>
       <StyledBox ref={setScrollContainer} onScroll={onScroll}>
         <StyledPublishedBox
           $reducePadding={!releases.length || !areReleasesEnabled}
@@ -163,6 +163,6 @@ export function ReleasesList({
           />
         </>
       )}
-    </Box>
+    </>
   )
 }
