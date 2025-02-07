@@ -14,7 +14,10 @@ import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type TableRelease} from '../../overview/ReleasesOverview'
 import {ReleaseTime} from '../ReleaseTime'
 
-vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', () => useTimeZoneMockReturn)
+vi.mock(
+  '../../../scheduledPublishing/hooks/useTimeZone',
+  vi.fn(() => useTimeZoneMockReturn),
+)
 
 const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
   const wrapper = await createTestProvider({
