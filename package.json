@@ -104,7 +104,7 @@
   "prettier": "@sanity/prettier-config",
   "devDependencies": {
     "@google-cloud/storage": "^7.11.0",
-    "@playwright/test": "1.49.1",
+    "@playwright/test": "1.50.1",
     "@repo/dev-aliases": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",

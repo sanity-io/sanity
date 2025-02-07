@@ -29,7 +29,7 @@
     "dotenv": "^16.0.3",
     "globby": "^11.1.0",
     "ora": "^8.0.1",
-    "playwright": "^1.46.1",
+    "playwright": "^1.50.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
