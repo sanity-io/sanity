@@ -31,7 +31,7 @@ const RELATIVE_TIME_OPTIONS = {
   useTemporalPhrase: true,
 } as const
 
-const MotionButton = motion(Button)
+const MotionButton = motion.create(Button)
 
 const ButtonSkeleton = () => {
   return (
