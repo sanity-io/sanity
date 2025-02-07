@@ -2,7 +2,7 @@ import {type ReleaseId} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
@@ -53,18 +53,6 @@ export function useVersionOperations(): VersionOperationsValue {
   const handleDiscardVersion = async (releaseId: string, documentId: string) => {
     try {
       await discardVersion(releaseId, documentId)
-
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={t}
-            i18nKey={'release.action.discard-version.success'}
-            values={{title: document.title as string}}
-          />
-        ),
-      })
     } catch (err) {
       toast.push({
         closable: true,
@@ -78,18 +66,6 @@ export function useVersionOperations(): VersionOperationsValue {
   const handleUnpublishVersion = async (documentId: string) => {
     try {
       await unpublishVersion(documentId)
-
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={t}
-            i18nKey={'release.action.unpublish-version.success'}
-            values={{title: document.title as string}}
-          />
-        ),
-      })
     } catch (err) {
       toast.push({
         closable: true,

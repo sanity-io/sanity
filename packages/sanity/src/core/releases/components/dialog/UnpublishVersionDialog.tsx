@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Stack, Text, useToast} from '@sanity/ui'
 import {type CSSProperties, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -6,6 +6,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
+import {unstable_useValuePreview as useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
@@ -23,10 +24,12 @@ export function UnpublishVersionDialog(props: {
 }): React.JSX.Element {
   const {onClose, documentVersionId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: coreT} = useTranslation()
+
   const schema = useSchema()
   const {unpublishVersion} = useVersionOperations()
   const [isUnpublishing, setIsUnpublishing] = useState(false)
-
+  const toast = useToast()
   const {data} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
@@ -40,14 +43,27 @@ export function UnpublishVersionDialog(props: {
   const tone = getReleaseTone(releaseInDetail as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
+  const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
+
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 
     await unpublishVersion(documentVersionId)
     setIsUnpublishing(false)
+    toast.push({
+      closable: true,
+      status: 'success',
+      description: (
+        <Translate
+          t={coreT}
+          i18nKey={'release.action.unpublish-version.success'}
+          values={{title: preview?.value?.title || documentVersionId}}
+        />
+      ),
+    })
 
     onClose()
-  }, [documentVersionId, onClose, unpublishVersion])
+  }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])
 
   return (
     <Dialog

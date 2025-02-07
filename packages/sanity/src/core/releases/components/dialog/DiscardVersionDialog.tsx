@@ -1,12 +1,12 @@
-import {Box} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {Preview} from '../../../preview'
+import {Preview, unstable_useValuePreview as useValuePreview} from '../../../preview'
 import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -23,14 +23,17 @@ export function DiscardVersionDialog(props: {
 }): React.JSX.Element {
   const {onClose, documentId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
-
+  const toast = useToast()
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
   const [isDiscarding, setIsDiscarding] = useState(false)
 
   const schemaType = schema.get(documentType)
+
+  const preview = useValuePreview({schemaType, value: {_id: documentId}})
 
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
@@ -41,6 +44,18 @@ export function DiscardVersionDialog(props: {
           getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
         documentId,
       )
+
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={coreT}
+            i18nKey={'release.action.discard-version.success'}
+            values={{title: preview.value?.title || documentId}}
+          />
+        ),
+      })
     } else {
       // on the document header you can also discard the draft
       discardChanges.execute()
@@ -49,7 +64,16 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [selectedPerspective, discardChanges, discardVersion, documentId, onClose])
+  }, [
+    documentId,
+    onClose,
+    discardVersion,
+    selectedPerspective,
+    toast,
+    coreT,
+    preview.value?.title,
+    discardChanges,
+  ])
 
   return (
     <Dialog
