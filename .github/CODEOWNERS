@@ -7,6 +7,9 @@
 # however it is preferable that a team is responsible for large
 # areas to improve maintainablitly and availability
 
+# Releases
+/packages/sanity/src/core/releases @sanity-io/studio-app
+
 # -- Others --
 
 # Shopify templates
