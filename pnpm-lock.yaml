@@ -1416,8 +1416,8 @@ importers:
         specifier: 3.74.1
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^1.0.4
-        version: 1.0.4(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+        specifier: ^1.0.5
+        version: 1.0.5(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.4
         version: 2.1.4(@sanity/client@6.27.2(debug@4.4.0))
@@ -4642,8 +4642,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation-comlink@1.0.4':
-    resolution: {integrity: sha512-TqXTjVPM8vRFXpATZ5eRPv9vGp3XsStGcW1SB3csXekNTEJSdP/VgWqtaMTsrtE4tYYcYPe1kB2DsbnE5k0Sxg==}
+  '@sanity/presentation-comlink@1.0.5':
+    resolution: {integrity: sha512-R3SN7rckwhnpWAIbm0KzTKQD3F1Dss/BXlchK0MHEmVRWKIylnfHBzSEuOAq910HrZnRGkeUvwjtxHT2gASDYw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.27.2
@@ -14891,7 +14891,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.27.2(debug@4.4.0)
       '@sanity/comlink': 3.0.1
-      '@sanity/presentation-comlink': 1.0.4(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 1.0.5(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 2.0.3(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -15223,7 +15223,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation-comlink@1.0.4(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.5(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 6.27.2(debug@4.4.0)
       '@sanity/comlink': 3.0.1
@@ -15587,7 +15587,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 3.0.1
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.19.2)
-      '@sanity/presentation-comlink': 1.0.4(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 1.0.5(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 2.1.4(@sanity/client@6.27.2(debug@4.4.0))
       '@sanity/visual-editing-csm': 2.0.3(@sanity/client@6.27.2(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 0.1.2
