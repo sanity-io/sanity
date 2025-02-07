@@ -21,7 +21,7 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest-m]
         node: [18, 20, 22]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
@@ -93,7 +93,7 @@ jobs:
   report-coverage:
     if: ${{ !cancelled() }}
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
 
     steps:
       - name: Checkout
