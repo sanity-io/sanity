@@ -46,6 +46,10 @@ export interface ReleaseDocument extends SanityDocument {
    * If defined, it takes precedence over the intendedPublishAt, the state should be 'scheduled'
    */
   publishAt?: string
+  /**
+   * If defined, it provides the time the release was actually published
+   */
+  publishedAt?: string
   metadata: {
     title: string
     description?: string

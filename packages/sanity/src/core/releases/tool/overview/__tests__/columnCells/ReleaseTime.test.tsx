@@ -1,8 +1,8 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {format} from 'date-fns'
 import {type ComponentProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {getByDataUi} from '../../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {useTimeZoneMockReturn} from '../../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
@@ -11,7 +11,7 @@ import {
   scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {ReleaseTime} from '../../columnCells/ReleaseTime'
+import {ReleaseTime} from '../../columnCells/useReleaseTime'
 import {type TableRelease} from '../../ReleasesOverview'
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', () => useTimeZoneMockReturn)
@@ -56,11 +56,11 @@ describe('ReleaseTime', () => {
       release: {
         ...scheduledRelease,
         publishAt: undefined,
+        publishedAt: undefined,
         metadata: {...scheduledRelease.metadata, intendedPublishAt: undefined},
       } as TableRelease,
     })
 
-    const formattedDate = `${format(new Date(), 'PPpp')}`
-    expect(screen.getByText(formattedDate, {exact: false})).toBeInTheDocument()
+    expect(getByDataUi(document.body, 'Box')).toBeEmptyDOMElement()
   })
 })

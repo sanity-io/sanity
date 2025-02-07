@@ -11,7 +11,7 @@ import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
-import {ReleaseTime} from './columnCells/ReleaseTime'
+import {ReleaseTime} from './columnCells/useReleaseTime'
 import {type TableRelease} from './ReleasesOverview'
 
 export const releasesOverviewColumnDefs: (
