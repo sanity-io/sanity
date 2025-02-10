@@ -277,8 +277,9 @@ export default async function initSanity(
   // skip project / dataset prompting
   const isCoreAppTemplate = cliFlags.template ? determineCoreAppTemplate(cliFlags.template) : false // Default to false
 
-  // We're authenticated, now lets select or create a project
-  const {projectId, displayName, isFirstProject, datasetName, schemaUrl} = await getProjectDetails()
+  // We're authenticated, now lets select or create a project (for studios) or org (for core apps)
+  const {projectId, displayName, isFirstProject, datasetName, schemaUrl, organizationId} =
+    await getProjectDetails()
 
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
@@ -715,6 +716,7 @@ export default async function initSanity(
     displayName: string
     isFirstProject: boolean
     schemaUrl?: string
+    organizationId?: string
   }> {
     // If we're doing a quickstart, we don't need to prompt for project details
     if (flags.quickstart) {
@@ -731,11 +733,17 @@ export default async function initSanity(
     }
 
     if (isCoreAppTemplate) {
+      const client = apiClient({requireUser: true, requireProject: false})
+      const organizations = await client.request({uri: '/organizations'})
+
+      const coreAppOrganizationId = await getOrganizationId(organizations)
+
       return {
         projectId: '',
         displayName: '',
-        isFirstProject: false,
         datasetName: '',
+        isFirstProject: false,
+        organizationId: coreAppOrganizationId,
       }
     }
 
@@ -1091,6 +1099,7 @@ export default async function initSanity(
       dataset: datasetName,
       projectId,
       projectName: displayName || answers.projectName,
+      organizationId,
     }
 
     if (remoteTemplateInfo) {
@@ -1230,12 +1239,12 @@ export default async function initSanity(
   }
 
   async function getOrganizationId(organizations: ProjectOrganization[]) {
-    let organizationId = flags.organization
+    let orgId = flags.organization
     if (unattended) {
-      return organizationId || undefined
+      return orgId || undefined
     }
 
-    const shouldPrompt = organizations.length > 0 && !organizationId
+    const shouldPrompt = organizations.length > 0 && !orgId
     if (shouldPrompt) {
       debug(`User has ${organizations.length} organization(s), checking attach access`)
       const withGrant = await getOrganizationsWithAttachGrant(organizations)
@@ -1261,18 +1270,18 @@ export default async function initSanity(
       })
 
       if (chosenOrg && chosenOrg !== 'none') {
-        organizationId = chosenOrg
+        orgId = chosenOrg
       }
-    } else if (organizationId) {
-      debug(`User has defined organization flag explicitly (%s)`, organizationId)
+    } else if (orgId) {
+      debug(`User has defined organization flag explicitly (%s)`, orgId)
     } else if (organizations.length === 0) {
       debug('User has no organizations, skipping selection prompt')
     }
 
-    return organizationId || undefined
+    return orgId || undefined
   }
 
-  async function hasProjectAttachGrant(organizationId: string) {
+  async function hasProjectAttachGrant(orgId: string) {
     const requiredGrantGroup = 'sanity.organization.projects'
     const requiredGrant = 'attach'
 
@@ -1280,7 +1289,7 @@ export default async function initSanity(
       .clone()
       .config({apiVersion: 'v2021-06-07'})
 
-    const grants = await client.request({uri: `organizations/${organizationId}/grants`})
+    const grants = await client.request({uri: `organizations/${orgId}/grants`})
     const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
     return group.some(
       (resource) =>
