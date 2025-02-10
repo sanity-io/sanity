@@ -117,16 +117,17 @@ jobs:
         run: pnpm install
 
       - name: Store Playwright's Version
+        id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
