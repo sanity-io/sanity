@@ -37,10 +37,9 @@ export function isDraftOrPublished(versionName: string): boolean {
 
 /** @internal */
 export function getPublishDateFromRelease(release: ReleaseDocument): Date | null {
-  if (release.metadata.releaseType !== 'scheduled') return null
+  const dateString = release.publishedAt || release.publishAt || release.metadata.intendedPublishAt
 
-  const dateString = release.publishAt || release.metadata.intendedPublishAt
-  if (!dateString) return new Date()
+  if (!dateString) return null
 
   return new Date(dateString)
 }

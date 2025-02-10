@@ -13,13 +13,14 @@ import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
+import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
-import {ReleaseTime} from '../overview/columnCells/ReleaseTime'
+import {ReleaseTime} from '../components/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
 
@@ -36,6 +37,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
   const {updateRelease} = useReleaseOperations()
   const toast = useToast()
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
+  const getReleaseTime = useReleaseTime()
 
   const [open, setOpen] = useState(false)
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
@@ -108,16 +110,16 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
 
   const publishDateLabel = useMemo(() => {
     if (release.state === 'published') {
-      if (isPublishDateInPast && release.publishAt)
+      if (isPublishDateInPast && publishDate)
         return tRelease('dashboard.details.published-on', {
-          date: format(new Date(publishDate), 'MMM d, yyyy, pp'),
+          date: getReleaseTime(release),
         })
 
       return tRelease('dashboard.details.published-asap')
     }
 
     return <ReleaseTime release={release} />
-  }, [isPublishDateInPast, publishDate, release, tRelease])
+  }, [getReleaseTime, isPublishDateInPast, publishDate, release, tRelease])
 
   const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
     setReleaseType(pickedReleaseType)

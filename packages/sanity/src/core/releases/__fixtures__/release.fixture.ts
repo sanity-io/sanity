@@ -66,6 +66,7 @@ export const publishedASAPRelease: ReleaseDocument = {
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
+  publishedAt: '2023-10-10T10:00:00Z',
   state: 'published',
   metadata: {
     title: 'published Release',
