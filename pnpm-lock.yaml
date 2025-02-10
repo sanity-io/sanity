@@ -429,7 +429,7 @@ importers:
         version: 3.2.1(react@19.0.0)
       '@sanity/assist':
         specifier: ^3.1.0
-        version: 3.1.0(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        version: 3.1.1(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/client':
         specifier: ^6.27.2
         version: 6.27.2(debug@4.4.0)
@@ -450,7 +450,7 @@ importers:
         version: 1.1.0
       '@sanity/locale-ko-kr':
         specifier: ^1.0.1
-        version: 1.1.15(sanity@packages+sanity)
+        version: 1.1.16(sanity@packages+sanity)
       '@sanity/locale-nb-no':
         specifier: ^1.0.1
         version: 1.1.19(sanity@packages+sanity)
@@ -4351,8 +4351,8 @@ packages:
     resolution: {integrity: sha512-dBsZWH5X6ANcvclFRnQT9Y+NNvoWTJZIMKR5HT6hzoRpRb48p7+vWn+wi1V1wPvqgZg2ScsOQQcGXWXskbPbQQ==}
     engines: {node: '>=18'}
 
-  '@sanity/assist@3.1.0':
-    resolution: {integrity: sha512-9y3gipQx82VbOhGpvHXAExyGne4B0bK8Z2CuDJIxzSoRTeG2IVcrdsmpVjfkz3HMYZPInAy0jZeQntTcokfjCA==}
+  '@sanity/assist@3.1.1':
+    resolution: {integrity: sha512-xZ93EVP1SDmMbn8pUKfi+5+/qxY9d+fZ01llDINZgSQps/OVfLo/VcLnRdcQTC4IIcS4alBDaQ5SEF9Vb/6EEQ==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sanity/mutator': ^3.36.4
@@ -4464,8 +4464,8 @@ packages:
       react-dom: ^18.3 || >=19.0.0-rc
       react-is: ^18.3 || >=19.0.0-rc
 
-  '@sanity/locale-ko-kr@1.1.15':
-    resolution: {integrity: sha512-67jYiYOKBTOml4nTC5LYIyb677++H1oLuHddlWlZRjHXbCYEYJfmXjpp4w7EyQH6hXE0jkAvAgQtyny1oVlx4A==}
+  '@sanity/locale-ko-kr@1.1.16':
+    resolution: {integrity: sha512-iqDSAb6pbUGQUE+GNbpkhlQAJjsMon2bI5NDkDlWuUzjB7RLIN9fQbff3HCUqlGJr7scKRd3PJiFQnMVW+jgIw==}
     peerDependencies:
       sanity: ^3.22.0
 
@@ -14574,7 +14574,7 @@ snapshots:
 
   '@sanity/asset-utils@2.2.1': {}
 
-  '@sanity/assist@3.1.0(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
+  '@sanity/assist@3.1.1(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
       '@sanity/icons': 3.5.7(react@19.0.0)
       '@sanity/incompatible-plugin': 1.0.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -14856,7 +14856,7 @@ snapshots:
       - '@emotion/is-prop-valid'
       - styled-components
 
-  '@sanity/locale-ko-kr@1.1.15(sanity@packages+sanity)':
+  '@sanity/locale-ko-kr@1.1.16(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
