@@ -442,6 +442,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
+  /** The title of the reconnecting toast */
+  'form.reconnecting.toast.title': 'Connection lost. Reconnecting…',
   /** Accessibility label for the icon that indicates the field has a validation error */
   'form.validation.has-error-aria-label': 'Has error',
   /** Accessibility label for the icon that indicates the field has validation information */
