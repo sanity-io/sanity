@@ -40,10 +40,10 @@ export function ReleaseForm(props: {
     (pickedReleaseType: ReleaseType) => {
       setButtonReleaseType(pickedReleaseType)
 
-      if (pickedReleaseType === 'scheduled') {
-        // select the start of the next hour
-        const nextInputValue = startOfHour(addHours(new Date(), 1))
+      // select the start of the next hour
+      const nextInputValue = startOfHour(addHours(new Date(), 1))
 
+      if (pickedReleaseType === 'scheduled') {
         setIntendedPublishAt(nextInputValue)
       }
 
