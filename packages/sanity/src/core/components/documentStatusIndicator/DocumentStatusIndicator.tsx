@@ -31,7 +31,7 @@ const Dot = styled.div<{$index: number}>`
     --card-icon-color: var(--card-badge-critical-dot-color);
   }
   &[data-status='undecided'] {
-    --card-icon-color: var(--card-badge-explore-dot-color);
+    --card-icon-color: var(--card-badge-suggest-dot-color);
   }
   &[data-status='scheduled'] {
     --card-icon-color: var(--card-badge-primary-dot-color);
