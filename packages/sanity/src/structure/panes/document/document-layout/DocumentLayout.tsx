@@ -43,7 +43,6 @@ import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
 import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
-import {usePreviewUrl} from '../usePreviewUrl'
 import {DocumentLayoutError} from './DocumentLayoutError'
 
 const EMPTY_ARRAY: [] = []
@@ -83,6 +82,7 @@ export function DocumentLayout() {
     value,
     isInitialValueLoading,
     ready,
+    previewUrl,
   } = useDocumentPane()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
@@ -90,7 +90,6 @@ export function DocumentLayout() {
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const zOffsets = useZIndex()
-  const previewUrl = usePreviewUrl(value)
 
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
   const {
