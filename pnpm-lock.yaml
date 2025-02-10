@@ -9,7 +9,7 @@ overrides:
   '@sanity/ui@2': ^2.12.3
   '@typescript-eslint/eslint-plugin': ^7.18.0
   '@typescript-eslint/parser': ^7.18.0
-  vite: ^6.0.11
+  vite: ^6.1.0
 
 importers:
 
@@ -221,7 +221,7 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
       vite-tsconfig-paths:
         specifier: ^4.3.2
@@ -287,7 +287,7 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
 
   dev/page-building-studio:
@@ -564,7 +564,7 @@ importers:
         specifier: 19.0.0-beta-30d8a17-20250209
         version: 19.0.0-beta-30d8a17-20250209
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
 
   examples/blog-studio:
@@ -901,7 +901,7 @@ importers:
         specifier: ^6.1.11
         version: 6.2.1
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
       vitest:
         specifier: ^3.0.5
@@ -1701,7 +1701,7 @@ importers:
         specifier: 0.31.1
         version: 0.31.1
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
       yargs:
         specifier: ^17.3.0
@@ -1927,7 +1927,7 @@ importers:
         specifier: ^0.7.4
         version: 0.7.4
       vite:
-        specifier: ^6.0.11
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.1)(terser@5.38.1)(yaml@2.7.0)
       yargs:
         specifier: 17.3.0
@@ -5244,7 +5244,7 @@ packages:
     resolution: {integrity: sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
-      vite: ^6.0.11
+      vite: ^6.1.0
 
   '@vitest/coverage-v8@3.0.5':
     resolution: {integrity: sha512-zOOWIsj5fHh3jjGwQg+P+J1FW3s4jBu1Zqga0qW60yutsBtqEqNEJKWYh7cYn1yGD+1bdPsPdC/eL4eVK56xMg==}
@@ -5262,7 +5262,7 @@ packages:
     resolution: {integrity: sha512-CLPNBFBIE7x6aEGbIjaQAX03ZZlBMaWwAjBdMkIf/cAn6xzLTiM3zYqO/WAbieEjsAZir6tO71mzeHZoodThvw==}
     peerDependencies:
       msw: ^2.4.9
-      vite: ^6.0.11
+      vite: ^6.1.0
     peerDependenciesMeta:
       msw:
         optional: true
@@ -11548,7 +11548,7 @@ packages:
   vite-tsconfig-paths@4.3.2:
     resolution: {integrity: sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==}
     peerDependencies:
-      vite: ^6.0.11
+      vite: ^6.1.0
     peerDependenciesMeta:
       vite:
         optional: true
