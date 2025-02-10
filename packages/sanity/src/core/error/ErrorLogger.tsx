@@ -1,4 +1,5 @@
 import {useToast} from '@sanity/ui'
+import {isObject} from 'lodash'
 import {useEffect} from 'react'
 
 import {ConfigResolutionError, SchemaError} from '../config'
@@ -51,7 +52,7 @@ export function ErrorLogger(): null {
   return null
 }
 
-function isKnownError(err: Error): boolean {
+export function isKnownError(err: Error): boolean {
   if (err instanceof SchemaError) {
     return true
   }
@@ -64,7 +65,8 @@ function isKnownError(err: Error): boolean {
     return true
   }
 
-  if ('ViteDevServerStoppedError' in err && err.ViteDevServerStoppedError) {
+  // This is a special case for the Vite dev server stopping error
+  if (isObject(err) && 'ViteDevServerStoppedError' in err && err.ViteDevServerStoppedError) {
     return true
   }
 
