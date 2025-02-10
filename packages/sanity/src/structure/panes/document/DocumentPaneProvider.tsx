@@ -9,14 +9,13 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
-import {omit, throttle} from 'lodash'
+import {throttle} from 'lodash'
 import {memo, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
-  type DocumentInspector,
   type DocumentPresence,
   EMPTY_ARRAY,
   getDraftId,
@@ -54,20 +53,15 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {useStructureTool} from '../../useStructureTool'
 import {CreatedDraft, DocumentURLCopied} from './__telemetry__'
-import {
-  DEFAULT_MENU_ITEM_GROUPS,
-  EMPTY_PARAMS,
-  HISTORY_INSPECTOR_NAME,
-  INSPECT_ACTION_PREFIX,
-} from './constants'
+import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
+import {useDocumentPaneInspector} from './useDocumentPaneInspector'
 import {usePreviewUrl} from './usePreviewUrl'
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
@@ -101,14 +95,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       badges: documentBadges,
       unstable_fieldActions: fieldActionsResolver,
       unstable_languageFilter: languageFilterResolver,
-      inspectors: inspectorsResolver,
     },
   } = useSource()
   const telemetry = useTelemetry()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {features} = useStructureTool()
   const {push: pushToast} = useToast()
   const {
     options,
@@ -151,6 +143,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const isInitialValueLoading = initialValue.loading
+  const {
+    changesOpen,
+    currentInspector,
+    inspectors,
+    closeInspector,
+    openInspector,
+    handleHistoryClose,
+    handleHistoryOpen,
+    handleInspectorAction,
+    inspectOpen,
+    handleLegacyInspectClose,
+  } = useDocumentPaneInspector({documentId, documentType, params})
 
   const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -279,30 +283,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
   }, [presenceStore, value._id])
 
-  const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}),
-    [documentId, documentType, inspectorsResolver],
-  )
-
-  const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
-
-  // Handle inspector name changes from URL
-  const inspectParamRef = useRef<string | undefined>(params.inspect)
-  useEffect(() => {
-    if (inspectParamRef.current !== params.inspect) {
-      inspectParamRef.current = params.inspect
-      setInspectorName(params.inspect || null)
-    }
-  }, [params.inspect])
-
-  const currentInspector = inspectors?.find((i) => i.name === inspectorName)
-  const resolvedChangesInspector = inspectors.find((i) => i.name === HISTORY_INSPECTOR_NAME)
-
-  const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
-
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? sinceDocument
     : editState?.published || null
@@ -364,108 +346,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [onFocusPath, setFocusPath],
   )
 
-  const closeInspector = useCallback(
-    (closeInspectorName?: string) => {
-      // inspector?: DocumentInspector
-      const inspector = closeInspectorName && inspectors.find((i) => i.name === closeInspectorName)
-
-      if (closeInspectorName && !inspector) {
-        console.warn(`No inspector named "${closeInspectorName}"`)
-        return
-      }
-
-      if (!currentInspector) {
-        return
-      }
-
-      if (inspector) {
-        const result = inspector.onClose?.({params}) ?? {params}
-
-        setInspectorName(null)
-        inspectParamRef.current = undefined
-
-        setPaneParams({...result.params, inspect: undefined})
-
-        return
-      }
-
-      if (currentInspector) {
-        const result = currentInspector.onClose?.({params}) ?? {params}
-
-        setInspectorName(null)
-        inspectParamRef.current = undefined
-
-        setPaneParams({...result.params, inspect: undefined})
-      }
-    },
-    [currentInspector, inspectors, params, setPaneParams],
-  )
-
-  const openInspector = useCallback(
-    (nextInspectorName: string, paneParams?: Record<string, string>) => {
-      const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
-
-      if (!nextInspector) {
-        console.warn(`No inspector named "${nextInspectorName}"`)
-        return
-      }
-
-      // if the inspector is already open, only update params
-      if (currentInspector?.name === nextInspector.name) {
-        setPaneParams({...params, ...paneParams, inspect: nextInspector.name})
-        return
-      }
-
-      let currentParams = params
-
-      if (currentInspector) {
-        const closeResult = nextInspector.onClose?.({params: currentParams}) ?? {
-          params: currentParams,
-        }
-
-        currentParams = closeResult.params
-      }
-
-      const result = nextInspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
-
-      setInspectorName(nextInspector.name)
-      inspectParamRef.current = nextInspector.name
-
-      setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
-    },
-    [currentInspector, inspectors, params, setPaneParams],
-  )
-
-  const handleHistoryClose = useCallback(() => {
-    if (resolvedChangesInspector) {
-      closeInspector(resolvedChangesInspector.name)
-    }
-  }, [closeInspector, resolvedChangesInspector])
-
-  const handleHistoryOpen = useCallback(() => {
-    if (!features.reviewChanges) {
-      return
-    }
-
-    if (resolvedChangesInspector) {
-      openInspector(resolvedChangesInspector.name, {changesInspectorTab: 'review'})
-    }
-  }, [features.reviewChanges, openInspector, resolvedChangesInspector])
-
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
-
-  const toggleLegacyInspect = useCallback(
-    (toggle = !inspectOpen) => {
-      if (toggle) {
-        setPaneParams({...params, inspect: 'on'})
-      } else {
-        setPaneParams(omit(params, 'inspect'))
-      }
-    },
-    [inspectOpen, params, setPaneParams],
-  )
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
@@ -489,49 +372,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
-      if (item.action === 'inspect') {
-        toggleLegacyInspect(true)
-        return true
-      }
-
       if (item.action === 'reviewChanges') {
         handleHistoryOpen()
         return true
       }
 
-      if (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX)) {
-        const nextInspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
-        const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
-
-        if (nextInspector) {
-          if (nextInspector.name === inspectorName) {
-            closeInspector(nextInspector.name)
-          } else {
-            openInspector(nextInspector.name)
-          }
-          return true
-        }
+      if (
+        item.action === 'inspect' ||
+        (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
+      ) {
+        handleInspectorAction(item)
       }
-
       return false
     },
-    [
-      t,
-      closeInspector,
-      handleHistoryOpen,
-      inspectorName,
-      inspectors,
-      openInspector,
-      previewUrl,
-      toggleLegacyInspect,
-      pushToast,
-      telemetry,
-    ],
-  )
-
-  const handleLegacyInspectClose = useCallback(
-    () => toggleLegacyInspect(false),
-    [toggleLegacyInspect],
+    [previewUrl, telemetry, pushToast, t, handleHistoryOpen, handleInspectorAction],
   )
 
   const [openPath, onSetOpenPath] = useState<Path>([])
