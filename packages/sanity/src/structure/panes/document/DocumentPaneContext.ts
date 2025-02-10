@@ -88,7 +88,7 @@ export interface DocumentPaneContextValue {
   /**
    * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
    *
-   * @deprecated use `usePerspective()`ﬁ instead
+   * @deprecated use `usePerspective()` instead
    */
   selectedReleaseId: ReleaseId | undefined
   permissions?: PermissionCheckResult | null
@@ -97,9 +97,6 @@ export interface DocumentPaneContextValue {
   isPermissionsLoading: boolean
   isInitialValueLoading?: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
-  __internal_tasks?: {
-    footerAction: React.ReactNode
-  }
 
   // History specific values
   revisionId: string | null

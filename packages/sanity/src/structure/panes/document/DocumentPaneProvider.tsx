@@ -65,7 +65,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schema = useSchema()
   const {setDocumentMeta} = useCopyPaste()
   const {
-    __internal_tasks,
     document: {
       actions: documentActions,
       badges: documentBadges,
@@ -392,7 +391,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         focusPath,
         inspector: currentInspector || null,
         inspectors,
-        __internal_tasks,
         onBlur,
         onChange,
         onFocus,
@@ -453,7 +451,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       focusPath,
       currentInspector,
       inspectors,
-      __internal_tasks,
       onBlur,
       onChange,
       onFocus,
