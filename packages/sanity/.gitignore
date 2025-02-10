@@ -5,6 +5,8 @@
 # Coverage directory used by tools like istanbul
 /coverage
 
+/.vscode
+
 # Dependency directories
 /node_modules
 

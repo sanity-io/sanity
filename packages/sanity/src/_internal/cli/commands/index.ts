@@ -52,7 +52,9 @@ import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
 import extractSchemaCommand from './schema/extractSchemaCommand'
+import fetchSchemaCommand from './schema/fetchSchemaCommand'
 import schemaGroup from './schema/schemaGroup'
+import storeSchemaCommand from './schema/storeSchemaCommand'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
 import inviteUserCommand from './users/inviteUserCommand'
@@ -115,6 +117,8 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   validateSchemaCommand,
   extractSchemaCommand,
   previewCommand,
+  fetchSchemaCommand,
+  storeSchemaCommand,
   execCommand,
   manifestGroup,
   extractManifestCommand,

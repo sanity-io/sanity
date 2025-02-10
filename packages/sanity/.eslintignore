@@ -7,3 +7,4 @@ presentation.js
 router.js
 structure.js
 /migrate/*
+.vscode/*

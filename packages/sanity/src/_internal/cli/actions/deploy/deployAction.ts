@@ -8,6 +8,7 @@ import tar from 'tar-fs'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {extractManifestSafe} from '../manifest/extractManifestAction'
+import storeManifestSchemas from '../schema/storeSchemasAction'
 import {
   type BaseConfigOptions,
   checkDir,
@@ -128,7 +129,7 @@ export default async function deployStudioAction(
     }
 
     if (!isCoreApp) {
-      await extractManifestSafe(
+      const extractManifestError = await extractManifestSafe(
         {
           ...buildArgs,
           extOptions: {},
@@ -136,6 +137,16 @@ export default async function deployStudioAction(
         },
         context,
       )
+
+      const storeManifestSchemasArgs = {
+        ...args,
+        extOptions: {
+          'schema-path': flags['schema-path'],
+        },
+        extraArguments: [],
+      }
+
+      if (!extractManifestError) await storeManifestSchemas(storeManifestSchemasArgs, context)
     }
   }
 
