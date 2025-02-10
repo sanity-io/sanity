@@ -41,12 +41,10 @@ import {
   useDocumentValuePermissions,
   useEditState,
   useFormState,
-  useInitialValue,
   usePerspective,
   usePresenceStore,
   useSchema,
   useSource,
-  useTemplates,
   useTranslation,
   useUnique,
   useValidationStatus,
@@ -65,11 +63,11 @@ import {
   INSPECT_ACTION_PREFIX,
 } from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
-import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {usePreviewUrl} from './usePreviewUrl'
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
@@ -95,7 +93,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = historyStore
 
   const schema = useSchema()
-  const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
   const {
     __internal_tasks,
@@ -146,27 +143,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     perspective.selectedPerspective,
   ])
 
-  const panePayload = useUnique(paneRouter.payload)
-  const {templateName, templateParams} = useMemo(
-    () =>
-      getInitialValueTemplateOpts(templates, {
-        documentType,
-        templateName: paneOptions.template,
-        templateParams: paneOptions.templateParameters,
-        panePayload,
-        urlTemplate: params.template,
-      }),
-    [documentType, paneOptions, params, panePayload, templates],
-  )
-  const initialValueRaw = useInitialValue({
+  const initialValue = useDocumentPaneInitialValue({
+    paneOptions,
     documentId,
     documentType,
-    templateName,
-    templateParams,
-    version: params.version,
+    params,
   })
 
-  const initialValue = useUnique(initialValueRaw)
   const isInitialValueLoading = initialValue.loading
 
   const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
