@@ -422,8 +422,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.31.0
-        version: 1.31.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
+        specifier: ^1.31.2
+        version: 1.31.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
@@ -1350,8 +1350,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.31.0
-        version: 1.31.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^1.31.2
+        version: 1.31.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4074,8 +4074,8 @@ packages:
       '@sanity/types': ^3.74.1
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.31.0':
-    resolution: {integrity: sha512-354MCNmqkrDAktcg4+h42IKDP2mLu/q48Vv7MvvNEQIwdSpqxkGzg8RsEw2IlkjXB4heJvpQKGi8e6Q9JdfPZg==}
+  '@portabletext/editor@1.31.2':
+    resolution: {integrity: sha512-NQMMP5F3XazsdQuorRlIDT61qX9OOYNU+qmqjxGxoLiUKZA0INjjsLaym1MkX/ZXHN69e9h+cAAQj1l7W2lrPQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.74.1
@@ -9862,6 +9862,11 @@ packages:
     peerDependencies:
       react: '*'
 
+  react-compiler-runtime@19.0.0-beta-30d8a17-20250209:
+    resolution: {integrity: sha512-lm42SAfsebXiA69sDBIWTFHDFuXWg0m75Fyvl+bzLyBbGKErnTbYfVsSrta811fdbK0A3j+RGjcHOEoRwWICOQ==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+
   react-compiler-runtime@19.0.0-beta-714736e-20250131:
     resolution: {integrity: sha512-RJQqbR2zIobjLZ242MRQlWlyxLDxw0fRxbniImHxSsBqHSf35vK8CsClA37MfO729M3n4jCIawI3BCdBHksOvA==}
     peerDependencies:
@@ -14283,7 +14288,7 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.31.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
+  '@portabletext/editor@1.31.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/patches': 1.1.2
@@ -14296,7 +14301,7 @@ snapshots:
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 18.3.1
-      react-compiler-runtime: 19.0.0-beta-714736e-20250131(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-30d8a17-20250209(react@18.3.1)
       rxjs: 7.8.1
       slate: 0.112.0
       slate-dom: 0.112.2(slate@0.112.0)
@@ -14308,7 +14313,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.31.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
+  '@portabletext/editor@1.31.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/patches': 1.1.2
@@ -14321,7 +14326,7 @@ snapshots:
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 19.0.0
-      react-compiler-runtime: 19.0.0-beta-714736e-20250131(react@19.0.0)
+      react-compiler-runtime: 19.0.0-beta-30d8a17-20250209(react@19.0.0)
       rxjs: 7.8.1
       slate: 0.112.0
       slate-dom: 0.112.2(slate@0.112.0)
@@ -21424,6 +21429,14 @@ snapshots:
       react: 19.0.0
       reactcss: 1.2.3(react@19.0.0)
       tinycolor2: 1.6.0
+
+  react-compiler-runtime@19.0.0-beta-30d8a17-20250209(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  react-compiler-runtime@19.0.0-beta-30d8a17-20250209(react@19.0.0):
+    dependencies:
+      react: 19.0.0
 
   react-compiler-runtime@19.0.0-beta-714736e-20250131(react@18.3.1):
     dependencies:
