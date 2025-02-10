@@ -121,7 +121,7 @@ export const releasesOverviewColumnDefs: (
       width: 120,
       header: ({headerProps}) => (
         <Flex {...headerProps} paddingY={3} sizing="border">
-          <Headers.BasicHeader text="" />
+          <Headers.BasicHeader text={t('table-header.documents')} />
         </Flex>
       ),
       cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (

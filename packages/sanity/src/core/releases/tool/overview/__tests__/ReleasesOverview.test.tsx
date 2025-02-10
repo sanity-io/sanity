@@ -246,10 +246,10 @@ describe('ReleasesOverview', () => {
       mockUseReleasesMetadata.mockReturnValue({
         ...useReleasesMetadataMockReturn,
         data: Object.fromEntries(
-          releases.map((release) => [
+          releases.map((release, index) => [
             release._id,
             {
-              documentCount: 1,
+              documentCount: index + 1,
             } as ReleasesMetadata,
           ]),
         ),
@@ -271,6 +271,11 @@ describe('ReleasesOverview', () => {
       within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
       within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
       within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+
+      // document count
+      within(unsortedFirstRelease).getByText('2')
+      within(unsortedSecondRelease).getByText('4')
+      within(unsortedThirdRelease).getByText('1')
     })
 
     it('shows time as ASAP for asap release types', () => {
