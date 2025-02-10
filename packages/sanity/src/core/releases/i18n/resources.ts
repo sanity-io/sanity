@@ -147,6 +147,8 @@ const releasesLocaleStrings = {
   'failed-edit-title': 'Failed to save changes',
   /** Title text displayed for releases that failed to publish  */
   'failed-publish-title': 'Failed to publish',
+  /** Title text displayed for releases that failed to schedule  */
+  'failed-schedule-title': 'Failed to schedule',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',
