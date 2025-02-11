@@ -16,8 +16,6 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   deleteRelease: vi.fn(),
   revertRelease: vi.fn(),
   unpublishVersion: vi.fn(),
-  canPublish: vi.fn(),
-  canSchedule: vi.fn(),
 }
 
 export const mockUseReleaseOperations = useReleaseOperations as Mock<typeof useReleaseOperations>
