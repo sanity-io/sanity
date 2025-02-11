@@ -88,7 +88,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   return (
     <Container width={3}>
-      <Stack padding={3} paddingBottom={[4, 4, 5, 6]}>
+      <Stack padding={3} paddingY={[3, 3, 4, 5]}>
         <Flex gap={1} align="center">
           {isReleaseOpen && (
             <Button
