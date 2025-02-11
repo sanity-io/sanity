@@ -169,7 +169,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         )}
 
         {!isReleaseOpen && retentionDays && (
-          <Card padding={4} radius={4} tone="primary">
+          <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
             <Flex gap={3}>
               <Text size={1}>
                 <InfoOutlineIcon />

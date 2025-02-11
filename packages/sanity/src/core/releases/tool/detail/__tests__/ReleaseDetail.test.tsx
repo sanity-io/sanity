@@ -1,13 +1,15 @@
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useProjectSubscriptionsMockReturn} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
 import {
   activeASAPRelease,
   activeUndecidedErrorRelease,
   activeUndecidedRelease,
+  archivedScheduledRelease,
   publishedASAPRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -73,6 +75,10 @@ vi.mock('../documentTable/useReleaseHistory', () => ({
   useReleaseHistory: vi.fn().mockReturnValue({
     documentsHistory: new Map(),
   }),
+}))
+
+vi.mock('../../../../hooks/useProjectSubscriptions', () => ({
+  useProjectSubscriptions: vi.fn(() => useProjectSubscriptionsMockReturn),
 }))
 
 const mockRouterNavigate = vi.fn()
@@ -286,6 +292,47 @@ describe('after releases have loaded', () => {
     })
   })
 
+  describe('with archived release', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReset()
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [archivedScheduledRelease],
+      })
+
+      mockUseRouterReturn.state = {
+        releaseId: getReleaseIdFromReleaseDocumentId(archivedScheduledRelease._id),
+      }
+
+      await renderTest()
+    })
+
+    publishAgnosticTests(archivedScheduledRelease.metadata.title)
+
+    it('allows for navigating back to archived overview', () => {
+      fireEvent.click(screen.getByTestId('back-to-releases-button'))
+
+      expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
+        _searchParams: [['group', 'archived']],
+      })
+    })
+
+    it('should show archived retention card', () => {
+      screen.getByText('This release is archived')
+
+      within(screen.getByTestId('retention-policy-card')).getByText('123', {exact: false})
+    })
+
+    it('should not show a schedule date or release type', () => {
+      expect(screen.queryByTestId('release-type-label')).not.toBeInTheDocument()
+    })
+
+    it('should not show the pin release button', () => {
+      expect(screen.queryByText('Pin release')).not.toBeInTheDocument()
+    })
+  })
+
   describe('with published release', () => {
     beforeEach(async () => {
       mockUseActiveReleases.mockReset()
@@ -303,6 +350,24 @@ describe('after releases have loaded', () => {
     })
 
     publishAgnosticTests(publishedASAPRelease.metadata.title)
+
+    it('allows for navigating back to archived overview', () => {
+      fireEvent.click(screen.getByTestId('back-to-releases-button'))
+
+      expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
+        _searchParams: [['group', 'archived']],
+      })
+    })
+
+    it('should show published retention card', () => {
+      screen.getByText('This release is published')
+
+      within(screen.getByTestId('retention-policy-card')).getByText('123', {exact: false})
+    })
+
+    it('should not show the pin release button', () => {
+      expect(screen.queryByText('Pin release')).not.toBeInTheDocument()
+    })
 
     it('should not show the publish button', () => {
       expect(screen.queryByText('Publish all')).toBeNull()
