@@ -55,6 +55,7 @@ function listen(id: string, fields: string[], store: DocumentStore) {
   const params = {id, draftId: getDraftId(id)}
   return store.listenQuery(query, params, {
     perspective: 'drafts',
+    tag: 'drafts',
   }) as Observable<SanityDocument | null>
 }
 
