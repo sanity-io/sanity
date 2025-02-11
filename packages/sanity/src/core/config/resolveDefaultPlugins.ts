@@ -44,6 +44,9 @@ export function getDefaultPluginsOptions(
     scheduledPublishing: {
       ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,
       ...workspace.scheduledPublishing,
+      // If the user has explicitly enabled scheduled publishing, we should respect that
+      // eslint-disable-next-line camelcase
+      __internal__workspaceEnabled: workspace.scheduledPublishing?.enabled ?? false,
     },
     releases: {
       ...workspace.releases,

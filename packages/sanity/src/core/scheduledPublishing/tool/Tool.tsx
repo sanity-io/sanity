@@ -4,7 +4,10 @@ import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useWorkspace} from '../../studio/workspace'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
+import InfoCallout from '../components/infoCallout/InfoCallout'
 import ButtonTimeZone from '../components/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../components/timeZoneButton/TimeZoneButtonElementQuery'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
@@ -30,10 +33,11 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 export default function Tool() {
   const router = useRouter()
+  const {scheduledPublishing} = useWorkspace()
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
-  const {enabled} = useScheduledPublishingEnabled()
+  const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
@@ -77,13 +81,44 @@ export default function Tool() {
   }
 
   if (!enabled) {
+    if (scheduledPublishing.__internal__workspaceEnabled) {
+      return (
+        <Container width={1} paddingTop={4}>
+          <Box paddingTop={4} paddingX={4}>
+            <ErrorCallout
+              description="Something went wrong loading permissions, please try again."
+              title="Permissions check failed"
+            />
+          </Box>
+        </Container>
+      )
+    }
+    // This is for the case users lands in the tool rout without having the feature enabled.
     return (
       <Container width={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          <ErrorCallout
-            description="Something went wrong loading permissions, please try again."
-            title="Permissions check failed"
-          />
+          {hasUsedScheduledPublishing.loading ? (
+            <LoadingBlock />
+          ) : (
+            <InfoCallout
+              // TODO: TBC with design and growth
+              description={
+                <>
+                  Scheduled Publishing is not enabled. It can be enabled in the config. We recommend
+                  using{' '}
+                  <a
+                    target="_blank"
+                    href="https://www.sanity.io/content-releases?ref=release"
+                    rel="noreferrer"
+                  >
+                    "Releases"
+                  </a>
+                  .
+                </>
+              }
+              title="Scheduled Publishing is not enabled"
+            />
+          )}
         </Box>
       </Container>
     )

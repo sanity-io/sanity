@@ -23,6 +23,13 @@ export interface ScheduledPublishingPluginOptions {
    * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
    */
   inputDateTimeFormat?: string
+
+  /**
+   * @hidden
+   * Whether scheduled publishing is enabled by the workspace.
+   * Sanity is enabling it by default in the config, {@link "../scheduledPublishing/constants.ts"}
+   */
+  __internal__workspaceEnabled?: boolean
 }
 
 export interface Schedule {

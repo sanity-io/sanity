@@ -81,13 +81,14 @@ export const DATE_FORMAT = {
   LARGE: `iiii',' d MMMM yyyy',' p`,
 }
 
-export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<ScheduledPublishingPluginOptions> =
-  {
-    enabled: true,
-    // 25/12/2022 22:00
-    inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
-  }
+export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<
+  Omit<ScheduledPublishingPluginOptions, '__internal__workspaceEnabled'>
+> = {
+  enabled: true,
+  // 25/12/2022 22:00
+  inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
+}
 
-export const TOOL_NAME = 'schedules'
+export const SCHEDULED_PUBLISHING_TOOL_NAME = 'schedules'
 
 export const TOOL_TITLE = 'Schedules'
