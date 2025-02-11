@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -27,7 +27,7 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const {publishRelease} = useReleaseOperations()
+  const {publishRelease, canPublish} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
@@ -43,16 +43,23 @@ export const ReleasePublishAllButton = ({
     'idle' | 'confirm' | 'confirm-2' | 'publishing'
   >('idle')
 
+  const [publishPermission, setPublishPermission] = useState<boolean>(false)
+
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
 
-  const isPublishButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
+  const isPublishButtonDisabled =
+    disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishPermission
+  const useUnstableAction = publishBundleStatus === 'confirm-2'
+
+  useEffect(() => {
+    canPublish(release._id, useUnstableAction).then((response) => setPublishPermission(response))
+  }, [canPublish, release._id, release.metadata.intendedPublishAt, useUnstableAction])
 
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return
 
     try {
-      const useUnstableAction = publishBundleStatus === 'confirm-2'
       setPublishBundleStatus('publishing')
       await publishRelease(release._id, useUnstableAction)
       telemetry.log(PublishedRelease)
@@ -94,8 +101,8 @@ export const ReleasePublishAllButton = ({
     }
   }, [
     release,
-    publishBundleStatus,
     publishRelease,
+    useUnstableAction,
     telemetry,
     toast,
     t,
@@ -139,9 +146,13 @@ export const ReleasePublishAllButton = ({
   }, [publishBundleStatus, t, handleConfirmPublishAll, release, documents.length])
 
   const publishTooltipContent = useMemo(() => {
-    if (!hasDocumentValidationErrors && !isValidatingDocuments) return null
+    if (!hasDocumentValidationErrors && !isValidatingDocuments && publishPermission) return null
 
     const tooltipText = () => {
+      if (!publishPermission) {
+        return t('publish-dialog.validation.no-permission')
+      }
+
       if (isValidatingDocuments) {
         return t('publish-dialog.validation.loading')
       }
@@ -162,7 +173,7 @@ export const ReleasePublishAllButton = ({
         </Flex>
       </Text>
     )
-  }, [hasDocumentValidationErrors, isValidatingDocuments, t])
+  }, [hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
 
   return (
     <>

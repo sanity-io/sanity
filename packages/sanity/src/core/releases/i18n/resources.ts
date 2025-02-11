@@ -196,6 +196,8 @@ const releasesLocaleStrings = {
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
     "The '<strong>{{title}}</strong>' release and its {{releaseDocumentsLength}} documents will be published.",
+  /** Label for the button when the user doesn't have permissions to publish a release */
+  'publish-dialog.validation.no-permission': 'You do not have permission to publish',
   /** Label for when documents are being validated */
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */
