@@ -9,6 +9,8 @@ import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../previ
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
+import {createRenderingContextStore} from '../renderingContext/createRenderingContextStore'
+import {type RenderingContextStore} from '../renderingContext/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
@@ -288,4 +290,25 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
+}
+
+/** @internal */
+export function useRenderingContextStore(): RenderingContextStore {
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const renderingContextStore =
+      resourceCache.get<RenderingContextStore>({
+        dependencies: [],
+        namespace: 'RenderingContextStore',
+      }) || createRenderingContextStore()
+
+    resourceCache.set({
+      dependencies: [],
+      namespace: 'RenderingContextStore',
+      value: renderingContextStore,
+    })
+
+    return renderingContextStore
+  }, [resourceCache])
 }
