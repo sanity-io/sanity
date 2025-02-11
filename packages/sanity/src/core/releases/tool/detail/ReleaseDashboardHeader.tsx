@@ -13,6 +13,7 @@ import {useRouter} from 'sanity/router'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../index'
+import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 
 export function ReleaseDashboardHeader(props: {
@@ -25,17 +26,18 @@ export function ReleaseDashboardHeader(props: {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const router = useRouter()
+
   const handleNavigateToReleasesList = useCallback(() => {
-    router.navigate({})
-  }, [router])
+    const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
+
+    router.navigate({
+      _searchParams: isReleaseOpen ? undefined : [[GROUP_SEARCH_PARAM_KEY, 'archived']],
+    })
+  }, [release.state, router])
 
   const handleActivityClick = useCallback(() => {
     setInspector((prev) => (prev === 'activity' ? undefined : 'activity'))
   }, [setInspector])
-
-  const handleTitleClick = useCallback(() => {
-    // TODO: Focus on the title when clicked once it's editable
-  }, [])
 
   return (
     <Flex align="flex-start">
@@ -61,7 +63,6 @@ export function ReleaseDashboardHeader(props: {
           />
           <Button
             mode="bleed"
-            onClick={handleTitleClick}
             text={title || tCore('release.placeholder-untitled-release')}
             // @ts-expect-error - pending @sanity/ui change
             textWeight="semibold"
