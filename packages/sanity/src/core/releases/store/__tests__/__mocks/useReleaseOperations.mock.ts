@@ -16,8 +16,8 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   deleteRelease: vi.fn(),
   revertRelease: vi.fn(),
   unpublishVersion: vi.fn(),
-  canPublish: vi.fn(),
-  canSchedule: vi.fn(),
+  canPublish: vi.fn(async (releaseId: string, useUnstableAction?: boolean) => true),
+  canSchedule: vi.fn(async (releaseId: string, intendedPublishAt: Date) => true),
 }
 
 export const mockUseReleaseOperations = useReleaseOperations as Mock<typeof useReleaseOperations>

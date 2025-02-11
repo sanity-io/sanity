@@ -7,6 +7,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
   activeUndecidedErrorRelease,
+  activeUndecidedRelease,
   publishedASAPRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -14,7 +15,10 @@ import {
   mockUseActiveReleases,
   useActiveReleasesMockReturn,
 } from '../../../store/__tests__/__mocks/useActiveReleases.mock'
-import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {
+  mockUseReleaseOperations,
+  useReleaseOperationsMockReturn,
+} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {
@@ -349,6 +353,33 @@ describe('after releases have loaded', () => {
 
     it('should show error message', () => {
       screen.getByTestId('release-error-details')
+    })
+  })
+
+  describe('with release with permissions warnings', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReset()
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeUndecidedRelease],
+      })
+
+      mockUseRouterReturn.state = {
+        releaseId: getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id),
+      }
+
+      mockUseReleaseOperations.mockReturnValue({
+        ...useReleaseOperationsMockReturn,
+        canPublish: async () => false,
+        canSchedule: async () => false,
+      })
+
+      await renderTest()
+    })
+
+    it('should show warning chip', () => {
+      screen.getByTestId('release-permission-error-details')
     })
   })
 })
