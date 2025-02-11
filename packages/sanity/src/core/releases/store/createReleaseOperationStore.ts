@@ -34,6 +34,7 @@ export interface ReleaseOperationsStore {
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
+  canSchedule: (releaseId: string, publishAt: Date) => Promise<boolean>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -200,6 +201,29 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const canSchedule = async (releaseId: string, publishAt: Date) => {
+    try {
+      await requestAction(
+        client,
+        [
+          {
+            actionType: 'sanity.action.release.schedule',
+            releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+            publishAt: publishAt.toISOString(),
+          },
+        ],
+        {
+          dryRun: true,
+          skipCrossDatasetReferenceValidation: true,
+        },
+      )
+
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -213,6 +237,7 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    canSchedule: canSchedule,
   }
 }
 
@@ -220,6 +245,8 @@ interface ScheduleApiAction {
   actionType: 'sanity.action.release.schedule'
   releaseId: string
   publishAt: string
+  dryRun?: boolean
+  skipCrossDatasetValidation?: boolean
 }
 
 interface PublishApiAction {
@@ -288,6 +315,7 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
   return async function requestAction(
     client: SanityClient,
     actions: ReleaseAction | ReleaseAction[],
+    options?: {dryRun?: boolean; skipCrossDatasetReferenceValidation?: boolean},
   ): Promise<void> {
     const {dataset} = client.config()
     try {
@@ -295,6 +323,7 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
         uri: `/data/actions/${dataset}`,
         method: 'POST',
         body: {
+          ...options,
           actions: Array.isArray(actions) ? actions : [actions],
         },
       })

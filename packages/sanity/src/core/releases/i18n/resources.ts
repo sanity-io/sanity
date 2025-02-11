@@ -225,6 +225,8 @@ const releasesLocaleStrings = {
   /** Title o unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
+  /** Schedule release button tooltip when user has no permissions to schedule */
+  'schedule-button-tooltip.validation.no-permission': 'You do not have permission to schedule',
   /** Schedule release button tooltip when validation is loading */
   'schedule-button-tooltip.validation.loading': 'Validating documents...',
   /** Schedule release button tooltip when there are validation errors */
