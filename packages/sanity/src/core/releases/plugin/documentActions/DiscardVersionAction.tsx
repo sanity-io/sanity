@@ -25,7 +25,7 @@ export const DiscardVersionAction = (
     id,
     type,
     version: release,
-    permission: 'publish',
+    permission: 'discardVersion',
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -48,6 +48,7 @@ export const DiscardVersionAction = (
   }
 
   return {
+    disabled: isPermissionsLoading || !permissions?.granted,
     dialog: dialogOpen && {
       type: 'custom',
       component: (
