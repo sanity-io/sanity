@@ -19,7 +19,7 @@ export interface PerspectiveContextValue {
   /* The selected perspective name, it could be a release or Published */
   selectedPerspectiveName: 'published' | ReleaseId | undefined
   /**
-   * The releaseId as r<string>; it will be undefined if the selected perspective is `published` or `drafts`
+   * The releaseId as `r<string>`; it will be undefined if the selected perspective is `published` or `drafts`
    */
   selectedReleaseId: ReleaseId | undefined
 

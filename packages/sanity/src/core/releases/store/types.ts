@@ -40,7 +40,7 @@ export type ReleaseFinalDocumentState = {
 export interface ReleaseDocument extends SanityDocument {
   /**
    * typically
-   * _.releases.<name>
+   * `_.releases.<name>`
    */
   _id: string
   _type: typeof RELEASE_DOCUMENT_TYPE
