@@ -258,6 +258,29 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const canSchedule = async (releaseId: string, publishAt: Date) => {
+    try {
+      await requestAction(
+        client,
+        [
+          {
+            actionType: 'sanity.action.release.schedule',
+            releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+            publishAt: publishAt.toISOString(),
+          },
+        ],
+        {
+          dryRun: true,
+          skipCrossDatasetReferenceValidation: true,
+        },
+      )
+
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -271,6 +294,7 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    canSchedule: canSchedule,
   }
 }
 
