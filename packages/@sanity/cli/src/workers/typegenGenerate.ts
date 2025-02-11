@@ -156,6 +156,8 @@ async function main() {
   }
 
   if (opts.overloadClientMethods && allQueries.length > 0) {
+    // Sort to ensure consistent order between runs
+    allQueries.sort((a, b) => a.query.localeCompare(b.query))
     const typeMap = `${typeGenerator.generateQueryMap(allQueries).trim()}\n`
     parentPort?.postMessage({
       type: 'typemap',

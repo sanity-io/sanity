@@ -95,6 +95,8 @@ export default async function typegenGenerateAction(
     size: 0,
   }
 
+  const results: string[] = []
+
   await new Promise<void>((resolve, reject) => {
     worker.addListener('message', (msg: TypegenGenerateTypesWorkerMessage) => {
       if (msg.type === 'error') {
@@ -118,7 +120,7 @@ export default async function typegenGenerateAction(
       if (msg.type === 'typemap') {
         let typeMapStr = `// Query TypeMap\n`
         typeMapStr += msg.typeMap
-        typeFile.write(typeMapStr)
+        results.push(typeMapStr)
         stats.size += Buffer.byteLength(typeMapStr)
         return
       }
@@ -128,7 +130,7 @@ export default async function typegenGenerateAction(
       if (msg.type === 'schema') {
         stats.schemaTypesCount += msg.length
         fileTypeString += msg.schema
-        typeFile.write(fileTypeString)
+        results.push(fileTypeString)
         return
       }
 
@@ -150,12 +152,17 @@ export default async function typegenGenerateAction(
           stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
           stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
         }
-        typeFile.write(`${fileTypeString}\n`)
+        results.push(`${fileTypeString}\n`)
         stats.size += Buffer.byteLength(fileTypeString)
       }
     })
     worker.addListener('error', reject)
   })
+
+  // Sort to ensure consistent order between runs
+  for (const str of results.sort()) {
+    await typeFile.write(str)
+  }
 
   await typeFile.close()
 
