@@ -39,7 +39,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const isActive = release.state === 'active'
   const shouldDisplayError = isActive && typeof release.error !== 'undefined'
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
-
+  const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
   useEffect(() => {
     // only run if the release is active
     if (isActive) {
@@ -93,6 +93,16 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
               </TextWithTone>
             </Flex>
           )}
+          {shouldDisplayWarnings && (
+            <Flex gap={2} padding={2} data-testid="release-permission-error-details">
+              <Text size={1}>
+                <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+              </Text>
+              <TextWithTone size={1} tone="caution">
+                {tRelease('permission-missing-title')}
+              </TextWithTone>
+            </Flex>
+          )}
         </Flex>
         <Box padding={2}>
           <ReleaseDetailsEditor release={release} />
@@ -119,7 +129,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
           </Card>
         )}
 
-        {isActive && shouldDisplayPermissionWarning && (
+        {shouldDisplayWarnings && (
           <Card padding={4} radius={4} tone="caution">
             <Flex gap={3}>
               <Text size={1}>
