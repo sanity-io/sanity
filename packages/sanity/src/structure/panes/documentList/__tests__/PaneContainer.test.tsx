@@ -1,5 +1,5 @@
 import {act, render, screen, waitFor} from '@testing-library/react'
-import {defineConfig, useSearchState} from 'sanity'
+import {defineConfig, type PerspectiveContextValue, useSearchState} from 'sanity'
 import {type DocumentListPaneNode, type StructureToolContextValue} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -27,7 +27,15 @@ vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useSearchState: vi.fn(),
   useActiveReleases: vi.fn(() => ({})),
-  usePerspective: vi.fn(() => ({perspective: undefined})),
+  usePerspective: vi.fn(
+    (): PerspectiveContextValue => ({
+      perspectiveStack: [],
+      excludedPerspectives: [],
+      selectedPerspective: 'drafts',
+      selectedPerspectiveName: undefined,
+      selectedReleaseId: undefined,
+    }),
+  ),
 }))
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
