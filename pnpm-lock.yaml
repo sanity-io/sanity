@@ -422,8 +422,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.32.0
-        version: 1.32.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
+        specifier: ^1.33.0
+        version: 1.33.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
@@ -1350,8 +1350,8 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.32.0
-        version: 1.32.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^1.33.0
+        version: 1.33.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4074,8 +4074,8 @@ packages:
       '@sanity/types': ^3.74.1
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.32.0':
-    resolution: {integrity: sha512-0j3md0tQGUKt1NlMRN+/7pgdjeFg+OOae/96ef6wxNCvIt2J7w+dK6Iggk8R4PmACcY4plKyUy279+q0x3oWiA==}
+  '@portabletext/editor@1.33.0':
+    resolution: {integrity: sha512-4NYZ8xut8yfMh+wRMtvVlv7AAKDIzKRNgXNtJmdgCP6WVJfqUGEGErk/WQql9Wf1k/RKju2Mwi940kvpkd9NBA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.74.1
@@ -4083,8 +4083,8 @@ packages:
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.1
 
-  '@portabletext/patches@1.1.2':
-    resolution: {integrity: sha512-ENGxLD+AJc2Uq2GfDCNmeU/9dT50VYBMX5zKYyPVw2/OYDEpLYDlEZBjh0v0RqEuE2ecUu+eBaHf4PE6C0CoQQ==}
+  '@portabletext/patches@1.1.3':
+    resolution: {integrity: sha512-9olhOppydPR/UoMVf9w3SxHR3l9UJ66GoI/hnG34ESf6ccewI6cgLMXdcn9MPiFIve46hFMO/hP7g7exmN6RSg==}
 
   '@portabletext/react@3.2.1':
     resolution: {integrity: sha512-RyFLk6u2q6ZyABTdOk+xoNR2Tq/4fcQFEWayNk4Kbd3gHpUUTabqOrDMChcmG6C7YVLSpwIEBwHoBVcy4vK/hA==}
@@ -14286,10 +14286,10 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.32.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
+  '@portabletext/editor@1.33.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
-      '@portabletext/patches': 1.1.2
+      '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
@@ -14311,10 +14311,10 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.32.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
+  '@portabletext/editor@1.33.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.6(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
-      '@portabletext/patches': 1.1.2
+      '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
@@ -14336,7 +14336,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/patches@1.1.2':
+  '@portabletext/patches@1.1.3':
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
       lodash: 4.17.21
