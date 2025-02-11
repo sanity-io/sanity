@@ -2,9 +2,9 @@ import {type DocumentBadgeComponent} from 'sanity'
 
 /** @internal */
 export const LiveEditBadge: DocumentBadgeComponent = (props) => {
-  const {liveEditSchemaType} = props
+  const {liveEditSchemaType, version} = props
 
-  if (liveEditSchemaType) {
+  if (liveEditSchemaType && !version) {
     return {
       label: 'Live',
       color: 'danger',
