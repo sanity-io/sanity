@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon, PinFilledIcon, PinIcon} from '@sanity/icons'
+import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
 import {
   Box,
   // Custom button with full radius used here
@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
@@ -19,6 +19,7 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {releasesLocaleNamespace} from '../../i18n'
+import {useReleaseOperations} from '../../store'
 import {type ReleaseDocument} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
@@ -28,12 +29,31 @@ import {ReleaseTypePicker} from './ReleaseTypePicker'
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+  const {canSchedule, canPublish} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
   const isSelected = releaseId === selectedReleaseId
-  const shouldDisplayError = release.state === 'active' && typeof release.error !== 'undefined'
+  const isActive = release.state === 'active'
+  const shouldDisplayError = isActive && typeof release.error !== 'undefined'
+  const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
+
+  useEffect(() => {
+    // only run if the release is active
+    if (isActive) {
+      canPublish(release._id).then((response) => {
+        setShouldDisplayPermissionWarning(!response)
+      })
+
+      // if it's a release that can be scheduled, check if it can be scheduled
+      if (release.metadata.intendedPublishAt && release.metadata.releaseType === 'scheduled') {
+        canSchedule(release._id, new Date(release.metadata.intendedPublishAt)).then((response) => {
+          setShouldDisplayPermissionWarning(!response)
+        })
+      }
+    }
+  })
 
   const handlePinRelease = useCallback(() => {
     if (isSelected) {
@@ -80,13 +100,29 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
-                <Text>{tRelease('failed-publish-title')}</Text>
+              <Stack space={3}>
+                <Text size={1}>{tRelease('failed-publish-title')}</Text>
                 <Details title={tRelease('error-details-title')}>
                   <Text>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
+              </Stack>
+            </Flex>
+          </Card>
+        )}
+
+        {isActive && shouldDisplayPermissionWarning && (
+          <Card padding={4} radius={4} tone="caution">
+            <Flex gap={3}>
+              <Text size={1}>
+                <WarningOutlineIcon />
+              </Text>
+              <Stack space={3}>
+                <Text size={1}>{tRelease('permission-missing-title')}</Text>
+                <Text size={1} muted>
+                  {tRelease('permission-missing-description')}
+                </Text>
               </Stack>
             </Flex>
           </Card>
