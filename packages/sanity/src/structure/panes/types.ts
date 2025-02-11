@@ -22,4 +22,9 @@ export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
     isReleaseLocked: boolean
     selectedReleaseId: ReleaseId | undefined
   }
+
+  /**
+   * @deprecated Avoid specifying a key, instead use `paneKey` if need be
+   */
+  key?: string
 }
