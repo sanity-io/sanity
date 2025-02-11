@@ -1,6 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
-import {addMinutes, isValid} from 'date-fns'
+import {addHours, isValid, startOfHour} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
@@ -39,9 +39,10 @@ export function ReleaseForm(props: {
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: ReleaseType) => {
       setButtonReleaseType(pickedReleaseType)
-      // select time 1 minute from now so that form doesn't immediately
-      // evaluate to error
-      const nextInputValue = addMinutes(new Date().setSeconds(0, 0), 1)
+
+      // select the start of the next hour
+      const nextInputValue = startOfHour(addHours(new Date(), 1))
+
       if (pickedReleaseType === 'scheduled') {
         setIntendedPublishAt(nextInputValue)
       }
