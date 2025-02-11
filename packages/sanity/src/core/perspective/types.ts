@@ -3,17 +3,17 @@ import {type ClientPerspective, type ReleaseId} from '@sanity/client'
 import {type ReleaseDocument} from '../releases/store/types'
 
 /**
- * @internal
+ * @beta
  */
 export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
 
 /**
- * @internal
+ * @beta
  */
 export type PerspectiveStack = ExtractArray<ClientPerspective>
 
 /**
- * @internal
+ * @beta
  */
 export interface PerspectiveContextValue {
   /* The selected perspective name, it could be a release or Published */

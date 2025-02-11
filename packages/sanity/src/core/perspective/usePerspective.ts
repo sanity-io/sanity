@@ -4,7 +4,7 @@ import {PerspectiveContext} from 'sanity/_singletons'
 import {type PerspectiveContextValue} from './types'
 
 /**
- * @internal
+ * @beta
  */
 export function usePerspective(): PerspectiveContextValue {
   const context = useContext(PerspectiveContext)
