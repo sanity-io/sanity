@@ -34,8 +34,6 @@ export interface ReleaseOperationsStore {
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
-  canSchedule: (releaseId: string, publishAt: Date) => Promise<boolean>
-  canPublish: (releaseId: string, useUnstableAction?: boolean) => Promise<boolean>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -202,53 +200,6 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
-  const canSchedule = async (releaseId: string, publishAt: Date) => {
-    try {
-      await requestAction(
-        client,
-        [
-          {
-            actionType: 'sanity.action.release.schedule',
-            releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-            publishAt: publishAt.toISOString(),
-          },
-        ],
-        {
-          dryRun: true,
-          skipCrossDatasetReferenceValidation: true,
-        },
-      )
-
-      return true
-    } catch (e) {
-      return false
-    }
-  }
-
-  const canPublish = async (releaseId: string, useUnstableAction?: boolean) => {
-    try {
-      await requestAction(
-        client,
-        [
-          {
-            actionType: useUnstableAction
-              ? 'sanity.action.release.publish2'
-              : 'sanity.action.release.publish',
-            releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-          },
-        ],
-        {
-          dryRun: true,
-          skipCrossDatasetReferenceValidation: true,
-        },
-      )
-
-      return true
-    } catch (e) {
-      return false
-    }
-  }
-
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -262,8 +213,6 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
-    canSchedule: canSchedule,
-    canPublish: canPublish,
   }
 }
 

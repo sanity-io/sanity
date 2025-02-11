@@ -15,10 +15,11 @@ import {
   mockUseActiveReleases,
   useActiveReleasesMockReturn,
 } from '../../../store/__tests__/__mocks/useActiveReleases.mock'
+import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
-  mockUseReleaseOperations,
-  useReleaseOperationsMockReturn,
-} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDetail} from '../ReleaseDetail'
 import {
@@ -38,6 +39,10 @@ vi.mock('sanity/router', async (importOriginal) => {
     IntentLink: vi.fn(),
   }
 })
+
+vi.mock('../../../store/useReleasePermission', () => ({
+  useReleasePermission: vi.fn(() => useReleasePermissionsMockReturn),
+}))
 
 vi.mock('../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
@@ -108,6 +113,11 @@ describe('ReleaseDetail', () => {
       mockUseActiveReleases.mockReturnValue({
         ...useActiveReleasesMockReturn,
         loading: true,
+      })
+
+      mockUseReleasePermissions.mockReturnValue({
+        canSchedule: async () => true,
+        canPublish: async () => true,
       })
 
       await renderTest()
@@ -369,8 +379,7 @@ describe('after releases have loaded', () => {
         releaseId: getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id),
       }
 
-      mockUseReleaseOperations.mockReturnValue({
-        ...useReleaseOperationsMockReturn,
+      mockUseReleasePermissions.mockReturnValue({
         canPublish: async () => false,
         canSchedule: async () => false,
       })

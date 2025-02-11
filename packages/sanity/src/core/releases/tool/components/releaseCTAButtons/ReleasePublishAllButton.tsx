@@ -13,6 +13,7 @@ import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {
@@ -27,7 +28,8 @@ export const ReleasePublishAllButton = ({
   disabled,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
-  const {publishRelease, canPublish} = useReleaseOperations()
+  const {publishRelease} = useReleaseOperations()
+  const {canPublish} = useReleasePermissions()
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()

@@ -16,6 +16,7 @@ import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -30,7 +31,8 @@ export const ReleaseScheduleButton = ({
   documents,
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
-  const {schedule, canSchedule} = useReleaseOperations()
+  const {schedule} = useReleaseOperations()
+  const {canSchedule} = useReleasePermissions()
 
   const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
 

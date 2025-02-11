@@ -19,8 +19,8 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {releasesLocaleNamespace} from '../../i18n'
-import {useReleaseOperations} from '../../store'
 import {type ReleaseDocument} from '../../store/types'
+import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
@@ -29,7 +29,7 @@ import {ReleaseTypePicker} from './ReleaseTypePicker'
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-  const {canSchedule, canPublish} = useReleaseOperations()
+  const {canSchedule, canPublish} = useReleasePermissions()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {selectedReleaseId} = usePerspective()
