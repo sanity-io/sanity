@@ -1,6 +1,6 @@
 {
   "name": "@repo/dev-aliases",
-  "version": "3.74.1",
+  "version": "3.75.0",
   "private": true,
   "description": "Dev aliases for the sanity monorepo",
   "type": "module",
