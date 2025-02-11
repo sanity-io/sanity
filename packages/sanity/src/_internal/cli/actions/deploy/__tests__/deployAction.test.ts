@@ -1,6 +1,6 @@
 import zlib from 'node:zlib'
 
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '@sanity/cli'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -300,5 +300,58 @@ describe('deployStudioAction', () => {
     )
 
     expect(mockContext.output.error).toHaveBeenCalledWith('Application limit reached')
+  })
+
+  it('handles core app deployment correctly', async () => {
+    // Create a mock application with all required properties
+    const mockCoreApp: UserApplication = {
+      id: 'core-app-id',
+      appHost: 'core-app-host',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      urlType: 'internal',
+      projectId: null,
+      title: null,
+      type: 'coreApp',
+    }
+
+    mockContext = {
+      ...mockContext,
+      cliConfig: {
+        api: {
+          organizationId: 'org-id',
+        },
+        // eslint-disable-next-line camelcase
+        __experimental_coreAppConfiguration: {
+          appHost: 'core-app-host',
+        },
+      } as CliConfig,
+    }
+
+    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
+    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
+
+    await deployStudioAction(
+      {
+        argsWithoutOptions: ['customSourceDir'],
+        extOptions: {},
+      } as CliCommandArguments<DeployStudioActionFlags>,
+      mockContext,
+    )
+
+    expect(helpers.getOrCreateUserApplicationFromConfig).toHaveBeenCalled()
+    expect(helpers.createDeployment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isCoreApp: true,
+      }),
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
   })
 })

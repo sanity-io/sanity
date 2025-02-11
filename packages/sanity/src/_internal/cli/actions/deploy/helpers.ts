@@ -40,7 +40,7 @@ export interface ActiveDeployment {
 
 export interface UserApplication {
   id: string
-  projectId: string
+  projectId: string | null
   title: string | null
   appHost: string
   urlType: 'internal' | 'external'

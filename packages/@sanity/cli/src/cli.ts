@@ -291,7 +291,7 @@ function loadAndSetEnvFromDotEnvFiles({
   // and apply the old behavior for environment variables. Otherwise, use the Vite-style
   // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
   // may be used in the configuration file, meaning we'd have to load the config twice.
-  if (existsSync(path.join(workDir, 'sanity.json')) && !isCoreApp) {
+  if (existsSync(path.join(workDir, 'sanity.json'))) {
     // v2
     debug('sanity.json exists, assuming v2 project and loading .env files using old behavior')
     const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
