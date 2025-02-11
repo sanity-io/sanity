@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {Box, Card, Code, Container, type ErrorBoundaryProps, Heading, Stack, Text} from '@sanity/ui'
+import {isObject} from 'lodash'
 import {
   type ComponentType,
   type ErrorInfo,
@@ -90,7 +91,12 @@ export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
     return <SchemaErrorsScreen schema={error.schema} />
   }
 
-  if (error && 'ViteDevServerStoppedError' in error && error.ViteDevServerStoppedError) {
+  if (
+    error &&
+    isObject(error) &&
+    'ViteDevServerStoppedError' in error &&
+    error.ViteDevServerStoppedError
+  ) {
     return <DevServerStoppedErrorScreen />
   }
 
