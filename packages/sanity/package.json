@@ -161,7 +161,7 @@
     "@sanity/asset-utils": "^2.0.6",
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/cli": "3.75.0",
-    "@sanity/client": "^6.27.2",
+    "@sanity/client": "^6.28.0",
     "@sanity/color": "^3.0.0",
     "@sanity/comlink": "^3.0.1",
     "@sanity/diff": "3.75.0",
