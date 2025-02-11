@@ -187,6 +187,11 @@ const releasesLocaleStrings = {
   /** Title for the release tool */
   'overview.title': 'Releases',
 
+  /** Text for when a user doesn't have publish or schedule releases */
+  'permission-missing-title': 'Limited access',
+  /** Description for when a user doesn't have publish or schedule releases */
+  'permission-missing-description':
+    'This release is not yet published. Only users with access to this release can view it.',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
