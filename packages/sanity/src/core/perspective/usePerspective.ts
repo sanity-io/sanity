@@ -5,6 +5,17 @@ import {type PerspectiveContextValue} from './types'
 
 /**
  * @beta
+ *
+ * React hook that returns the current studio perspective and perspective stack.
+ *
+ * @returns See {@link PerspectiveContextValue}
+ * @example Reading the current perspective stack
+ * ```ts
+ * function MyComponent() {
+ *  const {perspectiveStack} = usePerspective()
+ *  // ... do something with the perspective stack ...
+ * }
+ * ```
  */
 export function usePerspective(): PerspectiveContextValue {
   const context = useContext(PerspectiveContext)
