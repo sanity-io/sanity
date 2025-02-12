@@ -126,11 +126,6 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Discard version',
 
-  /** Label for the count of documents in to a release when only 1 document added */
-  'document-count_one': '{{count}} document',
-  /** Label for the count of documents in to a release */
-  'document-count_other': '{{count}} documents',
-
   /** Text for when documents of a release are loading */
   'document-loading': 'Loading documents',
   /** Label for when a document in a release has multiple validation warnings */
