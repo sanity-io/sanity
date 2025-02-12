@@ -113,18 +113,6 @@ const useTimeZone = () => {
             localStorage.setItem(LOCAL_STORAGE_TZ_KEY, JSON.stringify(tz))
             window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
-
-          toast.push({
-            closable: true,
-            description: (
-              <ToastDescription
-                body={`${tz.alternativeName} (${tz.namePretty})`}
-                title="Time zone updated"
-              />
-            ),
-            duration: 15000, // 15s
-            status: 'info',
-          })
         } catch (err) {
           console.error(err)
 
