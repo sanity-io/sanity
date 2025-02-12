@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
   <a href="https://sanity.io">
     <img src="https://cdn.sanity.io/images/3do82whm/next/1dfce9dde7a62ccaa8e8377254a1e919f6c07ad3-128x128.svg" />
   </a>
@@ -8,9 +8,9 @@
     <a href="https://www.sanity.io/docs">Docs</a> |
     <a href="https://www.sanity.io">Website</a>
   </h4>
-</p>
+</div>
 
-<p align="center">
+<div align="center">
   <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
   <img alt="" src="https://img.shields.io/npm/l/sanity.svg?style=flat">
@@ -20,7 +20,7 @@
   <a aria-label="Follow Sanity on Bluesky" href="https://bsky.app/profile/sanity.io">
     <img alt="" src="https://img.shields.io/badge/follow-@sanity.io-blue?logo=bluesky">
   </a>
-</p>
+</div>
 
 ## Build powerful production-ready content workspaces
 
