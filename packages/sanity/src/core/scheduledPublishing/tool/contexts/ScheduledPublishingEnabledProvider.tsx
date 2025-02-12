@@ -7,12 +7,13 @@ import {useClient} from '../../../hooks/useClient'
 import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {type Schedule} from '../../types'
 
 interface HasUsedScheduledPublishing {
-  enabled: boolean
+  used: boolean
   loading: boolean
 }
-const HAS_USED_SCHEDULED_PUBLISHING: HasUsedScheduledPublishing = {enabled: false, loading: true}
+const HAS_USED_SCHEDULED_PUBLISHING: HasUsedScheduledPublishing = {used: false, loading: true}
 
 /**
  * @internal
@@ -51,15 +52,15 @@ export function ScheduledPublishingEnabledProvider({
   const hasUsedScheduledPublishing$: Observable<HasUsedScheduledPublishing> = useMemo(() => {
     const {dataset, projectId} = client.config()
     return client.observable
-      .request({
+      .request<{schedules: Schedule[]}>({
         uri: `/schedules/${projectId}/${dataset}?limit=1`,
         tag: 'scheduled-publishing-used',
       })
       .pipe(
         map((res) => {
-          return {enabled: res.schedules?.length > 0, loading: false}
+          return {used: res.schedules?.length > 0, loading: false}
         }),
-        catchError(() => of({enabled: false, loading: false})),
+        catchError(() => of({used: false, loading: false})),
       )
   }, [client])
 
@@ -83,7 +84,7 @@ export function ScheduledPublishingEnabledProvider({
         hasUsedScheduledPublishing,
       }
     }
-    if (!hasUsedScheduledPublishing.enabled) {
+    if (!hasUsedScheduledPublishing.used) {
       return {
         enabled: false,
         mode: null,
