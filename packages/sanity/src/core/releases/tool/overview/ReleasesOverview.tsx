@@ -279,7 +279,16 @@ export function ReleasesOverview() {
   const handleOnCreateRelease = useCallback(
     (createdReleaseId: string) => {
       setIsCreateReleaseDialogOpen(false)
-      router.navigate({releaseId: createdReleaseId})
+
+      router.navigate(
+        {releaseId: createdReleaseId},
+        {
+          stickyParams: {
+            excludedPerspectives: '',
+            perspective: createdReleaseId,
+          },
+        },
+      )
     },
     [router],
   )
