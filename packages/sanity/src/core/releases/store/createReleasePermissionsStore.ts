@@ -4,7 +4,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromRelease
 import {createRequestAction} from './createReleaseOperationStore'
 
 export interface useReleasePermissionsValue {
-  canSchedule: (releaseId: string, publishAt: Date) => Promise<boolean>
+  canSchedule: (releaseId: string) => Promise<boolean>
   canPublish: (releaseId: string, useUnstableAction?: boolean) => Promise<boolean>
 }
 
@@ -15,7 +15,7 @@ export function createReleasePermissionsStore(options: {
   const {client} = options
   const requestAction = createRequestAction(options.onReleaseLimitReached)
 
-  const canSchedule = async (releaseId: string, publishAt: Date) => {
+  const canSchedule = async (releaseId: string) => {
     try {
       await requestAction(
         client,
@@ -23,7 +23,7 @@ export function createReleasePermissionsStore(options: {
           {
             actionType: 'sanity.action.release.schedule',
             releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-            publishAt: publishAt.toISOString(),
+            publishAt: new Date().toISOString(),
           },
         ],
         {

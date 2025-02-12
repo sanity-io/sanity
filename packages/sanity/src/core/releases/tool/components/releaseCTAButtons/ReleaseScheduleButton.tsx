@@ -56,12 +56,7 @@ export const ReleaseScheduleButton = ({
   const isScheduleButtonDisabled = disabled || isValidatingDocuments || !schedulePermission
 
   useEffect(() => {
-    canSchedule(
-      release._id,
-      release.metadata.intendedPublishAt
-        ? new Date(release.metadata.intendedPublishAt)
-        : new Date(),
-    ).then((response) => setSchedulePermission(response))
+    canSchedule(release._id).then((response) => setSchedulePermission(response))
   }, [canSchedule, release._id, release.metadata.intendedPublishAt])
 
   const isScheduledDateInPast = useCallback(() => {

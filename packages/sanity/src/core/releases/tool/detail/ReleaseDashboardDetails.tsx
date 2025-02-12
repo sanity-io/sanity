@@ -49,7 +49,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
-        canSchedule(release._id, new Date(release.metadata.intendedPublishAt)).then((response) => {
+        canSchedule(release._id).then((response) => {
           setShouldDisplayPermissionWarning(!response)
         })
       }

@@ -41,7 +41,7 @@ describe('useReleasePermissions', () => {
 
   it('should check if it has permission to schedule a release', async () => {
     const store = createStore()
-    await store.canSchedule('_.releases.release-id', new Date('2024-01-01T00:00:00Z'))
+    await store.canSchedule('_.releases.release-id')
     expect(mockClient.request).toHaveBeenCalledWith({
       uri: '/data/actions/test-dataset',
       method: 'POST',
