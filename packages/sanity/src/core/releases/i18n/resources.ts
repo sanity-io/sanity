@@ -77,8 +77,6 @@ const releasesLocaleStrings = {
   /** Title for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
-  /** Description for the dialog confirming the archive of a release with no documents */
-  'archive-dialog.confirm-archive-description_zero': 'This will not archive any documents.',
   /** Description for the dialog confirming the archive of a release with one document */
   'archive-dialog.confirm-archive-description_one': 'This will archive 1 document version.',
   /** Description for the dialog confirming the archive of a release with more than one document */
@@ -105,8 +103,6 @@ const releasesLocaleStrings = {
 
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': "Are you sure you want to delete the '{{title}}' release?",
-  /** Description for the dialog confirming the deleting of a release with no documents */
-  'delete-dialog.confirm-delete-description_zero': 'This will not delete any documents.',
   /** Description for the dialog confirming the deleting of a release with one document */
   'delete-dialog.confirm-delete-description_one': 'This will delete 1 document version.',
   /** Description for the dialog confirming the deleting of a release with more than one document */
@@ -244,8 +240,7 @@ const releasesLocaleStrings = {
   'schedule-button-tooltip.already-scheduled': 'This release is already scheduled',
 
   /** Title for unschedule release dialog */
-  'schedule-dialog.confirm-title':
-    'Are you sure you want to schedule the release and all document versions for publishing?',
+  'schedule-dialog.confirm-title': 'Schedule the release for publishing',
   /** Description shown in unschedule relaease dialog */
   'schedule-dialog.confirm-description_one':
     "The '<strong>{{title}}</strong>' release and its document will be published on the selected date.",
