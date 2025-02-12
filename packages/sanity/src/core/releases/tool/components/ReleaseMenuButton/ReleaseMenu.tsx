@@ -32,15 +32,34 @@ export const ReleaseMenu = ({
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const {mode} = useReleasesUpsell()
-  const {archive} = useReleaseOperations()
+  const {archive, unarchive} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasArchivePermission, setHasArchivePermission] = useState<boolean | null>(null)
+  const [hasUnarchivePermission, setHasUnarchivePermission] = useState<boolean | null>(null)
 
   useEffect(() => {
-    checkWithPermissionGuard(archive, release._id).then((response) =>
-      setHasArchivePermission(response),
-    )
-  })
+    if (!releaseMenuDisabled) {
+      if (release.state !== 'published') {
+        if (release.state === 'archived') {
+          checkWithPermissionGuard(unarchive, release._id).then((response) =>
+            setHasUnarchivePermission(response),
+          )
+        } else {
+          checkWithPermissionGuard(archive, release._id).then((response) =>
+            setHasArchivePermission(response),
+          )
+        }
+      }
+    }
+  }, [
+    release._id,
+    mode,
+    releaseMenuDisabled,
+    release.state,
+    checkWithPermissionGuard,
+    unarchive,
+    archive,
+  ])
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
@@ -58,11 +77,14 @@ export const ReleaseMenu = ({
       return (
         <MenuItem
           data-value="unarchive"
-          disabled={mode === 'disabled'}
+          disabled={mode === 'disabled' || !hasUnarchivePermission}
           onClick={handleOnInitiateAction}
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
           data-testid="unarchive-release-menu-item"
+          tooltipProps={{
+            content: !hasUnarchivePermission && t('permissions.error.unarchive'),
+          }}
         />
       )
 
@@ -85,7 +107,15 @@ export const ReleaseMenu = ({
         disabled={['scheduled', 'scheduling'].includes(release.state) || !hasArchivePermission}
       />
     )
-  }, [release.state, mode, handleOnInitiateAction, t, disabled, hasArchivePermission])
+  }, [
+    release.state,
+    mode,
+    hasUnarchivePermission,
+    handleOnInitiateAction,
+    t,
+    hasArchivePermission,
+    disabled,
+  ])
 
   const deleteMenuItem = useMemo(() => {
     if (release.state !== 'archived' && release.state !== 'published') return null
