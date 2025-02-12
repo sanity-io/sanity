@@ -30,6 +30,11 @@ export interface ScheduledPublishingPluginOptions {
    * Sanity is enabling it by default in the config, {@link "../scheduledPublishing/constants.ts"}
    */
   __internal__workspaceEnabled?: boolean
+  /**
+   * Whether to show the use releases warning banner in the tool.
+   * @defaultValue true
+   */
+  showReleasesBanner?: boolean
 }
 
 export interface Schedule {

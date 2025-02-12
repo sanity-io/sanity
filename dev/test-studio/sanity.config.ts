@@ -176,6 +176,7 @@ const defaultWorkspace = defineConfig({
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
+    showReleasesBanner: false,
   },
   tasks: {
     enabled: true,
