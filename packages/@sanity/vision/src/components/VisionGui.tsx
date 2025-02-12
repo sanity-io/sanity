@@ -698,12 +698,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     try {
       el.select()
       document.execCommand('copy')
-      this.props.toast.push({
-        closable: true,
-        title: 'Copied to clipboard',
-        status: 'info',
-        id: 'vision-copy',
-      })
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Unable to copy to clipboard :(')
