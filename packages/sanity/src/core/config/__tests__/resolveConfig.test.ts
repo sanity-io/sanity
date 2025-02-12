@@ -331,7 +331,7 @@ describe('search strategy selection', () => {
       },
     })
 
-    expect(workspaceB.search.strategy).toBe('textSearch')
+    expect(workspaceB.search.strategy).toBe('groq2024')
   })
 
   it('gives precedence to `strategy`', async () => {
@@ -340,11 +340,11 @@ describe('search strategy selection', () => {
       dataset,
       search: {
         enableLegacySearch: true,
-        strategy: 'textSearch',
+        strategy: 'groq2024',
       },
     })
 
-    expect(workspaceA.search.strategy).toBe('textSearch')
+    expect(workspaceA.search.strategy).toBe('groq2024')
 
     const workspaceB = await createWorkspaceFromConfig({
       projectId,
@@ -387,7 +387,7 @@ describe('search strategy selection', () => {
       },
     })
 
-    expect(workspaceB.search.strategy).toBe('textSearch')
+    expect(workspaceB.search.strategy).toBe('groq2024')
 
     const workspaceC = await createWorkspaceFromConfig({
       projectId,
@@ -409,7 +409,7 @@ describe('search strategy selection', () => {
       dataset,
       plugins: [
         getSearchOptionsPlugin({
-          strategy: 'textSearch',
+          strategy: 'groq2024',
         }),
       ],
       search: {
@@ -424,7 +424,7 @@ describe('search strategy selection', () => {
       dataset,
       plugins: [
         getSearchOptionsPlugin({
-          strategy: 'textSearch',
+          strategy: 'groq2024',
         }),
       ],
       search: {
@@ -432,7 +432,7 @@ describe('search strategy selection', () => {
       },
     })
 
-    expect(workspaceE.search.strategy).toBe('textSearch')
+    expect(workspaceE.search.strategy).toBe('groq2024')
 
     const workspaceF = await createWorkspaceFromConfig({
       projectId,

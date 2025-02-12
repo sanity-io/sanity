@@ -1,20 +1,23 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {format} from 'date-fns'
 import {type ComponentProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {useTimeZoneMockReturn} from '../../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
+import {getByDataUi} from '../../../../../../test/setup/customQueries'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useTimeZoneMockReturn} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeUndecidedRelease,
   scheduledRelease,
-} from '../../../../__fixtures__/release.fixture'
-import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {ReleaseTime} from '../../columnCells/ReleaseTime'
-import {type TableRelease} from '../../ReleasesOverview'
+} from '../../../__fixtures__/release.fixture'
+import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {type TableRelease} from '../../overview/ReleasesOverview'
+import {ReleaseTime} from '../ReleaseTime'
 
-vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', () => useTimeZoneMockReturn)
+vi.mock(
+  '../../../scheduledPublishing/hooks/useTimeZone',
+  vi.fn(() => useTimeZoneMockReturn),
+)
 
 const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
   const wrapper = await createTestProvider({
@@ -56,11 +59,11 @@ describe('ReleaseTime', () => {
       release: {
         ...scheduledRelease,
         publishAt: undefined,
+        publishedAt: undefined,
         metadata: {...scheduledRelease.metadata, intendedPublishAt: undefined},
       } as TableRelease,
     })
 
-    const formattedDate = `${format(new Date(), 'PPpp')}`
-    expect(screen.getByText(formattedDate, {exact: false})).toBeInTheDocument()
+    expect(getByDataUi(document.body, 'Box')).toBeEmptyDOMElement()
   })
 })

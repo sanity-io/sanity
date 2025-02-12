@@ -3,7 +3,7 @@ import {expect, test} from 'vitest'
 
 import {turboChargeResultIfSourceMap} from '../LiveQueries'
 
-const perspective = 'previewDrafts'
+const perspective = 'drafts'
 
 test('Can apply an array keyed field update', () => {
   const result = {

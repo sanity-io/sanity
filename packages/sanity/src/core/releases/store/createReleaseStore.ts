@@ -45,6 +45,7 @@ const QUERY_PROJECTION = `{
   state,
   finalDocumentStates,
   publishAt,
+  publishedAt,
   "metadata": coalesce(metadata, {
     "title": "",
     "releaseType": "${DEFAULT_RELEASE_TYPE}",

@@ -34,6 +34,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const setPerspective = useSetPerspective()
   const isSelected = releaseId === selectedReleaseId
   const shouldDisplayError = release.state === 'active' && typeof release.error !== 'undefined'
+  const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
 
   const handlePinRelease = useCallback(() => {
     if (isSelected) {
@@ -66,7 +67,9 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                 <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
               </Text>
               <TextWithTone size={1} tone="critical">
-                {tRelease('failed-publish-title')}
+                {isAtTimeRelease
+                  ? tRelease('failed-schedule-title')
+                  : tRelease('failed-publish-title')}
               </TextWithTone>
             </Flex>
           )}
@@ -81,7 +84,11 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                 <ErrorOutlineIcon />
               </Text>
               <Stack space={4}>
-                <Text>{tRelease('failed-publish-title')}</Text>
+                <Text>
+                  {isAtTimeRelease
+                    ? tRelease('failed-schedule-title')
+                    : tRelease('failed-publish-title')}
+                </Text>
                 <Details title={tRelease('error-details-title')}>
                   <Text>
                     <code>{release.error?.message}</code>

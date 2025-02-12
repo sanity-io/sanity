@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "3.74.1",
+  "version": "3.75.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -15,8 +15,8 @@
     "studio:dev": "cd perf/studio && SANITY_STUDIO_DATASET=dev pnpm dev"
   },
   "dependencies": {
-    "@playwright/test": "1.49.1",
-    "@sanity/client": "^6.27.2",
+    "@playwright/test": "1.50.1",
+    "@sanity/client": "^6.28.0",
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
     "execa": "^2.0.0",

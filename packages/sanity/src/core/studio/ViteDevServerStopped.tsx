@@ -7,7 +7,7 @@ const ERROR_TITLE = 'Dev server stopped'
 const ERROR_DESCRIPTION =
   'The development server has stopped. You may need to restart it to continue working.'
 
-class ViteDevServerStoppedError extends Error {
+export class ViteDevServerStoppedError extends Error {
   ViteDevServerStoppedError: boolean
 
   constructor() {

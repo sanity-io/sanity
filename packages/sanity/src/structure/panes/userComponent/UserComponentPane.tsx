@@ -29,6 +29,8 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   } | null>(null)
   const {title = ''} = useI18nText(pane)
 
+  const {key, ...componentProps} = {...restProps, ...restPane}
+
   return (
     <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>
       <UserComponentPaneHeader
@@ -42,8 +44,8 @@ export function UserComponentPane(props: UserComponentPaneProps) {
       <UserComponentPaneContent>
         {isValidElementType(UserComponent) && (
           <UserComponent
-            {...restProps}
-            {...restPane}
+            key={key}
+            {...componentProps}
             // NOTE: here we're utilizing the function form of refs so setting
             // the ref causes a re-render for `UserComponentPaneHeader`
             ref={setRef as any}

@@ -74,6 +74,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
       visibility: 'query',
+      tag: 'listen-search-query',
     })
   }).pipe(
     mergeMap((ev, i) => {
