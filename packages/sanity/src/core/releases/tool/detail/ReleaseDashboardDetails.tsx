@@ -54,7 +54,14 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
         })
       }
     }
-  })
+  }, [
+    canPublish,
+    canSchedule,
+    isActive,
+    isAtTimeRelease,
+    release._id,
+    release.metadata.intendedPublishAt,
+  ])
 
   const handlePinRelease = useCallback(() => {
     if (isSelected) {
