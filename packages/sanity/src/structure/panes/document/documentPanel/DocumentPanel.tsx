@@ -244,44 +244,46 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   return (
     <PaneContent>
       <Flex height="fill">
-        {(features.resizablePanes || !showInspector) && (
-          <DocumentBox flex={2} overflow="hidden">
-            <PortalProvider
-              element={portalElement}
-              __unstable_elements={{documentScrollElement: documentScrollElement}}
-            >
-              <LegacyLayerProvider zOffset="paneHeader">
-                {banners}
-                <DocumentPanelSubHeader />
-              </LegacyLayerProvider>
-              <BoundaryElementProvider element={documentScrollElement}>
-                <VirtualizerScrollInstanceProvider
-                  scrollElement={documentScrollElement}
-                  containerElement={formContainerElement}
-                >
-                  <Scroller
-                    $disabled={layoutCollapsed || false}
-                    data-testid="document-panel-scroller"
-                    ref={setDocumentScrollElement}
+        <Flex height="fill" direction="column" width="fill" flex={1}>
+          <LegacyLayerProvider zOffset="paneHeader">
+            {banners}
+            <DocumentPanelSubHeader />
+          </LegacyLayerProvider>
+          {(features.resizablePanes || !showInspector) && (
+            <DocumentBox flex={2} overflow="hidden">
+              <PortalProvider
+                element={portalElement}
+                __unstable_elements={{documentScrollElement: documentScrollElement}}
+              >
+                <BoundaryElementProvider element={documentScrollElement}>
+                  <VirtualizerScrollInstanceProvider
+                    scrollElement={documentScrollElement}
+                    containerElement={formContainerElement}
                   >
-                    <FormView
-                      hidden={formViewHidden}
-                      margins={margins}
-                      ref={formContainerElement}
-                    />
-                    {activeViewNode}
-                  </Scroller>
+                    <Scroller
+                      $disabled={layoutCollapsed || false}
+                      data-testid="document-panel-scroller"
+                      ref={setDocumentScrollElement}
+                    >
+                      <FormView
+                        hidden={formViewHidden}
+                        margins={margins}
+                        ref={formContainerElement}
+                      />
+                      {activeViewNode}
+                    </Scroller>
 
-                  {inspectDialog}
+                    {inspectDialog}
 
-                  <div data-testid="document-panel-portal" ref={setPortalElement} />
-                </VirtualizerScrollInstanceProvider>
-              </BoundaryElementProvider>
-              {footer}
-            </PortalProvider>
-          </DocumentBox>
-        )}
+                    <div data-testid="document-panel-portal" ref={setPortalElement} />
+                  </VirtualizerScrollInstanceProvider>
+                </BoundaryElementProvider>
+              </PortalProvider>
+            </DocumentBox>
+          )}
 
+          {footer}
+        </Flex>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
             <DocumentInspectorPanel
