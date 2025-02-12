@@ -398,6 +398,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <UpdateValuePlugin value={value} />
               <MarkdownPlugin
                 config={{
+                  boldDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
+                  italicDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'em')?.value,
                   defaultStyle: ({schema}) =>
                     schema.styles.find((style) => style.value === 'normal')?.value,
                   blockquoteStyle: ({schema}) =>
