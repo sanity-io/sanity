@@ -67,7 +67,6 @@ export const PaneHeader = forwardRef(function PaneHeader(
               gap={3}
               onClick={handleLayoutClick}
               padding={3}
-              paddingBottom={collapsed || !showTabsOrSubActions ? 3 : 2}
               sizing="border"
               style={layoutStyle}
             >
