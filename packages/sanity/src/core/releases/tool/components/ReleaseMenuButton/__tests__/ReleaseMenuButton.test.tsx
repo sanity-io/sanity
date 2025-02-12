@@ -64,6 +64,10 @@ describe('ReleaseMenuButton', () => {
       fireEvent.click(screen.getByTestId('release-menu-button'))
       screen.getByTestId('archive-release-menu-item')
 
+      await waitFor(() => {
+        expect(screen.getByTestId('archive-release-menu-item')).not.toBeDisabled()
+      })
+
       await act(() => {
         fireEvent.click(screen.getByTestId('archive-release-menu-item'))
       })
@@ -106,6 +110,10 @@ describe('ReleaseMenuButton', () => {
 
       fireEvent.click(screen.getByTestId('release-menu-button'))
       screen.getByTestId('archive-release-menu-item')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('archive-release-menu-item')).not.toBeDisabled()
+      })
 
       await act(() => {
         fireEvent.click(screen.getByTestId('archive-release-menu-item'))

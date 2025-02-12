@@ -195,6 +195,8 @@ const releasesLocaleStrings = {
   /** Description for when a user doesn't have publish or schedule releases */
   'permission-missing-description':
     'Your role currently limits what you can see in this release. You may not publish nor schedule this release.',
+  /** Tooltip label when the user doesn't have permission to archive release */
+  'permissions.error.archive': 'You do not have permission to archive this release',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
