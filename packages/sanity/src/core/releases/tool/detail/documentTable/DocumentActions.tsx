@@ -5,6 +5,8 @@ import {memo, useState} from 'react'
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
+import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
+import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {DiscardVersionDialog} from '../../../components'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -25,6 +27,21 @@ export const DocumentActions = memo(
     const {t} = useTranslation(releasesLocaleNamespace)
     const isAlreadyUnpublished = isGoingToUnpublish(document.document)
 
+    const publishedId = getPublishedId(document.document._id)
+    const type = document.document._type
+    const version = getVersionFromId(document.document._id)
+
+    const [discardVersionPermission, isDiscardVersionPermissionsLoading] =
+      useDocumentPairPermissions({
+        id: publishedId,
+        type,
+        version,
+        permission: 'discardVersion',
+      })
+
+    const isDiscardVersionActionDisabled =
+      !discardVersionPermission?.granted || isDiscardVersionPermissionsLoading
+
     return (
       <>
         <Card tone="default" display="flex">
@@ -37,6 +54,8 @@ export const DocumentActions = memo(
                   text={coreT('release.action.discard-version')}
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
+                  disabled={isDiscardVersionActionDisabled}
+                  tooltipProps={{content: t('permissions.error.discard-version')}}
                 />
                 <MenuDivider />
                 <Box padding={3} paddingBottom={2}>

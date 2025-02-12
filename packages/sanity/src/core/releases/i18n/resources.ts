@@ -187,6 +187,8 @@ const releasesLocaleStrings = {
   /** Title for the release tool */
   'overview.title': 'Releases',
 
+  /** Tooltip label when the user doesn't have permission for discarding a version */
+  'permissions.error.discard-version': 'You do not have permission to discard this version',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
