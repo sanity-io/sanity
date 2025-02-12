@@ -53,8 +53,10 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
             refs.map((ref) => {
               const draftRef = {...ref, _id: getDraftId(ref._id)}
               const draft$ =
-                perspective === 'previewDrafts'
-                  ? documentPreviewStore
+                perspective === 'published'
+                  ? // Don't emit if not displaying drafts
+                    NEVER
+                  : documentPreviewStore
                       .observeForPreview(draftRef, schema.get(draftRef._type)!)
                       .pipe(
                         // Share to prevent double subscribe in the merge
@@ -63,8 +65,6 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
                         // eslint-disable-next-line max-nested-callbacks
                         skipWhile((p) => p.snapshot === null),
                       )
-                  : // Don't emit if not displaying drafts
-                    NEVER
 
               const publishedRef = {...ref, _id: getPublishedId(ref._id)}
               const published$ = documentPreviewStore.observeForPreview(
