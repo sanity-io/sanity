@@ -66,10 +66,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (data: DocumentWithHistory[], searchTerm: string) =>
       data.filter(({previewValues}) => {
         const title =
-          typeof previewValues.values.title === 'string' ? previewValues.values.title : 'Untitled'
+          typeof previewValues.values.title === 'string'
+            ? previewValues.values.title
+            : t('release-placeholder.title')
         return title.toLowerCase().includes(searchTerm.toLowerCase())
       }),
-    [],
+    [t],
   )
 
   const closeAddDialog = useCallback(() => {
@@ -104,7 +106,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       <AddDocumentSearch
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
-        releaseId={release._id}
+        releaseDocumentId={release._id}
       />
     </Card>
   )

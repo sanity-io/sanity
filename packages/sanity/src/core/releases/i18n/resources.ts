@@ -220,6 +220,9 @@ const releasesLocaleStrings = {
   /** Title for information card on a published release */
   'publish-info.title': 'This release is published',
 
+  /** Placeholder title for a release with no title */
+  'release-placeholder.title': 'Untitled',
+
   /** Description for the review changes button in release tool */
   'review.description': 'Add documents to this release to review changes',
   /** Text for when a document is edited */
@@ -243,7 +246,7 @@ const releasesLocaleStrings = {
   /** Description of a reverted release */
   'revert-release.description': 'Revert changes to document versions in "{{title}}".',
 
-  /** Title o unschedule release dialog */
+  /** Title of unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
   /** Schedule release button tooltip when user has no permissions to schedule */

@@ -1,36 +1,56 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocumentLike} from '@sanity/types'
 import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
+import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from './useBundleDocuments'
 
+type AddedDocument = Pick<SanityDocumentLike, '_id' | '_type' | 'title'>
+
 export function AddDocumentSearch({
   open,
   onClose,
-  releaseId,
+  releaseDocumentId,
 }: {
   open: boolean
   onClose: () => void
-  releaseId: string
+  releaseDocumentId: string
 }): React.JSX.Element {
   const {createVersion} = useReleaseOperations()
   const toast = useToast()
   const telemetry = useTelemetry()
 
-  const {results} = useBundleDocuments(getReleaseIdFromReleaseDocumentId(releaseId))
+  const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+
+  const {results} = useBundleDocuments(releaseId)
   const idsInRelease: string[] = results.map((doc) => doc.document._id)
 
+  const [addedId, setAddedId] = useState<AddedDocument | null>(null)
+  const [isReadyToClose, setIsReadyToClose] = useState(false)
+
+  // Only close search once the document has been received through subscription
+  // to the release documents
+  useEffect(() => {
+    if (isReadyToClose && addedId && idsInRelease.includes(getVersionId(addedId._id, releaseId))) {
+      setAddedId(null)
+      setIsReadyToClose(false)
+
+      onClose()
+    }
+  }, [addedId, idsInRelease, onClose, releaseId, isReadyToClose])
+
   const addDocument = useCallback(
-    async (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => {
+    async (item: AddedDocument) => {
       try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(releaseId), item._id)
+        setAddedId(item)
+        await createVersion(releaseId, item._id)
 
         toast.push({
           closable: true,
@@ -44,21 +64,19 @@ export function AddDocumentSearch({
           documentOrigin: origin,
         })
       } catch (error) {
-        /* empty */
-
         toast.push({
           closable: true,
           status: 'error',
           title: error.message,
         })
+
+        onClose()
       }
     },
-    [createVersion, releaseId, telemetry, toast],
+    [createVersion, onClose, releaseId, telemetry, toast],
   )
 
-  const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
+  const handleClose = useCallback(() => setIsReadyToClose(true), [])
 
   return (
     <LayerProvider zOffset={1}>
