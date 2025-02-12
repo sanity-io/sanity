@@ -323,7 +323,7 @@ describe('deployStudioAction', () => {
         },
         // eslint-disable-next-line camelcase
         __experimental_coreAppConfiguration: {
-          appHost: 'core-app-host',
+          appId: 'core-app-id',
         },
       } as CliConfig,
     }

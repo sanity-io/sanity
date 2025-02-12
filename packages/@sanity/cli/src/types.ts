@@ -356,7 +356,7 @@ export interface CliConfig {
   __experimental_coreAppConfiguration?: {
     organizationId?: string
     appLocation?: string
-    appHost?: string
+    appId?: string
   }
 }
 

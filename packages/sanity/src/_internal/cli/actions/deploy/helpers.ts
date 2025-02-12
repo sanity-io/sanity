@@ -57,25 +57,25 @@ export interface GetUserApplicationsOptions {
 
 export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
   appHost?: string
+  appId?: string
 }
 export async function getUserApplication({
   client,
   appHost,
-  organizationId,
+  appId,
 }: GetUserApplicationOptions): Promise<UserApplication | null> {
   let query
-  if (organizationId) {
-    query = {organizationId, appHost: appHost ?? '', appType: 'coreApp'}
+  let uri = '/user-applications'
+  if (appId) {
+    uri = `/user-applications/${appId}`
+    query = {appType: 'coreApp'}
   } else if (appHost) {
     query = {appHost}
   } else {
     query = {default: 'true'}
   }
   try {
-    return await client.request({
-      uri: '/user-applications',
-      query,
-    })
+    return await client.request({uri, query})
   } catch (e) {
     if (e?.statusCode === 404) {
       return null
@@ -336,45 +336,38 @@ export async function getOrCreateCoreApplication({
   const response = await promise
 
   spinner.succeed()
-  // Placeholder -- not sure what ultimate URL will be
-  output.print(`Deployed application to CORE`)
-
   return response
 }
 
-/**
- * This function handles the logic for managing user applications when
- * studioHost is provided in the CLI config.
- *
- * @internal
- */
-export async function getOrCreateUserApplicationFromConfig({
+export interface BaseConfigOptions {
+  client: SanityClient
+  context: Pick<CliCommandContext, 'output' | 'prompt' | 'cliConfig'>
+  spinner: ReturnType<CliOutputter['spinner']>
+}
+
+interface StudioConfigOptions extends BaseConfigOptions {
+  appHost: string
+}
+
+interface CoreAppConfigOptions extends BaseConfigOptions {
+  appId?: string
+}
+
+async function getOrCreateStudioFromConfig({
   client,
   context,
   spinner,
   appHost,
-}: GetOrCreateUserApplicationOptions & {
-  appHost: string
-}): Promise<UserApplication> {
-  const {output, cliConfig} = context
-  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
-  const organizationId = isCoreApp ? cliConfig?.api?.organizationId : undefined
+}: StudioConfigOptions): Promise<UserApplication> {
+  const {output} = context
   // if there is already an existing user-app, then just return it
-  const existingUserApplication = await getUserApplication({client, appHost, organizationId})
+  const existingUserApplication = await getUserApplication({client, appHost})
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
 
   if (existingUserApplication) {
     return existingUserApplication
-  }
-
-  // core apps cannot arbitrarily create their own appHosts,
-  // so send the user to a get or create function
-  if (isCoreApp) {
-    output.print('The appHost provided in your configuration is not recognized.')
-    output.print('Checking existing applications...')
-    getOrCreateCoreApplication({client, context, spinner})
   }
 
   output.print('Your project has not been assigned a studio hostname.')
@@ -389,7 +382,6 @@ export async function getOrCreateUserApplicationFromConfig({
       type: 'studio',
     })
     spinner.succeed()
-
     return response
   } catch (e) {
     spinner.fail()
@@ -397,12 +389,62 @@ export async function getOrCreateUserApplicationFromConfig({
     if ([402, 409].includes(e?.statusCode)) {
       throw new Error(e?.response?.body?.message || 'Bad request') // just in case
     }
-
     debug('Error creating user application from config', e)
     // otherwise, it's a fatal error
     throw e
   }
 }
+
+async function getOrCreateCoreAppFromConfig({
+  client,
+  context,
+  spinner,
+  appId,
+}: CoreAppConfigOptions): Promise<UserApplication> {
+  const {output} = context
+  const organizationId = context.cliConfig?.api?.organizationId
+
+  if (appId) {
+    const existingUserApplication = await getUserApplication({client, appId, organizationId})
+    spinner.succeed()
+
+    if (existingUserApplication) {
+      return existingUserApplication
+    }
+  }
+
+  // core apps cannot arbitrarily create ids or hosts, so send them to create option
+  output.print('The appId provided in your configuration is not recognized.')
+  output.print('Checking existing applications...')
+  return getOrCreateCoreApplication({client, context, spinner})
+}
+
+/**
+ * This function handles the logic for managing user applications when
+ * studioHost or appId is provided in the CLI config.
+ *
+ * @internal
+ */
+export async function getOrCreateUserApplicationFromConfig(
+  options: BaseConfigOptions & {
+    appHost?: string
+    appId?: string
+  },
+): Promise<UserApplication> {
+  const {context} = options
+  const isCoreApp = context.cliConfig && '__experimental_coreAppConfiguration' in context.cliConfig
+
+  if (isCoreApp) {
+    return getOrCreateCoreAppFromConfig(options)
+  }
+
+  if (!options.appHost) {
+    throw new Error('Studio host was detected, but is invalid')
+  }
+
+  return getOrCreateStudioFromConfig({...options, appHost: options.appHost})
+}
+
 export interface CreateDeploymentOptions {
   client: SanityClient
   applicationId: string
