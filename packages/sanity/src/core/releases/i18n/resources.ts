@@ -187,6 +187,10 @@ const releasesLocaleStrings = {
   /** Title for the release tool */
   'overview.title': 'Releases',
 
+  /** Tooltip label when the user doesn't have permission for discarding a version */
+  'permissions.error.discard-version': 'You do not have permission to discard this version',
+  /** Tooltip label when the user doesn't have permission for unpublishing a document */
+  'permissions.error.unpublish': 'You do not have permission to unpublish this document',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
@@ -333,6 +337,10 @@ const releasesLocaleStrings = {
   /** Link text for toast link to the generated revert release */
   'toast.revert-stage.success-link': 'View revert release',
 
+  /** Text for when a document is unpublished */
+  'unpublish.already-unpublished': 'This document is already unpublished.',
+  /** Tooltip label for when a document is unpublished */
+  'unpublish.no-published-version': 'There is no published version of this document.',
   /** Title for the dialog confirming the unpublish of a release */
   'unpublish-dialog.header': 'Are you sure you want to unpublish this document when releasing?',
   /** Text action in unpublish dialog to cancel */
