@@ -186,7 +186,7 @@ const releasesLocaleStrings = {
   'permissions.error.discard-version': 'You do not have permission to discard this version',
   /** Tooltip label when the user doesn't have permission for unpublishing a document */
   'permissions.error.unpublish': 'You do not have permission to unpublish this document',
-    /** Text for when a user doesn't have publish or schedule releases */
+  /** Text for when a user doesn't have publish or schedule releases */
   'permission-missing-title': 'Limited access',
   /** Description for when a user doesn't have publish or schedule releases */
   'permission-missing-description':
