@@ -97,28 +97,7 @@ export default function Tool() {
     return (
       <Container width={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          {hasUsedScheduledPublishing.loading ? (
-            <LoadingBlock />
-          ) : (
-            <InfoCallout
-              // TODO: TBC with design and growth
-              description={
-                <>
-                  Scheduled Publishing is not enabled. It can be enabled in the config. We recommend
-                  using{' '}
-                  <a
-                    target="_blank"
-                    href="https://www.sanity.io/content-releases?ref=release"
-                    rel="noreferrer"
-                  >
-                    "Releases"
-                  </a>
-                  .
-                </>
-              }
-              title="Scheduled Publishing is not enabled"
-            />
-          )}
+          {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
         </Box>
       </Container>
     )

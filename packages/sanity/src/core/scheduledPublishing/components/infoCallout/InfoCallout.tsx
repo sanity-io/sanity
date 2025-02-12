@@ -1,14 +1,11 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Inline, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 
-interface Props {
-  description?: string | React.ReactNode
-  title: string | React.ReactNode
-}
+import {RELEASES_DOCS_URL} from '../../constants'
 
-const InfoCallout = (props: Props) => {
-  const {description, title} = props
+// TODO: TBC with design and growth
 
+const InfoCallout = () => {
   return (
     <Card overflow="hidden" padding={4} radius={2} shadow={1} tone="suggest">
       <Flex align="center" gap={4}>
@@ -17,9 +14,31 @@ const InfoCallout = (props: Props) => {
         </Text>
         <Inline space={3}>
           <Text size={1} weight="semibold">
-            {title}
+            Schedule Publishing is not enabled
           </Text>
-          {description && <Text size={1}>{description}</Text>}
+          <Stack space={3} marginTop={2}>
+            <Text size={1}>
+              We recommend using{' '}
+              <a target="_blank" href={RELEASES_DOCS_URL} rel="noreferrer">
+                Releases
+              </a>
+              .
+            </Text>
+
+            <Text size={1}>
+              Scheduled Publishing is not enabled by default. It can be enabled in the config by
+              setting <code>scheduledPublishing.enabled = true</code>
+            </Text>
+            <Text size={1}>
+              <a
+                target="_blank"
+                href={'https://www.sanity.io/docs/scheduled-publishing'}
+                rel="noreferrer"
+              >
+                Read the docs
+              </a>
+            </Text>
+          </Stack>
         </Inline>
       </Flex>
     </Card>
