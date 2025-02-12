@@ -59,11 +59,6 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
     'Could not resolve schema type for path: {{path}}',
   /** The warning message that is shown when not all values can be pasted */
   'copy-paste.on-paste.validation.partial-warning.title': 'Could not paste all values',
-  /** The success message that is shown when a document is pasted */
-  'copy-paste.on-paste.validation.document-paste-success.title':
-    'Document "{{fieldNames}}" updated',
-  /** The success message that is shown when a field is pasted */
-  'copy-paste.on-paste.validation.field_one-paste-success.title': 'Field "{{fieldName}}" updated',
 
   /** The error message that is shown when the MIME type is not accepted */
   'copy-paste.on-paste.validation.mime-type-incompatible.description':

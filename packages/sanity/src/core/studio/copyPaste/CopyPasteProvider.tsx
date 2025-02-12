@@ -331,32 +331,7 @@ export const CopyPasteProvider: React.FC<{
 
       if (updateItems.length) {
         const allPatches = flatten(updateItems.map(({patches}) => patches))
-        const allTargetNames = updateItems.map((i) => i.targetSchemaTypeTitle).join('", "')
-
         onChange(PatchEvent.from(allPatches))
-
-        if (clipboardItem.isDocument) {
-          toast.push({
-            status: 'success',
-            title: t('copy-paste.on-paste.validation.document-paste-success.title', {
-              fieldNames: allTargetNames,
-            }),
-          })
-
-          return
-        }
-
-        const isSingleField = updateItems.length === 1
-
-        if (isSingleField) {
-          toast.push({
-            status: 'success',
-            title: t('copy-paste.on-paste.validation.field_one-paste-success.title', {
-              fieldName: allTargetNames,
-            }),
-          })
-        }
-
         // TODO: missing case with multiple updated items?
       }
     },
