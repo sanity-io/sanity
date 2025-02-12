@@ -66,7 +66,7 @@ withDefaultClient((context) => {
     await expect(paneFooter).toContainText('Published just now')
   })
 
-  test(`_strengthenOnPublish and _weak properties exist when adding reference`, async ({
+  test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
     page,
     createDraftDocument,
   }) => {
@@ -97,6 +97,49 @@ withDefaultClient((context) => {
       page.getByText('aliasRef._strengthenOnPublish_strengthenOnPublish:{…} 3 properties'),
     ).toBeVisible()
     await expect(page.getByText('aliasRef._weak_weak:true')).toBeVisible()
+  })
+
+  // TODO: This test has been skipped because the release `r56VOgCmW` consistently cannot be found
+  //       when the test is run in CI. This is despite CI using the same project, dataset, and API
+  //       environment that is used when running the test locally. It is still useful, because it
+  //       validates the behaviour when it is run locally. But we should get to the bottom of this
+  //       and re-enable it.
+  test.skip(`only _strengthenOnPublish (not _weak) properties exist when adding reference to a document in a release`, async ({
+    page,
+  }) => {
+    test.slow()
+    const originalTitle = 'Initial Doc'
+
+    await page.goto(
+      `/test/intent/create/template=referenceTest;type=referenceTest;version=r56VOgCmW/?perspective=r56VOgCmW`,
+    )
+
+    page.getByTestId('string-input').fill(originalTitle)
+
+    await expect(
+      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
+    ).toBeVisible()
+    /** create reference */
+    await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
+
+    // Wait for the new document referenced to be created & loaded
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+
+    // switch to original doc
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
+
+    // open the context menu
+    page.getByTestId('pane-context-menu-button').first().click()
+    page.getByTestId('action-inspect').click()
+    await expect(page.getByTestId('leaf-root')).toBeVisible()
+
+    /** Checks that the properties were added when a weak reference is added */
+    await expect(
+      page.getByText('aliasRef._strengthenOnPublish_strengthenOnPublish:{…} 3 properties'),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('leaf-root').getByText('aliasRef._weak_weak:true'),
+    ).not.toBeVisible()
   })
 
   test(`_strengthenOnPublish and _weak properties are removed when the reference and document are published`, async ({

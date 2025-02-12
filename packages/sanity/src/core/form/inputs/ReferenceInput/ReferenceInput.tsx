@@ -74,15 +74,37 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (option: CreateReferenceOption) => {
       const newDocumentId = uuid()
 
+      // The strengthen-on-publish process is not necessary for documents inside a release, and in
+      // fact must be skipped in order for release preflight checks to function.
+      //
+      // Strengthen-on-publish is still necessary for drafts, and for documents in a bundle
+      // *that isn't a release* (this isn't a scenario Studio supports today, but it may need to in
+      // the future).
+      const shouldStrengthenOnPublish = typeof selectedReleaseId === 'undefined'
+      const strengthenOnPublishPatches = shouldStrengthenOnPublish ? [set(true, ['_weak'])] : []
+
+      // The `_strengthenOnPublish` field is always set, regardless of whether the
+      // strengthen-on-publish process should be used. This is because the field is used to
+      // store details such as the non-existing document's type, which Studio uses to render
+      // reference previews.
+      //
+      // Content Lake will only strengthen the reference if **both** `_strengthenOnPublish` and
+      // `_weak` are truthy.
+      //
+      // Yes, this is confusing.
+      const createInPlaceMetadataPatches = [
+        set({type: option.type, weak: schemaType.weak, template: option.template}, [
+          '_strengthenOnPublish',
+        ]),
+      ]
+
       const patches = [
         setIfMissing({}),
         set(schemaType.name, ['_type']),
         set(newDocumentId, ['_ref']),
-        set(true, ['_weak']),
-        set({type: option.type, weak: schemaType.weak, template: option.template}, [
-          '_strengthenOnPublish',
-        ]),
-      ].filter(isNonNullable)
+      ]
+        .concat(strengthenOnPublishPatches, createInPlaceMetadataPatches)
+        .filter(isNonNullable)
 
       onChange(patches)
 
