@@ -106,4 +106,7 @@ export default defineConfig({
   announcements: {
     enabled: false,
   },
+  releases: {
+    enabled: true,
+  },
 })
