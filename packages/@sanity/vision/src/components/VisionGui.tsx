@@ -522,12 +522,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
   handleListenerEvent(evt: ListenEvent<any>) {
     if (evt.type !== 'mutation') {
-      this.props.toast.push({
-        closable: true,
-        id: 'vision-listen',
-        status: 'success',
-        title: 'Listening for mutations…',
-      })
       return
     }
 
