@@ -167,7 +167,7 @@ export function useMainDocument(props: {
         if (query) {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
-            perspective: 'previewDrafts',
+            perspective: 'drafts',
             signal: controller.signal,
           }
 

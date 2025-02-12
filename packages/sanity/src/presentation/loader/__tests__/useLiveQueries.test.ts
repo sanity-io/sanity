@@ -6,7 +6,7 @@ import {initialState, reducer} from '../useLiveQueries'
 describe('useLiveQueries', () => {
   const query1 = `count(*)`
   const params1 = {}
-  const perspective1 = 'previewDrafts' satisfies ClientPerspective
+  const perspective1 = 'drafts' satisfies ClientPerspective
   const query2 = `count(*[_type == $type])`
   const params2 = {type: 'foo'}
   const perspective2 = ['rFOO', 'drafts'] satisfies ClientPerspective
