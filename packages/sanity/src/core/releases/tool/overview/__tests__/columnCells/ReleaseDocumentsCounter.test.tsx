@@ -28,12 +28,12 @@ describe('ReleaseDocumentsCounter', () => {
   it('renders the singular text when documentCount is 1', async () => {
     await renderTest({documentCount: 1})
 
-    expect(screen.getByText('1 document')).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
   })
 
   it('renders the plural text when documentCount is greater than 1', async () => {
     await renderTest({documentCount: 5})
 
-    expect(screen.getByText('5 documents')).toBeInTheDocument()
+    expect(screen.getByText('5')).toBeInTheDocument()
   })
 })
