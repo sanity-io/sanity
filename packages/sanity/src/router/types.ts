@@ -165,11 +165,15 @@ export type MatchResult = MatchError | MatchOk
 /**
  * @public
  */
-export interface NavigateOptions {
+export interface NavigateStickyParamsOptions {
   /**
    * Indicates whether to replace the current state.
    */
   replace?: boolean
+}
+
+export interface NavigateOptions extends NavigateStickyParamsOptions {
+  stickyParams?: Record<string, string | undefined>
 }
 
 /**
@@ -269,7 +273,7 @@ export interface RouterContextValue {
    */
   navigateStickyParams: (
     params: Record<string, string | undefined>,
-    options?: NavigateOptions,
+    options?: NavigateStickyParamsOptions,
   ) => void
 
   /**
@@ -280,9 +284,13 @@ export interface RouterContextValue {
 
   /**
    * Navigates to the given intent.
-   * See {@link RouterState} and {@link NavigateOptions}
+   * See {@link RouterState} and {@link NavigateStickyParamsOptions}
    */
-  navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
+  navigateIntent: (
+    intentName: string,
+    params?: IntentParameters,
+    options?: NavigateStickyParamsOptions,
+  ) => void
 
   /**
    * The current router state. See {@link RouterState}

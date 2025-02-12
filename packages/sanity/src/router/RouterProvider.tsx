@@ -6,6 +6,7 @@ import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
   type NavigateOptions,
+  type NavigateStickyParamsOptions,
   type Router,
   type RouterContextValue,
   type RouterState,
@@ -119,25 +120,16 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
   )
 
   const handleNavigateStickyParams = useCallback(
-    (params: Record<string, string | undefined>, options: NavigateOptions = {}) => {
+    (params: Record<string, string | undefined>, options: NavigateStickyParamsOptions = {}) => {
       const hasInvalidParam = Object.keys(params).some((param) => !STICKY_PARAMS.includes(param))
       if (hasInvalidParam) {
         throw new Error('One or more parameters are not sticky')
       }
 
-      const allNextSearchParams = [...(state._searchParams || []), ...Object.entries(params)]
+      // Use helper to merge sticky params
+      const searchParams = mergeStickyParams(state._searchParams || [], params)
 
-      const searchParams = Object.entries(
-        allNextSearchParams.reduce<SearchParam>(
-          (deduppedSearchParams, [key, value]) => ({
-            ...deduppedSearchParams,
-            [key]: value,
-          }),
-          [] as unknown as SearchParam,
-        ),
-      )
-
-      // Trigger the navigation with updated _searchParams
+      // Trigger navigation with updated params
       onNavigate({
         path: resolvePathFromState({
           ...state,
@@ -151,13 +143,26 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
 
   const navigate = useCallback(
     (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
-      onNavigate({path: resolvePathFromState(nextState), replace: options.replace})
+      const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
+      const nextParams = Array.isArray(nextState._searchParams) ? nextState._searchParams : []
+
+      // Merge sticky params using the helper function
+      const mergedParams = mergeStickyParams(
+        nextParams, // Ensure it's always an array
+        options.stickyParams ??
+          Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key))), // Preserve sticky params unless overridden
+      )
+
+      // Construct new state
+      const mergedState = {...nextState, _searchParams: mergedParams}
+
+      onNavigate({path: resolvePathFromState(mergedState), replace: options.replace})
     },
-    [onNavigate, resolvePathFromState],
+    [onNavigate, resolvePathFromState, state],
   )
 
   const navigateIntent = useCallback(
-    (intentName: string, params?: IntentParameters, options: NavigateOptions = {}) => {
+    (intentName: string, params?: IntentParameters, options: NavigateStickyParamsOptions = {}) => {
       onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
     },
     [onNavigate, resolveIntentLink],
@@ -210,6 +215,23 @@ function replaceStickyParam(
 ): SearchParam[] {
   const filtered = current.filter(([key]) => key !== param)
   return value === undefined || value == '' ? filtered : [...filtered, [param, value]]
+}
+
+function mergeStickyParams(
+  currentParams: SearchParam[],
+  newParams?: Record<string, string | undefined>,
+): SearchParam[] {
+  const mergedParams = [...currentParams, ...Object.entries(newParams || {})]
+
+  return Object.entries(
+    mergedParams.reduce<SearchParam>(
+      (deduppedSearchParams, [key, value]) => ({
+        ...deduppedSearchParams,
+        [key]: value,
+      }),
+      [] as unknown as SearchParam,
+    ),
+  )
 }
 
 function findParam(searchParams: SearchParam[], key: string): string | undefined {

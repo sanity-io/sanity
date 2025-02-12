@@ -2,7 +2,7 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
+import {type NavigateStickyParamsOptions, type RouterContextValue, type RouterState} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -95,7 +95,7 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   )
 
   const navigate = useCallback(
-    (nextState: RouterState, options?: NavigateOptions) =>
+    (nextState: RouterState, options?: NavigateStickyParamsOptions) =>
       parent_navigate(resolveNextParentState(nextState), options),
     [parent_navigate, resolveNextParentState],
   )
