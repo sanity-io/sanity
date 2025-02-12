@@ -172,6 +172,9 @@ export interface NavigateStickyParamsOptions {
   replace?: boolean
 }
 
+/**
+ * @public
+ */
 export interface NavigateOptions extends NavigateStickyParamsOptions {
   stickyParams?: Record<string, string | undefined>
 }
