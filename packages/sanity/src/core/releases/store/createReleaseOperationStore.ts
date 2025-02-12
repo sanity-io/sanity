@@ -8,6 +8,7 @@ import {
 import {getPublishedId, getVersionId} from '../../util'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
 import {type EditableReleaseDocument} from './types'
 
@@ -187,11 +188,11 @@ export function createReleaseOperationsStore(options: {
       throw new Error(`Document with id ${documentId} not found and no initial value provided`)
     }
 
-    const versionDocument = {
+    const versionDocument = prepareVersionReferences({
       ...(document || {}),
       ...(initialValue || {}),
       _id: getVersionId(documentId, releaseId),
-    } as IdentifiedSanityDocumentStub
+    }) as IdentifiedSanityDocumentStub
 
     await (IS_CREATE_VERSION_ACTION_SUPPORTED
       ? requestAction(
