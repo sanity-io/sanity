@@ -1,6 +1,6 @@
 import {Card, Container, Flex, Heading, Stack} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type RouterContextValue, useRouter} from 'sanity/router'
+import {useMemo, useRef, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
@@ -15,28 +15,15 @@ import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
 import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
 import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
-import {ReleaseReview} from './ReleaseReview'
 import {ReleaseSummary} from './ReleaseSummary'
 import {useBundleDocuments} from './useBundleDocuments'
 
 export type ReleaseInspector = 'activity'
 
-const SUPPORTED_SCREENS = ['summary', 'review'] as const
-export type ReleaseView = (typeof SUPPORTED_SCREENS)[number]
-
-const getActiveView = (router: RouterContextValue): ReleaseView => {
-  const activeView = Object.fromEntries(router.state._searchParams || []).screen as ReleaseView
-  if (typeof activeView !== 'string' || !activeView || !SUPPORTED_SCREENS.includes(activeView)) {
-    return 'summary'
-  }
-  return activeView
-}
-
 export const ReleaseDetail = () => {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
-  const activeView = getActiveView(router)
 
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
@@ -53,28 +40,6 @@ export const ReleaseDetail = () => {
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
 
-  const navigateToReview = useCallback(() => {
-    router.navigate({
-      ...router.state,
-      _searchParams: [['screen', 'review']],
-    })
-  }, [router])
-
-  const navigateToSummary = useCallback(() => {
-    router.navigate({
-      ...router.state,
-      _searchParams: [],
-    })
-  }, [router])
-
-  // review screen will not be available once published
-  // so redirect to summary screen
-  useEffect(() => {
-    if (activeView === 'review' && releaseInDetail?.publishAt) {
-      navigateToSummary()
-    }
-  }, [activeView, releaseInDetail?.publishAt, navigateToSummary])
-
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const detailContent = useMemo(() => {
@@ -83,29 +48,15 @@ export const ReleaseDetail = () => {
     }
     if (!releaseInDetail) return null
 
-    if (activeView === 'summary') {
-      return (
-        <ReleaseSummary
-          documents={results}
-          release={releaseInDetail}
-          documentsHistory={history.documentsHistory}
-          scrollContainerRef={scrollContainerRef}
-        />
-      )
-    }
-    if (activeView === 'review') {
-      // This screen needs to be confirmed, is not part of the prototype yet, maybe it could be removed...
-      return (
-        <ReleaseReview
-          documents={results}
-          release={releaseInDetail}
-          documentsHistory={history.documentsHistory}
-          scrollContainerRef={scrollContainerRef}
-        />
-      )
-    }
-    return null
-  }, [activeView, releaseInDetail, documentsLoading, history.documentsHistory, results, t])
+    return (
+      <ReleaseSummary
+        documents={results}
+        release={releaseInDetail}
+        documentsHistory={history.documentsHistory}
+        scrollContainerRef={scrollContainerRef}
+      />
+    )
+  }, [releaseInDetail, documentsLoading, history.documentsHistory, results, t])
 
   if (loading) {
     return (

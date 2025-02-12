@@ -30,7 +30,7 @@ beforeEach(() => {
 })
 
 function TestPrinter(props: {previewUrl: PreviewUrlOption; previewSearchParam?: string | null}) {
-  return `${usePreviewUrl(props.previewUrl, 'presentation', 'previewDrafts', props.previewSearchParam || null, true)}`
+  return `${usePreviewUrl(props.previewUrl, 'presentation', 'drafts', props.previewSearchParam || null, true)}`
 }
 
 describe('previewUrl handling', () => {

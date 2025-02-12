@@ -161,6 +161,7 @@ export function _createAuthStore({
         useCdn: false,
         ...(token && {token}),
         withCredentials: true,
+        perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
