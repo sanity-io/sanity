@@ -185,6 +185,10 @@ describe('ReleaseMenuButton', () => {
       fireEvent.click(screen.getByTestId('release-menu-button'))
       screen.getByTestId('delete-release-menu-item')
 
+      await waitFor(() => {
+        expect(screen.getByTestId('delete-release-menu-item')).not.toBeDisabled()
+      })
+
       await act(() => {
         fireEvent.click(screen.getByTestId('delete-release-menu-item'))
       })
@@ -216,6 +220,10 @@ describe('ReleaseMenuButton', () => {
 
       fireEvent.click(screen.getByTestId('release-menu-button'))
       screen.getByTestId('delete-release-menu-item')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('delete-release-menu-item')).not.toBeDisabled()
+      })
 
       await act(() => {
         fireEvent.click(screen.getByTestId('delete-release-menu-item'))

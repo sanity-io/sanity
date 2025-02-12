@@ -32,10 +32,11 @@ export const ReleaseMenu = ({
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const {mode} = useReleasesUpsell()
-  const {archive, unarchive} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasArchivePermission, setHasArchivePermission] = useState<boolean | null>(null)
   const [hasUnarchivePermission, setHasUnarchivePermission] = useState<boolean | null>(null)
+  const [hasDeletePermission, setHasDeletePermission] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (!releaseMenuDisabled) {
@@ -50,6 +51,12 @@ export const ReleaseMenu = ({
           )
         }
       }
+
+      if (release.state === 'archived' || release.state == 'published') {
+        checkWithPermissionGuard(deleteRelease, release._id).then((response) =>
+          setHasDeletePermission(response),
+        )
+      }
     }
   }, [
     release._id,
@@ -59,6 +66,7 @@ export const ReleaseMenu = ({
     checkWithPermissionGuard,
     unarchive,
     archive,
+    deleteRelease,
   ])
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -124,13 +132,16 @@ export const ReleaseMenu = ({
       <MenuItem
         data-value="delete"
         onClick={handleOnInitiateAction}
-        disabled={releaseMenuDisabled}
+        disabled={releaseMenuDisabled || !hasDeletePermission}
         icon={TrashIcon}
         text={t('action.delete-release')}
         data-testid="delete-release-menu-item"
+        tooltipProps={{
+          content: !hasDeletePermission && t('permissions.error.delete'),
+        }}
       />
     )
-  }, [handleOnInitiateAction, release.state, releaseMenuDisabled, t])
+  }, [handleOnInitiateAction, hasDeletePermission, release.state, releaseMenuDisabled, t])
 
   const unscheduleMenuItem = useMemo(() => {
     if (ignoreCTA || (release.state !== 'scheduled' && release.state !== 'scheduling')) return null
