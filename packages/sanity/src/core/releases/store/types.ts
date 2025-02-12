@@ -7,15 +7,26 @@ import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 
-/** @internal */
+/**
+ * @beta
+ */
 export type ReleaseType = 'asap' | 'scheduled' | 'undecided'
 
 /**
- *@internal
+ * @beta
  */
-export type ReleaseState = 'active' | 'archived' | 'published' | 'scheduled' | 'scheduling'
+export type ReleaseState =
+  | 'active'
+  | 'archiving'
+  | 'unarchiving'
+  | 'archived'
+  | 'published'
+  | 'publishing'
+  | 'scheduled'
+  | 'scheduling'
+
 /**
- *@internal
+ * @beta
  */
 export type ReleaseFinalDocumentState = {
   /** Document ID */
@@ -24,13 +35,12 @@ export type ReleaseFinalDocumentState = {
 }
 
 /**
- * TODO: When made `beta`, update the PublishDocumentVersionEvent to use this type
- * @internal
+ * @beta
  */
 export interface ReleaseDocument extends SanityDocument {
   /**
    * typically
-   * _.releases.<name>
+   * `_.releases.<name>`
    */
   _id: string
   _type: typeof RELEASE_DOCUMENT_TYPE
