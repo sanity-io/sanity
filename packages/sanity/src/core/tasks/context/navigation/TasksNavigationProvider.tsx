@@ -124,11 +124,6 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
     navigator.clipboard
       .writeText(url.toString())
       .then(() => {
-        toast.push({
-          closable: true,
-          status: 'info',
-          title: 'Copied link to clipboard',
-        })
         telemetry.log(TaskLinkCopied)
       })
       .catch(() => {
