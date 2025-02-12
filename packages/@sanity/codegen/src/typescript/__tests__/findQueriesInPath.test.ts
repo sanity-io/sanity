@@ -1,8 +1,11 @@
 import assert from 'node:assert'
+import {mkdtemp, rm, writeFile} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
 import path from 'node:path'
 
-import {describe, expect, test} from 'vitest'
+import {afterAll, beforeAll, describe, expect, suite, test} from 'vitest'
 
+import {type NamedQueryResult} from '../expressionResolvers'
 import {findQueriesInPath} from '../findQueriesInPath'
 
 describe('findQueriesInPath', () => {
@@ -54,4 +57,71 @@ describe('findQueriesInPath', () => {
     assert(res[0].type === 'queries') // workaround for TS
     expect(res[0].queries.length).toBe(1)
   })
+
+  // This test is skipped by default because it's very slow, but it's useful to have it around for testing deterministic behavior
+  suite.concurrent.skip(
+    'deterministic, given the same files',
+    async () => {
+      const tmpDir = await mkdtemp(path.join(tmpdir(), 'deterministic-'))
+      const base: NamedQueryResult[] = []
+      beforeAll(async () => {
+        // create 10 000 files with the same query, but different variable
+        for (let i = 0; i < 1_000; i++) {
+          const randomFilename = Math.random().toString(36).slice(7)
+          await writeFile(
+            path.join(tmpDir, `${randomFilename}.ts`),
+            `import {defineQuery} from 'groq'\n`,
+          )
+          for (let n = 0; n < 100; n++) {
+            await writeFile(
+              path.join(tmpDir, `${randomFilename}.ts`),
+              `export const postQuery${i.toString().padStart(4, '0')}${n.toString().padStart(4, '0')} = defineQuery('*[_type == "author"]')\n`,
+              {
+                flag: 'a',
+              },
+            )
+          }
+        }
+        // try it 10000 times
+        const stream = findQueriesInPath({
+          path: path.join(tmpDir, '*.ts'),
+        })
+        for await (const result of stream) {
+          if (result.type === 'error') {
+            throw new Error(result.error.message)
+          }
+          base.push(...result.queries)
+        }
+        expect(base.length).toBe(100_000)
+      }, 300_000)
+
+      afterAll(async () => {
+        // cleanup
+        await rm(tmpDir, {recursive: true, force: true})
+      })
+
+      for (let i = 0; i < 10; i++) {
+        test(`run ${i}`, async () => {
+          const compare: NamedQueryResult[] = []
+          const stream = findQueriesInPath({
+            path: path.join(tmpDir, '*.ts'),
+          })
+          await writeFile(path.join(tmpDir, `${i}.ts`), `import {defineQuery} from 'groq'\n`)
+          await writeFile(
+            path.join(tmpDir, `someTestFile.ts`),
+            `import {defineQuery} from 'groq'\n`,
+          )
+          for await (const result of stream) {
+            if (result.type === 'error') {
+              throw new Error(result.error.message)
+            }
+
+            compare.push(...result.queries)
+          }
+          expect(compare).toStrictEqual(base)
+        })
+      }
+    },
+    300_000,
+  )
 })
