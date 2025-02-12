@@ -140,27 +140,7 @@ export const CopyPasteProvider: React.FC<{
           status: 'error',
           title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
         })
-        return
       }
-
-      const fields = schemaTypeAtPath.title || schemaType.name || 'unknown'
-
-      const fieldSuccessTitle = isArrayItem
-        ? t('copy-paste.on-copy.validation.copy-item_one-success.title', {
-            typeName: fields,
-          })
-        : t('copy-paste.on-copy.validation.copy-field_one-success.title', {
-            fieldName: fields,
-          })
-
-      toast.push({
-        status: 'success',
-        title: isDocument
-          ? t('copy-paste.on-copy.validation.copy-document-success.title', {
-              fieldNames: fields,
-            })
-          : fieldSuccessTitle,
-      })
     },
     [documentMeta, telemetry, toast, t],
   )
