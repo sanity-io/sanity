@@ -28,7 +28,6 @@ import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -123,7 +122,6 @@ export const DocumentPanelHeader = memo(
     )
 
     const title = useMemo(() => <DocumentHeaderTitle />, [])
-    const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
     const backButton = useMemo(
       () =>
         showBackButton && (
@@ -218,27 +216,28 @@ export const DocumentPanelHeader = memo(
 
     return (
       <TooltipDelayGroupProvider>
-        <Card hidden={collapsed} style={{lineHeight: 0}}>
-          <Flex>
-            <Flex flex={1} gap={1} padding={3} paddingBottom={0} style={{overflowX: 'scroll'}}>
-              <DocumentPerspectiveList />
+        {collapsed ? (
+          <PaneHeader
+            border
+            ref={ref}
+            loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
+            title={title}
+            tabIndex={tabIndex}
+            backButton={backButton}
+          />
+        ) : (
+          <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom paddingBottom={3}>
+            <Flex>
+              <Flex flex={1} wrap="wrap" gap={1} padding={3} paddingBottom={0}>
+                <DocumentPerspectiveList />
+              </Flex>
+
+              <Box flex="none" padding={3} paddingBottom={0}>
+                {renderedActions}
+              </Box>
             </Flex>
-
-            <Box flex="none" padding={3} paddingBottom={0}>
-              {renderedActions}
-            </Box>
-          </Flex>
-        </Card>
-
-        <PaneHeader
-          border
-          ref={ref}
-          loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={title}
-          tabs={tabs}
-          tabIndex={tabIndex}
-          backButton={backButton}
-        />
+          </Card>
+        )}
       </TooltipDelayGroupProvider>
     )
   }),

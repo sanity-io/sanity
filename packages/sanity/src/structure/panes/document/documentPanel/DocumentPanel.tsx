@@ -31,6 +31,7 @@ import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
+import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -233,12 +234,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               element={portalElement}
               __unstable_elements={{documentScrollElement: documentScrollElement}}
             >
+              {banners}
+              <DocumentPanelSubHeader />
               <BoundaryElementProvider element={documentScrollElement}>
                 <VirtualizerScrollInstanceProvider
                   scrollElement={documentScrollElement}
                   containerElement={formContainerElement}
                 >
-                  {banners}
                   <Scroller
                     $disabled={layoutCollapsed || false}
                     data-testid="document-panel-scroller"

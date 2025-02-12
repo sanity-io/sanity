@@ -64,7 +64,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              gap={1}
+              gap={3}
               onClick={handleLayoutClick}
               padding={3}
               paddingBottom={collapsed || !showTabsOrSubActions ? 3 : 2}
@@ -98,23 +98,16 @@ export const PaneHeader = forwardRef(function PaneHeader(
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}
+              {showTabsOrSubActions && (
+                <Flex align="center" hidden={collapsed} overflow="auto">
+                  <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
+                    {tabs}
+                  </TabsBox>
+
+                  {subActions && subActions}
+                </Flex>
+              )}
             </Layout>
-
-            {showTabsOrSubActions && (
-              <Flex
-                align="center"
-                hidden={collapsed}
-                overflow="auto"
-                paddingBottom={3}
-                paddingX={3}
-              >
-                <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                  {tabs}
-                </TabsBox>
-
-                {subActions && subActions}
-              </Flex>
-            )}
 
             {!collapsed && contentAfter && contentAfter}
           </Card>
