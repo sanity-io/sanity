@@ -5,6 +5,7 @@ import {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSystemBundle,
+  LegacyLayerProvider,
   type ReleaseDocument,
   ScrollContainer,
   usePerspective,
@@ -39,6 +40,7 @@ interface DocumentPanelProps {
   isInspectOpen: boolean
   rootElement: HTMLDivElement | null
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
+  footer: React.ReactNode
 }
 
 const DocumentBox = styled(Box)({
@@ -60,8 +62,14 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, headerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} =
-    props
+  const {
+    footerHeight,
+    headerHeight,
+    isInspectOpen,
+    rootElement,
+    setDocumentPanelPortalElement,
+    footer,
+  } = props
   const {
     activeViewId,
     displayed,
@@ -234,8 +242,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               element={portalElement}
               __unstable_elements={{documentScrollElement: documentScrollElement}}
             >
-              {banners}
-              <DocumentPanelSubHeader />
+              <LegacyLayerProvider zOffset="paneHeader">
+                {banners}
+                <DocumentPanelSubHeader />
+              </LegacyLayerProvider>
               <BoundaryElementProvider element={documentScrollElement}>
                 <VirtualizerScrollInstanceProvider
                   scrollElement={documentScrollElement}
@@ -259,6 +269,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   <div data-testid="document-panel-portal" ref={setPortalElement} />
                 </VirtualizerScrollInstanceProvider>
               </BoundaryElementProvider>
+              {footer}
             </PortalProvider>
           </DocumentBox>
         )}

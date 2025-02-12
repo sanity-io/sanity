@@ -262,37 +262,38 @@ export function DocumentLayout() {
                   isInspectOpen={inspectOpen}
                   rootElement={rootElement}
                   setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                  footer={
+                    // These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane
+                    // The portal element comes from `DocumentPanel`.
+                    <PortalProvider __unstable_elements={portalElements}>
+                      <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+                        <PaneFooter ref={setFooterElement} padding={1}>
+                          {StartInCreateBanner && (
+                            <ShowWhenPaneOpen>
+                              <StartInCreateBanner
+                                document={value}
+                                documentId={documentId}
+                                documentType={schemaType}
+                                documentReady={ready}
+                                isInitialValueLoading={!!isInitialValueLoading}
+                                panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
+                              />
+                            </ShowWhenPaneOpen>
+                          )}
+                          <TooltipDelayGroupProvider>
+                            <DocumentStatusBar
+                              actionsBoxRef={setActionsBoxElement}
+                              createLinkMetadata={createLinkMetadata}
+                            />
+                          </TooltipDelayGroupProvider>
+                        </PaneFooter>
+                      </DialogProvider>
+                    </PortalProvider>
+                  }
                 />
               </StyledChangeConnectorRoot>
             </Flex>
           </DialogProvider>
-
-          {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-          {/* The portal element comes from `DocumentPanel`. */}
-          <PortalProvider __unstable_elements={portalElements}>
-            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-              {StartInCreateBanner && (
-                <ShowWhenPaneOpen>
-                  <StartInCreateBanner
-                    document={value}
-                    documentId={documentId}
-                    documentType={schemaType}
-                    documentReady={ready}
-                    isInitialValueLoading={!!isInitialValueLoading}
-                    panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
-                  />
-                </ShowWhenPaneOpen>
-              )}
-              <PaneFooter ref={setFooterElement}>
-                <TooltipDelayGroupProvider>
-                  <DocumentStatusBar
-                    actionsBoxRef={setActionsBoxElement}
-                    createLinkMetadata={createLinkMetadata}
-                  />
-                </TooltipDelayGroupProvider>
-              </PaneFooter>
-            </DialogProvider>
-          </PortalProvider>
           <DocumentOperationResults />
         </DocumentActionShortcuts>
       </FieldActionsProvider>
