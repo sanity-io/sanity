@@ -1,9 +1,11 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
+  getSanityCreateLinkMetadata,
   getVersionFromId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
+  isSanityCreateLinked,
   isSystemBundle,
   LegacyLayerProvider,
   type ReleaseDocument,
@@ -27,6 +29,7 @@ import {
 } from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
+import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -83,6 +86,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     permissions,
     isPermissionsLoading,
   } = useDocumentPane()
+  const createLinkMetadata = getSanityCreateLinkMetadata(value)
+  const showCreateBanner = isSanityCreateLinked(createLinkMetadata)
+
   const {params} = usePaneRouter()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -203,6 +209,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     return (
       <>
+        {showCreateBanner && <CreateLinkedBanner />}
         {!permissions?.granted && (
           <InsufficientPermissionBanner requiredPermission={requiredPermission} />
         )}
@@ -226,6 +233,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isLiveEdit,
     editState?.draft?._id,
     isPermissionsLoading,
+    showCreateBanner,
     permissions?.granted,
     requiredPermission,
     documentId,

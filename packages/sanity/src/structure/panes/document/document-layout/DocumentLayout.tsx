@@ -16,7 +16,6 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   getSanityCreateLinkMetadata,
-  isSanityCreateLinked,
   type Path,
   useGlobalCopyPasteElementHandler,
   useSanityCreateConfig,
@@ -38,7 +37,6 @@ import {
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel'
-import {Banner} from '../documentPanel/banners/Banner'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
@@ -95,10 +93,7 @@ export function DocumentLayout() {
   const zOffsets = useZIndex()
 
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
-  const {
-    documentLinkedBannerContent: CreateLinkedBannerContent,
-    startInCreateBanner: StartInCreateBanner,
-  } = useSanityCreateConfig().components ?? {}
+  const {startInCreateBanner: StartInCreateBanner} = useSanityCreateConfig().components ?? {}
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -235,19 +230,6 @@ export function DocumentLayout() {
           rootRef={setRootElement}
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
-
-          {createLinkMetadata &&
-            isSanityCreateLinked(createLinkMetadata) &&
-            CreateLinkedBannerContent && (
-              <ShowWhenPaneOpen>
-                <Banner
-                  tone="transparent"
-                  data-test-id="sanity-create-read-only-banner"
-                  content={<CreateLinkedBannerContent metadata={createLinkMetadata} />}
-                />
-              </ShowWhenPaneOpen>
-            )}
-
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
