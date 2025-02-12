@@ -1,6 +1,6 @@
 import {CloseIcon, UnpublishIcon} from '@sanity/icons'
 import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
-import {memo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
@@ -38,9 +38,35 @@ export const DocumentActions = memo(
         version,
         permission: 'discardVersion',
       })
+    const [unpublishPermission, isUnpublishPermissionsLoading] = useDocumentPairPermissions({
+      id: publishedId,
+      type,
+      version,
+      permission: 'unpublish',
+    })
 
     const isDiscardVersionActionDisabled =
       !discardVersionPermission?.granted || isDiscardVersionPermissionsLoading
+    const noPermissionToUnpublish = !unpublishPermission?.granted || isUnpublishPermissionsLoading
+
+    const unPublishTooltipContent = useMemo(() => {
+      if (noPermissionToUnpublish) {
+        return t('permissions.error.unpublish')
+      }
+      if (!document.document.publishedDocumentExists) {
+        return t('unpublish.no-published-version')
+      }
+      if (isAlreadyUnpublished) {
+        return t('unpublish.already-unpublished')
+      }
+
+      return null
+    }, [
+      document.document.publishedDocumentExists,
+      isAlreadyUnpublished,
+      noPermissionToUnpublish,
+      t,
+    ])
 
     return (
       <>
@@ -64,7 +90,12 @@ export const DocumentActions = memo(
                 <MenuItem
                   text={t('action.unpublish')}
                   icon={UnpublishIcon}
-                  disabled={!document.document.publishedDocumentExists || isAlreadyUnpublished}
+                  disabled={
+                    noPermissionToUnpublish ||
+                    !document.document.publishedDocumentExists ||
+                    isAlreadyUnpublished
+                  }
+                  tooltipProps={{content: unPublishTooltipContent}}
                   onClick={() => setShowUnpublishDialog(true)}
                 />
               </Menu>
