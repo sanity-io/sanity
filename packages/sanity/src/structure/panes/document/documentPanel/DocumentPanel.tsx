@@ -240,16 +240,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     value._id,
     schemaType,
   ])
-
+  const showFormView = features.resizablePanes || !showInspector
   return (
     <PaneContent>
       <Flex height="fill">
-        <Flex height="fill" direction="column" width="fill" flex={1}>
-          <LegacyLayerProvider zOffset="paneHeader">
-            {banners}
-            <DocumentPanelSubHeader />
-          </LegacyLayerProvider>
-          {(features.resizablePanes || !showInspector) && (
+        {showFormView && (
+          <Flex height="fill" direction="column" width="fill" flex={2}>
+            <LegacyLayerProvider zOffset="paneHeader">
+              {banners}
+              <DocumentPanelSubHeader />
+            </LegacyLayerProvider>
             <DocumentBox flex={2} overflow="hidden">
               <PortalProvider
                 element={portalElement}
@@ -280,17 +280,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 </BoundaryElementProvider>
               </PortalProvider>
             </DocumentBox>
-          )}
 
-          {footer}
-        </Flex>
+            {footer}
+          </Flex>
+        )}
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
+            {/* {!showFormView && <DocumentPanelSubHeader />} */}
             <DocumentInspectorPanel
               documentId={documentId}
               documentType={schemaType.name}
               flex={1}
             />
+            {/* {!showFormView && footer} */}
           </BoundaryElementProvider>
         )}
       </Flex>
