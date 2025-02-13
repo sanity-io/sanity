@@ -16,7 +16,9 @@ import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useIsReleaseActive} from '../../../../releases/hooks/useIsReleaseActive'
+import {isPublishedPerspective} from '../../../../releases/util/util'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
@@ -48,6 +50,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
   const isReleaseActive = useIsReleaseActive()
+  const {selectedPerspective} = usePerspective()
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -177,7 +180,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
     if (!isReleaseActive) {
-      return <Text size={1}>{t('new-document.disabled-release.tooltip')}</Text>
+      const tooltipText = isPublishedPerspective(selectedPerspective)
+        ? t('new-document.disabled-published.tooltip')
+        : t('new-document.disabled-release.tooltip')
+
+      return <Text size={1}>{tooltipText}</Text>
     }
     if (!hasNewDocumentOptions) {
       return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
@@ -190,7 +197,14 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     return (
       <InsufficientPermissionsMessage currentUser={currentUser} context="create-any-document" />
     )
-  }, [canCreateDocument, currentUser, hasNewDocumentOptions, isReleaseActive, t])
+  }, [
+    canCreateDocument,
+    currentUser,
+    hasNewDocumentOptions,
+    isReleaseActive,
+    selectedPerspective,
+    t,
+  ])
 
   // Shared tooltip props for the popover and dialog
   const sharedTooltipProps: TooltipProps = useMemo(
