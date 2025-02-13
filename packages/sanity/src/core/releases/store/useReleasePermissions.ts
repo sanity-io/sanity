@@ -1,7 +1,7 @@
 export interface useReleasePermissionsValue {
-  checkWithPermissionGuard: (
-    action: (...args: any[]) => Promise<void> | void,
-    ...args: any[]
+  checkWithPermissionGuard: <T extends (...args: any[]) => Promise<void> | void>(
+    action: T,
+    ...args: Parameters<T>
   ) => Promise<boolean>
 }
 
@@ -16,10 +16,10 @@ export function useReleasePermissions(): useReleasePermissionsValue {
    * @param args - the arguments to pass to the action (release id, etc)
    * @returns true or false depending if the user can perform the action
    */
-  const checkWithPermissionGuard = async (
-    action: (...args: any[]) => Promise<void> | void,
-    ...args: any[]
-  ) => {
+  const checkWithPermissionGuard = async <T extends (...args: any[]) => Promise<void> | void>(
+    action: T,
+    ...args: Parameters<T>
+  ): Promise<boolean> => {
     try {
       await action(...args, {
         dryRun: true,
