@@ -233,7 +233,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       handleQueryChange(comlink, perspective, query, params, result, resultSourceMap, tags)
     }
     return undefined
-  }, [comlink, handleQueryChange, params, perspective, query, result, resultSourceMap, tags])
+  }, [comlink, params, perspective, query, result, resultSourceMap, tags])
 
   return null
 }

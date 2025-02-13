@@ -188,7 +188,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, handleResponse, previewUrl, relativeUrl, resolvers])
+  }, [client, previewUrl, relativeUrl, resolvers])
 
   return mainDocumentState
 }

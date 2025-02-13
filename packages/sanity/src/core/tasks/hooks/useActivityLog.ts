@@ -55,6 +55,6 @@ export function useActivityLog(task: TaskDocument): {
   useEffect(() => {
     // Task is updated on every change, wait until the revision changes to update the activity log.
     handleFetchAndParse(task._rev)
-  }, [handleFetchAndParse, task._rev])
+  }, [task._rev])
   return {changes}
 }
