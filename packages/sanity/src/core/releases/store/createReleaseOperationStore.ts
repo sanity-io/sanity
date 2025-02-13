@@ -11,29 +11,39 @@ import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseR
 import {isReleaseLimitError} from './isReleaseLimitError'
 import {type EditableReleaseDocument} from './types'
 
+interface operationsOptions {
+  dryRun?: boolean
+  skipCrossDatasetValidation?: boolean
+}
 export interface ReleaseOperationsStore {
-  publishRelease: (releaseId: string, useUnstableAction?: boolean) => Promise<void>
-  schedule: (releaseId: string, date: Date) => Promise<void>
+  publishRelease: (
+    releaseId: string,
+    useUnstableAction?: boolean,
+    opts?: operationsOptions,
+  ) => Promise<void>
+  schedule: (releaseId: string, date: Date, opts?: operationsOptions) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
-  unschedule: (releaseId: string) => Promise<void>
-  archive: (releaseId: string) => Promise<void>
-  unarchive: (releaseId: string) => Promise<void>
-  updateRelease: (release: EditableReleaseDocument) => Promise<void>
-  createRelease: (release: EditableReleaseDocument) => Promise<void>
-  deleteRelease: (releaseId: string) => Promise<void>
+  unschedule: (releaseId: string, opts?: operationsOptions) => Promise<void>
+  archive: (releaseId: string, opts?: operationsOptions) => Promise<void>
+  unarchive: (releaseId: string, opts?: operationsOptions) => Promise<void>
+  updateRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
+  createRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
+  deleteRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
   revertRelease: (
     revertReleaseId: string,
     documents: RevertDocument[],
     releaseMetadata: ReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
+    opts?: operationsOptions,
   ) => Promise<void>
   createVersion: (
     releaseId: string,
     documentId: string,
     initialvalue?: Record<string, unknown>,
+    opts?: operationsOptions,
   ) => Promise<void>
-  discardVersion: (releaseId: string, documentId: string) => Promise<void>
-  unpublishVersion: (documentId: string) => Promise<void>
+  discardVersion: (releaseId: string, documentId: string, opts?: operationsOptions) => Promise<void>
+  unpublishVersion: (documentId: string, opts?: operationsOptions) => Promise<void>
 }
 
 const IS_CREATE_VERSION_ACTION_SUPPORTED = false
@@ -46,86 +56,126 @@ export function createReleaseOperationsStore(options: {
   const {client} = options
   const requestAction = createRequestAction(options.onReleaseLimitReached)
 
-  const handleCreateRelease = (release: EditableReleaseDocument) =>
-    requestAction(client, {
-      actionType: 'sanity.action.release.create',
-      releaseId: getReleaseIdFromReleaseDocumentId(release._id),
-      [METADATA_PROPERTY_NAME]: release.metadata,
-    })
+  const handleCreateRelease = (release: EditableReleaseDocument, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      {
+        actionType: 'sanity.action.release.create',
+        releaseId: getReleaseIdFromReleaseDocumentId(release._id),
+        [METADATA_PROPERTY_NAME]: release.metadata,
+      },
+      opts,
+    )
 
-  const handleUpdateRelease = async (release: EditableReleaseDocument) => {
+  const handleUpdateRelease = async (
+    release: EditableReleaseDocument,
+    opts?: operationsOptions,
+  ) => {
     const bundleId = getReleaseIdFromReleaseDocumentId(release._id)
 
     const unsetKeys = Object.entries(release)
       .filter(([_, value]) => value === undefined)
       .map(([key]) => `${METADATA_PROPERTY_NAME}.${key}`)
 
-    await requestAction(client, {
-      actionType: 'sanity.action.release.edit',
-      releaseId: bundleId,
-      patch: {
-        // todo: consider more granular updates here
-        set: {[METADATA_PROPERTY_NAME]: release.metadata},
-        unset: unsetKeys,
+    await requestAction(
+      client,
+      {
+        actionType: 'sanity.action.release.edit',
+        releaseId: bundleId,
+        patch: {
+          // todo: consider more granular updates here
+          set: {[METADATA_PROPERTY_NAME]: release.metadata},
+          unset: unsetKeys,
+        },
       },
-    })
+      opts,
+    )
   }
 
-  const handlePublishRelease = (releaseId: string, useUnstableAction?: boolean) =>
-    requestAction(client, [
-      {
-        actionType: useUnstableAction
-          ? 'sanity.action.release.publish2'
-          : 'sanity.action.release.publish',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-      },
-    ])
+  const handlePublishRelease = (
+    releaseId: string,
+    useUnstableAction?: boolean,
+    opts?: operationsOptions,
+  ) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: useUnstableAction
+            ? 'sanity.action.release.publish2'
+            : 'sanity.action.release.publish',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+        },
+      ],
+      opts,
+    )
 
-  const handleScheduleRelease = (releaseId: string, publishAt: Date) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.release.schedule',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        publishAt: publishAt.toISOString(),
-      },
-    ])
+  const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.release.schedule',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+          publishAt: publishAt.toISOString(),
+        },
+      ],
+      opts,
+    )
 
-  const handleUnscheduleRelease = (releaseId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.release.unschedule',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-      },
-    ])
+  const handleUnscheduleRelease = (releaseId: string, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.release.unschedule',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+        },
+      ],
+      opts,
+    )
 
-  const handleArchiveRelease = (releaseId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.release.archive',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-      },
-    ])
+  const handleArchiveRelease = (releaseId: string, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.release.archive',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+        },
+      ],
+      opts,
+    )
 
-  const handleUnarchiveRelease = (releaseId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.release.unarchive',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-      },
-    ])
+  const handleUnarchiveRelease = (releaseId: string, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.release.unarchive',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+        },
+      ],
+      opts,
+    )
 
-  const handleDeleteRelease = (releaseId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.release.delete',
-        releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-      },
-    ])
+  const handleDeleteRelease = (releaseId: string, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.release.delete',
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+        },
+      ],
+      opts,
+    )
 
   const handleCreateVersion = async (
     releaseId: string,
     documentId: string,
     initialValue?: Record<string, unknown>,
+    opts?: operationsOptions,
   ) => {
     // the documentId will show you where the document is coming from and which
     // document should it copy from
@@ -144,23 +194,31 @@ export function createReleaseOperationsStore(options: {
     } as IdentifiedSanityDocumentStub
 
     await (IS_CREATE_VERSION_ACTION_SUPPORTED
-      ? requestAction(client, [
-          {
-            actionType: 'sanity.action.document.createVersion',
-            releaseId,
-            attributes: versionDocument,
-          },
-        ])
-      : client.create(versionDocument))
+      ? requestAction(
+          client,
+          [
+            {
+              actionType: 'sanity.action.document.createVersion',
+              releaseId,
+              attributes: versionDocument,
+            },
+          ],
+          opts,
+        )
+      : client.create(versionDocument, opts))
   }
 
-  const handleDiscardVersion = (releaseId: string, documentId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.document.discard',
-        draftId: getVersionId(documentId, releaseId),
-      },
-    ])
+  const handleDiscardVersion = (releaseId: string, documentId: string, opts?: operationsOptions) =>
+    requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.document.discard',
+          draftId: getVersionId(documentId, releaseId),
+        },
+      ],
+      opts,
+    )
 
   const handleUnpublishVersion = (documentId: string) =>
     requestAction(client, [
@@ -220,6 +278,8 @@ interface ScheduleApiAction {
   actionType: 'sanity.action.release.schedule'
   releaseId: string
   publishAt: string
+  dryRun?: boolean
+  skipCrossDatasetValidation?: boolean
 }
 
 interface PublishApiAction {
@@ -288,6 +348,7 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
   return async function requestAction(
     client: SanityClient,
     actions: ReleaseAction | ReleaseAction[],
+    options?: operationsOptions,
   ): Promise<void> {
     const {dataset} = client.config()
     try {
@@ -295,6 +356,7 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
         uri: `/data/actions/${dataset}`,
         method: 'POST',
         body: {
+          ...options,
           actions: Array.isArray(actions) ? actions : [actions],
         },
       })
