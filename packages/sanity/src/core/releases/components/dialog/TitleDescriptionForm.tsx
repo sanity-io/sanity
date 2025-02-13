@@ -88,6 +88,7 @@ export function TitleDescriptionForm({
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
 }): React.JSX.Element {
+  const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [scrollHeight, setScrollHeight] = useState(46)
@@ -145,6 +146,8 @@ export function TitleDescriptionForm({
     [onChange, release.metadata, value],
   )
 
+  const shouldShowDescription = isReleaseOpen || value.metadata.description
+
   return (
     <Stack space={4}>
       <TitleInput
@@ -152,19 +155,22 @@ export function TitleDescriptionForm({
         value={value.metadata.title}
         placeholder={t('release.placeholder-untitled-release')}
         data-testid="release-form-title"
+        readOnly={!isReleaseOpen}
       />
-      <DescriptionTextArea
-        ref={descriptionRef}
-        autoFocus={!value}
-        value={value.metadata.description}
-        placeholder={t('release.form.placeholer-describe-release')}
-        onChange={handleDescriptionChange}
-        style={{
-          height: `${scrollHeight}px`,
-          maxHeight: MAX_DESCRIPTION_HEIGHT,
-        }}
-        data-testid="release-form-description"
-      />
+      {shouldShowDescription && (
+        <DescriptionTextArea
+          ref={descriptionRef}
+          autoFocus={!value}
+          value={value.metadata.description}
+          placeholder={t('release.form.placeholder-describe-release')}
+          onChange={handleDescriptionChange}
+          style={{
+            height: `${scrollHeight}px`,
+            maxHeight: MAX_DESCRIPTION_HEIGHT,
+          }}
+          data-testid="release-form-description"
+        />
+      )}
     </Stack>
   )
 }

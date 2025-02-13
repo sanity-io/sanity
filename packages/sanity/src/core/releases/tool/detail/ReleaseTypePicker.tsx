@@ -1,4 +1,4 @@
-import {LockIcon} from '@sanity/icons'
+import {LockIcon, PublishIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
@@ -15,7 +15,7 @@ import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument, type ReleaseType} from '../../store'
+import {type ReleaseDocument, type ReleaseState, type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
@@ -24,7 +24,13 @@ import {ReleaseTime} from '../components/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
 
-export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.Element {
+type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
+
+export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
+  return release.state !== 'archived'
+}
+
+export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
 
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -222,15 +228,17 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
       ? 'positive'
       : getReleaseTone({...release, metadata: {...release.metadata, releaseType}})
 
+  const releaseTypeIcon = useMemo(() => {
+    if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />
+    if (release.state === 'published') return <PublishIcon />
+
+    return <ReleaseAvatar tone={tone} padding={0} />
+  }, [isUpdating, release.state, tone])
+
   const labelContent = useMemo(
     () => (
-      <Flex flex={1} gap={2}>
-        {isUpdating ? (
-          <Spinner size={1} data-testid="updating-release-spinner" />
-        ) : (
-          <ReleaseAvatar tone={tone} padding={0} />
-        )}
-
+      <Flex flex={1} gap={2} align={'center'}>
+        {releaseTypeIcon}
         <Text muted size={1} data-testid="release-type-label" weight="medium">
           {publishDateLabel}
         </Text>
@@ -242,7 +250,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
         )}
       </Flex>
     ),
-    [isReleaseScheduled, isUpdating, publishDateLabel, tone],
+    [isReleaseScheduled, publishDateLabel, releaseTypeIcon],
   )
 
   return (
@@ -255,7 +263,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
     >
       {release.state === 'published' ? (
         <Card
-          tone="positive"
+          tone="default"
           data-testid="published-release-type-label"
           padding={2}
           style={{borderRadius: '999px'}}
@@ -264,7 +272,7 @@ export function ReleaseTypePicker(props: {release: ReleaseDocument}): React.JSX.
         </Card>
       ) : (
         <Button
-          disabled={isReleaseScheduled || release.state === 'archived'}
+          disabled={isReleaseScheduled}
           mode="bleed"
           onClick={handleOnPickerClick}
           ref={buttonRef}

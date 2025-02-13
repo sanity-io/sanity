@@ -1232,7 +1232,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for tooltip to explain release time */
   'release.dialog.tooltip.title': 'Approximate time of release',
   /** The placeholder text when the release doesn't have a description */
-  'release.form.placeholer-describe-release': 'Describe the release…',
+  'release.form.placeholder-describe-release': 'Describe the release…',
   /** Tooltip for button to hide release visibility */
   'release.layer.hide': 'Hide release',
   /** Label for draft perspective in navbar */

@@ -85,6 +85,12 @@ const releasesLocaleStrings = {
   /** Label for the button to proceed with archiving a release */
   'archive-dialog.confirm-archive-button': 'Yes, archive now',
 
+  /** Title for information card on a archived release */
+  'archive-info.title': 'This release is archived',
+  /** Description for information card on a published or archived release to description retention effects */
+  'archive-info.description':
+    'Your plan supports a {{retentionDays}}-day retention period. After this period this release will be removed.',
+
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
   /** Text for when a release / document was created */
@@ -202,6 +208,9 @@ const releasesLocaleStrings = {
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */
   'publish-dialog.validation.error': 'Some documents have validation errors',
+
+  /** Title for information card on a published release */
+  'publish-info.title': 'This release is published',
 
   /** Description for the review changes button in release tool */
   'review.description': 'Add documents to this release to review changes',
