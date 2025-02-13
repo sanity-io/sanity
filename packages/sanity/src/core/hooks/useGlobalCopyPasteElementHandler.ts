@@ -69,5 +69,5 @@ export function useGlobalCopyPasteElementHandler({
     return () => {
       element?.removeEventListener('keydown', handleKeydown)
     }
-  }, [element, handleKeydown, onPaste])
+  }, [element, onPaste])
 }

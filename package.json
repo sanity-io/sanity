@@ -146,7 +146,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "experimental",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tsdoc": "^0.3.0",
     "eslint-plugin-unicorn": "^52.0.0",
@@ -192,6 +192,7 @@
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
+      "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "vite": "$vite"
     }
   },

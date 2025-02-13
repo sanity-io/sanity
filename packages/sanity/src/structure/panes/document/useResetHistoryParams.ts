@@ -36,8 +36,7 @@ export function useResetHistoryParams() {
     if (isMounted.current) {
       updateHistoryParams(selectedPerspectiveName)
     }
-    // TODO: Remove `updateHistoryParams` as a dependency when react eslint plugin is updated
-  }, [selectedPerspectiveName, updateHistoryParams])
+  }, [selectedPerspectiveName])
 
   useEffect(() => {
     isMounted.current = true

@@ -310,7 +310,7 @@ export default function PresentationTool(props: {
       stop()
       setVisualEditingComlink(null)
     }
-  }, [controller, handleNavigate, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
+  }, [controller, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
 
   useEffect(() => {
     if (!controller) return undefined
