@@ -15,6 +15,10 @@ import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
 } from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {
   mockUseBundleDocuments,
@@ -25,6 +29,10 @@ import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButt
 
 vi.mock('../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
+}))
+
+vi.mock('../../../../store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
@@ -51,6 +59,10 @@ describe('ReleaseMenuButton', () => {
     vi.clearAllMocks()
 
     mockUseBundleDocuments.mockRestore()
+
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
+    })
   })
 
   describe('archive release', () => {
