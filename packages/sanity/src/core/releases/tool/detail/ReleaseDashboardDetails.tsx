@@ -1,4 +1,10 @@
-import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
+import {
+  ErrorOutlineIcon,
+  InfoOutlineIcon,
+  PinFilledIcon,
+  PinIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
 import {
   Box,
   // Custom button with full radius used here
@@ -15,6 +21,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {Details} from '../../../form/components/Details'
+import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
@@ -25,7 +32,7 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
-import {ReleaseTypePicker} from './ReleaseTypePicker'
+import {isNotArchivedRelease, ReleaseTypePicker} from './ReleaseTypePicker'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state} = release
@@ -36,8 +43,13 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
+  const {projectSubscriptions} = useProjectSubscriptions()
+
+  const retentionDays =
+    projectSubscriptions?.featureTypes.retention.features[0].attributes.maxRetentionDays
   const isSelected = releaseId === selectedReleaseId
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
+  const isReleaseOpen = state !== 'archived' && state !== 'published'
   const isActive = release.state === 'active'
   const shouldDisplayError = isActive && typeof release.error !== 'undefined'
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
@@ -76,21 +88,22 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
 
   return (
     <Container width={3}>
-      <Stack padding={3} paddingY={[4, 4, 5, 6]} space={[3, 3, 4, 5]}>
+      <Stack padding={3} paddingY={[3, 3, 4, 5]}>
         <Flex gap={1} align="center">
-          <Button
-            disabled={state === 'archived' || state === 'published'}
-            icon={isSelected ? PinFilledIcon : PinIcon}
-            mode="bleed"
-            onClick={handlePinRelease}
-            padding={2}
-            radius="full"
-            selected={isSelected}
-            space={2}
-            text={tRelease('dashboard.details.pin-release')}
-            tone={getReleaseTone(release)}
-          />
-          <ReleaseTypePicker release={release} />
+          {isReleaseOpen && (
+            <Button
+              icon={isSelected ? PinFilledIcon : PinIcon}
+              mode="bleed"
+              onClick={handlePinRelease}
+              padding={2}
+              radius="full"
+              selected={isSelected}
+              space={2}
+              text={tRelease('dashboard.details.pin-release')}
+              tone={getReleaseTone(release)}
+            />
+          )}
+          {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
               <Text size={1}>
@@ -124,13 +137,13 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                 <ErrorOutlineIcon />
               </Text>
               <Stack space={4}>
-                <Text>
+                <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
                     : tRelease('failed-publish-title')}
                 </Text>
                 <Details title={tRelease('error-details-title')}>
-                  <Text>
+                  <Text size={1} accent>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
@@ -149,6 +162,26 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}
+                </Text>
+              </Stack>
+            </Flex>
+          </Card>
+        )}
+
+        {!isReleaseOpen && retentionDays && (
+          <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
+            <Flex gap={3}>
+              <Text size={1}>
+                <InfoOutlineIcon />
+              </Text>
+              <Stack space={4}>
+                <Text size={1} weight="semibold">
+                  {state === 'archived'
+                    ? tRelease('archive-info.title')
+                    : tRelease('publish-info.title')}
+                </Text>
+                <Text size={1} accent>
+                  {tRelease('archive-info.description', {retentionDays})}
                 </Text>
               </Stack>
             </Flex>

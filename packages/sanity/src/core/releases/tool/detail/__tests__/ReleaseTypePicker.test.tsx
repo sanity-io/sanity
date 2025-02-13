@@ -191,13 +191,6 @@ describe('ReleaseTypePicker', () => {
   })
 
   describe('picker behavior based on release state', () => {
-    it('disables the picker for archived releases', async () => {
-      await renderComponent({...activeASAPRelease, state: 'archived'})
-
-      const pickerButton = screen.getByRole('button')
-      expect(pickerButton).toBeDisabled()
-    })
-
     it('does not show button for picker when release is published state', async () => {
       await renderComponent(publishedASAPRelease)
 
