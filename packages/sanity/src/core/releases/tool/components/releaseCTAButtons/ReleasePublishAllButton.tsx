@@ -55,8 +55,8 @@ export const ReleasePublishAllButton = ({
   const useUnstableAction = publishBundleStatus === 'confirm-2'
 
   useEffect(() => {
-    checkWithPermissionGuard(publishRelease, release._id, false).then((response) =>
-      setPublishPermission(response),
+    checkWithPermissionGuard(publishRelease, release._id, false).then((hasPermission) =>
+      setPublishPermission(hasPermission),
     )
   }, [
     checkWithPermissionGuard,

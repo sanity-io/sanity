@@ -56,8 +56,8 @@ export const ReleaseScheduleButton = ({
   const isScheduleButtonDisabled = disabled || isValidatingDocuments || !schedulePermission
 
   useEffect(() => {
-    checkWithPermissionGuard(schedule, release._id, new Date()).then((response) =>
-      setSchedulePermission(response),
+    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) =>
+      setSchedulePermission(hasPermission),
     )
   }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
