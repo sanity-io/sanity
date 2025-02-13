@@ -80,7 +80,7 @@ describe('render states', () => {
 
     const value = {
       _type: 'productReference',
-      _ref: 'dataset/myProject.myDataset/foo',
+      _ref: 'dataset:myProject.myDataset:foo',
     }
 
     const {result} = await renderGlobalDocumentReferenceInput({
@@ -128,8 +128,8 @@ describe('render states', () => {
     )
 
     const value = {
-      _type: 'reference',
-      _ref: 'dataset/myProject.myDataset/someActor',
+      _type: 'globalDocumentReference',
+      _ref: 'dataset:myProject.myDataset:someActor',
       _weak: true,
     } satisfies GlobalDocumentReferenceValue
 
@@ -237,8 +237,8 @@ describe('user interaction happy paths', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
       set({
-        _type: 'reference',
-        _ref: `dataset/myProject.myDataset/two`,
+        _type: 'globalDocumentReference',
+        _ref: `dataset:myProject.myDataset:two`,
         _weak: undefined,
         _key: undefined,
       }),
@@ -266,8 +266,8 @@ describe('user interaction happy paths', () => {
       })
 
     const value = {
-      _type: 'reference',
-      _ref: 'dataset/myProject.myDataset/some-product',
+      _type: 'globalDocumentReference',
+      _ref: 'dataset:myProject.myDataset:some-product',
     }
 
     const {onChange, onPathFocus, result} = await renderGlobalDocumentReferenceInput({
@@ -344,8 +344,8 @@ describe('user interaction happy paths', () => {
             path: [],
             type: 'set',
             value: {
-              _ref: 'dataset/myProject.myDataset/two',
-              _type: 'reference',
+              _ref: 'dataset:myProject.myDataset:two',
+              _type: 'globalDocumentReference',
             },
           },
         ],
@@ -368,7 +368,7 @@ describe('user interaction happy paths', () => {
 
     const value = {
       _type: 'productReference',
-      _ref: 'dataset/myProject.myDataset/some-product',
+      _ref: 'dataset:myProject.myDataset:some-product',
     }
 
     const {onChange, result} = await renderGlobalDocumentReferenceInput({
