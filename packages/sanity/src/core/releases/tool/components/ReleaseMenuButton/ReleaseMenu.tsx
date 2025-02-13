@@ -42,19 +42,19 @@ export const ReleaseMenu = ({
     if (!releaseMenuDisabled) {
       if (release.state !== 'published') {
         if (release.state === 'archived') {
-          checkWithPermissionGuard(unarchive, release._id).then((response) =>
-            setHasUnarchivePermission(response),
+          checkWithPermissionGuard(unarchive, release._id).then((hasPermission) =>
+            setHasUnarchivePermission(hasPermission),
           )
         } else {
-          checkWithPermissionGuard(archive, release._id).then((response) =>
-            setHasArchivePermission(response),
+          checkWithPermissionGuard(archive, release._id).then((hasPermission) =>
+            setHasArchivePermission(hasPermission),
           )
         }
       }
 
       if (release.state === 'archived' || release.state == 'published') {
-        checkWithPermissionGuard(deleteRelease, release._id).then((response) =>
-          setHasDeletePermission(response),
+        checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) =>
+          setHasDeletePermission(hasPermission),
         )
       }
     }
