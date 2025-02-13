@@ -28,10 +28,6 @@ export const ReleaseUnscheduleButton = ({
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'unscheduling'>('idle')
 
-  const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
-  const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
-  const isScheduleButtonDisabled = disabled || isValidatingDocuments || hasDocumentValidationErrors
-
   const handleConfirmSchedule = useCallback(async () => {
     try {
       setStatus('unscheduling')
@@ -76,13 +72,16 @@ export const ReleaseUnscheduleButton = ({
       <Dialog
         id="confirm-unschedule-dialog"
         header={t('unschedule-dialog.confirm-title')}
-        onClose={() => setStatus('idle')}
+        onClose={() => status !== 'unscheduling' && setStatus('idle')}
         footer={{
           confirmButton: {
             text: t('action.unschedule'),
             tone: 'default',
             onClick: handleConfirmSchedule,
             loading: status === 'unscheduling',
+            disabled: status === 'unscheduling',
+          },
+          cancelButton: {
             disabled: status === 'unscheduling',
           },
         }}
@@ -108,7 +107,7 @@ export const ReleaseUnscheduleButton = ({
     <>
       <Button
         icon={CloseCircleIcon}
-        disabled={isScheduleButtonDisabled || status === 'unscheduling'}
+        disabled={disabled || status === 'unscheduling'}
         text={t('action.unschedule')}
         onClick={() => setStatus('confirm')}
         loading={status === 'unscheduling'}
