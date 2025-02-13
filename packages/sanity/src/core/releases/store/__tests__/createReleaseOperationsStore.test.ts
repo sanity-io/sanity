@@ -16,7 +16,11 @@ describe('createReleaseOperationsStore', () => {
     }
   })
 
-  const createStore = () => createReleaseOperationsStore({client: mockClient})
+  const createStore = () =>
+    createReleaseOperationsStore({
+      client: mockClient,
+      onReleaseLimitReached: vi.fn(),
+    })
 
   it('should create a release', async () => {
     const store = createStore()
@@ -218,12 +222,20 @@ describe('createReleaseOperationsStore', () => {
         },
       })
 
-      expect(mockClient.create).toHaveBeenNthCalledWith(1, {
-        _id: `versions.${revertReleaseId}.doc1`,
-      })
-      expect(mockClient.create).toHaveBeenNthCalledWith(2, {
-        _id: `versions.${revertReleaseId}.doc2`,
-      })
+      expect(mockClient.create).toHaveBeenNthCalledWith(
+        1,
+        {
+          _id: `versions.${revertReleaseId}.doc1`,
+        },
+        undefined,
+      )
+      expect(mockClient.create).toHaveBeenNthCalledWith(
+        2,
+        {
+          _id: `versions.${revertReleaseId}.doc2`,
+        },
+        undefined,
+      )
 
       expect(mockClient.request).toHaveBeenCalledWith({
         uri: '/data/actions/test-dataset',
@@ -290,12 +302,20 @@ describe('createReleaseOperationsStore', () => {
 
       expect(result).toBeUndefined()
       expect(mockClient.create).toHaveBeenCalledTimes(2)
-      expect(mockClient.create).toHaveBeenNthCalledWith(1, {
-        _id: `versions.${revertReleaseId}.doc1`,
-      })
-      expect(mockClient.create).toHaveBeenNthCalledWith(2, {
-        _id: `versions.${revertReleaseId}.doc2`,
-      })
+      expect(mockClient.create).toHaveBeenNthCalledWith(
+        1,
+        {
+          _id: `versions.${revertReleaseId}.doc1`,
+        },
+        undefined,
+      )
+      expect(mockClient.create).toHaveBeenNthCalledWith(
+        2,
+        {
+          _id: `versions.${revertReleaseId}.doc2`,
+        },
+        undefined,
+      )
     })
 
     it('should throw an error if creating the release fails', async () => {
@@ -311,11 +331,14 @@ describe('createReleaseOperationsStore', () => {
     const store = createStore()
     mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
     await store.createVersion('release-id', 'doc-id', {newData: 'value'})
-    expect(mockClient.create).toHaveBeenCalledWith({
-      _id: `versions.release-id.doc-id`,
-      data: 'example',
-      newData: 'value',
-    })
+    expect(mockClient.create).toHaveBeenCalledWith(
+      {
+        _id: `versions.release-id.doc-id`,
+        data: 'example',
+        newData: 'value',
+      },
+      undefined,
+    )
   })
 
   it('should discard a version of a document', async () => {

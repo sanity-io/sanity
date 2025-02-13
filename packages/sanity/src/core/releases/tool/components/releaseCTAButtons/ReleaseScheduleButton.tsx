@@ -2,7 +2,7 @@ import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -16,6 +16,7 @@ import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -31,6 +32,10 @@ export const ReleaseScheduleButton = ({
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
   const {schedule} = useReleaseOperations()
+  const {checkWithPermissionGuard} = useReleasePermissions()
+
+  const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
+
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
@@ -48,7 +53,13 @@ export const ReleaseScheduleButton = ({
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
-  const isScheduleButtonDisabled = disabled || isValidatingDocuments
+  const isScheduleButtonDisabled = disabled || isValidatingDocuments || !schedulePermission
+
+  useEffect(() => {
+    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) =>
+      setSchedulePermission(hasPermission),
+    )
+  }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {
     return isBefore(zoneDateToUtc(publishAt || new Date()), new Date())
@@ -224,6 +235,10 @@ export const ReleaseScheduleButton = ({
   }, [release.metadata.intendedPublishAt])
 
   const tooltipText = useMemo(() => {
+    if (!schedulePermission) {
+      return t('schedule-button-tooltip.validation.no-permission')
+    }
+
     if (isValidatingDocuments) {
       return t('schedule-button-tooltip.validation.loading')
     }
@@ -236,7 +251,7 @@ export const ReleaseScheduleButton = ({
       return t('schedule-button-tooltip.already-scheduled')
     }
     return null
-  }, [hasDocumentValidationErrors, isValidatingDocuments, release, t])
+  }, [hasDocumentValidationErrors, isValidatingDocuments, release, schedulePermission, t])
 
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {

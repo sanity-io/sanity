@@ -89,10 +89,6 @@ describe('DocumentHeaderTitle', () => {
       dispatch: vi.fn(),
     })
 
-    mockUseReleasesIds.mockReturnValue({
-      releasesIds: [],
-    })
-
     mockUseArchivedReleases.mockReturnValue({
       data: [],
       loading: false,

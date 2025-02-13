@@ -186,6 +186,11 @@ const releasesLocaleStrings = {
   'permissions.error.discard-version': 'You do not have permission to discard this version',
   /** Tooltip label when the user doesn't have permission for unpublishing a document */
   'permissions.error.unpublish': 'You do not have permission to unpublish this document',
+  /** Text for when a user doesn't have publish or schedule releases */
+  'permission-missing-title': 'Limited access',
+  /** Description for when a user doesn't have publish or schedule releases */
+  'permission-missing-description':
+    'Your role currently limits what you can see in this release. You may not publish nor schedule this release.',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
@@ -195,6 +200,8 @@ const releasesLocaleStrings = {
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
     "The '<strong>{{title}}</strong>' release and its {{releaseDocumentsLength}} documents will be published.",
+  /** Label for the button when the user doesn't have permissions to publish a release */
+  'publish-dialog.validation.no-permission': 'You do not have permission to publish',
   /** Label for when documents are being validated */
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */
@@ -226,6 +233,8 @@ const releasesLocaleStrings = {
   /** Title o unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
+  /** Schedule release button tooltip when user has no permissions to schedule */
+  'schedule-button-tooltip.validation.no-permission': 'You do not have permission to schedule',
   /** Schedule release button tooltip when validation is loading */
   'schedule-button-tooltip.validation.loading': 'Validating documents...',
   /** Schedule release button tooltip when there are validation errors */
