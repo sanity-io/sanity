@@ -99,7 +99,9 @@ export const ReleaseMenu = ({
     return (
       <MenuItem
         tooltipProps={{
-          disabled: !['scheduled', 'scheduling'].includes(release.state) || disabled,
+          disabled: hasArchivePermission
+            ? !['scheduled', 'scheduling'].includes(release.state) || disabled
+            : false,
           content: hasArchivePermission
             ? t('action.archive.tooltip')
             : t('permissions.error.archive'),
