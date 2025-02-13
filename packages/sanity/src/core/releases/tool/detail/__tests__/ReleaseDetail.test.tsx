@@ -116,8 +116,7 @@ describe('ReleaseDetail', () => {
       })
 
       mockUseReleasePermissions.mockReturnValue({
-        canSchedule: async () => true,
-        canPublish: async () => true,
+        checkWithPermissionGuard: async () => true,
       })
 
       await renderTest()
@@ -380,8 +379,7 @@ describe('after releases have loaded', () => {
       }
 
       mockUseReleasePermissions.mockReturnValue({
-        canPublish: async () => false,
-        canSchedule: async () => false,
+        checkWithPermissionGuard: async () => false,
       })
 
       await renderTest()

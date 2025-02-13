@@ -29,7 +29,7 @@ export const ReleasePublishAllButton = ({
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishRelease} = useReleaseOperations()
-  const {canPublish} = useReleasePermissions()
+  const {checkWithPermissionGuard} = useReleasePermissions()
   const {t} = useTranslation(releasesLocaleNamespace)
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
@@ -55,8 +55,16 @@ export const ReleasePublishAllButton = ({
   const useUnstableAction = publishBundleStatus === 'confirm-2'
 
   useEffect(() => {
-    canPublish(release._id, useUnstableAction).then((response) => setPublishPermission(response))
-  }, [canPublish, release._id, release.metadata.intendedPublishAt, useUnstableAction])
+    checkWithPermissionGuard(publishRelease, release._id, false).then((response) =>
+      setPublishPermission(response),
+    )
+  }, [
+    checkWithPermissionGuard,
+    publishRelease,
+    release._id,
+    release.metadata.intendedPublishAt,
+    useUnstableAction,
+  ])
 
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return

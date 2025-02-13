@@ -32,7 +32,7 @@ export const ReleaseScheduleButton = ({
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
   const {schedule} = useReleaseOperations()
-  const {canSchedule} = useReleasePermissions()
+  const {checkWithPermissionGuard} = useReleasePermissions()
 
   const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
 
@@ -56,8 +56,10 @@ export const ReleaseScheduleButton = ({
   const isScheduleButtonDisabled = disabled || isValidatingDocuments || !schedulePermission
 
   useEffect(() => {
-    canSchedule(release._id).then((response) => setSchedulePermission(response))
-  }, [canSchedule, release._id, release.metadata.intendedPublishAt])
+    checkWithPermissionGuard(schedule, release._id, new Date()).then((response) =>
+      setSchedulePermission(response),
+    )
+  }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {
     return isBefore(zoneDateToUtc(publishAt || new Date()), new Date())

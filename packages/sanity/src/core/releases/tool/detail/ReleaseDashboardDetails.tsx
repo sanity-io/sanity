@@ -19,6 +19,7 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {releasesLocaleNamespace} from '../../i18n'
+import {useReleaseOperations} from '../../store'
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -29,7 +30,8 @@ import {ReleaseTypePicker} from './ReleaseTypePicker'
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-  const {canSchedule, canPublish} = useReleasePermissions()
+  const {checkWithPermissionGuard} = useReleasePermissions()
+  const {publishRelease, schedule} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {selectedReleaseId} = usePerspective()
@@ -43,24 +45,25 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   useEffect(() => {
     // only run if the release is active
     if (isActive) {
-      canPublish(release._id).then((response) => {
+      checkWithPermissionGuard(publishRelease, release._id, false).then((response) => {
         setShouldDisplayPermissionWarning(!response)
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
-        canSchedule(release._id).then((response) => {
+        checkWithPermissionGuard(schedule, release._id, new Date()).then((response) => {
           setShouldDisplayPermissionWarning(!response)
         })
       }
     }
   }, [
-    canPublish,
-    canSchedule,
+    checkWithPermissionGuard,
     isActive,
     isAtTimeRelease,
+    publishRelease,
     release._id,
     release.metadata.intendedPublishAt,
+    schedule,
   ])
 
   const handlePinRelease = useCallback(() => {
