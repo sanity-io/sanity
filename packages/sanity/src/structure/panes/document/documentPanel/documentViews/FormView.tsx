@@ -121,7 +121,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       handleInitialValue()
     }
     // React to changes in hasRev only
-  }, [handleInitialValue, hasRev])
+  }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 

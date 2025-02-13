@@ -44,7 +44,7 @@ export function PresentationDocumentProvider(props: {
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )
-  useLayoutEffect(() => registerEffectEvent(options), [registerEffectEvent, options])
+  useLayoutEffect(() => registerEffectEvent(options), [options])
 
   return (
     <PresentationDocumentContext.Provider value={context}>

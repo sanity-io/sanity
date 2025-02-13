@@ -69,7 +69,7 @@ export function FormCreate(props: ObjectInputProps) {
     if (creating && savedTask?.createdByUser) {
       handleCreatingSuccess()
     }
-  }, [creating, handleCreatingSuccess, savedTask?.createdByUser])
+  }, [creating, savedTask?.createdByUser])
 
   const handleCreatingTimeout = useEffectEvent(() => {
     setCreating(false)
@@ -89,7 +89,7 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
-  }, [creating, handleCreatingTimeout])
+  }, [creating])
 
   const handleCreate = useCallback(async () => {
     setCreating(true)
