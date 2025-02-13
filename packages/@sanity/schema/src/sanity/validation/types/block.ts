@@ -29,6 +29,7 @@ const supportedBuiltInObjectTypes = [
   'object',
   'reference',
   'crossDatasetReference',
+  'globalDocumentReference',
 ]
 
 export default function validateBlockType(typeDef: any, visitorContext: any) {
