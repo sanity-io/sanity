@@ -2,7 +2,7 @@ import {omit} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource} from 'sanity'
 
-import {type PaneRouterContextValue, usePaneRouter} from '../../components'
+import {type PaneRouterContextValue} from '../../components'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME, INSPECT_ACTION_PREFIX} from './constants'
@@ -11,12 +11,13 @@ export function useDocumentPaneInspector({
   documentId,
   documentType,
   params,
+  setParams,
 }: {
   params: NonNullable<PaneRouterContextValue['params']>
   documentId: string
   documentType: string
+  setParams: (params: Record<string, string | undefined>) => void
 }) {
-  const {setParams: setPaneParams} = usePaneRouter()
   const {features} = useStructureTool()
   const source = useSource()
   const inspectorsResolver = source.document.inspectors
@@ -67,7 +68,7 @@ export function useDocumentPaneInspector({
         setInspectorName(null)
         inspectParamRef.current = undefined
 
-        setPaneParams({...result.params, inspect: undefined})
+        setParams({...result.params, inspect: undefined})
 
         return
       }
@@ -78,10 +79,10 @@ export function useDocumentPaneInspector({
         setInspectorName(null)
         inspectParamRef.current = undefined
 
-        setPaneParams({...result.params, inspect: undefined})
+        setParams({...result.params, inspect: undefined})
       }
     },
-    [currentInspector, inspectors, params, setPaneParams],
+    [currentInspector, inspectors, params, setParams],
   )
 
   const openInspector = useCallback(
@@ -95,7 +96,7 @@ export function useDocumentPaneInspector({
 
       // if the inspector is already open, only update params
       if (currentInspector?.name === nextInspector.name) {
-        setPaneParams({...params, ...paneParams, inspect: nextInspector.name})
+        setParams({...params, ...paneParams, inspect: nextInspector.name})
         return
       }
 
@@ -114,9 +115,9 @@ export function useDocumentPaneInspector({
       setInspectorName(nextInspector.name)
       inspectParamRef.current = nextInspector.name
 
-      setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
+      setParams({...result.params, ...paneParams, inspect: nextInspector.name})
     },
-    [currentInspector, inspectors, params, setPaneParams],
+    [currentInspector, inspectors, params, setParams],
   )
   const handleHistoryClose = useCallback(() => {
     if (historyInspector) {
@@ -139,12 +140,12 @@ export function useDocumentPaneInspector({
   const toggleLegacyInspect = useCallback(
     (toggle = !inspectOpen) => {
       if (toggle) {
-        setPaneParams({...params, inspect: 'on'})
+        setParams({...params, inspect: 'on'})
       } else {
-        setPaneParams(omit(params, 'inspect'))
+        setParams(omit(params, 'inspect'))
       }
     },
-    [inspectOpen, params, setPaneParams],
+    [inspectOpen, params, setParams],
   )
 
   const handleLegacyInspectClose = useCallback(

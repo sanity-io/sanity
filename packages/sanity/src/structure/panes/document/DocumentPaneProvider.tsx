@@ -128,7 +128,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     handleInspectorAction,
     inspectOpen,
     handleLegacyInspectClose,
-  } = useDocumentPaneInspector({documentId, documentType, params})
+  } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
 
