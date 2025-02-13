@@ -1,14 +1,17 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useMemo} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
+import {useCreateReleaseMetadata} from '../../releases/hooks/useCreateReleaseMetadata'
 import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST} from '../../releases/util/const'
+import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
+import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
+import {DEFAULT_RELEASE, LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
@@ -60,7 +63,18 @@ export function ReleasesList({
 }): React.JSX.Element {
   const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const {loading, data: releases} = useActiveReleases()
+  const {createRelease} = useReleaseOperations()
+  const {checkWithPermissionGuard} = useReleasePermissions()
+  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const createReleaseMetadata = useCreateReleaseMetadata()
+
   const {t} = useTranslation()
+
+  useEffect(() => {
+    checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
+      setHasCreatePermission,
+    )
+  }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
 
   const handleCreateBundleClick = useCallback(
     () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
@@ -156,10 +170,13 @@ export function ReleasesList({
           <MenuDivider />
           <MenuItem
             icon={AddIcon}
-            disabled={mode === 'disabled'}
+            disabled={!hasCreatePermission || mode === 'disabled'}
             onClick={handleCreateBundleClick}
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"
+            tooltipProps={{
+              content: !hasCreatePermission && t('release.action.permission.error'),
+            }}
           />
         </>
       )}

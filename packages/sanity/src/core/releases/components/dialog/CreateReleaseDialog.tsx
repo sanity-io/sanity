@@ -11,8 +11,7 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {DEFAULT_RELEASE_TYPE} from '../../util/const'
-import {createReleaseId} from '../../util/createReleaseId'
+import {DEFAULT_RELEASE} from '../../util/const'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseForm} from './ReleaseForm'
@@ -33,14 +32,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
 
   const [release, setRelease] = useState((): EditableReleaseDocument => {
-    return {
-      _id: createReleaseId(),
-      metadata: {
-        title: '',
-        description: '',
-        releaseType: DEFAULT_RELEASE_TYPE,
-      },
-    } as const
+    return DEFAULT_RELEASE
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   /**

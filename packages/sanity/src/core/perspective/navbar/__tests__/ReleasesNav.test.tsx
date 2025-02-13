@@ -11,8 +11,16 @@ import {
 } from '../../../releases/__fixtures__/release.fixture'
 import {useReleasesUpsellMockReturn} from '../../../releases/contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
+import {
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
+
+vi.mock('../../../releases/store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
+}))
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
@@ -60,6 +68,10 @@ const renderTest = async () => {
 describe('ReleasesNav', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
   })
   it('should have link to releases tool', async () => {
     await renderTest()
