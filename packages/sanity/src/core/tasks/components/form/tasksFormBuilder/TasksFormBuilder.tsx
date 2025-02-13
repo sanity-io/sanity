@@ -7,7 +7,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components'
-import {createPatchChannel, FormBuilder, useCreateForm} from '../../../../form'
+import {createPatchChannel, FormBuilder, useDocumentForm} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useWorkspace} from '../../../../studio'
 import {MentionUserProvider, useMentionUser, useTasks, useTasksNavigation} from '../../../context'
@@ -62,7 +62,7 @@ const TasksFormBuilderInner = ({
     collapsedPaths,
     schemaType,
     value,
-  } = useCreateForm({documentId, documentType: 'tasks.task', initialValue})
+  } = useDocumentForm({documentId, documentType: 'tasks.task', initialValue})
 
   const isLoading = formState === null || !ready
 

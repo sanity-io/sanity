@@ -17,7 +17,7 @@ import {
   isVersionId,
   type PartialContext,
   useCopyPaste,
-  useCreateForm,
+  useDocumentForm,
   usePerspective,
   useSchema,
   useSource,
@@ -210,7 +210,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
     openPath,
-  } = useCreateForm({
+  } = useDocumentForm({
     documentType,
     documentId,
     initialValue: initialValue.value,

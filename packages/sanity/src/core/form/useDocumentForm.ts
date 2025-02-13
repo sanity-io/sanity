@@ -101,12 +101,12 @@ interface CreateFormValue {
 
 /**
  * @internal
- * Hook for creating a form state and combine it with the <FormProvider>.
+ * Hook for creating a form state and combine it with the <FormBuilder>.
  * It will handle the connection state, edit state, validation, and presence.
  *
  * Use this as a base point to create your own form.
  */
-export function useCreateForm(options: CreateFormOptions): CreateFormValue {
+export function useDocumentForm(options: CreateFormOptions): CreateFormValue {
   const {
     documentType,
     getFormDocumentValue,
