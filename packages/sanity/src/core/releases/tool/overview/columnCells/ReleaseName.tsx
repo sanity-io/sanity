@@ -48,7 +48,7 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <Box {...cellProps} marginLeft={3} flex={1} paddingY={1} paddingRight={2} sizing={'border'}>
+    <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing={'border'}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -57,7 +57,7 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
           </Text>
         }
       >
-        <Flex align="center" gap={4}>
+        <Flex align="center" gap={3}>
           <Button
             tooltipProps={{
               disabled: isArchived || release.state === 'published',

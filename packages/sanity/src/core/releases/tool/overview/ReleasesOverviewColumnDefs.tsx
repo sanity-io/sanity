@@ -19,20 +19,21 @@ export const releasesOverviewColumnDefs: (
 ) => Column<TableRelease>[] = (t) => {
   return [
     {
-      id: 'title',
-      sorting: false,
+      id: 'metadata.title',
+      sorting: true,
       width: null,
       style: {minWidth: '50%', maxWidth: '50%'},
-      header: ({headerProps}) => (
+      header: (props) => (
         <Flex
-          {...headerProps}
+          {...props.headerProps}
           flex={1}
-          marginLeft={3}
+          paddingLeft={6}
+          width={3}
           paddingRight={2}
           paddingY={3}
           sizing="border"
         >
-          <Headers.BasicHeader text={t('table-header.title')} />
+          <Headers.SortHeaderButton {...props} text={t('table-header.title')} />
         </Flex>
       ),
       cell: ReleaseNameCell,

@@ -134,7 +134,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
         id={confirmDialog.dialogId}
         data-testid={confirmDialog.dialogId}
         header={t(confirmDialog.dialogHeaderI18nKey, {title: releaseTitle})}
-        onClose={() => setSelectedAction(undefined)}
+        onClose={() => !isPerformingOperation && setSelectedAction(undefined)}
+        padding={false}
         footer={{
           confirmButton: {
             text: t(confirmDialog.dialogConfirmButtonI18nKey),
@@ -143,19 +144,24 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
             loading: isPerformingOperation,
             disabled: isPerformingOperation,
           },
+          cancelButton: {
+            disabled: isPerformingOperation,
+          },
         }}
       >
-        <Text muted size={1}>
-          {
-            <Translate
-              t={t}
-              i18nKey={confirmDialog.dialogDescriptionI18nKey}
-              values={{
-                count: documentsCount,
-              }}
-            />
-          }
-        </Text>
+        {!!documentsCount && (
+          <Text muted size={1}>
+            {
+              <Translate
+                t={t}
+                i18nKey={confirmDialog.dialogDescriptionI18nKey}
+                values={{
+                  count: documentsCount,
+                }}
+              />
+            }
+          </Text>
+        )}
       </Dialog>
     )
   }, [selectedAction, documentsCount, t, releaseTitle, isPerformingOperation, handleAction])

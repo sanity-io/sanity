@@ -53,7 +53,8 @@ export const ReleaseScheduleButton = ({
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
-  const isScheduleButtonDisabled = disabled || isValidatingDocuments || !schedulePermission
+  const isScheduleButtonDisabled =
+    disabled || isValidatingDocuments || !schedulePermission || hasDocumentValidationErrors
 
   useEffect(() => {
     checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) =>
@@ -161,7 +162,7 @@ export const ReleaseScheduleButton = ({
           documentsLength: documents.length,
           count: documents.length,
         })}
-        onClose={() => setStatus('idle')}
+        onClose={() => status !== 'scheduling' && setStatus('idle')}
         footer={{
           confirmButton: {
             text: t('schedule-dialog.confirm-button'),
@@ -169,6 +170,9 @@ export const ReleaseScheduleButton = ({
             onClick: handleConfirmSchedule,
             loading: status === 'scheduling',
             disabled: _isScheduledDateInPast || status === 'scheduling',
+          },
+          cancelButton: {
+            disabled: status === 'scheduling',
           },
         }}
       >
