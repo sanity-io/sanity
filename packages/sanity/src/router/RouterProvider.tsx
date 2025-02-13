@@ -126,10 +126,8 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
         throw new Error('One or more parameters are not sticky')
       }
 
-      // Use helper to merge sticky params
       const searchParams = mergeStickyParams(state._searchParams || [], params)
 
-      // Trigger navigation with updated params
       onNavigate({
         path: resolvePathFromState({
           ...state,
@@ -146,14 +144,11 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
       const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
       const nextParams = Array.isArray(nextState._searchParams) ? nextState._searchParams : []
 
-      // Merge sticky params using the helper function
       const mergedParams = mergeStickyParams(
-        nextParams, // Ensure it's always an array
+        nextParams,
         options.stickyParams ??
-          Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key))), // Preserve sticky params unless overridden
+          Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key))),
       )
-
-      // Construct new state
       const mergedState = {...nextState, _searchParams: mergedParams}
 
       onNavigate({path: resolvePathFromState(mergedState), replace: options.replace})
