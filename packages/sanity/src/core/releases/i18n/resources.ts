@@ -31,7 +31,7 @@ const releasesLocaleStrings = {
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule for publishing',
   /** Action text for publishing all documents in a release (and the release itself) */
-  'action.publish-all-documents': 'Publish all documents',
+  'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
   /** Action text for reverting a release */
