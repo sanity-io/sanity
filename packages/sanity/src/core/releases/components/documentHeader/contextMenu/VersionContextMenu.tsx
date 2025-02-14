@@ -1,6 +1,6 @@
 import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
-import {memo} from 'react'
+import {memo, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -10,6 +10,9 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isPublishedId} from '../../../../util/draftUtils'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {DEFAULT_RELEASE} from '../../../util/const'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
@@ -50,7 +53,15 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     value: release,
   }))
 
+  const {checkWithPermissionGuard} = useReleasePermissions()
+  const {createRelease} = useReleaseOperations()
+  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+
   const releaseId = isVersion ? fromRelease : documentId
+
+  useEffect(() => {
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+  }, [checkWithPermissionGuard, createRelease])
 
   return (
     <>
@@ -71,7 +82,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           icon={CopyIcon}
           popover={{placement: 'right-start'}}
           text={t('release.action.copy-to')}
-          disabled={disabled}
+          disabled={disabled || !hasCreatePermission}
+          tooltipProps={{content: !hasCreatePermission && t('release.action.permission.error')}}
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
