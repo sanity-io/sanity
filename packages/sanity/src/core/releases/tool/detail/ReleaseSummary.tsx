@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
-import {Card, Container} from '@sanity/ui'
+import {Card, Container, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -41,6 +41,8 @@ const isBundleDocumentRow = (
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, scrollContainerRef} = props
+  const toast = useToast()
+
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow | null>(null)
 
@@ -84,8 +86,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [t],
   )
 
-  const closeAddDialog = useCallback((documentToAdd: AddedDocument) => {
+  const closeAddDialog = useCallback((documentToAdd?: AddedDocument) => {
     setAddDocumentDialog(false)
+    if (!documentToAdd) return
+
     setPendingAddedDocument({
       memoKey: documentToAdd._id,
       previewValues: {isLoading: true, values: {}},
@@ -106,9 +110,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       pendingAddedDocument &&
       documents.some(({document}) => document._id === pendingAddedDocument.document._id)
     ) {
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: `${pendingAddedDocument.document.title} added to release`,
+      })
       setPendingAddedDocument(null)
     }
-  }, [pendingAddedDocument, documents])
+  }, [pendingAddedDocument, documents, toast])
 
   const tableData = useMemo(
     () => (pendingAddedDocument ? [...aggregatedData, pendingAddedDocument] : aggregatedData),

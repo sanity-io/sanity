@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback} from 'react'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
@@ -21,7 +21,7 @@ export function AddDocumentSearch({
   releaseDocumentId,
 }: {
   open: boolean
-  onClose: (document: AddedDocument) => void
+  onClose: (document?: AddedDocument) => void
   releaseDocumentId: string
 }): React.JSX.Element {
   const {createVersion} = useReleaseOperations()
@@ -33,34 +33,11 @@ export function AddDocumentSearch({
   const {results} = useBundleDocuments(releaseId)
   const idsInRelease: string[] = results.map((doc) => doc.document._id)
 
-  const [addedId, setAddedId] = useState<AddedDocument | null>(null)
-  const [isReadyToClose, setIsReadyToClose] = useState(false)
-  const [addedDocument, setAddedDocument] = useState<AddedDocument[]>([])
-
-  // Only close search once the document has been received through subscription
-  // to the release documents
-  useEffect(() => {
-    if (isReadyToClose && addedId && idsInRelease.includes(getVersionId(addedId._id, releaseId))) {
-      setAddedId(null)
-      setIsReadyToClose(false)
-
-      // onClose(addedDocument)
-    }
-  }, [addedId, idsInRelease, onClose, releaseId, isReadyToClose, addedDocument])
-
   const addDocument = useCallback(
     async (item: AddedDocument) => {
       try {
-        setAddedId(item)
-        setAddedDocument(item)
         onClose({...item, _id: getVersionId(item._id, releaseId)})
         await createVersion(releaseId, item._id)
-
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: `${item.title} added to release`,
-        })
 
         const origin = getDocumentVariantType(item._id)
 
@@ -74,15 +51,11 @@ export function AddDocumentSearch({
           title: error.message,
         })
       }
-
-      // onClose(addedDocument)
     },
     [createVersion, onClose, releaseId, telemetry, toast],
   )
 
-  const handleClose = useCallback(() => {
-    console.log('close called')
-  }, [])
+  const handleClose = useCallback(() => onClose(), [onClose])
 
   return (
     <LayerProvider zOffset={1}>
