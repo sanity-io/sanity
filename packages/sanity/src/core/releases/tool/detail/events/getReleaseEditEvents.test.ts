@@ -137,26 +137,18 @@ describe('getReleaseEditEvents()', () => {
   })
   it('should not get the events if release is undefined', () => {
     testScheduler.run(({expectObservable, hot}) => {
-      const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
+      const observeDocument$ = hot('a', {a: undefined})
 
-      const editEvents$ = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: 'not-existing-release',
-        releasesState$,
-      })
+      const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
 
       expectObservable(editEvents$).toBe('(a)', {a: INITIAL_VALUE})
     })
   })
   it('should get and build the release edit events', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
-      const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
+      const observeDocument$ = hot('a', {a: MOCKED_RELEASE})
 
-      const editEvents$ = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: MOCKED_RELEASE._id,
-        releasesState$,
-      })
+      const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
       expectObservable(editEvents$).toBe('a-b', {
@@ -172,13 +164,9 @@ describe('getReleaseEditEvents()', () => {
   })
   it('should expand the release edit events transactions if received max', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
-      const releasesState$ = hot('a', {a: MOCKED_RELEASES_STATE})
+      const observeDocument$ = hot('a', {a: MOCKED_RELEASE})
 
-      const editEvents$ = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: MOCKED_RELEASE._id,
-        releasesState$,
-      })
+      const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
       const mockFirstResponse$ = cold('-a|', {
         a: Array.from({length: 100}).map((_, index) => {
           return {
@@ -227,15 +215,11 @@ describe('getReleaseEditEvents()', () => {
       // Simulate the release states changing over time, but the _rev is the same
       // 'a' at frame 0: initial state with _rev=rev1
       // 'b' at frame 5: updated state with _rev=rev2
-      const releasesState$ = hot('a---b', {
-        a: MOCKED_RELEASES_STATE,
-        b: MOCKED_RELEASES_STATE,
+      const observeDocument$ = hot('a---b', {
+        a: MOCKED_RELEASE,
+        b: MOCKED_RELEASE,
       })
-      const editEvents$ = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: MOCKED_RELEASE._id,
-        releasesState$: releasesState$,
-      })
+      const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       mockGetTransactionsLogs.mockReturnValueOnce(mockResponse$)
       // Even though the state changes, the editEvents$ should not emit again
@@ -252,24 +236,15 @@ describe('getReleaseEditEvents()', () => {
   })
   it('should refetch the edit events if release._rev changes', () => {
     testScheduler.run(({expectObservable, cold, hot}) => {
-      // Define the initial and updated release state
-      const updatedReleaseState = {
-        ...MOCKED_RELEASES_STATE,
-        releases: new Map([[MOCKED_RELEASE._id, {...MOCKED_RELEASE, _rev: 'changed-rev'}]]),
-      }
       // Simulate the release states changing over time
       // 'a' at frame 0: initial state with _rev=rev1
       // 'b' at frame 5: updated state with _rev=rev2
-      const releasesState$ = hot('a---b', {
-        a: MOCKED_RELEASES_STATE,
-        b: updatedReleaseState,
+      const observeDocument$ = hot('a---b', {
+        a: MOCKED_RELEASE,
+        b: {...MOCKED_RELEASE, _rev: 'changed-rev'},
       })
 
-      const editEvents$ = getReleaseEditEvents({
-        client: mockClient,
-        releaseId: MOCKED_RELEASE._id,
-        releasesState$: releasesState$,
-      })
+      const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
 
       const mockResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})
       const newTransaction = {

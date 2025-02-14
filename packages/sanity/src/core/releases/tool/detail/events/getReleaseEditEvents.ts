@@ -18,7 +18,7 @@ import {
 } from 'rxjs'
 
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {type ReleasesReducerState} from '../../../store/reducer'
+import {type ReleaseDocument} from '../../../store/types'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 import {type CreateReleaseEvent, type EditReleaseEvent} from './types'
 
@@ -120,23 +120,20 @@ export const INITIAL_VALUE: EditEventsObservableValue = {
 
 interface getReleaseActivityEventsOpts {
   client: SanityClient
-  releaseId: string
-  releasesState$: Observable<ReleasesReducerState>
+  observeDocument$: Observable<ReleaseDocument | undefined>
 }
+
 export function getReleaseEditEvents({
   client,
-  releaseId,
-  releasesState$,
+  observeDocument$,
 }: getReleaseActivityEventsOpts): Observable<EditEventsObservableValue> {
-  return releasesState$.pipe(
-    map((releasesState) => releasesState.releases.get(releaseId)),
-    // Don't emit if the release is not found
+  return observeDocument$.pipe(
     filter(Boolean),
     distinctUntilChanged((prev, next) => prev._rev === next._rev),
     switchMap((release) => {
       return getReleaseTransactions({
         client,
-        documentId: releaseId,
+        documentId: release._id,
         toTransaction: release._rev,
       }).pipe(
         map((transactions) => {
