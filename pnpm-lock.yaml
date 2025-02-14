@@ -127,7 +127,7 @@ importers:
         version: 9.1.0(eslint@8.57.1)
       eslint-config-sanity:
         specifier: ^7.1.2
-        version: 7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-f83903bf-20250212(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1)
+        version: 7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1)
       eslint-config-turbo:
         specifier: ^2.1.2
         version: 2.4.1(eslint@8.57.1)(turbo@2.4.1)
@@ -151,7 +151,7 @@ importers:
         version: 19.0.0-beta-30d8a17-20250209(eslint@8.57.1)
       eslint-plugin-react-hooks:
         specifier: experimental
-        version: 0.0.0-experimental-f83903bf-20250212(eslint@8.57.1)
+        version: 0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1)
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@8.57.1)
@@ -423,8 +423,8 @@ importers:
         specifier: ^1.1.7
         version: 1.1.7(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.33.3
-        version: 1.33.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
+        specifier: ^1.33.4
+        version: 1.33.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
@@ -1351,8 +1351,8 @@ importers:
         specifier: ^1.1.7
         version: 1.1.7(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/editor':
-        specifier: ^1.33.3
-        version: 1.33.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^1.33.4
+        version: 1.33.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4075,8 +4075,8 @@ packages:
       '@sanity/types': ^3.75.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.33.3':
-    resolution: {integrity: sha512-IdqF3uAGFCPTPkvjXK+lDmHb/o8QTcd2Hnbma3J2e/w6hFcTU8sppX/FPPmybZv9wvRGq6XW5iyYiklwxR0cEg==}
+  '@portabletext/editor@1.33.4':
+    resolution: {integrity: sha512-Schx1TMzw4x1TEXR601nNTr+XLEQ7mbOmArgmmV5PWDdfLMRmjJmWXxB2lLRsUpeP0VgTUCcLm2qR7vXZV3Odw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.75.0
@@ -6907,8 +6907,8 @@ packages:
     peerDependencies:
       eslint: '>=7'
 
-  eslint-plugin-react-hooks@0.0.0-experimental-f83903bf-20250212:
-    resolution: {integrity: sha512-Gocp51zTs74zTaeqrqD+DZkM88+JoQNoMZ4+Q/vfnTH9vpuaTpU7gn4lwcIoden5Kw28khGiNRgGptRD7uIeMg==}
+  eslint-plugin-react-hooks@0.0.0-experimental-32b0cad8-20250213:
+    resolution: {integrity: sha512-sfDUC/x5EPew1c5wBf6h/jdbv3p3cdytpXObrNggKepnuaX42cNLjQ04yC3m6oG8fU16sjMbA7XseV0M7dU0+w==}
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
@@ -14291,7 +14291,7 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.33.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
+  '@portabletext/editor@1.33.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.7(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/patches': 1.1.3
@@ -14316,7 +14316,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.33.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
+  '@portabletext/editor@1.33.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
     dependencies:
       '@portabletext/block-tools': 1.1.7(@sanity/types@packages+@sanity+types)(@types/react@19.0.8)
       '@portabletext/patches': 1.1.3
@@ -14710,7 +14710,7 @@ snapshots:
       confusing-browser-globals: 1.0.11
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
-      eslint-plugin-react-hooks: 0.0.0-experimental-f83903bf-20250212(eslint@8.57.1)
+      eslint-plugin-react-hooks: 0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -17912,7 +17912,7 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
-  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-f83903bf-20250212(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1):
+  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
       eslint-plugin-simple-import-sort: 12.1.1(eslint@8.57.1)
@@ -17921,7 +17921,7 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1)(typescript@5.7.3)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
-      eslint-plugin-react-hooks: 0.0.0-experimental-f83903bf-20250212(eslint@8.57.1)
+      eslint-plugin-react-hooks: 0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1)
 
   eslint-config-turbo@2.4.1(eslint@8.57.1)(turbo@2.4.1):
     dependencies:
@@ -18062,7 +18062,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-react-hooks@0.0.0-experimental-f83903bf-20250212(eslint@8.57.1):
+  eslint-plugin-react-hooks@0.0.0-experimental-32b0cad8-20250213(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
 
