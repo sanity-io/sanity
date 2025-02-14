@@ -272,8 +272,11 @@ export async function getOrCreateCoreApplication({
   context,
   spinner,
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
-  const {output, prompt, cliConfig} = context
-  const organizationId = cliConfig?.api?.organizationId
+  const {prompt, cliConfig} = context
+  const organizationId =
+    cliConfig &&
+    '__experimental_coreAppConfiguration' in cliConfig &&
+    cliConfig.__experimental_coreAppConfiguration?.organizationId
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
@@ -283,7 +286,7 @@ export async function getOrCreateCoreApplication({
     prompt,
     message: 'Select an existing deployed application',
     createNewLabel: 'Create new deployed application',
-    organizationId,
+    organizationId: organizationId || undefined,
   })
 
   if (selectedApp) {
@@ -321,7 +324,7 @@ export async function getOrCreateCoreApplication({
           title,
           type: 'coreApp',
         },
-        organizationId,
+        organizationId || undefined,
       )
       resolve(response)
       return true
@@ -410,11 +413,17 @@ async function getOrCreateCoreAppFromConfig({
   spinner,
   appId,
 }: CoreAppConfigOptions): Promise<UserApplication> {
-  const {output} = context
-  const organizationId = context.cliConfig?.api?.organizationId
-
+  const {output, cliConfig} = context
+  const organizationId =
+    cliConfig &&
+    '__experimental_coreAppConfiguration' in cliConfig &&
+    cliConfig.__experimental_coreAppConfiguration?.organizationId
   if (appId) {
-    const existingUserApplication = await getUserApplication({client, appId, organizationId})
+    const existingUserApplication = await getUserApplication({
+      client,
+      appId,
+      organizationId: organizationId || undefined,
+    })
     spinner.succeed()
 
     if (existingUserApplication) {

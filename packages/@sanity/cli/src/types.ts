@@ -184,7 +184,6 @@ export type CliStubbedYarn = (args: string[], options?: CliYarnOptions) => Promi
 export interface CliApiConfig {
   projectId?: string
   dataset?: string
-  organizationId?: string
 }
 
 export interface SanityJson {

@@ -403,7 +403,8 @@ describe('getOrCreateCoreApplication', () => {
     output: mockOutput,
     prompt: mockPrompt,
     cliConfig: {
-      api: {
+      // eslint-disable-next-line camelcase
+      __experimental_coreAppConfiguration: {
         organizationId: 'test-org',
       },
     },

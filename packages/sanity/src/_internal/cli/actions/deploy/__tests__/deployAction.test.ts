@@ -36,6 +36,7 @@ describe('deployStudioAction', () => {
     updatedAt: new Date().toISOString(),
     urlType: 'internal',
     projectId: 'example',
+    organizationId: null,
     title: null,
     type: 'studio',
   }
@@ -313,17 +314,16 @@ describe('deployStudioAction', () => {
       projectId: null,
       title: null,
       type: 'coreApp',
+      organizationId: 'org-id',
     }
 
     mockContext = {
       ...mockContext,
       cliConfig: {
-        api: {
-          organizationId: 'org-id',
-        },
         // eslint-disable-next-line camelcase
         __experimental_coreAppConfiguration: {
           appId: 'core-app-id',
+          organizationId: 'org-id',
         },
       } as CliConfig,
     }

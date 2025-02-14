@@ -9,7 +9,6 @@ import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
-  --auto-updates / --no-auto-updates Enable/disable auto updates of studio versions
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the application prior to deploy, instead deploying the version currently in \`dist/\`
   -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
