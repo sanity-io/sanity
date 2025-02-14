@@ -115,4 +115,35 @@ describe('ReleasesList', () => {
       expect(screen.queryByTestId('create-new-release-button')).toBeNull()
     })
   })
+
+  describe('when releases are enabled without permissions', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      })
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => false,
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedReleaseId={undefined}
+            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+    })
+
+    it('calls doesnt open the create dialog user has no permissions', async () => {
+      await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
+    })
+  })
 })
