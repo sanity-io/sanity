@@ -40,6 +40,10 @@ import {
   useArchivedReleasesMockReturn,
 } from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
 import {
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
+import {
   mockUseReleasesMetadata,
   useReleasesMetadataMockReturn,
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
@@ -88,6 +92,10 @@ vi.mock('../../detail/useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
+vi.mock('../../../store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
@@ -132,6 +140,10 @@ const TestComponent = () => {
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
+
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
   })
 
   setupVirtualListEnv()

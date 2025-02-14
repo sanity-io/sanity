@@ -232,6 +232,7 @@ export const VersionChip = memo(function VersionChip(props: {
             disabled={contextMenuDisabled}
             onCreateVersion={handleAddVersion}
             locked={locked}
+            type={documentType}
           />
         }
         fallbackPlacements={[]}

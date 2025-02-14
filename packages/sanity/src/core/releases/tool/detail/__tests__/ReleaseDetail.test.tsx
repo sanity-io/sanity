@@ -153,6 +153,9 @@ describe('ReleaseDetail', () => {
         ...useActiveReleasesMockReturn,
         data: [activeASAPRelease],
       })
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => true,
+      })
 
       mockUseRouterReturn.state = {
         releaseId: getReleaseIdFromReleaseDocumentId(activeASAPRelease._id),
@@ -176,6 +179,10 @@ describe('after releases have loaded', () => {
   describe('with unpublished release', () => {
     beforeEach(async () => {
       vi.clearAllMocks()
+
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => true,
+      })
     })
 
     const loadedReleaseAndDocumentsTests = () => {
@@ -198,6 +205,10 @@ describe('after releases have loaded', () => {
             },
           ],
         })
+        mockUseReleasePermissions.mockReturnValue({
+          checkWithPermissionGuard: async () => true,
+        })
+
         await renderTest()
       })
 
@@ -216,6 +227,9 @@ describe('after releases have loaded', () => {
         mockUseBundleDocuments.mockReturnValue({
           loading: false,
           results: [documentsInRelease],
+        })
+        mockUseReleasePermissions.mockReturnValue({
+          checkWithPermissionGuard: async () => true,
         })
         await renderTest()
       })
@@ -278,6 +292,9 @@ describe('after releases have loaded', () => {
               },
             },
           ],
+        })
+        mockUseReleasePermissions.mockReturnValue({
+          checkWithPermissionGuard: async () => true,
         })
         await renderTest()
       })
@@ -345,6 +362,10 @@ describe('after releases have loaded', () => {
       mockUseRouterReturn.state = {
         releaseId: getReleaseIdFromReleaseDocumentId(publishedASAPRelease._id),
       }
+
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => true,
+      })
 
       await renderTest()
     })

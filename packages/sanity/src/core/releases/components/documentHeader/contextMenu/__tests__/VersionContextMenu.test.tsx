@@ -1,7 +1,12 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {type ReleaseDocument} from '../../../../store/types'
 import {VersionContextMenu} from '../VersionContextMenu'
 
@@ -11,6 +16,14 @@ vi.mock('sanity/router', async (importOriginal) => ({
   route: {
     create: vi.fn(),
   },
+}))
+
+vi.mock('../../../../store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
+}))
+
+vi.mock('../../../../../store/_legacy/grants/documentPairPermissions', () => ({
+  useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 
 describe('VersionContextMenu', () => {
@@ -55,15 +68,27 @@ describe('VersionContextMenu', () => {
     onCreateRelease: vi.fn(),
     onCreateVersion: vi.fn(),
     disabled: false,
+    type: 'document',
   }
 
   it('renders the menu items correctly', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     expect(screen.getByText('Copy version to')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Copy version to'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+    })
+
+    await act(() => {
+      fireEvent.click(screen.getByText('Copy version to'))
+    })
     await waitFor(() => {
       expect(screen.getByText('New Release')).toBeInTheDocument()
       expect(screen.getByText('Release 1')).toBeInTheDocument()
@@ -72,11 +97,24 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateRelease when "New release" is clicked', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    fireEvent.click(screen.getByText('Copy version to'))
+    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+    })
+
+    await act(() => {
+      fireEvent.click(screen.getByText('Copy version to'))
+    })
+
     await waitFor(() => {
       fireEvent.click(screen.getByText('New Release'))
     })
@@ -84,6 +122,10 @@ describe('VersionContextMenu', () => {
   })
 
   it('hides discard version on published chip', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
     const publishedProps = {
       ...defaultProps,
@@ -97,22 +139,43 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onDiscard when "Discard version" is clicked', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     await waitFor(() => {
+      expect(screen.getByText('Discard version')).not.toBeDisabled()
+    })
+
+    await act(() => {
       fireEvent.click(screen.getByText('Discard version'))
     })
     expect(defaultProps.onDiscard).toHaveBeenCalled()
   })
 
   it('calls onCreateRelease when a "new release" is clicked', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    fireEvent.click(screen.getByText('Copy version to'))
+    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+    })
+
+    await act(() => {
+      fireEvent.click(screen.getByText('Copy version to'))
+    })
+
     await waitFor(() => {
       fireEvent.click(screen.getByText('New Release'))
     })
@@ -120,11 +183,24 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateVersion when a release is clicked and sets the perspective to the release', async () => {
+    mockUseReleasePermissions.mockReturnValue({
+      checkWithPermissionGuard: async () => true,
+    })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    fireEvent.click(screen.getByText('Copy version to'))
+    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+    })
+
+    await act(() => {
+      fireEvent.click(screen.getByText('Copy version to'))
+    })
+
     await waitFor(() => {
       fireEvent.click(screen.getByText('Release 2'))
     })
