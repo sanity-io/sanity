@@ -93,7 +93,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           popover={{placement: 'right-start'}}
           text={t('release.action.copy-to')}
           disabled={disabled || !hasCreatePermission}
-          tooltipProps={{content: !hasCreatePermission && t('release.action.permission.error')}}
+          tooltipProps={{
+            disabled: !hasCreatePermission,
+            content: t('release.action.permission.error'),
+          }}
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
@@ -105,7 +108,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                   onClick={() => onCreateVersion(option.value._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                   disabled={disabled || isReleaseScheduled}
-                  tooltipProps={{content: isReleaseScheduled && t('release.tooltip.locked')}}
+                  tooltipProps={{
+                    disabled: isReleaseScheduled,
+                    content: t('release.tooltip.locked'),
+                  }}
                 />
               )
             })}
