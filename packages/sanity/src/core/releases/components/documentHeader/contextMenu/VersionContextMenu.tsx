@@ -1,15 +1,19 @@
 import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
-import {memo} from 'react'
+import {memo, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {isPublishedId} from '../../../../util/draftUtils'
+import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
+import {getPublishedId, isDraftId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
+import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {DEFAULT_RELEASE} from '../../../util/const'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
@@ -30,6 +34,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
+  type: string
 }) {
   const {
     documentId,
@@ -42,6 +47,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     onCreateVersion,
     disabled,
     locked,
+    type,
   } = props
   const {t} = useTranslation()
   const {mode} = useReleasesUpsell()
@@ -50,7 +56,22 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     value: release,
   }))
 
+  const {checkWithPermissionGuard} = useReleasePermissions()
+  const {createRelease} = useReleaseOperations()
+  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+
   const releaseId = isVersion ? fromRelease : documentId
+  const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
+    id: getPublishedId(documentId),
+    type,
+    version: releaseId,
+    permission: isDraftId(documentId) ? 'discardDraft' : 'discardVersion',
+  })
+  const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
+
+  useEffect(() => {
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+  }, [checkWithPermissionGuard, createRelease])
 
   return (
     <>
@@ -71,7 +92,11 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           icon={CopyIcon}
           popover={{placement: 'right-start'}}
           text={t('release.action.copy-to')}
-          disabled={disabled}
+          disabled={disabled || !hasCreatePermission}
+          tooltipProps={{
+            disabled: !hasCreatePermission,
+            content: t('release.action.permission.error'),
+          }}
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((option) => {
@@ -83,7 +108,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                   onClick={() => onCreateVersion(option.value._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                   disabled={disabled || isReleaseScheduled}
-                  tooltipProps={{content: isReleaseScheduled && t('release.tooltip.locked')}}
+                  tooltipProps={{
+                    disabled: isReleaseScheduled,
+                    content: t('release.tooltip.locked'),
+                  }}
                 />
               )
             })}
@@ -103,7 +131,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               icon={TrashIcon}
               onClick={onDiscard}
               text={t('release.action.discard-version')}
-              disabled={disabled || locked}
+              disabled={disabled || locked || !hasDiscardPermission}
+              tooltipProps={{
+                content: !hasDiscardPermission && t('release.action.permission.error'),
+              }}
             />
           </>
         )}

@@ -18,6 +18,7 @@ import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useStat
 import {type SearchParam, useRouter} from 'sanity/router'
 
 import {Button as StudioButton, Tooltip} from '../../../../ui-components'
+import {Button as UIButton} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -29,7 +30,10 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
+import {DEFAULT_RELEASE} from '../../util/const'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
@@ -80,6 +84,10 @@ export function ReleasesOverview() {
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
+  const {createRelease} = useReleaseOperations()
+  const {checkWithPermissionGuard} = useReleasePermissions()
+  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+
   const mediaIndex = useMediaIndex()
 
   const getRowProps = useCallback(
@@ -111,6 +119,10 @@ export function ReleasesOverview() {
       })),
     ]
   }, [hasReleases, releasesMetadata, releases])
+
+  useEffect(() => {
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+  }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
@@ -225,14 +237,18 @@ export function ReleasesOverview() {
 
   const createReleaseButton = useMemo(
     () => (
-      <Button
+      <UIButton
         icon={AddIcon}
-        disabled={isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
+        paddingY={3}
+        tooltipProps={{
+          content: !hasCreatePermission && tCore('release.action.permission.error'),
+        }}
       />
     ),
-    [handleOnClickCreateRelease, isCreateReleaseDialogOpen, tCore, mode],
+    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
   )
 
   const handleOnCreateRelease = useCallback(

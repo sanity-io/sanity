@@ -1183,6 +1183,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     '<strong>{{title}}</strong> version was successfully discarded',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New Release',
+  /** Tooltip message for not having permissions for creating new releases */
+  'release.action.permission.error': 'You do not have permission to perform this action',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */

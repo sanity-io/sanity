@@ -13,10 +13,18 @@ import {
   mockUseActiveReleases,
   useActiveReleasesMockReturn,
 } from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
+import {
+  mockUseReleasePermissions,
+  useReleasePermissionsMockReturn,
+} from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesList} from '../ReleasesList'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
+}))
+
+vi.mock('../../../releases/store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
 vi.mock('../../../releases/store/useActiveReleases', () => ({
@@ -31,6 +39,9 @@ describe('ReleasesList', () => {
       mockUseActiveReleases.mockReturnValue({
         ...useActiveReleasesMockReturn,
         data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      })
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => true,
       })
       const wrapper = await createTestProvider()
       render(
@@ -55,7 +66,11 @@ describe('ReleasesList', () => {
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
     })
 
-    it('calls setCreateBundleDialogOpen when create new release button is clicked', () => {
+    it('calls setCreateBundleDialogOpen when create new release button is clicked', async () => {
+      await waitFor(() =>
+        expect(screen.getByTestId('create-new-release-button')).not.toBeDisabled(),
+      )
+
       fireEvent.click(screen.getByTestId('create-new-release-button'))
       expect(setCreateBundleDialogOpen).toHaveBeenCalledWith(true)
     })
@@ -98,6 +113,37 @@ describe('ReleasesList', () => {
 
     it('should hide the create new release', async () => {
       expect(screen.queryByTestId('create-new-release-button')).toBeNull()
+    })
+  })
+
+  describe('when releases are enabled without permissions', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      })
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: async () => false,
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedReleaseId={undefined}
+            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+    })
+
+    it('calls doesnt open the create dialog user has no permissions', async () => {
+      await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
     })
   })
 })
