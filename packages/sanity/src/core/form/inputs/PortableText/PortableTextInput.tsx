@@ -1,7 +1,6 @@
 import {
   type EditorChange,
   type EditorEmittedEvent,
-  EditorEventListener,
   EditorProvider,
   type EditorSelection,
   type InvalidValue,
@@ -14,7 +13,7 @@ import {
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
-import {MarkdownPlugin} from '@portabletext/editor/plugins'
+import {EventListenerPlugin, MarkdownPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
@@ -513,7 +512,7 @@ function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
     [props],
   )
 
-  return <EditorEventListener on={handleEditorEvent} />
+  return <EventListenerPlugin on={handleEditorEvent} />
 }
 
 /**
