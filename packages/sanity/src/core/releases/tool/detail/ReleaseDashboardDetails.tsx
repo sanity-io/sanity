@@ -5,19 +5,10 @@ import {
   PinIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {
-  Box,
-  // Custom button with full radius used here
-  // eslint-disable-next-line no-restricted-imports
-  Button,
-  Card,
-  Container,
-  Flex,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {Details} from '../../../form/components/Details'
@@ -30,7 +21,6 @@ import {useReleaseOperations} from '../../store'
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {isNotArchivedRelease, ReleaseTypePicker} from './ReleaseTypePicker'
 
@@ -93,14 +83,16 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
           {isReleaseOpen && (
             <Button
               icon={isSelected ? PinFilledIcon : PinIcon}
+              tooltipProps={{
+                placement: 'top',
+                content: isSelected
+                  ? tRelease('dashboard.details.unpin-release')
+                  : tRelease('dashboard.details.pin-release'),
+              }}
               mode="bleed"
               onClick={handlePinRelease}
-              padding={2}
               radius="full"
               selected={isSelected}
-              space={2}
-              text={tRelease('dashboard.details.pin-release')}
-              tone={getReleaseTone(release)}
             />
           )}
           {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
