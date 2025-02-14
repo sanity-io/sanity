@@ -175,7 +175,9 @@ export const getDocumentTableColumnDefs: (
       </Flex>
     ),
     cell: ({cellProps, datum}) => {
-      const validationErrorCount = datum.validation.validation.length
+      const validationErrorCount = datum.validation.validation.filter(
+        (validation) => validation.level === 'error',
+      ).length
 
       return (
         <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
