@@ -61,7 +61,9 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
           <Button
             tooltipProps={{
               disabled: isArchived || release.state === 'published',
-              content: t('dashboard.details.pin-release'),
+              content: isReleasePinned
+                ? t('dashboard.details.unpin-release')
+                : t('dashboard.details.pin-release'),
             }}
             disabled={isArchived || release.state === 'published'}
             icon={pinButtonIcon}
