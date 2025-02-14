@@ -11,7 +11,7 @@ import {shareReplayLatest} from './utils/shareReplayLatest'
 export function createGlobalListener(client: SanityClient) {
   return client
     .listen(
-      '*[]',
+      '*',
       {},
       {
         events: ['welcome', 'mutation', 'reconnect'],
