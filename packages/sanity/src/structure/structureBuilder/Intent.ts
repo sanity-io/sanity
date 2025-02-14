@@ -61,7 +61,7 @@ export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent
 
 /**
  * Intent parameters
- * See {@link router.BaseIntentParams} and {@link router.IntentJsonParams}
+ * See {@link structure.BaseIntentParams} and {@link structure.IntentJsonParams}
  *
  * @public
  */
