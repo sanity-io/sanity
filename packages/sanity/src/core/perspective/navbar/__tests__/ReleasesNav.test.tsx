@@ -198,6 +198,12 @@ describe('ReleasesNav', () => {
 
         expect(screen.getByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
       })
+
+      it('disables button when no permissions are met', async () => {
+        mockUseReleasePermissions.mockReturnValue({
+          checkWithPermissionGuard: async () => true,
+        })
+      })
     })
 
     describe('release layering', () => {
