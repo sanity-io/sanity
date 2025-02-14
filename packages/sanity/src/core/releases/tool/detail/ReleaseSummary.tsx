@@ -1,12 +1,16 @@
 import {type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {getDocumentVariantType, getReleaseIdFromReleaseDocumentId, getVersionId} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {DocumentActions} from './documentTable/DocumentActions'
@@ -42,11 +46,15 @@ const isBundleDocumentRow = (
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, release, scrollContainerRef} = props
   const toast = useToast()
+  const {createVersion} = useReleaseOperations()
+  const telemetry = useTelemetry()
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow | null>(null)
 
   const {t} = useTranslation(releasesLocaleNamespace)
+
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
   const aggregatedData = useMemo(
     () =>
@@ -86,29 +94,57 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [t],
   )
 
-  const closeAddDialog = useCallback((documentToAdd?: AddedDocument) => {
-    setAddDocumentDialog(false)
-    if (!documentToAdd) return
+  const closeAddDialog = useCallback(
+    async (documentToAdd?: AddedDocument) => {
+      setAddDocumentDialog(false)
+      if (!documentToAdd) return
 
-    setPendingAddedDocument({
-      memoKey: documentToAdd._id,
-      previewValues: {isLoading: true, values: {}},
-      validation: {
-        isValidating: false,
-        validation: [],
-        hasError: false,
-      },
-      history: undefined,
-      document: {...(documentToAdd as SanityDocument), publishedDocumentExists: false},
-      isPending: true,
-    })
-  }, [])
+      const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
 
-  // Remove pending added document once it has been received by bundle store
+      setPendingAddedDocument({
+        memoKey: versionDocumentId,
+        previewValues: {isLoading: true, values: {}},
+        validation: {
+          isValidating: false,
+          validation: [],
+          hasError: false,
+        },
+        history: undefined,
+        document: {
+          ...(documentToAdd as SanityDocument),
+          _id: `${versionDocumentId}-pending`,
+          publishedDocumentExists: false,
+        },
+        isPending: true,
+      })
+
+      try {
+        await createVersion(releaseId, documentToAdd._id)
+
+        const origin = getDocumentVariantType(documentToAdd._id)
+
+        telemetry.log(AddedVersion, {
+          documentOrigin: origin,
+        })
+      } catch (error) {
+        setPendingAddedDocument(null)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: error.message,
+        })
+      }
+    },
+    [createVersion, releaseId, telemetry, toast],
+  )
+
   useEffect(() => {
+    // once pending added document has been received by bundle store
     if (
       pendingAddedDocument &&
-      documents.some(({document}) => document._id === pendingAddedDocument.document._id)
+      documents.some(
+        ({document}) => `${document._id}-pending` === `${pendingAddedDocument.document._id}`,
+      )
     ) {
       toast.push({
         closable: true,
@@ -155,7 +191,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       <AddDocumentSearch
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
-        releaseDocumentId={release._id}
+        releaseId={releaseId}
       />
     </Card>
   )

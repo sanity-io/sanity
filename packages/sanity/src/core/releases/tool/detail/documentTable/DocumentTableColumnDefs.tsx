@@ -8,6 +8,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
+import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {type ReleaseState} from '../../../store'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
@@ -138,14 +139,16 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {
+        {datum.isPending ? (
+          <SanityDefaultPreview isPlaceholder />
+        ) : (
           <MemoReleaseDocumentPreview
             item={datum}
             releaseId={releaseId}
             releaseState={releaseState}
             documentRevision={datum.document._rev}
           />
-        }
+        )}
       </Box>
     ),
   },
