@@ -103,6 +103,8 @@ const releasesLocaleStrings = {
 
   /** Text for the releases detail screen in the pin release button. */
   'dashboard.details.pin-release': 'Pin release',
+  /** Text for the releases detail screen in the unpin release button. */
+  'dashboard.details.unpin-release': 'Unpin release',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
