@@ -1,6 +1,7 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
   mockUseReleasePermissions,
@@ -19,6 +20,10 @@ vi.mock('sanity/router', async (importOriginal) => ({
 
 vi.mock('../../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
+}))
+
+vi.mock('../../../../../store/_legacy/grants/documentPairPermissions', () => ({
+  useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 
 describe('VersionContextMenu', () => {
@@ -63,6 +68,7 @@ describe('VersionContextMenu', () => {
     onCreateRelease: vi.fn(),
     onCreateVersion: vi.fn(),
     disabled: false,
+    type: 'document',
   }
 
   it('renders the menu items correctly', async () => {
@@ -94,6 +100,7 @@ describe('VersionContextMenu', () => {
     mockUseReleasePermissions.mockReturnValue({
       checkWithPermissionGuard: async () => true,
     })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
@@ -118,6 +125,7 @@ describe('VersionContextMenu', () => {
     mockUseReleasePermissions.mockReturnValue({
       checkWithPermissionGuard: async () => true,
     })
+
     const wrapper = await createTestProvider()
     const publishedProps = {
       ...defaultProps,
@@ -134,11 +142,16 @@ describe('VersionContextMenu', () => {
     mockUseReleasePermissions.mockReturnValue({
       checkWithPermissionGuard: async () => true,
     })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     await waitFor(() => {
+      expect(screen.getByText('Discard version')).not.toBeDisabled()
+    })
+
+    await act(() => {
       fireEvent.click(screen.getByText('Discard version'))
     })
     expect(defaultProps.onDiscard).toHaveBeenCalled()
@@ -148,6 +161,7 @@ describe('VersionContextMenu', () => {
     mockUseReleasePermissions.mockReturnValue({
       checkWithPermissionGuard: async () => true,
     })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
@@ -172,6 +186,7 @@ describe('VersionContextMenu', () => {
     mockUseReleasePermissions.mockReturnValue({
       checkWithPermissionGuard: async () => true,
     })
+
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
