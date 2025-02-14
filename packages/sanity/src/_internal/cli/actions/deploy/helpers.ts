@@ -11,9 +11,6 @@ import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
 
-// appHosts have some restrictions (no uppercase for example)
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 12)
-
 export const debug = debugIt.extend('deploy')
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node
@@ -41,6 +38,7 @@ export interface ActiveDeployment {
 export interface UserApplication {
   id: string
   projectId: string | null
+  organizationId: string | null
   title: string | null
   appHost: string
   urlType: 'internal' | 'external'
@@ -85,12 +83,13 @@ export async function getUserApplication({
     throw e
   }
 }
-
 export async function getUserApplications({
   client,
   organizationId,
 }: GetUserApplicationsOptions): Promise<UserApplication[] | null> {
-  const query = organizationId ? {organizationId: organizationId, appType: 'coreApp'} : undefined
+  const query: Record<string, string> = organizationId
+    ? {organizationId: organizationId, appType: 'coreApp'}
+    : {appType: 'studio'}
   try {
     return await client.request({
       uri: '/user-applications',
@@ -113,7 +112,9 @@ function createUserApplication(
   },
   organizationId?: string,
 ): Promise<UserApplication> {
-  const query = organizationId ? {organizationId, appType: 'coreApp'} : undefined
+  const query: Record<string, string> = organizationId
+    ? {organizationId: organizationId, appType: 'coreApp'}
+    : {appType: 'studio'}
   return client.request({uri: '/user-applications', method: 'POST', body, query})
 }
 
@@ -300,8 +301,16 @@ export async function getOrCreateCoreApplication({
 
   // Try to create the application, retrying with new hostnames if needed
   const tryCreateApp = async () => {
-    // we will likely prepend this with app ID or other parameter in the future
-    const appHost = nanoid()
+    // appHosts have some restrictions (no uppercase, must start with a letter)
+    const generateId = () => {
+      const letters = 'abcdefghijklmnopqrstuvwxyz'
+      const firstChar = customAlphabet(letters, 1)()
+      const rest = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 11)()
+      return `${firstChar}${rest}`
+    }
+
+    // we will likely prepend this with an org ID or other parameter in the future
+    const appHost = generateId()
 
     try {
       const response = await createUserApplication(
@@ -472,7 +481,7 @@ export async function createDeployment({
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
-    query: isCoreApp ? {appType: 'coreApp'} : undefined,
+    query: isCoreApp ? {appType: 'coreApp'} : {appType: 'studio'},
   })
 }
 

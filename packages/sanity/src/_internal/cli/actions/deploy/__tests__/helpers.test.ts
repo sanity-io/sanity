@@ -189,6 +189,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       uri: '/user-applications',
       method: 'POST',
       body: {appHost: 'newhost', urlType: 'internal', type: 'studio'},
+      query: {appType: 'studio'},
     })
     expect(result).toEqual(newApp)
   })

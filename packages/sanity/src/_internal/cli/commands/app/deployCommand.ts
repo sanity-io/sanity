@@ -22,7 +22,7 @@ Examples
 const appDeployCommand: CliCommandDefinition = {
   name: 'deploy',
   group: 'app',
-  signature: '[SOURCE_DIR] [--no-build]  [--source-maps] [--no-minify]',
+  signature: '[SOURCE_DIR] [--no-build] [--source-maps] [--no-minify]',
   description: 'Builds and deploys Sanity application to Sanity hosting',
   action: async (
     args: CliCommandArguments<DeployStudioActionFlags>,
