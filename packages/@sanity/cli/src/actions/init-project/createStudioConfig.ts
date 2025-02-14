@@ -36,6 +36,7 @@ export interface GenerateConfigOptions {
     projectName?: string
     sourceName?: string
     sourceTitle?: string
+    organizationId?: string
   }
 }
 
