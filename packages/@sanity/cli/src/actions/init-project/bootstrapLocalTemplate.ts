@@ -130,7 +130,10 @@ export async function bootstrapLocalTemplate(
 
   // ...and a CLI config (`sanity.cli.[ts|js]`)
   const cliConfig = isCoreAppTemplate
-    ? createCoreAppCliConfig({appLocation: template.appLocation!})
+    ? createCoreAppCliConfig({
+        appLocation: template.appLocation!,
+        organizationId: variables.organizationId,
+      })
     : createCliConfig({
         projectId: variables.projectId,
         dataset: variables.dataset,
