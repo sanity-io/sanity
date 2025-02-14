@@ -95,7 +95,7 @@ export function ReleaseForm(props: {
           <span style={{marginLeft: 10, opacity: 0.5}}>
             <Tooltip
               content={
-                <Stack space={4} style={{maxWidth: 320 - 16}}>
+                <Stack space={3} style={{maxWidth: 320 - 16}}>
                   <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
                     {t('release.dialog.tooltip.note')}
