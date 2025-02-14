@@ -10,28 +10,23 @@ import {useClient} from './useClient'
 
 type FeatureAttributes = Record<string, string | number | boolean | null>
 
-type Feature = {
+interface Feature {
   id: string
-  variantId: string | null
+  variantId: string
   name: string
   price: number
   included: boolean
   attributes: FeatureAttributes
-  custom: boolean
-  startedAt: string | null
-  startedBy: string | null
-  endedAt: string | null
-  endedBy: string | null
 }
 
-type FeatureType = {
+interface FeatureType {
   id: string
   name: string
   singular: boolean
   features: Feature[]
 }
 
-type Resource = {
+interface Resource {
   id: string
   name: string
   unit: string
@@ -44,7 +39,7 @@ type Resource = {
   maxOverageQuota: number | null
 }
 
-type Plan = {
+interface Plan {
   id: string
   planTypeId: string
   variantId: string | null
@@ -65,7 +60,10 @@ type Plan = {
   featureTypes: Record<string, FeatureType>
 }
 
-export type ProjectSubscriptionsResponse = {
+/**
+ * @internal
+ */
+export interface ProjectSubscriptionsResponse {
   id: string
   projectId: string
   productType: string
@@ -75,16 +73,16 @@ export type ProjectSubscriptionsResponse = {
   previousSubscriptionId: string | null
   status: string
   startedAt: string
-  startedBy: string | null
-  endedAt: string | null
-  endedBy: string | null
+  startedBy: string
+  endedAt: string
+  endedBy: string
   trialUntil: string | null
   plan: Plan
   resources: Record<string, Resource>
   featureTypes: Record<string, FeatureType>
 }
 
-type ProjectSubscriptions = {
+interface ProjectSubscriptions {
   error: Error | null
   projectSubscriptions: ProjectSubscriptionsResponse | null
   isLoading: boolean
@@ -97,6 +95,7 @@ const INITIAL_LOADING_STATE: ProjectSubscriptions = {
 }
 
 /**
+ * @internal
  * fetches subscriptions for this project
  */
 function fetchProjectSubscriptions({
