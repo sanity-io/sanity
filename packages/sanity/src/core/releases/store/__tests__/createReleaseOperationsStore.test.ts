@@ -327,25 +327,26 @@ describe('createReleaseOperationsStore', () => {
     })
   })
 
-  it('should create a version of a document', async () => {
-    const store = createStore()
-    mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
-    await store.createVersion('release-id', 'doc-id', {newData: 'value'})
-    expect(mockClient.create).toHaveBeenCalledWith(
-      {
-        _id: `versions.release-id.doc-id`,
-        data: 'example',
-        newData: 'value',
-      },
-      undefined,
-    )
-  })
+  // it('should create a version of a document', async () => {
+  //   const store = createStore()
+  //   mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
+  //   await store.createVersion('release-id', 'doc-id', {newData: 'value'})
+  //   expect(mockClient.create).toHaveBeenCalledWith(
+  //     {
+  //       _id: `versions.release-id.doc-id`,
+  //       data: 'example',
+  //       newData: 'value',
+  //     },
+  //     undefined,
+  //   )
+  // })
 
   it('should omit _weak from reference fields if _strengthenOnPublish is present when it creates a version of a document', async () => {
     const store = createStore()
 
     mockClient.getDocument.mockResolvedValue({
       _id: 'doc-id',
+      data: 'example',
       artist: {
         _ref: 'some-artist-id',
         _strengthenOnPublish: {
@@ -426,10 +427,12 @@ describe('createReleaseOperationsStore', () => {
       ],
     })
 
-    await store.createVersion('release-id', 'doc-id')
+    await store.createVersion('release-id', 'doc-id', {newData: 'value'})
 
     expect(mockClient.create).toHaveBeenCalledWith({
       _id: `versions.release-id.doc-id`,
+      data: 'example',
+      newData: 'value',
       artist: {
         _ref: 'some-artist-id',
         _strengthenOnPublish: {
