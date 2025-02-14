@@ -14,6 +14,7 @@ import {
 
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type ReleasesReducerState} from '../../../store/reducer'
+import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {getReleaseActivityEvents} from './getReleaseActivityEvents'
@@ -56,11 +57,11 @@ export function getReleaseEvents({
   documentPreviewStore,
   eventsAPIEnabled,
 }: getReleaseEventsOpts) {
-  const activityEvents = eventsAPIEnabled
-    ? getReleaseActivityEvents({client, releaseId})
-    : notEnabledActivityEvents
+  const observeDocument$ = documentPreviewStore.unstable_observeDocument(releaseId) as Observable<
+    ReleaseDocument | undefined
+  >
 
-  const editEvents$ = getReleaseEditEvents({client, releaseId, releasesState$})
+  const editEvents$ = getReleaseEditEvents({client, observeDocument$})
 
   const releaseRev$ = releasesState$.pipe(
     map((state) => state.releases.get(releaseId)?._rev),
@@ -70,18 +71,26 @@ export function getReleaseEvents({
     skip(1),
   )
 
+  // Turn off activity events if eventsAPI is not enabled.
+  const activityEvents = eventsAPIEnabled
+    ? getReleaseActivityEvents({client, releaseId})
+    : notEnabledActivityEvents
+
   const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
-  const documentsCount$ = documentPreviewStore
-    .unstable_observeDocumentIdSet(groqFilter, undefined, {
-      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    })
-    .pipe(
-      filter(({status}) => status === 'connected'),
-      map(({documentIds}) => documentIds.length),
-      distinctUntilChanged(),
-      // Emit only when count changes, after first non null value.
-      skip(1),
-    )
+  // Turn off document counts listener if eventsAPI is not enabled.
+  const documentsCount$ = eventsAPIEnabled
+    ? of(0)
+    : documentPreviewStore
+        .unstable_observeDocumentIdSet(groqFilter, undefined, {
+          apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+        })
+        .pipe(
+          filter(({status}) => status === 'connected'),
+          map(({documentIds}) => documentIds.length),
+          distinctUntilChanged(),
+          // Emit only when count changes, after first non null value.
+          skip(1),
+        )
 
   const sideEffects$ = merge(releaseRev$, documentsCount$).pipe(
     tap(() => {
