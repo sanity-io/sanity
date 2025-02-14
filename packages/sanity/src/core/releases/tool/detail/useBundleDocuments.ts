@@ -44,6 +44,7 @@ export interface DocumentValidationStatus extends ValidationStatus {
 
 export interface DocumentInRelease {
   memoKey: string
+  isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
