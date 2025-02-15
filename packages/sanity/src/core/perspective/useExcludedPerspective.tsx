@@ -18,7 +18,7 @@ export interface ExcludedPerspectiveValue {
  * @internal
  */
 export function useExcludedPerspective(): ExcludedPerspectiveValue {
-  const {navigateStickyParams} = useRouter()
+  const {navigate} = useRouter()
   const {excludedPerspectives} = usePerspective()
 
   const toggleExcludedPerspective = useCallback(
@@ -29,9 +29,9 @@ export function useExcludedPerspective(): ExcludedPerspectiveValue {
         ? existingPerspectives.filter((id) => id !== excluded)
         : [...existingPerspectives, excluded]
 
-      navigateStickyParams({excludedPerspectives: nextExcludedPerspectives.toString()})
+      navigate(null, {stickyParams: {excludedPerspectives: nextExcludedPerspectives.toString()}})
     },
-    [excludedPerspectives, navigateStickyParams],
+    [excludedPerspectives, navigate],
   )
 
   const isPerspectiveExcluded = useCallback(

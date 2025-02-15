@@ -96,7 +96,15 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
 
   const navigate = useCallback(
     (nextState: RouterState | null, options?: NavigateOptions) =>
-      parent_navigate(resolveNextParentState(nextState), options),
+      /**
+       * OH NO!! This isn't good
+       * There needs to be some special case to handle options.stickyParams
+       * But... not sure what
+       */
+      parent_navigate(
+        options?.stickyParams ? nextState : resolveNextParentState(nextState),
+        options,
+      ),
     [parent_navigate, resolveNextParentState],
   )
 

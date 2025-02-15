@@ -10,9 +10,11 @@ export function useSetPerspective() {
   const router = useRouter()
   const setPerspective = useCallback(
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
-      router.navigateStickyParams({
-        excludedPerspectives: '',
-        perspective: releaseId === 'drafts' ? '' : releaseId,
+      router.navigate(null, {
+        stickyParams: {
+          excludedPerspectives: '',
+          perspective: releaseId === 'drafts' ? '' : releaseId,
+        },
       })
     },
     [router],
