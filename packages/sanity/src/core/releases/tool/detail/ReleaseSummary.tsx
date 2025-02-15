@@ -52,7 +52,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const telemetry = useTelemetry()
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
-  const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow | null>(null)
+  const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -71,11 +71,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
       if (release.state !== 'active') return null
       if (!isBundleDocumentRow(rowProps.datum)) return null
-      if (pendingAddedDocument?.document._id === rowProps.datum.document._id) return null
+      if (rowProps.datum.isPending) return null
 
       return <DocumentActions document={rowProps.datum} releaseTitle={release.metadata.title} />
     },
-    [pendingAddedDocument, release.metadata.title, release.state],
+    [release.metadata.title, release.state],
   )
 
   const documentTableColumnDefs = useMemo(
@@ -85,13 +85,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const filterRows = useCallback(
     (data: DocumentWithHistory[], searchTerm: string) =>
-      data.filter(({document, previewValues}) => {
+      data.filter(({previewValues, isPending}) => {
         const title =
           typeof previewValues.values.title === 'string'
             ? previewValues.values.title
             : t('release-placeholder.title')
 
-        return document.isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
+        // always show the pending rows to visualise that documents are being added
+        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
       }),
     [t],
   )
@@ -102,23 +103,27 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!documentToAdd) return
 
       const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
+      const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
-      setPendingAddedDocument({
-        memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
-        validation: {
-          isValidating: false,
-          validation: [],
-          hasError: false,
+      setPendingAddedDocument((prev) => [
+        ...prev,
+        {
+          memoKey: versionDocumentId,
+          previewValues: {isLoading: true, values: {}},
+          validation: {
+            isValidating: false,
+            validation: [],
+            hasError: false,
+          },
+          history: undefined,
+          document: {
+            ...(documentToAdd as SanityDocument),
+            _id: pendingAddedDocumentId,
+            publishedDocumentExists: false,
+          },
+          isPending: true,
         },
-        history: undefined,
-        document: {
-          ...(documentToAdd as SanityDocument),
-          _id: `${versionDocumentId}-pending`,
-          publishedDocumentExists: false,
-        },
-        isPending: true,
-      })
+      ])
 
       try {
         await createVersion(releaseId, documentToAdd._id)
@@ -129,8 +134,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           documentOrigin: origin,
         })
       } catch (error) {
-        setPendingAddedDocument(null)
+        setPendingAddedDocument((prev) =>
+          prev.filter(({document}) => document._id !== pendingAddedDocumentId),
+        )
+
         toast.push({
+          id: `add-version-to-release-${versionDocumentId}`,
           closable: true,
           status: 'error',
           title: error.message,
@@ -141,24 +150,33 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   useEffect(() => {
-    // once pending added document has been received by bundle store
-    if (
-      pendingAddedDocument &&
-      documents.some(
-        ({document}) => `${document._id}-pending` === `${pendingAddedDocument.document._id}`,
+    const documentsNoLongerPending: string[] = []
+
+    pendingAddedDocument?.forEach((pendingDocument) => {
+      // once pending added document has been received by bundle store
+      if (
+        documents.find(({document}) => `${document._id}-pending` === pendingDocument.document._id)
+      ) {
+        toast.push({
+          id: `add-version-to-release-${pendingDocument.document._id}`,
+          closable: true,
+          status: 'success',
+          title: `${pendingDocument.document.title} added to release`,
+        })
+        documentsNoLongerPending.push(pendingDocument.document._id)
+      }
+    })
+
+    if (documentsNoLongerPending.length)
+      // cleanup all resolved added documents
+      setPendingAddedDocument((prev) =>
+        prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )
-    ) {
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: `${pendingAddedDocument.document.title} added to release`,
-      })
-      setPendingAddedDocument(null)
-    }
-  }, [pendingAddedDocument, documents, toast])
+  }, [documents, pendingAddedDocument, toast])
 
   const tableData = useMemo(
-    () => (pendingAddedDocument ? [...aggregatedData, pendingAddedDocument] : aggregatedData),
+    () =>
+      pendingAddedDocument.length ? [...aggregatedData, ...pendingAddedDocument] : aggregatedData,
     [pendingAddedDocument, aggregatedData],
   )
 
@@ -182,9 +200,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               mode="bleed"
               onClick={() => setAddDocumentDialog(true)}
-              // @todo support adding multiple documents quickly
-              // before each has been received in store
-              disabled={!!pendingAddedDocument}
               text={t('action.add-document')}
             />
           </Card>
