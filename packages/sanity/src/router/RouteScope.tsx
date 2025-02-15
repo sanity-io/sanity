@@ -102,7 +102,8 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
        * But... not sure what
        */
       parent_navigate(
-        options?.stickyParams ? nextState : resolveNextParentState(nextState),
+        // as in, if you are doing what navigateStickyParams does, then nextState is null
+        options?.stickyParams && nextState === null ? null : resolveNextParentState(nextState),
         options,
       ),
     [parent_navigate, resolveNextParentState],
