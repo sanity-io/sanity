@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.75.0",
+  "version": "3.75.1",
   "private": true,
   "keywords": [
     "sanity"
@@ -19,7 +19,7 @@
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.5.7",
     "@sanity/ui": "^2.13.1",
-    "@sanity/vision": "3.75.0",
+    "@sanity/vision": "3.75.1",
     "babel-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
