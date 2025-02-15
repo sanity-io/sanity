@@ -274,7 +274,7 @@ export interface RouterContextValue {
   navigateUrl: (opts: {path: string; replace?: boolean}) => void
 
   /**
-   * Navigates to the current URL with the sticky url search param set to the given values
+   * @deprecated Use `navigate(null, {stickyParams: params, ...options})` instead
    */
   navigateStickyParams: (
     params: NavigateOptions['stickyParams'],
@@ -282,8 +282,27 @@ export interface RouterContextValue {
   ) => void
 
   /**
-   * Navigates to the given router state.
+   * Updates the router state and navigates to a new path.
+   * Allows specifying new state values and optionally merging sticky parameters.
+   *
    * See {@link RouterState} and {@link NavigateOptions}
+   *
+   * @public
+   *
+   * @example Navigate with router state only
+   * ```tsx
+   * router.navigate({foo: 'bar'})
+   * ```
+   *
+   * @example Navigate with router state and sticky params
+   * ```tsx
+   * router.navigate({foo: 'bar'}, {stickyParams: {baz: 'qux'}})
+   * ```
+   *
+   * @example Navigate with sticky params only
+   * ```tsx
+   * router.navigate(null, {stickyParams: {baz: 'qux'}})
+   * ```
    */
   navigate: (nextState: RouterState | null, options?: NavigateOptions) => void
 

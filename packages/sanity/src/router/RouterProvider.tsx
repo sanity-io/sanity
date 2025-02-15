@@ -119,27 +119,6 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
     [routerProp, state],
   )
 
-  /**
-   * Updates the router state and navigates to a new path.
-   * Allows specifying new state values and optionally merging sticky parameters.
-   *
-   * @public
-   *
-   * @example Navigate with router state only
-   * ```tsx
-   * router.navigate({foo: 'bar'})
-   * ```
-   *
-   * @example Navigate with router state and sticky params
-   * ```tsx
-   * router.navigate({foo: 'bar'}, {stickyParams: {baz: 'qux'}})
-   * ```
-   *
-   * @example Navigate with sticky params only
-   * ```tsx
-   * router.navigate(null, {stickyParams: {baz: 'qux'}})
-   * ```
-   */
   const navigate = useCallback(
     (nextState: Record<string, unknown> | null, options: NavigateOptions = {}) => {
       const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
@@ -166,9 +145,6 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
     [onNavigate, resolvePathFromState, state],
   )
 
-  /**
-   * @deprecated Use `navigate(null, {stickyParams: params, ...options})` instead
-   */
   const handleNavigateStickyParams = useCallback(
     (params: NavigateOptions['stickyParams'], options: NavigateBaseOptions = {}) =>
       navigate(null, {stickyParams: params, ...options}),
