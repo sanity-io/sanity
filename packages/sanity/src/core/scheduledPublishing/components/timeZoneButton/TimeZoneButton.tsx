@@ -7,13 +7,18 @@ import useTimeZone from '../../hooks/useTimeZone'
 
 export interface ButtonTimeZoneProps {
   useElementQueries?: boolean
+  defaultTimezone?: string
+  inputId?: string
 }
 
 const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
-  const {useElementQueries} = props
+  const {useElementQueries, defaultTimezone, inputId} = props
 
-  const {timeZone} = useTimeZone()
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+  const {timeZone} = useTimeZone(defaultTimezone, inputId)
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(
+    inputId,
+    defaultTimezone,
+  )
 
   return (
     <>

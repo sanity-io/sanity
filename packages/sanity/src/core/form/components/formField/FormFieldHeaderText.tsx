@@ -39,7 +39,7 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY} = props
+  const {description, inputId, title, timezone, deprecated, validation = EMPTY_ARRAY} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
   const hasLabelSuffix = deprecated || hasValidations

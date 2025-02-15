@@ -1,23 +1,47 @@
-import {EarthGlobeIcon} from '@sanity/icons'
-import {Inline, Text} from '@sanity/ui'
+/* eslint-disable no-restricted-imports */
+import {Box, Card, Flex, Inline} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
   format,
   isValidTimezoneString,
   parse,
+  type ParseResult,
 } from '@sanity/util/legacyDateFormat'
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
+import {
+  ChangeIndicator,
+  EMPTY_ARRAY,
+  FormFieldHeaderText,
+  FormFieldStatus,
+  set,
+  type StringInputProps,
+  unset,
+  useFieldActions,
+} from 'sanity'
+import styled from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {useTranslation} from '../../../i18n'
-import {set, unset} from '../../patch'
-import {type StringInputProps} from '../../types'
+import ButtonTimeZone from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButton'
+import ButtonTimeZoneElementQuery from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButtonElementQuery'
+import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
+import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {type ParseResult} from './types'
 import {getCalendarLabels, isValidDate} from './utils'
+
+const Root = styled(Card)`
+  line-height: 1;
+`
+
+const CenterAlignedBox = styled(Box)`
+  align-self: center;
+`
+
+const ZeroLineHeightBox = styled(Box)`
+  line-height: 0;
+`
 
 interface ParsedOptions {
   dateFormat: string
@@ -86,10 +110,31 @@ function enforceTimeStep(dateString: string, timeStep: number) {
  * @hidden
  * @beta */
 export function DateTimeInput(props: DateTimeInputProps) {
-  const {onChange, schemaType, value, elementProps} = props
+  const {
+    onChange,
+    schemaType,
+    value,
+    elementProps,
+    id,
+    validation,
+    changed,
+    path,
+    presence = EMPTY_ARRAY,
+  } = props
 
+  const {
+    focused,
+    __internal_comments: comments,
+    hovered,
+    onMouseEnter,
+    onMouseLeave,
+    actions,
+    __internal_slot: slot,
+  } = useFieldActions()
   const {dateFormat, timeFormat, timeStep, displayTimezone} = parseOptions(schemaType.options)
   const {t} = useTranslation()
+
+  const {timeZone} = useTimeZone(displayTimezone, id)
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -104,17 +149,17 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const formatInputValue = useCallback(
-    (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timezone: displayTimezone}),
-    [dateFormat, timeFormat, displayTimezone],
+    (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timezone: timeZone.name}),
+    [dateFormat, timeFormat, timeZone.name],
   )
 
-  const deserialize = useMemo(() => getDeserializer(displayTimezone), [displayTimezone])
+  const deserialize = useMemo(() => getDeserializer(timeZone.name), [timeZone.name])
   const memoizedSerialize = useMemo(() => serialize, [])
 
   const parseInputValue = useCallback(
     (inputValue: string): ParseResult =>
-      parse(inputValue, `${dateFormat} ${timeFormat}`, displayTimezone),
-    [dateFormat, timeFormat, displayTimezone],
+      parse(inputValue, `${dateFormat} ${timeFormat}`, timeZone.name),
+    [dateFormat, timeFormat, timeZone.name],
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const commonProps = useMemo(
@@ -127,7 +172,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       parseInputValue,
       placeholder: schemaType.placeholder,
       serialize: memoizedSerialize,
-      timezone: displayTimezone,
+      timezone: timeZone.name,
       timeStep,
       selectTime: true,
       value,
@@ -141,27 +186,67 @@ export function DateTimeInput(props: DateTimeInputProps) {
       parseInputValue,
       schemaType.placeholder,
       memoizedSerialize,
-      displayTimezone,
+      timeZone.name,
       timeStep,
       value,
     ],
   )
 
-  return displayTimezone ? (
-    <Tooltip
-      placement="bottom-start"
-      content={
-        <Inline space={1}>
-          <EarthGlobeIcon />
-          <Text size={1} muted>
-            {t('inputs.datetime.timezone-information-text', {timezone: displayTimezone})}
-          </Text>
-        </Inline>
-      }
-    >
+  const input = (
+    <>
       <CommonDateTimeInput {...commonProps} />
-    </Tooltip>
-  ) : (
-    <CommonDateTimeInput {...commonProps} />
+    </>
+  )
+  return (
+    <Root
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      data-testid="datetime-input"
+      radius={2}
+    >
+      <Flex direction={'column'}>
+        <Box flex={1} paddingY={2}>
+          <FormFieldBaseHeader
+            __internal_comments={comments}
+            __internal_slot={slot}
+            actions={actions}
+            fieldFocused={Boolean(focused)}
+            fieldHovered={hovered}
+            presence={presence}
+            inputId={id}
+            content={
+              <Inline>
+                <FormFieldHeaderText
+                  deprecated={schemaType.deprecated}
+                  description={schemaType.description}
+                  inputId={id}
+                  validation={validation}
+                  title={schemaType.title}
+                />
+                {displayTimezone && (
+                  <ButtonTimeZoneElementQuery>
+                    <Box marginLeft={2}>
+                      <ButtonTimeZone
+                        useElementQueries
+                        inputId={id}
+                        defaultTimezone={displayTimezone}
+                      />
+                    </Box>
+                  </ButtonTimeZoneElementQuery>
+                )}
+              </Inline>
+            }
+          />
+        </Box>
+        <CenterAlignedBox paddingX={3} paddingY={1}>
+          <FormFieldStatus maxAvatars={1} position="top">
+            {/*<FieldPresence maxAvatars={1} presence={presence} />*/}
+          </FormFieldStatus>
+        </CenterAlignedBox>
+        <ChangeIndicator hasFocus={Boolean(focused)} isChanged={changed} path={path}>
+          {input}
+        </ChangeIndicator>
+      </Flex>
+    </Root>
   )
 }

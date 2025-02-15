@@ -2,6 +2,7 @@
 import {
   isBooleanSchemaType,
   isCrossDatasetReferenceSchemaType,
+  isDateTimeSchemaType,
   isReferenceSchemaType,
   type SchemaType,
 } from '@sanity/types'
@@ -20,14 +21,70 @@ import {getTypeChain} from './helpers'
 const EMPTY_ARRAY: never[] = []
 
 function BooleanField(field: FieldProps) {
+  const documentId = usePublishedId()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const focused = Boolean(field.inputProps.focused)
+
   return (
-    <ChangeIndicator
-      hasFocus={Boolean(field.inputProps.focused)}
-      isChanged={field.inputProps.changed}
-      path={field.path}
-    >
-      {field.children}
-    </ChangeIndicator>
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+      <ChangeIndicator
+        hasFocus={Boolean(field.inputProps.focused)}
+        isChanged={field.inputProps.changed}
+        path={field.path}
+      >
+        <FieldActionsProvider
+          __internal_slot={field.__internal_slot}
+          __internal_comments={field.__internal_comments}
+          actions={fieldActionsNodes}
+          focused={focused}
+          path={field.path}
+        >
+          {field.children}
+        </FieldActionsProvider>
+      </ChangeIndicator>
+    </>
+  )
+}
+
+function DateTimeField(field: FieldProps) {
+  /*
+    To account for the timezone picker, all title logic is being moved into the DateTimeInput component.
+  */
+  const documentId = usePublishedId()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const focused = Boolean(field.inputProps.focused)
+  return (
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+      <FieldActionsProvider
+        __internal_slot={field.__internal_slot}
+        __internal_comments={field.__internal_comments}
+        actions={fieldActionsNodes}
+        focused={focused}
+        path={field.path}
+      >
+        {field.children}
+      </FieldActionsProvider>
+    </>
   )
 }
 
@@ -49,7 +106,13 @@ function PrimitiveField(field: FieldProps) {
         />
       )}
 
-      <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
+      <FieldActionsProvider
+        __internal_slot={field.__internal_slot}
+        __internal_comments={field.__internal_comments}
+        actions={fieldActionsNodes}
+        focused={focused}
+        path={field.path}
+      >
         <FormField
           __internal_slot={field.__internal_slot}
           __internal_comments={field.__internal_comments}
@@ -107,7 +170,13 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
         />
       )}
 
-      <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
+      <FieldActionsProvider
+        __internal_slot={field.__internal_slot}
+        __internal_comments={field.__internal_comments}
+        actions={fieldActionsNodes}
+        focused={focused}
+        path={field.path}
+      >
         <FormFieldSet
           __internal_comments={field.__internal_comments}
           __internal_slot={field.__internal_slot}
@@ -189,6 +258,10 @@ export function defaultResolveFieldComponent(
 
   if (isBooleanSchemaType(schemaType)) {
     return BooleanField as ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+
+  if (isDateTimeSchemaType(schemaType)) {
+    return DateTimeField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   const typeChain = getTypeChain(schemaType, new Set())

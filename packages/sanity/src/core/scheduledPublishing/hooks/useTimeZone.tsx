@@ -1,7 +1,6 @@
 import {useToast} from '@sanity/ui'
-import {getTimeZones} from '@vvo/tzdb'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import ToastDescription from '../components/toastDescription/ToastDescription'
 import {DATE_FORMAT, LOCAL_STORAGE_TZ_KEY} from '../constants'
@@ -15,52 +14,131 @@ enum TimeZoneEvents {
 
 const debug = debugWithName('useScheduleOperation')
 
-// Map through only the values we care about
-export const allTimeZones: NormalizedTimeZone[] = getTimeZones().map((tz) => {
-  return {
-    abbreviation: tz.abbreviation,
-    alternativeName: tz.alternativeName,
-    mainCities: tz.mainCities.join(', '),
-    // Main time zone name 'Africa/Dar_es_Salaam'
-    name: tz.name,
-    // Time zone name with underscores removed
-    namePretty: tz.name.replaceAll('_', ' '),
-    offset: tz.currentTimeFormat.split(' ')[0],
-    // all searchable text - this is transformed before being rendered in `<AutoComplete>`
-    value: `${tz.currentTimeFormat} ${tz.abbreviation} ${tz.name}`,
-  } as NormalizedTimeZone
-})
-
-export function getLocalTimeZone(): NormalizedTimeZone {
-  return (
-    allTimeZones.find((tz) => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone) ||
-    // Default to GMT-0 if no user timeZone is found
-    allTimeZones.find((timeZone) => timeZone.abbreviation === 'GMT') ||
-    // Return the first time zone as a fallback
-    allTimeZones[0]
-  )
-}
-
-function getStoredTimeZone(): NormalizedTimeZone {
-  const storedTimeZone = localStorage.getItem(LOCAL_STORAGE_TZ_KEY)
-  try {
-    if (storedTimeZone) {
-      return JSON.parse(storedTimeZone)
-    }
-  } catch (error) {
-    // invalid value (non-JSON) - fallback to local timeZone
+// Add cache outside component to persist between renders
+const timeZoneCache = new Map<
+  string,
+  {
+    abbreviation: string
+    longName: string
+    cities: string[]
   }
+>()
 
-  return getLocalTimeZone()
+// Add helper to convert offset string to minutes for sorting
+const offsetToMinutes = (offset: string): number => {
+  const [hours, minutes] = offset.replace(/[+-]/, '').split(':').map(Number)
+  const multiplier = offset.startsWith('-') ? -1 : 1
+  return multiplier * (hours * 60 + minutes)
 }
 
-const useTimeZone = () => {
-  const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getStoredTimeZone())
+const useTimeZone = (defaultTimezone?: string, inputId?: string) => {
   const toast = useToast()
+  const currentLocale = navigator.language
+  const localStorageId = inputId ? `${LOCAL_STORAGE_TZ_KEY}-${inputId}` : LOCAL_STORAGE_TZ_KEY
+
+  // Batch process timezone info with a single formatter per timezone
+  const getTimeZoneInfo = useCallback(
+    (canonicalIdentifier: string) => {
+      if (timeZoneCache.has(canonicalIdentifier)) {
+        return timeZoneCache.get(canonicalIdentifier)!
+      }
+
+      const formatter = new Intl.DateTimeFormat(currentLocale, {
+        timeZone: canonicalIdentifier,
+        timeZoneName: 'long',
+      })
+
+      const shortFormatter = new Intl.DateTimeFormat(currentLocale, {
+        timeZone: canonicalIdentifier,
+        timeZoneName: 'short',
+      })
+
+      const parts = formatter.formatToParts(new Date())
+      const shortParts = shortFormatter.formatToParts(new Date())
+
+      const info = {
+        abbreviation: shortParts.find(({type}) => type === 'timeZoneName')?.value || '',
+        longName: parts.find(({type}) => type === 'timeZoneName')?.value || '',
+      }
+
+      timeZoneCache.set(canonicalIdentifier, info)
+      return info
+    },
+    [currentLocale],
+  )
+
+  const allTimeZones = useMemo((): NormalizedTimeZone[] => {
+    const zones = Intl.supportedValuesOf('timeZone')
+    const currentDate = new Date()
+    const progressiveCities: Record<string, string[]> = {}
+
+    const rawZones = zones
+      .map((tz) => {
+        const info = getTimeZoneInfo(tz)
+        const offset = formatInTimeZone(currentDate, tz, 'xxx')
+        const cityName = tz.split('/')[1].replaceAll('_', ' ')
+        progressiveCities[info.longName] = [...(progressiveCities[info.longName] || []), cityName]
+        return Object.values(progressiveCities[info.longName]).length === 1
+          ? {
+              abbreviation: info.abbreviation,
+              alternativeName: info.longName,
+              mainCities: '',
+              name: tz,
+              namePretty: tz.replaceAll('_', ' '),
+              offset,
+              value: `${offset} ${info.abbreviation} ${tz}`,
+            }
+          : undefined
+      })
+      .filter(Boolean)
+      .sort((a, b) => {
+        const offsetA = offsetToMinutes(a.offset)
+        const offsetB = offsetToMinutes(b.offset)
+        return offsetA - offsetB
+      }) as NormalizedTimeZone[]
+
+    const completedZones = rawZones.map((zone) => {
+      const cities = progressiveCities[zone.alternativeName]
+      zone.mainCities = cities?.join(', ') || ''
+      return zone
+    })
+
+    return completedZones
+  }, [getTimeZoneInfo])
+
+  const getLocalTimeZone = useCallback(() => {
+    return (
+      allTimeZones.find((tz) => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone) ||
+      allTimeZones.find((timeZone) => timeZone.abbreviation === 'GMT') ||
+      allTimeZones[0]
+    )
+  }, [allTimeZones])
+
+  const getStoredTimeZone = useCallback((): NormalizedTimeZone => {
+    const storedTimeZone = localStorage.getItem(localStorageId)
+    if (storedTimeZone) {
+      const parsedTimeZone = JSON.parse(storedTimeZone)
+      if (allTimeZones.some((tz) => tz.name === parsedTimeZone.name)) {
+        return parsedTimeZone
+      }
+    }
+    return getLocalTimeZone()
+  }, [allTimeZones, getLocalTimeZone, localStorageId])
+
+  const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => {
+    const defaultTz =
+      allTimeZones.find((tz) => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone) ||
+      allTimeZones[0]
+    return defaultTz
+  })
+
+  useEffect(() => {
+    const normalizedDefaultTimezone = allTimeZones.find((tz) => tz.name === defaultTimezone)
+    setTimeZone(getStoredTimeZone() || normalizedDefaultTimezone || getLocalTimeZone())
+  }, [allTimeZones, defaultTimezone, getLocalTimeZone, getStoredTimeZone, localStorageId])
 
   useEffect(() => {
     const handler = () => {
-      // When updated in another hook instance, just fetch from localStorage
       setTimeZone(getStoredTimeZone())
     }
 
@@ -68,11 +146,8 @@ const useTimeZone = () => {
     return () => {
       window.removeEventListener(TimeZoneEvents.update, handler)
     }
-  }, [])
+  }, [getStoredTimeZone, localStorageId])
 
-  /**
-   * Return time-zone adjusted date in a date-fns supported format
-   */
   const formatDateTz = useCallback(
     ({
       date,
@@ -102,15 +177,20 @@ const useTimeZone = () => {
     [timeZone.name],
   )
 
+  const getTimeZone = useCallback(
+    (tzValue: string): NormalizedTimeZone | undefined =>
+      allTimeZones.find((tz) => tzValue === tz.value),
+    [allTimeZones],
+  )
+
   const handleNewValue = useCallback(
     (tz: NormalizedTimeZone) => {
       debug('handleNewValue:', tz)
 
       setTimeZone((prevTz) => {
         try {
-          // If different from current state, update localStorage & notify other instances
           if (prevTz.name !== tz.name) {
-            localStorage.setItem(LOCAL_STORAGE_TZ_KEY, JSON.stringify(tz))
+            localStorage.setItem(localStorageId, JSON.stringify(tz))
             window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
 
@@ -122,7 +202,7 @@ const useTimeZone = () => {
                 title="Time zone updated"
               />
             ),
-            duration: 15000, // 15s
+            duration: 15000,
             status: 'info',
           })
         } catch (err) {
@@ -140,7 +220,7 @@ const useTimeZone = () => {
         return tz
       })
     },
-    [toast],
+    [localStorageId, toast],
   )
 
   const utcToCurrentZoneDate = useCallback(
@@ -153,14 +233,30 @@ const useTimeZone = () => {
     [timeZone.name],
   )
 
-  return {
-    formatDateTz,
-    getCurrentZoneDate,
-    setTimeZone: handleNewValue,
-    timeZone,
-    utcToCurrentZoneDate,
-    zoneDateToUtc,
-  }
+  return useMemo(
+    () => ({
+      formatDateTz,
+      getCurrentZoneDate,
+      setTimeZone: handleNewValue,
+      timeZone,
+      allTimeZones,
+      getLocalTimeZone,
+      getTimeZone,
+      utcToCurrentZoneDate,
+      zoneDateToUtc,
+    }),
+    [
+      formatDateTz,
+      getCurrentZoneDate,
+      handleNewValue,
+      timeZone,
+      allTimeZones,
+      getLocalTimeZone,
+      getTimeZone,
+      utcToCurrentZoneDate,
+      zoneDateToUtc,
+    ],
+  )
 }
 
 export default useTimeZone

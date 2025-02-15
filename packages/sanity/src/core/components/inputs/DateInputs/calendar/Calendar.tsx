@@ -392,7 +392,6 @@ export const Calendar = forwardRef(function Calendar(
             />
           </Box>
         </Flex>
-        {monthPicker}
 
         {/* Selected month (grid of days) */}
         <Box

@@ -4,11 +4,13 @@ import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../../ui-components'
-import useTimeZone, {allTimeZones, getLocalTimeZone} from '../../hooks/useTimeZone'
+import useTimeZone from '../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../types'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
+  inputId?: string
+  defaultTimezone?: string
 }
 
 const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
@@ -27,20 +29,24 @@ const TimeZoneMainCitiesSpan = styled.span(({theme}: {theme: Theme}) => {
 })
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
-  const {onClose} = props
+  const {onClose, inputId, defaultTimezone} = props
 
-  const {setTimeZone, timeZone} = useTimeZone()
+  const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} = useTimeZone(
+    defaultTimezone,
+    inputId,
+  )
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
 
   // Callbacks
-  const handleTimeZoneChange = useCallback((value: string) => {
-    const tz = allTimeZones.find((v) => v.value === value)
-    setSelectedTz(tz)
-  }, [])
+  const handleTimeZoneChange = useCallback(
+    (value: string) => setSelectedTz(getTimeZone(value)),
+    [getTimeZone],
+  )
 
-  const handleTimeZoneSelectLocal = useCallback(() => {
-    setSelectedTz(getLocalTimeZone())
-  }, [])
+  const handleTimeZoneSelectLocal = useCallback(
+    () => setSelectedTz(getLocalTimeZone()),
+    [getLocalTimeZone],
+  )
 
   const handleTimeZoneUpdate = useCallback(() => {
     if (selectedTz) {
@@ -52,7 +58,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const isDirty = selectedTz?.name !== timeZone.name
   const isLocalTzSelected = useMemo(() => {
     return selectedTz?.name === getLocalTimeZone().name
-  }, [selectedTz])
+  }, [getLocalTimeZone, selectedTz?.name])
 
   const renderOption = useCallback((option: NormalizedTimeZone) => {
     return (

@@ -3,10 +3,11 @@ import {useCallback, useState} from 'react'
 interface DialogControls {
   show: () => void
   hide: () => void
+  inputId?: string
   visible: boolean
 }
 
-export function useDialogVisible(): DialogControls {
+export function useDialogVisible(inputId?: string): DialogControls {
   const [dialogVisible, setDialogVisible] = useState(false)
 
   const hide = useCallback(() => {
@@ -19,6 +20,7 @@ export function useDialogVisible(): DialogControls {
   return {
     visible: dialogVisible,
     show,
+    inputId,
     hide,
   }
 }
