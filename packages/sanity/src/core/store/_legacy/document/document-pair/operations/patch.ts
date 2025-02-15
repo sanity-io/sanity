@@ -5,10 +5,22 @@ import {type OperationImpl} from './types'
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
-    {schema, snapshots, idPair, draft, published, typeName},
+    {schema, snapshots, idPair, draft, published, version, typeName},
     patches = [],
     initialDocument,
   ): void => {
+    if (version) {
+      // No drafting, so patch and commit the version document.
+      version.mutate([
+        version.createIfNotExists({
+          _type: typeName,
+          ...initialDocument,
+        }),
+        ...version.patch(patches),
+      ])
+      return
+    }
+
     if (isLiveEditEnabled(schema, typeName)) {
       // No drafting, so patch and commit the published document
       published.mutate([

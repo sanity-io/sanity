@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.71.0",
+  "version": "3.75.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -61,7 +61,7 @@
     "debug": "^4.3.4",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.14.2",
+    "groq-js": "^1.15.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
@@ -75,7 +75,7 @@
     "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
     "rimraf": "^5.0.10",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.5"
   },
   "engines": {
     "node": ">=18"

@@ -21,8 +21,8 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        node: [18, 20]
+        os: [ubuntu-latest-m]
+        node: [18, 20, 22]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -71,6 +71,77 @@ jobs:
       - name: Test
         id: test
         run: |
-          pnpm test:vitest --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+          ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
+          if [ "${{ matrix.node }}" == "20" ]; then
+            # We only gather coverage from a single Node version.
+            # We pass in `--reporter=blob` so that we can combine the results from all shards.
+            ARGS="$ARGS --coverage --reporter=default --reporter=blob"
+          fi
+          pnpm test:vitest $ARGS
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
+
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: ${{ !cancelled() && matrix.node == '20' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
+          path: ".vitest-reports/*"
+          include-hidden-files: true
+          retention-days: 1
+
+  report-coverage:
+    if: ${{ !cancelled() }}
+    needs: test
+    runs-on: ubuntu-latest-m
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: "Download coverage artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          path: .vitest-reports
+          pattern: blob-report-${{ github.run_id }}-*
+          merge-multiple: true
+
+      - name: Merged report
+        run: |
+          pnpm vitest run --merge-reports --coverage
+
+      - name: Report coverage
+        uses: davelosert/vitest-coverage-report-action@5a78cb16e761204097ad8a39369ea5d0ff7c8a5d # v2

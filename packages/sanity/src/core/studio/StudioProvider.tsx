@@ -11,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
@@ -71,7 +72,9 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>
+                <StudioAnnouncementsProvider>
+                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                </StudioAnnouncementsProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>

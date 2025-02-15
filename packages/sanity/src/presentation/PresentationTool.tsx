@@ -25,6 +25,7 @@ import {
   type SanityDocument,
   type Tool,
   useDataset,
+  usePerspective,
   useProjectId,
   useUnique,
   useWorkspace,
@@ -33,7 +34,7 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'
 
-import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, LIVE_DRAFT_EVENTS_ENABLED} from './constants'
+import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {debounce} from './lib/debounce'
 import {SharedStateProvider} from './overlays/SharedStateProvider'
@@ -52,7 +53,6 @@ import {
   presentationReducer,
   presentationReducerInit,
 } from './reducers/presentationReducer'
-import {RevisionSwitcher} from './RevisionSwitcher'
 import {
   type FrameState,
   type PresentationNavigate,
@@ -70,7 +70,6 @@ import {usePopups} from './usePopups'
 import {usePreviewUrl} from './usePreviewUrl'
 import {useStatus} from './useStatus'
 
-const LoaderQueries = lazy(() => import('./loader/LoaderQueries'))
 const LiveQueries = lazy(() => import('./loader/LiveQueries'))
 const PostMessageDocuments = lazy(() => import('./overlays/PostMessageDocuments'))
 const PostMessageRefreshMutations = lazy(() => import('./editor/PostMessageRefreshMutations'))
@@ -106,11 +105,15 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
+  const {perspectiveStack, selectedPerspectiveName = 'drafts', selectedReleaseId} = usePerspective()
+  const perspective = (
+    selectedReleaseId ? perspectiveStack : selectedPerspectiveName
+  ) as PresentationPerspective
 
   const initialPreviewUrl = usePreviewUrl(
     _previewUrl || '/',
     name,
-    routerSearchParams.perspective === 'published' ? 'published' : 'previewDrafts',
+    perspective,
     routerSearchParams.preview || null,
     canCreateUrlPreviewSecrets,
   )
@@ -179,11 +182,6 @@ export default function PresentationTool(props: {
   const navigate = useMemo(() => debounce<PresentationNavigate>(_navigate, 50), [_navigate])
 
   const [state, dispatch] = useReducer(presentationReducer, {}, presentationReducerInit)
-
-  const perspective = useMemo(
-    () => (params.perspective ? 'published' : 'previewDrafts'),
-    [params.perspective],
-  )
 
   const viewport = useMemo(() => (params.viewport ? 'mobile' : 'desktop'), [params.viewport])
 
@@ -308,12 +306,11 @@ export default function PresentationTool(props: {
 
     const stop = comlink.start()
     setVisualEditingComlink(comlink)
-
     return () => {
       stop()
       setVisualEditingComlink(null)
     }
-  }, [controller, handleNavigate, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
+  }, [controller, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
 
   useEffect(() => {
     if (!controller) return undefined
@@ -436,15 +433,6 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  // Handle edge case where the `&rev=` parameter gets "stuck"
-  const idRef = useRef<string | undefined>(params.id)
-  useEffect(() => {
-    if (params.rev && idRef.current && params.id !== idRef.current) {
-      navigate({}, {rev: undefined})
-    }
-    idRef.current = params.id
-  })
-
   const refreshRef = useRef<number>(undefined)
   const handleRefresh = useCallback(
     (fallback: () => void) => {
@@ -498,16 +486,6 @@ export default function PresentationTool(props: {
     [navigate],
   )
 
-  const setPerspective = useCallback(
-    (next: PresentationPerspective) => {
-      // Omit the perspective URL search param if the next perspective state is
-      // the default: 'previewDrafts'
-      const perspective = next === 'previewDrafts' ? undefined : next
-      navigate({}, {perspective})
-    },
-    [navigate],
-  )
-
   return (
     <>
       <PresentationProvider
@@ -551,7 +529,6 @@ export default function PresentationTool(props: {
                           previewUrl={params.preview}
                           perspective={perspective}
                           ref={iframeRef}
-                          setPerspective={setPerspective}
                           setViewport={setViewport}
                           targetOrigin={targetOrigin}
                           toggleNavigator={toggleNavigator}
@@ -582,25 +559,15 @@ export default function PresentationTool(props: {
         </PresentationNavigateProvider>
       </PresentationProvider>
       <Suspense>
-        {controller &&
-          (LIVE_DRAFT_EVENTS_ENABLED ? (
-            <LiveQueries
-              controller={controller}
-              perspective={perspective}
-              liveDocument={displayedDocument}
-              onDocumentsOnPage={setDocumentsOnPage}
-              onLoadersConnection={setLoadersConnection}
-            />
-          ) : (
-            <LoaderQueries
-              controller={controller}
-              perspective={perspective}
-              liveDocument={displayedDocument}
-              onDocumentsOnPage={setDocumentsOnPage}
-              onLoadersConnection={setLoadersConnection}
-              documentsOnPage={documentsOnPage}
-            />
-          ))}
+        {controller && (
+          <LiveQueries
+            controller={controller}
+            perspective={perspective}
+            liveDocument={displayedDocument}
+            onDocumentsOnPage={setDocumentsOnPage}
+            onLoadersConnection={setLoadersConnection}
+          />
+        )}
         {visualEditingComlink && params.id && params.type && (
           <PostMessageRefreshMutations
             comlink={visualEditingComlink}
@@ -620,21 +587,14 @@ export default function PresentationTool(props: {
             refs={documentsOnPage}
           />
         )}
-        {visualEditingComlink && <PostMessageDocuments comlink={visualEditingComlink} />}
+        {visualEditingComlink && (
+          <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
+        )}
         {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
         {visualEditingComlink && (
           <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
         )}
         {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}
-        {params.id && params.type && (
-          <RevisionSwitcher
-            documentId={params.id}
-            documentRevision={params.rev}
-            documentType={params.type}
-            navigate={navigate}
-            perspective={perspective}
-          />
-        )}
       </Suspense>
     </>
   )

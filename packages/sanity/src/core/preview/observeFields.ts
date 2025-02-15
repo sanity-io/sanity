@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
@@ -22,6 +23,9 @@ import {
   tap,
 } from 'rxjs/operators'
 
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
+import {versionedClient} from '../studioClient'
+import {isVersionId} from '../util/draftUtils'
 import {INCLUDE_FIELDS} from './constants'
 import {
   type ApiConfig,
@@ -67,7 +71,7 @@ export interface ClientLike {
  * @internal
  */
 export function createObserveFields(options: {
-  client: ClientLike
+  client: SanityClient
   invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
   const {client: currentDatasetClient, invalidationChannel} = options
@@ -77,11 +81,19 @@ export function createObserveFields(options: {
     )
   }
 
-  function fetchAllDocumentPathsWith(client: ClientLike) {
+  function fetchAllDocumentPathsWith(client: SanityClient) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
-      return client.observable
-        .fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
+      // If any document is a version document we need to use the release API version
+      const useReleaseVersion = combinedSelections.some((selection) =>
+        selection.ids.some(isVersionId),
+      )
+
+      return versionedClient(
+        client,
+        useReleaseVersion ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion : undefined,
+      )
+        .observable.fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
         .pipe(map((result: any) => reassemble(result, combinedSelections)))
     }
   }

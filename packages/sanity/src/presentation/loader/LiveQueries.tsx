@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {
   type ClientPerspective,
   type ContentSourceMap,
-  createClient,
   type LiveEventMessage,
   type QueryParams,
   type SyncTag,
@@ -20,30 +18,26 @@ import {
   type LoaderNodeMsg,
 } from '@sanity/presentation-comlink'
 import isEqual from 'fast-deep-equal'
-// import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
-import {memo, useDeferredValue, useEffect, useMemo, useState} from 'react'
+import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
   type SanityClient,
   type SanityDocument,
   useClient,
-  // useCurrentUser,
   useDataset,
   useProjectId,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
-// import {useEffectEvent} from 'use-effect-event'
-import {MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
-import {
-  type LiveQueriesState,
-  type LiveQueriesStateValue,
-  type LoaderConnection,
-  type PresentationPerspective,
-} from '../types'
+import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
+import {type LoaderConnection, type PresentationPerspective} from '../types'
 import {type DocumentOnPage} from '../useDocumentsOnPage'
-import {useQueryParams, useRevalidate} from './utils'
+import {useLiveEvents} from './useLiveEvents'
+import {useLiveQueries} from './useLiveQueries'
+import {mapChangedValue} from './utils'
 
-export interface LoaderQueriesProps {
+export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
   controller: Controller | undefined
   perspective: ClientPerspective
@@ -55,55 +49,18 @@ export interface LoaderQueriesProps {
   ) => void
 }
 
-export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Element {
-  const {
-    liveDocument: _liveDocument,
-    controller,
-    perspective: activePerspective,
-    onLoadersConnection,
-    onDocumentsOnPage,
-  } = props
+export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
+  const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
-  const [liveQueries, setLiveQueries] = useState<LiveQueriesState>({})
+  const [liveQueries, liveQueriesDispatch] = useLiveQueries()
 
   const projectId = useProjectId()
   const dataset = useDataset()
 
-  useEffect(() => {
-    const interval = setInterval(
-      () =>
-        setLiveQueries((liveQueries) => {
-          if (Object.keys(liveQueries).length < 1) {
-            return liveQueries
-          }
-
-          const now = Date.now()
-          const hasAnyExpired = Object.values(liveQueries).some(
-            // eslint-disable-next-line max-nested-callbacks
-            (liveQuery) =>
-              liveQuery.heartbeat !== false && now > liveQuery.receivedAt + liveQuery.heartbeat,
-          )
-          if (!hasAnyExpired) {
-            return liveQueries
-          }
-          const next = {} as LiveQueriesState
-          for (const [key, value] of Object.entries(liveQueries)) {
-            if (value.heartbeat !== false && now > value.receivedAt + value.heartbeat) {
-              continue
-            }
-            next[key] = value
-          }
-          return next
-        }),
-      MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL,
-    )
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
+  useEffect((): (() => void) => {
     if (controller) {
-      const comlink = controller.createChannel<LoaderControllerMsg, LoaderNodeMsg>(
+      const nextComlink = controller.createChannel<LoaderControllerMsg, LoaderNodeMsg>(
         {
           name: 'presentation',
           connectTo: 'loaders',
@@ -113,11 +70,11 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
-      setComlink(comlink)
+      setComlink(nextComlink)
 
-      comlink.onStatus(onLoadersConnection)
+      nextComlink.onStatus(onLoadersConnection)
 
-      comlink.on('loader/documents', (data) => {
+      nextComlink.on('loader/documents', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
           onDocumentsOnPage(
             'loaders',
@@ -128,7 +85,7 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
         }
       })
 
-      comlink.on('loader/query-listen', (data) => {
+      nextComlink.on('loader/query-listen', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
           if (
             typeof data.heartbeat === 'number' &&
@@ -138,54 +95,28 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
               `Loader query listen heartbeat interval must be at least ${MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL}ms`,
             )
           }
-          setLiveQueries((prev) => ({
-            ...prev,
-            [getQueryCacheKey(data.query, data.params)]: {
+          liveQueriesDispatch({
+            type: 'query-listen',
+            payload: {
               perspective: data.perspective,
               query: data.query,
               params: data.params,
-              receivedAt: Date.now(),
               heartbeat: data.heartbeat ?? false,
-            } satisfies LiveQueriesStateValue,
-          }))
+            },
+          })
         }
       })
 
-      return comlink.start()
+      return nextComlink.start()
     }
-    return undefined
-  }, [controller, dataset, onDocumentsOnPage, onLoadersConnection, projectId])
+    return () => undefined
+  }, [controller, dataset, liveQueriesDispatch, onDocumentsOnPage, onLoadersConnection, projectId])
 
-  // const currentUser = useCurrentUser()
-  // const handleCreatePreviewUrlSecret = useEffectEvent(
-  //   async ({projectId, dataset}: {projectId: string; dataset: string}) => {
-  //     try {
-  //       // eslint-disable-next-line no-console
-  //       console.log('Creating preview URL secret for ', {projectId, dataset})
-  //       const {secret} = await createPreviewSecret(
-  //         client,
-  //         '@sanity/presentation',
-  //         typeof window === 'undefined' ? '' : location.href,
-  //         currentUser?.id,
-  //       )
-  //       return {secret}
-  //     } catch (err) {
-  //       // eslint-disable-next-line no-console
-  //       console.error('Failed to generate preview URL secret', err)
-  //       return {secret: null}
-  //     }
-  //   },
-  // )
-  // useEffect(() => {
-  //   return comlink?.on('loader/fetch-preview-url-secret', (data) =>
-  //     handleCreatePreviewUrlSecret(data),
-  //   )
-  // }, [comlink, handleCreatePreviewUrlSecret])
-
-  const [syncTagsInUse] = useState(() => new Set<SyncTag[]>())
-  const [lastLiveEventId, setLastLiveEventId] = useState<string | null>(null)
-  const studioClient = useClient({apiVersion: '2023-10-16'})
-  const clientConfig = useMemo(() => studioClient.config(), [studioClient])
+  const studioClient = useClient(
+    isReleasePerspective(activePerspective)
+      ? RELEASES_STUDIO_CLIENT_OPTIONS
+      : {apiVersion: API_VERSION},
+  )
   const client = useMemo(
     () =>
       studioClient.withConfig({
@@ -195,71 +126,35 @@ export default function LoaderQueries(props: LoaderQueriesProps): React.JSX.Elem
   )
   useEffect(() => {
     if (comlink) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const {projectId, dataset} = clientConfig
-      // @todo - Can this be migrated/deprecated in favour of emitting
-      // `presentation/perspective` at a higher level?
       comlink.post('loader/perspective', {
-        projectId: projectId!,
-        dataset: dataset!,
+        projectId,
+        dataset,
         perspective: activePerspective,
       })
     }
-  }, [comlink, clientConfig, activePerspective])
-
-  const handleSyncTags = useEffectEvent((event: LiveEventMessage) => {
-    const flattenedSyncTags = Array.from(syncTagsInUse).flat()
-    const hasMatchingTags = event.tags.some((tag) => flattenedSyncTags.includes(tag))
-    if (hasMatchingTags) {
-      setLastLiveEventId(event.id)
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('No matching tags found', event.tags, {flattenedSyncTags})
-    }
-  })
-  useEffect(() => {
-    const liveClient = createClient(client.config()).withConfig({
-      // Necessary for the live drafts to work
-      apiVersion: 'vX',
-    })
-    const subscription = liveClient.live
-      .events({includeDrafts: true, tag: 'presentation-loader'})
-      .subscribe({
-        next: (event) => {
-          if (event.type === 'message') {
-            handleSyncTags(event)
-          } else if (event.type === 'restart') {
-            setLastLiveEventId(event.id)
-          } else if (event.type === 'reconnect') {
-            setLastLiveEventId(null)
-          }
-        },
-        // eslint-disable-next-line no-console
-        error: (err) => console.error('Error validating EventSource URL:', err),
-      })
-    return () => subscription.unsubscribe()
-  }, [client, handleSyncTags])
+  }, [comlink, activePerspective, projectId, dataset])
 
   /**
    * Defer the liveDocument to avoid unnecessary rerenders on rapid edits
    */
-  const liveDocument = useDeferredValue(_liveDocument)
+  const liveDocument = useDeferredValue(props.liveDocument)
+
+  const liveEvents = useLiveEvents(client)
 
   return (
     <>
-      {Object.entries(liveQueries).map(([key, {query, params, perspective}]) => (
+      {[...liveQueries.entries()].map(([key, {query, params, perspective}]) => (
         <QuerySubscription
-          key={`${key}${perspective}`}
-          projectId={clientConfig.projectId!}
-          dataset={clientConfig.dataset!}
+          key={`${liveEvents.resets}:${key}`}
+          projectId={projectId}
+          dataset={dataset}
           perspective={perspective}
           query={query}
           params={params}
           comlink={comlink}
           client={client}
           liveDocument={liveDocument}
-          lastLiveEventId={lastLiveEventId}
-          syncTagsInUse={syncTagsInUse}
+          liveEventsMessages={liveEvents.messages}
         />
       ))}
     </>
@@ -274,14 +169,13 @@ interface SharedProps {
 }
 
 interface QuerySubscriptionProps
-  extends Pick<UseQuerySubscriptionProps, 'client' | 'liveDocument' | 'lastLiveEventId'> {
+  extends Pick<UseQuerySubscriptionProps, 'client' | 'liveDocument' | 'liveEventsMessages'> {
   projectId: string
   dataset: string
   perspective: ClientPerspective
   query: string
   params: QueryParams
   comlink: LoaderConnection | undefined
-  syncTagsInUse: Set<SyncTag[]>
 }
 function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
   const {
@@ -291,12 +185,11 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     query,
     client,
     liveDocument,
+    params,
     comlink,
-    lastLiveEventId,
-    syncTagsInUse,
+    liveEventsMessages,
   } = props
 
-  const params = useQueryParams(props.params)
   const {
     result,
     resultSourceMap,
@@ -307,9 +200,10 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     params,
     perspective,
     query,
-    lastLiveEventId,
+    liveEventsMessages,
   }) || {}
 
+  /* eslint-disable @typescript-eslint/no-shadow,max-params */
   const handleQueryChange = useEffectEvent(
     (
       comlink: LoaderConnection | undefined,
@@ -319,7 +213,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       result: unknown,
       resultSourceMap: ContentSourceMap | undefined,
       tags: `s1:${string}`[] | undefined,
-      // eslint-disable-next-line max-params
     ) => {
       comlink?.post('loader/query-change', {
         projectId,
@@ -333,28 +226,14 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       })
     },
   )
+  /* eslint-enable @typescript-eslint/no-shadow,max-params */
+
   useEffect(() => {
     if (resultSourceMap) {
       handleQueryChange(comlink, perspective, query, params, result, resultSourceMap, tags)
     }
-    if (Array.isArray(tags)) {
-      syncTagsInUse.add(tags)
-      return () => {
-        syncTagsInUse.delete(tags)
-      }
-    }
     return undefined
-  }, [
-    comlink,
-    handleQueryChange,
-    params,
-    perspective,
-    query,
-    result,
-    resultSourceMap,
-    syncTagsInUse,
-    tags,
-  ])
+  }, [comlink, params, perspective, query, result, resultSourceMap, tags])
 
   return null
 }
@@ -366,79 +245,59 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
   query: string
   params: QueryParams
   perspective: ClientPerspective
-  lastLiveEventId: string | null
+  liveEventsMessages: LiveEventMessage[]
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
-  const {liveDocument, client, query, params, perspective, lastLiveEventId} = props
-  const [snapshot, setSnapshot] = useState<{
-    result: unknown
-    resultSourceMap?: ContentSourceMap
-    syncTags?: SyncTag[]
-    lastLiveEventId: string | null
-  } | null>(null)
+  const {liveDocument, client, query, params, perspective, liveEventsMessages} = props
+  const [result, setResult] = useState<unknown>(null)
+  const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
+  const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
+  const [skipEventIds] = useState(() => new Set(liveEventsMessages.map((msg) => msg.id)))
+  const recentLiveEvents = liveEventsMessages.filter((msg) => !skipEventIds.has(msg.id))
+  const lastLiveEvent = recentLiveEvents.findLast((msg) =>
+    msg.tags.some((tag) => syncTags?.includes(tag)),
+  )
+  const lastLiveEventId = lastLiveEvent?.id
+
   // Make sure any async errors bubble up to the nearest error boundary
   const [error, setError] = useState<unknown>(null)
   if (error) throw error
 
-  const [revalidate, startRefresh] = useRevalidate({
-    // Refresh interval is set to zero as we're using the Live Draft Content API to revalidate queries
-    refreshInterval: 0,
-  })
-  const shouldRefetch =
-    revalidate === 'refresh' ||
-    revalidate === 'inflight' ||
-    lastLiveEventId !== snapshot?.lastLiveEventId
+  /* eslint-disable max-nested-callbacks */
   useEffect(() => {
-    if (!shouldRefetch) {
-      return undefined
-    }
-
-    let fulfilled = false
-    let fetching = false
     const controller = new AbortController()
-    // eslint-disable-next-line no-inner-declarations
-    async function effect() {
-      const {signal} = controller
-      fetching = true
-      const {result, resultSourceMap, syncTags} = await client.fetch(query, params, {
+
+    client
+      .fetch(query, params, {
         lastLiveEventId,
         tag: 'presentation-loader',
-        signal,
+        signal: controller.signal,
         perspective,
         filterResponse: false,
         returnQuery: false,
       })
-      fetching = false
-
-      if (!signal.aborted) {
-        setSnapshot((prev) => ({
-          result: isEqual(prev?.result, result) ? prev?.result : result,
-          resultSourceMap: isEqual(prev?.resultSourceMap, resultSourceMap)
-            ? prev?.resultSourceMap
-            : resultSourceMap,
-          syncTags: isEqual(prev?.syncTags, syncTags) ? prev?.syncTags : syncTags,
-          lastLiveEventId,
-        }))
-        fulfilled = true
-      }
-    }
-    const onFinally = startRefresh()
-    effect()
-      .catch((error) => {
-        fetching = false
-        if (error.name !== 'AbortError') {
-          setError(error)
+      .then((response) => {
+        startTransition(() => {
+          // eslint-disable-next-line max-nested-callbacks
+          setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
+          setResultSourceMap((prev) =>
+            isEqual(prev, response.resultSourceMap) ? prev : response.resultSourceMap,
+          )
+          setSyncTags((prev) => (isEqual(prev, response.syncTags) ? prev : response.syncTags))
+        })
+      })
+      .catch((err) => {
+        if (typeof err !== 'object' || err?.name !== 'AbortError') {
+          setError(err)
         }
       })
-      .finally(onFinally)
-    return () => {
-      if (!fulfilled && !fetching) {
-        controller.abort()
-      }
-    }
-  }, [client, lastLiveEventId, params, perspective, query, shouldRefetch, startRefresh])
 
-  const {result, resultSourceMap, syncTags} = snapshot ?? {}
+    return () => {
+      controller.abort()
+    }
+  }, [client, lastLiveEventId, params, perspective, query])
+  /* eslint-enable max-nested-callbacks */
+
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
       return {
@@ -471,22 +330,18 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         liveDocument?._id &&
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
-        return liveDocument
+        if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
+          return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
+        }
+        return {
+          ...liveDocument,
+          _id: liveDocument._id || sourceDocument._id,
+          _type: liveDocument._type || sourceDocument._type,
+        }
       }
-      return undefined
+      return null
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (changedValue: any, {previousValue}) => {
-      if (typeof changedValue === 'number' && typeof previousValue === 'string') {
-        // If the string() function was used in the query, we need to convert the source value to a string as well
-        return `${changedValue}`
-      }
-      return changedValue
-    },
+    mapChangedValue,
     perspective,
   )
-}
-
-function getQueryCacheKey(query: string, params: QueryParams | string): `${string}-${string}` {
-  return `${query}-${typeof params === 'string' ? params : JSON.stringify(params)}`
 }

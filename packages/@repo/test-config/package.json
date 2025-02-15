@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-config",
-  "version": "3.71.0",
+  "version": "3.75.0",
   "private": true,
   "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
   "type": "module",
@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@repo/dev-aliases": "workspace:*",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.5"
   }
 }

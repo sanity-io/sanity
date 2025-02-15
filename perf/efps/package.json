@@ -16,27 +16,27 @@
     "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
   },
   "devDependencies": {
-    "@sanity/client": "^6.25.0",
+    "@sanity/client": "^6.28.0",
     "@swc-node/register": "^1.10.9",
-    "@types/react": "^19.0.3",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
     "@types/serve-handler": "^6.1.4",
     "@types/yargs": "^17.0.7",
     "@vitejs/plugin-react": "^4.3.4",
-    "babel-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",
+    "babel-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.0.3",
     "globby": "^11.1.0",
     "ora": "^8.0.1",
-    "playwright": "^1.46.1",
+    "playwright": "^1.50.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "sanity": "workspace:*",
     "serve-handler": "^6.1.5",
     "source-map": "^0.7.4",
-    "vite": "^6.0.7",
+    "vite": "^6.1.0",
     "yargs": "17.3.0"
   }
 }

@@ -1,6 +1,6 @@
 import {type ChunkMetadata, type Plugin} from 'vite'
 
-import {renderDocument} from '../renderDocument'
+import {decorateIndexWithBridgeScript, renderDocument} from '../renderDocument'
 import {type SanityMonorepo} from '../sanityMonorepo'
 
 interface ViteOutputBundle {
@@ -19,6 +19,7 @@ interface ViteRenderedChunk {
   code: string
   imports: string[]
   viteMetadata: ChunkMetadata
+  isEntry: boolean
 }
 
 const entryChunkId = '.sanity/runtime/app.js'
@@ -28,8 +29,9 @@ export function sanityBuildEntries(options: {
   monorepo: SanityMonorepo | undefined
   basePath: string
   importMap?: {imports?: Record<string, string>}
+  isCoreApp?: boolean
 }): Plugin {
-  const {cwd, monorepo, basePath, importMap} = options
+  const {cwd, monorepo, basePath, importMap, isCoreApp} = options
 
   return {
     name: 'sanity/server/build-entries',
@@ -84,16 +86,19 @@ export function sanityBuildEntries(options: {
       this.emitFile({
         type: 'asset',
         fileName: 'index.html',
-        source: await renderDocument({
-          monorepo,
-          studioRootPath: cwd,
-          importMap,
-          props: {
-            basePath,
-            entryPath,
-            css,
-          },
-        }),
+        source: decorateIndexWithBridgeScript(
+          await renderDocument({
+            monorepo,
+            studioRootPath: cwd,
+            importMap,
+            props: {
+              basePath,
+              entryPath,
+              css,
+            },
+            isCoreApp,
+          }),
+        ),
       })
     },
   }

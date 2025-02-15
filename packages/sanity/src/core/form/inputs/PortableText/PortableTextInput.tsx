@@ -1,7 +1,6 @@
 import {
   type EditorChange,
   type EditorEmittedEvent,
-  EditorEventListener,
   EditorProvider,
   type EditorSelection,
   type InvalidValue,
@@ -14,7 +13,7 @@ import {
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
-import {coreBehaviors, createMarkdownBehaviors} from '@portabletext/editor/behaviors'
+import {EventListenerPlugin, MarkdownPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
@@ -385,21 +384,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <EditorProvider
               initialConfig={{
-                behaviors: [
-                  ...coreBehaviors,
-                  ...createMarkdownBehaviors({
-                    defaultStyle: ({schema}) =>
-                      schema.styles.find((style) => style.value === 'normal')?.value,
-                    blockquoteStyle: ({schema}) =>
-                      schema.styles.find((style) => style.value === 'blockquote')?.value,
-                    headingStyle: ({schema, level}) =>
-                      schema.styles.find((style) => style.value === `h${level}`)?.value,
-                    orderedListStyle: ({schema}) =>
-                      schema.lists.find((list) => list.value === 'number')?.value,
-                    unorderedListStyle: ({schema}) =>
-                      schema.lists.find((list) => list.value === 'bullet')?.value,
-                  }),
-                ],
                 initialValue: value,
                 readOnly: readOnly || !ready,
                 keyGenerator,
@@ -411,6 +395,24 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
               <UpdateValuePlugin value={value} />
+              <MarkdownPlugin
+                config={{
+                  boldDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
+                  italicDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'em')?.value,
+                  defaultStyle: ({schema}) =>
+                    schema.styles.find((style) => style.value === 'normal')?.value,
+                  blockquoteStyle: ({schema}) =>
+                    schema.styles.find((style) => style.value === 'blockquote')?.value,
+                  headingStyle: ({schema, level}) =>
+                    schema.styles.find((style) => style.value === `h${level}`)?.value,
+                  orderedListStyle: ({schema}) =>
+                    schema.lists.find((list) => list.value === 'number')?.value,
+                  unorderedListStyle: ({schema}) =>
+                    schema.lists.find((list) => list.value === 'bullet')?.value,
+                }}
+              />
               <Compositor
                 {...props}
                 elementRef={elementRef}
@@ -510,7 +512,7 @@ function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
     [props],
   )
 
-  return <EditorEventListener on={handleEditorEvent} />
+  return <EventListenerPlugin on={handleEditorEvent} />
 }
 
 /**

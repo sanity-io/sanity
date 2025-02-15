@@ -34,10 +34,11 @@ withDefaultClient((context) => {
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
     const authorListbox = page.locator('#author-listbox')
+    const popover = page.locator("[data-ui='Popover']")
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
-    await expect(authorListbox).toBeAttached()
+    await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
     // Select the first document in the list.
@@ -52,7 +53,7 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
-    await expect(authorListbox).toBeAttached()
+    await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
     // Select the next document in the list.
@@ -69,11 +70,15 @@ withDefaultClient((context) => {
     page,
     createDraftDocument,
   }) => {
+    test.slow()
     const originalTitle = 'Initial Doc'
 
     await createDraftDocument('/test/content/input-standard;referenceTest')
     page.getByTestId('string-input').fill(originalTitle)
 
+    await expect(
+      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
+    ).toBeVisible()
     /** create reference */
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
@@ -81,7 +86,7 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // switch to original doc
-    page.getByRole('button', {name: originalTitle}).click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
@@ -125,7 +130,7 @@ withDefaultClient((context) => {
     await expect(documentStatus.nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
-    page.getByRole('button', {name: originalTitle}).click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
@@ -153,7 +158,8 @@ withDefaultClient((context) => {
     const documentStatus = page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/test/content/input-debug;simpleReferences')
-    page.getByTestId('string-input').fill(originalTitle)
+    await expect(page.getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
     await expect(
@@ -173,7 +179,7 @@ withDefaultClient((context) => {
     await expect(documentStatus.nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
-    page.getByRole('button', {name: originalTitle}).click()
+    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 

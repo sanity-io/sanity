@@ -3,7 +3,9 @@ import {test} from '@sanity/test'
 
 import {mockActionsFeatureToggle} from '../../helpers/mockActionsFeatureToggle'
 
-test('Actions API should be used if the feature toggle is enabled and the Studio version satisfies the `compatibleStudioVersions` constraint', async ({
+// This test is skipped because the feature toggle is disable by the use of `releases`, see https://github.com/sanity-io/sanity/blob/corel/packages/sanity/src/core/releases/plugin/index.ts#L61-L62
+// Re enable once the feature toggle is removed and we support serverDocumentActions with releases.
+test.skip('Actions API should be used if the feature toggle is enabled and the Studio version satisfies the `compatibleStudioVersions` constraint', async ({
   page,
   createDraftDocument,
 }) => {

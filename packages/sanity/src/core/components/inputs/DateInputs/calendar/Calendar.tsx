@@ -77,6 +77,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
   showTimezone?: boolean
+  isPastDisabled?: boolean
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -112,6 +113,7 @@ export const Calendar = forwardRef(function Calendar(
     timezone,
     onSelect,
     labels,
+    isPastDisabled,
     monthPickerVariant = 'select',
     padding = 2,
     showTimezone = false,
@@ -308,12 +310,14 @@ export const Calendar = forwardRef(function Calendar(
                   icon={ChevronLeftIcon}
                   mode="bleed"
                   onClick={() => moveFocusedDate(-1)}
+                  data-testid="calendar-prev-month"
                   tooltipProps={{content: 'Previous month'}}
                 />
                 <Button
                   icon={ChevronRightIcon}
                   mode="bleed"
                   onClick={() => moveFocusedDate(1)}
+                  data-testid="calendar-next-month"
                   tooltipProps={{content: 'Next month'}}
                 />
               </TooltipDelayGroupProvider>
@@ -372,26 +376,7 @@ export const Calendar = forwardRef(function Calendar(
         )}
 
         {/* Select month and year */}
-        <Flex>
-          <Box flex={1}>
-            <CalendarMonthSelect
-              onChange={handleFocusedMonthChange}
-              monthNames={labels.monthNames}
-              value={getDisplayMonth()}
-            />
-          </Box>
-          <Box marginLeft={2}>
-            <CalendarYearSelect
-              moveFocusedDate={moveFocusedDate}
-              labels={{
-                goToNextYear: labels.goToNextYear,
-                goToPreviousYear: labels.goToPreviousYear,
-              }}
-              onChange={setFocusedDateYear}
-              value={getDisplayYear()}
-            />
-          </Box>
-        </Flex>
+        {monthPicker}
 
         {/* Selected month (grid of days) */}
         <Box
@@ -407,6 +392,7 @@ export const Calendar = forwardRef(function Calendar(
             focused={focusedDate}
             onSelect={handleDateChange}
             selected={selectedDate}
+            isPastDisabled={isPastDisabled}
           />
           {PRESERVE_FOCUS_ELEMENT}
         </Box>

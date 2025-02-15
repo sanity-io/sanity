@@ -4,8 +4,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
-  const {connectionState, schemaType, title, editState} = useDocumentPane()
-  const documentValue = editState?.draft || editState?.published
+  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({

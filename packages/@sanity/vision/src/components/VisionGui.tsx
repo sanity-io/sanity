@@ -1,6 +1,11 @@
 /* eslint-disable complexity */
 import {SplitPane} from '@rexxars/react-split-pane'
-import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
+import {
+  type ClientPerspective,
+  type ListenEvent,
+  type MutationEvent,
+  type SanityClient,
+} from '@sanity/client'
 import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
   Box,
@@ -19,14 +24,23 @@ import {
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {debounce} from 'lodash'
-import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
-import {type TFunction, Translate} from 'sanity'
+import {
+  type ChangeEvent,
+  type ComponentType,
+  createRef,
+  Fragment,
+  PureComponent,
+  type RefObject,
+  useMemo,
+} from 'react'
+import isEqual from 'react-fast-compare'
+import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {
-  DEFAULT_PERSPECTIVE,
   isSupportedPerspective,
+  isVirtualPerspective,
   SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
 } from '../perspectives'
@@ -117,7 +131,7 @@ interface VisionGuiState {
   dataset: string
   apiVersion: string
   customApiVersion: string | false
-  perspective: SupportedPerspective
+  perspective: SupportedPerspective | undefined
 
   // Selected options validation state
   isValidApiVersion: boolean
@@ -171,14 +185,16 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
     const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
     const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
-    const defaultPerspective = DEFAULT_PERSPECTIVE
 
     let dataset = this._localStorage.get('dataset', defaultDataset)
     let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
     let lastQuery = this._localStorage.get('query', '')
     let lastParams = this._localStorage.get('params', '{\n  \n}')
     const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
-    let perspective = this._localStorage.get('perspective', defaultPerspective)
+    const perspective = this._localStorage.get<SupportedPerspective | undefined>(
+      'perspective',
+      undefined,
+    )
 
     if (!datasets.includes(dataset)) {
       dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
@@ -186,10 +202,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
     if (!API_VERSIONS.includes(apiVersion)) {
       apiVersion = DEFAULT_API_VERSION
-    }
-
-    if (!SUPPORTED_PERSPECTIVES.includes(perspective)) {
-      perspective = DEFAULT_PERSPECTIVE
     }
 
     if (typeof lastQuery !== 'string') {
@@ -209,7 +221,10 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,
       dataset,
-      perspective: perspective,
+      perspective: getActivePerspective({
+        visionPerspective: perspective,
+        pinnedPerspective: this.props.pinnedPerspective,
+      }),
       allowReconfigure: true,
     })
 
@@ -264,6 +279,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleResize = this.handleResize.bind(this)
     this.handleOnPasteCapture = this.handleOnPasteCapture.bind(this)
+    this.setPerspective = this.setPerspective.bind(this)
   }
 
   componentDidMount() {
@@ -278,6 +294,16 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this.cancelListener()
     this.cancelEventListener()
     this.cancelResizeListener()
+  }
+
+  componentDidUpdate(prevProps: Readonly<VisionGuiProps>): void {
+    if (hasPinnedPerspectiveChanged(prevProps.pinnedPerspective, this.props.pinnedPerspective)) {
+      if (hasPinnedPerspective(this.props.pinnedPerspective)) {
+        this.setPerspective('pinnedRelease')
+      } else {
+        this.setPerspective(undefined)
+      }
+    }
   }
 
   handleResizeListen() {
@@ -338,11 +364,17 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       }
     }
 
-    const perspective = isSupportedPerspective(parts.options.perspective)
-      ? parts.options.perspective
-      : undefined
+    const perspective =
+      isSupportedPerspective(parts.options.perspective) &&
+      !isVirtualPerspective(parts.options.perspective)
+        ? parts.options.perspective
+        : undefined
 
-    if (perspective && !isSupportedPerspective(perspective)) {
+    if (
+      perspective &&
+      (!isSupportedPerspective(parts.options.perspective) ||
+        isVirtualPerspective(parts.options.perspective))
+    ) {
       this.props.toast.push({
         closable: true,
         id: 'vision-paste-unsupported-perspective',
@@ -378,7 +410,10 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         this._client.config({
           dataset: this.state.dataset,
           apiVersion: customApiVersion || apiVersion,
-          perspective: this.state.perspective,
+          perspective: getActivePerspective({
+            visionPerspective: this.state.perspective,
+            pinnedPerspective: this.props.pinnedPerspective,
+          }),
         })
         this.handleQueryExecution()
         this.props.toast.push({
@@ -399,7 +434,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     if (!this._querySubscription) {
       return
     }
-
     this._querySubscription.unsubscribe()
     this._querySubscription = undefined
   }
@@ -466,14 +500,21 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
   handleChangePerspective(evt: ChangeEvent<HTMLSelectElement>) {
     const perspective = evt.target.value
-    if (!isSupportedPerspective(perspective)) {
+    this.setPerspective(perspective === 'default' ? undefined : perspective)
+  }
+
+  setPerspective(perspective: string | undefined): void {
+    if (perspective !== undefined && !isSupportedPerspective(perspective)) {
       return
     }
 
     this.setState({perspective}, () => {
       this._localStorage.set('perspective', this.state.perspective)
       this._client.config({
-        perspective: this.state.perspective,
+        perspective: getActivePerspective({
+          visionPerspective: this.state.perspective,
+          pinnedPerspective: this.props.pinnedPerspective,
+        }),
       })
       this.handleQueryExecution()
     })
@@ -598,9 +639,13 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
     this.ensureSelectedApiVersion()
 
-    const urlQueryOpts: Record<string, string> = {}
-    if (this.state.perspective !== 'raw') {
-      urlQueryOpts.perspective = this.state.perspective
+    const urlQueryOpts: Record<string, string | string[]> = {}
+    if (this.state.perspective) {
+      urlQueryOpts.perspective =
+        getActivePerspective({
+          visionPerspective: this.state.perspective,
+          pinnedPerspective: this.props.pinnedPerspective,
+        }) ?? []
     }
 
     const url = this._client.getUrl(
@@ -613,20 +658,22 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this._querySubscription = this._client.observable
       .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
-        next: (res) =>
+        next: (res) => {
           this.setState({
             queryTime: res.ms,
             e2eTime: Date.now() - queryStart,
             queryResult: res.result,
             queryInProgress: false,
             error: undefined,
-          }),
-        error: (error) =>
+          })
+        },
+        error: (error) => {
           this.setState({
             error,
             query,
             queryInProgress: false,
-          }),
+          })
+        },
       })
 
     return true
@@ -670,7 +717,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   }
 
   render() {
-    const {datasets, t} = this.props
+    const {datasets, t, pinnedPerspective} = this.props
     const {
       apiVersion,
       customApiVersion,
@@ -776,11 +823,24 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                     </Box>
                   </Inline>
                 </Card>
-
-                <Select value={perspective} onChange={this.handleChangePerspective}>
-                  {SUPPORTED_PERSPECTIVES.map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
+                <Select value={perspective || 'default'} onChange={this.handleChangePerspective}>
+                  {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
+                    if (perspectiveName === 'pinnedRelease') {
+                      return (
+                        <Fragment key="pinnedRelease">
+                          <PinnedReleasePerspectiveOption
+                            pinnedPerspective={pinnedPerspective}
+                            t={t}
+                          />
+                          <option key="default" value="default">
+                            {t('settings.perspectives.default')}
+                          </option>
+                          <hr />
+                        </Fragment>
+                      )
+                    }
+                    return <option key={perspectiveName}>{perspectiveName}</option>
+                  })}
                 </Select>
               </Stack>
             </Box>
@@ -1026,4 +1086,66 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       </Root>
     )
   }
+}
+
+function getActivePerspective({
+  visionPerspective,
+  pinnedPerspective,
+}: {
+  visionPerspective: ClientPerspective | SupportedPerspective | undefined
+  pinnedPerspective: PerspectiveContextValue
+}): ClientPerspective | undefined {
+  if (visionPerspective !== 'pinnedRelease') {
+    return visionPerspective
+  }
+
+  if (pinnedPerspective.perspectiveStack.length !== 0) {
+    return pinnedPerspective.perspectiveStack
+  }
+
+  if (typeof pinnedPerspective.selectedPerspectiveName !== 'undefined') {
+    return [pinnedPerspective.selectedPerspectiveName]
+  }
+
+  return undefined
+}
+
+const PinnedReleasePerspectiveOption: ComponentType<{
+  pinnedPerspective: PerspectiveContextValue
+  t: TFunction
+}> = ({pinnedPerspective, t}) => {
+  const name =
+    typeof pinnedPerspective.selectedPerspective === 'object'
+      ? pinnedPerspective.selectedPerspective.metadata.title
+      : pinnedPerspective.selectedPerspectiveName
+
+  const label = hasPinnedPerspective(pinnedPerspective)
+    ? `(${t('settings.perspectives.pinned-release-label')})`
+    : t('settings.perspectives.pinned-release-label')
+
+  const text = useMemo(
+    () => [name, label].filter((value) => typeof value !== 'undefined').join(' '),
+    [label, name],
+  )
+
+  return (
+    <option value="pinnedRelease" disabled={!hasPinnedPerspective(pinnedPerspective)}>
+      {text}
+    </option>
+  )
+}
+
+function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
+  return typeof selectedPerspectiveName !== 'undefined'
+}
+
+function hasPinnedPerspectiveChanged(
+  previous: PerspectiveContextValue,
+  next: PerspectiveContextValue,
+): boolean {
+  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
+
+  return (
+    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
+  )
 }

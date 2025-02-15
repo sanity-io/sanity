@@ -364,6 +364,37 @@ export const internalTasksReducer = (opts: {
   return result
 }
 
+export const eventsAPIReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+  key: 'releases' | 'documents'
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    // @ts-expect-error enabled is a legacy option we want to warn beta testers in case they have enabled it.
+    if (innerConfig.beta?.eventsAPI?.enabled) {
+      throw new Error(
+        `The \`beta.eventsAPI.enabled\` option has been removed. Use \`beta.eventsAPI.${opts.key}\` instead.`,
+      )
+    }
+
+    const enabled = innerConfig.beta?.eventsAPI?.[opts.key]
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`beta.eventsAPI.${opts.key}\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const serverDocumentActionsReducer = (opts: {
   config: PluginOptions
   initialValue: boolean | undefined
@@ -427,7 +458,7 @@ export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigCo
  * `enableLegacySearch` option.
  *
  * If the project currently enables the Text Search API search strategy by setting
- * `enableLegacySearch` to `false`, this is mapped to the `textSearch` strategy.
+ * `enableLegacySearch` to `false`, this is mapped to the `groq2024` strategy.
  *
  * Any explicitly defined `strategy` value will take precedence over the value inferred from
  * `enableLegacySearch`.
@@ -465,7 +496,7 @@ export const searchStrategyReducer = ({
 
       // The strategy has been implicitly defined.
       if (typeof enableLegacySearch === 'boolean') {
-        return [enableLegacySearch ? 'groqLegacy' : 'textSearch', currentExplicit]
+        return [enableLegacySearch ? 'groqLegacy' : 'groq2024', currentExplicit]
       }
 
       return [currentImplicit, currentExplicit]

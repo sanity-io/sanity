@@ -37,7 +37,7 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
       - if: steps.check-changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7
+        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # v7
         with:
           body: I ran `pnpm -r up react-compiler-runtime@beta babel-plugin-react-compiler@beta eslint-plugin-react-compiler@beta` 🧑‍💻
           branch: actions/react-compiler

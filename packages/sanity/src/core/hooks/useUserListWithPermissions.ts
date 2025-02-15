@@ -3,7 +3,7 @@ import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import {sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
-import {concat, forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
+import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
 import {
   type DocumentValuePermission,
@@ -25,7 +25,12 @@ type Loadable<T> = {
  * @beta
  * @hidden
  */
-export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]>
+export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]> & {
+  /** when true, comments has mention feature disabled
+   * @internal
+   * */
+  disabled?: boolean
+}
 
 /**
  * @beta
@@ -49,8 +54,6 @@ export interface UserListWithPermissionsOptions {
   permission: DocumentValuePermission
 }
 
-let cachedSystemGroups: [] | null = null
-
 /**
  * @beta
  * Returns a list of users with the specified permission on the document.
@@ -67,14 +70,15 @@ export function useUserListWithPermissions(
 
   const [state, setState] = useState<UserListWithPermissionsHookValue>(INITIAL_STATE)
 
-  const list$ = useMemo(() => {
+  const [users$, systemGroup$] = useMemo(() => {
     // 1. Get the project members and filter out the robot users
     const members$: Observable<ProjectData['members']> = projectStore
       .get()
       .pipe(map((res: ProjectData) => res.members?.filter((m) => !m.isRobot)))
+      .pipe(shareReplay(1))
 
     // 2. Map the members to users to get more data of the users such as displayName (used for filtering)
-    const users$: Observable<UserWithPermission[]> = members$.pipe(
+    const _users$: Observable<UserWithPermission[]> = members$.pipe(
       switchMap(async (members) => {
         const ids = members.map(({id}) => id)
         const users = await userStore.getUsers(ids)
@@ -90,16 +94,14 @@ export function useUserListWithPermissions(
     )
 
     // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
-    const cached = cachedSystemGroups
-    const systemGroup$ = cached ? of(cached) : client.observable.fetch('*[_type == "system.group"]')
+    const _systemGroup$ = client.observable.fetch('*[_type == "system.group"]').pipe(shareReplay(1))
+    return [_users$, _systemGroup$]
+  }, [client.observable, projectStore, userStore])
 
+  const list$ = useMemo(() => {
     // 4. Check if the user has read permission on the document and set the `granted` property
     const grants$: Observable<UserWithPermission[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
-        if (!cached) {
-          cachedSystemGroups = groups
-        }
-
         const grantPromises = users?.map(async (user) => {
           const grants = groups.map((group: any) => {
             if (group.members.includes(user.id)) {
@@ -123,9 +125,7 @@ export function useUserListWithPermissions(
           }
         })
 
-        const usersWithPermission = await Promise.all(grantPromises || [])
-
-        return usersWithPermission
+        return await Promise.all(grantPromises || [])
       }),
     )
 
@@ -139,7 +139,7 @@ export function useUserListWithPermissions(
     )
 
     return $alphabetical
-  }, [client.observable, documentValue, projectStore, userStore, permission])
+  }, [documentValue, permission, users$, systemGroup$])
 
   useEffect(() => {
     const initial$ = of(INITIAL_STATE)

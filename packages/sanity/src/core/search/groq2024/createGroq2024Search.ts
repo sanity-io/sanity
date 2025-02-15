@@ -47,8 +47,8 @@ export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> 
     return client.observable
       .withConfig({
         // The GROQ functions that power `groq2024` are currently only available using API `vX`.
-        //
         // TODO: Switch to stable API version before `groq2024` general availability.
+        // TODO: When moving to stable API version, consider that the version should work with releases.
         apiVersion: 'vX',
       })
       .fetch<SanityDocumentLike[]>(query, params, options)

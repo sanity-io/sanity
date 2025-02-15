@@ -125,6 +125,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
 
+  /** Label when a release has been deleted by a different user */
+  'banners.deleted-bundle-banner.text':
+    "The '<strong>{{title}}</strong>' release has been deleted.",
+
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
   /** Action message for navigating to next year */
@@ -237,6 +241,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.error-boundary.developer-info': 'Check the developer console for more information',
   /** Text shown when a diff component crashes during rendering, triggering the error boundary */
   'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+  /* Error description when changes could not be loaded */
+  'changes.error-description': "We're unable to load the changes for this document.",
+  /** Error title when changes could not be loaded */
+  'changes.error-title': 'Something went wrong',
   /** Error message shown when the value of a field is not the expected one */
   'changes.error.incorrect-type-message':
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
@@ -271,6 +279,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'There are no changes',
+  /* Label for the tooltip that shows when an action is not selectable*/
+  'changes.not-selectable': 'It is not possible to select this event',
   /** Portable Text diff: An annotation was added */
   'changes.portable-text.annotation_added': 'Added annotation',
   /** Portable Text diff: An annotation was changed */
@@ -314,6 +324,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.removed-label': 'Removed',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
+  /**The title that will be shown in the badge inside the events when the item is a draft */
+  'changes.versions.draft': 'Draft',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -353,6 +365,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Label to show in the document footer indicating the creation date of the document */
+  'document-status.created': 'Created {{date}}',
+
+  /** Label to show in the document status indicating the date of the status */
+  'document-status.date': '{{date}}',
   /** Label to show in the document footer indicating the last edited date of the document */
   'document-status.edited': 'Edited {{date}}',
   /** Label to show in the document footer indicating the document is not published*/
@@ -542,6 +559,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Tooltip content when boolean input is disabled */
   'inputs.boolean.disabled': 'Disabled',
+  /** Warning label when selected datetime is in the past */
+  'inputs.dateTime.past-date-warning': 'Select a date in the future.',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Indicating timezone when a valid displayTimezone is set in the options of the input */
@@ -1097,6 +1116,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * when there are templates/types available for creation
    */
   'new-document.create-new-document-label': 'New document…',
+  /** Tooltip message for add document button when the selected perspective is published  */
+  'new-document.disabled-published.tooltip': 'You cannot create new published documents',
+  /** Tooltip message for add document button when the selected perspective is for inactive release */
+  'new-document.disabled-release.tooltip': 'You cannot add documents to this release',
   /** Placeholder for the "filter" input within the new document menu */
   'new-document.filter-placeholder': 'Search document types',
   /** Loading indicator text within the new document menu */
@@ -1142,6 +1165,106 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
+
+  /** Action message to add document to new release */
+  'release.action.add-to-new-release': 'Add to release',
+  /** Action message to add document to release */
+  'release.action.add-to-release': 'Add to {{title}}',
+  /** Action message for when document is already in release  */
+  'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for when you click to view all versions you can copy the current document to */
+  'release.action.copy-to': 'Copy version to',
+  /** Action message for creating new releases */
+  'release.action.create-new': 'New release',
+  /** Action message for when document is already in release  */
+  'release.action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'release.action.discard-version.failure': 'Failed to discard version',
+  /** Description for toast when version deletion is successfully discarded */
+  'release.action.discard-version.success':
+    '<strong>{{title}}</strong> version was successfully discarded',
+  /** Action message for when a new release is created off an existing version, draft or published document */
+  'release.action.new-release': 'New Release',
+  /** Tooltip message for not having permissions for creating new releases */
+  'release.action.permission.error': 'You do not have permission to perform this action',
+  /** Error message for when a version is set to be unpublished */
+  'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
+  /** Action message for when a version is set to be unpublished successfully */
+  'release.action.unpublish-version.success':
+    'Successfully set <strong>{{title}}</strong> to be unpublished on release',
+  /** Action message for when the view release is pressed */
+  'release.action.view-release': 'View release',
+  /** Label for banner when release is scheduled */
+  'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
+  /** Label for Draft chip in document header */
+  'release.chip.draft': 'Draft',
+  /** Label for Draft chip in global header */
+  'release.chip.global.drafts': 'Drafts',
+  /** Label for Published chip in document header */
+  'release.chip.published': 'Published',
+  /** Label for tooltip in chip with the created date */
+  'release.chip.tooltip.created-date': 'Created {{date}}',
+  /** Label for tooltip in draft chip when it's a live edit document */
+  'release.chip.tooltip.draft-disabled.live-edit':
+    'This document is in live edit mode, drafts are disabled',
+  /** Label for tooltip in chip with the lasted edited date */
+  'release.chip.tooltip.edited-date': 'Edited {{date}}',
+  /** Label for tooltip in chip when document is intended for a future release that hasn't been scheduled */
+  'release.chip.tooltip.intended-for-date': 'Intended for {{date}}',
+  /** Label for tooltip in chip when there is no recent draft edits */
+  'release.chip.tooltip.no-edits': 'No edits',
+  /** Label for tooltip in chip when document isn't published */
+  'release.chip.tooltip.not-published': 'Not published',
+  /** Label for tooltip in chip with the published date */
+  'release.chip.tooltip.published-date': 'Published {{date}}',
+  /** Label for tooltip in chip when document is in a release that has been scheduled */
+  'release.chip.tooltip.scheduled-for-date': 'Scheduled for {{date}}',
+  /** Label for tooltip in scheduled chip without a known date */
+  'release.chip.tooltip.unknown-date': 'Unknown date',
+  /** Label for tooltip on deleted release */
+  'release.deleted-tooltip': 'This release has been deleted',
+  /** Title for copying version to a new release dialog */
+  'release.dialog.copy-to-release.title': 'Copy version to new release',
+  /** Title for creating releases dialog */
+  'release.dialog.create.title': 'New release',
+  /** Label for description in tooltip to explain release types */
+  'release.dialog.tooltip.description':
+    'The intended release time is used to create better previews and hints about whether documents conflict.',
+  /** Label for noting that a release time is not final */
+  'release.dialog.tooltip.note': 'You can always change it later.',
+  /** Title for tooltip to explain release time */
+  'release.dialog.tooltip.title': 'Approximate time of release',
+  /** The placeholder text when the release doesn't have a description */
+  'release.form.placeholder-describe-release': 'Describe the release…',
+  /** Tooltip for button to hide release visibility */
+  'release.layer.hide': 'Hide release',
+  /** Label for draft perspective in navbar */
+  'release.navbar.drafts': 'Drafts',
+  /** Label for published releases in navbar */
+  'release.navbar.published': 'Published',
+  /** Tooltip for releases navigation in navbar */
+  'release.navbar.tooltip': 'Releases',
+  /** The placeholder text when the release doesn't have a title */
+  'release.placeholder-untitled-release': 'Untitled release',
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
+  'release.toast.archived-release.title': "The '{{title}}' release was archived",
+  /** The toast tiele that will be shown the creating a release fails */
+  'release.toast.create-release-error.title': 'Failed to create release',
+  /**The toast title that will be shown when the user has a release perspective which is now deleted */
+  'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
+  /** Label for when a version of a document has already been added to the release */
+  'release.tooltip.already-added': 'A version of this document has already been added',
+  /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
+  'release.tooltip.locked':
+    'This release has been scheduled. Unsechedule it to add more documents.',
+  /** Label for the release type 'as soon as possible' */
+  'release.type.asap': 'ASAP',
+  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
+  'release.type.scheduled': 'At time',
+  /** Label for the release type 'undecided' */
+  'release.type.undecided': 'Undecided',
+  /** Tooltip for the dropdown to show all versions of document */
+  'release.version-list.tooltip': 'See all document versions',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
@@ -1611,6 +1734,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-title':
     'An error occurred whilst retrieving document changes.',
+  /** Description for error when the timeline for the given document can't be loaded */
+  'timeline.error.load-document-changes-version-description':
+    'Enable the events API through the Studio config to view document history.',
+  /** Title for error when the timeline for the given version document can't be loaded */
+  'timeline.error.load-document-changes-version-title':
+    'Version documents history is only available through the Events API.',
   /** Error description for when the document doesn't have history */
   'timeline.error.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',
@@ -1632,6 +1761,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
   'timeline.loading-history': 'Loading history…',
+  /* Label for when no previous since events are available*/
+  'timeline.no-previous-events': 'No previous events',
   /** Label shown in review changes timeline when a document has been created */
   'timeline.operation.created': 'Created',
   /** Label shown in review changes timeline when a document was initially created */

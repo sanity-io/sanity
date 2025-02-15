@@ -1,4 +1,4 @@
-import {type ClientPerspective, type QueryParams} from '@sanity/client'
+import {type ClientPerspective} from '@sanity/client'
 import {type ChannelInstance} from '@sanity/comlink'
 import {
   type LoaderControllerMsg,
@@ -252,27 +252,10 @@ export type PresentationNavigate = (
 ) => void
 
 /** @public */
-export type PresentationPerspective = Extract<'published' | 'previewDrafts', ClientPerspective>
+export type PresentationPerspective = Exclude<ClientPerspective, 'raw'>
 
 /** @public */
 export type PresentationViewport = 'desktop' | 'mobile'
-
-/** @internal */
-export type LiveQueriesState = Record<string, LiveQueriesStateValue>
-
-/** @internal */
-export interface LiveQueriesStateValue {
-  query: string
-  params: QueryParams
-  perspective: ClientPerspective
-  receivedAt: number
-  /**
-   * If false it means the query can't safely be garbage collected,
-   * as older versions of \@sanity/core-loader doesn't fire listen events
-   * on an interval.
-   */
-  heartbeat: number | false
-}
 
 /** @internal */
 export interface FrameState {

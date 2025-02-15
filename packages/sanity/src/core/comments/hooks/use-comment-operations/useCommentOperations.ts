@@ -32,6 +32,7 @@ export interface CommentOperationsHookOptions {
   documentId: string
   documentRevisionId?: string
   documentType: string
+  documentVersionId?: string
   getComment?: (id: string) => CommentDocument | undefined
   getThreadLength?: (threadId: string) => number
   onCreate?: (comment: CommentPostPayload) => void
@@ -56,6 +57,7 @@ export function useCommentOperations(
     documentId,
     documentRevisionId,
     documentType,
+    documentVersionId,
     getComment,
     getThreadLength,
     onCreate,
@@ -102,6 +104,7 @@ export function useCommentOperations(
         documentId,
         documentRevisionId,
         documentType,
+        documentVersionId,
         getIntent,
         getNotificationValue,
         getThreadLength,
@@ -120,6 +123,7 @@ export function useCommentOperations(
       documentId,
       documentRevisionId,
       documentType,
+      documentVersionId,
       getIntent,
       getNotificationValue,
       getThreadLength,

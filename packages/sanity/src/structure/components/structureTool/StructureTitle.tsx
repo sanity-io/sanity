@@ -3,6 +3,7 @@ import {useEffect} from 'react'
 import {
   unstable_useValuePreview as useValuePreview,
   useEditState,
+  usePerspective,
   useSchema,
   useTranslation,
 } from 'sanity'
@@ -17,13 +18,16 @@ interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
+// TODO: Fix state jank when editing different versions inside panes.
 const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
-  const editState = useEditState(documentId, documentType)
+  const {selectedReleaseId} = usePerspective()
+
+  const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !editState?.published && !editState?.draft
-  const documentValue = editState?.draft || editState?.published
+  const documentValue = editState?.version || editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
   const {value, isLoading: previewValueIsLoading} = useValuePreview({

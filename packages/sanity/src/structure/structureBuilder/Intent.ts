@@ -1,3 +1,5 @@
+import {type SearchParam} from 'sanity/router'
+
 import {getTypeNamesFromFilter, type PartialDocumentList} from './DocumentList'
 import {type StructureNode} from './StructureNodes'
 
@@ -59,7 +61,7 @@ export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent
 
 /**
  * Intent parameters
- * See {@link router.BaseIntentParams} and {@link router.IntentJsonParams}
+ * See {@link structure.BaseIntentParams} and {@link structure.IntentJsonParams}
  *
  * @public
  */
@@ -75,6 +77,8 @@ export interface Intent {
   /** Intent parameters. See {@link IntentParams}
    */
   params?: IntentParams
+
+  searchParams?: SearchParam[]
 }
 
 /**

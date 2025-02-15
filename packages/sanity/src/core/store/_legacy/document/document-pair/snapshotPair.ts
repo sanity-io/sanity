@@ -58,6 +58,7 @@ interface SnapshotPair {
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
+  version?: DocumentVersionSnapshots
 }
 
 /** @internal */
@@ -70,11 +71,12 @@ export const snapshotPair = memoize(
     pairListenerOptions?: PairListenerOptions,
   ): Observable<SnapshotPair> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
-      map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
+      map(({published, draft, version, transactionsPendingEvents$}): SnapshotPair => {
         return {
           transactionsPendingEvents$,
           published: withSnapshots(published),
           draft: withSnapshots(draft),
+          ...(version ? {version: withSnapshots(version)} : {}),
         }
       }),
       publishReplay(1),

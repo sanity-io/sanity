@@ -1,6 +1,13 @@
 import {Card, Flex} from '@sanity/ui'
-import {type Ref, useCallback, useState} from 'react'
-import {type CreateLinkMetadata, isSanityCreateLinked, useSanityCreateConfig} from 'sanity'
+import {type Ref, useCallback, useMemo, useState} from 'react'
+import {
+  type CreateLinkMetadata,
+  isPublishedPerspective,
+  isReleaseDocument,
+  isSanityCreateLinked,
+  usePerspective,
+  useSanityCreateConfig,
+} from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -22,6 +29,7 @@ const CONTAINER_BREAKPOINT = 480 // px
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
   const {editState, revisionId, onChange: onDocumentChange} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
@@ -36,7 +44,18 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   useResizeObserver({element: rootElement, onResize: handleResize})
 
-  const shouldRender = editState?.ready && typeof collapsed === 'boolean'
+  const shouldRender = useMemo(() => {
+    const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
+    if (selectedPerspective) {
+      if (isPublishedPerspective(selectedPerspective)) {
+        return isReady && Boolean(editState?.published)
+      }
+      if (isReleaseDocument(selectedPerspective)) {
+        return isReady && Boolean(editState?.version)
+      }
+    }
+    return isReady
+  }, [collapsed, editState?.published, editState?.ready, editState?.version, selectedPerspective])
 
   let actions: React.JSX.Element | null = null
   if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
@@ -68,11 +87,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           >
             <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
               <Flex align="center">
-                {showingRevision ? (
-                  <RevisionStatusLine />
-                ) : (
-                  <DocumentStatusLine singleLine={!collapsed} />
-                )}
+                {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
                 <SpacerButton size="large" />
               </Flex>
               <DocumentBadges />

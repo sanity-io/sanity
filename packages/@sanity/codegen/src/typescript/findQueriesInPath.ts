@@ -44,13 +44,15 @@ export async function* findQueriesInPath({
   // Holds all query names found in the source files
   debug(`Globing ${path}`)
 
-  const stream = glob.stream(path, {
-    absolute: false,
-    ignore: ['**/node_modules/**'], // we never want to look in node_modules
-    onlyFiles: true,
-  })
+  const files = glob
+    .sync(path, {
+      absolute: false,
+      ignore: ['**/node_modules/**'], // we never want to look in node_modules
+      onlyFiles: true,
+    })
+    .sort()
 
-  for await (const filename of stream) {
+  for (const filename of files) {
     if (typeof filename !== 'string') {
       continue
     }

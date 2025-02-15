@@ -5,7 +5,9 @@ import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   type GeneralPreviewLayoutKey,
+  useActiveReleases,
   useI18nText,
+  usePerspective,
   useSchema,
   useTranslation,
   useUnique,
@@ -73,7 +75,8 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
-
+  const releases = useActiveReleases()
+  const {perspectiveStack} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -99,14 +102,24 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
 
-  const {error, isLoadingFullList, isLoading, items, fromCache, onLoadFullList, onRetry} =
-    useDocumentList({
-      apiVersion,
-      filter,
-      params,
-      searchQuery: searchQuery?.trim(),
-      sortOrder,
-    })
+  const {
+    error,
+    isLoadingFullList,
+    isLoading: documentListIsLoading,
+    items,
+    fromCache,
+    onLoadFullList,
+    onRetry,
+  } = useDocumentList({
+    apiVersion,
+    filter,
+    perspective: perspectiveStack.length === 0 ? 'raw' : perspectiveStack,
+    params,
+    searchQuery: searchQuery?.trim(),
+    sortOrder,
+  })
+
+  const isLoading = documentListIsLoading || releases.loading
 
   const handleQueryChange = useObservableEvent(
     (event$: Observable<React.ChangeEvent<HTMLInputElement>>) => {

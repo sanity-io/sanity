@@ -14,6 +14,7 @@ export const DatePicker = forwardRef(function DatePicker(
     monthPickerVariant?: CalendarProps['monthPickerVariant']
     padding?: number
     showTimezone?: boolean
+    isPastDisabled?: boolean
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {

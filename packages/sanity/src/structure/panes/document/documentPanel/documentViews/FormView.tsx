@@ -13,6 +13,7 @@ import {
   PresenceOverlay,
   useDocumentPresence,
   useDocumentStore,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
@@ -55,6 +56,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetActiveFieldGroup,
     openPath,
   } = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
@@ -83,7 +85,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType)
+      .documentEvents(documentId, documentType, selectedReleaseId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -100,7 +102,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel])
+  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
 
   const hasRev = Boolean(value?._rev)
   const handleInitialValue = useEffectEvent(() => {
@@ -119,7 +121,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       handleInitialValue()
     }
     // React to changes in hasRev only
-  }, [handleInitialValue, hasRev])
+  }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 

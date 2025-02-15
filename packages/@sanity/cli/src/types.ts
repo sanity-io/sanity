@@ -24,6 +24,7 @@ export interface SanityModuleInternal {
 export interface PackageJson {
   name: string
   version: string
+  scripts?: Record<string, string>
 
   description?: string
   author?: string
@@ -344,6 +345,16 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   studioHost?: string
+
+  /**
+   * Parameter used to configure other kinds of applications.
+   * Signals to `sanity` commands that this is not a studio.
+   * @internal
+   */
+  __experimental_coreAppConfiguration?: {
+    organizationId?: string
+    appLocation?: string
+  }
 }
 
 export type UserViteConfig =

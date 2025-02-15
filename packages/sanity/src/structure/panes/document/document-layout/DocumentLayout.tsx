@@ -17,11 +17,11 @@ import {
   GetFormValueProvider,
   getSanityCreateLinkMetadata,
   isSanityCreateLinked,
+  type Path,
   useGlobalCopyPasteElementHandler,
   useSanityCreateConfig,
   useZIndex,
 } from 'sanity'
-import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
