@@ -56,7 +56,6 @@ export function ReleaseDashboardHeader(props: {
             mode="bleed"
             onClick={handleNavigateToReleasesList}
             text={t('overview.title')}
-            // @ts-expect-error - pending @sanity/ui change
             textWeight="regular"
             padding={2}
             data-testid="back-to-releases-button"
@@ -64,7 +63,6 @@ export function ReleaseDashboardHeader(props: {
           <Button
             mode="bleed"
             text={title || tCore('release.placeholder-untitled-release')}
-            // @ts-expect-error - pending @sanity/ui change
             textWeight="semibold"
             padding={2}
             style={title ? undefined : {opacity: 0.5}}
