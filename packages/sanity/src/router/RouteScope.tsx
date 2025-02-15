@@ -2,7 +2,7 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {type NavigateBaseOptions, type RouterContextValue, type RouterState} from './types'
+import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -75,8 +75,8 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   }, [parentRouter.state])
 
   const resolveNextParentState = useCallback(
-    (_nextState: RouterState) => {
-      const {_searchParams, ...nextState} = _nextState
+    (_nextState: RouterState | null) => {
+      const {_searchParams, ...nextState} = _nextState || {}
       const nextParentState = addScope(parentStateRef.current, scope, nextState)
       if (__unsafe_disableScopedSearchParams) {
         // Move search params to parent scope
@@ -95,7 +95,7 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   )
 
   const navigate = useCallback(
-    (nextState: RouterState, options?: NavigateBaseOptions) =>
+    (nextState: RouterState | null, options?: NavigateOptions) =>
       parent_navigate(resolveNextParentState(nextState), options),
     [parent_navigate, resolveNextParentState],
   )
