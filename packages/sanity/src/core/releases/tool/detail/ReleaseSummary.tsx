@@ -105,25 +105,24 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
       const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
-      setPendingAddedDocument((prev) => [
-        ...prev,
-        {
-          memoKey: versionDocumentId,
-          previewValues: {isLoading: true, values: {}},
-          validation: {
-            isValidating: false,
-            validation: [],
-            hasError: false,
-          },
-          history: undefined,
-          document: {
-            ...(documentToAdd as SanityDocument),
-            _id: pendingAddedDocumentId,
-            publishedDocumentExists: false,
-          },
-          isPending: true,
+      const pendingDocumentRow: DocumentWithHistory = {
+        memoKey: versionDocumentId,
+        previewValues: {isLoading: true, values: {}},
+        validation: {
+          isValidating: false,
+          validation: [],
+          hasError: false,
         },
-      ])
+        history: undefined,
+        document: {
+          ...(documentToAdd as SanityDocument),
+          _id: pendingAddedDocumentId,
+          publishedDocumentExists: false,
+        },
+        isPending: true,
+      }
+
+      setPendingAddedDocument((prev) => [...prev, pendingDocumentRow])
 
       try {
         await createVersion(releaseId, documentToAdd._id)
@@ -142,11 +141,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           id: `add-version-to-release-${versionDocumentId}`,
           closable: true,
           status: 'error',
-          title: error.message,
+          title: t('toast.create-version.error', {error: error.message}),
         })
       }
     },
-    [createVersion, releaseId, telemetry, toast],
+    [createVersion, releaseId, t, telemetry, toast],
   )
 
   useEffect(() => {
@@ -161,7 +160,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           id: `add-version-to-release-${pendingDocument.document._id}`,
           closable: true,
           status: 'success',
-          title: `${pendingDocument.document.title} added to release`,
+          title: t('toast.create-version.success', {documentTitle: pendingDocument.document.title}),
         })
         documentsNoLongerPending.push(pendingDocument.document._id)
       }
@@ -172,7 +171,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       setPendingAddedDocument((prev) =>
         prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )
-  }, [documents, pendingAddedDocument, toast])
+  }, [documents, pendingAddedDocument, t, toast])
 
   const tableData = useMemo(
     () =>
