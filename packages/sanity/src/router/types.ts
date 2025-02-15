@@ -165,19 +165,21 @@ export type MatchResult = MatchError | MatchOk
 /**
  * @public
  */
-export interface NavigateStickyParamsOptions {
+export interface NavigateOptions {
   /**
    * Indicates whether to replace the current state.
    */
   replace?: boolean
+  /**
+   * Record of query parameters that should persist across navigation.
+   */
+  stickyParams?: Record<string, string | undefined>
 }
 
 /**
  * @public
  */
-export interface NavigateOptions extends NavigateStickyParamsOptions {
-  stickyParams?: Record<string, string | undefined>
-}
+export type NavigateBaseOptions = Omit<NavigateOptions, 'stickyParams'>
 
 /**
  * Base intent parameters
@@ -275,24 +277,24 @@ export interface RouterContextValue {
    * Navigates to the current URL with the sticky url search param set to the given values
    */
   navigateStickyParams: (
-    params: Record<string, string | undefined>,
-    options?: NavigateStickyParamsOptions,
+    params: NavigateOptions['stickyParams'],
+    options?: NavigateBaseOptions,
   ) => void
 
   /**
    * Navigates to the given router state.
    * See {@link RouterState} and {@link NavigateOptions}
    */
-  navigate: (nextState: RouterState, options?: NavigateOptions) => void
+  navigate: (nextState: RouterState | null, options?: NavigateOptions) => void
 
   /**
    * Navigates to the given intent.
-   * See {@link RouterState} and {@link NavigateStickyParamsOptions}
+   * See {@link RouterState} and {@link NavigateBaseOptions}
    */
   navigateIntent: (
     intentName: string,
     params?: IntentParameters,
-    options?: NavigateStickyParamsOptions,
+    options?: NavigateBaseOptions,
   ) => void
 
   /**

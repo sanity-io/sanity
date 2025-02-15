@@ -5,8 +5,8 @@ import {RouterContext} from 'sanity/_singletons'
 import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
+  type NavigateBaseOptions,
   type NavigateOptions,
-  type NavigateStickyParamsOptions,
   type Router,
   type RouterContextValue,
   type RouterState,
@@ -119,45 +119,64 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
     [routerProp, state],
   )
 
-  const handleNavigateStickyParams = useCallback(
-    (params: Record<string, string | undefined>, options: NavigateStickyParamsOptions = {}) => {
-      const hasInvalidParam = Object.keys(params).some((param) => !STICKY_PARAMS.includes(param))
+  /**
+   * Updates the router state and navigates to a new path.
+   * Allows specifying new state values and optionally merging sticky parameters.
+   *
+   * @public
+   *
+   * @example Navigate with router state only
+   * ```tsx
+   * router.navigate({foo: 'bar'})
+   * ```
+   *
+   * @example Navigate with router state and sticky params
+   * ```tsx
+   * router.navigate({foo: 'bar'}, {stickyParams: {baz: 'qux'}})
+   * ```
+   *
+   * @example Navigate with sticky params only
+   * ```tsx
+   * router.navigate(null, {stickyParams: {baz: 'qux'}})
+   * ```
+   */
+  const navigate = useCallback(
+    (nextState: Record<string, unknown> | null, options: NavigateOptions = {}) => {
+      const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
+      const nextStickyParams =
+        options.stickyParams ??
+        Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key)))
+
+      const hasInvalidParam = Object.keys(nextStickyParams).some(
+        (param) => !STICKY_PARAMS.includes(param),
+      )
       if (hasInvalidParam) {
         throw new Error('One or more parameters are not sticky')
       }
 
-      const searchParams = mergeStickyParams(state._searchParams || [], params)
+      const baseState = nextState ?? state
+      const nextParams = Array.isArray(baseState._searchParams) ? baseState._searchParams : []
+      const mergedParams = mergeStickyParams([...currentParams, ...nextParams], nextStickyParams)
 
       onNavigate({
-        path: resolvePathFromState({
-          ...state,
-          _searchParams: searchParams,
-        }),
+        path: resolvePathFromState({...baseState, _searchParams: mergedParams}),
         replace: options.replace,
       })
     },
     [onNavigate, resolvePathFromState, state],
   )
 
-  const navigate = useCallback(
-    (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
-      const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
-      const nextParams = Array.isArray(nextState._searchParams) ? nextState._searchParams : []
-
-      const mergedParams = mergeStickyParams(
-        nextParams,
-        options.stickyParams ??
-          Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key))),
-      )
-      const mergedState = {...nextState, _searchParams: mergedParams}
-
-      onNavigate({path: resolvePathFromState(mergedState), replace: options.replace})
-    },
-    [onNavigate, resolvePathFromState, state],
+  /**
+   * @deprecated Use `navigate(null, {stickyParams: params, ...options})` instead
+   */
+  const handleNavigateStickyParams = useCallback(
+    (params: NavigateOptions['stickyParams'], options: NavigateBaseOptions = {}) =>
+      navigate(null, {stickyParams: params, ...options}),
+    [navigate],
   )
 
   const navigateIntent = useCallback(
-    (intentName: string, params?: IntentParameters, options: NavigateStickyParamsOptions = {}) => {
+    (intentName: string, params?: IntentParameters, options: NavigateBaseOptions = {}) => {
       onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
     },
     [onNavigate, resolveIntentLink],
@@ -216,17 +235,19 @@ function mergeStickyParams(
   currentParams: SearchParam[],
   newParams?: Record<string, string | undefined>,
 ): SearchParam[] {
-  const mergedParams = [...currentParams, ...Object.entries(newParams || {})]
+  if (!newParams) return currentParams
 
-  return Object.entries(
-    mergedParams.reduce<SearchParam>(
-      (deduppedSearchParams, [key, value]) => ({
-        ...deduppedSearchParams,
-        [key]: value,
-      }),
-      [] as unknown as SearchParam,
-    ),
-  )
+  // Remove old sticky params before merging new ones
+  const filteredParams = currentParams.filter(([key]) => !Object.hasOwn(newParams, key))
+
+  // Type guard function to filter out undefined values
+  const isValidSearchParam = (entry: [string, string | undefined]): entry is [string, string] =>
+    entry[1] !== undefined
+
+  // Convert newParams into the correct SearchParam format
+  const newEntries = Object.entries(newParams).filter(isValidSearchParam)
+
+  return [...filteredParams, ...newEntries]
 }
 
 function findParam(searchParams: SearchParam[], key: string): string | undefined {
