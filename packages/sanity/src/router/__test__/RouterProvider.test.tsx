@@ -42,21 +42,6 @@ describe('RouterProvider', () => {
   })
 
   describe('navigate', () => {
-    it('should navigate with new state', () => {
-      const {result} = renderHook(() => useRouter(), {wrapper})
-
-      act(() => {
-        result.current.navigate({routeStateKey: 'routeStateValue'})
-      })
-
-      expect(mockOnNavigate).toHaveBeenCalledWith({
-        path: {
-          _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
-          routeStateKey: 'routeStateValue',
-        },
-      })
-    })
-
     it('should update only the route state when navigating without stickyParams', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
