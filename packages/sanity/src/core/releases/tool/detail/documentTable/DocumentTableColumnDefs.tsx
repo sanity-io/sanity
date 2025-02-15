@@ -120,7 +120,7 @@ export const getDocumentTableColumnDefs: (
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          <MemoDocumentType type={datum.document?._type} />
+          <MemoDocumentType type={datum.document._type} />
         </Box>
       </Flex>
     ),
@@ -130,7 +130,7 @@ export const getDocumentTableColumnDefs: (
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
     sortTransform(value) {
-      if (!value?.previewValues) return 0
+      if (!value.previewValues) return 0
 
       return value.previewValues.values.title?.toLowerCase() || 0
     },
