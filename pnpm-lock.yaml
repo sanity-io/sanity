@@ -706,7 +706,7 @@ importers:
         specifier: ^7.23.5
         version: 7.26.8
       '@sanity/client':
-        specifier: ^6.27.2
+        specifier: ^6.28.0
         version: 6.28.0(debug@4.4.0)
       '@sanity/codegen':
         specifier: 3.75.1
@@ -1171,18 +1171,24 @@ importers:
 
   packages/@sanity/util:
     dependencies:
+      '@date-fns/tz':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@date-fns/utc':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@sanity/client':
         specifier: ^6.28.0
         version: 6.28.0(debug@4.4.0)
       '@sanity/types':
         specifier: 3.75.1
         version: link:../types
+      date-fns:
+        specifier: 4.1.0
+        version: 4.1.0
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
-      moment:
-        specifier: ^2.30.1
-        version: 2.30.1
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -2722,6 +2728,12 @@ packages:
   '@csstools/css-tokenizer@3.0.3':
     resolution: {integrity: sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==}
     engines: {node: '>=18'}
+
+  '@date-fns/tz@1.2.0':
+    resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@date-fns/utc@2.1.0':
+    resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
 
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
@@ -6315,6 +6327,9 @@ packages:
 
   date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   dateformat@3.0.3:
     resolution: {integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==}
@@ -12906,6 +12921,10 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.3': {}
 
+  '@date-fns/tz@1.2.0': {}
+
+  '@date-fns/utc@2.1.0': {}
+
   '@dnd-kit/accessibility@3.1.1(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -17299,6 +17318,8 @@ snapshots:
       '@babel/runtime': 7.26.7
 
   date-fns@3.6.0: {}
+
+  date-fns@4.1.0: {}
 
   dateformat@3.0.3: {}
 
