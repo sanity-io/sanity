@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.75.0",
+  "version": "3.75.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -37,7 +37,7 @@
     "@sanity/react-loader": "^1.10.35",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.12.4",
+    "@sanity/ui": "^2.13.1",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",

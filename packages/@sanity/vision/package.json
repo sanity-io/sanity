@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.75.0",
+  "version": "3.75.1",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -63,7 +63,7 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.5.7",
-    "@sanity/ui": "^2.12.4",
+    "@sanity/ui": "^2.13.1",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
