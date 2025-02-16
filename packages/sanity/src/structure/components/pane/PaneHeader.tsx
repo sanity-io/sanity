@@ -5,6 +5,8 @@ import {LegacyLayerProvider} from 'sanity'
 import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
 
+export type TabsType = 'default' | 'dropdown'
+
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
@@ -18,6 +20,7 @@ export interface PaneHeaderProps {
   tabIndex?: number
   tabs?: ReactNode
   title: ReactNode
+  tabsType?: 'default' | 'dropdown'
 }
 
 /**
@@ -29,8 +32,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {actions, backButton, border, contentAfter, loading, subActions, tabs, tabIndex, title} =
-    props
+  const {
+    actions,
+    backButton,
+    border,
+    contentAfter,
+    loading,
+    subActions,
+    tabs,
+    tabIndex,
+    title,
+    tabsType = 'default',
+  } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -99,7 +112,11 @@ export const PaneHeader = forwardRef(function PaneHeader(
               )}
               {showTabsOrSubActions && (
                 <Flex align="center" hidden={collapsed} overflow="auto">
-                  <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
+                  <TabsBox
+                    flex={1}
+                    marginRight={subActions ? 3 : 0}
+                    $scrollGradient={tabsType === 'default'}
+                  >
                     {tabs}
                   </TabsBox>
 

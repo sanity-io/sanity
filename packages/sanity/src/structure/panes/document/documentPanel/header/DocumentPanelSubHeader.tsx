@@ -19,7 +19,7 @@ export const DocumentPanelSubHeader = memo(
     const {editState, connectionState, views} = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink} = usePaneRouter()
-
+    const tabsType = features.resizablePanes ? 'default' : 'dropdown'
     const showTabs = views.length > 1
 
     const {collapsed, isLast} = usePane()
@@ -33,7 +33,11 @@ export const DocumentPanelSubHeader = memo(
     const {t} = useTranslation(structureLocaleNamespace)
 
     const title = useMemo(() => <DocumentHeaderTitle />, [])
-    const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
+    const tabs = useMemo(
+      () => showTabs && <DocumentHeaderTabs type={tabsType} />,
+      [showTabs, tabsType],
+    )
+
     const backButton = useMemo(
       () =>
         showBackButton && (
@@ -54,6 +58,7 @@ export const DocumentPanelSubHeader = memo(
         loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
         title={title}
         tabs={tabs}
+        tabsType={tabsType}
         tabIndex={tabIndex}
         backButton={backButton}
       />

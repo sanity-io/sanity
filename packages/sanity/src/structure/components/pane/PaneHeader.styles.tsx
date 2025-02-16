@@ -1,4 +1,6 @@
-import {Box, Card, Flex, Layer, rgba, Text, TextSkeleton, type Theme} from '@sanity/ui'
+import {Box, Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 interface RootProps {
@@ -55,8 +57,10 @@ export const TitleText = styled(Text)`
   outline: none;
 `
 
-export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
-  const {color, space} = theme.sanity
+export const TabsBox = styled(Box)<{
+  $scrollGradient?: boolean
+}>((props) => {
+  const {color, space} = getTheme_v2(props.theme)
 
   return css`
     overflow: hidden;
@@ -88,12 +92,12 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
     /* Gradient that makes it look like tabs disappear into nothing (looks nicer) */
     &:after {
       content: '';
-      display: block;
+      display: ${props.$scrollGradient ? 'block' : 'none'};
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(to right, ${rgba(color.base.bg, 0)}, var(--card-bg-color));
+      background: linear-gradient(to right, ${rgba(color.bg, 0)}, var(--card-bg-color));
       width: ${space[3]}px;
       pointer-events: none;
     }
