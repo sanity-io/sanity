@@ -24,7 +24,7 @@
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
-    "@sanity/icons": "^3.5.7",
+    "@sanity/icons": "^3.6.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/locale-ko-kr": "^1.0.1",
     "@sanity/locale-nb-no": "^1.0.1",
