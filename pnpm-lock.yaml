@@ -706,7 +706,7 @@ importers:
         specifier: ^7.23.5
         version: 7.26.8
       '@sanity/client':
-        specifier: ^6.27.2
+        specifier: ^6.28.0
         version: 6.28.0(debug@4.4.0)
       '@sanity/codegen':
         specifier: 3.75.1
