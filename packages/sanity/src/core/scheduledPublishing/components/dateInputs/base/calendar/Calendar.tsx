@@ -21,7 +21,7 @@ import {
   useRef,
 } from 'react'
 
-import useTimeZone from '../../../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24, MONTH_NAMES} from './constants'
 import {features} from './features'
@@ -36,6 +36,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
   customValidation?: (selectedDate: Date) => boolean
+  timeZoneScope: TimeZoneScope
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -57,8 +58,7 @@ export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-  const {getCurrentZoneDate, zoneDateToUtc} = useTimeZone()
-
+  const {getCurrentZoneDate, zoneDateToUtc} = useTimeZone(props.timeZoneScope)
   const {
     selectTime,
     onFocusedDateChange,
@@ -67,6 +67,7 @@ export const Calendar = forwardRef(function Calendar(
     timeStep = 1,
     onSelect,
     customValidation,
+    timeZoneScope,
     ...restProps
   } = props
 
@@ -218,6 +219,7 @@ export const Calendar = forwardRef(function Calendar(
             customValidation={customValidation}
             onSelect={handleDateChange}
             selected={selectedDate}
+            timeZoneScope={timeZoneScope}
           />
           {PRESERVE_FOCUS_ELEMENT}
         </Box>

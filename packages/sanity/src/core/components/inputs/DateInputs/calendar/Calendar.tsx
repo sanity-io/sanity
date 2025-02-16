@@ -19,7 +19,7 @@ import {
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import useDialogTimeZone from '../../../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
@@ -27,8 +27,8 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-const format = (date: Date, formatStr: string, options?: {timezone?: string}) => {
-  if (!options?.timezone) {
+const format = (date: Date, formatStr: string, options?: {timeZone?: string}) => {
+  if (!options?.timeZone) {
     const dateParts = date
       .toLocaleString('en-US', {
         day: '2-digit',
@@ -47,7 +47,7 @@ const format = (date: Date, formatStr: string, options?: {timezone?: string}) =>
     }
   }
 
-  const zonedDate = utcToZonedTime(date, options.timezone)
+  const zonedDate = utcToZonedTime(date, options.timeZone)
   const formatPattern =
     {
       DD: 'dd',
@@ -56,7 +56,7 @@ const format = (date: Date, formatStr: string, options?: {timezone?: string}) =>
     }[formatStr] || 'yyyy'
 
   return formatTZ(zonedDate, formatPattern, {
-    timeZone: options.timezone,
+    timeZone: options.timeZone,
   })
 }
 
@@ -69,15 +69,15 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
-  timezone?: string
   onSelect: (date: Date) => void
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
-  showTimezone?: boolean
+  showTimeZone?: boolean
   isPastDisabled?: boolean
+  timeZoneScope: TimeZoneScope
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -110,37 +110,38 @@ export const Calendar = forwardRef(function Calendar(
     selectedDate = new Date(),
     focusedDate = selectedDate,
     timeStep = 1,
-    timezone,
     onSelect,
     labels,
     isPastDisabled,
     monthPickerVariant = 'select',
     padding = 2,
-    showTimezone = false,
+    showTimeZone = false,
+    timeZoneScope,
     ...restProps
   } = props
 
+  const {timeZone} = useTimeZone(timeZoneScope)
+
   const getDisplayHour = useCallback(() => {
-    if (!timezone) return selectedDate.getHours()
-    const zonedDate = utcToZonedTime(selectedDate, timezone)
+    if (!timeZone.name) return selectedDate.getHours()
+    const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
     return zonedDate.getHours()
-  }, [selectedDate, timezone])
+  }, [selectedDate, timeZone.name])
 
   const getDisplayMinutes = useCallback(() => {
-    if (!timezone) return selectedDate.getMinutes()
-    const zonedDate = utcToZonedTime(selectedDate, timezone)
+    if (!timeZone.name) return selectedDate.getMinutes()
+    const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
     return zonedDate.getMinutes()
-  }, [selectedDate, timezone])
-
+  }, [selectedDate, timeZone.name])
+  // @todo: this should be used be used for month below
   const getDisplayMonth = useCallback(() => {
-    return Number(format(selectedDate, 'MM', {timezone})) - 1 // month is 0-indexed
-  }, [selectedDate, timezone])
-
+    return Number(format(selectedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
+  }, [selectedDate, timeZone.name])
+  // @todo: this should be used for the year beloe
   const getDisplayYear = useCallback(() => {
-    return Number(format(selectedDate, 'YYYY', {timezone}))
-  }, [selectedDate, timezone])
-  const {timeZone} = useTimeZone()
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+    return Number(format(selectedDate, 'YYYY', {timeZone: timeZone.name}))
+  }, [selectedDate, timeZone.name])
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -177,45 +178,45 @@ export const Calendar = forwardRef(function Calendar(
   const handleMinutesChange = useCallback(
     (event: FormEvent<HTMLSelectElement>) => {
       const minutes = Number(event.currentTarget.value)
-      if (!timezone) {
+      if (!timeZone) {
         onSelect(setMinutes(selectedDate, minutes))
         return
       }
-      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
       const newZonedDate = setMinutes(zonedDate, minutes)
-      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
       onSelect(utcDate)
     },
-    [onSelect, selectedDate, timezone],
+    [onSelect, selectedDate, timeZone],
   )
 
   const handleHoursChange = useCallback(
     (event: FormEvent<HTMLSelectElement>) => {
       const hours = Number(event.currentTarget.value)
-      if (!timezone) {
+      if (!timeZone) {
         onSelect(setHours(selectedDate, hours))
         return
       }
-      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
       const newZonedDate = setHours(zonedDate, hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
       onSelect(utcDate)
     },
-    [onSelect, selectedDate, timezone],
+    [onSelect, selectedDate, timeZone],
   )
 
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
-      if (!timezone) {
+      if (!timeZone) {
         onSelect(setHours(setMinutes(selectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(selectedDate, timezone)
+      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timezone)
+      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
       onSelect(utcDate)
     },
-    [onSelect, selectedDate, timezone],
+    [onSelect, selectedDate, timeZone],
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
@@ -449,7 +450,7 @@ export const Calendar = forwardRef(function Calendar(
                 </Box>
               </Flex>
 
-              {showTimezone && (
+              {showTimeZone && (
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"
@@ -479,7 +480,7 @@ export const Calendar = forwardRef(function Calendar(
             </>
           )}
 
-          {showTimezone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+          {showTimeZone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
         </Flex>
       </Box>
     </Box>

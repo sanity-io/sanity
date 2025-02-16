@@ -10,7 +10,8 @@ import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
-import {type CalendarLabels} from '../base/calendar/types'
+import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
+import {TimeZoneScopeType} from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {type ParseResult} from '../types'
 import {isValidDate} from '../utils'
@@ -61,6 +62,8 @@ const CALENDAR_LABELS: CalendarLabels = {
   ],
   weekDayNamesShort: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   setToTimePreset: (time: string, date: Date) => `${time} on ${format(date, 'yyyy-MM-dd')}`,
+  ariaLabel: '',
+  tooltipText: '',
 }
 
 async function renderInput() {
@@ -85,6 +88,7 @@ async function renderInput() {
           readOnly={readOnly}
           serialize={serialize}
           value={value}
+          timeZoneScope={{type: TimeZoneScopeType.input, id}}
         />
       )
     },
@@ -93,9 +97,9 @@ async function renderInput() {
   return {...ret, onChange}
 }
 
-// NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined timezone
+// NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
 // see globalSetup in jest config for details about how this is set up
-test('timezone for the test environment should be set to America/Los_Angeles', () => {
+test('time zone for the test environment should be set to America/Los_Angeles', () => {
   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('America/Los_Angeles')
 })
 
@@ -116,12 +120,12 @@ test('emits onChange on correct format if a valid value has been typed', async (
   const {result, onChange} = await renderInput()
   const input = result.container.querySelector('input')!
 
-  // NOTE: the date is entered and displayed in local timezone (which is hardcoded to America/Los_Angeles)
+  // NOTE: the date is entered and displayed in local time zone (which is hardcoded to America/Los_Angeles)
   userEvent.type(input, '2021-03-28 10:23')
   expect(input.value).toBe('2021-03-28 10:23')
 
   fireEvent.blur(input)
 
-  // NOTE: the date is entered and displayed in local timezone but stored in utc
+  // NOTE: the date is entered and displayed in local time zone but stored in utc
   expect(onChange.mock.calls).toEqual([['2021-03-28T17:23:00.000Z']])
 })

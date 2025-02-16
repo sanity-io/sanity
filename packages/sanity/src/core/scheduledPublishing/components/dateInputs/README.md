@@ -8,10 +8,11 @@ Some changes have been made to make both `<DateTimeInput>` and its calendar comp
 - Date and time handling uses `date-fns` formatting (rather than moment - which the studio is moving away from anyway)
 - Added the `customValidation` option, a callback function used to validate whether certain date ranges are selectable in the calendar
 - Added the `customValidationMessage` option, a custom error message displayed when `customValidation` fails
+- The `timeZoneScope` allows you to persist in local storage with a scope of application being `scheduledPublishing`, meaning that it will not override user persisted timeZone preferences in other parts fo the studio.
 
   ```js
   // E.g. No scheduling on weekends!
-  const {utcToCurrentZoneDate} = useTimeZone()
+  const {utcToCurrentZoneDate} = useTimeZone({type: TimeZoneScopeType.scheduledPublishing})
 
   const handleCustomValidation = (selectedDate: Date): boolean => {
     return !isWeekend(utcToCurrentZoneDate(selectedDate))

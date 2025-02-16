@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 
 import {useDocumentActionProps} from '../../contexts/documentActionProps'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
+import {TimeZoneScopeType} from '../../hooks/useTimeZone'
 import {type Schedule} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
@@ -15,8 +16,12 @@ interface Props {
 
 const DocumentPreview = (props: Props) => {
   const {schedule, schemaType} = props
+  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
 
-  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(schedule)
+  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(
+    schedule,
+    timeZoneScope,
+  )
   const {onComplete} = useDocumentActionProps()
   const publishedId = useMemo(() => getScheduledDocumentId(schedule), [schedule])
 

@@ -10,11 +10,12 @@ import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import useDialogTimeZone from '../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone from '../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../scheduledPublishing/hooks/useTimeZone'
 
 interface ScheduleDatePickerProps {
   initialValue: Date
   onChange: (date: Date) => void
+  timeZoneScope: TimeZoneScope
 }
 
 const inputDateFormat = 'PP HH:mm'
@@ -22,12 +23,13 @@ const inputDateFormat = 'PP HH:mm'
 export const ScheduleDatePicker = ({
   initialValue: inputValue,
   onChange,
+  timeZoneScope,
 }: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
-  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone()
+  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone(timeZoneScope)
 
-  const timezoneAdjustedValue = utcToCurrentZoneDate(inputValue)
+  const timeZoneAdjustedValue = utcToCurrentZoneDate(inputValue)
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
@@ -55,11 +57,12 @@ export const ScheduleDatePicker = ({
         onChange={handlePublishAtCalendarChange}
         onInputChange={handlePublishAtInputChange}
         calendarLabels={calendarLabels}
-        value={timezoneAdjustedValue}
-        inputValue={format(timezoneAdjustedValue, inputDateFormat)}
+        value={timeZoneAdjustedValue}
+        inputValue={format(timeZoneAdjustedValue, inputDateFormat)}
         constrainSize={false}
         padding={0}
         isPastDisabled
+        timeZoneScope={timeZoneScope}
       />
 
       <Button

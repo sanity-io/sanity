@@ -68,7 +68,7 @@ export function groupTests(report: JSONReportCustom): GroupedTests {
 export function getCurrentUTCDate(): string {
   const now = new Date()
 
-  // Get the timezone offset in minutes
+  // Get the time zone offset in minutes
   const offset = now.getTimezoneOffset()
 
   // Convert the date to UTC by adding the offset

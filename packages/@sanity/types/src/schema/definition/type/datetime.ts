@@ -8,7 +8,8 @@ export interface DatetimeOptions extends BaseSchemaTypeOptions {
   dateFormat?: string
   timeFormat?: string
   timeStep?: number
-  displayTimezone?: string
+  displayTimeZone?: string
+  allowTimeZoneSwitch?: boolean
 }
 
 /** @public */

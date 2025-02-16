@@ -4,7 +4,7 @@ import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
   format,
-  isValidTimezoneString,
+  isValidTimeZoneString,
   parse,
   type ParseResult,
 } from '@sanity/util/legacyDateFormat'
@@ -26,7 +26,7 @@ import {type CalendarLabels} from '../../../components/inputs/DateInputs/calenda
 import {useTranslation} from '../../../i18n'
 import ButtonTimeZone from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButtonElementQuery'
-import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
@@ -47,14 +47,16 @@ interface ParsedOptions {
   dateFormat: string
   timeFormat: string
   timeStep: number
-  displayTimezone?: string
+  displayTimeZone?: string
+  allowTimeZoneSwitch?: boolean
 }
 
 interface SchemaOptions {
   dateFormat?: string
   timeFormat?: string
   timeStep?: number
-  displayTimezone?: string
+  displayTimeZone?: string
+  allowTimeZoneSwitch?: boolean
 }
 
 /**
@@ -71,18 +73,20 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 1,
-    displayTimezone:
-      options.displayTimezone && isValidTimezoneString(options.displayTimezone)
-        ? options.displayTimezone
+    displayTimeZone:
+      options.displayTimeZone && isValidTimeZoneString(options.displayTimeZone)
+        ? options.displayTimeZone
         : undefined,
+    allowTimeZoneSwitch:
+      options.allowTimeZoneSwitch === undefined ? true : options.allowTimeZoneSwitch,
   }
 }
 
 const getDeserializer =
-  (timezone?: string) =>
+  (timeZoneName?: string) =>
   (isoString: string): ParseResult => {
-    // create a date object respecting the timezone
-    const {date: deserialized} = parse(isoString, undefined, timezone)
+    // create a date object respecting the time zone
+    const {date: deserialized} = parse(isoString, undefined, timeZoneName)
     if (deserialized && isValidDate(deserialized)) {
       return {isValid: true, date: deserialized}
     }
@@ -131,10 +135,20 @@ export function DateTimeInput(props: DateTimeInputProps) {
     actions,
     __internal_slot: slot,
   } = useFieldActions()
-  const {dateFormat, timeFormat, timeStep, displayTimezone} = parseOptions(schemaType.options)
+  const {
+    dateFormat,
+    timeFormat,
+    timeStep,
+    displayTimeZone,
+    allowTimeZoneSwitch = true,
+  } = parseOptions(schemaType.options)
   const {t} = useTranslation()
+  const timeZoneScope = useMemo(
+    () => ({type: TimeZoneScopeType.input, defaultTimeZone: displayTimeZone, id}),
+    [displayTimeZone, id],
+  )
 
-  const {timeZone} = useTimeZone(displayTimezone, id)
+  const {timeZone} = useTimeZone(timeZoneScope)
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -149,7 +163,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const formatInputValue = useCallback(
-    (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timezone: timeZone.name}),
+    (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timeZone: timeZone.name}),
     [dateFormat, timeFormat, timeZone.name],
   )
 
@@ -172,10 +186,11 @@ export function DateTimeInput(props: DateTimeInputProps) {
       parseInputValue,
       placeholder: schemaType.placeholder,
       serialize: memoizedSerialize,
-      timezone: timeZone.name,
+      timeZone: timeZone.name,
       timeStep,
       selectTime: true,
       value,
+      timeZoneScope,
     }),
     [
       elementProps,
@@ -189,6 +204,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       timeZone.name,
       timeStep,
       value,
+      timeZoneScope,
     ],
   )
 
@@ -223,13 +239,13 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   validation={validation}
                   title={schemaType.title}
                 />
-                {displayTimezone && (
+                {displayTimeZone && (
                   <ButtonTimeZoneElementQuery>
                     <Box marginLeft={2}>
                       <ButtonTimeZone
+                        allowTimeZoneSwitch={allowTimeZoneSwitch}
                         useElementQueries
-                        inputId={id}
-                        defaultTimezone={displayTimezone}
+                        timeZoneScope={timeZoneScope}
                       />
                     </Box>
                   </ButtonTimeZoneElementQuery>

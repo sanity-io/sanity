@@ -12,6 +12,7 @@ import {type FormPatch, type PatchEvent, set, unset} from '../../../../form'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useDateTimeFormat} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
+import {TimeZoneScopeType} from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {tasksLocaleNamespace} from '../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
@@ -83,6 +84,7 @@ export function DateEditFormField(props: {
               onKeyUp={handleKeyUp}
               value={deserializedValue.date}
               onChange={handleChange}
+              timeZoneScope={{type: TimeZoneScopeType.scheduledPublishing} as const}
             />
             {value && (
               <Flex justify={'flex-start'} padding={3} paddingTop={0}>

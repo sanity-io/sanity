@@ -5,7 +5,7 @@ import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
@@ -21,7 +21,7 @@ export function ReleaseForm(props: {
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
 
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone({type: TimeZoneScopeType.contentReleases})
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
@@ -144,6 +144,7 @@ export function ReleaseForm(props: {
               <ScheduleDatePicker
                 initialValue={intendedPublishAt || new Date()}
                 onChange={handleBundlePublishAtCalendarChange}
+                timeZoneScope={{type: TimeZoneScopeType.contentReleases}}
               />
             </TabPanel>
           )}

@@ -7,6 +7,7 @@ import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPre
 import {getPublishedId} from '../../../util'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {usePublishedId} from '../../hooks/usePublishedId'
+import {TimeZoneScopeType} from '../../hooks/useTimeZone'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
@@ -20,12 +21,16 @@ interface Props {
 
 const ToolPreview = (props: Props) => {
   const {previewState, schedule, schemaType} = props
+  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
 
   const visibleDocument = previewState.draft || previewState.published
   const isCompleted = schedule.state === 'succeeded'
   const isScheduled = schedule.state === 'scheduled'
 
-  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(schedule)
+  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(
+    schedule,
+    timeZoneScope,
+  )
 
   const publishedId = usePublishedId(visibleDocument?._id)
 

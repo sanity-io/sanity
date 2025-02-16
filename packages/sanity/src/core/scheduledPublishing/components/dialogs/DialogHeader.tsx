@@ -1,14 +1,16 @@
 import {Box, Flex} from '@sanity/ui'
 
+import {type TimeZoneScope} from '../../hooks/useTimeZone'
 import ButtonTimeZone from '../timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../timeZoneButton/TimeZoneButtonElementQuery'
 
 interface Props {
   title: string
+  timeZoneScope: TimeZoneScope
 }
 
 const DialogHeader = (props: Props) => {
-  const {title} = props
+  const {title, timeZoneScope} = props
   return (
     <ButtonTimeZoneElementQuery>
       <Flex align="center">
@@ -23,7 +25,7 @@ const DialogHeader = (props: Props) => {
         */}
         <input style={{opacity: 0, position: 'absolute', width: 0}} tabIndex={-1} type="button" />
         <Box marginLeft={2} style={{marginTop: '-1em', marginBottom: '-1em'}}>
-          <ButtonTimeZone useElementQueries />
+          <ButtonTimeZone timeZoneScope={timeZoneScope} useElementQueries />
         </Box>
       </Flex>
     </ButtonTimeZoneElementQuery>

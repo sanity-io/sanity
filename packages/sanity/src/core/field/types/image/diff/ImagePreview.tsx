@@ -43,7 +43,8 @@ const ImageWrapper = styled.div`
 
   /* Ideally the checkerboard component currently in the form builder should be made available and used here */
   background-color: ${hues.gray[100].hex};
-  background-image: linear-gradient(45deg, ${hues.gray[50].hex} 25%, transparent 25%),
+  background-image:
+    linear-gradient(45deg, ${hues.gray[50].hex} 25%, transparent 25%),
     linear-gradient(-45deg, ${hues.gray[50].hex} 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, ${hues.gray[50].hex} 75%),
     linear-gradient(-45deg, transparent 75%, ${hues.gray[50].hex} 75%);

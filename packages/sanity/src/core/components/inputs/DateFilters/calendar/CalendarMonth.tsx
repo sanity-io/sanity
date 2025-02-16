@@ -1,7 +1,7 @@
 import {Box, Card, Grid, Label} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 
-import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {DEFAULT_WEEK_DAY_NAMES} from '../../DateInputs/calendar/constants'
 import {useWeeksOfMonth} from '../../DateInputs/calendar/utils'
 import {CalendarDay as DefaultCalendarDay} from './CalendarDay'
@@ -15,11 +15,12 @@ interface CalendarMonthProps {
   hidden?: boolean
   renderCalendarDay?: CalendarProps['renderCalendarDay']
   disabled?: boolean
+  timeZoneScope: TimeZoneScope
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
-  const {date, renderCalendarDay, hidden, disabled} = props
-  const {getCurrentZoneDate} = useTimeZone()
+  const {date, renderCalendarDay, hidden, disabled, timeZoneScope} = props
+  const {getCurrentZoneDate} = useTimeZone(timeZoneScope)
   const CalendarDay = renderCalendarDay || DefaultCalendarDay
   const weeksOfMonth = useWeeksOfMonth(date)
 

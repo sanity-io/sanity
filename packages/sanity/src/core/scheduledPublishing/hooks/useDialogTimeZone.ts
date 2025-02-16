@@ -1,22 +1,21 @@
 import DialogTimeZone from '../components/dialogs/DialogTimeZone'
 import {useDialogVisible} from './useDialogVisibile'
+import {type TimeZoneScope} from './useTimeZone'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-function useDialogTimeZone(inputId?: string, defaultTimezone?: string) {
-  const {visible, show, hide} = useDialogVisible(inputId)
+function useDialogTimeZone(timeZoneScope: TimeZoneScope) {
+  const {visible, show, hide} = useDialogVisible(timeZoneScope)
 
   const dialogProps = {
     onClose: hide,
     visible,
-    inputId,
-    defaultTimezone,
+    timeZoneScope,
   }
 
   return {
     DialogTimeZone: visible ? DialogTimeZone : null,
     dialogProps,
-    inputId,
-    defaultTimezone,
+    timeZoneScope,
     dialogTimeZoneShow: show,
     hide,
   }

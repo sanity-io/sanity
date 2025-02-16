@@ -1,18 +1,19 @@
 import {useCallback, useState} from 'react'
 
-import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
-import useTimeZone from '../../hooks/useTimeZone'
+import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar'
+import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'
 
 export interface ToolCalendarProps {
   onSelect: (date?: Date) => void
   selectedDate?: Date
+  timeZoneScope: TimeZoneScope
 }
 
 export const ToolCalendar = (props: ToolCalendarProps) => {
-  const {onSelect, selectedDate} = props
+  const {onSelect, selectedDate, timeZoneScope} = props
 
-  const {getCurrentZoneDate, utcToCurrentZoneDate} = useTimeZone()
+  const {getCurrentZoneDate, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
 
   // Focus selected date (if routed) or user's current date (in stored time zone)
   const [focusedDate, setFocusedDate] = useState<Date>(selectedDate || getCurrentZoneDate())
@@ -31,6 +32,7 @@ export const ToolCalendar = (props: ToolCalendarProps) => {
       onSelect={onSelect}
       selectedDate={selectedDate}
       renderCalendarDay={CalendarDay}
+      timeZoneScope={timeZoneScope}
     />
   )
 }

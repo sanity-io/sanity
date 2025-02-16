@@ -58,7 +58,7 @@ function BooleanField(field: FieldProps) {
 
 function DateTimeField(field: FieldProps) {
   /*
-    To account for the timezone picker, all title logic is being moved into the DateTimeInput component.
+    To account for the time zone picker, all title logic is being moved into the DateTimeInput component.
   */
   const documentId = usePublishedId()
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)

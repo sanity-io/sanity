@@ -8,6 +8,7 @@ import momentToDateFnsFormat from './datetime-formatter/momentToDateFnsFormat'
 
 export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 export const DEFAULT_TIME_FORMAT = 'HH:mm'
+// take local as default time zone
 const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
@@ -18,31 +19,31 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
 export function format(
   input: Date,
   format: string,
-  options: {useUTC?: boolean; timezone?: string} = {useUTC: false, timezone: 'UTC'},
+  options: {useUTC?: boolean; timeZone?: string} = {useUTC: false, timeZone: 'UTC'},
 ): string {
-  const {useUTC, timezone} = options
+  const {useUTC, timeZone} = options
 
   if (useUTC) return formatMomentLike(new UTCDateMini(input), format)
-  return formatMomentLike(new TZDateMini(input, timezone || DEFAULT_TIMEZONE), format)
+  return formatMomentLike(new TZDateMini(input, timeZone || DEFAULT_TIMEZONE), format)
 }
 
 /*
   It would be so good to remove date-fns from this file, but it's used in the parse function. We could write our own parser,
   but this is better than moment.
  */
-export function parse(dateString: string, format?: string, timezone?: string): ParseResult {
+export function parse(dateString: string, format?: string, timeZone?: string): ParseResult {
   const dnsFormat = format ? momentToDateFnsFormat(format) : undefined
 
   // parse string to date using the format string from date-fns
   const parsed = dnsFormat ? dateFnsParse(dateString, dnsFormat, new Date()) : parseISO(dateString)
   if (parsed && !isNaN(parsed.getTime())) {
     const parsedDate =
-      timezone && isValidTimezoneString(timezone) ? new TZDateMini(parsed, timezone) : parsed
+      timeZone && isValidTimeZoneString(timeZone) ? new TZDateMini(parsed, timeZone) : parsed
     return {isValid: true, date: parsedDate}
   }
   return {isValid: false, error: `Invalid date. Must be on the format "${format}"`}
 }
 
-export function isValidTimezoneString(timezone: string): boolean {
-  return Intl.supportedValuesOf('timeZone').includes(timezone)
+export function isValidTimeZoneString(timeZone: string): boolean {
+  return Intl.supportedValuesOf('timeZone').includes(timeZone)
 }

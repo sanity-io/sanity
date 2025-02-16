@@ -14,7 +14,7 @@ import {
 } from 'react'
 
 import {FormField} from '../../../form/components/formField'
-import useTimeZone from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
 import {DateTimeInput} from './base/DateTimeInput'
 import {type CommonProps, type ParseResult} from './types'
 
@@ -30,6 +30,7 @@ type Props = CommonProps & {
   placeholder?: string
   timeStep?: number
   customValidation?: (selectedDate: Date) => boolean
+  timeZoneScope: TimeZoneScope
 }
 
 export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
@@ -52,6 +53,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     level,
     onChange,
     customValidation,
+    timeZoneScope,
     ...rest
   } = props
 
@@ -61,7 +63,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     setLocalValue(null)
   }, [value])
 
-  const {zoneDateToUtc} = useTimeZone()
+  const {zoneDateToUtc} = useTimeZone(timeZoneScope)
   const undefinedValue = typeof value === 'undefined'
   // Text input changes ('wall time')
   const handleDatePickerInputChange = useCallback(
@@ -157,6 +159,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
           onChange={handleDatePickerChange}
           customValidity={parseResult?.error}
           customValidation={customValidation}
+          timeZoneScope={timeZoneScope}
         />
       )}
     </FormField>

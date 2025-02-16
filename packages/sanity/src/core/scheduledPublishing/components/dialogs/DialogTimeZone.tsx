@@ -4,13 +4,12 @@ import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../../ui-components'
-import useTimeZone from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../types'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
-  inputId?: string
-  defaultTimezone?: string
+  timeZoneScope: TimeZoneScope
 }
 
 const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
@@ -29,14 +28,10 @@ const TimeZoneMainCitiesSpan = styled.span(({theme}: {theme: Theme}) => {
 })
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
-  const {onClose, inputId, defaultTimezone} = props
-
-  const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} = useTimeZone(
-    defaultTimezone,
-    inputId,
-  )
+  const {onClose, timeZoneScope} = props
+  const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} =
+    useTimeZone(timeZoneScope)
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
-
   // Callbacks
   const handleTimeZoneChange = useCallback(
     (value: string) => setSelectedTz(getTimeZone(value)),

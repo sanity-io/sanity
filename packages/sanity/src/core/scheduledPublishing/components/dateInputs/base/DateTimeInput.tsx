@@ -21,6 +21,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Popover} from '../../../../../ui-components'
 import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {DatePicker} from './DatePicker'
 
 type Props = {
@@ -35,6 +36,7 @@ type Props = {
   inputValue?: string
   onChange: (date: Date | null) => void
   customValidation?: (selectedDate: Date) => boolean
+  timeZoneScope: TimeZoneScope
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -49,6 +51,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     onChange,
     selectTime,
     timeStep,
+    timeZoneScope,
     ...rest
   } = props
 
@@ -122,6 +125,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       value={value}
                       onChange={onChange}
                       customValidation={customValidation}
+                      timeZoneScope={timeZoneScope}
                     />
                   </FocusLock>
                 </Box>

@@ -1,24 +1,27 @@
 import {EarthAmericasIcon} from '@sanity/icons'
-import {Box} from '@sanity/ui'
+import {Box, Inline, Label} from '@sanity/ui'
+import {noop} from 'lodash'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import useDialogTimeZone from '../../hooks/useDialogTimeZone'
-import useTimeZone from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope, TimeZoneScopeType} from '../../hooks/useTimeZone'
 
 export interface ButtonTimeZoneProps {
   useElementQueries?: boolean
-  defaultTimezone?: string
-  inputId?: string
+  timeZoneScope: TimeZoneScope
+  allowTimeZoneSwitch?: boolean
+}
+
+const timeZoneScopeToName: Record<TimeZoneScopeType, string> = {
+  [TimeZoneScopeType.scheduledPublishing]: 'schedules',
+  [TimeZoneScopeType.contentReleases]: 'releases',
+  [TimeZoneScopeType.input]: 'this input',
 }
 
 const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
-  const {useElementQueries, defaultTimezone, inputId} = props
-
-  const {timeZone} = useTimeZone(defaultTimezone, inputId)
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(
-    inputId,
-    defaultTimezone,
-  )
+  const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true} = props
+  const {timeZone} = useTimeZone(timeZoneScope)
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
   return (
     <>
@@ -26,7 +29,7 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
       {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
 
       <Tooltip
-        content={`Displaying schedules in ${timeZone.alternativeName} (GMT${timeZone.offset})`}
+        content={`Displaying ${timeZoneScopeToName[timeZoneScope.type]} in ${timeZone.alternativeName} (GMT${timeZone.offset})`}
         portal
       >
         <div>
@@ -37,29 +40,61 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
           {useElementQueries ? (
             <>
               <Box className="button-small">
-                <Button
-                  icon={EarthAmericasIcon}
-                  mode="bleed"
-                  onClick={dialogTimeZoneShow}
-                  text={`${timeZone.abbreviation}`}
-                />
+                {allowTimeZoneSwitch ? (
+                  <Button
+                    icon={EarthAmericasIcon}
+                    mode="bleed"
+                    readOnly={!allowTimeZoneSwitch}
+                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                    text={`${timeZone.abbreviation}`}
+                  />
+                ) : (
+                  <Inline space={2} paddingLeft={2}>
+                    <Label size={4}>
+                      <EarthAmericasIcon />
+                    </Label>
+                    <Label size={4}>{`${timeZone.abbreviation}`}</Label>
+                  </Inline>
+                )}
               </Box>
               <Box className="button-large">
-                <Button
-                  icon={EarthAmericasIcon}
-                  mode="bleed"
-                  onClick={dialogTimeZoneShow}
-                  text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
-                />
+                {allowTimeZoneSwitch ? (
+                  <Inline space={2} paddingLeft={2}>
+                    <Label size={4}>
+                      <EarthAmericasIcon />
+                    </Label>
+                    <Label size={4}>{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Label>
+                  </Inline>
+                ) : (
+                  <Button
+                    icon={EarthAmericasIcon}
+                    mode="bleed"
+                    readOnly={!allowTimeZoneSwitch}
+                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                    text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
+                  />
+                )}
               </Box>
             </>
           ) : (
-            <Button
-              icon={EarthAmericasIcon}
-              mode="bleed"
-              onClick={dialogTimeZoneShow}
-              text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
-            />
+            <>
+              {allowTimeZoneSwitch ? (
+                <Button
+                  icon={EarthAmericasIcon}
+                  mode="bleed"
+                  readOnly={!allowTimeZoneSwitch}
+                  onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                  text={`${timeZone.alternativeName} 123 (${timeZone.namePretty})`}
+                />
+              ) : (
+                <Inline space={2} paddingLeft={2}>
+                  <Label size={4}>
+                    <EarthAmericasIcon />
+                  </Label>
+                  <Label size={4}>{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Label>
+                </Inline>
+              )}
+            </>
           )}
         </div>
       </Tooltip>

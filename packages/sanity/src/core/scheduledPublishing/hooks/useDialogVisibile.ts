@@ -1,13 +1,15 @@
 import {useCallback, useState} from 'react'
 
+import {type TimeZoneScope} from './useTimeZone'
+
 interface DialogControls {
   show: () => void
   hide: () => void
-  inputId?: string
+  timeZoneScope: TimeZoneScope
   visible: boolean
 }
 
-export function useDialogVisible(inputId?: string): DialogControls {
+export function useDialogVisible(timeZoneScope: TimeZoneScope): DialogControls {
   const [dialogVisible, setDialogVisible] = useState(false)
 
   const hide = useCallback(() => {
@@ -20,7 +22,7 @@ export function useDialogVisible(inputId?: string): DialogControls {
   return {
     visible: dialogVisible,
     show,
-    inputId,
+    timeZoneScope,
     hide,
   }
 }

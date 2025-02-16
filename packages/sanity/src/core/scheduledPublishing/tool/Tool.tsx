@@ -9,7 +9,7 @@ import ButtonTimeZone from '../components/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../components/timeZoneButton/TimeZoneButtonElementQuery'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
-import useTimeZone from '../hooks/useTimeZone'
+import useTimeZone, {TimeZoneScopeType} from '../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../types'
 import {useScheduledPublishingEnabled} from './contexts/ScheduledPublishingEnabledProvider'
 import {SchedulesProvider} from './contexts/schedules'
@@ -52,8 +52,8 @@ export default function Tool() {
   // Default to first filter type ('upcoming') if no existing schedule state or
   // selected date can be inferred from current route.
   useFallbackNavigation(router, scheduleState, selectedDate)
-
-  const {formatDateTz} = useTimeZone()
+  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
+  const {formatDateTz} = useTimeZone(timeZoneScope)
 
   const schedulesContext = useMemo(
     () => ({
@@ -102,7 +102,11 @@ export default function Tool() {
               width: '350px',
             }}
           >
-            <ToolCalendar onSelect={handleSelectDate} selectedDate={selectedDate} />
+            <ToolCalendar
+              onSelect={handleSelectDate}
+              timeZoneScope={timeZoneScope}
+              selectedDate={selectedDate}
+            />
           </Column>
           {/* RHS Column */}
           <Column display="flex" flex={1} overflow="hidden">
@@ -130,7 +134,7 @@ export default function Tool() {
 
                   {/* Time zone select + context menu */}
                   <Flex align="center" gap={1}>
-                    <ButtonTimeZone useElementQueries />
+                    <ButtonTimeZone timeZoneScope={timeZoneScope} useElementQueries />
                     <SchedulesContextMenu />
                   </Flex>
                 </Flex>

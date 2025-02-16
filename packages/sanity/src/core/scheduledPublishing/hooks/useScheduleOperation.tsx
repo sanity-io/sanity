@@ -4,7 +4,7 @@ import ToastDescription from '../components/toastDescription/ToastDescription'
 import {type Schedule} from '../types'
 import getErrorMessage from '../utils/getErrorMessage'
 import {useScheduleApi} from './useScheduleApi'
-import useTimeZone from './useTimeZone'
+import useTimeZone, {TimeZoneScopeType} from './useTimeZone'
 
 // Custom events
 export enum ScheduleEvents {
@@ -68,7 +68,7 @@ export const scheduleCustomEvent = <
 
 export default function useScheduleOperation() {
   const toast = useToast()
-  const {formatDateTz} = useTimeZone()
+  const {formatDateTz} = useTimeZone({type: TimeZoneScopeType.scheduledPublishing})
   const api = useScheduleApi()
 
   async function createSchedule({

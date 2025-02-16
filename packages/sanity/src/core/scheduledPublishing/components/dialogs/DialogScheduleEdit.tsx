@@ -3,6 +3,7 @@ import {useCallback} from 'react'
 import {Dialog} from '../../../../ui-components'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {TimeZoneScopeType} from '../../hooks/useTimeZone'
 import {type Schedule} from '../../types'
 import {EditScheduleForm} from '../editScheduleForm/EditScheduleForm'
 import DialogHeader from './DialogHeader'
@@ -14,6 +15,7 @@ export interface DialogScheduleEditProps {
 
 const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
   const {onClose, schedule} = props
+  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
 
   const {updateSchedule} = useScheduleOperation()
   const {formData, isDirty, onFormChange} = useScheduleForm(schedule)
@@ -39,7 +41,7 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
           onClick: handleScheduleUpdate,
         },
       }}
-      header={<DialogHeader title="Edit schedule" />}
+      header={<DialogHeader timeZoneScope={timeZoneScope} title="Edit schedule" />}
       id="time-zone"
       onClose={onClose}
       width={1}
