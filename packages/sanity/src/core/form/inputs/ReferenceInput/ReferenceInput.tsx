@@ -236,16 +236,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const renderValue = useCallback(() => {
-    return (
-      loadableReferenceInfo.result?.preview.version?.title ||
-      loadableReferenceInfo.result?.preview.draft?.title ||
-      loadableReferenceInfo.result?.preview.published?.title ||
-      ''
-    )
+    return (loadableReferenceInfo.result?.preview?.snapshot?.title ||
+      loadableReferenceInfo.result?.preview?.raw?.title ||
+      '') as string
   }, [
-    loadableReferenceInfo.result?.preview.draft?.title,
-    loadableReferenceInfo.result?.preview.published?.title,
-    loadableReferenceInfo.result?.preview.version?.title,
+    loadableReferenceInfo.result?.preview?.raw?.title,
+    loadableReferenceInfo.result?.preview?.snapshot?.title,
   ])
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])

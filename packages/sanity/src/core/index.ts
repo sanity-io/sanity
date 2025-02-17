@@ -39,11 +39,13 @@ export {
   RELEASES_STUDIO_CLIENT_OPTIONS,
   useActiveReleases,
   useArchivedReleases,
+  useDocumentVersionInfo,
   useDocumentVersions,
   useIsReleaseActive,
   useReleasesIds,
   useVersionOperations,
   VersionChip,
+  type VersionInfoDocumentStub,
   VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'

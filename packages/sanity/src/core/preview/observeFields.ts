@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type SanityClient, type StackablePerspective} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
@@ -25,7 +25,7 @@ import {
 
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
-import {isVersionId} from '../util/draftUtils'
+import {getPublishedId, isVersionId} from '../util/draftUtils'
 import {INCLUDE_FIELDS} from './constants'
 import {
   type ApiConfig,
@@ -77,38 +77,52 @@ export function createObserveFields(options: {
   const {client: currentDatasetClient, invalidationChannel} = options
   function listen(id: Id) {
     return invalidationChannel.pipe(
-      filter((event) => event.type === 'connected' || event.documentId === id),
+      filter((event) => event.type === 'connected' || getPublishedId(event.documentId) === id),
     )
   }
 
-  function fetchAllDocumentPathsWith(client: SanityClient) {
+  function fetchAllDocumentPathsWith(client: SanityClient, perspective?: StackablePerspective[]) {
     return function fetchAllDocumentPath(selections: Selection[]) {
       const combinedSelections = combineSelections(selections)
       // If any document is a version document we need to use the release API version
-      const useReleaseVersion = combinedSelections.some((selection) =>
-        selection.ids.some(isVersionId),
-      )
+      const useReleaseVersion =
+        (perspective && perspective.length > 0) ||
+        combinedSelections.some((selection) => selection.ids.some(isVersionId))
 
       return versionedClient(
         client,
         useReleaseVersion ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion : undefined,
       )
-        .observable.fetch(toQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
+        .observable.fetch(
+          toQuery(combinedSelections),
+          {},
+          {tag: 'preview.document-paths', perspective},
+        )
         .pipe(map((result: any) => reassemble(result, combinedSelections)))
     }
   }
+  const batchFetchersCache = new Map()
+  function getBatchFetchersForPerspective(perspective?: StackablePerspective[]) {
+    const key = perspective?.join('-') || 'raw'
+    if (batchFetchersCache.has(key)) {
+      return batchFetchersCache.get(key)
+    }
+    const batchFetchers = {
+      fast: debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient, perspective), 100),
+      slow: debounceCollect(fetchAllDocumentPathsWith(currentDatasetClient, perspective), 1000),
+    }
+    batchFetchersCache.set(key, batchFetchers)
+    return batchFetchers
+  }
 
-  const fetchDocumentPathsFast = debounceCollect(
-    fetchAllDocumentPathsWith(currentDatasetClient),
-    100,
-  )
+  function currentDatasetListenFields(
+    id: Id,
+    fields: FieldName[],
+    perspective?: StackablePerspective[],
+  ) {
+    const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
+      getBatchFetchersForPerspective(perspective)
 
-  const fetchDocumentPathsSlow = debounceCollect(
-    fetchAllDocumentPathsWith(currentDatasetClient),
-    1000,
-  )
-
-  function currentDatasetListenFields(id: Id, fields: FieldName[]) {
     return listen(id).pipe(
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
@@ -135,7 +149,7 @@ export function createObserveFields(options: {
   const getBatchFetcherForDataset = memoize(
     function getBatchFetcherForDataset(apiConfig: ApiConfig) {
       const client = currentDatasetClient.withConfig(apiConfig)
-      const fetchAll = fetchAllDocumentPathsWith(client)
+      const fetchAll = fetchAllDocumentPathsWith(client, ['published'])
       return debounceCollect(fetchAll, 10)
     },
     (apiConfig) => apiConfig.dataset + apiConfig.projectId,
@@ -165,6 +179,7 @@ export function createObserveFields(options: {
     id: string,
     fields: FieldName[],
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): CachedFieldObserver {
     // Note: `undefined` means the memo has not been set, while `null` means the memo is explicitly set to null (e.g. we did fetch, but got null back)
     let latest: T | undefined | null = undefined
@@ -172,7 +187,7 @@ export function createObserveFields(options: {
       defer(() => (latest === undefined ? EMPTY : of(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields)) as Observable<T>,
+        : currentDatasetListenFields(id, fields, perspective)) as Observable<T>,
     ).pipe(
       tap((v: T | null) => (latest = v)),
       shareReplay({refCount: true, bufferSize: 1}),
@@ -181,10 +196,15 @@ export function createObserveFields(options: {
     return {id, fields, changes$}
   }
 
-  function cachedObserveFields(id: Id, fields: FieldName[], apiConfig?: ApiConfig) {
+  function cachedObserveFields(
+    id: Id,
+    fields: FieldName[],
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+  ) {
     const cacheKey = apiConfig
       ? `${apiConfig.projectId}:${apiConfig.dataset}:${id}`
-      : `$current$-${id}`
+      : `$current$-${id}-${perspective?.join('-') || 'raw'}`
 
     if (!(cacheKey in CACHE)) {
       CACHE[cacheKey] = []
@@ -197,7 +217,7 @@ export function createObserveFields(options: {
     )
 
     if (missingFields.length > 0) {
-      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig))
+      existingObservers.push(createCachedFieldObserver(id, fields, apiConfig, perspective))
     }
 
     const cachedFieldObservers = existingObservers

@@ -1,4 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
@@ -15,11 +14,10 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
+import {useDocumentVersionInfo} from '../../../../../../../releases'
 import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
-import {useReleasesIds} from '../../../../../../../releases/store/useReleasesIds'
 import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
-import {isArray} from '../../../../../../../util/isArray'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 
 interface SearchResultItemPreviewProps {
@@ -56,54 +54,28 @@ export function SearchResultItemPreview({
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {data, loading} = useActiveReleases()
-  const {releasesIds} = useReleasesIds(data)
   const {perspectiveStack} = usePerspective()
   const {state} = useSearchState()
   const isRaw = isPerspectiveRaw(state.perspective)
 
   const observable = useMemo(() => {
     const stack = state.perspective && !isRaw ? state.perspective : perspectiveStack
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '', {
-      ids: releasesIds,
-      /**
-       * if the perspective is defined in the state it means that there is a scope to the search
-       * and that the preview needs to take that into account
-       */
-      stack: Array.isArray(stack) ? stack : [],
-      isRaw: isRaw,
-    })
-  }, [
-    documentPreviewStore,
-    schemaType,
-    documentId,
-    releasesIds,
-    state.perspective,
-    perspectiveStack,
-    isRaw,
-  ])
+    return getPreviewStateObservable(
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      Array.isArray(stack) ? stack : [],
+    )
+  }, [documentPreviewStore, schemaType, documentId, state.perspective, perspectiveStack, isRaw])
 
-  const {
-    draft,
-    published,
-    isLoading: previewIsLoading,
-    version,
-    versions,
-  } = useObservable(observable, {
-    draft: null,
+  const {isLoading: previewIsLoading, snapshot} = useObservable(observable, {
+    snapshot: null,
     isLoading: true,
-    published: null,
-    version: null,
-    versions: {},
   })
 
   const isLoading = previewIsLoading || loading
 
-  const sanityDocument = useMemo(() => {
-    return {
-      _id: documentId,
-      _type: schemaType.name,
-    } as SanityDocument
-  }, [documentId, schemaType.name])
+  const versionsInfo = useDocumentVersionInfo(documentId)
 
   const status = useMemo(() => {
     if (isLoading) return null
@@ -111,23 +83,35 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator draft={draft} published={published} versions={versions} />
+        <DocumentStatusIndicator
+          draft={versionsInfo.draft}
+          published={versionsInfo.published}
+          versions={versionsInfo.versions}
+        />
       </Flex>
     )
-  }, [draft, isLoading, presence, published, schemaType.title, showBadge, versions])
+  }, [
+    isLoading,
+    presence,
+    schemaType.title,
+    showBadge,
+    versionsInfo.draft,
+    versionsInfo.published,
+    versionsInfo.versions,
+  ])
 
-  const tooltip = <DocumentStatus draft={draft} published={published} versions={versions} />
+  const tooltip = (
+    <DocumentStatus
+      draft={versionsInfo.draft}
+      published={versionsInfo.published}
+      versions={versionsInfo.versions}
+    />
+  )
 
   return (
     <SearchResultItemPreviewBox>
       <SanityDefaultPreview
-        {...getPreviewValueWithFallback({
-          draft,
-          published,
-          version,
-          value: sanityDocument,
-          perspective: isArray(perspective) ? perspective[0] : perspective,
-        })}
+        {...getPreviewValueWithFallback({snapshot})}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}
         icon={schemaType.icon}

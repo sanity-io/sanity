@@ -9,8 +9,7 @@ import {
 
 interface PreviewState {
   isLoading?: boolean
-  draft?: PreviewValue | Partial<SanityDocument> | null
-  published?: PreviewValue | Partial<SanityDocument> | null
+  snapshot?: PreviewValue | Partial<SanityDocument> | null
 }
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
@@ -25,7 +24,6 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
       documentPreviewStore,
       schemaType,
       documentId,
-      '',
     ).subscribe((state) => {
       setPreview(state)
     })

@@ -39,12 +39,12 @@ export function useNotificationTarget(
 
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
   }, [documentId, documentPreviewStore, schemaType])
   const previewState = useObservable(previewStateObservable)
 
-  const {published, draft} = previewState || {}
-  const documentTitle = (draft?.title || published?.title || 'Sanity document') as string
+  const {snapshot, raw} = previewState || {}
+  const documentTitle = (snapshot?.title || raw?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(
     ({commentId}: {commentId: string}) => ({

@@ -5,12 +5,12 @@ import {
   type PreviewValue,
   type Reference,
   type ReferenceSchemaType,
+  type SanityDocument,
 } from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type DocumentAvailability} from '../../../preview'
-import {type VersionsRecord} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -22,12 +22,11 @@ export type PreviewDocumentValue = PreviewValue & {
 export interface ReferenceInfo {
   id: string
   type: string | undefined
+  isPublished: boolean | null
   availability: DocumentAvailability
   preview: {
-    draft: PreviewDocumentValue | undefined
-    published: PreviewDocumentValue | undefined
-    version: PreviewDocumentValue | undefined
-    versions: VersionsRecord
+    snapshot: PreviewValue | Partial<SanityDocument> | null
+    raw: PreviewValue | Partial<SanityDocument> | null
   }
 }
 

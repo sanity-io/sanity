@@ -1,9 +1,9 @@
-import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {getPreviewStateObservable, getPreviewValueWithFallback} from '../../../../../../../preview'
+import {getPreviewStateObservable} from '../../../../../../../preview'
 import {useDocumentPreviewStore} from '../../../../../../../store'
 
 export function ReferencePreviewTitle({
@@ -16,31 +16,18 @@ export function ReferencePreviewTitle({
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId, ''),
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId),
     [documentId, documentPreviewStore, schemaType],
   )
-  const {draft, published, isLoading} = useObservable(observable, {
-    draft: null,
+  const {snapshot, raw, isLoading} = useObservable(observable, {
     isLoading: true,
-    published: null,
-  })
-
-  const sanityDocument = useMemo(() => {
-    return {
-      _id: documentId,
-      _type: schemaType.name,
-    } as SanityDocument
-  }, [documentId, schemaType.name])
-
-  const previewValue = getPreviewValueWithFallback({
-    draft,
-    published,
-    value: sanityDocument,
+    snapshot: null,
+    raw: null,
   })
 
   if (isLoading) {
     return <Skeleton animated marginLeft={1} radius={2} style={{width: '10ch', height: '1em'}} />
   }
 
-  return <>{previewValue.title || documentId.slice(0, 8)}</>
+  return <>{snapshot?.title || raw?.title || documentId.slice(0, 8)}</>
 }

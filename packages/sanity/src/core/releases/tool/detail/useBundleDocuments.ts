@@ -35,7 +35,6 @@ import {validateDocumentWithReferences, type ValidationStatus} from '../../../va
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
@@ -134,20 +133,18 @@ const getActiveReleaseDocumentsObservable = ({
               })
             }
 
-            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-              map((version) => ({
-                isLoading: false,
-                values: prepareForPreview(
-                  getPreviewValueWithFallback({
-                    value: document,
-                    version: version.snapshot,
-                    perspective: releaseId,
-                  }),
-                  schemaType,
-                ),
-              })),
-              startWith({isLoading: true, values: {}}),
-            )
+            return documentPreviewStore
+              .observeForPreview(document, schemaType, {perspective: [releaseId]})
+              .pipe(
+                map(({snapshot}) => ({
+                  isLoading: false,
+                  values: prepareForPreview(
+                    getPreviewValueWithFallback({document, snapshot}),
+                    schemaType,
+                  ),
+                })),
+                startWith({isLoading: true, values: {}}),
+              )
           }),
           switchAll(),
         )
@@ -199,14 +196,10 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
 
           return documentPreviewStore.observeForPreview(document, schemaType).pipe(
             take(1),
-            map((version) => ({
+            map(({snapshot}) => ({
               isLoading: false,
               values: prepareForPreview(
-                getPreviewValueWithFallback({
-                  value: document,
-                  version: version.snapshot || document,
-                  perspective: getReleaseIdFromReleaseDocumentId(release._id),
-                }),
+                getPreviewValueWithFallback({document, snapshot}),
                 schemaType,
               ),
             })),
