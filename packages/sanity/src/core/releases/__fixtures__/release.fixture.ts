@@ -45,6 +45,23 @@ export const activeASAPRelease: ReleaseDocument = {
   },
 }
 
+export const activeASAPErrorRelease: ReleaseDocument = {
+  _rev: 'activeASAPErrorRev',
+  _id: '_.releases.rASAPError',
+  _type: 'system.release',
+  _createdAt: '2023-10-01T08:00:00Z',
+  _updatedAt: '2023-10-01T09:00:00Z',
+  state: 'active',
+  metadata: {
+    title: 'active asap Error Release',
+    releaseType: 'asap',
+    description: 'active Error Release description',
+  },
+  error: {
+    message: 'An unexpected error occurred during publication.',
+  },
+}
+
 export const archivedScheduledRelease: ReleaseDocument = {
   _rev: 'archivedRev',
   _id: '_.releases.rArchived',
