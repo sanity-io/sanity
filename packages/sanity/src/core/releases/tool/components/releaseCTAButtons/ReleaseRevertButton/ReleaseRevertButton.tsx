@@ -12,6 +12,7 @@ import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
+import {useReleaseLimits} from '../../../../store/useReleaseLimits'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
@@ -226,23 +227,19 @@ export const ReleaseRevertButton = ({
     [guardWithReleaseLimitUpsell],
   )
 
-  const [isReleasesPlus, setIsReleasesPlug] = useState<boolean | undefined>(undefined)
+  const getReleaseLimits = useReleaseLimits()
+
+  const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | undefined>(undefined)
   const [isFetchingLimits, setIsFetchingLimits] = useState(false)
 
-  // const getLimits = useReleaseLimitsStore()
-
-  // useEffect(() => {
-  //   if (isReleasesPlus !== undefined || isFetchingLimits) return
-
-  //   setIsFetchingLimits(true)
-  //   getLimits().then((limits) => {
-  //     setIsReleasesPlug(limits.orgActiveReleaseLimit > 2)
-  //   })
-  // }, [getLimits, isFetchingLimits, isReleasesPlus])
-
   useEffect(() => {
-    guardWithReleaseLimitUpsell((limits) => setIsReleasesPlug(limits.orgActiveReleaseLimit > 2))
-  }, [guardWithReleaseLimitUpsell])
+    if (isReleasesPlus !== undefined || isFetchingLimits) return
+
+    setIsFetchingLimits(true)
+    getReleaseLimits().then((limits) => {
+      setIsReleasesPlus(limits.orgActiveReleaseLimit > 2)
+    })
+  }, [getReleaseLimits, isFetchingLimits, isReleasesPlus])
 
   if (!isReleasesPlus) return null
 
