@@ -62,15 +62,15 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
-    "@sanity/icons": "^3.5.7",
-    "@sanity/ui": "^2.13.1",
+    "@sanity/icons": "^3.6.0",
+    "@sanity/ui": "^2.13.4",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-30d8a17-20250209",
+    "react-compiler-runtime": "19.0.0-beta-21e868a-20250216",
     "react-fast-compare": "^3.2.2"
   },
   "devDependencies": {
@@ -85,7 +85,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
+    "babel-plugin-react-compiler": "19.0.0-beta-21e868a-20250216",
     "react": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.15"

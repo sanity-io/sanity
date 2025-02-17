@@ -1,9 +1,16 @@
+import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
+
 export interface useReleasePermissionsValue {
   checkWithPermissionGuard: <T extends (...args: any[]) => Promise<void> | void>(
     action: T,
     ...args: Parameters<T>
   ) => Promise<boolean>
 }
+
+type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
+
+export const isReleasePermissionError = (error: unknown): error is ReleasePermissionError =>
+  isErrorWithDetails(error) && error.details?.type === 'insufficientPermissionsError'
 
 /**
  * @internal
@@ -27,7 +34,7 @@ export function useReleasePermissions(): useReleasePermissionsValue {
       })
       return true
     } catch (e) {
-      return false
+      return !isReleasePermissionError(e)
     }
   }
   return {

@@ -16,8 +16,8 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.7",
-    "@portabletext/editor": "^1.33.4",
+    "@portabletext/block-tools": "^1.1.8",
+    "@portabletext/editor": "^1.33.6",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.1.0",
     "@sanity/client": "^6.28.0",
@@ -37,12 +37,12 @@
     "@sanity/react-loader": "^1.10.35",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.13.1",
+    "@sanity/ui": "^2.13.4",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.13.2",
+    "@sanity/visual-editing": "2.13.3",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@million/lint": "1.0.14",
-    "babel-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
+    "babel-plugin-react-compiler": "19.0.0-beta-21e868a-20250216",
     "chokidar": "^3.6.0",
     "vite": "^6.1.0"
   }

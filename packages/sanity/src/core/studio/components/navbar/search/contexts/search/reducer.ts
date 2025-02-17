@@ -43,6 +43,7 @@ export type SearchReducerState = PaginationState & {
   strategy?: SearchStrategy
   disabledDocumentIds?: string[]
   perspective?: ClientPerspective
+  canDisableAction?: boolean
 }
 
 export interface SearchDefinitions {

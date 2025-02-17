@@ -1,9 +1,10 @@
-import {DotIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
+import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
 import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
+import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
@@ -168,9 +169,18 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
             }}
           >
-            <Text size={1} weight="medium">
-              {displayTitle}
-            </Text>
+            <Flex gap={3} align="center">
+              <Text size={1} weight="medium">
+                {displayTitle}
+              </Text>
+              {isReleaseDocument(release) &&
+                typeof release.error !== 'undefined' &&
+                release.state === 'active' && (
+                  <Text size={1} data-testid="release-error-icon">
+                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                  </Text>
+                )}
+            </Flex>
             {isReleaseDocument(release) &&
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (

@@ -84,9 +84,11 @@ const DescriptionTextArea = styled.textarea((props) => {
 export function TitleDescriptionForm({
   release,
   onChange,
+  disabled,
 }: {
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
+  disabled?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
@@ -156,6 +158,7 @@ export function TitleDescriptionForm({
         placeholder={t('release.placeholder-untitled-release')}
         data-testid="release-form-title"
         readOnly={!isReleaseOpen}
+        disabled={disabled}
       />
       {shouldShowDescription && (
         <DescriptionTextArea
@@ -169,6 +172,7 @@ export function TitleDescriptionForm({
             maxHeight: MAX_DESCRIPTION_HEIGHT,
           }}
           data-testid="release-form-description"
+          disabled={disabled}
         />
       )}
     </Stack>
