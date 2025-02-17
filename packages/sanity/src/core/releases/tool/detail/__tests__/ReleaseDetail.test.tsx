@@ -42,10 +42,6 @@ vi.mock('sanity/router', async (importOriginal) => {
   }
 })
 
-vi.mock('../../../store/useReleasePermissions', () => ({
-  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
-}))
-
 vi.mock('../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
@@ -57,6 +53,10 @@ vi.mock('../../../index', () => ({
 
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
+}))
+
+vi.mock('../../../store/useReleasePermissions', () => ({
+  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
 vi.mock('../useBundleDocuments', () => ({
