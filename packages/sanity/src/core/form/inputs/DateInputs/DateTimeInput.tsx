@@ -71,14 +71,20 @@ const serialize = (date: Date) => {
 }
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
+  const displayTimeZone =
+    options.displayTimeZone && isValidTimeZoneString(options.displayTimeZone)
+      ? options.displayTimeZone
+      : undefined
+  if (options.displayTimeZone && !displayTimeZone) {
+    console.warn(
+      `Invalid time zone "${options.displayTimeZone}" supplied to datetime input, defaulting to local time zone or a previously stored preference`,
+    )
+  }
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 1,
-    displayTimeZone:
-      options.displayTimeZone && isValidTimeZoneString(options.displayTimeZone)
-        ? options.displayTimeZone
-        : undefined,
+    displayTimeZone,
     allowTimeZoneSwitch:
       options.allowTimeZoneSwitch === undefined ? true : options.allowTimeZoneSwitch,
   }

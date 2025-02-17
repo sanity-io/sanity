@@ -1,6 +1,6 @@
 import {type Mock, type Mocked, vi} from 'vitest'
 
-import useTimeZone, {getLocalTimeZone} from '../../../../hooks/useTimeZone'
+import useTimeZone from '../../../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../../types'
 
 const mockTimeZone: NormalizedTimeZone = {
@@ -9,7 +9,7 @@ const mockTimeZone: NormalizedTimeZone = {
   offset: '+00:00',
   name: 'SCT',
   alternativeName: 'Sanity/Oslo',
-  mainCities: 'Oslo',
+  city: 'Oslo',
   value: 'SCT',
 }
 
@@ -21,11 +21,10 @@ export const useTimeZoneMockReturn: Mocked<ReturnType<typeof useTimeZone>> = {
   timeZone: mockTimeZone,
   setTimeZone: vi.fn(),
   formatDateTz: vi.fn(),
+  allTimeZones: [],
+  getLocalTimeZone: vi.fn(() => mockTimeZone),
+  getTimeZone: vi.fn(),
 }
-
-export const getLocalTimeZoneMockReturn: Mocked<ReturnType<typeof getLocalTimeZone>> = mockTimeZone
 
 // default export
 export const mockUseTimeZone = useTimeZone as Mock<typeof useTimeZone>
-
-export const mockGetLocaleTimeZone = getLocalTimeZone as Mock<typeof getLocalTimeZone>

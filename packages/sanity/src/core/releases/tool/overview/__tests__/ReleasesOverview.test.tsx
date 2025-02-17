@@ -12,8 +12,6 @@ import {
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
 import {
-  getLocalTimeZoneMockReturn,
-  mockGetLocaleTimeZone,
   mockUseTimeZone,
   useTimeZoneMockReturn,
 } from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
@@ -112,7 +110,6 @@ vi.mock('../../../../perspective/useSetPerspective', () => ({
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
   ...(await importOriginal()),
-  getLocalTimeZone: vi.fn(() => getLocalTimeZoneMockReturn),
   default: vi.fn(() => useTimeZoneMockReturn),
 }))
 
@@ -421,14 +418,18 @@ describe('ReleasesOverview', () => {
       })
 
       it('shows dates with timezone abbreviation when it is not the locale', async () => {
-        mockGetLocaleTimeZone.mockReturnValue({
-          abbreviation: 'NST', // Not Sanity Time
-          namePretty: 'Not Sanity Time',
-          offset: '+00:00',
-          name: 'NST',
-          alternativeName: 'Not Sanity Time',
-          mainCities: 'Not Sanity City',
-          value: 'Not Sanity Time',
+        // mock useTimeZoneMockReturn
+        mockUseTimeZone.mockReturnValue({
+          ...useTimeZoneMockReturn,
+          getLocalTimeZone: vi.fn(() => ({
+            abbreviation: 'NST', // Not Sanity Time
+            namePretty: 'Not Sanity Time',
+            offset: '+00:00',
+            name: 'NST',
+            alternativeName: 'Not Sanity Time',
+            city: 'Not Sanity City',
+            value: 'Not Sanity Time',
+          })),
         })
 
         await rerender()
