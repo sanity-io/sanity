@@ -21,7 +21,7 @@ const releasesLocaleStrings = {
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
-  'action.open': 'Open',
+  'action.open': 'Active',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule for publishing...',
   /** Action text for unpublishing a document in a release in the context menu */

@@ -84,7 +84,7 @@ export const releasesOverviewColumnDefs: (
           </Flex>
         ),
       },
-      'open',
+      'active',
     ),
     checkColumnMode(
       {
@@ -173,7 +173,7 @@ export const releasesOverviewColumnDefs: (
           )
         },
       },
-      'open',
+      'active',
     ),
     checkColumnMode(
       {
