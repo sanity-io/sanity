@@ -306,7 +306,6 @@
     "@types/tar-fs": "^2.0.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/expect": "^3.0.5",
-    "@vvo/tzdb": "6.137.0",
     "babel-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
     "blob-polyfill": "^9.0.20240710",
     "date-fns-tz": "2.0.1",
