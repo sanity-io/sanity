@@ -184,7 +184,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const {getOrgActiveReleaseCount, setOrgActiveReleaseCountManually} = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
-    async (cb: (limits: any | undefined) => void, throwError: boolean = false) => {
+    async (cb: () => void, throwError: boolean = false) => {
       console.log('Guard called, checking caches...')
 
       const existingLimits = getReleaseLimits()
@@ -192,21 +192,17 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       console.log({existingLimits, existingOrgActiveReleaseCount})
 
-      if (existingLimits && existingOrgActiveReleaseCount !== null) {
+      if (existingLimits !== null && existingOrgActiveReleaseCount !== null) {
         console.log('Both caches valid, skipping fetch.')
-        return cb({
-          datasetReleaseLimit: existingLimits.datasetReleaseLimit,
-          orgActiveReleaseLimit: existingLimits.orgActiveReleaseLimit,
-          orgActiveReleaseCount: existingOrgActiveReleaseCount,
-        })
+        return cb()
       }
 
       console.log('Fetching new data since cache is missing or expired...')
 
       try {
-        const limits = await firstValueFrom(fetchReleasesLimits()) // ✅ Fetch API once
+        const limits = await firstValueFrom(fetchReleasesLimits())
 
-        if (!existingLimits) {
+        if (existingLimits === null) {
           console.log('setting release limits', {limits})
           setLimitsManually({
             datasetReleaseLimit: limits.datasetReleaseLimit,
@@ -221,9 +217,16 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         const {datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount} = limits
         const activeReleasesCount = activeReleases?.length || 0
 
+        const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
+        const isCurrentDatasetAtAboveOrgLimit =
+          orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
+        const isOrgAtAboveOrgLimit =
+          orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
+
         const shouldShowDialog =
-          activeReleasesCount >= datasetReleaseLimit ||
-          (orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit)
+          isCurrentDatasetAtAboveDatasetLimit ||
+          isCurrentDatasetAtAboveOrgLimit ||
+          isOrgAtAboveOrgLimit
 
         if (shouldShowDialog) {
           handleOpenDialog()
@@ -233,7 +236,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           return
         }
 
-        cb({datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount})
+        cb()
       } catch (error) {
         console.error('Error fetching release limits:', error)
       }

@@ -1,4 +1,5 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {BehaviorSubject, defer, delay, firstValueFrom, map, of, shareReplay, tap} from 'rxjs'
 
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
@@ -36,7 +37,7 @@ export const useReleaseLimits = () => {
 
       if (cachedState) {
         console.log('Using cached ReleaseLimits')
-        return of(cachedState) // ✅ Use existing cache
+        return of(cachedState)
       }
 
       console.log('Fetching ReleaseLimits...')
@@ -58,16 +59,9 @@ export const useReleaseLimits = () => {
     }).pipe(shareReplay({bufferSize: 1, refCount: true}))
   }, [resourceCache])
 
-  const fetchReleaseLimits = async () => {
-    const existingValue = releaseLimitsSubject.getValue()
-    if (existingValue) {
-      console.log('Returning already cached ReleaseLimits')
-      return existingValue
-    }
+  const releasesLimit = useObservable(releaseLimitsSubject, null)
 
-    console.log('Triggering new fetch for ReleaseLimits...')
-    return firstValueFrom(releaseLimits$)
-  }
+  const fetchReleaseLimits = async () => releasesLimit || firstValueFrom(releaseLimits$)
 
   const setLimitsManually = (limits: ReleaseLimits) => {
     console.log('Storing ReleaseLimits...')
@@ -81,16 +75,13 @@ export const useReleaseLimits = () => {
     releaseLimitsSubject.next(limits)
   }
 
-  const getReleaseLimits = () => {
-    return (
-      releaseLimitsSubject.getValue() ||
-      resourceCache.get<ReleaseLimits>({
-        namespace: 'ReleaseLimits',
-        dependencies: [],
-      }) ||
-      null
-    )
-  }
+  const getReleaseLimits = () =>
+    releasesLimit ||
+    resourceCache.get<ReleaseLimits>({
+      namespace: 'ReleaseLimits',
+      dependencies: [],
+    }) ||
+    null
 
   return {fetchReleaseLimits, setLimitsManually, getReleaseLimits}
 }

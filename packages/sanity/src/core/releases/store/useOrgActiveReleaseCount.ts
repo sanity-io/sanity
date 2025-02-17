@@ -1,4 +1,5 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -29,7 +30,7 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
 
-  useMemo(
+  const cache$ = useMemo(
     () =>
       cacheTrigger$.pipe(
         distinctUntilChanged(),
@@ -58,7 +59,7 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
                     resourceCache.set({
                       namespace: 'OrgActiveReleasesCount',
                       dependencies: [activeReleases],
-                      value: null, // 🚨 Force cache to be removed
+                      value: null,
                     })
 
                     cacheTrigger$.next(null)
@@ -76,6 +77,8 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
       ),
     [activeReleases, resourceCache],
   )
+
+  useObservable(cache$, null)
 
   const setOrgActiveReleaseCountManually = (count: number) => {
     const activeReleasesCount = activeReleases?.length || 0

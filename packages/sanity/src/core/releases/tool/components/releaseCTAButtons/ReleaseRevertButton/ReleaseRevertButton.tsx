@@ -1,7 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -9,10 +9,10 @@ import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
+import {useIsReleasesPlus} from '../../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
-import {useReleaseLimits} from '../../../../store/useReleaseLimits'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
@@ -227,19 +227,7 @@ export const ReleaseRevertButton = ({
     [guardWithReleaseLimitUpsell],
   )
 
-  const {fetchReleaseLimits} = useReleaseLimits()
-
-  const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | undefined>(undefined)
-  const [hasFetchedLimits, setHasFetchedLimits] = useState(false)
-
-  useEffect(() => {
-    if (isReleasesPlus !== undefined || hasFetchedLimits) return
-
-    setHasFetchedLimits(true)
-    fetchReleaseLimits().then((limits) => {
-      setIsReleasesPlus(limits.orgActiveReleaseLimit > 2)
-    })
-  }, [fetchReleaseLimits, hasFetchedLimits, isReleasesPlus])
+  const isReleasesPlus = useIsReleasesPlus()
 
   if (!isReleasesPlus) return null
 
