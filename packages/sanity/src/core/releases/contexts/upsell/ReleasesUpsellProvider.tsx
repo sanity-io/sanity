@@ -201,7 +201,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
         const now = Date.now()
         const _cachedState = resourceCache.get<{
-          datasetLimit: number | null
           cacheExpiresAt: number | null
           cachedValue: any
           activeReleases: number
@@ -213,14 +212,17 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
         if (_cachedState) {
           const {
-            datasetLimit,
             cacheExpiresAt,
             cachedValue,
             activeReleases: cachedActiveReleases,
             expired,
           } = _cachedState
 
-          if (datasetLimit !== null && _activeReleases === datasetLimit && cachedValue) {
+          if (
+            cachedValue?.datasetReleaseLimit !== null &&
+            _activeReleases === cachedValue?.datasetReleaseLimit &&
+            cachedValue
+          ) {
             console.log('At dataset limit, keeping cache indefinitely.')
             return of(cachedValue)
           }
@@ -250,7 +252,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   useEffect(() => {
     const _cachedState = resourceCache.get<{
-      datasetLimit: number | null
       cacheExpiresAt: number | null
       cachedValue: any
       activeReleases: number
@@ -279,7 +280,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       let limits = releaseLimits
 
       const _cachedState = resourceCache.get<{
-        datasetLimit: number | null
         cacheExpiresAt: number | null
         cachedValue: any
         expired?: boolean
@@ -302,8 +302,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       if (
         _cachedState &&
-        _cachedState.datasetLimit !== null &&
-        activeReleases.length === _cachedState.datasetLimit
+        _cachedState.cachedValue.datasetReleaseLimit !== null &&
+        activeReleases.length === _cachedState.cachedValue.datasetReleaseLimit
       ) {
         console.log('At dataset limit, NOT fetching new data.')
         limits = _cachedState.cachedValue
@@ -321,7 +321,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
             dependencies: [activeReleases],
             namespace: 'ReleasesUpsellLimits',
             value: {
-              datasetLimit: limits.datasetReleaseLimit,
               cacheExpiresAt: Date.now() + CACHE_TTL_MS,
               cachedValue: limits,
               activeReleases: activeReleasesCount,
