@@ -9,7 +9,7 @@ interface TypeInfo {
  * @internal
  */
 export const ResolvedLiveEdit = defineEvent<TypeInfo>({
-  name: 'Resolved LiveEdit Draft',
+  name: 'LiveEdit Draft Resolved',
   version: 1,
   description: 'User resolved a draft of a live edit document to continue editing',
 })
