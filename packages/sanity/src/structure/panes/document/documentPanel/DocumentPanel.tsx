@@ -234,6 +234,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   <Scroller
                     $disabled={layoutCollapsed || false}
                     data-testid="document-panel-scroller"
+                    id="document-panel-scrolller"
                     ref={setDocumentScrollElement}
                   >
                     <FormView

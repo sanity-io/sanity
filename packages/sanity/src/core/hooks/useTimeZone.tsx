@@ -40,15 +40,18 @@ const timeZoneCache = new Map<
   string,
   {
     abbreviation: string
-    longName: string
-    cities: string[]
+    alternativeName: string
+    offset: string
   }
 >()
 
 // Add helper to convert offset string to minutes for sorting
 const offsetToMinutes = (offset: string): number => {
-  const [hours, minutes] = offset.replace(/[+-]/, '').split(':').map(Number)
+  if (!offset) return 0
   const multiplier = offset.startsWith('-') ? -1 : 1
+  if (!offset.includes(':')) return multiplier * Number(offset.replace(/[+-]/, '')) * 60
+
+  const [hours, minutes] = offset.replace(/[+-]/, '').split(':').map(Number)
   return multiplier * (hours * 60 + minutes)
 }
 
@@ -63,7 +66,9 @@ const useTimeZone = (scope: TimeZoneScope) => {
 
   // Batch process timezone info with a single formatter per timezone
   const getTimeZoneInfo = useCallback(
-    (canonicalIdentifier: string) => {
+    (
+      canonicalIdentifier: string,
+    ): {abbreviation: string; alternativeName: string; offset: string} => {
       if (timeZoneCache.has(canonicalIdentifier)) {
         return timeZoneCache.get(canonicalIdentifier)!
       }
@@ -80,11 +85,18 @@ const useTimeZone = (scope: TimeZoneScope) => {
 
       const parts = formatter.formatToParts(new Date())
       const shortParts = shortFormatter.formatToParts(new Date())
+      const rawOffset = formatInTimeZone(new Date(), canonicalIdentifier, 'xxx')
+      // If the offset is +02:00 then we can just show +2, if it has +13:45 then we should show +13:45, remove the leading +0 and just leave a + if a number under 10, remove the :00 at the end
+      const offset = rawOffset
+        .replace(/([+-])0(\d)/, '$1$2')
+        .replace(/([+-])0$/, '$1')
+        .replace(/:00$/, '')
+        .replace(/[+]0$/, '')
 
       const info = {
         abbreviation: shortParts.find(({type}) => type === 'timeZoneName')?.value || '',
-        longName: parts.find(({type}) => type === 'timeZoneName')?.value || '',
-        cities: [],
+        alternativeName: parts.find(({type}) => type === 'timeZoneName')?.value || '',
+        offset,
       }
 
       timeZoneCache.set(canonicalIdentifier, info)
@@ -93,47 +105,36 @@ const useTimeZone = (scope: TimeZoneScope) => {
     [currentLocale],
   )
 
-  const allTimeZones = useMemo((): NormalizedTimeZone[] => {
-    const zones = Intl.supportedValuesOf('timeZone')
-    const currentDate = new Date()
-    const progressiveCities: Record<string, string[]> = {}
+  const allTimeZones: NormalizedTimeZone[] = useMemo(
+    () =>
+      Intl.supportedValuesOf('timeZone')
+        .map((tzName): NormalizedTimeZone | null => {
+          // Skip if timezone name doesn't contain a city (should have a '/')
+          if (!tzName.includes('/')) return null
 
-    const rawZones = zones
-      .map((tz) => {
-        const info = getTimeZoneInfo(tz)
-        const offset = formatInTimeZone(currentDate, tz, 'xxx')
-        const cityName = tz.split('/')[1].replaceAll('_', ' ')
-        progressiveCities[info.longName] = [...(progressiveCities[info.longName] || []), cityName]
-        return {
-          abbreviation: info.abbreviation,
-          alternativeName: info.longName,
-          mainCities: '',
-          name: tz,
-          namePretty: tz.replaceAll('_', ' '),
-          offset,
-          value: `${offset} ${info.abbreviation} ${tz}`,
-        } as NormalizedTimeZone
-      })
-      .filter(Boolean) // Remove any incomplete cities
-      .sort((a, b) => {
-        if (!a || !b) return 0
-        const offsetA = offsetToMinutes(a.offset)
-        const offsetB = offsetToMinutes(b.offset)
-        return offsetA - offsetB
-      }) as NormalizedTimeZone[]
-
-    const completedZones = rawZones.map((zone) => {
-      const cities = progressiveCities[zone.alternativeName]
-      zone.mainCities = cities?.join(', ') || ''
-      return zone
-    })
-
-    return completedZones
-  }, [getTimeZoneInfo])
+          const {alternativeName, abbreviation, offset} = getTimeZoneInfo(tzName)
+          const [, city] = tzName.split('/')
+          return {
+            abbreviation,
+            alternativeName,
+            city: city.replaceAll('_', ' '),
+            name: tzName,
+            namePretty: tzName.replaceAll('_', ' '),
+            offset,
+            value: `${offset} ${abbreviation} ${tzName} ${alternativeName}`,
+          }
+        })
+        .filter((tz): tz is NormalizedTimeZone => tz !== null)
+        .sort(
+          (a: NormalizedTimeZone, b: NormalizedTimeZone) =>
+            offsetToMinutes(a.offset) - offsetToMinutes(b.offset),
+        ),
+    [getTimeZoneInfo],
+  )
 
   const getDefaultTimeZone = useCallback((): NormalizedTimeZone | undefined => {
     const normalizedDefaultTimezone = defaultTimeZone
-      ? allTimeZones.find((tz) => tz.name === defaultTimeZone)
+      ? allTimeZones.find((tz: NormalizedTimeZone) => tz.name === defaultTimeZone)
       : undefined
     return normalizedDefaultTimezone
   }, [allTimeZones, defaultTimeZone])
@@ -147,7 +148,7 @@ const useTimeZone = (scope: TimeZoneScope) => {
       const parsedTimeZone = JSON.parse(storedTimeZone)
 
       // Check if stored timezone still exists in our available timezones
-      if (allTimeZones.some((tz) => tz.name === parsedTimeZone.name)) {
+      if (allTimeZones.some((tz: NormalizedTimeZone) => tz.name === parsedTimeZone.name)) {
         return parsedTimeZone
       }
 

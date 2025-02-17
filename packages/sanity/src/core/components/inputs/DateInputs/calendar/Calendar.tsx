@@ -334,7 +334,7 @@ export const Calendar = forwardRef(function Calendar(
           <CalendarMonthSelect
             onChange={handleFocusedMonthChange}
             monthNames={labels.monthNames}
-            value={focusedDate?.getMonth()}
+            value={getDisplayMonth()}
           />
         </Box>
         <Box marginLeft={2}>
@@ -345,13 +345,15 @@ export const Calendar = forwardRef(function Calendar(
               goToPreviousYear: labels.goToPreviousYear,
             }}
             onChange={setFocusedDateYear}
-            value={focusedDate.getFullYear()}
+            value={getDisplayYear()}
           />
         </Box>
       </Flex>
     )
   }, [
     focusedDate,
+    getDisplayMonth,
+    getDisplayYear,
     handleFocusedMonthChange,
     labels.goToNextYear,
     labels.goToPreviousYear,

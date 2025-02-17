@@ -14,7 +14,7 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
     color: ${theme.sanity.color.base.fg};
     font-weight: 500;
@@ -22,10 +22,17 @@ const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-const TimeZoneMainCitiesSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
+  return css`
+    color: ${theme.sanity.color.muted.default.enabled.fg};
+    font-weight: 500;
+  `
+})
+
+const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
     color: ${theme.sanity.color.input.default.readOnly.fg};
-    margin-left: 1em;
+    float: right;
   `
 })
 
@@ -74,9 +81,14 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     return (
       <Card as="button" padding={3}>
         <Text size={1} textOverflow="ellipsis">
-          <span>GMT{option.offset}</span>
+          <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
+          <TimeZoneOffsetSpan>
+            {' '}
+            ({'GMT'}
+            {option.offset})
+          </TimeZoneOffsetSpan>
+
           <TimeZoneAlternativeNameSpan>{option.alternativeName}</TimeZoneAlternativeNameSpan>
-          <TimeZoneMainCitiesSpan>{option.mainCities}</TimeZoneMainCitiesSpan>
         </Text>
       </Card>
     )
@@ -134,7 +146,10 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             padding={4}
             placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
-              boundaryElement: document.querySelector('body'),
+              boundaryElement:
+                timeZoneScope.type === 'input'
+                  ? (document.querySelector('#document-panel-scroller') as HTMLElement)
+                  : (document.querySelector('body') as HTMLElement),
               constrainSize: true,
               placement: 'bottom-start',
             }}

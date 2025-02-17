@@ -3,7 +3,7 @@ import {type ValidationMarker} from '@sanity/types'
 export interface NormalizedTimeZone {
   abbreviation: string
   alternativeName: string
-  mainCities: string
+  city: string
   name: string
   namePretty: string
   offset: string
