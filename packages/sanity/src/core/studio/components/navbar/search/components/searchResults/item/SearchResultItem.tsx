@@ -1,6 +1,6 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
-import {type MouseEvent, useCallback, useMemo} from 'react'
+import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {useIntentLink, useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../../../../../ui-components'
@@ -8,7 +8,11 @@ import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../co
 import {useSchema} from '../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {unstable_useValuePreview as useValuePreview} from '../../../../../../../preview/useValuePreview'
-import {useDocumentPresence} from '../../../../../../../store'
+import {
+  type PermissionCheckResult,
+  useDocumentPresence,
+  useGrantsStore,
+} from '../../../../../../../store'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
@@ -44,6 +48,17 @@ export function SearchResultItem({
   })
   const {state} = useSearchState()
   const {t} = useTranslation()
+  const grantsStore = useGrantsStore()
+  const [createPermission, setCreatePermission] = useState<PermissionCheckResult | null>(null)
+  const hasCreatePermission = createPermission?.granted
+
+  useEffect(() => {
+    if (state.canDisableAction) {
+      grantsStore
+        .checkDocumentPermission('create', {_id: documentId, _type: documentType})
+        .subscribe(setCreatePermission)
+    }
+  }, [documentId, documentType, grantsStore, state.canDisableAction])
 
   // if the perspective is set within the searchState then it means it should override the router perspective
   const pickedPerspective = state.perspective ? state.perspective[0] : perspective
@@ -52,6 +67,8 @@ export function SearchResultItem({
   const existsInRelease = state.disabledDocumentIds?.some((id) =>
     id.includes(getPublishedId(documentId)),
   )
+  // should the search items be disasabled
+  const disabledAction = (!hasCreatePermission && state.canDisableAction) || existsInRelease
 
   const preview = useValuePreview({
     enabled: true,
@@ -75,16 +92,16 @@ export function SearchResultItem({
   const content = (
     <Box {...rest}>
       <PreviewCard
-        as={existsInRelease ? undefined : 'a'}
+        as={disabledAction ? undefined : 'a'}
         data-as="a"
         flex={1}
-        href={disableIntentLink || existsInRelease ? undefined : href}
+        href={disabledAction || disableIntentLink ? undefined : href}
         onClick={handleClick}
         radius={2}
         tabIndex={-1}
         style={{
-          pointerEvents: existsInRelease ? 'none' : undefined,
-          opacity: existsInRelease ? 0.5 : 1,
+          pointerEvents: disabledAction ? 'none' : undefined,
+          opacity: disabledAction ? 0.5 : 1,
         }}
       >
         <SearchResultItemPreview
@@ -98,8 +115,12 @@ export function SearchResultItem({
     </Box>
   )
 
-  return existsInRelease ? (
-    <Tooltip content={t('release.tooltip.already-added')} placement="top">
+  const tooltipContent = existsInRelease
+    ? t('search.disabledItem')
+    : t('release.action.permission.error')
+
+  return disabledAction ? (
+    <Tooltip content={tooltipContent} placement="top">
       {content}
     </Tooltip>
   ) : (

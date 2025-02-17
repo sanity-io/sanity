@@ -36,6 +36,10 @@ interface SearchProviderProps {
    * if provided, then ids should be checked against this list
    */
   disabledDocumentIds?: string[]
+  /**
+   * If true, the search action (such as adding a document to a release list, for example) should be allowed to disable under the right conditions
+   */
+  canDisableAction?: boolean
 }
 
 /**
@@ -46,6 +50,7 @@ export function SearchProvider({
   fullscreen,
   perspective,
   disabledDocumentIds,
+  canDisableAction,
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
@@ -216,9 +221,18 @@ export function SearchProvider({
         fullscreen,
         perspective,
         disabledDocumentIds,
+        canDisableAction,
       },
     }),
-    [fullscreen, disabledDocumentIds, onClose, perspective, searchCommandList, state],
+    [
+      fullscreen,
+      disabledDocumentIds,
+      canDisableAction,
+      onClose,
+      perspective,
+      searchCommandList,
+      state,
+    ],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
