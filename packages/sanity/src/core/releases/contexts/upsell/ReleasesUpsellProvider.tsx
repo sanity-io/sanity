@@ -187,10 +187,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     async (cb: (limits: any | undefined) => void, throwError: boolean = false) => {
       console.log('Guard called, triggering cache fetches...')
 
-      // ✅ Fetch both values **only when guard is called**
       const [limits, orgActiveReleaseCount] = await Promise.all([
-        fetchReleaseLimits(), // ✅ Triggers fetching if needed
-        getActiveReleasesCountStoreValue(), // ✅ Fetches count with TTL handling
+        fetchReleaseLimits(),
+        getActiveReleasesCountStoreValue(),
       ])
 
       if (!limits || orgActiveReleaseCount === null) {
