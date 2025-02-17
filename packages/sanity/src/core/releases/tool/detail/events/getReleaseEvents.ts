@@ -116,7 +116,7 @@ export function getReleaseEvents({
         }, [])
 
       return {
-        events,
+        events: deduplicateEvents(events),
         hasMore: Boolean(activity.nextCursor),
         error: activity.error || edit.error,
         loading: activity.loading || edit.loading,
@@ -128,4 +128,23 @@ export function getReleaseEvents({
     events$,
     loadMore: activityEvents.loadMore,
   }
+}
+
+const deduplicateEvents = (events: ReleaseEvent[]) => {
+  // Events are sorted by timestamp, compare this event with the next one, if they are the same type and timestamp, remove it.
+  return events.filter((event, index) => {
+    const nextEvent = events[index + 1]
+    if (!nextEvent) return true
+    return !(event.type === nextEvent.type && areTheSameDate(event.timestamp, nextEvent.timestamp))
+  })
+}
+
+/**
+ * Checks if two dates are the same date, without contemplating miliseconds.
+ * The translog has miliseconds but the events api does not.
+ */
+function areTheSameDate(date1: string, date2: string) {
+  const time1 = new Date(date1).getTime()
+  const time2 = new Date(date2).getTime()
+  return Math.abs(time1 - time2) <= 1000
 }
