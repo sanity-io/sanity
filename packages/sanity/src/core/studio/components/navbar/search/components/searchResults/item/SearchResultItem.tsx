@@ -53,10 +53,12 @@ export function SearchResultItem({
   const hasCreatePermission = createPermission?.granted
 
   useEffect(() => {
-    grantsStore
-      .checkDocumentPermission('create', {_id: documentId, _type: documentType})
-      .subscribe(setCreatePermission)
-  }, [documentId, documentType, grantsStore])
+    if (state.canDisableAction) {
+      grantsStore
+        .checkDocumentPermission('create', {_id: documentId, _type: documentType})
+        .subscribe(setCreatePermission)
+    }
+  }, [documentId, documentType, grantsStore, state.canDisableAction])
 
   // if the perspective is set within the searchState then it means it should override the router perspective
   const pickedPerspective = state.perspective ? state.perspective[0] : perspective
@@ -66,7 +68,7 @@ export function SearchResultItem({
     id.includes(getPublishedId(documentId)),
   )
   // should the search items be disasabled
-  const disabledAction = (!hasCreatePermission && state.disabledDocumentIds) || existsInRelease
+  const disabledAction = (!hasCreatePermission && state.canDisableAction) || existsInRelease
 
   const preview = useValuePreview({
     enabled: true,
