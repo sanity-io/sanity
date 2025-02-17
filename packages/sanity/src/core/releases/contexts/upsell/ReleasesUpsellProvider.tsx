@@ -17,6 +17,7 @@ import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
+import {useReleaseLimits} from '../../store/useReleaseLimits'
 import {type ReleasesUpsellContextValue} from './types'
 
 type ReleaseLimits = {
@@ -179,33 +180,47 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
+  const fetchReleaseLimits = useReleaseLimits()
   const getActiveReleasesCountStoreValue = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: (limits: any | undefined) => void, throwError: boolean = false) => {
-      const limits = await getActiveReleasesCountStoreValue()
+      console.log('Guard called, triggering cache fetches...')
 
-      if ('error' in limits) return cb(undefined)
+      // ✅ Fetch both values **only when guard is called**
+      const [limits, orgActiveReleaseCount] = await Promise.all([
+        fetchReleaseLimits(), // ✅ Triggers fetching if needed
+        getActiveReleasesCountStoreValue(), // ✅ Fetches count with TTL handling
+      ])
 
-      const {datasetReleaseLimit, orgActiveReleaseCount, orgActiveReleaseLimit} = limits
+      if (!limits || orgActiveReleaseCount === null) {
+        console.warn('Cache expired or data missing. Skipping callback execution.')
+        return
+      }
 
+      const {datasetReleaseLimit, orgActiveReleaseLimit} = limits
       const activeReleasesCount = activeReleases?.length || 0
+
       const shouldShowDialog =
         activeReleasesCount >= datasetReleaseLimit ||
         (orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit)
 
       if (shouldShowDialog) {
         handleOpenDialog()
-
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
         }
         return
       }
 
-      cb(limits)
+      cb({datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount})
     },
-    [activeReleases?.length, getActiveReleasesCountStoreValue, handleOpenDialog],
+    [
+      activeReleases?.length,
+      getActiveReleasesCountStoreValue,
+      handleOpenDialog,
+      fetchReleaseLimits,
+    ],
   )
 
   const onReleaseLimitReached = useCallback(
