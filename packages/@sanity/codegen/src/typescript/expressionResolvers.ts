@@ -101,6 +101,8 @@ export function resolveExpression({
         return (quasi.value.cooked || '') + (resolvedExpressions[idx] || '')
       })
       .join('')
+      .replace(/\s+/g, ' ')
+      .trim()
   }
 
   if (babelTypes.isLiteral(node)) {
