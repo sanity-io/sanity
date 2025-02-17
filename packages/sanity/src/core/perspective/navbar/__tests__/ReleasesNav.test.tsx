@@ -5,6 +5,7 @@ import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useExcludedPerspectiveMockReturn} from '../../../perspective/__mocks__/useExcludedPerspective.mock'
 import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {
+  activeASAPErrorRelease,
   activeASAPRelease,
   activeScheduledRelease,
   scheduledRelease,
@@ -145,6 +146,7 @@ describe('ReleasesNav', () => {
         activeASAPRelease,
 
         {...scheduledRelease, publishAt: '2023-10-10T09:00:00Z'},
+        activeASAPErrorRelease,
       ]
     })
 
@@ -191,6 +193,15 @@ describe('ReleasesNav', () => {
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
         within(scheduledMenuItem).getByTestId('release-lock-icon')
         within(scheduledMenuItem).getByTestId('release-avatar-primary')
+      })
+
+      it('should show the error icon if the release is active and has an error', () => {
+        const releaseMenu = screen.getByTestId('release-menu')
+        const releaseTitle = within(releaseMenu).getByText('active asap Error Release')
+        const releaseButton = releaseTitle?.closest('button')
+
+        expect(releaseButton).toBeTruthy()
+        within(releaseButton!).getByTestId('release-error-icon')
       })
 
       it('allows for new release to be created', async () => {
