@@ -1,22 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {BehaviorSubject, firstValueFrom, merge, of, timer} from 'rxjs'
-import {
-  delay,
-  distinctUntilChanged,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs/operators'
+import {firstValueFrom, of} from 'rxjs'
+import {delay, take, tap} from 'rxjs/operators'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
-import {useResourceCache} from '../../../store/_legacy/ResourceCacheProvider'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -27,6 +16,7 @@ import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
+import {useReleaseLimitsStore} from '../../store/useReleaseLimitsStore'
 import {type ReleasesUpsellContextValue} from './types'
 
 type ReleaseLimits = {
@@ -52,7 +42,7 @@ const BASE_URL = 'www.sanity.io'
 // Date when the change from array to object in the data returned was introduced.
 const API_VERSION = '2024-04-19'
 
-const fetchReleasesLimits = () =>
+export const fetchReleasesLimits = () =>
   of({
     orgActiveReleaseCount: 10,
     orgActiveReleaseLimit: 20,
@@ -65,9 +55,6 @@ const fetchReleasesLimits = () =>
     tap(() => console.log('fetchReleasesLimits')),
     delay(3000),
   )
-
-const cacheTrigger$ = new BehaviorSubject<number | null>(null)
-const CACHE_TTL_MS = 15000 // 1 minute
 
 /**
  * @beta
@@ -192,56 +179,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  const resourceCache = useResourceCache()
-
-  const cache$ = useMemo(
-    () =>
-      cacheTrigger$.pipe(
-        distinctUntilChanged(),
-        switchMap((activeReleasesCount) => {
-          if (activeReleasesCount === null) return of(null)
-
-          const cachedState = resourceCache.get<{
-            cachedValue: any
-            activeReleases: number
-          }>({
-            namespace: 'ReleasesUpsellLimits',
-            dependencies: [activeReleases],
-          })
-
-          if (cachedState) {
-            const {cachedValue, activeReleases: cachedReleases} = cachedState
-
-            if (cachedReleases === activeReleasesCount) {
-              console.log('Using cached value.')
-
-              return merge(
-                of(cachedValue),
-                timer(CACHE_TTL_MS).pipe(
-                  map(() => {
-                    console.log('TTL expired, emitting null.')
-                    cacheTrigger$.next(null)
-                    return null
-                  }),
-                ),
-              )
-            }
-          }
-
-          return of(null)
-        }),
-        startWith(null),
-        shareReplay({bufferSize: 1, refCount: true}),
-      ),
-    [activeReleases, resourceCache],
-  )
-
-  const releaseLimits = useObservable(cache$, null)
+  const [releaseLimits, setReleaseLimits] = useReleaseLimitsStore()
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
       let limits = releaseLimits
-      const activeReleasesCount = activeReleases?.length || 0
 
       if (!limits) {
         console.log('Cache expired or activeReleases changed. Fetching new data...')
@@ -251,16 +193,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
           console.log('Received first API response', limits)
 
-          resourceCache.set({
-            dependencies: [activeReleases],
-            namespace: 'ReleasesUpsellLimits',
-            value: {
-              cachedValue: limits,
-              activeReleases: activeReleasesCount,
-            },
-          })
-
-          cacheTrigger$.next(activeReleasesCount)
+          setReleaseLimits(limits)
         } catch (error) {
           console.error('Error fetching release limits:', error)
           return
@@ -276,6 +209,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       const {datasetReleaseLimit, orgActiveReleaseCount, orgActiveReleaseLimit} = limits
 
+      const activeReleasesCount = activeReleases?.length || 0
       const shouldShowDialog =
         activeReleasesCount >= datasetReleaseLimit ||
         (orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit)
@@ -291,7 +225,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       cb()
     },
-    [activeReleases, handleOpenDialog, releaseLimits, resourceCache],
+    [activeReleases?.length, handleOpenDialog, releaseLimits, setReleaseLimits],
   )
 
   const onReleaseLimitReached = useCallback(
