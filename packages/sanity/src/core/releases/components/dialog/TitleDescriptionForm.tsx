@@ -115,17 +115,20 @@ export function TitleDescriptionForm({
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault()
+      if (!isReleaseOpen) return
       const title = event.target.value
       onChange({...value, metadata: {...release.metadata, title}})
       // save the values to make input snappier while requests happen in the background
       setValue({...value, metadata: {...release.metadata, title}})
     },
-    [onChange, release.metadata, value],
+    [isReleaseOpen, onChange, release.metadata, value],
   )
 
   const handleDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
+      if (!isReleaseOpen) return
+
       const description = event.target.value
       onChange({...value, metadata: {...release.metadata, description}})
       // save the values to make input snappier while requests happen in the background
@@ -145,7 +148,7 @@ export function TitleDescriptionForm({
 
       setScrollHeight(event.currentTarget.scrollHeight)
     },
-    [onChange, release.metadata, value],
+    [isReleaseOpen, onChange, release.metadata, value],
   )
 
   const shouldShowDescription = isReleaseOpen || value.metadata.description
@@ -173,6 +176,7 @@ export function TitleDescriptionForm({
           }}
           data-testid="release-form-description"
           disabled={disabled}
+          readOnly={!isReleaseOpen}
         />
       )}
     </Stack>
