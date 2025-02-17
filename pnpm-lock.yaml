@@ -127,7 +127,7 @@ importers:
         version: 9.1.0(eslint@8.57.1)
       eslint-config-sanity:
         specifier: ^7.1.2
-        version: 7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-e670e72f-20250214(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1)
+        version: 7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-4632e36a-20250216(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1)
       eslint-config-turbo:
         specifier: ^2.1.2
         version: 2.4.1(eslint@8.57.1)(turbo@2.4.1)
@@ -151,7 +151,7 @@ importers:
         version: 19.0.0-beta-21e868a-20250216(eslint@8.57.1)
       eslint-plugin-react-hooks:
         specifier: experimental
-        version: 0.0.0-experimental-e670e72f-20250214(eslint@8.57.1)
+        version: 0.0.0-experimental-4632e36a-20250216(eslint@8.57.1)
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@8.57.1)
@@ -6907,8 +6907,8 @@ packages:
     peerDependencies:
       eslint: '>=7'
 
-  eslint-plugin-react-hooks@0.0.0-experimental-e670e72f-20250214:
-    resolution: {integrity: sha512-7l2ckiWo7h/oSmADrVT31se3mKMIu3R9mD3V8vk5p+C/tk4vWmxUaH3J2SXJTKyxl4fAXeCOnD1OlvJGxixaQg==}
+  eslint-plugin-react-hooks@0.0.0-experimental-4632e36a-20250216:
+    resolution: {integrity: sha512-1OAnQV3D7uFH0WynfiGw7imkCb4tV9HbSyGcC+eOTOpDox1e6hW7nLZnUU/Je58G6EHn0ZumPFnn3qVqZ+8gyA==}
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
@@ -14709,7 +14709,7 @@ snapshots:
       confusing-browser-globals: 1.0.11
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
-      eslint-plugin-react-hooks: 0.0.0-experimental-e670e72f-20250214(eslint@8.57.1)
+      eslint-plugin-react-hooks: 0.0.0-experimental-4632e36a-20250216(eslint@8.57.1)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -17912,7 +17912,7 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
-  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-e670e72f-20250214(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1):
+  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1)(typescript@5.7.3))(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-4632e36a-20250216(eslint@8.57.1))(eslint-plugin-react@7.37.4(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
       eslint-plugin-simple-import-sort: 12.1.1(eslint@8.57.1)
@@ -17921,7 +17921,7 @@ snapshots:
       '@typescript-eslint/parser': 7.18.0(eslint@8.57.1)(typescript@5.7.3)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
-      eslint-plugin-react-hooks: 0.0.0-experimental-e670e72f-20250214(eslint@8.57.1)
+      eslint-plugin-react-hooks: 0.0.0-experimental-4632e36a-20250216(eslint@8.57.1)
 
   eslint-config-turbo@2.4.1(eslint@8.57.1)(turbo@2.4.1):
     dependencies:
@@ -18062,7 +18062,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-react-hooks@0.0.0-experimental-e670e72f-20250214(eslint@8.57.1):
+  eslint-plugin-react-hooks@0.0.0-experimental-4632e36a-20250216(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
 
