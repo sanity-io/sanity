@@ -41,7 +41,7 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
           if (activeReleasesCount === null) return of(null)
 
           const cachedState = resourceCache.get<{
-            cachedValue: ReleaseLimits
+            cachedValue: number
             activeReleases: number
           }>({
             namespace: 'OrgActiveReleasesCount',
@@ -78,16 +78,17 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
   const cache = useObservable(cache$, null)
 
   const getOrgActiveReleasesCountStoreValue = async () => {
-    let limits = cache
+    let count = cache
 
-    if (limits) return limits
+    if (count) return count
 
     console.log('Cache expired or activeReleases changed. Fetching new data...')
 
     try {
-      limits = await firstValueFrom(fetchReleasesLimits().pipe(take(1)))
+      const limits = await firstValueFrom(fetchReleasesLimits().pipe(take(1)))
+      count = limits.orgActiveReleaseCount
 
-      console.log('Received first API response', limits)
+      console.log('Received first API response', count)
 
       const activeReleasesCount = activeReleases?.length || 0
 
@@ -95,14 +96,14 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
         dependencies: [activeReleases],
         namespace: 'OrgActiveReleasesCount',
         value: {
-          cachedValue: limits,
+          cachedValue: count,
           activeReleases: activeReleasesCount,
         },
       })
 
       cacheTrigger$.next(activeReleasesCount)
 
-      return limits
+      return count
     } catch (error) {
       console.error('Error fetching release limits:', error)
     }
