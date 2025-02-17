@@ -39,24 +39,30 @@ export const ReleaseMenu = ({
   const [hasDeletePermission, setHasDeletePermission] = useState<boolean | null>(null)
 
   useEffect(() => {
+    let shouldUpdate = true
+
     if (!releaseMenuDisabled) {
       if (release.state !== 'published') {
         if (release.state === 'archived') {
-          checkWithPermissionGuard(unarchive, release._id).then((hasPermission) =>
-            setHasUnarchivePermission(hasPermission),
-          )
+          checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
+            if (shouldUpdate) setHasUnarchivePermission(hasPermission)
+          })
         } else {
-          checkWithPermissionGuard(archive, release._id).then((hasPermission) =>
-            setHasArchivePermission(hasPermission),
-          )
+          checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
+            if (shouldUpdate) setHasArchivePermission(hasPermission)
+          })
         }
       }
 
       if (release.state === 'archived' || release.state == 'published') {
-        checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) =>
-          setHasDeletePermission(hasPermission),
-        )
+        checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
+          if (shouldUpdate) setHasDeletePermission(hasPermission)
+        })
       }
+    }
+
+    return () => {
+      shouldUpdate = false
     }
   }, [
     release._id,
