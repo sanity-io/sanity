@@ -227,7 +227,7 @@ export const ReleaseRevertButton = ({
     [guardWithReleaseLimitUpsell],
   )
 
-  const getReleaseLimits = useReleaseLimits()
+  const {fetchReleaseLimits} = useReleaseLimits()
 
   const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | undefined>(undefined)
   const [hasFetchedLimits, setHasFetchedLimits] = useState(false)
@@ -236,10 +236,10 @@ export const ReleaseRevertButton = ({
     if (isReleasesPlus !== undefined || hasFetchedLimits) return
 
     setHasFetchedLimits(true)
-    getReleaseLimits().then((limits) => {
+    fetchReleaseLimits().then((limits) => {
       setIsReleasesPlus(limits.orgActiveReleaseLimit > 2)
     })
-  }, [getReleaseLimits, hasFetchedLimits, isReleasesPlus])
+  }, [fetchReleaseLimits, hasFetchedLimits, isReleasesPlus])
 
   if (!isReleasesPlus) return null
 

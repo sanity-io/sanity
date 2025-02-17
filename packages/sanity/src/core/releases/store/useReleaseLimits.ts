@@ -69,5 +69,28 @@ export const useReleaseLimits = () => {
     return firstValueFrom(releaseLimits$)
   }
 
-  return fetchReleaseLimits
+  const setLimitsManually = (limits: ReleaseLimits) => {
+    console.log('Storing ReleaseLimits...')
+
+    resourceCache.set({
+      namespace: 'ReleaseLimits',
+      dependencies: [],
+      value: limits,
+    })
+
+    releaseLimitsSubject.next(limits)
+  }
+
+  const getReleaseLimits = () => {
+    return (
+      releaseLimitsSubject.getValue() ||
+      resourceCache.get<ReleaseLimits>({
+        namespace: 'ReleaseLimits',
+        dependencies: [],
+      }) ||
+      null
+    )
+  }
+
+  return {fetchReleaseLimits, setLimitsManually, getReleaseLimits}
 }
