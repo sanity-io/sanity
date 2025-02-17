@@ -139,6 +139,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <Label>{{title}}</Label> release.',
 
+  /** The text content for the unpublished document banner when is part of a release */
+  'banners.unpublished-release-banner.text':
+    'This document will be unpublished as part of the <strong>{{title}}</strong> release',
+
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
   /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */

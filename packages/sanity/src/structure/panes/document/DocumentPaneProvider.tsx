@@ -605,7 +605,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return true
     }
 
+    const willBeUnpublished =
+      selectedReleaseId &&
+      value?._system &&
+      typeof value?._system === 'object' &&
+      'delete' in value._system
+
     return (
+      Boolean(willBeUnpublished) ||
       !ready ||
       revisionId !== null ||
       hasNoPermission ||
@@ -630,6 +637,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     selectedPerspectiveName,
     selectedReleaseId,
     value._id,
+    value._system,
     ready,
     revisionId,
     isDeleting,
