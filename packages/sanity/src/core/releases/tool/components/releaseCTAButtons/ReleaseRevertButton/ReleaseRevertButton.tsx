@@ -1,7 +1,7 @@
 import {RestoreIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -212,9 +212,6 @@ const ConfirmReleaseDialog = ({
   )
 }
 
-// TODO:  This is going to be disabled until we have the proper "releases plus" flag
-const isRevertEnabled = false
-
 export const ReleaseRevertButton = ({
   release,
   documents,
@@ -229,7 +226,25 @@ export const ReleaseRevertButton = ({
     [guardWithReleaseLimitUpsell],
   )
 
-  if (!isRevertEnabled) return null
+  const [isReleasesPlus, setIsReleasesPlug] = useState<boolean | undefined>(undefined)
+  const [isFetchingLimits, setIsFetchingLimits] = useState(false)
+
+  // const getLimits = useReleaseLimitsStore()
+
+  // useEffect(() => {
+  //   if (isReleasesPlus !== undefined || isFetchingLimits) return
+
+  //   setIsFetchingLimits(true)
+  //   getLimits().then((limits) => {
+  //     setIsReleasesPlug(limits.orgActiveReleaseLimit > 2)
+  //   })
+  // }, [getLimits, isFetchingLimits, isReleasesPlus])
+
+  useEffect(() => {
+    guardWithReleaseLimitUpsell((limits) => setIsReleasesPlug(limits.orgActiveReleaseLimit > 2))
+  }, [guardWithReleaseLimitUpsell])
+
+  if (!isReleasesPlus) return null
 
   return (
     <>
