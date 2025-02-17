@@ -1,8 +1,8 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {firstValueFrom, of} from 'rxjs'
-import {delay, take, tap} from 'rxjs/operators'
+import {of} from 'rxjs'
+import {delay, tap} from 'rxjs/operators'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
@@ -16,7 +16,7 @@ import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
-import {useReleaseLimitsStore} from '../../store/useReleaseLimitsStore'
+import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
 import {type ReleasesUpsellContextValue} from './types'
 
 type ReleaseLimits = {
@@ -179,33 +179,13 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  const [releaseLimits, setReleaseLimits] = useReleaseLimitsStore()
+  const getActiveReleasesCountStoreValue = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
-    async (cb: () => void, throwError: boolean = false) => {
-      let limits = releaseLimits
+    async (cb: (limits: any | undefined) => void, throwError: boolean = false) => {
+      const limits = await getActiveReleasesCountStoreValue()
 
-      if (!limits) {
-        console.log('Cache expired or activeReleases changed. Fetching new data...')
-
-        try {
-          limits = await firstValueFrom(fetchReleasesLimits().pipe(take(1)))
-
-          console.log('Received first API response', limits)
-
-          setReleaseLimits(limits)
-        } catch (error) {
-          console.error('Error fetching release limits:', error)
-          return
-        }
-      }
-
-      if (!limits) {
-        console.warn('Fetch was triggered, but still no limits found. Skipping callback execution.')
-        return
-      }
-
-      if ('error' in limits) return cb()
+      if ('error' in limits) return cb(undefined)
 
       const {datasetReleaseLimit, orgActiveReleaseCount, orgActiveReleaseLimit} = limits
 
@@ -223,9 +203,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         return
       }
 
-      cb()
+      cb(limits)
     },
-    [activeReleases?.length, handleOpenDialog, releaseLimits, setReleaseLimits],
+    [activeReleases?.length, getActiveReleasesCountStoreValue, handleOpenDialog],
   )
 
   const onReleaseLimitReached = useCallback(

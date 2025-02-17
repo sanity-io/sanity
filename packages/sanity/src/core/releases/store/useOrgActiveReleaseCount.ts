@@ -3,16 +3,19 @@ import {useObservable} from 'react-rx'
 import {
   BehaviorSubject,
   distinctUntilChanged,
+  firstValueFrom,
   map,
   merge,
   shareReplay,
   startWith,
   switchMap,
+  take,
 } from 'rxjs'
 import {of} from 'rxjs/internal/observable/of'
 import {timer} from 'rxjs/internal/observable/timer'
 
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
 import {useActiveReleases} from './useActiveReleases'
 
 interface ReleaseLimits {
@@ -21,15 +24,12 @@ interface ReleaseLimits {
   orgActiveReleaseCount: number
 }
 
-type UseReleaseLimitsStoreReturn = [
-  cache: ReleaseLimits | null,
-  setReleasesUpsellStoreValue: (value: ReleaseLimits) => void,
-]
+type UseOrgActiveReleaseCountReturn = () => Promise<any>
 
 const cacheTrigger$ = new BehaviorSubject<number | null>(null)
 const CACHE_TTL_MS = 15000
 
-export const useReleaseLimitsStore = (): UseReleaseLimitsStoreReturn => {
+export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
 
@@ -44,7 +44,7 @@ export const useReleaseLimitsStore = (): UseReleaseLimitsStoreReturn => {
             cachedValue: ReleaseLimits
             activeReleases: number
           }>({
-            namespace: 'ReleasesUpsellLimits',
+            namespace: 'OrgActiveReleasesCount',
             dependencies: [activeReleases],
           })
 
@@ -75,22 +75,38 @@ export const useReleaseLimitsStore = (): UseReleaseLimitsStoreReturn => {
     [activeReleases, resourceCache],
   )
 
-  const setReleasesUpsellStoreValue = (value: ReleaseLimits) => {
-    const activeReleasesCount = activeReleases?.length || 0
-
-    resourceCache.set({
-      dependencies: [activeReleases],
-      namespace: 'ReleasesUpsellLimits',
-      value: {
-        cachedValue: value,
-        activeReleases: activeReleasesCount,
-      },
-    })
-
-    cacheTrigger$.next(activeReleasesCount)
-  }
-
   const cache = useObservable(cache$, null)
 
-  return [cache, setReleasesUpsellStoreValue]
+  const getOrgActiveReleasesCountStoreValue = async () => {
+    let limits = cache
+
+    if (limits) return limits
+
+    console.log('Cache expired or activeReleases changed. Fetching new data...')
+
+    try {
+      limits = await firstValueFrom(fetchReleasesLimits().pipe(take(1)))
+
+      console.log('Received first API response', limits)
+
+      const activeReleasesCount = activeReleases?.length || 0
+
+      resourceCache.set({
+        dependencies: [activeReleases],
+        namespace: 'OrgActiveReleasesCount',
+        value: {
+          cachedValue: limits,
+          activeReleases: activeReleasesCount,
+        },
+      })
+
+      cacheTrigger$.next(activeReleasesCount)
+
+      return limits
+    } catch (error) {
+      console.error('Error fetching release limits:', error)
+    }
+  }
+
+  return getOrgActiveReleasesCountStoreValue
 }
