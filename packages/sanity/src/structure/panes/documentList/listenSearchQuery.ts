@@ -72,6 +72,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   const events$ = defer(() => {
     return client.listen(`*[${filter}]`, params, {
       events: ['welcome', 'mutation', 'reconnect'],
+      includeAllVersions: true,
       includeResult: false,
       visibility: 'query',
       tag: 'listen-search-query',

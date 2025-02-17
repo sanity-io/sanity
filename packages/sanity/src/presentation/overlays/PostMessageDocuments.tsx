@@ -33,6 +33,7 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
           events: ['welcome', 'mutation', 'reconnect'],
           includePreviousRevision: false,
           includeResult: false,
+          includeAllVersions: true,
           tag: 'presentation-documents',
           visibility: 'transaction',
         },

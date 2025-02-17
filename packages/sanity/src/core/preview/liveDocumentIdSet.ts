@@ -46,6 +46,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,
         includeMutations: false,
+        includeAllVersions: true,
         tag: 'preview.observe-document-set.listen',
       })
       .pipe(
