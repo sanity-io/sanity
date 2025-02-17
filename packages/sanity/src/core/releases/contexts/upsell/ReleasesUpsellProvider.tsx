@@ -2,10 +2,11 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, firstValueFrom, of} from 'rxjs'
+import {BehaviorSubject, firstValueFrom, merge, of, timer} from 'rxjs'
 import {
   delay,
   distinctUntilChanged,
+  map,
   shareReplay,
   startWith,
   switchMap,
@@ -191,147 +192,59 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  const activeReleasesCount = activeReleases?.length || 0
-
   const resourceCache = useResourceCache()
 
-  const cache$ = useMemo(() => {
-    return cacheTrigger$.pipe(
-      distinctUntilChanged(),
-      switchMap((_activeReleases) => {
-        if (_activeReleases === null) {
+  const cache$ = useMemo(
+    () =>
+      cacheTrigger$.pipe(
+        distinctUntilChanged(),
+        switchMap((activeReleasesCount) => {
+          if (activeReleasesCount === null) return of(null)
+
+          const cachedState = resourceCache.get<{
+            cachedValue: any
+            activeReleases: number
+          }>({
+            namespace: 'ReleasesUpsellLimits',
+            dependencies: [activeReleases],
+          })
+
+          if (cachedState) {
+            const {cachedValue, activeReleases: cachedReleases} = cachedState
+
+            if (cachedReleases === activeReleasesCount) {
+              console.log('Using cached value.')
+
+              return merge(
+                of(cachedValue),
+                timer(CACHE_TTL_MS).pipe(
+                  map(() => {
+                    console.log('TTL expired, emitting null.')
+                    cacheTrigger$.next(null)
+                    return null
+                  }),
+                ),
+              )
+            }
+          }
+
           return of(null)
-        }
-
-        const now = Date.now()
-        const _cachedState = resourceCache.get<{
-          cacheExpiresAt: number | null
-          cachedValue: any
-          activeReleases: number
-          expired?: boolean
-        }>({
-          namespace: 'ReleasesUpsellLimits',
-          dependencies: [activeReleases],
-        })
-
-        if (_cachedState) {
-          const {
-            cacheExpiresAt,
-            cachedValue,
-            activeReleases: cachedActiveReleases,
-            expired,
-          } = _cachedState
-
-          const datasetLimit = cachedValue?.datasetReleaseLimit
-          const orgLimit = cachedValue?.orgActiveReleaseLimit
-
-          if (datasetLimit !== null && _activeReleases === datasetLimit && cachedValue) {
-            console.log('At dataset limit, keeping cache indefinitely.')
-            return of(cachedValue)
-          }
-
-          if (orgLimit !== null && _activeReleases === orgLimit && cachedValue) {
-            console.log('At org limit, keeping cache indefinitely.')
-            return of(cachedValue)
-          }
-
-          if (expired) {
-            console.log('Cache is expired but will NOT fetch until guard is called.')
-            return of(null)
-          }
-
-          if (cacheExpiresAt && now < cacheExpiresAt && cachedValue) {
-            return of(cachedValue)
-          }
-
-          if (cachedActiveReleases === _activeReleases && cachedValue) {
-            return of(cachedValue)
-          }
-        }
-
-        return of(null)
-      }),
-      startWith(null),
-      shareReplay({bufferSize: 1, refCount: true}),
-    )
-  }, [activeReleases, resourceCache])
+        }),
+        startWith(null),
+        shareReplay({bufferSize: 1, refCount: true}),
+      ),
+    [activeReleases, resourceCache],
+  )
 
   const releaseLimits = useObservable(cache$, null)
-
-  useEffect(() => {
-    const _cachedState = resourceCache.get<{
-      cacheExpiresAt: number | null
-      cachedValue: any
-      activeReleases: number
-    }>({
-      namespace: 'ReleasesUpsellLimits',
-      dependencies: [activeReleases],
-    })
-
-    if (!_cachedState) return
-
-    const {cacheExpiresAt, cachedValue} = _cachedState
-    const now = Date.now()
-
-    const datasetLimit = cachedValue?.datasetReleaseLimit
-    const orgLimit = cachedValue?.orgActiveReleaseLimit
-
-    if (
-      (datasetLimit !== null && activeReleases.length === datasetLimit) ||
-      (orgLimit !== null && activeReleases.length === orgLimit)
-    ) {
-      console.log('At limit (dataset or org), keeping cache indefinitely.')
-      return
-    }
-
-    if (cacheExpiresAt !== null && now >= cacheExpiresAt) {
-      console.log('Cache TTL expired, marking cache as expired...')
-      resourceCache.set({
-        namespace: 'ReleasesUpsellLimits',
-        dependencies: [activeReleases],
-        value: {..._cachedState, expired: true},
-      })
-    }
-  }, [activeReleases, resourceCache])
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
       let limits = releaseLimits
+      const activeReleasesCount = activeReleases?.length || 0
 
-      const _cachedState = resourceCache.get<{
-        cacheExpiresAt: number | null
-        cachedValue: any
-        expired?: boolean
-      }>({
-        namespace: 'ReleasesUpsellLimits',
-        dependencies: [activeReleases],
-      })
-
-      const now = Date.now()
-
-      if (
-        _cachedState &&
-        _cachedState.cachedValue &&
-        !_cachedState.expired &&
-        now < _cachedState.cacheExpiresAt!
-      ) {
-        console.log('Using cached limits from ResourceCache')
-        limits = _cachedState.cachedValue
-      }
-
-      const datasetLimit = _cachedState?.cachedValue?.datasetReleaseLimit
-      const orgLimit = _cachedState?.cachedValue?.orgActiveReleaseLimit
-
-      if (
-        (datasetLimit !== null && activeReleases.length === datasetLimit) ||
-        (orgLimit !== null && activeReleases.length === orgLimit)
-      ) {
-        console.log('At limit (dataset or org), NOT fetching new data.')
-        limits = _cachedState?.cachedValue
-      }
-
-      if (!limits || _cachedState?.expired) {
-        console.log('Cache is expired or missing. Fetching new data...')
+      if (!limits) {
+        console.log('Cache expired or activeReleases changed. Fetching new data...')
 
         try {
           limits = await firstValueFrom(fetchReleasesLimits().pipe(take(1)))
@@ -342,11 +255,12 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
             dependencies: [activeReleases],
             namespace: 'ReleasesUpsellLimits',
             value: {
-              cacheExpiresAt: Date.now() + CACHE_TTL_MS,
               cachedValue: limits,
               activeReleases: activeReleasesCount,
             },
           })
+
+          cacheTrigger$.next(activeReleasesCount)
         } catch (error) {
           console.error('Error fetching release limits:', error)
           return
@@ -377,7 +291,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       cb()
     },
-    [activeReleases, activeReleasesCount, handleOpenDialog, releaseLimits, resourceCache],
+    [activeReleases, handleOpenDialog, releaseLimits, resourceCache],
   )
 
   const onReleaseLimitReached = useCallback(
