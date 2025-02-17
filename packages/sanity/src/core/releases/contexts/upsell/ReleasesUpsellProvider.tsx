@@ -56,6 +56,10 @@ const fetchReleasesLimits = () =>
     orgActiveReleaseCount: 10,
     orgActiveReleaseLimit: 20,
     datasetReleaseLimit: 6,
+
+    // orgActiveReleaseCount: 6,
+    // orgActiveReleaseLimit: 6,
+    // datasetReleaseLimit: 10,
   }).pipe(
     tap(() => console.log('fetchReleasesLimits')),
     delay(3000),
@@ -218,12 +222,16 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
             expired,
           } = _cachedState
 
-          if (
-            cachedValue?.datasetReleaseLimit !== null &&
-            _activeReleases === cachedValue?.datasetReleaseLimit &&
-            cachedValue
-          ) {
+          const datasetLimit = cachedValue?.datasetReleaseLimit
+          const orgLimit = cachedValue?.orgActiveReleaseLimit
+
+          if (datasetLimit !== null && _activeReleases === datasetLimit && cachedValue) {
             console.log('At dataset limit, keeping cache indefinitely.')
+            return of(cachedValue)
+          }
+
+          if (orgLimit !== null && _activeReleases === orgLimit && cachedValue) {
+            console.log('At org limit, keeping cache indefinitely.')
             return of(cachedValue)
           }
 
@@ -262,8 +270,19 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
     if (!_cachedState) return
 
-    const {cacheExpiresAt} = _cachedState
+    const {cacheExpiresAt, cachedValue} = _cachedState
     const now = Date.now()
+
+    const datasetLimit = cachedValue?.datasetReleaseLimit
+    const orgLimit = cachedValue?.orgActiveReleaseLimit
+
+    if (
+      (datasetLimit !== null && activeReleases.length === datasetLimit) ||
+      (orgLimit !== null && activeReleases.length === orgLimit)
+    ) {
+      console.log('At limit (dataset or org), keeping cache indefinitely.')
+      return
+    }
 
     if (cacheExpiresAt !== null && now >= cacheExpiresAt) {
       console.log('Cache TTL expired, marking cache as expired...')
@@ -300,13 +319,15 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         limits = _cachedState.cachedValue
       }
 
+      const datasetLimit = _cachedState?.cachedValue?.datasetReleaseLimit
+      const orgLimit = _cachedState?.cachedValue?.orgActiveReleaseLimit
+
       if (
-        _cachedState &&
-        _cachedState.cachedValue.datasetReleaseLimit !== null &&
-        activeReleases.length === _cachedState.cachedValue.datasetReleaseLimit
+        (datasetLimit !== null && activeReleases.length === datasetLimit) ||
+        (orgLimit !== null && activeReleases.length === orgLimit)
       ) {
-        console.log('At dataset limit, NOT fetching new data.')
-        limits = _cachedState.cachedValue
+        console.log('At limit (dataset or org), NOT fetching new data.')
+        limits = _cachedState?.cachedValue
       }
 
       if (!limits || _cachedState?.expired) {
