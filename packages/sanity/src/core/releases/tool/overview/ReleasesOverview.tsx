@@ -322,6 +322,11 @@ export function ReleasesOverview() {
     )
   }, [loading, releases, releaseFilterDate, handleSelectFilterDate])
 
+  const tableColumns = useMemo(
+    () => releasesOverviewColumnDefs(t, releaseGroupMode),
+    [releaseGroupMode, t],
+  )
+
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
@@ -377,7 +382,7 @@ export function ReleasesOverview() {
                 defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
                 loading={loadingTableData}
                 data={filteredReleases}
-                columnDefs={releasesOverviewColumnDefs(t)}
+                columnDefs={tableColumns}
                 emptyState={t('no-releases')}
                 // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 rowId="_id"

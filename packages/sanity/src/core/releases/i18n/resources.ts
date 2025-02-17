@@ -303,6 +303,8 @@ const releasesLocaleStrings = {
   /** Change action type that will be shown in the table*/
   'table-body.action.unpublish': 'Unpublish',
 
+  /** Header for the document table in the release tool - Archived */
+  'table-header.archivedAt': 'Archived',
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
   /** Header for the document table in the release tool - type */
@@ -315,6 +317,8 @@ const releasesLocaleStrings = {
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
+  /** Header for the document table in the release tool - Published */
+  'table-header.publishedAt': 'Published',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
 
