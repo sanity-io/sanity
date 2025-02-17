@@ -21,7 +21,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Popover} from '../../../../../ui-components'
 import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
-import {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import {type TimeZoneScope} from '../../../../hooks/useTimeZone'
 import {DatePicker} from './DatePicker'
 
 type Props = {

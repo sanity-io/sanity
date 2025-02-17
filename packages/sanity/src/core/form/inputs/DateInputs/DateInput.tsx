@@ -3,7 +3,6 @@ import {useCallback, useMemo} from 'react'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {useTranslation} from '../../../i18n'
-import {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
@@ -24,7 +23,7 @@ export function DateInput(props: DateInputProps) {
   const {readOnly, onChange, schemaType, elementProps, value, id} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
   const {t} = useTranslation()
-  const timeZoneScope = {type: TimeZoneScopeType.input, id}
+  const timeZoneScope = {type: 'input', id}
 
   const handleChange = useCallback(
     (nextDate: string | null) => {

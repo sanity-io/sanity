@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react'
 
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar'
-import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'
 
 export interface ToolCalendarProps {

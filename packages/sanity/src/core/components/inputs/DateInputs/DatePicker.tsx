@@ -1,6 +1,6 @@
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
-import {type TimeZoneScope} from '../../../scheduledPublishing/hooks/useTimeZone'
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 

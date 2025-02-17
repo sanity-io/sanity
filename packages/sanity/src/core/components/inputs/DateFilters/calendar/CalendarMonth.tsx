@@ -1,7 +1,7 @@
 import {Box, Card, Grid, Label} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 
-import useTimeZone, {type TimeZoneScope} from '../../../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../../hooks/useTimeZone'
 import {DEFAULT_WEEK_DAY_NAMES} from '../../DateInputs/calendar/constants'
 import {useWeeksOfMonth} from '../../DateInputs/calendar/utils'
 import {CalendarDay as DefaultCalendarDay} from './CalendarDay'

@@ -14,7 +14,7 @@ import {
 } from 'react'
 
 import {FormField} from '../../../form/components/formField'
-import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {DateTimeInput} from './base/DateTimeInput'
 import {type CommonProps, type ParseResult} from './types'
 

@@ -1,11 +1,13 @@
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useDocumentTitle} from 'sanity/structure'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../../ui-components'
-import useTimeZone, {type TimeZoneScope} from '../../hooks/useTimeZone'
-import {type NormalizedTimeZone} from '../../types'
+import {Dialog} from '../../../ui-components'
+import useTimeZone, {type TimeZoneScope, type TimeZoneScopeType} from '../../hooks/useTimeZone'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type NormalizedTimeZone} from '../../scheduledPublishing/types'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
@@ -32,6 +34,19 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} =
     useTimeZone(timeZoneScope)
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
+  const {t} = useTranslation('studio')
+  const {title} = useDocumentTitle()
+
+  // Differend text based on different scopes
+  const timeZoneScopeTypeToLabel = useMemo(
+    (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
+      scheduledPublishing: t('time-zone.dialog-info.scheduled-publishing'),
+      contentReleases: t('time-zone.dialog-info.content-releases'),
+      input: t('time-zone.dialog-info.input', {documentTitle: title}),
+    }),
+    [t, title],
+  )
+
   // Callbacks
   const handleTimeZoneChange = useCallback(
     (value: string) => setSelectedTz(getTimeZone(value)),
@@ -87,26 +102,23 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       width={1}
     >
       <Stack padding={4} space={5}>
-        <Text size={1}>
-          The selected time zone will change how dates are represented in schedules.
-        </Text>
-
+        <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
         <Stack space={3}>
           <Flex align="center" justify="space-between">
             <Inline space={2}>
               <Text size={1} weight="semibold">
-                Time zone
+                {t('time-zone.time-zone')}
               </Text>
               {isLocalTzSelected && (
                 <Text muted size={1}>
-                  local time
+                  {t('time-zone.local-time')}
                 </Text>
               )}
             </Inline>
             {!isLocalTzSelected && (
               <Text size={1} weight="medium">
                 <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
-                  Select local time zone
+                  {t('time-zone.action.select-local-time-zone')}
                 </a>
               </Text>
             )}
@@ -120,7 +132,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             openButton
             options={allTimeZones}
             padding={4}
-            placeholder="Search for a city or time zone"
+            placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
               boundaryElement: document.querySelector('body'),
               constrainSize: true,

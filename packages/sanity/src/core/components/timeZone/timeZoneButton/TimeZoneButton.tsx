@@ -1,25 +1,21 @@
 import {EarthAmericasIcon} from '@sanity/icons'
 import {Box, Inline, Label} from '@sanity/ui'
 import {noop} from 'lodash'
+import {type ReactNode} from 'react'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import useDialogTimeZone from '../../hooks/useDialogTimeZone'
-import useTimeZone, {type TimeZoneScope, TimeZoneScopeType} from '../../hooks/useTimeZone'
+import useTimeZone, {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 
 export interface ButtonTimeZoneProps {
   useElementQueries?: boolean
   timeZoneScope: TimeZoneScope
   allowTimeZoneSwitch?: boolean
-}
-
-const timeZoneScopeToName: Record<TimeZoneScopeType, string> = {
-  [TimeZoneScopeType.scheduledPublishing]: 'schedules',
-  [TimeZoneScopeType.contentReleases]: 'releases',
-  [TimeZoneScopeType.input]: 'this input',
+  tooltipContent: ReactNode
 }
 
 const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
-  const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true} = props
+  const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true, tooltipContent} = props
   const {timeZone} = useTimeZone(timeZoneScope)
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
@@ -28,10 +24,7 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
       {/* Dialog */}
       {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
 
-      <Tooltip
-        content={`Displaying ${timeZoneScopeToName[timeZoneScope.type]} in ${timeZone.alternativeName} (GMT${timeZone.offset})`}
-        portal
-      >
+      <Tooltip content={tooltipContent} portal>
         <div>
           {/*
           If `useElementQueries` is enabled, dates will be conditionally toggled at different element
@@ -84,7 +77,7 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                   mode="bleed"
                   readOnly={!allowTimeZoneSwitch}
                   onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
-                  text={`${timeZone.alternativeName} 123 (${timeZone.namePretty})`}
+                  text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                 />
               ) : (
                 <Inline space={2} paddingLeft={2}>

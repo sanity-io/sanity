@@ -6,13 +6,13 @@ import {styled} from 'styled-components'
 import {Tooltip} from '../../../../ui-components/tooltip'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
+import useTimeZone from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
-import useTimeZone, {TimeZoneScopeType} from '../../hooks/useTimeZone'
 import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
@@ -56,7 +56,7 @@ const PreviewWrapper = (props: Props) => {
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
-  const {formatDateTz} = useTimeZone({type: TimeZoneScopeType.scheduledPublishing})
+  const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
 
   const executeDate = getLastExecuteDate(schedule)
   const scheduleDate = executeDate ? new Date(executeDate) : null

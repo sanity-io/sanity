@@ -15,18 +15,20 @@ import {
   EMPTY_ARRAY,
   FormFieldHeaderText,
   FormFieldStatus,
+  getPublishedId,
   set,
   type StringInputProps,
   unset,
   useFieldActions,
+  useFormValue,
 } from 'sanity'
 import styled from 'styled-components'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
-import {useTranslation} from '../../../i18n'
-import ButtonTimeZone from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButton'
-import ButtonTimeZoneElementQuery from '../../../scheduledPublishing/components/timeZoneButton/TimeZoneButtonElementQuery'
-import useTimeZone, {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
+import ButtonTimeZone from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
+import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
+import useTimeZone, {type TimeZoneScopeType} from '../../../hooks/useTimeZone'
+import {Translate, useTranslation} from '../../../i18n'
 import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
@@ -142,10 +144,18 @@ export function DateTimeInput(props: DateTimeInputProps) {
     displayTimeZone,
     allowTimeZoneSwitch = true,
   } = parseOptions(schemaType.options)
+  const {title} = schemaType
   const {t} = useTranslation()
+  const _id = useFormValue(['_id'])
+  const published = getPublishedId(_id as string)
   const timeZoneScope = useMemo(
-    () => ({type: TimeZoneScopeType.input, defaultTimeZone: displayTimeZone, id}),
-    [displayTimeZone, id],
+    () => ({
+      type: 'input' as TimeZoneScopeType,
+      defaultTimeZone: displayTimeZone,
+      // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
+      id: `${published}.${id}${allowTimeZoneSwitch ? '' : '.fixed'}`,
+    }),
+    [allowTimeZoneSwitch, displayTimeZone, id, published],
   )
 
   const {timeZone} = useTimeZone(timeZoneScope)
@@ -243,6 +253,17 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   <ButtonTimeZoneElementQuery>
                     <Box marginLeft={2}>
                       <ButtonTimeZone
+                        tooltipContent={
+                          <Translate
+                            t={t}
+                            i18nKey={'time-zone.time-zone-tooltip-input'}
+                            values={{
+                              title,
+                              alternativeName: timeZone.alternativeName,
+                              offset: timeZone.offset,
+                            }}
+                          />
+                        }
                         allowTimeZoneSwitch={allowTimeZoneSwitch}
                         useElementQueries
                         timeZoneScope={timeZoneScope}

@@ -2,26 +2,21 @@ import {useToast} from '@sanity/ui'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import ToastDescription from '../components/toastDescription/ToastDescription'
-import {DATE_FORMAT} from '../constants'
-import {type NormalizedTimeZone} from '../types'
-import {debugWithName} from '../utils/debug'
-import getErrorMessage from '../utils/getErrorMessage'
+import ToastDescription from '../scheduledPublishing/components/toastDescription/ToastDescription'
+import {DATE_FORMAT} from '../scheduledPublishing/constants'
+import {type NormalizedTimeZone} from '../scheduledPublishing/types'
+import {debugWithName} from '../scheduledPublishing/utils/debug'
+import getErrorMessage from '../scheduledPublishing/utils/getErrorMessage'
 
 enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',
 }
 
-// @TODO would be great to add a document type level to this
-export enum TimeZoneScopeType {
-  scheduledPublishing = 'scheduledPublishing',
-  contentReleases = 'contentReleases',
-  input = 'input',
-}
+export type TimeZoneScopeType = 'scheduledPublishing' | 'contentReleases' | 'input'
 
 // Create a type helper to ensure we don't miss any cases
-type NoIdRequiredTypes = TimeZoneScopeType.scheduledPublishing | TimeZoneScopeType.contentReleases
-type IdRequiredTypes = TimeZoneScopeType.input
+type NoIdRequiredTypes = 'scheduledPublishing' | 'contentReleases'
+type IdRequiredTypes = 'input'
 
 type ReleasesOrScheduledPublishingScope = {
   type: NoIdRequiredTypes
@@ -63,7 +58,7 @@ const useTimeZone = (scope: TimeZoneScope) => {
   const {defaultTimeZone} = scope
   const localStorageId =
     'id' in scope
-      ? `${timeZoneLocalStorageNamespace}${scope.type}-${scope.id}`
+      ? `${timeZoneLocalStorageNamespace}${scope.type}.${scope.id}`
       : `${timeZoneLocalStorageNamespace}${scope.type}`
 
   // Batch process timezone info with a single formatter per timezone

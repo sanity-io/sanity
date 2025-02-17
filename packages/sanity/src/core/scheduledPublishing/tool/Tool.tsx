@@ -4,12 +4,13 @@ import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import ButtonTimeZone from '../../components/timeZone/timeZoneButton/TimeZoneButton'
+import ButtonTimeZoneElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
+import useTimeZone from '../../hooks/useTimeZone'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
-import ButtonTimeZone from '../components/timeZoneButton/TimeZoneButton'
-import ButtonTimeZoneElementQuery from '../components/timeZoneButton/TimeZoneButtonElementQuery'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
-import useTimeZone, {TimeZoneScopeType} from '../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../types'
 import {useScheduledPublishingEnabled} from './contexts/ScheduledPublishingEnabledProvider'
 import {SchedulesProvider} from './contexts/schedules'
@@ -34,6 +35,7 @@ export default function Tool() {
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {enabled} = useScheduledPublishingEnabled()
+  const {t} = useTranslation()
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
@@ -52,8 +54,8 @@ export default function Tool() {
   // Default to first filter type ('upcoming') if no existing schedule state or
   // selected date can be inferred from current route.
   useFallbackNavigation(router, scheduleState, selectedDate)
-  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
-  const {formatDateTz} = useTimeZone(timeZoneScope)
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
+  const {formatDateTz, timeZone} = useTimeZone(timeZoneScope)
 
   const schedulesContext = useMemo(
     () => ({
@@ -134,7 +136,14 @@ export default function Tool() {
 
                   {/* Time zone select + context menu */}
                   <Flex align="center" gap={1}>
-                    <ButtonTimeZone timeZoneScope={timeZoneScope} useElementQueries />
+                    <ButtonTimeZone
+                      tooltipContent={t('time-zone.time-zone-tooltip-content-releases', {
+                        alternativeName: timeZone.alternativeName,
+                        offset: timeZone.offset,
+                      })}
+                      timeZoneScope={timeZoneScope}
+                      useElementQueries
+                    />
                     <SchedulesContextMenu />
                   </Flex>
                 </Flex>

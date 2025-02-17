@@ -11,7 +11,7 @@ import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
-import {TimeZoneScopeType} from '../../../../scheduledPublishing/hooks/useTimeZone'
+import {type TimeZoneScopeType} from '../../../../hooks/useTimeZone'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {type ParseResult} from '../types'
 import {isValidDate} from '../utils'
@@ -88,7 +88,7 @@ async function renderInput() {
           readOnly={readOnly}
           serialize={serialize}
           value={value}
-          timeZoneScope={{type: TimeZoneScopeType.input, id}}
+          timeZoneScope={{type: 'input' as TimeZoneScopeType, id}}
         />
       )
     },

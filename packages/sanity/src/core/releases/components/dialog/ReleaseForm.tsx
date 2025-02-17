@@ -4,8 +4,8 @@ import {addHours, isValid, startOfHour} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
+import useTimeZone from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
-import useTimeZone, {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
@@ -20,8 +20,8 @@ export function ReleaseForm(props: {
   const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
-
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone({type: TimeZoneScopeType.contentReleases})
+  const timeZoneScope = {type: 'contentReleases'} as const
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
@@ -144,7 +144,7 @@ export function ReleaseForm(props: {
               <ScheduleDatePicker
                 initialValue={intendedPublishAt || new Date()}
                 onChange={handleBundlePublishAtCalendarChange}
-                timeZoneScope={{type: TimeZoneScopeType.contentReleases}}
+                timeZoneScope={timeZoneScope}
               />
             </TabPanel>
           )}

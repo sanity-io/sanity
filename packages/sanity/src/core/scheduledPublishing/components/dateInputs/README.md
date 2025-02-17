@@ -12,7 +12,7 @@ Some changes have been made to make both `<DateTimeInput>` and its calendar comp
 
   ```js
   // E.g. No scheduling on weekends!
-  const {utcToCurrentZoneDate} = useTimeZone({type: TimeZoneScopeType.scheduledPublishing})
+  const {utcToCurrentZoneDate} = useTimeZone({type: 'scheduledPublishing'})
 
   const handleCustomValidation = (selectedDate: Date): boolean => {
     return !isWeekend(utcToCurrentZoneDate(selectedDate))

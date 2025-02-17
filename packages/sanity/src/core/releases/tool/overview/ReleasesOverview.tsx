@@ -20,10 +20,10 @@ import {type SearchParam, useRouter} from 'sanity/router'
 import {Button as StudioButton, Tooltip} from '../../../../ui-components'
 import {Button as UIButton} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar'
+import useTimeZone from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone, {TimeZoneScopeType} from '../../../scheduledPublishing/hooks/useTimeZone'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -79,7 +79,7 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const timeZoneScope = {type: TimeZoneScopeType.contentReleases} as const
+  const timeZoneScope = {type: 'contentReleases'} as const
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
@@ -317,7 +317,7 @@ export function ReleasesOverview() {
             renderCalendarDay={ReleaseCalendarFilterDay}
             selectedDate={releaseFilterDate}
             onSelect={handleSelectFilterDate}
-            timeZoneScope={{type: TimeZoneScopeType.contentReleases}}
+            timeZoneScope={{type: 'contentReleases'} as const}
           />
         </Card>
       </Flex>

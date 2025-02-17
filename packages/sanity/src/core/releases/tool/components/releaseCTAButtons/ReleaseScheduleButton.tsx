@@ -10,8 +10,8 @@ import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/cal
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
+import useTimeZone from '../../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../../i18n'
-import useTimeZone, {TimeZoneScopeType} from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
@@ -39,7 +39,7 @@ export const ReleaseScheduleButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const telemetry = useTelemetry()
   // in the releases tool we want timezone to be saved for releases
-  const timeZoneScope = useMemo(() => ({type: TimeZoneScopeType.contentReleases}) as const, [])
+  const timeZoneScope = useMemo(() => ({type: 'contentReleases'}) as const, [])
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()

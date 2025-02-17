@@ -1,8 +1,9 @@
 import {Box, Flex} from '@sanity/ui'
 
-import {type TimeZoneScope} from '../../hooks/useTimeZone'
-import ButtonTimeZone from '../timeZoneButton/TimeZoneButton'
-import ButtonTimeZoneElementQuery from '../timeZoneButton/TimeZoneButtonElementQuery'
+import ButtonTimeZone from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
+import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
+import useTimeZone, {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 interface Props {
   title: string
@@ -11,6 +12,8 @@ interface Props {
 
 const DialogHeader = (props: Props) => {
   const {title, timeZoneScope} = props
+  const {timeZone} = useTimeZone(timeZoneScope)
+  const {t} = useTranslation()
   return (
     <ButtonTimeZoneElementQuery>
       <Flex align="center">
@@ -25,7 +28,14 @@ const DialogHeader = (props: Props) => {
         */}
         <input style={{opacity: 0, position: 'absolute', width: 0}} tabIndex={-1} type="button" />
         <Box marginLeft={2} style={{marginTop: '-1em', marginBottom: '-1em'}}>
-          <ButtonTimeZone timeZoneScope={timeZoneScope} useElementQueries />
+          <ButtonTimeZone
+            tooltipContent={t('time-zone.time-zone-tooltip-scheduled-publishing', {
+              alternativeName: timeZone.alternativeName,
+              offset: timeZone.offset,
+            })}
+            timeZoneScope={timeZoneScope}
+            useElementQueries
+          />
         </Box>
       </Flex>
     </ButtonTimeZoneElementQuery>

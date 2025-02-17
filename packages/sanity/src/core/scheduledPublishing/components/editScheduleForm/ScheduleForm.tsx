@@ -1,7 +1,7 @@
 import {Card, Stack} from '@sanity/ui'
 import {useState} from 'react'
 
-import useTimeZone, {TimeZoneScopeType} from '../../hooks/useTimeZone'
+import useTimeZone from '../../../hooks/useTimeZone'
 import {type ScheduleFormData} from '../../types'
 import {DateTimeInput} from '../dateInputs'
 
@@ -12,7 +12,7 @@ interface Props {
 
 const ScheduleForm = (props: Props) => {
   const {onChange, value} = props
-  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
   const {getCurrentZoneDate} = useTimeZone(timeZoneScope)
 
   // Date input is stored locally to handle behaviour of the studio's `<LazyTextInput />` component.

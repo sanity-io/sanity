@@ -1,10 +1,10 @@
 import {useCallback} from 'react'
 
-import useTimeZone, {TimeZoneScopeType} from '../../scheduledPublishing/hooks/useTimeZone'
+import useTimeZone from '../../hooks/useTimeZone'
 import {type EditableReleaseDocument} from '../store'
 
 export const useCreateReleaseMetadata = () => {
-  const {zoneDateToUtc} = useTimeZone({type: TimeZoneScopeType.contentReleases})
+  const {zoneDateToUtc} = useTimeZone({type: 'contentReleases'} as const)
 
   const createReleaseMetadata = useCallback(
     (release: EditableReleaseDocument) => {

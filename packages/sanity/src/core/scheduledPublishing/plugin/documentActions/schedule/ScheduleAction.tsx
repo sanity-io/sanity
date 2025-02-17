@@ -17,7 +17,6 @@ import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps
 import usePollSchedules from '../../../hooks/usePollSchedules'
 import useScheduleForm from '../../../hooks/useScheduleForm'
 import useScheduleOperation from '../../../hooks/useScheduleOperation'
-import {TimeZoneScopeType} from '../../../hooks/useTimeZone'
 import {useScheduledPublishingEnabled} from '../../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
 import {debugWithName} from '../../../utils/debug'
@@ -46,7 +45,7 @@ const debug = debugWithName('ScheduleAction')
  */
 export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
   const {draft, id, liveEdit, onComplete, published, type} = props
-  const timeZoneScope = {type: TimeZoneScopeType.scheduledPublishing} as const
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
 
   const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

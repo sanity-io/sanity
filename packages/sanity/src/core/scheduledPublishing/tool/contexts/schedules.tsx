@@ -2,7 +2,7 @@ import {isSameDay} from 'date-fns'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 
-import useTimeZone, {TimeZoneScopeType} from '../../hooks/useTimeZone'
+import useTimeZone from '../../../hooks/useTimeZone'
 import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
@@ -35,7 +35,7 @@ function SchedulesProvider({
   }
 }) {
   const [sortBy, setSortBy] = useState<ScheduleSort>(value.sortBy || 'executeAt')
-  const {utcToCurrentZoneDate} = useTimeZone({type: TimeZoneScopeType.scheduledPublishing})
+  const {utcToCurrentZoneDate} = useTimeZone({type: 'scheduledPublishing'})
 
   const filterByDate = useCallback(
     (wallDate: Date) => {
