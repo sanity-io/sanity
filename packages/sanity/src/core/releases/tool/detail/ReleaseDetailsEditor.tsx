@@ -28,9 +28,15 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
   )
 
   useEffect(() => {
-    checkWithPermissionGuard(updateRelease, release).then((hasPermission) =>
-      setHasUpdatePermission(hasPermission),
-    )
+    let shouldUpdate = true
+
+    checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
+      if (shouldUpdate) setHasUpdatePermission(hasPermission)
+    })
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, release, release._id, updateRelease])
 
   return (
