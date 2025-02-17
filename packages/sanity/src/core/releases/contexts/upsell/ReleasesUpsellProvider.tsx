@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {of} from 'rxjs'
+import {firstValueFrom, of} from 'rxjs'
 import {delay, tap} from 'rxjs/operators'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
@@ -180,45 +180,71 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  const fetchReleaseLimits = useReleaseLimits()
-  const getActiveReleasesCountStoreValue = useOrgActiveReleaseCount()
+  const {getReleaseLimits, setLimitsManually} = useReleaseLimits()
+  const {getOrgActiveReleaseCount, setOrgActiveReleaseCountManually} = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: (limits: any | undefined) => void, throwError: boolean = false) => {
-      console.log('Guard called, triggering cache fetches...')
+      console.log('Guard called, checking caches...')
 
-      const [limits, orgActiveReleaseCount] = await Promise.all([
-        fetchReleaseLimits(),
-        getActiveReleasesCountStoreValue(),
-      ])
+      const existingLimits = getReleaseLimits()
+      const existingOrgActiveReleaseCount = getOrgActiveReleaseCount()
 
-      if (!limits || orgActiveReleaseCount === null) {
-        console.warn('Cache expired or data missing. Skipping callback execution.')
-        return
+      console.log({existingLimits, existingOrgActiveReleaseCount})
+
+      if (existingLimits && existingOrgActiveReleaseCount !== null) {
+        console.log('Both caches valid, skipping fetch.')
+        return cb({
+          datasetReleaseLimit: existingLimits.datasetReleaseLimit,
+          orgActiveReleaseLimit: existingLimits.orgActiveReleaseLimit,
+          orgActiveReleaseCount: existingOrgActiveReleaseCount,
+        })
       }
 
-      const {datasetReleaseLimit, orgActiveReleaseLimit} = limits
-      const activeReleasesCount = activeReleases?.length || 0
+      console.log('Fetching new data since cache is missing or expired...')
 
-      const shouldShowDialog =
-        activeReleasesCount >= datasetReleaseLimit ||
-        (orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit)
+      try {
+        const limits = await firstValueFrom(fetchReleasesLimits()) // ✅ Fetch API once
 
-      if (shouldShowDialog) {
-        handleOpenDialog()
-        if (throwError) {
-          throw new StudioReleaseLimitExceededError()
+        if (!existingLimits) {
+          console.log('setting release limits', {limits})
+          setLimitsManually({
+            datasetReleaseLimit: limits.datasetReleaseLimit,
+            orgActiveReleaseLimit: limits.orgActiveReleaseLimit,
+          })
         }
-        return
-      }
 
-      cb({datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount})
+        if (existingOrgActiveReleaseCount === null) {
+          setOrgActiveReleaseCountManually(limits.orgActiveReleaseCount)
+        }
+
+        const {datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount} = limits
+        const activeReleasesCount = activeReleases?.length || 0
+
+        const shouldShowDialog =
+          activeReleasesCount >= datasetReleaseLimit ||
+          (orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit)
+
+        if (shouldShowDialog) {
+          handleOpenDialog()
+          if (throwError) {
+            throw new StudioReleaseLimitExceededError()
+          }
+          return
+        }
+
+        cb({datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount})
+      } catch (error) {
+        console.error('Error fetching release limits:', error)
+      }
     },
     [
       activeReleases?.length,
-      getActiveReleasesCountStoreValue,
       handleOpenDialog,
-      fetchReleaseLimits,
+      getReleaseLimits,
+      setLimitsManually,
+      getOrgActiveReleaseCount,
+      setOrgActiveReleaseCountManually,
     ],
   )
 
