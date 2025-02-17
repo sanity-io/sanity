@@ -172,10 +172,10 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   )
 
   const onReleaseLimitReached = useCallback(
-    (limit: number) => {
+    (limit: number, suppressDialogOpening: boolean = false) => {
       setReleaseLimit(limit)
 
-      if ((activeReleases?.length || 0) >= limit) {
+      if (!suppressDialogOpening && (activeReleases?.length || 0) >= limit) {
         handleOpenDialog()
       }
     },

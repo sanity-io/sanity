@@ -6,6 +6,7 @@ import {
 } from '@sanity/client'
 
 import {getPublishedId, getVersionId} from '../../util'
+import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {isReleaseLimitError} from './isReleaseLimitError'
@@ -51,7 +52,7 @@ const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
-  onReleaseLimitReached: (limit: number) => void
+  onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached']
 }): ReleaseOperationsStore {
   const {client} = options
   const requestAction = createRequestAction(options.onReleaseLimitReached)
@@ -344,7 +345,9 @@ type ReleaseAction =
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
 
-export function createRequestAction(onReleaseLimitReached: (limit: number) => void) {
+export function createRequestAction(
+  onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached'],
+) {
   return async function requestAction(
     client: SanityClient,
     actions: ReleaseAction | ReleaseAction[],
@@ -363,7 +366,7 @@ export function createRequestAction(onReleaseLimitReached: (limit: number) => vo
     } catch (e) {
       if (isReleaseLimitError(e)) {
         // free accounts do not return limit, 0 is implied
-        onReleaseLimitReached(e.details.limit || 0)
+        onReleaseLimitReached(e.details.limit || 0, !!options?.dryRun)
       }
 
       throw e
