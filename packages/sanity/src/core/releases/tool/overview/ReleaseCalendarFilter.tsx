@@ -5,7 +5,7 @@ import {useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {CalendarDay} from '../../../components/inputs/DateFilters/calendar/CalendarDay'
-import {type CalendarProps} from '../../../components/inputs/DateInputs/calendar/Calendar'
+import {type CalendarProps} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
