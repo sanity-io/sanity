@@ -57,6 +57,12 @@ export const fetchReleasesLimits = () =>
     delay(3000),
   )
 
+// export const fetchReleasesLimits = () =>
+//   throwError(() => new Error('Simulated API failure')).pipe(
+//     tap(() => console.log('fetchReleasesLimits - Simulating failure')),
+//     delay(3000),
+//   )
+
 /**
  * @beta
  * @hidden
