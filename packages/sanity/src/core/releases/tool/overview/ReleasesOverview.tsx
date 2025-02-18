@@ -241,16 +241,23 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
-  const handleOnClickCreateRelease = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [guardWithReleaseLimitUpsell],
-  )
+  const [isPendingGuard, setIsPendingGuard] = useState<boolean>(false)
+
+  const handleOnClickCreateRelease = useCallback(async () => {
+    setIsPendingGuard(true)
+    await guardWithReleaseLimitUpsell(() => {
+      setIsCreateReleaseDialogOpen(true)
+    })
+    setIsPendingGuard(false)
+  }, [guardWithReleaseLimitUpsell])
 
   const createReleaseButton = useMemo(
     () => (
       <UIButton
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={
+          isPendingGuard || !hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         paddingY={3}
@@ -259,7 +266,14 @@ export function ReleasesOverview() {
         }}
       />
     ),
-    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
+    [
+      isPendingGuard,
+      hasCreatePermission,
+      isCreateReleaseDialogOpen,
+      mode,
+      handleOnClickCreateRelease,
+      tCore,
+    ],
   )
 
   const handleOnCreateRelease = useCallback(

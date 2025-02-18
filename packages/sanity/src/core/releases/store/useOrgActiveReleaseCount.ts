@@ -21,7 +21,10 @@ interface ReleaseLimits {
   orgActiveReleaseCount: number
 }
 
-type UseOrgActiveReleaseCountReturn = () => Promise<any>
+type UseOrgActiveReleaseCountReturn = {
+  setOrgActiveReleaseCountManually: (count: number) => void
+  getOrgActiveReleaseCount: () => number | null
+}
 
 const cacheTrigger$ = new BehaviorSubject<number | null>(null)
 const CACHE_TTL_MS = 15000
