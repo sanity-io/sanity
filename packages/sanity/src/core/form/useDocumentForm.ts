@@ -306,7 +306,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         patch.execute(toMutationPatches(event.patches), initialValue)
       }
     }
-  }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])
+  }, [
+    editState.draft,
+    editState.published,
+    initialValue,
+    patch,
+    telemetry,
+    readOnly,
+    isCreateLinked,
+  ])
 
   const formDocumentValue = useMemo(() => {
     if (getFormDocumentValue) return getFormDocumentValue(value)
