@@ -75,7 +75,7 @@ const getActiveReleaseDocumentsObservable = ({
     })
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
-      mergeMapArray((id) => {
+      mergeMapArray((id: string) => {
         const ctx = {
           observeDocument: documentPreviewStore.unstable_observeDocument,
           observeDocumentPairAvailability:
@@ -85,25 +85,29 @@ const getActiveReleaseDocumentsObservable = ({
           schema,
         }
 
-        const document$ = documentPreviewStore.unstable_observeDocument(id).pipe(
-          filter(Boolean),
-          switchMap((doc) =>
-            observableClient
-              .fetch(
-                `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
-                {},
-                {tag: 'release-documents.check-existing'},
-              )
-              .pipe(
-                switchMap((publishedDocumentExists) =>
-                  of({
-                    ...doc,
-                    publishedDocumentExists: !!publishedDocumentExists.length,
-                  }),
+        const document$ = documentPreviewStore
+          .unstable_observeDocument(id, {
+            apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+          })
+          .pipe(
+            filter(Boolean),
+            switchMap((doc) =>
+              observableClient
+                .fetch(
+                  `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
+                  {},
+                  {tag: 'release-documents.check-existing'},
+                )
+                .pipe(
+                  switchMap((publishedDocumentExists) =>
+                    of({
+                      ...doc,
+                      publishedDocumentExists: !!publishedDocumentExists.length,
+                    }),
+                  ),
                 ),
-              ),
-          ),
-        )
+            ),
+          )
         const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
           map((validationStatus) => ({
             ...validationStatus,
