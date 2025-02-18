@@ -1,29 +1,16 @@
-import {useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
 
 import {useReleaseLimits} from '../store/useReleaseLimits'
 
 const RELEASES_PLUS_LIMIT = 2
 
 export const useIsReleasesPlus = () => {
-  const {fetchReleaseLimits, isFetching, isError} = useReleaseLimits()
+  const {releaseLimits$} = useReleaseLimits()
 
-  const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | null>(null)
+  const releaseLimit = useObservable(releaseLimits$, null)
 
-  useEffect(() => {
-    if (isReleasesPlus !== null || isFetching) return
+  const {orgActiveReleaseLimit} = releaseLimit || {}
 
-    fetchReleaseLimits().then((limits) => {
-      if (limits?.orgActiveReleaseLimit) {
-        const {orgActiveReleaseLimit} = limits
-
-        setIsReleasesPlus(orgActiveReleaseLimit > RELEASES_PLUS_LIMIT)
-      }
-    })
-  }, [fetchReleaseLimits, isFetching, isReleasesPlus])
-
-  useEffect(() => {
-    if (isError) setIsReleasesPlus(false)
-  }, [isError])
-
-  return isReleasesPlus
+  // presume not releases+ if empty data
+  return orgActiveReleaseLimit && orgActiveReleaseLimit >= RELEASES_PLUS_LIMIT
 }
