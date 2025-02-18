@@ -12,6 +12,7 @@ import {ErrorLogger} from '../error/ErrorLogger'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
+import {ReleasesPermissionsProvider} from '../releases/contexts/ReleasesPermissionsProvider'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
@@ -73,7 +74,9 @@ export function StudioProvider({
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
                 <StudioAnnouncementsProvider>
-                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                  <GlobalPerspectiveProvider>
+                    <ReleasesPermissionsProvider>{children}</ReleasesPermissionsProvider>
+                  </GlobalPerspectiveProvider>
                 </StudioAnnouncementsProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
