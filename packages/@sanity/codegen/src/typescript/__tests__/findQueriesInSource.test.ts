@@ -217,7 +217,6 @@ describe('findQueries with the groq template', () => {
 
     expect(queryResult?.result).toEqual('*[_type == "author"]')
   })
-
 })
 
 describe('findQueries with defineQuery', () => {
