@@ -63,26 +63,9 @@ describe('createReleaseOperationsStore', () => {
     })
   })
 
-  it('should publish a release using new publish', async () => {
-    const store = createStore()
-    await store.publishRelease('_.releases.release-id', true)
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.publish2',
-            releaseId: 'release-id',
-          },
-        ],
-      },
-    })
-  })
-
   it('should publish a release using stable publish', async () => {
     const store = createStore()
-    await store.publishRelease('_.releases.release-id', false)
+    await store.publishRelease('_.releases.release-id')
     expect(mockClient.request).toHaveBeenCalledWith({
       uri: '/data/actions/test-dataset',
       method: 'POST',

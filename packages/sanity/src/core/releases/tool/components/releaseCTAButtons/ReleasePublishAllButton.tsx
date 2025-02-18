@@ -8,7 +8,6 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
-import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument, type ReleaseDocument} from '../../../index'
@@ -34,16 +33,10 @@ export const ReleasePublishAllButton = ({
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
   const telemetry = useTelemetry()
-  const publish2 = useMemo(() => {
-    if (supportsLocalStorage) {
-      return localStorage.getItem('publish2') === 'true'
-    }
-    return false
-  }, [])
 
-  const [publishBundleStatus, setPublishBundleStatus] = useState<
-    'idle' | 'confirm' | 'confirm-2' | 'publishing'
-  >('idle')
+  const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
+    'idle',
+  )
 
   const [publishPermission, setPublishPermission] = useState<boolean>(false)
 
@@ -52,26 +45,19 @@ export const ReleasePublishAllButton = ({
 
   const isPublishButtonDisabled =
     disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishPermission
-  const useUnstableAction = publishBundleStatus === 'confirm-2'
 
   useEffect(() => {
-    checkWithPermissionGuard(publishRelease, release._id, false).then((hasPermission) =>
+    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) =>
       setPublishPermission(hasPermission),
     )
-  }, [
-    checkWithPermissionGuard,
-    publishRelease,
-    release._id,
-    release.metadata.intendedPublishAt,
-    useUnstableAction,
-  ])
+  }, [checkWithPermissionGuard, publishRelease, release._id, release.metadata.intendedPublishAt])
 
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return
 
     try {
       setPublishBundleStatus('publishing')
-      await publishRelease(release._id, useUnstableAction)
+      await publishRelease(release._id)
       telemetry.log(PublishedRelease)
       toast.push({
         closable: true,
@@ -112,7 +98,6 @@ export const ReleasePublishAllButton = ({
   }, [
     release,
     publishRelease,
-    useUnstableAction,
     telemetry,
     toast,
     t,
@@ -187,23 +172,6 @@ export const ReleasePublishAllButton = ({
 
   return (
     <>
-      {publish2 && (
-        <Button
-          tooltipProps={{
-            disabled: !isPublishButtonDisabled,
-            content: publishTooltipContent,
-            placement: 'bottom',
-          }}
-          icon={PublishIcon}
-          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          text={'Unstable Publish'}
-          onClick={() => setPublishBundleStatus('confirm-2')}
-          loading={publishBundleStatus === 'publishing'}
-          data-testid="publish-all-button"
-          tone="suggest"
-        />
-      )}
       <Button
         tooltipProps={{
           disabled: !isPublishButtonDisabled,
