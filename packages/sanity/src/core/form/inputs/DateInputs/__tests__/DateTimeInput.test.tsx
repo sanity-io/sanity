@@ -1,10 +1,22 @@
-import {defineField} from '@sanity/types'
+import {defineField, type StringSchemaType} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {expect, test} from 'vitest'
+import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
+import {FormValueProvider} from '../../../contexts/FormValue'
+import {type StringInputProps} from '../../../types'
 import {DateTimeInput} from '../DateTimeInput'
+
+vi.mock('sanity', () => ({
+  set: vi.fn(),
+}))
+
+const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+  <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
+    <DateTimeInput {...inputProps} />
+  </FormValueProvider>
+)
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
 // see globalSetup in jest config for details about how this is set up
@@ -18,7 +30,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
       type: 'datetime',
       name: 'test',
     }),
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
@@ -38,7 +50,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
       type: 'datetime',
       name: 'test',
     }),
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
@@ -61,7 +73,7 @@ test('formatting of deserialized value', async () => {
       name: 'test',
     }),
     props: {documentValue: {test: '2021-03-28T17:23:00.000Z'}},
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
@@ -78,7 +90,7 @@ test('time is shown in the display time zone if specified (utc+1 winter)', async
       options: {displayTimeZone: 'Europe/Oslo'},
     }),
     props: {documentValue: {test: '2021-01-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
@@ -94,7 +106,7 @@ test('time is shown in the display time zone if specified (utc+2 summer)', async
       options: {displayTimeZone: 'Europe/Oslo'},
     }),
     props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
@@ -110,11 +122,11 @@ test('the time zone can be changed by the user if allowed', async () => {
       options: {displayTimeZone: 'Europe/Oslo', allowTimeZoneSwitch: true},
     }),
     props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   // click on the TimeZoneButton
-  const timeZoneButton = result.getByLabelText('GMT+1')
+  const timeZoneButton = result.getByText('GMT+1')
   userEvent.click(timeZoneButton)
   // ensure the dialog shows
   expect(result.getByText('Select time zone')).toBeInTheDocument()
@@ -128,11 +140,12 @@ test('the time zone can not be changed by the user if not allowed', async () => 
       options: {displayTimeZone: 'Europe/Oslo', allowTimeZoneSwitch: false},
     }),
     props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInput {...inputProps} />,
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
-  const timeZoneText = result.getByLabelText('GMT+1')
-  userEvent.click(timeZoneText)
-
-  expect(result.getByText('Select time zone')).not.toBeInTheDocument()
+  // click on the TimeZoneButton
+  const timeZoneButton = result.getByText('GMT+1')
+  userEvent.click(timeZoneButton)
+  // ensure the dialog shows
+  expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
 })

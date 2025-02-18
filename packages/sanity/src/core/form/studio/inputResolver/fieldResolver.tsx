@@ -63,6 +63,7 @@ function DateTimeField(field: FieldProps) {
   const documentId = usePublishedId()
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const focused = Boolean(field.inputProps.focused)
+
   return (
     <>
       {documentId && field.actions && field.actions.length > 0 && (
