@@ -1,4 +1,5 @@
 import {type DefinedTelemetryLog} from '@sanity/telemetry/react'
+import {type ButtonTone} from '@sanity/ui'
 
 import {
   ArchivedRelease,
@@ -21,6 +22,7 @@ interface DialogActionsMap extends BaseReleaseActionsMap {
     dialogHeaderI18nKey: string
     dialogDescriptionI18nKey: string
     dialogConfirmButtonI18nKey: string
+    confirmButtonTone: ButtonTone
   }
 }
 
@@ -34,6 +36,7 @@ export const RELEASE_ACTION_MAP: Record<
       dialogHeaderI18nKey: 'delete-dialog.confirm-delete.header',
       dialogDescriptionI18nKey: 'delete-dialog.confirm-delete-description',
       dialogConfirmButtonI18nKey: 'delete-dialog.confirm-delete-button',
+      confirmButtonTone: 'critical',
     },
     toastSuccessI18nKey: 'toast.delete.success',
     toastFailureI18nKey: 'toast.delete.error',
@@ -45,6 +48,7 @@ export const RELEASE_ACTION_MAP: Record<
       dialogHeaderI18nKey: 'archive-dialog.confirm-archive-header',
       dialogDescriptionI18nKey: 'archive-dialog.confirm-archive-description',
       dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
+      confirmButtonTone: 'critical',
     },
     toastSuccessI18nKey: 'toast.archive.success',
     toastFailureI18nKey: 'toast.archive.error',

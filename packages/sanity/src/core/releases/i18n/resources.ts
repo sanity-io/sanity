@@ -72,8 +72,7 @@ const releasesLocaleStrings = {
   'activity.panel.title': 'Activity',
 
   /** Header for the dialog confirming the archive of a release */
-  'archive-dialog.confirm-archive-header':
-    "Are you sure you want to archive the '{{title}}' release?",
+  'archive-dialog.confirm-archive-header': 'Are you sure you want to archive this release?',
   /** Title for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
@@ -83,7 +82,7 @@ const releasesLocaleStrings = {
   'archive-dialog.confirm-archive-description_other':
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
-  'archive-dialog.confirm-archive-button': 'Yes, archive now',
+  'archive-dialog.confirm-archive-button': 'Yes, archive release',
 
   /** Title for information card on a archived release */
   'archive-info.title': 'This release is archived',
@@ -110,13 +109,13 @@ const releasesLocaleStrings = {
   'dashboard.details.activity': 'Activity',
 
   /** Header for deleting a release dialog */
-  'delete-dialog.confirm-delete.header': "Are you sure you want to delete the '{{title}}' release?",
+  'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
   /** Description for the dialog confirming the deleting of a release with one document */
   'delete-dialog.confirm-delete-description_one': 'This will delete 1 document version.',
   /** Description for the dialog confirming the deleting of a release with more than one document */
   'delete-dialog.confirm-delete-description_other': 'This will delete {{count}} document versions.',
   /** Label for the button to proceed deleting a release */
-  'delete-dialog.confirm-delete-button': 'Delete',
+  'delete-dialog.confirm-delete-button': 'Yes, delete release',
 
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
