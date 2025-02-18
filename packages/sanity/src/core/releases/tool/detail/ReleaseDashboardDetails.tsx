@@ -45,18 +45,23 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
   const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
   useEffect(() => {
+    let shouldUpdate = true
+
     // only run if the release is active
     if (isActive) {
       checkWithPermissionGuard(publishRelease, release._id, false).then((hasPermission) => {
-        setShouldDisplayPermissionWarning(!hasPermission)
+        if (shouldUpdate) setShouldDisplayPermissionWarning(!hasPermission)
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
         checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
-          setShouldDisplayPermissionWarning(!hasPermission)
+          if (shouldUpdate) setShouldDisplayPermissionWarning(!hasPermission)
         })
       }
+    }
+    return () => {
+      shouldUpdate = false
     }
   }, [
     checkWithPermissionGuard,
