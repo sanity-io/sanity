@@ -22,6 +22,7 @@ import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
+import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -147,10 +148,12 @@ export function createReleaseStore(context: {
   )
 
   const errorCount$ = state$.pipe(releaseStoreErrorCount(), shareReplay(1))
+  const releaseLimits$ = releasesStoreLimits().pipe(shareReplay(1))
 
   const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 
   return {
+    releaseLimits$,
     state$,
     errorCount$,
     getMetadataStateForSlugs$,
@@ -172,4 +175,8 @@ export function releaseStoreErrorCount(): OperatorFunction<ReleasesReducerState,
     ),
     distinctUntilChanged(),
   )
+}
+
+function releasesStoreLimits() {
+  return fetchReleasesLimits()
 }
