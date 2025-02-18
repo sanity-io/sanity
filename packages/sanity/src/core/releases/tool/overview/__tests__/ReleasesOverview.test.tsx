@@ -42,6 +42,7 @@ import {
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {
   mockUseReleasesMetadata,
@@ -141,9 +142,7 @@ describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
 
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
   })
 
   setupVirtualListEnv()

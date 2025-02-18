@@ -15,6 +15,7 @@ import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__m
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
@@ -70,9 +71,7 @@ describe('ReleasesNav', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
   })
   it('should have link to releases tool', async () => {
     await renderTest()
@@ -211,9 +210,7 @@ describe('ReleasesNav', () => {
       })
 
       it('disables button when no permissions are met', async () => {
-        mockUseReleasePermissions.mockReturnValue({
-          checkWithPermissionGuard: async () => true,
-        })
+        mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
       })
     })
 

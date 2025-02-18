@@ -6,6 +6,8 @@ import {type ReleaseDocument} from '../../../index'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnFalse,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
@@ -33,9 +35,8 @@ describe('ReleaseDetailsEditor', () => {
         },
       } as ReleaseDocument
 
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: async () => true,
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
@@ -97,9 +98,8 @@ describe('ReleaseDetailsEditor', () => {
         },
       } as ReleaseDocument
 
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: async () => false,
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
+
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
