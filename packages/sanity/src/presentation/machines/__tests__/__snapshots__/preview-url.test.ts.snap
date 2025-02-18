@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Preview URL machine > checks permissions > the check permission actor is required 1`] = `[Error: The 'check permission' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'check permission': fromObservable(({input}: {input: CheckPermissionInput}) => ...)}})]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow '://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow '://*/foo/bar?foo=bar#hash' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'http://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'https://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'https://username:password@*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > the resolve allow patterns actor is required 1`] = `[Error: The 'resolve allow patterns' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve allow pattern': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > resolves initial url > the resolve initial url actor is required 1`] = `[Error: The 'resolve initial url' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve initial url': fromPromise(...)}})]`;

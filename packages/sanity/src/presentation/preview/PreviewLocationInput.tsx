@@ -2,7 +2,6 @@ import {ResetIcon} from '@sanity/icons'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
 import {
   type ChangeEvent,
-  type FunctionComponent,
   type KeyboardEvent,
   type ReactNode,
   useCallback,
@@ -14,17 +13,21 @@ import {
 import {useActiveWorkspace, useTranslation} from 'sanity'
 
 import {presentationLocaleNamespace} from '../i18n'
+import {type PreviewUrlRef} from '../machines/preview-url'
+import {useAllowPatterns} from '../useAllowPatterns'
 
-export const PreviewLocationInput: FunctionComponent<{
+export function PreviewLocationInput(props: {
   fontSize?: number
   onChange: (value: string) => void
   origin: string
+  previewUrlRef: PreviewUrlRef
   padding?: number
   prefix?: ReactNode
   suffix?: ReactNode
   value: string
-}> = function (props) {
-  const {fontSize = 1, onChange, origin, padding = 3, prefix, suffix, value} = props
+}): React.JSX.Element {
+  const {fontSize = 1, onChange, origin, padding = 3, prefix, suffix, value, previewUrlRef} = props
+  const allowOrigins = useAllowPatterns(previewUrlRef)
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const {basePath = '/'} = useActiveWorkspace()?.activeWorkspace || {}
@@ -49,24 +52,35 @@ export const PreviewLocationInput: FunctionComponent<{
             ? `${origin}${sessionValue}`
             : sessionValue
 
-        if (!absoluteValue.startsWith(`${origin}/`) && absoluteValue !== origin) {
-          setCustomValidity(t('preview-location-input.error', {origin, context: 'missing-origin'}))
-          return
+        if (Array.isArray(allowOrigins)) {
+          if (!allowOrigins.some((pattern) => pattern.test(absoluteValue))) {
+            setCustomValidity(
+              t('preview-location-input.error', {origin, context: 'origin-not-allowed'}),
+            )
+            event.currentTarget.reportValidity()
+            return
+          }
+        } else {
+          if (!absoluteValue.startsWith(`${origin}/`) && absoluteValue !== origin) {
+            setCustomValidity(
+              t('preview-location-input.error', {origin, context: 'missing-origin'}),
+            )
+            return
+          }
+          // `origin` is an empty string '' if the Studio is embedded, and that's when we need to protect against recursion
+          if (!origin && (absoluteValue.startsWith(`${basePath}/`) || absoluteValue === basePath)) {
+            setCustomValidity(
+              t('preview-location-input.error', {basePath, context: 'same-base-path'}),
+            )
+            return
+          }
         }
-        // `origin` is an empty string '' if the Studio is embedded, and that's when we need to protect against recursion
-        if (!origin && (absoluteValue.startsWith(`${basePath}/`) || absoluteValue === basePath)) {
-          setCustomValidity(
-            t('preview-location-input.error', {basePath, context: 'same-base-path'}),
-          )
-          return
-        }
-
         const nextValue = absoluteValue === origin ? `${origin}/` : absoluteValue
 
         setCustomValidity(undefined)
         setSessionValue(undefined)
 
-        onChange(nextValue.slice(origin.length))
+        onChange(nextValue)
 
         inputRef.current?.blur()
       }
@@ -76,13 +90,18 @@ export const PreviewLocationInput: FunctionComponent<{
         setSessionValue(undefined)
       }
     },
-    [basePath, onChange, origin, sessionValue, t],
+    [allowOrigins, basePath, onChange, origin, sessionValue, t],
   )
 
   const handleBlur = useCallback(() => {
     setCustomValidity(undefined)
     setSessionValue(undefined)
   }, [])
+
+  const handleClear = useCallback(() => {
+    setCustomValidity(undefined)
+    setSessionValue(origin + value)
+  }, [origin, value])
 
   useEffect(() => {
     setCustomValidity(undefined)
@@ -98,10 +117,7 @@ export const PreviewLocationInput: FunctionComponent<{
         customValidity={customValidity}
         fontSize={fontSize}
         onBlur={handleBlur}
-        onClear={() => {
-          setCustomValidity(undefined)
-          setSessionValue(origin + value)
-        }}
+        onClear={handleClear}
         onChange={handleChange}
         onKeyDownCapture={handleKeyDown}
         padding={padding}

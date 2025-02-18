@@ -114,7 +114,7 @@ export function LocationsBanner(props: {
                 <LocationItem
                   active={
                     (options.name || DEFAULT_TOOL_NAME) === presentationName &&
-                    l.href === presentation?.params.preview
+                    l.href === presentation?.params.preview?.split('?')[0]
                   }
                   documentId={documentId}
                   documentType={schemaType.name}

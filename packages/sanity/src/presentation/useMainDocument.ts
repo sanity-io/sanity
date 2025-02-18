@@ -136,13 +136,20 @@ export function useMainDocument(props: {
   })
 
   useEffect(() => {
-    const base =
+    // @TODO resolve base from previewUrl in a more robust way
+    let base =
       // eslint-disable-next-line no-nested-ternary
       typeof previewUrl === 'string'
         ? previewUrl
         : typeof previewUrl === 'object'
           ? previewUrl?.origin || location.origin
           : location.origin
+    try {
+      const {origin} = new URL(base)
+      base = origin
+    } catch {
+      base = location.origin
+    }
     const url = new URL(relativeUrl, base)
 
     if (resolvers.length) {
