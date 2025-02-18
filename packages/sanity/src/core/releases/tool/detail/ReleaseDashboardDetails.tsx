@@ -47,7 +47,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   useEffect(() => {
     // only run if the release is active
     if (isActive) {
-      checkWithPermissionGuard(publishRelease, release._id, false).then((hasPermission) => {
+      checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
         setShouldDisplayPermissionWarning(!hasPermission)
       })
 

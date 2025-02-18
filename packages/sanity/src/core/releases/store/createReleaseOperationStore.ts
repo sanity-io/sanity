@@ -18,11 +18,7 @@ interface operationsOptions {
   skipCrossDatasetValidation?: boolean
 }
 export interface ReleaseOperationsStore {
-  publishRelease: (
-    releaseId: string,
-    useUnstableAction?: boolean,
-    opts?: operationsOptions,
-  ) => Promise<void>
+  publishRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
   schedule: (releaseId: string, date: Date, opts?: operationsOptions) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string, opts?: operationsOptions) => Promise<void>
@@ -94,18 +90,12 @@ export function createReleaseOperationsStore(options: {
     )
   }
 
-  const handlePublishRelease = (
-    releaseId: string,
-    useUnstableAction?: boolean,
-    opts?: operationsOptions,
-  ) =>
+  const handlePublishRelease = (releaseId: string, opts?: operationsOptions) =>
     requestAction(
       client,
       [
         {
-          actionType: useUnstableAction
-            ? 'sanity.action.release.publish2'
-            : 'sanity.action.release.publish',
+          actionType: 'sanity.action.release.publish',
           releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
         },
       ],
@@ -285,7 +275,7 @@ interface ScheduleApiAction {
 }
 
 interface PublishApiAction {
-  actionType: 'sanity.action.release.publish' | 'sanity.action.release.publish2'
+  actionType: 'sanity.action.release.publish'
   releaseId: string
 }
 
