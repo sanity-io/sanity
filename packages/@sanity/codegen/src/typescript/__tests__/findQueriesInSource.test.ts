@@ -188,7 +188,7 @@ describe('findQueries with the groq template', () => {
     expect(queries.length).toBe(0)
   })
 
-  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+  test('will ignore declarations if any of the leading comments are ignore tags', () => {
     const source = `
       import { groq } from "groq";
 
@@ -199,6 +199,23 @@ describe('findQueries with the groq template', () => {
 
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
+  })
+
+  test('should remove unnecessary whitespace in queries', () => {
+    const source = `
+      import { groq } from "groq";
+      const messyQuery = groq\`
+        
+        *[_type == "author"]    
+        
+      \`
+      const res = sanity.fetch(messyQuery);
+    `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+    const queryResult = queries[0]
+
+    expect(queryResult?.result).toEqual('*[_type == "author"]')
   })
 })
 
@@ -368,7 +385,7 @@ describe('findQueries with defineQuery', () => {
     expect(queries.length).toBe(0)
   })
 
-  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+  test('will ignore declarations if any of the leading comments are ignore tags', () => {
     const source = `
       import {defineQuery} from "groq";
 
