@@ -61,7 +61,10 @@ export interface TableRelease extends ReleaseDocument {
 }
 
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
-
+const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
+  column: 'publishedAt',
+  direction: 'desc',
+}
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -379,7 +382,11 @@ export function ReleasesOverview() {
               <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
                 key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                defaultSort={
+                  releaseGroupMode === 'archived'
+                    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+                    : DEFAULT_RELEASES_OVERVIEW_SORT
+                }
                 loading={loadingTableData}
                 data={filteredReleases}
                 columnDefs={tableColumns}

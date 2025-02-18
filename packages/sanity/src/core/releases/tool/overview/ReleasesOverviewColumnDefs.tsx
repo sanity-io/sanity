@@ -91,7 +91,7 @@ export const releasesOverviewColumnDefs: (
         id: 'publishedAt',
         sorting: true,
         sortTransform: (release) => {
-          if (!release.publishedAt) return Infinity
+          if (!release.publishedAt) return release._updatedAt
           return new Date(release.publishedAt).getTime()
         },
         width: 250,
