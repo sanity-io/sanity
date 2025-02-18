@@ -1,7 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useDocumentTitle} from 'sanity/structure'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
@@ -42,16 +41,15 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     useTimeZone(timeZoneScope)
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
   const {t} = useTranslation('studio')
-  const {title} = useDocumentTitle()
 
   // Differend text based on different scopes
   const timeZoneScopeTypeToLabel = useMemo(
     (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
       scheduledPublishing: t('time-zone.dialog-info.scheduled-publishing'),
       contentReleases: t('time-zone.dialog-info.content-releases'),
-      input: t('time-zone.dialog-info.input', {documentTitle: title}),
+      input: t('time-zone.dialog-info.input'),
     }),
-    [t, title],
+    [t],
   )
 
   // Callbacks

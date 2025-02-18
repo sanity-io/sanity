@@ -1731,7 +1731,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'time-zone.dialog-info.content-releases':
     'The selected time zone will change how dates are represented in content releases.',
   'time-zone.dialog-info.input':
-    'The selected time zone will change how dates are represented only for this input in {{documentTitle}}.',
+    'The selected time zone will change how dates are represented only for this input in this document.',
   'time-zone.dialog-info.scheduled-publishing':
     'The selected time zone will change how dates are represented in schedules.',
   'time-zone.local-time': 'local time',

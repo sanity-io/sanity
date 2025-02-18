@@ -23,13 +23,13 @@ type ReleasesOrScheduledPublishingScope = {
   defaultTimeZone?: string
 }
 
-type InputOrDocumentScope = {
+type InputScope = {
   type: IdRequiredTypes
   id: string
   defaultTimeZone?: string
 }
 
-export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputOrDocumentScope
+export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
 
