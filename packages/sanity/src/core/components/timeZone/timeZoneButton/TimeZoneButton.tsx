@@ -14,7 +14,7 @@ export interface ButtonTimeZoneProps {
   tooltipContent: ReactNode
 }
 
-const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
+export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
   const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true, tooltipContent} = props
   const {timeZone} = useTimeZone(timeZoneScope)
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
@@ -94,5 +94,3 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
     </>
   )
 }
-
-export default ButtonTimeZone

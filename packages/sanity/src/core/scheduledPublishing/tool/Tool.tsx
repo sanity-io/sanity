@@ -4,7 +4,7 @@ import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import ButtonTimeZone from '../../components/timeZone/timeZoneButton/TimeZoneButton'
+import {ButtonTimeZone} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'

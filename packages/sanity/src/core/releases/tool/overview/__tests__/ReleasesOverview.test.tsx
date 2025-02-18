@@ -49,7 +49,6 @@ import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
-import {useTimeZone} from '../../../../hooks/useTimeZone'
 
 const TODAY = set(new Date(), {
   hours: 22,
@@ -418,7 +417,6 @@ describe('ReleasesOverview', () => {
       })
 
       it('shows dates with timezone abbreviation when it is not the locale', async () => {
-        // mock useTimeZoneMockReturn
         mockUseTimeZone.mockReturnValue({
           ...useTimeZoneMockReturn,
           getLocalTimeZone: vi.fn(() => ({

@@ -1,6 +1,6 @@
 import {Box, Flex} from '@sanity/ui'
 
-import ButtonTimeZone from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
+import {ButtonTimeZone} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
