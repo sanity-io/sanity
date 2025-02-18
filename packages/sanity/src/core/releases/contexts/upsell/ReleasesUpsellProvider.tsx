@@ -187,7 +187,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   )
 
   const {getReleaseLimits, setLimitsManually} = useReleaseLimits()
-  const {getOrgActiveReleaseCount, setOrgActiveReleaseCountManually} = useOrgActiveReleaseCount()
+  const {getOrgActiveReleaseCount, setOrgActiveReleaseCount} = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
@@ -211,7 +211,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           }
 
           if (existingOrgActiveReleaseCount === null)
-            setOrgActiveReleaseCountManually(limits.orgActiveReleaseCount)
+            setOrgActiveReleaseCount(limits.orgActiveReleaseCount)
 
           const {datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount} = limits
           existingLimits = {
@@ -256,7 +256,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       getReleaseLimits,
       setLimitsManually,
       getOrgActiveReleaseCount,
-      setOrgActiveReleaseCountManually,
+      setOrgActiveReleaseCount,
     ],
   )
 

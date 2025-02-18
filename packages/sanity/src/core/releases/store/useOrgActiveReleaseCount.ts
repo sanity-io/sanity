@@ -5,14 +5,15 @@ import {
   distinctUntilChanged,
   map,
   merge,
+  of,
   shareReplay,
   startWith,
+  Subject,
   switchMap,
+  timer,
 } from 'rxjs'
-import {of} from 'rxjs/internal/observable/of'
-import {timer} from 'rxjs/internal/observable/timer'
 
-import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {type ResourceCache, useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {useActiveReleases} from './useActiveReleases'
 
 interface ReleaseLimits {
@@ -21,69 +22,64 @@ interface ReleaseLimits {
   orgActiveReleaseCount: number
 }
 
-type UseOrgActiveReleaseCountReturn = {
-  setOrgActiveReleaseCountManually: (count: number) => void
-  getOrgActiveReleaseCount: () => number | null
-}
-
 const cacheTrigger$ = new BehaviorSubject<number | null>(null)
 const CACHE_TTL_MS = 15000
 
-export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
-  const resourceCache = useResourceCache()
-  const {data: activeReleases} = useActiveReleases()
+export function createOrgActiveReleaseCountStore(
+  resourceCache: ResourceCache,
+  activeReleases: any,
+) {
+  const dispatch$ = new Subject<number | null>()
 
-  const cache$ = useMemo(
-    () =>
-      cacheTrigger$.pipe(
-        distinctUntilChanged(),
-        switchMap((activeReleasesCount) => {
-          if (activeReleasesCount === null) return of(null)
+  // Observable that listens to cache updates & TTL expiration
+  const state$ = merge(
+    cacheTrigger$.pipe(
+      distinctUntilChanged(),
+      switchMap((activeReleasesCount) => {
+        if (activeReleasesCount === null) return of(null)
 
-          const cachedState = resourceCache.get<{
-            cachedValue: number
-            activeReleases: number
-          }>({
-            namespace: 'OrgActiveReleasesCount',
-            dependencies: [activeReleases],
-          })
+        const cachedState = resourceCache.get<{
+          cachedValue: number
+          activeReleases: number
+        }>({
+          namespace: 'OrgActiveReleasesCount',
+          dependencies: [activeReleases],
+        })
 
-          if (cachedState) {
-            const {cachedValue, activeReleases: cachedReleases} = cachedState
+        if (cachedState) {
+          const {cachedValue, activeReleases: cachedReleases} = cachedState
 
-            if (cachedReleases === activeReleasesCount) {
-              console.log('Using cached value.')
+          if (cachedReleases === activeReleasesCount) {
+            console.log('Using cached value.')
 
-              return merge(
-                of(cachedValue),
-                timer(CACHE_TTL_MS).pipe(
-                  map(() => {
-                    console.log('TTL expired, emitting null.')
-                    resourceCache.set({
-                      namespace: 'OrgActiveReleasesCount',
-                      dependencies: [activeReleases],
-                      value: null,
-                    })
+            return merge(
+              of(cachedValue),
+              timer(CACHE_TTL_MS).pipe(
+                map(() => {
+                  console.log('TTL expired, emitting null.')
+                  resourceCache.set({
+                    namespace: 'OrgActiveReleasesCount',
+                    dependencies: [activeReleases],
+                    value: null,
+                  })
 
-                    cacheTrigger$.next(null)
-                    return null
-                  }),
-                ),
-              )
-            }
+                  cacheTrigger$.next(null)
+                  return null
+                }),
+              ),
+            )
           }
+        }
 
-          return of(null)
-        }),
-        startWith(null),
-        shareReplay({bufferSize: 1, refCount: true}),
-      ),
-    [activeReleases, resourceCache],
-  )
+        return of(null)
+      }),
+      startWith(null),
+    ),
+    dispatch$,
+  ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
-  useObservable(cache$, null)
-
-  const setOrgActiveReleaseCountManually = (count: number) => {
+  // Function to update cache manually
+  const setOrgActiveReleaseCount = (count: number) => {
     const activeReleasesCount = activeReleases?.length || 0
 
     console.log('Storing orgActiveReleaseCount...')
@@ -99,14 +95,25 @@ export const useOrgActiveReleaseCount = (): UseOrgActiveReleaseCountReturn => {
     cacheTrigger$.next(activeReleasesCount)
   }
 
-  const getOrgActiveReleaseCount = () => {
-    const cachedState = resourceCache.get<{cachedValue: number; activeReleases: number}>({
-      namespace: 'OrgActiveReleasesCount',
-      dependencies: [activeReleases],
-    })
-
-    return cachedState?.cachedValue ?? null
+  return {
+    state$,
+    setOrgActiveReleaseCount,
   }
+}
 
-  return {setOrgActiveReleaseCountManually, getOrgActiveReleaseCount}
+export const useOrgActiveReleaseCount = () => {
+  const resourceCache = useResourceCache()
+  const {data: activeReleases} = useActiveReleases()
+
+  const {state$, setOrgActiveReleaseCount} = useMemo(
+    () => createOrgActiveReleaseCountStore(resourceCache, activeReleases),
+    [resourceCache, activeReleases],
+  )
+
+  const cache = useObservable(state$, null)
+
+  return {
+    getOrgActiveReleaseCount: () => cache,
+    setOrgActiveReleaseCount,
+  }
 }
