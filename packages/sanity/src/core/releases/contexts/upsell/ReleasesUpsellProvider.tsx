@@ -186,7 +186,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [telemetry],
   )
 
-  const {getReleaseLimits, setLimitsManually} = useReleaseLimits()
+  const {getReleaseLimits, setReleaseLimits} = useReleaseLimits()
   const {getOrgActiveReleaseCount, setOrgActiveReleaseCount} = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
@@ -204,7 +204,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
           if (existingLimits === null) {
             console.log('setting release limits', {limits})
-            setLimitsManually({
+            setReleaseLimits({
               datasetReleaseLimit: limits.datasetReleaseLimit,
               orgActiveReleaseLimit: limits.orgActiveReleaseLimit,
             })
@@ -251,12 +251,12 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       cb()
     },
     [
-      activeReleases?.length,
-      handleOpenDialog,
       getReleaseLimits,
-      setLimitsManually,
       getOrgActiveReleaseCount,
+      activeReleases?.length,
       setOrgActiveReleaseCount,
+      setReleaseLimits,
+      handleOpenDialog,
     ],
   )
 
