@@ -45,6 +45,7 @@ const HorizontalScroller = styled(Card)((props) => {
   return css`
     scrollbar-width: none;
     z-index: 1;
+    flex: 1;
     position: relative;
     > div {
       &::-webkit-scrollbar {
