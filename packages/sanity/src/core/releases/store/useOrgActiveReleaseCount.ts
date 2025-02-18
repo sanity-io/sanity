@@ -31,7 +31,6 @@ export function createOrgActiveReleaseCountStore(
 ) {
   const dispatch$ = new Subject<number | null>()
 
-  // Observable that listens to cache updates & TTL expiration
   const state$ = merge(
     cacheTrigger$.pipe(
       distinctUntilChanged(),
@@ -78,7 +77,6 @@ export function createOrgActiveReleaseCountStore(
     dispatch$,
   ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
-  // Function to update cache manually
   const setOrgActiveReleaseCount = (count: number) => {
     const activeReleasesCount = activeReleases?.length || 0
 

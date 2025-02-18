@@ -1,22 +1,9 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, defer, delay, firstValueFrom, map, of, shareReplay, tap} from 'rxjs'
+import {BehaviorSubject, firstValueFrom, shareReplay} from 'rxjs'
 
-import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
-
-export const fetchReleasesLimits = () =>
-  of({
-    orgActiveReleaseCount: 10,
-    orgActiveReleaseLimit: 20,
-    datasetReleaseLimit: 6,
-
-    // orgActiveReleaseCount: 6,
-    // orgActiveReleaseLimit: 6,
-    // datasetReleaseLimit: 10,
-  }).pipe(
-    tap(() => console.log('SEE THIS ONLY ONCE fetchReleasesLimits')),
-    delay(3000),
-  )
+import {type ResourceCache, useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
 
 interface ReleaseLimits {
   datasetReleaseLimit: number
@@ -25,47 +12,38 @@ interface ReleaseLimits {
 
 const releaseLimitsSubject = new BehaviorSubject<ReleaseLimits | null>(null)
 
-export const useReleaseLimits = () => {
-  const resourceCache = useResourceCache()
+export function createReleaseLimitsStore(resourceCache: ResourceCache) {
+  const state$ = releaseLimitsSubject.pipe(shareReplay({bufferSize: 1, refCount: true}))
 
-  const releaseLimits$ = useMemo(() => {
-    return defer(() => {
-      const cachedState = resourceCache.get<ReleaseLimits>({
+  const fetchReleaseLimits = async () => {
+    const cachedState =
+      releaseLimitsSubject.getValue() ??
+      resourceCache.get<ReleaseLimits>({
         namespace: 'ReleaseLimits',
         dependencies: [],
       })
 
-      if (cachedState) {
-        console.log('Using cached ReleaseLimits')
-        return of(cachedState)
-      }
+    if (cachedState) {
+      console.log('Returning already cached ReleaseLimits')
+      releaseLimitsSubject.next(cachedState)
+      return cachedState
+    }
 
-      console.log('Fetching ReleaseLimits...')
-      return fetchReleasesLimits().pipe(
-        map(({datasetReleaseLimit, orgActiveReleaseLimit}) => {
-          const limits: ReleaseLimits = {datasetReleaseLimit, orgActiveReleaseLimit}
+    console.log('Fetching ReleaseLimits...')
+    const limits = await firstValueFrom(fetchReleasesLimits())
 
-          resourceCache.set({
-            namespace: 'ReleaseLimits',
-            dependencies: [],
-            value: limits,
-          })
+    resourceCache.set({
+      namespace: 'ReleaseLimits',
+      dependencies: [],
+      value: limits,
+    })
+    releaseLimitsSubject.next(limits)
 
-          releaseLimitsSubject.next(limits)
+    return limits
+  }
 
-          return limits
-        }),
-      )
-    }).pipe(shareReplay({bufferSize: 1, refCount: true}))
-  }, [resourceCache])
-
-  const releasesLimit = useObservable(releaseLimitsSubject, null)
-
-  const fetchReleaseLimits = async () => releasesLimit || firstValueFrom(releaseLimits$)
-
-  const setLimitsManually = (limits: ReleaseLimits) => {
+  const setReleaseLimits = (limits: ReleaseLimits) => {
     console.log('Storing ReleaseLimits...')
-
     resourceCache.set({
       namespace: 'ReleaseLimits',
       dependencies: [],
@@ -75,13 +53,26 @@ export const useReleaseLimits = () => {
     releaseLimitsSubject.next(limits)
   }
 
-  const getReleaseLimits = () =>
-    releasesLimit ||
-    resourceCache.get<ReleaseLimits>({
-      namespace: 'ReleaseLimits',
-      dependencies: [],
-    }) ||
-    null
+  return {
+    state$,
+    setReleaseLimits,
+    fetchReleaseLimits,
+  }
+}
 
-  return {fetchReleaseLimits, setLimitsManually, getReleaseLimits}
+export const useReleaseLimits = () => {
+  const resourceCache = useResourceCache()
+
+  const {state$, setReleaseLimits, fetchReleaseLimits} = useMemo(
+    () => createReleaseLimitsStore(resourceCache),
+    [resourceCache],
+  )
+
+  const cache = useObservable(state$, null)
+
+  return {
+    getReleaseLimits: () => cache,
+    setReleaseLimits,
+    fetchReleaseLimits,
+  }
 }
