@@ -152,8 +152,8 @@ export class TypeGenerator {
   }
 
   /**
-   * Since we are sanitizing identifiers we might end up with collisions. Ie there might be a type mux.video and muxVideo, both these
-   * types would be sanitized into MuxVideo. To avoid this we keep track of the generated type names and add a index to the name.
+   * Since we are sanitizing identifiers we migt end up with collisions. Ie there might be a type mux.video and muxVideo, both these
+   * types would be sanityized into MuxVideo. To avoid this we keep track of the generated type names and add a index to the name.
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
   private getTypeName(
