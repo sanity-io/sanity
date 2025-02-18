@@ -3,37 +3,19 @@ import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyMendozaPatch} from '../../../../preview/utils/applyMendozaPatch'
 import {type ReleaseDocument, type ReleaseType} from '../../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {
-  type ArchiveReleaseEvent,
-  type CreateReleaseEvent,
-  type EditReleaseEvent,
-  type PublishReleaseEvent,
-  type UnarchiveReleaseEvent,
-} from './types'
+import {type ReleaseEvent} from './types'
 
 export function buildReleaseEditEvents(
   transactions: TransactionLogEventWithEffects[],
   release: ReleaseDocument,
-): (
-  | EditReleaseEvent
-  | CreateReleaseEvent
-  | ArchiveReleaseEvent
-  | PublishReleaseEvent
-  | UnarchiveReleaseEvent
-)[] {
+): ReleaseEvent[] {
   // Confirm we have all the events by checking the first transaction id and the release._rev, the should match.
   if (release._rev !== transactions[0]?.id) {
     console.error('Some transactions are missing, cannot calculate the edit events')
     return []
   }
 
-  const releaseEditEvents: (
-    | EditReleaseEvent
-    | CreateReleaseEvent
-    | ArchiveReleaseEvent
-    | PublishReleaseEvent
-    | UnarchiveReleaseEvent
-  )[] = []
+  const releaseEditEvents: ReleaseEvent[] = []
   // We start from the last release document and apply changes in reverse order
   // Compare for each transaction what changed, if metadata.releaseType or metadata.intendedPublishAt changed build an event.
   let currentDocument = release
