@@ -23,13 +23,13 @@ const releasesLocaleStrings = {
   /** Action text for opening a release */
   'action.open': 'Open',
   /** Action text for scheduling a release */
-  'action.schedule': 'Schedule for publishing...',
+  'action.schedule': 'Schedule release...',
   /** Action text for unpublishing a document in a release in the context menu */
   'action.unpublish': 'Unpublish',
   /** Action message for scheduling an unpublished of a document  */
   'action.unpublish-doc-actions': 'Unpublish when releasing',
   /** Action text for unscheduling a release */
-  'action.unschedule': 'Unschedule for publishing',
+  'action.unschedule': 'Unschedule release',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -258,19 +258,19 @@ const releasesLocaleStrings = {
   'schedule-button-tooltip.already-scheduled': 'This release is already scheduled',
 
   /** Title for unschedule release dialog */
-  'schedule-dialog.confirm-title': 'Schedule the release for publishing',
+  'schedule-dialog.confirm-title': 'Schedule the release',
   /** Description shown in unschedule relaease dialog */
   'schedule-dialog.confirm-description_one':
     "The '<strong>{{title}}</strong>' release and its document will be published on the selected date.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'schedule-dialog.confirm-description_other':
-    'The <strong>{{title}}</strong> release and its {{count}} document versions will be scheduled for publishing.',
+    'The <strong>{{title}}</strong> release and its {{count}} document versions will be scheduled.',
 
   /** Description for the confirm button for scheduling a release */
-  'schedule-dialog.confirm-button': 'Yes, schedule for publishing',
+  'schedule-dialog.confirm-button': 'Yes, schedule',
 
   /** Label for date picker when scheduling a release */
-  'schedule-dialog.select-publish-date-label': 'Schedule for publishing on',
+  'schedule-dialog.select-publish-date-label': 'Schedule on',
 
   /** Title for unschedule release dialog */
   'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',
