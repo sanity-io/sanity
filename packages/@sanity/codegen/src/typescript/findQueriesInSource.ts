@@ -71,7 +71,10 @@ export function findQueriesInSource(
           babelConfig,
           filename,
           resolver,
-        })
+        })      
+        .replace(/\s+/g, ' ')
+        .trim()
+  
 
         const location = node.loc
           ? {

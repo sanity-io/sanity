@@ -201,7 +201,7 @@ describe('findQueries with the groq template', () => {
     expect(queries.length).toBe(0)
   })
 
-  test('trims unnecessary whitespace and newlines', () => {
+  test('should remove unnecessary whitespace in queries', () => {
     const source = `
       import { groq } from "groq";
       const messyQuery = groq\`
