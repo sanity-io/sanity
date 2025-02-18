@@ -21,6 +21,7 @@ interface ReleaseDashboardActivityPanelProps {
 }
 const MotionFlex = motion.create(Flex)
 const FillHeight = styled.div`
+  --card-border-color: transparent;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -35,7 +36,6 @@ export function ReleaseDashboardActivityPanel({
     <AnimatePresence>
       {show && (
         <>
-          <Card flex="none" borderLeft marginY={2} style={{opacity: 0.6}} />
           <motion.div
             animate={{width: 'auto', opacity: 1}}
             initial={{width: 0, opacity: 0}}

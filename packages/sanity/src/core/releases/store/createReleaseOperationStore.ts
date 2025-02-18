@@ -9,6 +9,7 @@ import {getPublishedId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
 import {type EditableReleaseDocument} from './types'
 
@@ -17,11 +18,7 @@ interface operationsOptions {
   skipCrossDatasetValidation?: boolean
 }
 export interface ReleaseOperationsStore {
-  publishRelease: (
-    releaseId: string,
-    useUnstableAction?: boolean,
-    opts?: operationsOptions,
-  ) => Promise<void>
+  publishRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
   schedule: (releaseId: string, date: Date, opts?: operationsOptions) => Promise<void>
   //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
   unschedule: (releaseId: string, opts?: operationsOptions) => Promise<void>
@@ -93,18 +90,12 @@ export function createReleaseOperationsStore(options: {
     )
   }
 
-  const handlePublishRelease = (
-    releaseId: string,
-    useUnstableAction?: boolean,
-    opts?: operationsOptions,
-  ) =>
+  const handlePublishRelease = (releaseId: string, opts?: operationsOptions) =>
     requestAction(
       client,
       [
         {
-          actionType: useUnstableAction
-            ? 'sanity.action.release.publish2'
-            : 'sanity.action.release.publish',
+          actionType: 'sanity.action.release.publish',
           releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
         },
       ],
@@ -188,11 +179,11 @@ export function createReleaseOperationsStore(options: {
       throw new Error(`Document with id ${documentId} not found and no initial value provided`)
     }
 
-    const versionDocument = {
+    const versionDocument = prepareVersionReferences({
       ...(document || {}),
       ...(initialValue || {}),
       _id: getVersionId(documentId, releaseId),
-    } as IdentifiedSanityDocumentStub
+    }) as IdentifiedSanityDocumentStub
 
     await (IS_CREATE_VERSION_ACTION_SUPPORTED
       ? requestAction(
@@ -284,7 +275,7 @@ interface ScheduleApiAction {
 }
 
 interface PublishApiAction {
-  actionType: 'sanity.action.release.publish' | 'sanity.action.release.publish2'
+  actionType: 'sanity.action.release.publish'
   releaseId: string
 }
 

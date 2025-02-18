@@ -63,26 +63,9 @@ describe('createReleaseOperationsStore', () => {
     })
   })
 
-  it('should publish a release using new publish', async () => {
-    const store = createStore()
-    await store.publishRelease('_.releases.release-id', true)
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.publish2',
-            releaseId: 'release-id',
-          },
-        ],
-      },
-    })
-  })
-
   it('should publish a release using stable publish', async () => {
     const store = createStore()
-    await store.publishRelease('_.releases.release-id', false)
+    await store.publishRelease('_.releases.release-id')
     expect(mockClient.request).toHaveBeenCalledWith({
       uri: '/data/actions/test-dataset',
       method: 'POST',
@@ -336,6 +319,174 @@ describe('createReleaseOperationsStore', () => {
         _id: `versions.release-id.doc-id`,
         data: 'example',
         newData: 'value',
+      },
+      undefined,
+    )
+  })
+
+  it('should omit _weak from reference fields if _strengthenOnPublish is present when it creates a version of a document', async () => {
+    const store = createStore()
+
+    mockClient.getDocument.mockResolvedValue({
+      _id: 'doc-id',
+      artist: {
+        _ref: 'some-artist-id',
+        _strengthenOnPublish: {
+          template: {
+            id: 'artist',
+          },
+          type: 'artist',
+        },
+        _type: 'reference',
+        _weak: true,
+      },
+      expectedWeakReference: {
+        _ref: 'expected-weak-reference',
+        _type: 'reference',
+        _weak: true,
+        _strengthenOnPublish: {
+          template: {
+            id: 'some-document',
+          },
+          type: 'some-document',
+          weak: true,
+        },
+      },
+      plants: [
+        {
+          _ref: 'some-plant-id',
+          _strengthenOnPublish: {
+            template: {
+              id: 'plant',
+            },
+            type: 'plant',
+          },
+          _type: 'reference',
+          _weak: true,
+        },
+        {
+          _ref: 'some-plant-id',
+          _strengthenOnPublish: {
+            template: {
+              id: 'plant',
+            },
+            type: 'plant',
+          },
+          _type: 'reference',
+          _weak: true,
+        },
+      ],
+      stores: [
+        {
+          name: 'some-store',
+          inventory: {
+            products: [
+              {
+                _ref: 'some-product-id',
+                _strengthenOnPublish: {
+                  template: {
+                    id: 'product',
+                  },
+                  type: 'product',
+                },
+                _type: 'reference',
+                _weak: true,
+              },
+              {
+                _ref: 'some-product-id',
+                _strengthenOnPublish: {
+                  template: {
+                    id: 'product',
+                  },
+                  type: 'product',
+                },
+                _type: 'reference',
+                _weak: true,
+              },
+            ],
+          },
+        },
+      ],
+    })
+
+    await store.createVersion('release-id', 'doc-id')
+
+    expect(mockClient.create).toHaveBeenCalledWith(
+      {
+        _id: `versions.release-id.doc-id`,
+        artist: {
+          _ref: 'some-artist-id',
+          _strengthenOnPublish: {
+            template: {
+              id: 'artist',
+            },
+            type: 'artist',
+          },
+          _type: 'reference',
+        },
+        expectedWeakReference: {
+          _ref: 'expected-weak-reference',
+          _type: 'reference',
+          _weak: true,
+          _strengthenOnPublish: {
+            template: {
+              id: 'some-document',
+            },
+            type: 'some-document',
+            weak: true,
+          },
+        },
+        plants: [
+          {
+            _ref: 'some-plant-id',
+            _strengthenOnPublish: {
+              template: {
+                id: 'plant',
+              },
+              type: 'plant',
+            },
+            _type: 'reference',
+          },
+          {
+            _ref: 'some-plant-id',
+            _strengthenOnPublish: {
+              template: {
+                id: 'plant',
+              },
+              type: 'plant',
+            },
+            _type: 'reference',
+          },
+        ],
+        stores: [
+          {
+            name: 'some-store',
+            inventory: {
+              products: [
+                {
+                  _ref: 'some-product-id',
+                  _strengthenOnPublish: {
+                    template: {
+                      id: 'product',
+                    },
+                    type: 'product',
+                  },
+                  _type: 'reference',
+                },
+                {
+                  _ref: 'some-product-id',
+                  _strengthenOnPublish: {
+                    template: {
+                      id: 'product',
+                    },
+                    type: 'product',
+                  },
+                  _type: 'reference',
+                },
+              ],
+            },
+          },
+        ],
       },
       undefined,
     )
