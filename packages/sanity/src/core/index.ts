@@ -27,6 +27,7 @@ export {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isDraftPerspective,
+  isGoingToUnpublish,
   isPublishedPerspective,
   isReleaseDocument,
   isReleasePerspective,
