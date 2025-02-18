@@ -49,6 +49,7 @@ import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 
 const TODAY = set(new Date(), {
   hours: 22,
@@ -108,9 +109,8 @@ vi.mock('../../../../perspective/useSetPerspective', () => ({
   useSetPerspective: vi.fn(() => mockedSetPerspective),
 }))
 
-vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
-  ...(await importOriginal()),
-  default: vi.fn(() => useTimeZoneMockReturn),
+vi.mock('../../../../hooks/useTimeZone', () => ({
+  useTimeZone: vi.fn(() => useTimeZoneMockReturn),
 }))
 
 const getWrapper = () =>

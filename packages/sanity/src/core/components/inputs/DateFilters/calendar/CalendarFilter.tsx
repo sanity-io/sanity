@@ -15,7 +15,7 @@ import {
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import useTimeZone, {type TimeZoneScope} from '../../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
 import {type CalendarDayProps} from './CalendarDay'

@@ -4,7 +4,7 @@ import {addHours, isValid, startOfHour} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Tab, Tooltip} from '../../../../ui-components'
-import useTimeZone from '../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'

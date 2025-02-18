@@ -55,7 +55,7 @@ const offsetToMinutes = (offset: string): number => {
   return multiplier * (hours * 60 + minutes)
 }
 
-const useTimeZone = (scope: TimeZoneScope) => {
+export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()
   const currentLocale = navigator.language
   const {defaultTimeZone} = scope
@@ -302,5 +302,3 @@ const useTimeZone = (scope: TimeZoneScope) => {
     ],
   )
 }
-
-export default useTimeZone

@@ -4,7 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
-import useTimeZone, {type TimeZoneScope, type TimeZoneScopeType} from '../../hooks/useTimeZone'
+import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../scheduledPublishing/types'
 

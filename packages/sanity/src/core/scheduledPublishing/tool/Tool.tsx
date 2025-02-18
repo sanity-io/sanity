@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import ButtonTimeZone from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
-import useTimeZone from '../../hooks/useTimeZone'
+import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'

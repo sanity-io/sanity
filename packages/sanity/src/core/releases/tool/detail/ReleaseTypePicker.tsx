@@ -10,7 +10,7 @@ import {type CalendarLabels} from '../../../components/inputs/DateInputs/calenda
 import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
 import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
-import useTimeZone from '../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'

@@ -21,7 +21,7 @@ import {
   useRef,
 } from 'react'
 
-import useTimeZone, {type TimeZoneScope} from '../../../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24, MONTH_NAMES} from './constants'
 import {features} from './features'

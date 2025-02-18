@@ -10,7 +10,7 @@ import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/cal
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
-import useTimeZone from '../../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../../i18n'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'

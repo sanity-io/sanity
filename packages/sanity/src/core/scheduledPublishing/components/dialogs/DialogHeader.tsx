@@ -2,7 +2,7 @@ import {Box, Flex} from '@sanity/ui'
 
 import ButtonTimeZone from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
-import useTimeZone, {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 interface Props {

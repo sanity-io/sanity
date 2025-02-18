@@ -1,7 +1,7 @@
 import {Card, Stack} from '@sanity/ui'
 import {useState} from 'react'
 
-import useTimeZone from '../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {type ScheduleFormData} from '../../types'
 import {DateTimeInput} from '../dateInputs'
 

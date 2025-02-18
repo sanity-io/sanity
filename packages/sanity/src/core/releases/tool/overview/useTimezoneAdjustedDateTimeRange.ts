@@ -1,7 +1,7 @@
 import {endOfDay, startOfDay} from 'date-fns'
 import {useCallback} from 'react'
 
-import useTimeZone from '../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 
 export const useTimezoneAdjustedDateTimeRange = () => {
   const {zoneDateToUtc} = useTimeZone({type: 'contentReleases'})

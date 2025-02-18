@@ -1,7 +1,7 @@
 import {format} from 'date-fns'
 import {useCallback} from 'react'
 
-import useTimeZone from '../../hooks/useTimeZone'
+import {useTimeZone} from '../../hooks/useTimeZone'
 import {type TableRelease} from '../tool/overview/ReleasesOverview'
 import {getPublishDateFromRelease} from '../util/util'
 

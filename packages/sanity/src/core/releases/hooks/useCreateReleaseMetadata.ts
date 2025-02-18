@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
 
-import useTimeZone from '../../hooks/useTimeZone'
+import {useTimeZone} from '../../hooks/useTimeZone'
 import {type EditableReleaseDocument} from '../store'
 
 export const useCreateReleaseMetadata = () => {

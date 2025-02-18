@@ -22,7 +22,7 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
-vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
+vi.mock('../../../../hooks/useTimeZone', async (importOriginal) => ({
   ...(await importOriginal()),
   useTimeZone: vi.fn(() => useTimeZoneMockReturn),
 }))

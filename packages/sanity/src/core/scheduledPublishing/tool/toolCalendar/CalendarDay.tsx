@@ -4,7 +4,7 @@ import {format, isWeekend} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
-import useTimeZone from '../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SCHEDULE_ACTION_DICTIONARY, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {type Schedule, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'

@@ -1,6 +1,6 @@
 import {type Mock, type Mocked, vi} from 'vitest'
 
-import useTimeZone from '../../../../hooks/useTimeZone'
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../../types'
 
 const mockTimeZone: NormalizedTimeZone = {
