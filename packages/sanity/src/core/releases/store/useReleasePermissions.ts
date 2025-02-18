@@ -3,7 +3,7 @@ import {useContext} from 'react'
 import {
   type ReleasePermissionsValue,
   ReleasesPermissionsContext,
-} from '../../../_singletons/context/ReleasesPermissionContext'
+} from '../contexts/ReleasesPermissionContext'
 
 /**
  * @internal

@@ -1,7 +1,7 @@
 import {useState} from 'react'
 
-import {ReleasesPermissionsContext} from '../../../_singletons/context/ReleasesPermissionContext'
 import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
+import {ReleasesPermissionsContext} from './ReleasesPermissionContext'
 
 type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
 
