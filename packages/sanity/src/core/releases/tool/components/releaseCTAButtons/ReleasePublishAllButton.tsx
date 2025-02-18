@@ -47,9 +47,15 @@ export const ReleasePublishAllButton = ({
     disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishPermission
 
   useEffect(() => {
-    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) =>
-      setPublishPermission(hasPermission),
-    )
+    let shouldUpdate = true
+
+    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+      if (shouldUpdate) setPublishPermission(hasPermission)
+    })
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, publishRelease, release._id, release.metadata.intendedPublishAt])
 
   const handleConfirmPublishAll = useCallback(async () => {

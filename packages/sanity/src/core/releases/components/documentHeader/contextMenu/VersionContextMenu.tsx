@@ -70,7 +70,15 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
 
   useEffect(() => {
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+    let shouldUpdate = true
+
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermission) => {
+      if (shouldUpdate) setHasCreatePermission(hasPermission)
+    })
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, createRelease])
 
   return (

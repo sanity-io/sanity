@@ -57,9 +57,15 @@ export const ReleaseScheduleButton = ({
     disabled || isValidatingDocuments || !schedulePermission || hasDocumentValidationErrors
 
   useEffect(() => {
-    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) =>
-      setSchedulePermission(hasPermission),
-    )
+    let shouldUpdate = true
+
+    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+      if (shouldUpdate) setSchedulePermission(hasPermission)
+    })
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {

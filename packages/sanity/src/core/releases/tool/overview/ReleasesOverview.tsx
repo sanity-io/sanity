@@ -121,7 +121,14 @@ export function ReleasesOverview() {
   }, [hasReleases, releasesMetadata, releases])
 
   useEffect(() => {
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+    let shouldUpdate = true
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
+      if (shouldUpdate) setHasCreatePermission(hasPermissions)
+    })
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases

@@ -71,9 +71,17 @@ export function ReleasesList({
   const {t} = useTranslation()
 
   useEffect(() => {
+    let shouldUpdate = true
+
     checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
-      setHasCreatePermission,
+      (hasPermission) => {
+        if (shouldUpdate) setHasCreatePermission(hasPermission)
+      },
     )
+
+    return () => {
+      shouldUpdate = false
+    }
   }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
 
   const handleCreateBundleClick = useCallback(
