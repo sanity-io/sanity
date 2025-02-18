@@ -176,21 +176,15 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     }
   }, [client, projectId])
 
-  const [existingCount, setExistingCount] = useState<number>(0)
+  const handleOpenDialog = useCallback(() => {
+    setUpsellDialogOpen(true)
 
-  const handleOpenDialog = useCallback(
-    (_existingCount: number = 0) => {
-      setExistingCount(_existingCount)
-      setUpsellDialogOpen(true)
-
-      telemetry.log(UpsellDialogViewed, {
-        feature: FEATURE,
-        type: 'modal',
-        source: 'navbar',
-      })
-    },
-    [telemetry],
-  )
+    telemetry.log(UpsellDialogViewed, {
+      feature: FEATURE,
+      type: 'modal',
+      source: 'navbar',
+    })
+  }, [telemetry])
 
   const {getReleaseLimits, setReleaseLimits} = useReleaseLimits()
   const {getOrgActiveReleaseCount, setOrgActiveReleaseCount} = useOrgActiveReleaseCount()
@@ -206,20 +200,24 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         console.log('Fetching new data since cache is missing or expired...')
 
         try {
-          const limits = await firstValueFrom(fetchReleasesLimits())
+          const {datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount} =
+            await firstValueFrom(fetchReleasesLimits())
 
           if (existingLimits === null) {
-            console.log('setting release limits', {limits})
+            console.log('setting release limits', {
+              datasetReleaseLimit,
+              orgActiveReleaseLimit,
+              orgActiveReleaseCount,
+            })
             setReleaseLimits({
-              datasetReleaseLimit: limits.datasetReleaseLimit,
-              orgActiveReleaseLimit: limits.orgActiveReleaseLimit,
+              datasetReleaseLimit,
+              orgActiveReleaseLimit,
             })
           }
 
           if (existingOrgActiveReleaseCount === null)
-            setOrgActiveReleaseCount(limits.orgActiveReleaseCount)
+            setOrgActiveReleaseCount(orgActiveReleaseCount)
 
-          const {datasetReleaseLimit, orgActiveReleaseLimit, orgActiveReleaseCount} = limits
           existingLimits = {
             datasetReleaseLimit,
             orgActiveReleaseLimit,
@@ -247,7 +245,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         isOrgAtAboveOrgLimit
 
       if (shouldShowDialog) {
-        handleOpenDialog(existingOrgActiveReleaseCount)
+        handleOpenDialog()
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
         }
@@ -288,8 +286,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
-  const interpolation = getOrgActiveReleaseCount()
-    ? {releaseLimit: getOrgActiveReleaseCount()}
+  const currentReleaseLimitCount = getOrgActiveReleaseCount()
+  const interpolation = currentReleaseLimitCount
+    ? {releaseLimit: currentReleaseLimitCount}
     : undefined
 
   return (

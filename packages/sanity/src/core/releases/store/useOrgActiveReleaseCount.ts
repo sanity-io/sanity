@@ -16,53 +16,48 @@ import {
 import {type ResourceCache, useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {useActiveReleases} from './useActiveReleases'
 
-interface ReleaseLimits {
-  datasetReleaseLimit: number
-  orgActiveReleaseLimit: number | null
-  orgActiveReleaseCount: number
-}
+const STATE_TTL_MS = 15000
+const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'OrgActiveReleasesCount'
 
-const cacheTrigger$ = new BehaviorSubject<number | null>(null)
-const CACHE_TTL_MS = 15000
-
-export function createOrgActiveReleaseCountStore(
+function createOrgActiveReleaseCountStore(
   resourceCache: ResourceCache,
-  activeReleases: any,
+  activeReleases: ReturnType<typeof useActiveReleases>['data'],
 ) {
   const dispatch$ = new Subject<number | null>()
+  const stateTrigger$ = new BehaviorSubject<number | null>(null)
 
   const state$ = merge(
-    cacheTrigger$.pipe(
+    stateTrigger$.pipe(
       distinctUntilChanged(),
       switchMap((activeReleasesCount) => {
         if (activeReleasesCount === null) return of(null)
 
         const cachedState = resourceCache.get<{
-          cachedValue: number
+          orgActiveReleaseCount: number
           activeReleases: number
         }>({
-          namespace: 'OrgActiveReleasesCount',
+          namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
           dependencies: [activeReleases],
         })
 
         if (cachedState) {
-          const {cachedValue, activeReleases: cachedReleases} = cachedState
+          const {orgActiveReleaseCount, activeReleases: cachedReleases} = cachedState
 
           if (cachedReleases === activeReleasesCount) {
             console.log('Using cached value.')
 
             return merge(
-              of(cachedValue),
-              timer(CACHE_TTL_MS).pipe(
+              of(orgActiveReleaseCount),
+              timer(STATE_TTL_MS).pipe(
                 map(() => {
                   console.log('TTL expired, emitting null.')
                   resourceCache.set({
-                    namespace: 'OrgActiveReleasesCount',
+                    namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
                     dependencies: [activeReleases],
                     value: null,
                   })
 
-                  cacheTrigger$.next(null)
+                  stateTrigger$.next(null)
                   return null
                 }),
               ),
@@ -77,20 +72,20 @@ export function createOrgActiveReleaseCountStore(
     dispatch$,
   ).pipe(shareReplay({bufferSize: 1, refCount: true}))
 
-  const setOrgActiveReleaseCount = (count: number) => {
+  const setOrgActiveReleaseCount = (orgActiveReleaseCount: number) => {
     const activeReleasesCount = activeReleases?.length || 0
 
     console.log('Storing orgActiveReleaseCount...')
     resourceCache.set({
-      namespace: 'OrgActiveReleasesCount',
+      namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
       dependencies: [activeReleases],
       value: {
-        cachedValue: count,
+        orgActiveReleaseCount,
         activeReleases: activeReleasesCount,
       },
     })
 
-    cacheTrigger$.next(activeReleasesCount)
+    stateTrigger$.next(activeReleasesCount)
   }
 
   return {
@@ -108,10 +103,10 @@ export const useOrgActiveReleaseCount = () => {
     [resourceCache, activeReleases],
   )
 
-  const cache = useObservable(state$, null)
+  const state = useObservable(state$, null)
 
   return {
-    getOrgActiveReleaseCount: () => cache,
+    getOrgActiveReleaseCount: () => state,
     setOrgActiveReleaseCount,
   }
 }
