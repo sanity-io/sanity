@@ -595,7 +595,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     this._listenSubscription = this._client
-      .listen(query, params, {events: ['mutation', 'welcome']})
+      .listen(query, params, {events: ['mutation', 'welcome'], includeAllVersions: true})
       .subscribe({
         next: this.handleListenerEvent,
         error: (error) =>

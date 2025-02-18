@@ -114,6 +114,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
         {},
         {
           includeResult: true,
+          includeAllVersions: true,
           visibility: 'query',
           events: ['mutation'],
           tag: 'release-docs.listen',

@@ -40,7 +40,7 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
       )
 
     sub2Ref.current = client.observable
-      .listen(query, params)
+      .listen(query, params, {includeAllVersions: true})
       .subscribe((mut) => setState({document: mut.result || undefined, isLoading: false}))
   }, [client, itemId])
 
