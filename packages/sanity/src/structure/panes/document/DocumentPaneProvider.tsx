@@ -647,7 +647,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
   useInsertionEffect(() => {
-    if (readOnly) {
+    // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
+    // document necessitates patching it. This renders it impossible to unlink a Create-linked
+    // document.
+    //
+    // Excluding Create-linked documents from this check is a simple way to ensure they can be
+    // unlinked.
+    //
+    // This does mean `handleChange` can be used to patch any part of a Create-linked document,
+    // which would otherwise be read-only.
+    if (readOnly && !isCreateLinked) {
       patchRef.current = () => {
         throw new Error('Attempted to patch a read-only document')
       }
