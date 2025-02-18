@@ -9,12 +9,14 @@ import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {
+  type BaseConfigOptions,
   checkDir,
   createDeployment,
   debug,
   dirIsEmptyOrNonExistent,
   getInstalledSanityVersion,
-  getOrCreateUserApplication,
+  getOrCreateCoreApplication,
+  getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
   type UserApplication,
 } from './helpers'
@@ -32,13 +34,18 @@ export default async function deployStudioAction(
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
+  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
 
   const installedSanityVersion = await getInstalledSanityVersion()
   const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
+  const appId =
+    cliConfig &&
+    '__experimental_coreAppConfiguration' in cliConfig &&
+    cliConfig.__experimental_coreAppConfiguration?.appId
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true,
+    requireProject: !isCoreApp, // core apps are not project-specific
   }).withConfig({apiVersion: 'v2024-08-01'})
 
   if (customSourceDir === 'graphql') {
@@ -74,20 +81,27 @@ export default async function deployStudioAction(
   let userApplication: UserApplication
 
   try {
-    // If the user has provided a studioHost in the config, use that
-    if (configStudioHost) {
-      userApplication = await getOrCreateUserApplicationFromConfig({
-        client,
-        context,
-        spinner,
-        appHost: configStudioHost,
-      })
+    const configParams: BaseConfigOptions & {
+      appHost?: string
+      appId?: string
+    } = {
+      client,
+      context,
+      spinner,
+    }
+
+    if (isCoreApp && appId) {
+      configParams.appId = appId
+    } else if (configStudioHost) {
+      configParams.appHost = configStudioHost
+    }
+    // If the user has provided a studioHost / appId in the config, use that
+    if (configStudioHost || appId) {
+      userApplication = await getOrCreateUserApplicationFromConfig(configParams)
     } else {
-      userApplication = await getOrCreateUserApplication({
-        client,
-        context,
-        spinner,
-      })
+      userApplication = isCoreApp
+        ? await getOrCreateCoreApplication({client, context, spinner})
+        : await getOrCreateStudio({client, context, spinner})
     }
   } catch (err) {
     if (err.message) {
@@ -113,14 +127,16 @@ export default async function deployStudioAction(
       return
     }
 
-    await extractManifestSafe(
-      {
-        ...buildArgs,
-        extOptions: {},
-        extraArguments: [],
-      },
-      context,
-    )
+    if (!isCoreApp) {
+      await extractManifestSafe(
+        {
+          ...buildArgs,
+          extOptions: {},
+          extraArguments: [],
+        },
+        context,
+      )
+    }
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
@@ -139,7 +155,7 @@ export default async function deployStudioAction(
   const base = path.basename(sourceDir)
   const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
 
-  spinner = output.spinner('Deploying to Sanity.Studio').start()
+  spinner = output.spinner(`Deploying to ${isCoreApp ? 'CORE' : 'Sanity.Studio'}`).start()
   try {
     const {location} = await createDeployment({
       client,
@@ -147,17 +163,24 @@ export default async function deployStudioAction(
       version: installedSanityVersion,
       isAutoUpdating,
       tarball,
+      isCoreApp,
     })
 
     spinner.succeed()
 
     // And let the user know we're done
-    output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
+    output.print(
+      `\nSuccess! ${isCoreApp ? 'Application deployed' : `Studio deployed to ${chalk.cyan(location)}`}`,
+    )
 
-    if (!configStudioHost) {
-      output.print(`\nAdd ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`)
-      output.print('to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts')
-      output.print('to avoid prompting for hostname on next deploy.')
+    if ((isCoreApp && !appId) || (!isCoreApp && !configStudioHost)) {
+      output.print(
+        `\nAdd ${chalk.cyan(isCoreApp ? `appId: '${userApplication.id}'` : `studioHost: '${userApplication.appHost}'`)}`,
+      )
+      output.print(
+        `to ${isCoreApp ? '__experimental_coreAppConfiguration' : 'defineCliConfig root properties'} in sanity.cli.js or sanity.cli.ts`,
+      )
+      output.print(`to avoid prompting ${isCoreApp ? '' : 'for hostname'} on next deploy.`)
     }
   } catch (err) {
     spinner.fail()

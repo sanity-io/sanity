@@ -47,16 +47,17 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
+  const isCoreApp = args.groupOrCommand === 'app'
   const cwd = getCurrentWorkingDirectory()
   let workDir: string | undefined
   try {
-    workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+    workDir = isInit ? process.cwd() : resolveRootDir(cwd, isCoreApp)
   } catch (err) {
     console.error(chalk.red(err.message))
     process.exit(1)
   }
 
-  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand})
+  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand, isCoreApp})
   maybeFixMissingWindowsEnvVar()
 
   // Check if there are updates available for the CLI, and notify if there is
@@ -99,6 +100,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     corePath: await getCoreModulePath(workDir, cliConfig),
     cliConfig,
     telemetry,
+    isCoreApp,
   }
 
   warnOnNonProductionEnvironment()
@@ -274,7 +276,15 @@ function warnOnNonProductionEnvironment(): void {
   )
 }
 
-function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: string}) {
+function loadAndSetEnvFromDotEnvFiles({
+  workDir,
+  cmd,
+  isCoreApp,
+}: {
+  workDir: string
+  cmd: string
+  isCoreApp: boolean
+}) {
   /* eslint-disable no-process-env */
 
   // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
@@ -309,7 +319,7 @@ function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: str
 
   debug('Loading environment files using %s mode', mode)
 
-  const studioEnv = loadEnv(mode, workDir, ['SANITY_STUDIO_'])
+  const studioEnv = loadEnv(mode, workDir, isCoreApp ? ['VITE_'] : ['SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
   /* eslint-disable no-process-env */
 }
