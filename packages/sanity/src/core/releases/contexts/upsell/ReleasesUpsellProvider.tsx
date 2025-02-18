@@ -195,12 +195,12 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
-      if (mode === 'default') {
-        return cb()
-      }
+      // if (mode === 'default') {
+      //   return cb()
+      // }
 
-      const doUpsell = () => {
-        handleOpenDialog()
+      const doUpsell = (count?: number) => {
+        handleOpenDialog(count)
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
         }
@@ -236,7 +236,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           isCurrentDatasetAtAboveOrgLimit ||
           isOrgAtAboveOrgLimit
 
-        if (shouldShowDialog) return doUpsell()
+        if (shouldShowDialog) return doUpsell(orgActiveReleaseCount)
 
         return cb()
       } catch (e) {
