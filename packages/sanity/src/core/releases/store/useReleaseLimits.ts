@@ -11,9 +11,13 @@ interface ReleaseLimits {
 }
 
 const releaseLimitsSubject = new BehaviorSubject<ReleaseLimits | null>(null)
+const isFetchingSubject = new BehaviorSubject<boolean>(false)
+const isErrorSubject = new BehaviorSubject<boolean>(false)
 
 export function createReleaseLimitsStore(resourceCache: ResourceCache) {
   const state$ = releaseLimitsSubject.pipe(shareReplay({bufferSize: 1, refCount: true}))
+  const isFetching$ = isFetchingSubject.pipe(shareReplay({bufferSize: 1, refCount: true}))
+  const isError$ = isErrorSubject.pipe(shareReplay({bufferSize: 1, refCount: true}))
 
   const fetchReleaseLimits = async () => {
     const cachedState =
@@ -26,20 +30,36 @@ export function createReleaseLimitsStore(resourceCache: ResourceCache) {
     if (cachedState) {
       console.log('Returning already cached ReleaseLimits')
       releaseLimitsSubject.next(cachedState)
+      isErrorSubject.next(false)
       return cachedState
     }
 
+    if (isFetchingSubject.value) {
+      console.log('Fetch already in progress, skipping...')
+      return null
+    }
+
     console.log('Fetching ReleaseLimits...')
-    const limits = await firstValueFrom(fetchReleasesLimits())
+    isFetchingSubject.next(true)
+    isErrorSubject.next(false)
 
-    resourceCache.set({
-      namespace: 'ReleaseLimits',
-      dependencies: [],
-      value: limits,
-    })
-    releaseLimitsSubject.next(limits)
+    try {
+      const limits = await firstValueFrom(fetchReleasesLimits())
 
-    return limits
+      resourceCache.set({
+        namespace: 'ReleaseLimits',
+        dependencies: [],
+        value: limits,
+      })
+      releaseLimitsSubject.next(limits)
+      return limits
+    } catch (error) {
+      console.error('Error fetching ReleaseLimits:', error)
+      isErrorSubject.next(true)
+      return null
+    } finally {
+      isFetchingSubject.next(false)
+    }
   }
 
   const setReleaseLimits = (limits: ReleaseLimits) => {
@@ -51,10 +71,13 @@ export function createReleaseLimitsStore(resourceCache: ResourceCache) {
     })
 
     releaseLimitsSubject.next(limits)
+    isErrorSubject.next(false)
   }
 
   return {
     state$,
+    isFetching$,
+    isError$,
     setReleaseLimits,
     fetchReleaseLimits,
   }
@@ -63,15 +86,19 @@ export function createReleaseLimitsStore(resourceCache: ResourceCache) {
 export const useReleaseLimits = () => {
   const resourceCache = useResourceCache()
 
-  const {state$, setReleaseLimits, fetchReleaseLimits} = useMemo(
+  const {state$, isFetching$, isError$, setReleaseLimits, fetchReleaseLimits} = useMemo(
     () => createReleaseLimitsStore(resourceCache),
     [resourceCache],
   )
 
   const cache = useObservable(state$, null)
+  const isFetching = useObservable(isFetching$, false)
+  const isError = useObservable(isError$, false)
 
   return {
     getReleaseLimits: () => cache,
+    isFetching,
+    isError,
     setReleaseLimits,
     fetchReleaseLimits,
   }

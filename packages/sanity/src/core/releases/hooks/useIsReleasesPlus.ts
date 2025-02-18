@@ -5,21 +5,25 @@ import {useReleaseLimits} from '../store/useReleaseLimits'
 const RELEASES_PLUS_LIMIT = 2
 
 export const useIsReleasesPlus = () => {
-  const {fetchReleaseLimits} = useReleaseLimits()
+  const {fetchReleaseLimits, isFetching, isError} = useReleaseLimits()
 
-  const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | undefined>(undefined)
-  const [hasFetchedLimits, setHasFetchedLimits] = useState(false)
+  const [isReleasesPlus, setIsReleasesPlus] = useState<boolean | null>(null)
 
   useEffect(() => {
-    if (isReleasesPlus !== undefined || hasFetchedLimits) return
+    if (isReleasesPlus !== null || isFetching) return
 
-    setHasFetchedLimits(true)
-    fetchReleaseLimits()
-      .then((limits) =>
-        setIsReleasesPlus((limits.orgActiveReleaseLimit || 0) > RELEASES_PLUS_LIMIT),
-      )
-      .catch(() => setIsReleasesPlus(false))
-  }, [fetchReleaseLimits, hasFetchedLimits, isReleasesPlus])
+    fetchReleaseLimits().then((limits) => {
+      if (limits?.orgActiveReleaseLimit) {
+        const {orgActiveReleaseLimit} = limits
+
+        setIsReleasesPlus(orgActiveReleaseLimit > RELEASES_PLUS_LIMIT)
+      }
+    })
+  }, [fetchReleaseLimits, isFetching, isReleasesPlus])
+
+  useEffect(() => {
+    if (isError) setIsReleasesPlus(false)
+  }, [isError])
 
   return isReleasesPlus
 }
