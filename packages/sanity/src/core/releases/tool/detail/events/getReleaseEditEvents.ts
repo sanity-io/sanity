@@ -20,7 +20,7 @@ import {
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {type ReleaseDocument} from '../../../store/types'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
-import {type CreateReleaseEvent, type EditReleaseEvent} from './types'
+import {type ReleaseEvent} from './types'
 
 const TRANSLOG_ENTRY_LIMIT = 100
 
@@ -108,7 +108,7 @@ function getReleaseTransactions({
 }
 
 interface EditEventsObservableValue {
-  editEvents: (EditReleaseEvent | CreateReleaseEvent)[]
+  editEvents: ReleaseEvent[]
   loading: boolean
   error: null | Error
 }

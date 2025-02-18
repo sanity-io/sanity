@@ -31,7 +31,6 @@ export type ReleaseState =
 export type ReleaseFinalDocumentState = {
   /** Document ID */
   id: string
-  revisionId: string
 }
 
 /**
