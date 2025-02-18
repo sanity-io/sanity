@@ -195,13 +195,19 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
-      if (mode === 'upsell') {
+      if (mode === 'default') {
+        return cb()
+      }
+
+      const doUpsell = () => {
         handleOpenDialog()
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
         }
-        return
+        return false
       }
+
+      if (mode === 'upsell') return doUpsell()
 
       try {
         console.log('Guard called, checking caches...')
@@ -215,35 +221,29 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
         // orgActiveReleaseCount might be missing due to internal server error
         // allow pass through guard in that case
-        if (orgActiveReleaseCount) {
-          const activeReleasesCount = activeReleases?.length || 0
+        if (orgActiveReleaseCount === null) return cb()
 
-          const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
-          const isCurrentDatasetAtAboveOrgLimit =
-            orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
-          const isOrgAtAboveOrgLimit =
-            orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
+        const activeReleasesCount = activeReleases?.length || 0
 
-          const shouldShowDialog =
-            isCurrentDatasetAtAboveDatasetLimit ||
-            isCurrentDatasetAtAboveOrgLimit ||
-            isOrgAtAboveOrgLimit
+        const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
+        const isCurrentDatasetAtAboveOrgLimit =
+          orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
+        const isOrgAtAboveOrgLimit =
+          orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
 
-          if (shouldShowDialog) {
-            handleOpenDialog(orgActiveReleaseCount)
-            if (throwError) {
-              throw new StudioReleaseLimitExceededError()
-            }
-            return
-          }
-        }
+        const shouldShowDialog =
+          isCurrentDatasetAtAboveDatasetLimit ||
+          isCurrentDatasetAtAboveOrgLimit ||
+          isOrgAtAboveOrgLimit
 
-        cb()
+        if (shouldShowDialog) return doUpsell()
+
+        return cb()
       } catch (e) {
         console.error('Error fetching release limits for upsell:', e)
 
         // silently fail and allow pass through guard
-        cb()
+        return cb()
       }
     },
     [mode, handleOpenDialog, orgActiveReleaseCount$, releaseLimits$, activeReleases?.length],
