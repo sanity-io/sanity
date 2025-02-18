@@ -49,7 +49,7 @@ import {
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 
-interface CreateFormOptions {
+interface DocumentFormOptions {
   documentType: string
   documentId: string
   releaseId?: ReleaseId
@@ -73,7 +73,7 @@ interface CreateFormOptions {
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
 }
-interface CreateFormValue {
+interface DocumentFormValue {
   editState: EditStateFor
   connectionState: ConnectionState
   collapsedFieldSets: StateTree<boolean> | undefined
@@ -106,7 +106,7 @@ interface CreateFormValue {
  *
  * Use this as a base point to create your own form.
  */
-export function useDocumentForm(options: CreateFormOptions): CreateFormValue {
+export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue {
   const {
     documentType,
     getFormDocumentValue,
