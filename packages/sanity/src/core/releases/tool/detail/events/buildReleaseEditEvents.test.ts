@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {type ReleaseDocument} from '../../../store/types'
+import {RELEASE_STATE_CHANGE} from './__fixtures__/mock-translog-events'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 
 describe('buildReleaseEditEvents()', () => {
@@ -571,6 +572,48 @@ describe('buildReleaseEditEvents()', () => {
         id: '27IdYXOVe1PEc0ZOAD1jvY',
         timestamp: '2024-12-05T16:34:59.512774Z',
         releaseName: 'rWBfpXZVj',
+      },
+    ])
+  })
+  it('should identify state changes', () => {
+    const changes = buildReleaseEditEvents(
+      RELEASE_STATE_CHANGE.transactions,
+      RELEASE_STATE_CHANGE.document,
+    )
+
+    expect(changes).toEqual([
+      {
+        type: 'publishRelease',
+        timestamp: '2025-02-17T15:50:22.301295Z',
+        author: 'p8xDvUMxC',
+        releaseName: 'rY3Ko1I4q',
+        id: 'ad56vrBQ94RnZtJ3uXY2W4',
+        origin: 'translog',
+      },
+      {
+        type: 'unarchiveRelease',
+        timestamp: '2025-02-17T15:48:37.430863Z',
+        author: 'p8xDvUMxC',
+        releaseName: 'rY3Ko1I4q',
+        id: 'ad56vrBQ94RnZtJ3uXY2N4',
+        origin: 'translog',
+      },
+      {
+        type: 'archiveRelease',
+        timestamp: '2025-02-17T15:37:41.591300Z',
+        author: 'p8xDvUMxC',
+        releaseName: 'rY3Ko1I4q',
+        id: 'ad56vrBQ94RnZtJ3uXY2K4',
+        origin: 'translog',
+      },
+      {
+        type: 'createRelease',
+        origin: 'translog',
+        author: 'p8xDvUMxC',
+        change: {releaseType: 'asap'},
+        id: 'g9WA6RAm4T2Bl8zZYz08dP',
+        timestamp: '2025-02-17T15:37:30.977183Z',
+        releaseName: 'rY3Ko1I4q',
       },
     ])
   })

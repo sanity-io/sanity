@@ -1,4 +1,4 @@
-import {Box, useToast} from '@sanity/ui'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
@@ -94,13 +94,18 @@ export function DiscardVersionDialog(props: {
         },
       }}
     >
-      <Box paddingX={3} marginBottom={2}>
+      <Stack space={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
           <Preview value={{_id: documentId}} schemaType={schemaType} />
         ) : (
           <LoadingBlock />
         )}
-      </Box>
+        <Box paddingX={2}>
+          <Text size={1} muted>
+            {t('discard-version-dialog.description')}
+          </Text>
+        </Box>
+      </Stack>
     </Dialog>
   )
 }

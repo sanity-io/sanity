@@ -92,6 +92,7 @@ export function getPairListener(
         },
         {
           includeResult: false,
+          includeAllVersions: true,
           events: ['welcome', 'mutation', 'reconnect'],
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair-listener',

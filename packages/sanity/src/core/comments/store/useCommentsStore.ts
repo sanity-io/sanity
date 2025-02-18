@@ -33,6 +33,7 @@ const INITIAL_STATE: CommentsReducerState = {
 const LISTEN_OPTIONS: ListenOptions = {
   events: ['welcome', 'mutation', 'reconnect'],
   includeResult: true,
+  includeAllVersions: true,
   visibility: 'query',
   tag: 'comments-store',
 }
