@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -38,7 +39,7 @@ const BASE_URL = 'www.sanity.io'
 // Date when the change from array to object in the data returned was introduced.
 const API_VERSION = '2024-04-19'
 
-export const fetchReleasesLimits = () =>
+export const fetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClient}) =>
   of({
     orgActiveReleaseCount: 6,
     orgActiveReleaseLimit: 20,
@@ -199,7 +200,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       //   return cb()
       // }
 
-      const doUpsell = (count?: number) => {
+      const doUpsell: (count?: number) => false = (count) => {
         handleOpenDialog(count)
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
