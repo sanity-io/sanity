@@ -266,16 +266,20 @@ export default async function initSanity(
     await getOrCreateUser()
   }
 
+  // skip project / dataset prompting
+  const isCoreAppTemplate = cliFlags.template ? determineCoreAppTemplate(cliFlags.template) : false // Default to false
+
   let introMessage = 'Fetching existing projects'
   if (cliFlags.quickstart) {
     introMessage = "Eject your existing project's Sanity configuration"
   }
-  success(introMessage)
-  print('')
+
+  if (!isCoreAppTemplate) {
+    success(introMessage)
+    print('')
+  }
 
   const flags = await prepareFlags()
-  // skip project / dataset prompting
-  const isCoreAppTemplate = cliFlags.template ? determineCoreAppTemplate(cliFlags.template) : false // Default to false
 
   // We're authenticated, now lets select or create a project (for studios) or org (for core apps)
   const {projectId, displayName, isFirstProject, datasetName, schemaUrl, organizationId} =

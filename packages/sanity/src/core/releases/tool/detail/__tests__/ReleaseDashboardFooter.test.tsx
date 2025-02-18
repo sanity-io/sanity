@@ -52,7 +52,7 @@ describe('ReleaseDashboardFooter', () => {
     test('shows unschedule button', async () => {
       await renderTest({release: activeScheduledRelease})
 
-      expect(screen.getByText('Schedule for publishing...')).toBeInTheDocument()
+      expect(screen.getByText('Schedule release...')).toBeInTheDocument()
     })
   })
 
@@ -81,7 +81,7 @@ describe('ReleaseDashboardFooter', () => {
     test('shows unschedule button', async () => {
       await renderTest({release: scheduledRelease})
 
-      expect(screen.getByText('Unschedule for publishing')).toBeInTheDocument()
+      expect(screen.getByText('Unschedule release')).toBeInTheDocument()
     })
   })
 

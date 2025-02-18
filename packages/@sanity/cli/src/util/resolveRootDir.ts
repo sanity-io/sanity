@@ -7,26 +7,27 @@ import {debug} from '../debug'
 /**
  * Resolve project root directory, falling back to cwd if it cannot be found
  */
-export function resolveRootDir(cwd: string): string {
+export function resolveRootDir(cwd: string, isCoreApp = false): string {
   try {
-    return resolveProjectRoot(cwd) || cwd
+    return resolveProjectRoot(cwd, 0, isCoreApp) || cwd
   } catch (err) {
     throw new Error(`Error occurred trying to resolve project root:\n${err.message}`)
   }
 }
 
-function hasStudioConfig(basePath: string): boolean {
+function hasSanityConfig(basePath: string, configName: string): boolean {
   const buildConfigs = [
-    fileExists(path.join(basePath, 'sanity.config.js')),
-    fileExists(path.join(basePath, 'sanity.config.ts')),
+    fileExists(path.join(basePath, `${configName}.js`)),
+    fileExists(path.join(basePath, `${configName}.ts`)),
     isSanityV2StudioRoot(basePath),
   ]
 
   return buildConfigs.some(Boolean)
 }
 
-function resolveProjectRoot(basePath: string, iterations = 0): string | false {
-  if (hasStudioConfig(basePath)) {
+function resolveProjectRoot(basePath: string, iterations = 0, isCoreApp = false): string | false {
+  const configName = isCoreApp ? 'sanity.cli' : 'sanity.config'
+  if (hasSanityConfig(basePath, configName)) {
     return basePath
   }
 
@@ -36,7 +37,7 @@ function resolveProjectRoot(basePath: string, iterations = 0): string | false {
     return false
   }
 
-  return resolveProjectRoot(parentDir, iterations + 1)
+  return resolveProjectRoot(parentDir, iterations + 1, isCoreApp)
 }
 
 function isSanityV2StudioRoot(basePath: string): boolean {

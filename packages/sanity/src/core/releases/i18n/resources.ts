@@ -23,13 +23,13 @@ const releasesLocaleStrings = {
   /** Action text for opening a release */
   'action.open': 'Open',
   /** Action text for scheduling a release */
-  'action.schedule': 'Schedule for publishing...',
+  'action.schedule': 'Schedule release...',
   /** Action text for unpublishing a document in a release in the context menu */
   'action.unpublish': 'Unpublish',
   /** Action message for scheduling an unpublished of a document  */
   'action.unpublish-doc-actions': 'Unpublish when releasing',
   /** Action text for unscheduling a release */
-  'action.unschedule': 'Unschedule for publishing',
+  'action.unschedule': 'Unschedule release',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -72,8 +72,7 @@ const releasesLocaleStrings = {
   'activity.panel.title': 'Activity',
 
   /** Header for the dialog confirming the archive of a release */
-  'archive-dialog.confirm-archive-header':
-    "Are you sure you want to archive the '{{title}}' release?",
+  'archive-dialog.confirm-archive-header': 'Are you sure you want to archive this release?',
   /** Title for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-title':
     "Are you sure you want to archive the <strong>'{{title}}'</strong> release?",
@@ -83,7 +82,7 @@ const releasesLocaleStrings = {
   'archive-dialog.confirm-archive-description_other':
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
-  'archive-dialog.confirm-archive-button': 'Yes, archive now',
+  'archive-dialog.confirm-archive-button': 'Yes, archive release',
 
   /** Title for information card on a archived release */
   'archive-info.title': 'This release is archived',
@@ -110,13 +109,13 @@ const releasesLocaleStrings = {
   'dashboard.details.activity': 'Activity',
 
   /** Header for deleting a release dialog */
-  'delete-dialog.confirm-delete.header': "Are you sure you want to delete the '{{title}}' release?",
+  'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
   /** Description for the dialog confirming the deleting of a release with one document */
   'delete-dialog.confirm-delete-description_one': 'This will delete 1 document version.',
   /** Description for the dialog confirming the deleting of a release with more than one document */
   'delete-dialog.confirm-delete-description_other': 'This will delete {{count}} document versions.',
   /** Label for the button to proceed deleting a release */
-  'delete-dialog.confirm-delete-button': 'Delete',
+  'delete-dialog.confirm-delete-button': 'Yes, delete release',
 
   /** Text for when there's no changes in a release diff */
   'diff.no-changes': 'No changes',
@@ -258,19 +257,19 @@ const releasesLocaleStrings = {
   'schedule-button-tooltip.already-scheduled': 'This release is already scheduled',
 
   /** Title for unschedule release dialog */
-  'schedule-dialog.confirm-title': 'Schedule the release for publishing',
+  'schedule-dialog.confirm-title': 'Schedule the release',
   /** Description shown in unschedule relaease dialog */
   'schedule-dialog.confirm-description_one':
     "The '<strong>{{title}}</strong>' release and its document will be published on the selected date.",
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'schedule-dialog.confirm-description_other':
-    'The <strong>{{title}}</strong> release and its {{count}} document versions will be scheduled for publishing.',
+    'The <strong>{{title}}</strong> release and its {{count}} document versions will be scheduled.',
 
   /** Description for the confirm button for scheduling a release */
-  'schedule-dialog.confirm-button': 'Yes, schedule for publishing',
+  'schedule-dialog.confirm-button': 'Yes, schedule',
 
   /** Label for date picker when scheduling a release */
-  'schedule-dialog.select-publish-date-label': 'Schedule for publishing on',
+  'schedule-dialog.select-publish-date-label': 'Schedule on',
 
   /** Title for unschedule release dialog */
   'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',

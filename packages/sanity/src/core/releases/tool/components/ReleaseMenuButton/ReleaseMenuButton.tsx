@@ -1,6 +1,6 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Text, useToast} from '@sanity/ui'
+import {Menu, Spinner, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -13,6 +13,7 @@ import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
+import {ReleasePreviewCard} from './ReleasePreviewCard'
 
 export type ReleaseMenuButtonProps = {
   /** defaults to false
@@ -133,13 +134,13 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       <Dialog
         id={confirmDialog.dialogId}
         data-testid={confirmDialog.dialogId}
-        header={t(confirmDialog.dialogHeaderI18nKey, {title: releaseTitle})}
+        header={t(confirmDialog.dialogHeaderI18nKey)}
         onClose={() => !isPerformingOperation && setSelectedAction(undefined)}
         padding={false}
         footer={{
           confirmButton: {
             text: t(confirmDialog.dialogConfirmButtonI18nKey),
-            tone: 'positive',
+            tone: confirmDialog.confirmButtonTone,
             onClick: () => handleAction(selectedAction),
             loading: isPerformingOperation,
             disabled: isPerformingOperation,
@@ -149,9 +150,10 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
           },
         }}
       >
-        {!!documentsCount && (
-          <Text muted size={1}>
-            {
+        <Stack space={4} paddingX={4} paddingBottom={4}>
+          <ReleasePreviewCard release={release} />
+          {!!documentsCount && (
+            <Text muted size={1}>
               <Translate
                 t={t}
                 i18nKey={confirmDialog.dialogDescriptionI18nKey}
@@ -159,12 +161,12 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
                   count: documentsCount,
                 }}
               />
-            }
-          </Text>
-        )}
+            </Text>
+          )}
+        </Stack>
       </Dialog>
     )
-  }, [selectedAction, documentsCount, t, releaseTitle, isPerformingOperation, handleAction])
+  }, [selectedAction, t, isPerformingOperation, release, documentsCount, handleAction])
 
   return (
     <>
