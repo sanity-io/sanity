@@ -282,7 +282,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
-  const interpolation = existingCount ? {releaseLimit: existingCount} : undefined
+  const interpolation = getOrgActiveReleaseCount()
+    ? {releaseLimit: getOrgActiveReleaseCount()}
+    : undefined
 
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
