@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
+import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {BehaviorSubject, map, type Observable, of, switchMap, tap, timer} from 'rxjs'
 
+import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
 import {useActiveReleases} from './useActiveReleases'
@@ -13,7 +15,10 @@ interface ReleaseLimits {
 const STATE_TTL_MS = 15000
 const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount'
 
-function createOrgActiveReleaseCountStore(activeReleasesCount: number): ReleaseLimits {
+function createOrgActiveReleaseCountStore(
+  versionedClient: SanityClient,
+  activeReleasesCount: number,
+): ReleaseLimits {
   const fetchTrigger$ = new BehaviorSubject<'fetch' | number | null>('fetch')
   const staleFlag$ = new BehaviorSubject<boolean>(false)
   const countAtFetch$ = new BehaviorSubject<number | null>(null)
@@ -27,7 +32,7 @@ function createOrgActiveReleaseCountStore(activeReleasesCount: number): ReleaseL
       ) {
         staleFlag$.next(false)
 
-        return fetchReleasesLimits().pipe(
+        return fetchReleasesLimits({versionedClient}).pipe(
           tap(() => countAtFetch$.next(activeReleasesCount)),
           map((res) => res.orgActiveReleaseCount),
           switchMap((value) => {
@@ -56,6 +61,7 @@ function createOrgActiveReleaseCountStore(activeReleasesCount: number): ReleaseL
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
+  const client = useClient()
 
   const activeReleasesCount = activeReleases?.length || 0
 
@@ -64,16 +70,16 @@ export const useOrgActiveReleaseCount = () => {
   return useMemo(() => {
     const releaseLimitsStore =
       resourceCache.get<ReleaseLimits>({
-        dependencies: [count],
+        dependencies: [client, count],
         namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
-      }) || createOrgActiveReleaseCountStore(activeReleasesCount)
+      }) || createOrgActiveReleaseCountStore(client, activeReleasesCount)
 
     resourceCache.set({
       namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
       value: releaseLimitsStore,
-      dependencies: [count],
+      dependencies: [client, count],
     })
 
     return releaseLimitsStore
-  }, [activeReleasesCount, count, resourceCache])
+  }, [activeReleasesCount, client, count, resourceCache])
 }
