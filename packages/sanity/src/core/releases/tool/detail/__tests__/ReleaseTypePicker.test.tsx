@@ -183,7 +183,6 @@ describe('ReleaseTypePicker', () => {
         ...activeASAPRelease,
         metadata: expect.objectContaining({
           ...activeASAPRelease.metadata,
-          intendedPublishAt: undefined,
           releaseType: 'undecided',
         }),
       })

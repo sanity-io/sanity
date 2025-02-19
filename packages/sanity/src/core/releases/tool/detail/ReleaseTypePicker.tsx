@@ -71,7 +71,15 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     if (open && !dialog) {
       const newRelease = {
         ...release,
-        metadata: {...release.metadata, intendedPublishAt: updatedDate, releaseType},
+        metadata: {
+          ...release.metadata,
+          releaseType,
+          ...(typeof updatedDate === 'undefined'
+            ? {}
+            : {
+                intendedPublishAt: updatedDate,
+              }),
+        },
       }
 
       if (!isEqual(newRelease, release)) {
