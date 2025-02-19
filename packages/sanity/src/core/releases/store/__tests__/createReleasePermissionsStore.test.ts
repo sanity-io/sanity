@@ -1,12 +1,15 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useReleasePermissions} from '../useReleasePermissions'
+import {createReleasePermissionsStore} from '../createReleasePermissionsStore'
+import {type useReleasePermissionsValue} from '../useReleasePermissions'
+
+const createStore = () => createReleasePermissionsStore()
 
 describe('useReleasePermissions', () => {
-  let store: ReturnType<typeof useReleasePermissions>
+  let store: useReleasePermissionsValue
 
   beforeEach(() => {
-    store = useReleasePermissions()
+    store = createStore()
   })
 
   it('should return true when action succeeds', async () => {
