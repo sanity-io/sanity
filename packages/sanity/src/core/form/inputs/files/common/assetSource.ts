@@ -38,13 +38,26 @@ export function handleSelectAssetFromSource({
   }
   const firstAsset = assetFromSource[0]
   const assetProps = firstAsset.assetDocumentProps
+  const assetLibraryProps = firstAsset.assetLibraryProps
   const originalFilename = assetProps?.originalFilename
   const label = assetProps?.label
   const title = assetProps?.title
   const description = assetProps?.description
   const creditLine = assetProps?.creditLine
   const source = assetProps?.source
-  const imagePatches = isImage ? [unset(['hotspot']), unset(['crop'])] : []
+  const imagePatches: FormPatch[] = isImage ? [unset(['hotspot']), unset(['crop'])] : []
+
+  // If the asset is from an asset library, we need to set the assetLibraryAsset reference,
+  // so that the Asset Library can backtrack the usage of that asset.
+  if (assetLibraryProps) {
+    const assetContainerRef = {
+      _type: 'globalDocumentReference',
+      _ref: `asset-library:${assetLibraryProps.assetLibraryId}:${assetLibraryProps.assetId}`,
+      _weak: true,
+    }
+    imagePatches.push(set(assetContainerRef, ['assetLibraryAsset']))
+  }
+
   switch (firstAsset.kind) {
     case 'assetDocumentId':
       onChange([
