@@ -25,7 +25,7 @@ export const VersionInlineBadge = ({
   children,
   $tone,
 }: PropsWithChildren<{
-  $tone: BadgeTone
+  $tone?: BadgeTone
 }>) => <StyledVersionInlineBadge $tone={$tone}>{children}</StyledVersionInlineBadge>
 
 /**
