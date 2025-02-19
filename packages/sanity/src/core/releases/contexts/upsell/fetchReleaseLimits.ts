@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import {type SanityClient} from '@sanity/client'
-import {delay, map, type Observable, of, tap} from 'rxjs'
+import {type ClientError, type SanityClient} from '@sanity/client'
+import {catchError, delay, map, type Observable, of, tap} from 'rxjs'
 
 interface ReleaseLimits {
   orgActiveReleaseCount: number
@@ -49,7 +49,15 @@ export function _fetchReleaseLimits({
       uri: `projects/${versionedClient.config().projectId}/new-content-release-allowed`,
       tag: 'new-content-release-allowed',
     })
-    .pipe(map((response) => response.data))
+    .pipe(
+      catchError((error: ClientError) => {
+        console.error(error.message)
+        // body will still contain the limits and current count (if available)
+        // so still want to return these and just silently log the error
+        return of(error.response.body as ReleaseLimitsResponse)
+      }),
+      map(({data}) => data),
+    )
 }
 
 export const fetchReleaseLimits = USE_STUB ? stubFetchReleasesLimits : _fetchReleaseLimits
