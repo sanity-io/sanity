@@ -2,7 +2,7 @@ import {getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
 import {formatInTimeZone} from 'date-fns-tz'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
-import {type TimeZoneScope,  useTimeZone} from '../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useWorkspace} from '../../../studio/workspace'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {type CommonProps, type ParseResult} from './types'
