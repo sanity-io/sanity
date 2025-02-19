@@ -8,6 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {getVersionInlineBadge} from '../../../../../core/releases'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
@@ -18,8 +19,12 @@ export function UnpublishedDocumentBanner() {
   const willBeUnpublished = isGoingToUnpublish(value)
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   if (isReleaseDocument(selectedPerspective) && willBeUnpublished) {
+    const title =
+      selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
+
     return (
       <Banner
         tone="critical"
@@ -28,7 +33,12 @@ export function UnpublishedDocumentBanner() {
             <Translate
               t={t}
               i18nKey="banners.unpublished-release-banner.text"
-              values={{title: selectedPerspective.metadata?.title}}
+              values={{
+                title,
+              }}
+              components={{
+                Label: getVersionInlineBadge(selectedPerspective),
+              }}
             />
           </Text>
         }

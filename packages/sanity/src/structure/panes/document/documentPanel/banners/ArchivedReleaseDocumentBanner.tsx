@@ -2,18 +2,18 @@ import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   Translate,
   useArchivedReleases,
   useTranslation,
-  VersionInlineBadge,
 } from 'sanity'
 import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
+import {getVersionInlineBadge} from '../../../../../core/releases'
 import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const {data: archivedReleases} = useArchivedReleases()
 
   const {params, setParams} = usePaneRouter()
@@ -37,6 +37,8 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
       ? 'banners.published-release.description'
       : 'banners.archived-release.description'
 
+  const title = release?.metadata.title || tCore('release.placeholder-untitled-release')
+
   return (
     <Banner
       tone="caution"
@@ -47,15 +49,11 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
             <Translate
               t={t}
               i18nKey={description}
+              values={{
+                title,
+              }}
               components={{
-                VersionBadge: ({children}) => {
-                  if (!release) return children
-                  return (
-                    <VersionInlineBadge $tone={getReleaseTone(release)}>
-                      {release?.metadata.title}
-                    </VersionInlineBadge>
-                  )
-                },
+                VersionBadge: getVersionInlineBadge(release),
               }}
             />
           </Text>
