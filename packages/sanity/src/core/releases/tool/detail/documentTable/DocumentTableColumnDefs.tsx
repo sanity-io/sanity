@@ -132,7 +132,7 @@ export const getDocumentTableColumnDefs: (
     sortTransform(value) {
       if (!value.previewValues) return 0
 
-      return value.previewValues.values.title?.toLowerCase() || 0
+      return value.previewValues.values?.title?.toLowerCase() || 0
     },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />

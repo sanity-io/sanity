@@ -116,14 +116,21 @@ export function createObserveFields(options: {
   }
 
   function currentDatasetListenFields(
-    id: Id,
+    originalId: Id,
     fields: FieldName[],
     perspective?: StackablePerspective[],
   ) {
+    /**
+     * Q: Why are we using published id if perspective is provided?
+     * A: The queries for fetching preview values will be based on the id, for example:
+     * `*[_id == "drafts.foo"]` and if we then pass a perspective, we will not get any hits for drafts, since, if using perspectives, the `_id` will always be the published id
+     * Therefore, if perspective is provided, we need to subscribe to the published id instead.
+     */
+    const id = perspective?.length === 0 ? originalId : getPublishedId(originalId)
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
       getBatchFetchersForPerspective(perspective)
 
-    return listen(id).pipe(
+    return listen(originalId).pipe(
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
           return fetchDocumentPathsFast(id, fields).pipe(

@@ -58,12 +58,16 @@ export function createPreviewObserver(context: {
 
       const refApiConfig = {projectId: value._projectId, dataset: value._dataset}
 
-      return observeDocumentTypeFromId(value._ref, refApiConfig).pipe(
+      return observeDocumentTypeFromId(value._ref, refApiConfig, perspective).pipe(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.type === typeName)
             if (refType) {
-              return observeForPreview(value, refType, {apiConfig: refApiConfig, viewOptions})
+              return observeForPreview(value, refType, {
+                apiConfig: refApiConfig,
+                viewOptions,
+                perspective,
+              })
             }
           }
           return of({snapshot: undefined})

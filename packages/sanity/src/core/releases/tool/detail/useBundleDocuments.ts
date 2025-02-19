@@ -23,11 +23,7 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {
-  type DocumentPreviewStore,
-  getPreviewValueWithFallback,
-  prepareForPreview,
-} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -46,7 +42,10 @@ export interface DocumentInRelease {
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
-  previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
+  previewValues: {
+    isLoading: boolean
+    values: PreviewValue | undefined | null
+  }
 }
 
 type ReleaseDocumentsObservableResult = Observable<{loading: boolean; results: DocumentInRelease[]}>
@@ -132,16 +131,12 @@ const getActiveReleaseDocumentsObservable = ({
                 } satisfies PreviewValue,
               })
             }
-
             return documentPreviewStore
               .observeForPreview(document, schemaType, {perspective: [releaseId]})
               .pipe(
                 map(({snapshot}) => ({
                   isLoading: false,
-                  values: prepareForPreview(
-                    getPreviewValueWithFallback({document, snapshot}),
-                    schemaType,
-                  ),
+                  values: snapshot,
                 })),
                 startWith({isLoading: true, values: {}}),
               )
@@ -198,10 +193,7 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
             take(1),
             map(({snapshot}) => ({
               isLoading: false,
-              values: prepareForPreview(
-                getPreviewValueWithFallback({document, snapshot}),
-                schemaType,
-              ),
+              values: snapshot,
             })),
             startWith({isLoading: true, values: {}}),
           )

@@ -145,8 +145,9 @@ export function createDocumentPreviewStore({
   function observeDocumentTypeFromId(
     id: string,
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )

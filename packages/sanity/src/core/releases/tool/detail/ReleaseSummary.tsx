@@ -87,8 +87,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (data: DocumentWithHistory[], searchTerm: string) =>
       data.filter(({previewValues, isPending}) => {
         const title =
-          typeof previewValues.values.title === 'string'
-            ? previewValues.values.title
+          typeof previewValues.values?.title === 'string'
+            ? previewValues.values?.title
             : t('release-placeholder.title')
 
         // always show the pending rows to visualise that documents are being added

@@ -142,6 +142,7 @@ export interface PreparedSnapshot {
 export type ObserveDocumentTypeFromIdFn = (
   id: string,
   apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
 ) => Observable<string | undefined>
 
 /**
