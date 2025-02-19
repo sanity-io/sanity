@@ -69,11 +69,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown when the list of assets only include a specific set of types */
   'asset-source.dialog.accept-message':
     'Only showing assets of accepted types: <strong>{{acceptTypes}}</strong>',
+  /** Select asset dialog cancel-button */
+  'asset-source.dialog.button.cancel': 'Cancel',
+  /** Select asset dialog select-button */
+  'asset-source.dialog.button.select': 'Select',
   /** Keys shared between both image asset source and file asset source */
   /** Select asset dialog title for files */
   'asset-source.dialog.default-title_file': 'Select file',
   /** Select asset dialog title for images */
   'asset-source.dialog.default-title_image': 'Select image',
+  /** Insert asset error */
+  'asset-source.dialog.insert-asset-error':
+    'Error inserting asset. See the console for more information.',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
   /** Text shown when selecting a file but there's no files to select from */
