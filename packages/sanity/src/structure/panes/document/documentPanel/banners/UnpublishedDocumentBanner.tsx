@@ -37,7 +37,7 @@ export function UnpublishedDocumentBanner() {
                 title,
               }}
               components={{
-                Label: getVersionInlineBadge(selectedPerspective),
+                VersionBadge: getVersionInlineBadge(selectedPerspective),
               }}
             />
           </Text>
