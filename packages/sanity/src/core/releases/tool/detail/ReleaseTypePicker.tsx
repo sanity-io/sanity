@@ -127,12 +127,16 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     return <ReleaseTime release={release} />
   }, [getReleaseTime, isPublishDateInPast, publishDate, release, tRelease])
 
-  const handleButtonReleaseTypeChange = useCallback((pickedReleaseType: ReleaseType) => {
-    setReleaseType(pickedReleaseType)
-    const nextPublishAt = pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : undefined
-    setIntendedPublishAt(nextPublishAt)
-    setIsIntendedScheduleDateInPast(true)
-  }, [])
+  const handleButtonReleaseTypeChange = useCallback(
+    (pickedReleaseType: ReleaseType) => {
+      setReleaseType(pickedReleaseType)
+      const nextPublishAt =
+        pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : (publishDate ?? undefined)
+      setIntendedPublishAt(nextPublishAt)
+      setIsIntendedScheduleDateInPast(true)
+    },
+    [publishDate],
+  )
 
   const handlePublishAtCalendarChange = useCallback(
     (date: Date | null) => {
