@@ -31,7 +31,9 @@ export function useLiveDocumentSet(
   const observable = useMemo(() => {
     return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter, params, options).pipe(
       map((state) => (state.documentIds || []) as string[]),
-      mergeMapArray((id) => documentPreviewStore.unstable_observeDocument(id)),
+      mergeMapArray((id) =>
+        documentPreviewStore.unstable_observeDocument(id, {apiVersion: options.apiVersion}),
+      ),
       map((docs) => ({loading: false, documents: docs as SanityDocument[]})),
     )
   }, [documentPreviewStore, groqFilter, params, options])

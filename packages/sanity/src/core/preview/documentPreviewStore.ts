@@ -11,7 +11,7 @@ import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 import {isRecord} from '../util'
 import {createPreviewAvailabilityObserver} from './availability'
 import {createGlobalListener} from './createGlobalListener'
-import {createObserveDocument} from './createObserveDocument'
+import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
@@ -97,13 +97,19 @@ export interface DocumentPreviewStore {
    * @hidden
    * @beta
    */
-  unstable_observeDocument: (id: string) => Observable<SanityDocument | undefined>
+  unstable_observeDocument: (
+    id: string,
+    clientConfig?: ObserveDocumentAPIConfig,
+  ) => Observable<SanityDocument | undefined>
   /**
    * Observe a list of complete documents with the given IDs
    * @hidden
    * @beta
    */
-  unstable_observeDocuments: (ids: string[]) => Observable<(SanityDocument | undefined)[]>
+  unstable_observeDocuments: (
+    ids: string[],
+    clientConfig?: ObserveDocumentAPIConfig,
+  ) => Observable<(SanityDocument | undefined)[]>
 }
 
 /** @internal */

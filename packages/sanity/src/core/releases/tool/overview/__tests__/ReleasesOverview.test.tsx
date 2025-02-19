@@ -163,11 +163,11 @@ describe('ReleasesOverview', () => {
     it('does not allow for switching between history modes', async () => {
       await waitFor(
         () => {
-          screen.getByText('Open')
+          screen.getByText('Active')
         },
         {timeout: 4000},
       )
-      expect(screen.getByText('Open').closest('button')).toBeDisabled()
+      expect(screen.getByText('Active').closest('button')).toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).toBeDisabled()
     })
 
@@ -198,7 +198,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('does not show release history mode switch', () => {
-      expect(screen.queryByText('Open')).toBeNull()
+      expect(screen.queryByText('Active')).toBeNull()
       expect(screen.queryByText('Archived')).toBeNull()
     })
 
@@ -324,7 +324,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for switching between history modes', () => {
-      expect(screen.getByText('Open').closest('button')).not.toBeDisabled()
+      expect(screen.getByText('Active').closest('button')).not.toBeDisabled()
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
@@ -374,7 +374,7 @@ describe('ReleasesOverview', () => {
         })
 
         it('does not show open and archive filter group buttons', () => {
-          expect(screen.queryByText('Open')).not.toBeInTheDocument()
+          expect(screen.queryByText('Active')).not.toBeInTheDocument()
           expect(screen.queryByText('Archived')).not.toBeInTheDocument()
         })
 

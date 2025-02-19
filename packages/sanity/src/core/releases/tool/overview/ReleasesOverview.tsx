@@ -61,7 +61,10 @@ export interface TableRelease extends ReleaseDocument {
 }
 
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
-
+const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
+  column: 'publishedAt',
+  direction: 'desc',
+}
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -128,7 +131,7 @@ export function ReleasesOverview() {
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
     if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      setReleaseGroupMode('open')
+      setReleaseGroupMode('active')
     }
   }, [releaseGroupMode, archivedReleases.length, loadingReleases])
 
@@ -155,7 +158,7 @@ export function ReleasesOverview() {
 
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
-    setReleaseGroupMode('open')
+    setReleaseGroupMode('active')
   }, [])
 
   useEffect(() => {
@@ -198,9 +201,9 @@ export function ReleasesOverview() {
           {...groupModeButtonBaseProps}
           key="open-group"
           onClick={handleReleaseGroupModeChange}
-          selected={releaseGroupMode === 'open'}
+          selected={releaseGroupMode === 'active'}
           text={t('action.open')}
-          value="open"
+          value="active"
         />
         <Tooltip
           disabled={archivedReleases.length !== 0}
@@ -279,7 +282,7 @@ export function ReleasesOverview() {
       if (release.isDeleted) return null
 
       const documentsCount =
-        (releaseGroupMode === 'open'
+        (releaseGroupMode === 'active'
           ? release.documentsMetadata?.documentCount
           : release.finalDocumentStates?.length) ?? 0
 
@@ -289,7 +292,7 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return releaseGroupMode === 'open' ? tableReleases : archivedReleases
+    if (!releaseFilterDate) return releaseGroupMode === 'active' ? tableReleases : archivedReleases
 
     const [startOfDayForTimeZone, endOfDayForTimeZone] =
       getTimezoneAdjustedDateTimeRange(releaseFilterDate)
@@ -323,6 +326,11 @@ export function ReleasesOverview() {
       </Flex>
     )
   }, [loading, releases, releaseFilterDate, handleSelectFilterDate])
+
+  const tableColumns = useMemo(
+    () => releasesOverviewColumnDefs(t, releaseGroupMode),
+    [releaseGroupMode, t],
+  )
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -376,10 +384,14 @@ export function ReleasesOverview() {
               <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
                 key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={DEFAULT_RELEASES_OVERVIEW_SORT}
+                defaultSort={
+                  releaseGroupMode === 'archived'
+                    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+                    : DEFAULT_RELEASES_OVERVIEW_SORT
+                }
                 loading={loadingTableData}
                 data={filteredReleases}
-                columnDefs={releasesOverviewColumnDefs(t)}
+                columnDefs={tableColumns}
                 emptyState={t('no-releases')}
                 // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                 rowId="_id"

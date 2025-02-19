@@ -1,6 +1,6 @@
 import {type RouterContextValue} from 'sanity/router'
 
-export type Mode = 'open' | 'archived'
+export type Mode = 'active' | 'archived'
 
 export const DATE_SEARCH_PARAM_KEY = 'date'
 export const GROUP_SEARCH_PARAM_KEY = 'group'
@@ -18,5 +18,5 @@ export const getInitialReleaseGroupMode = (router: RouterContextValue) => (): Mo
     GROUP_SEARCH_PARAM_KEY,
   )
 
-  return activeGroupMode === 'archived' ? 'archived' : 'open'
+  return activeGroupMode === 'archived' ? 'archived' : 'active'
 }
