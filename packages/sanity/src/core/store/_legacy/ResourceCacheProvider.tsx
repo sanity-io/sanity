@@ -22,6 +22,8 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
     // this is used to replace the `null` values in any `dependencies` so that
     // they can be used in the `MultiKeyWeakMap` which doesn't accept null
     const nullReplacer = {}
+    // this is used to replace `[]` dependencies to maintain the
+    // same referential integrity in the weak map lookup
     const emptyDependenciesReplacer = [nullReplacer]
 
     const removeNullDependencies = (dependencies: (object | null)[]) =>
