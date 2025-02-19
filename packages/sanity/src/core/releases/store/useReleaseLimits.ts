@@ -8,6 +8,7 @@ import {fetchReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
 interface ReleaseLimits {
   releaseLimits$: Observable<{
+    defaultOrgActiveReleaseLimit: number
     datasetReleaseLimit: number
     orgActiveReleaseLimit: number | null
   } | null>
@@ -18,6 +19,7 @@ const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimits {
   const releaseLimits$ = fetchReleaseLimits({versionedClient}).pipe(
     map((data) => ({
+      defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
       datasetReleaseLimit: data.datasetReleaseLimit,
       orgActiveReleaseLimit: data.orgActiveReleaseLimit,
     })),

@@ -3,6 +3,7 @@ import {type ClientError, type SanityClient} from '@sanity/client'
 import {catchError, delay, map, type Observable, of, tap} from 'rxjs'
 
 interface ReleaseLimits {
+  defaultOrgActiveReleaseLimit: number
   orgActiveReleaseCount: number
   datasetReleaseLimit: number
   orgActiveReleaseLimit: number | null
@@ -16,6 +17,7 @@ const USE_STUB = false
 
 const stubFetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClient}) =>
   of({
+    defaultOrgActiveReleaseLimit: 2,
     orgActiveReleaseCount: 6,
     orgActiveReleaseLimit: 20,
     datasetReleaseLimit: 6,
@@ -23,7 +25,7 @@ const stubFetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClie
     // orgActiveReleaseCount: 6,
     // orgActiveReleaseLimit: 6,
     // datasetReleaseLimit: 10,
-  }).pipe(
+  } as ReleaseLimits).pipe(
     tap(() => console.log('fetchReleasesLimits')),
     delay(3000),
   )
