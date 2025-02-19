@@ -1,27 +1,32 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {map, type Observable, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
-import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
+import {fetchReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
 interface ReleaseLimits {
   releaseLimits$: Observable<{
     datasetReleaseLimit: number
     orgActiveReleaseLimit: number | null
-  }>
+  } | null>
 }
 
 const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 
 function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimits {
-  const releaseLimits$ = fetchReleasesLimits({versionedClient}).pipe(
+  const releaseLimits$ = fetchReleaseLimits({versionedClient}).pipe(
     map((res) => ({
       datasetReleaseLimit: res.datasetReleaseLimit,
       orgActiveReleaseLimit: res.orgActiveReleaseLimit,
     })),
     shareReplay(1),
+    catchError((error) => {
+      console.error('Failed to fetch release limits', error)
+
+      return of(null)
+    }),
   )
 
   return {
