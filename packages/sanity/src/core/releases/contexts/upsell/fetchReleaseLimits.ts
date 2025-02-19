@@ -1,7 +1,6 @@
+/* eslint-disable no-console */
 import {type SanityClient} from '@sanity/client'
-import {type Observable} from 'rxjs'
-
-import {fetchReleasesLimits} from './ReleasesUpsellProvider'
+import {delay, map, type Observable, of, tap} from 'rxjs'
 
 interface ReleaseLimits {
   orgActiveReleaseCount: number
@@ -9,26 +8,48 @@ interface ReleaseLimits {
   orgActiveReleaseLimit: number | null
 }
 
+interface ReleaseLimitsResponse {
+  data: ReleaseLimits
+}
+
 const USE_STUB = false
+
+const stubFetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClient}) =>
+  of({
+    orgActiveReleaseCount: 6,
+    orgActiveReleaseLimit: 20,
+    datasetReleaseLimit: 6,
+
+    // orgActiveReleaseCount: 6,
+    // orgActiveReleaseLimit: 6,
+    // datasetReleaseLimit: 10,
+  }).pipe(
+    tap(() => console.log('fetchReleasesLimits')),
+    delay(3000),
+  )
+
+// export const stubFetchReleasesLimits = () =>
+//   throwError(() => new Error('Simulated API failure')).pipe(
+//     tap(() => console.log('fetchReleasesLimits - Simulating failure')),
+//     delay(3000),
+//   )
 
 /**
  * @internal
  * fetches subscriptions for this project
  */
+// export function fetchReleaseLimits({
 export function _fetchReleaseLimits({
   versionedClient,
 }: {
   versionedClient: SanityClient
 }): Observable<ReleaseLimits> {
-  return versionedClient
-    .withConfig({
-      useProjectHostname: false,
-      apiHost: 'https://api.sanity.work',
-    })
-    .observable.request<ReleaseLimits>({
-      uri: `project/${versionedClient.config().projectId}/new-content-release-allowed`,
+  return versionedClient.observable
+    .request<ReleaseLimitsResponse>({
+      uri: `projects/${versionedClient.config().projectId}/new-content-release-allowed`,
       tag: 'new-content-release-allowed',
     })
+    .pipe(map((response) => response.data))
 }
 
-export const fetchReleaseLimits = USE_STUB ? fetchReleasesLimits : _fetchReleaseLimits
+export const fetchReleaseLimits = USE_STUB ? stubFetchReleasesLimits : _fetchReleaseLimits

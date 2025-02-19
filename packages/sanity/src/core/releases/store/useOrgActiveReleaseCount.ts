@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {BehaviorSubject, map, type Observable, of, switchMap, tap, timer} from 'rxjs'
+import {BehaviorSubject, catchError, map, type Observable, of, switchMap, tap, timer} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
@@ -21,27 +21,35 @@ function createOrgActiveReleaseCountStore(
 ): ReleaseLimits {
   const latestFetchState = new BehaviorSubject<number | null>(null)
   const staleFlag$ = new BehaviorSubject<boolean>(false)
-  const countAtFetch$ = new BehaviorSubject<number | null>(null)
+  const activeReleaseCountAtFetch = new BehaviorSubject<number | null>(null)
 
   const orgActiveReleaseCount$ = latestFetchState.pipe(
     switchMap((state) => {
       if (
         state === null ||
         staleFlag$.getValue() === true ||
-        countAtFetch$.getValue() !== activeReleasesCount
+        activeReleaseCountAtFetch.getValue() !== activeReleasesCount
       ) {
         staleFlag$.next(false)
 
         return fetchReleaseLimits({versionedClient}).pipe(
-          tap(() => countAtFetch$.next(activeReleasesCount)),
-          map((res) => res.orgActiveReleaseCount),
+          tap(() => activeReleaseCountAtFetch.next(activeReleasesCount)),
+          map((data) => data.orgActiveReleaseCount),
+          catchError((error) => {
+            console.error('Failed to fetch org release count', error)
+
+            if (!state) throw error
+
+            // return the last state if it exists
+            return of(state)
+          }),
           switchMap((nextState) => {
             latestFetchState.next(nextState)
 
             timer(STATE_TTL_MS).subscribe(() => {
               console.log('TTL expired, marking cache as stale.')
               staleFlag$.next(true)
-              countAtFetch$.next(null)
+              activeReleaseCountAtFetch.next(null)
             })
 
             return of(nextState)
@@ -58,10 +66,20 @@ function createOrgActiveReleaseCountStore(
   }
 }
 
+/**
+ * @internal
+ *
+ * Returns a shared observable to a cache of the org's active release count.
+ *
+ * This cache expires after a TTL or whenever the active releases in the current
+ * dataset changes.
+ *
+ * @returns An Observable of the cached value for org's active release count.
+ */
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  const client = useClient()
+  const client = useClient({apiVersion: 'vX'})
 
   const activeReleasesCount = activeReleases?.length || 0
 
