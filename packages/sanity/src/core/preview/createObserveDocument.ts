@@ -5,7 +5,6 @@ import {type RawPatch} from 'mendoza'
 import {EMPTY, finalize, type Observable, of} from 'rxjs'
 import {concatMap, map, scan, shareReplay} from 'rxjs/operators'
 
-import {type ApiConfig} from './types'
 import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
 
@@ -17,6 +16,11 @@ export type ListenerMutationEventLike = Pick<
     apply: unknown[]
   }
 }
+export interface ObserveDocumentAPIConfig {
+  dataset?: string
+  projectId?: string
+  apiVersion?: string
+}
 
 export function createObserveDocument({
   mutationChannel,
@@ -26,7 +30,7 @@ export function createObserveDocument({
   mutationChannel: Observable<WelcomeEvent | ListenerMutationEventLike>
 }) {
   const getBatchFetcher = memoize(
-    function getBatchFetcher(apiConfig: {dataset: string; projectId: string}) {
+    function getBatchFetcher(apiConfig: {dataset: string; projectId: string; apiVersion: string}) {
       const _client = client.withConfig(apiConfig)
 
       function batchFetchDocuments(ids: [string][]) {
@@ -39,15 +43,16 @@ export function createObserveDocument({
       }
       return debounceCollect(batchFetchDocuments, 100)
     },
-    (apiConfig) => apiConfig.dataset + apiConfig.projectId,
+    (apiConfig) => apiConfig.dataset + apiConfig.projectId + apiConfig.apiVersion,
   )
 
   const MEMO: Record<string, Observable<SanityDocument | undefined>> = {}
 
-  function observeDocument(id: string, apiConfig?: ApiConfig) {
-    const _apiConfig = apiConfig || {
-      dataset: client.config().dataset!,
-      projectId: client.config().projectId!,
+  function observeDocument(id: string, apiConfig?: ObserveDocumentAPIConfig) {
+    const _apiConfig = {
+      dataset: apiConfig?.dataset || client.config().dataset!,
+      projectId: apiConfig?.projectId || client.config().projectId!,
+      apiVersion: apiConfig?.apiVersion || client.config().apiVersion!,
     }
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(
@@ -69,7 +74,7 @@ export function createObserveDocument({
       }, undefined),
     )
   }
-  return function memoizedObserveDocument(id: string, apiConfig?: ApiConfig) {
+  return function memoizedObserveDocument(id: string, apiConfig?: ObserveDocumentAPIConfig) {
     const key = apiConfig ? `${id}-${JSON.stringify(apiConfig)}` : id
     if (!(key in MEMO)) {
       MEMO[key] = observeDocument(id, apiConfig).pipe(

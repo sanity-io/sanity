@@ -57,9 +57,9 @@ export function getReleaseEvents({
   documentPreviewStore,
   eventsAPIEnabled,
 }: getReleaseEventsOpts) {
-  const observeDocument$ = documentPreviewStore.unstable_observeDocument(releaseId) as Observable<
-    ReleaseDocument | undefined
-  >
+  const observeDocument$ = documentPreviewStore.unstable_observeDocument(releaseId, {
+    apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+  }) as Observable<ReleaseDocument | undefined>
 
   const editEvents$ = getReleaseEditEvents({client, observeDocument$})
 
