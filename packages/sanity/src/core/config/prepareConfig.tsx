@@ -9,6 +9,10 @@ import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
 import {
+  FileSource as AssetLibraryFileSource,
+  ImageSource as AssetLibraryImageSource,
+} from '../form/studio/assetSourceAssetLibrary'
+import {
   FileSource as DefaultFileSource,
   ImageSource as DefaultImageSource,
 } from '../form/studio/assetSourceDefault'
@@ -590,7 +594,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultFileSource],
+          initialValue: [DefaultFileSource, AssetLibraryFileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -603,7 +607,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultImageSource],
+          initialValue: [DefaultImageSource, AssetLibraryImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
