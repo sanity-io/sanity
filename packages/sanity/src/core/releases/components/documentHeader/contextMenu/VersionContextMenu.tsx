@@ -1,6 +1,6 @@
 import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
-import {memo, useEffect, useState} from 'react'
+import {memo, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -69,15 +69,16 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   })
   const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
 
     checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermission) => {
-      if (shouldUpdate) setHasCreatePermission(hasPermission)
+      if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease])
 

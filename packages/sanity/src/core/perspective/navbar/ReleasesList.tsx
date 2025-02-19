@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
@@ -70,17 +70,18 @@ export function ReleasesList({
 
   const {t} = useTranslation()
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
 
     checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
       (hasPermission) => {
-        if (shouldUpdate) setHasCreatePermission(hasPermission)
+        if (isMounted.current) setHasCreatePermission(hasPermission)
       },
     )
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
 

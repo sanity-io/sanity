@@ -120,14 +120,15 @@ export function ReleasesOverview() {
     ]
   }, [hasReleases, releasesMetadata, releases])
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
     checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
-      if (shouldUpdate) setHasCreatePermission(hasPermissions)
+      if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease])
 

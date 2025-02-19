@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
@@ -27,15 +27,16 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
     [hasUpdatePermission, timer, updateRelease],
   )
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
 
     checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
-      if (shouldUpdate) setHasUpdatePermission(hasPermission)
+      if (isMounted.current) setHasUpdatePermission(hasPermission)
     })
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [checkWithPermissionGuard, release, release._id, updateRelease])
 
