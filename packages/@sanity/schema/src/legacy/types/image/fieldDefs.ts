@@ -13,3 +13,10 @@ export const CROP_FIELD = {
   name: 'crop',
   type: 'sanity.imageCrop',
 }
+
+export const ASSET_LIBRARY_ASSET_FIELD = {
+  name: 'assetLibraryAsset',
+  type: 'globalDocumentReference',
+  hidden: true,
+  to: [], // Just have to be *something* to be valid
+}
