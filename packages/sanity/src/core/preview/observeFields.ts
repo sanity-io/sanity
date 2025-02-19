@@ -126,7 +126,8 @@ export function createObserveFields(options: {
      * `*[_id == "drafts.foo"]` and if we then pass a perspective, we will not get any hits for drafts, since, if using perspectives, the `_id` will always be the published id
      * Therefore, if perspective is provided, we need to subscribe to the published id instead.
      */
-    const id = perspective?.length === 0 ? originalId : getPublishedId(originalId)
+    const id = perspective?.length ? getPublishedId(originalId) : originalId
+
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
       getBatchFetchersForPerspective(perspective)
 
