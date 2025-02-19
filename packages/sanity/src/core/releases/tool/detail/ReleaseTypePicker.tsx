@@ -139,7 +139,9 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     (pickedReleaseType: ReleaseType) => {
       setReleaseType(pickedReleaseType)
       const nextPublishAt =
-        pickedReleaseType === 'scheduled' ? startOfMinute(new Date()) : (publishDate ?? undefined)
+        pickedReleaseType === 'scheduled'
+          ? (publishDate ?? startOfMinute(new Date()))
+          : (publishDate ?? undefined)
       setIntendedPublishAt(nextPublishAt)
       setIsIntendedScheduleDateInPast(true)
     },
