@@ -19,14 +19,14 @@ function createOrgActiveReleaseCountStore(
   versionedClient: SanityClient,
   activeReleasesCount: number,
 ): ReleaseLimits {
-  const fetchTrigger$ = new BehaviorSubject<'fetch' | number | null>('fetch')
+  const latestFetchState = new BehaviorSubject<number | null>(null)
   const staleFlag$ = new BehaviorSubject<boolean>(false)
   const countAtFetch$ = new BehaviorSubject<number | null>(null)
 
-  const orgActiveReleaseCount$ = fetchTrigger$.pipe(
-    switchMap((trigger) => {
+  const orgActiveReleaseCount$ = latestFetchState.pipe(
+    switchMap((state) => {
       if (
-        trigger === 'fetch' ||
+        state === null ||
         staleFlag$.getValue() === true ||
         countAtFetch$.getValue() !== activeReleasesCount
       ) {
@@ -35,8 +35,8 @@ function createOrgActiveReleaseCountStore(
         return fetchReleasesLimits({versionedClient}).pipe(
           tap(() => countAtFetch$.next(activeReleasesCount)),
           map((res) => res.orgActiveReleaseCount),
-          switchMap((value) => {
-            fetchTrigger$.next(value)
+          switchMap((nextState) => {
+            latestFetchState.next(nextState)
 
             timer(STATE_TTL_MS).subscribe(() => {
               console.log('TTL expired, marking cache as stale.')
@@ -44,12 +44,12 @@ function createOrgActiveReleaseCountStore(
               countAtFetch$.next(null)
             })
 
-            return of(value)
+            return of(nextState)
           }),
         )
       }
 
-      return of(trigger)
+      return of(state)
     }),
   )
 
