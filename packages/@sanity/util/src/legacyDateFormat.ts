@@ -19,12 +19,15 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
 export function format(
   input: Date,
   format: string,
-  options: {useUTC?: boolean; timeZone?: string} = {useUTC: false, timeZone: 'UTC'},
+  options: {useUTC?: boolean; timeZone?: string} = {useUTC: false, timeZone: undefined},
 ): string {
   const {useUTC, timeZone} = options
 
   if (useUTC) return formatMomentLike(new UTCDateMini(input), format)
-  return formatMomentLike(new TZDateMini(input, timeZone || DEFAULT_TIMEZONE), format)
+  return formatMomentLike(
+    timeZone ? new TZDateMini(input, timeZone || DEFAULT_TIMEZONE) : new Date(input),
+    format,
+  )
 }
 
 /*

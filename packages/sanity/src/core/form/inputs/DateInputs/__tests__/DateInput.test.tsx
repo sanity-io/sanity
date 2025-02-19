@@ -1,6 +1,5 @@
 import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {expect, test} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
@@ -23,7 +22,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   const input = result.container.querySelector('input')!
 
-  userEvent.type(input, 'this is invalid')
+  fireEvent.change(input, {target: {value: 'this is invalid'}})
   expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
 
@@ -44,7 +43,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
   const input = result.container.querySelector('input')!
 
   // NOTE: the date is entered and displayed in local time zone
-  userEvent.type(input, '2021-03-28')
+  fireEvent.change(input, {target: {value: '2021-03-28'}})
   expect(input.value).toBe('2021-03-28')
 
   fireEvent.blur(input)
@@ -67,4 +66,20 @@ test('formatting of deserialized value', async () => {
 
   // const {textInput} = renderInput({value: '2021-03-28'} as any)
   expect(input.value).toBe('2021-03-28')
+})
+
+test('change the date should show the correct date in the input (save on enter)', async () => {
+  const {onChange, result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'date',
+      name: 'test',
+    }),
+    props: {documentValue: {test: '2021-03-28'}},
+    render: (inputProps) => <DateInput {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+  fireEvent.change(input, {target: {value: '2021-03-30'}})
+  fireEvent.blur(input)
+  expect(onChange.mock.calls).toMatchSnapshot()
 })
