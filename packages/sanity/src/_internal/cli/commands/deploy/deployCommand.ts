@@ -10,9 +10,9 @@ const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
   --auto-updates / --no-auto-updates Enable/disable auto updates of studio versions
-  --schema-path / path to schema folder if custom schema folder is used
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the studio prior to deploy, instead deploying the version currently in \`dist/\`
+  --schema-required Require schema extraction and storing to be successful
   -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
 
 Examples

@@ -13,12 +13,13 @@ export interface StoreManifestSchemasFlags {
   'path'?: string
   'workspace'?: string
   'custom-id'?: string
+  'schema-required'?: boolean
 }
 
 export default async function storeManifestSchemas(
   args: CliCommandArguments<StoreManifestSchemasFlags>,
   context: CliCommandContext,
-): Promise<void> {
+): Promise<Error | undefined> {
   const flags = args.extOptions
   const workspaceName = flags.workspace
   const customId = flags['custom-id']
@@ -87,7 +88,12 @@ export default async function storeManifestSchemas(
         }),
       )
     }
+    return undefined
   } catch (err) {
     output.error(err)
+    if (flags['schema-required']) {
+      throw err
+    }
+    return err
   }
 }
