@@ -115,13 +115,12 @@ export function TitleDescriptionForm({
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault()
-      if (!isReleaseOpen) return
       const title = event.target.value
       onChange({...value, metadata: {...release.metadata, title}})
       // save the values to make input snappier while requests happen in the background
       setValue({...value, metadata: {...release.metadata, title}})
     },
-    [isReleaseOpen, onChange, release.metadata, value],
+    [onChange, release.metadata, value],
   )
 
   const handleDescriptionChange = useCallback(
