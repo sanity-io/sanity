@@ -70,7 +70,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const projectId = useProjectId()
   const telemetry = useTelemetry()
   const client = useClient({apiVersion: API_VERSION})
-  const [_releaseLimit, setReleaseLimit] = useState<number | undefined>(undefined)
   const {data: activeReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
 
@@ -78,18 +77,15 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     /**
      * upsell if:
      * plan is free, ie releases is not feature enabled
-     * there is a limit and the limit is reached or exceeded
      */
-    const isAtReleaseLimit =
-      !isReleasesFeatureEnabled || (_releaseLimit && (activeReleases?.length || 0) >= _releaseLimit)
-    if (isAtReleaseLimit && upsellData) {
+    if (!isReleasesFeatureEnabled && upsellData) {
       return 'upsell'
     }
-    if (isAtReleaseLimit && !upsellData) {
+    if (isReleasesFeatureEnabled && !upsellData) {
       return 'disabled'
     }
     return 'default'
-  }, [activeReleases?.length, isReleasesFeatureEnabled, _releaseLimit, upsellData])
+  }, [isReleasesFeatureEnabled, upsellData])
 
   const telemetryLogs = useMemo(
     (): ReleasesUpsellContextValue['telemetryLogs'] => ({
@@ -196,10 +192,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
-      // if (mode === 'default') {
-      //   return cb()
-      // }
-
       const doUpsell: (count?: number) => false = (count) => {
         handleOpenDialog(count)
         if (throwError) {
@@ -210,55 +202,56 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       if (mode === 'upsell') return doUpsell()
 
-      try {
-        console.log('Guard called, checking caches...')
-        // if either fails then catch the error
-        const [orgActiveReleaseCount, releaseLimits] = await Promise.all([
-          firstValueFrom(orgActiveReleaseCount$),
-          firstValueFrom(releaseLimits$),
-        ])
+      const fetchLimitsCount = async () => {
+        try {
+          console.log('Guard called, checking caches...')
+          // if either fails then catch the error
+          return await Promise.all([
+            firstValueFrom(orgActiveReleaseCount$),
+            firstValueFrom(releaseLimits$),
+          ])
+        } catch (e) {
+          console.error('Error fetching release limits for upsell:', e)
 
-        const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
-
-        // orgActiveReleaseCount might be missing due to internal server error
-        // allow pass through guard in that case
-        if (orgActiveReleaseCount === null) return cb()
-
-        const activeReleasesCount = activeReleases?.length || 0
-
-        const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
-        const isCurrentDatasetAtAboveOrgLimit =
-          orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
-        const isOrgAtAboveOrgLimit =
-          orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
-
-        const shouldShowDialog =
-          isCurrentDatasetAtAboveDatasetLimit ||
-          isCurrentDatasetAtAboveOrgLimit ||
-          isOrgAtAboveOrgLimit
-
-        if (shouldShowDialog) return doUpsell(orgActiveReleaseCount)
-
-        return cb()
-      } catch (e) {
-        console.error('Error fetching release limits for upsell:', e)
-
-        // silently fail and allow pass through guard
-        return cb()
+          return null
+        }
       }
+
+      const result = await fetchLimitsCount()
+
+      // silently fail and allow pass through guard
+      if (result === null) return cb()
+
+      const [orgActiveReleaseCount, releaseLimits] = result
+      const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
+
+      // orgActiveReleaseCount might be missing due to internal server error
+      // allow pass through guard in that case
+      if (orgActiveReleaseCount === null) return cb()
+
+      const activeReleasesCount = activeReleases?.length || 0
+
+      const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
+      const isCurrentDatasetAtAboveOrgLimit =
+        orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
+      const isOrgAtAboveOrgLimit =
+        orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
+
+      const shouldShowDialog =
+        isCurrentDatasetAtAboveDatasetLimit ||
+        isCurrentDatasetAtAboveOrgLimit ||
+        isOrgAtAboveOrgLimit
+
+      if (shouldShowDialog) return doUpsell(orgActiveReleaseCount)
+
+      return cb()
     },
     [mode, handleOpenDialog, orgActiveReleaseCount$, releaseLimits$, activeReleases?.length],
   )
 
   const onReleaseLimitReached = useCallback(
-    (limit: number, suppressDialogOpening: boolean = false) => {
-      setReleaseLimit(limit)
-
-      if (!suppressDialogOpening && (activeReleases?.length || 0) >= limit) {
-        handleOpenDialog()
-      }
-    },
-    [activeReleases?.length, handleOpenDialog],
+    (limit: number) => handleOpenDialog(limit),
+    [handleOpenDialog],
   )
 
   const ctxValue = useMemo<ReleasesUpsellContextValue>(

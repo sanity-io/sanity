@@ -9,7 +9,7 @@ export interface ReleasesUpsellContextValue {
   mode: 'upsell' | 'default' | 'disabled'
   upsellDialogOpen: boolean
   guardWithReleaseLimitUpsell: (callback: () => void, throwError?: boolean) => Promise<false | void>
-  onReleaseLimitReached: (limit: number, suppressDialogOpening: boolean) => void
+  onReleaseLimitReached: (limit: number) => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
