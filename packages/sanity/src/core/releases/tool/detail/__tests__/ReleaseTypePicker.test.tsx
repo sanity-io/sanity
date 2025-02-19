@@ -190,6 +190,72 @@ describe('ReleaseTypePicker', () => {
     })
   })
 
+  describe('noops if the release type is unchanged when the picker is closed', () => {
+    it('after returning to "ASAP" from "undecided"', async () => {
+      await renderComponent()
+
+      const pickerButton = screen.getByRole('button')
+      fireEvent.click(pickerButton)
+
+      const undecidedTab = within(screen.getByRole('tablist')).getByText('Undecided')
+      fireEvent.click(undecidedTab)
+
+      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      fireEvent.click(asapTab)
+
+      fireEvent.click(screen.getByTestId('release-type-picker'))
+      fireEvent.click(pickerButton)
+
+      expect(mockUpdateRelease).not.toHaveBeenCalled()
+    })
+
+    it('after returning to "ASAP" from "at time"', async () => {
+      await renderComponent()
+
+      const pickerButton = screen.getByRole('button')
+      fireEvent.click(pickerButton)
+
+      const atTimeTab = within(screen.getByRole('tablist')).getByText('At time')
+      fireEvent.click(atTimeTab)
+
+      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      fireEvent.click(asapTab)
+
+      fireEvent.click(screen.getByTestId('release-type-picker'))
+      fireEvent.click(pickerButton)
+
+      expect(mockUpdateRelease).not.toHaveBeenCalled()
+    })
+
+    it('after returning to "at time" from "ASAP" after the system time has incremented', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+
+      const intendedPublishAt = new Date(activeScheduledRelease.metadata.intendedPublishAt ?? 0)
+
+      // 24 hours before `intendedPublishAt`.
+      vi.setSystemTime(new Date(intendedPublishAt.getTime() - 3_600 * 1_000 * 24))
+
+      await renderComponent(activeScheduledRelease)
+
+      const pickerButton = screen.getByRole('button')
+      fireEvent.click(pickerButton)
+
+      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      fireEvent.click(asapTab)
+
+      // 23 hours before `intendedPublishAt` (one hour after picker opened).
+      vi.setSystemTime(new Date(intendedPublishAt.getTime() - 3_600 * 1_000 * 23))
+
+      const atTimeTab = within(screen.getByRole('tablist')).getByText('At time')
+      fireEvent.click(atTimeTab)
+
+      fireEvent.click(pickerButton)
+
+      expect(mockUpdateRelease).not.toHaveBeenCalled()
+      vi.useRealTimers()
+    })
+  })
+
   describe('picker behavior based on release state', () => {
     it('does not show button for picker when release is published state', async () => {
       await renderComponent(publishedASAPRelease)
