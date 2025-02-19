@@ -223,6 +223,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       if (result === null) return cb()
 
       const [orgActiveReleaseCount, releaseLimits] = result
+
+      if (releaseLimits === null || orgActiveReleaseCount === null) return cb()
+
       const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
 
       // orgActiveReleaseCount might be missing due to internal server error

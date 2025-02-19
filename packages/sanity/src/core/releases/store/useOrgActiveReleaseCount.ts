@@ -5,7 +5,7 @@ import {BehaviorSubject, map, type Observable, of, switchMap, tap, timer} from '
 
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
-import {fetchReleasesLimits} from '../contexts/upsell/ReleasesUpsellProvider'
+import {fetchReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 import {useActiveReleases} from './useActiveReleases'
 
 interface ReleaseLimits {
@@ -32,7 +32,7 @@ function createOrgActiveReleaseCountStore(
       ) {
         staleFlag$.next(false)
 
-        return fetchReleasesLimits({versionedClient}).pipe(
+        return fetchReleaseLimits({versionedClient}).pipe(
           tap(() => countAtFetch$.next(activeReleasesCount)),
           map((res) => res.orgActiveReleaseCount),
           switchMap((nextState) => {

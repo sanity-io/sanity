@@ -11,6 +11,6 @@ export const useIsReleasesPlus = () => {
 
   const {orgActiveReleaseLimit} = releaseLimit || {}
 
-  // presume not releases+ if empty data
+  // presume not releases+ if null releaseLimit
   return orgActiveReleaseLimit && orgActiveReleaseLimit >= RELEASES_PLUS_LIMIT
 }
