@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
-import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {firstValueFrom, of} from 'rxjs'
-import {delay, shareReplay, tap} from 'rxjs/operators'
+import {firstValueFrom} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
@@ -38,27 +36,6 @@ const FEATURE = 'content-releases'
 const BASE_URL = 'www.sanity.io'
 // Date when the change from array to object in the data returned was introduced.
 const API_VERSION = '2024-04-19'
-
-export const fetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClient}) =>
-  of({
-    orgActiveReleaseCount: 6,
-    orgActiveReleaseLimit: 20,
-    datasetReleaseLimit: 6,
-
-    // orgActiveReleaseCount: 6,
-    // orgActiveReleaseLimit: 6,
-    // datasetReleaseLimit: 10,
-  }).pipe(
-    shareReplay(1),
-    tap(() => console.log('fetchReleasesLimits')),
-    delay(3000),
-  )
-
-// export const fetchReleasesLimits = () =>
-//   throwError(() => new Error('Simulated API failure')).pipe(
-//     tap(() => console.log('fetchReleasesLimits - Simulating failure')),
-//     delay(3000),
-//   )
 
 /**
  * @beta
@@ -211,7 +188,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
             firstValueFrom(releaseLimits$),
           ])
         } catch (e) {
-          console.error('Error fetching release limits for upsell:', e)
+          console.error('Error fetching release limits and org count for upsell:', e)
 
           return null
         }
