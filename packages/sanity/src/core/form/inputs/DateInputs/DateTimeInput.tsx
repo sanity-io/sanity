@@ -242,7 +242,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
             presence={presence}
             inputId={id}
             content={
-              <Inline>
+              <Inline space={3}>
                 <FormFieldHeaderText
                   deprecated={schemaType.deprecated}
                   description={schemaType.description}
@@ -252,24 +252,22 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 />
                 {displayTimeZone && (
                   <ButtonTimeZoneElementQuery>
-                    <Box marginLeft={2}>
-                      <ButtonTimeZone
-                        tooltipContent={
-                          <Translate
-                            t={t}
-                            i18nKey={'time-zone.time-zone-tooltip-input'}
-                            values={{
-                              title,
-                              alternativeName: timeZone.alternativeName,
-                              offset: timeZone.offset,
-                            }}
-                          />
-                        }
-                        allowTimeZoneSwitch={allowTimeZoneSwitch}
-                        useElementQueries
-                        timeZoneScope={timeZoneScope}
-                      />
-                    </Box>
+                    <ButtonTimeZone
+                      tooltipContent={
+                        <Translate
+                          t={t}
+                          i18nKey={'time-zone.time-zone-tooltip-input'}
+                          values={{
+                            title,
+                            alternativeName: timeZone.alternativeName,
+                            offset: timeZone.offset,
+                          }}
+                        />
+                      }
+                      allowTimeZoneSwitch={allowTimeZoneSwitch}
+                      useElementQueries
+                      timeZoneScope={timeZoneScope}
+                    />
                   </ButtonTimeZoneElementQuery>
                 )}
               </Inline>

@@ -1,5 +1,5 @@
 import {EarthAmericasIcon} from '@sanity/icons'
-import {Box, Inline, Label} from '@sanity/ui'
+import {Box, Inline, Text} from '@sanity/ui'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 
@@ -43,20 +43,23 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                   />
                 ) : (
                   <Inline space={2} padding={2}>
-                    <Label size={4}>
+                    <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
-                    </Label>
-                    <Label size={4}>{`${timeZone.abbreviation}`}</Label>
+                    </Text>
+                    <Text weight={'medium'} size={1}>{`${timeZone.abbreviation}`}</Text>
                   </Inline>
                 )}
               </Box>
               <Box className="button-large">
                 {allowTimeZoneSwitch ? (
                   <Inline space={2} padding={2}>
-                    <Label size={4}>
+                    <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
-                    </Label>
-                    <Label size={4}>{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Label>
+                    </Text>
+                    <Text
+                      weight={'medium'}
+                      size={1}
+                    >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
                   </Inline>
                 ) : (
                   <Button
@@ -81,10 +84,13 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                 />
               ) : (
                 <Inline space={2} padding={2}>
-                  <Label size={4}>
+                  <Text weight={'medium'} size={1}>
                     <EarthAmericasIcon />
-                  </Label>
-                  <Label size={4}>{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Label>
+                  </Text>
+                  <Text
+                    weight={'medium'}
+                    size={1}
+                  >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
                 </Inline>
               )}
             </>
