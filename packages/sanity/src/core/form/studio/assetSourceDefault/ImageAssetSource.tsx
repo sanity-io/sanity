@@ -5,7 +5,7 @@ import {DefaultSource} from './shared/DefaultSource'
 
 export const ImageSource: AssetSource = {
   name: 'sanity-default',
-  title: 'Uploaded images',
+  title: 'Uploaded images 123',
   i18nKey: 'asset-source.image.title',
   component: DefaultSource,
   icon: ImageIcon,
