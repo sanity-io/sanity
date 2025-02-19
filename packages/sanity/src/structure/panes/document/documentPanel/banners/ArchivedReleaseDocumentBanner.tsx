@@ -2,13 +2,13 @@ import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getVersionInlineBadge,
   Translate,
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
 import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
-import {getVersionInlineBadge} from '../../../../../core/releases'
 import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {

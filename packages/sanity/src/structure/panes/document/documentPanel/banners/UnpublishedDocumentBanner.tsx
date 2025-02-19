@@ -1,6 +1,7 @@
 import {UnpublishIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {
+  getVersionInlineBadge,
   isGoingToUnpublish,
   isReleaseDocument,
   Translate,
@@ -8,7 +9,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {getVersionInlineBadge} from '../../../../../core/releases'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

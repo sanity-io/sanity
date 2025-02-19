@@ -3,6 +3,7 @@ import {useCallback} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  getVersionInlineBadge,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -11,7 +12,6 @@ import {
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
 
-import {getVersionInlineBadge} from '../../../../../core/releases'
 import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
