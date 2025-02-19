@@ -121,7 +121,7 @@ export interface DocumentPreviewStoreOptions {
 export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
-  const versionedClient = client.withConfig({apiVersion: '1'})
+  const versionedClient = client.withConfig({apiVersion: '2025-02-19'})
   const globalListener = createGlobalListener(versionedClient).pipe(
     filter(
       (event): event is MutationEvent | WelcomeEvent =>
