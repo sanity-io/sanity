@@ -15,14 +15,10 @@ import {
   SanityDefaultPreview,
 } from '../../../../../../../preview'
 import {useDocumentVersionInfo} from '../../../../../../../releases'
-import {useActiveReleases} from '../../../../../../../releases/store/useActiveReleases'
-import {isPerspectiveRaw} from '../../../../../../../search/common/isPerspectiveRaw'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
-import {useSearchState} from '../../../contexts/search/useSearchState'
 
 interface SearchResultItemPreviewProps {
   documentId: string
-  perspective?: string
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
@@ -47,33 +43,30 @@ const SearchResultItemPreviewBox = styled(Box)`
 export function SearchResultItemPreview({
   documentId,
   layout,
-  perspective,
   presence,
   schemaType,
   showBadge = true,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {data, loading} = useActiveReleases()
-  const {perspectiveStack} = usePerspective()
-  const {state} = useSearchState()
-  const isRaw = isPerspectiveRaw(state.perspective)
+  const {perspectiveStack, selectedPerspective} = usePerspective()
 
   const observable = useMemo(() => {
-    const stack = state.perspective && !isRaw ? state.perspective : perspectiveStack
     return getPreviewStateObservable(
       documentPreviewStore,
       schemaType,
-      documentId,
-      Array.isArray(stack) ? stack : [],
+      documentId, // eslint-disable-next-line no-nested-ternary
+      !selectedPerspective || selectedPerspective === 'drafts'
+        ? ['drafts']
+        : selectedPerspective === 'published'
+          ? ['published']
+          : perspectiveStack,
     )
-  }, [documentPreviewStore, schemaType, documentId, state.perspective, perspectiveStack, isRaw])
+  }, [documentPreviewStore, schemaType, documentId, selectedPerspective, perspectiveStack])
 
-  const {isLoading: previewIsLoading, snapshot} = useObservable(observable, {
+  const {isLoading, snapshot} = useObservable(observable, {
     snapshot: null,
     isLoading: true,
   })
-
-  const isLoading = previewIsLoading || loading
 
   const versionsInfo = useDocumentVersionInfo(documentId)
 

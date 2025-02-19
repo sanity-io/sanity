@@ -22,8 +22,7 @@ export function AddDocumentSearch({
 
   return (
     <LayerProvider zOffset={1}>
-      {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-      <SearchProvider perspective={['raw']} disabledDocumentIds={idsInRelease} canDisableAction>
+      <SearchProvider disabledDocumentIds={idsInRelease} canDisableAction>
         <PortalProvider>
           <SearchPopover onClose={onClose} onItemSelect={onClose} open={open} disableIntentLink />
         </PortalProvider>
