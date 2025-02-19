@@ -1,9 +1,11 @@
 import {defineField, type StringSchemaType} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {expect, test, vi} from 'vitest'
+import {afterAll, expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
+import {timeZoneLocalStorageNamespace} from '../../../../hooks/useTimeZone'
+import {type NormalizedTimeZone} from '../../../../scheduledPublishing/types'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
 import {DateTimeInput} from '../DateTimeInput'
@@ -17,6 +19,12 @@ const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaTyp
     <DateTimeInput {...inputProps} />
   </FormValueProvider>
 )
+
+const testTimeZoneLocalStorageId = `${timeZoneLocalStorageNamespace}.test`
+
+afterAll(() => {
+  localStorage.removeItem(testTimeZoneLocalStorageId)
+})
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
 // see globalSetup in jest config for details about how this is set up
@@ -112,6 +120,77 @@ test('time is shown in the display time zone if specified (utc+2 summer)', async
   const input = result.container.querySelector('input')!
 
   expect(input.value).toBe('2021-06-15 14:00')
+})
+
+test('Make sure time is displaying in wall time when displayTimeZone is not set', async () => {
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+    }),
+    props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+
+  expect(input.value).toBe('2021-06-15 05:00')
+})
+
+test('Make sure we are respecting the saved timezone in localStorage when displayTimeZone is set', async () => {
+  localStorage.setItem(
+    testTimeZoneLocalStorageId,
+    JSON.stringify({
+      abbreviation: 'CET',
+      alternativeName: 'Central European Time',
+      city: 'Oslo',
+      name: 'Europe/Oslo',
+      namePretty: 'GMT+1',
+      offset: '+1',
+      value: 'Oslo',
+    } as NormalizedTimeZone),
+  )
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+      options: {displayTimeZone: 'Europe/London'},
+    }),
+    props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
+  })
+
+  const input = result.container.querySelector('input')!
+  // should be an hour ahead
+  expect(input.value).toBe('2021-06-15 13:00')
+})
+
+test('Make sure we are not respecting the saved timezone in localStorage when displayTimeZone is set and switch is not allowed', async () => {
+  localStorage.setItem(
+    testTimeZoneLocalStorageId,
+    JSON.stringify({
+      abbreviation: 'CET',
+      alternativeName: 'Central European Time',
+      city: 'Oslo',
+      name: 'Europe/Oslo',
+      namePretty: 'GMT+1',
+      offset: '+1',
+      value: 'Oslo',
+    } as NormalizedTimeZone),
+  )
+  // imagine at this step you go and change your schema to be allowTimeZoneSwitch: false
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: 'test',
+      options: {displayTimeZone: 'Europe/Dublin', allowTimeZoneSwitch: false},
+    }),
+    props: {documentValue: {test: '2021-01-15T12:00:00.000Z'}},
+    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
+  })
+  const input = result.container.querySelector('input')!
+  // should be the same as UTC at this time of year
+  expect(input.value).toBe('2021-01-15 12:00')
 })
 
 test('the time zone can be changed by the user if allowed', async () => {
