@@ -12,7 +12,8 @@ interface ReleaseLimits {
   orgActiveReleaseCount$: Observable<number | null>
 }
 
-const STATE_TTL_MS = 15000
+// @todo make this 60_000
+const STATE_TTL_MS = 15_000
 const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount'
 
 function createOrgActiveReleaseCountStore(
