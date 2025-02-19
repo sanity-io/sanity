@@ -28,10 +28,19 @@ export default defineType({
     {
       name: 'aDateTimeWithDisplayTimezone',
       type: 'datetime',
-      title: 'A datetime field with display time zone',
+      title: 'A datetime field with display time zone and time zone switching allowed',
       options: {
-        displayTimeZone: 'Europe/Dublin',
+        displayTimeZone: 'Europe/Oslo',
         allowTimeZoneSwitch: true,
+      },
+    },
+    {
+      name: 'aDateTimeWithFixedDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with display time zone and no time zone switching allowed',
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: false,
       },
     },
     {

@@ -42,7 +42,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                     text={`${timeZone.abbreviation}`}
                   />
                 ) : (
-                  <Inline space={2} paddingLeft={2}>
+                  <Inline space={2} padding={2}>
                     <Label size={4}>
                       <EarthAmericasIcon />
                     </Label>
@@ -52,7 +52,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
               </Box>
               <Box className="button-large">
                 {allowTimeZoneSwitch ? (
-                  <Inline space={2} paddingLeft={2}>
+                  <Inline space={2} padding={2}>
                     <Label size={4}>
                       <EarthAmericasIcon />
                     </Label>
@@ -80,7 +80,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                   text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                 />
               ) : (
-                <Inline space={2} paddingLeft={2}>
+                <Inline space={2} padding={2}>
                   <Label size={4}>
                     <EarthAmericasIcon />
                   </Label>
