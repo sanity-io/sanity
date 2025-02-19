@@ -2,7 +2,7 @@ import {CalendarIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config'
-import {TOOL_NAME, TOOL_TITLE} from '../constants'
+import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
 import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
@@ -45,7 +45,7 @@ export const scheduledPublishing = definePlugin({
     return [
       ...prev,
       {
-        name: TOOL_NAME,
+        name: SCHEDULED_PUBLISHING_TOOL_NAME,
         title: TOOL_TITLE,
         icon: CalendarIcon,
         component: Tool,

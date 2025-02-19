@@ -4,9 +4,13 @@ import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useWorkspace} from '../../studio/workspace'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
+import InfoCallout from '../components/infoCallout/InfoCallout'
 import ButtonTimeZone from '../components/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../components/timeZoneButton/TimeZoneButtonElementQuery'
+import {WarningBanner} from '../components/warningBanner/WarningBanner'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
 import useTimeZone from '../hooks/useTimeZone'
@@ -30,10 +34,12 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 export default function Tool() {
   const router = useRouter()
+  const {scheduledPublishing, releases} = useWorkspace()
+  const isReleasesEnabled = Boolean(releases?.enabled)
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
-  const {enabled} = useScheduledPublishingEnabled()
+  const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
@@ -77,13 +83,23 @@ export default function Tool() {
   }
 
   if (!enabled) {
+    if (scheduledPublishing.__internal__workspaceEnabled) {
+      return (
+        <Container width={1} paddingTop={4}>
+          <Box paddingTop={4} paddingX={4}>
+            <ErrorCallout
+              description="Something went wrong loading permissions, please try again."
+              title="Permissions check failed"
+            />
+          </Box>
+        </Container>
+      )
+    }
+    // This is for the case users lands in the tool rout without having the feature enabled.
     return (
       <Container width={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
-          <ErrorCallout
-            description="Something went wrong loading permissions, please try again."
-            title="Permissions check failed"
-          />
+          {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
         </Box>
       </Container>
     )
@@ -91,6 +107,7 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
+      {isReleasesEnabled && scheduledPublishing.showReleasesBanner && <WarningBanner />}
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
         <Flex flex={1} height="fill">
           {/* LHS Column */}
