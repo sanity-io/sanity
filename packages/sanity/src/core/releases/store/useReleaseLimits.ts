@@ -5,8 +5,8 @@ import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
-interface ReleaseLimitsStore {
-  releaseLimits$: Observable<Omit<ReleaseLimits, 'orgActiveReleaseCount'> | null>
+export interface ReleaseLimitsStore {
+  releaseLimits$: Observable<ReleaseLimits | null>
 }
 
 const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
@@ -17,6 +17,7 @@ function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
       defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
       datasetReleaseLimit: data.datasetReleaseLimit,
       orgActiveReleaseLimit: data.orgActiveReleaseLimit,
+      orgActiveReleaseCount: data.orgActiveReleaseCount,
     })),
     shareReplay(1),
     catchError((error) => {
