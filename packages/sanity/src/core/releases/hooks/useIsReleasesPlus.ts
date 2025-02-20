@@ -6,7 +6,7 @@ import {useReleaseLimits} from '../store/useReleaseLimits'
  * @internal
  * @returns `boolean` Whether the current org is on a Releases+ plan
  */
-export const useIsReleasesPlus = () => {
+export const useIsReleasesPlus = (): boolean => {
   const {releaseLimits$} = useReleaseLimits()
 
   const releaseLimit = useObservable(releaseLimits$, null)
@@ -15,5 +15,5 @@ export const useIsReleasesPlus = () => {
 
   // presume not releases+ if null releaseLimit
   // (because of internal server error or network error)
-  return orgActiveReleaseLimit && orgActiveReleaseLimit >= defaultOrgActiveReleaseLimit
+  return !!orgActiveReleaseLimit && orgActiveReleaseLimit >= defaultOrgActiveReleaseLimit
 }
