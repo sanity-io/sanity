@@ -3,18 +3,12 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../../perspective/types'
-import {type VersionInfoDocumentStub} from '../../releases'
 import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUtils'
 import {type DocumentPreviewStore} from '../documentPreviewStore'
-import {type PreparedSnapshot} from '../types'
 
 /**
  * @internal
  */
-export type VersionsRecord = Record<string, VersionInfoDocumentStub | undefined>
-
-export type VersionTuple = [releaseId: string, snapshot: PreparedSnapshot]
-
 export interface PreviewState {
   isLoading?: boolean
   /**
@@ -25,7 +19,7 @@ export interface PreviewState {
    * The preview snapshot in either a single `version` perspective, or the `drafts` perspective
    * This can be used as a fallback if the document exists in e.g. drafts form, but not in the current perspective
    */
-  raw: PreviewValue | Partial<SanityDocument> | null
+  original: PreviewValue | Partial<SanityDocument> | null
 }
 
 /**
@@ -57,12 +51,12 @@ export function getPreviewStateObservable(
     map(([main, version]) => ({
       isLoading: false,
       snapshot: main?.snapshot || null,
-      raw: version?.snapshot || null,
+      original: version?.snapshot || null,
     })),
     startWith({
       isLoading: true,
       snapshot: null,
-      raw: null,
+      original: null,
     }),
   )
 }

@@ -62,7 +62,7 @@ export function getReferenceInfo(
           isPublished: null,
           preview: {
             snapshot: null,
-            raw: null,
+            original: null,
           },
         } as const)
       }
@@ -93,7 +93,7 @@ export function getReferenceInfo(
               isPublished: null,
               preview: {
                 snapshot: null,
-                raw: null,
+                original: null,
               },
             } as const)
           }
@@ -109,7 +109,7 @@ export function getReferenceInfo(
               isPublished: null,
               preview: {
                 snapshot: null,
-                raw: null,
+                original: null,
               },
             } as const)
           }
@@ -143,7 +143,7 @@ export function getReferenceInfo(
                 id: publishedId,
                 availability,
                 isPublished: publishedDocumentExists,
-                preview: {snapshot: previewState.snapshot, raw: previewState.raw},
+                preview: {snapshot: previewState.snapshot, original: previewState.original},
               }
             }),
           )

@@ -22,17 +22,17 @@ export function getMissingDocumentFallback(document: Partial<SanityDocument> | P
  */
 export function getPreviewValueWithFallback({
   snapshot,
-  raw,
+  original,
   document,
 }: {
   document?: Partial<SanityDocument> | PreviewValue | null | undefined
   snapshot?: Partial<SanityDocument> | PreviewValue | null | undefined
-  raw?: Partial<SanityDocument> | PreviewValue | null | undefined
+  original?: Partial<SanityDocument> | PreviewValue | null | undefined
 }) {
-  if (document && !raw && !snapshot) {
+  if (document && !original && !snapshot) {
     return getMissingDocumentFallback(document)
   }
-  return assignWith({}, raw, snapshot, (objValue, srcValue) => {
+  return assignWith({}, original, snapshot, (objValue, srcValue) => {
     return typeof srcValue === 'undefined' ? objValue : srcValue
   }) as PreviewValue
 }

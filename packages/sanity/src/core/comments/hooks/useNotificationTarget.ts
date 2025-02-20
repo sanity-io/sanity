@@ -43,8 +43,8 @@ export function useNotificationTarget(
   }, [documentId, documentPreviewStore, schemaType])
   const previewState = useObservable(previewStateObservable)
 
-  const {snapshot, raw} = previewState || {}
-  const documentTitle = (snapshot?.title || raw?.title || 'Sanity document') as string
+  const {snapshot, original} = previewState || {}
+  const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(
     ({commentId}: {commentId: string}) => ({

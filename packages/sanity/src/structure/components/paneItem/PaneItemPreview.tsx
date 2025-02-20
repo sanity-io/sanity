@@ -56,12 +56,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const {
     snapshot,
-    raw,
+    original,
     isLoading: previewIsLoading,
   } = useObservable(previewStateObservable, {
     snapshot: null,
     isLoading: true,
-    raw: null,
+    original: null,
   })
 
   const isLoading = previewIsLoading
@@ -89,7 +89,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({document, snapshot, raw})}
+      {...getPreviewValueWithFallback({document, snapshot, original})}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}

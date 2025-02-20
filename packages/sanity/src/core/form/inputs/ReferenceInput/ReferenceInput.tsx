@@ -237,10 +237,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderValue = useCallback(() => {
     return (loadableReferenceInfo.result?.preview?.snapshot?.title ||
-      loadableReferenceInfo.result?.preview?.raw?.title ||
+      loadableReferenceInfo.result?.preview?.original?.title ||
       '') as string
   }, [
-    loadableReferenceInfo.result?.preview?.raw?.title,
+    loadableReferenceInfo.result?.preview?.original?.title,
     loadableReferenceInfo.result?.preview?.snapshot?.title,
   ])
 

@@ -19,15 +19,15 @@ export function ReferencePreviewTitle({
     () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId),
     [documentId, documentPreviewStore, schemaType],
   )
-  const {snapshot, raw, isLoading} = useObservable(observable, {
+  const {snapshot, original, isLoading} = useObservable(observable, {
     isLoading: true,
     snapshot: null,
-    raw: null,
+    original: null,
   })
 
   if (isLoading) {
     return <Skeleton animated marginLeft={1} radius={2} style={{width: '10ch', height: '1em'}} />
   }
 
-  return <>{snapshot?.title || raw?.title || documentId.slice(0, 8)}</>
+  return <>{snapshot?.title || original?.title || documentId.slice(0, 8)}</>
 }
