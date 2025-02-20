@@ -180,8 +180,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       lerna:
-        specifier: ^8.1.9
-        version: 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        specifier: ^8.2.0
+        version: 8.2.0(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^12.1.2
         version: 12.5.0(enquirer@2.3.6)
@@ -3518,8 +3518,8 @@ packages:
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
-  '@lerna/create@8.1.9':
-    resolution: {integrity: sha512-DPnl5lPX4v49eVxEbJnAizrpMdMTBz1qykZrAbBul9rfgk531v8oAt+Pm6O/rpAleRombNM7FJb5rYGzBJatOQ==}
+  '@lerna/create@8.2.0':
+    resolution: {integrity: sha512-kyrAc709xhf79Ci2qM+neMfe3IuT89kJyqdMe+YK16kkTNlXedmmQOSs2ARdlEqVVGCWu7M75Dt2VoCBZPnZ8g==}
     engines: {node: '>=18.0.0'}
 
   '@lezer/common@1.2.3':
@@ -8519,8 +8519,8 @@ packages:
     resolution: {integrity: sha512-b94GiNHQNy6JNTrt5w6zNyffMrNkXZb3KTkCZJb2V1xaEGCk093vkZ2jk3tpaeP33/OiXC+WvK9AxUebnf5nbw==}
     engines: {node: '>= 0.6.3'}
 
-  lerna@8.1.9:
-    resolution: {integrity: sha512-ZRFlRUBB2obm+GkbTR7EbgTMuAdni6iwtTQTMy7LIrQ4UInG44LyfRepljtgUxh4HA0ltzsvWfPkd5J1DKGCeQ==}
+  lerna@8.2.0:
+    resolution: {integrity: sha512-SLXPPUqU1V6m8pGVNYp8CpqGX92U2fp6XFWQsQMY36VTCGVP/5dGtri4hd2sgk2hcBuFPnxycgEnJecT2MQUsg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -13474,7 +13474,7 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)':
+  '@lerna/create@8.2.0(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
@@ -13534,7 +13534,6 @@ snapshots:
       slash: 3.0.0
       ssri: 10.0.6
       string-width: 4.2.3
-      strip-ansi: 6.0.1
       strong-log-transformer: 2.1.0
       tar: 6.2.1
       temp-dir: 1.0.0
@@ -19875,9 +19874,9 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.2.0(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.1.9(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)
+      '@lerna/create': 8.2.0(@swc-node/register@1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3))(@swc/core@1.10.15)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.7.3)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
@@ -19944,7 +19943,6 @@ snapshots:
       slash: 3.0.0
       ssri: 10.0.6
       string-width: 4.2.3
-      strip-ansi: 6.0.1
       strong-log-transformer: 2.1.0
       tar: 6.2.1
       temp-dir: 1.0.0
