@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {BehaviorSubject, catchError, map, type Observable, of, switchMap, tap, timer} from 'rxjs'
@@ -17,7 +16,7 @@ const STATE_TTL_MS = 15_000
 const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount'
 
 function createOrgActiveReleaseCountStore(
-  versionedClient: SanityClient,
+  client: SanityClient,
   activeReleasesCount: number,
 ): OrgActiveReleaseCountStore {
   const latestFetchState = new BehaviorSubject<number | null>(null)
@@ -33,7 +32,7 @@ function createOrgActiveReleaseCountStore(
       ) {
         staleFlag$.next(false)
 
-        return fetchReleaseLimits({versionedClient}).pipe(
+        return fetchReleaseLimits(client).pipe(
           tap(() => activeReleaseCountAtFetch.next(activeReleasesCount)),
           map((data) => data.orgActiveReleaseCount),
           catchError((error) => {
@@ -48,7 +47,6 @@ function createOrgActiveReleaseCountStore(
             latestFetchState.next(nextState)
 
             timer(STATE_TTL_MS).subscribe(() => {
-              console.log('TTL expired, marking cache as stale.')
               staleFlag$.next(true)
               activeReleaseCountAtFetch.next(null)
             })
@@ -80,8 +78,7 @@ function createOrgActiveReleaseCountStore(
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  // @todo use default API version
-  const client = useClient({apiVersion: 'vX'})
+  const client = useClient()
 
   const activeReleasesCount = activeReleases?.length || 0
 

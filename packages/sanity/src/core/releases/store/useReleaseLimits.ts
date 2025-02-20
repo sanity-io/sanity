@@ -12,8 +12,8 @@ interface ReleaseLimitsStore {
 
 const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 
-function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimitsStore {
-  const releaseLimits$ = fetchReleaseLimits({versionedClient}).pipe(
+function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
+  const releaseLimits$ = fetchReleaseLimits(client).pipe(
     map((data) => ({
       defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
       datasetReleaseLimit: data.datasetReleaseLimit,
@@ -44,8 +44,7 @@ function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimitsS
  */
 export const useReleaseLimits: () => ReleaseLimitsStore = () => {
   const resourceCache = useResourceCache()
-  // @todo use default API version
-  const client = useClient({apiVersion: 'vX'})
+  const client = useClient()
 
   return useMemo(() => {
     const releaseLimitsStore =

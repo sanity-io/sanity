@@ -17,14 +17,19 @@ interface ReleaseLimitsResponse {
  * @internal
  * fetches subscriptions for this project
  */
-export function fetchReleaseLimits({
-  versionedClient,
-}: {
-  versionedClient: SanityClient
-}): Observable<ReleaseLimits> {
-  return versionedClient.observable
+export function fetchReleaseLimits(client: SanityClient): Observable<ReleaseLimits> {
+  const {projectId} = client.config()
+
+  // This endpoint is prone to optimisation and further work
+  // it will never live within a versions API and will always be on vX
+  // until it goes away - there is graceful handling in `catchError`
+  // for when this endpoint is no longer available and limits are fetched
+  // some other way
+  const clientX = client.withConfig({apiVersion: 'vX'})
+
+  return clientX.observable
     .request<ReleaseLimitsResponse>({
-      uri: `projects/${versionedClient.config().projectId}/new-content-release-allowed`,
+      uri: `projects/${projectId}/new-content-release-allowed`,
       tag: 'new-content-release-allowed',
     })
     .pipe(
