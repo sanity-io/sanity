@@ -22,14 +22,14 @@ export function useReleasePermissions(): useReleasePermissionsValue {
   return useMemo(() => {
     const releasePermissionsStore =
       resourceCache.get<useReleasePermissionsValue>({
-        dependencies: [null],
+        dependencies: [],
         namespace: RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE,
       }) || createReleasePermissionsStore()
 
     resourceCache.set({
       namespace: RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE,
       value: releasePermissionsStore,
-      dependencies: [null],
+      dependencies: [],
     })
 
     return releasePermissionsStore
