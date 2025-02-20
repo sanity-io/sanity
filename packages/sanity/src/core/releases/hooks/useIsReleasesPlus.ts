@@ -1,5 +1,6 @@
 import {useObservable} from 'react-rx'
 
+import {useClient} from '../../hooks/useClient'
 import {useReleaseLimits} from '../store/useReleaseLimits'
 
 /**
@@ -7,7 +8,8 @@ import {useReleaseLimits} from '../store/useReleaseLimits'
  * @returns `boolean` Whether the current org is on a Releases+ plan
  */
 export const useIsReleasesPlus = (): boolean => {
-  const {releaseLimits$} = useReleaseLimits()
+  const client = useClient().observable
+  const {releaseLimits$} = useReleaseLimits(client)
 
   const releaseLimit = useObservable(releaseLimits$, null)
 

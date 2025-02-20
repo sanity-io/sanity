@@ -164,8 +164,9 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [telemetry],
   )
 
-  const {releaseLimits$} = useReleaseLimits()
-  const {orgActiveReleaseCount$} = useOrgActiveReleaseCount()
+  const limitsClient = client.withConfig({apiVersion: 'vX'}).observable
+  const {releaseLimits$} = useReleaseLimits(limitsClient)
+  const {orgActiveReleaseCount$} = useOrgActiveReleaseCount(limitsClient)
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {

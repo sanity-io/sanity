@@ -1,8 +1,7 @@
-import {type SanityClient} from '@sanity/client'
+import {type ObservableSanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {BehaviorSubject, catchError, map, type Observable, of, switchMap, tap, timer} from 'rxjs'
 
-import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 import {useActiveReleases} from './useActiveReleases'
@@ -16,7 +15,7 @@ const STATE_TTL_MS = 15_000
 const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount'
 
 function createOrgActiveReleaseCountStore(
-  client: SanityClient,
+  client: ObservableSanityClient,
   activeReleasesCount: number,
 ): OrgActiveReleaseCountStore {
   const latestFetchState = new BehaviorSubject<number | null>(null)
@@ -75,10 +74,10 @@ function createOrgActiveReleaseCountStore(
  *
  * @returns An Observable of the cached value for org's active release count.
  */
-export const useOrgActiveReleaseCount = () => {
+export const useOrgActiveReleaseCount = (clientOb: ObservableSanityClient) => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  const client = useClient()
+  // const client = useClient()
 
   const activeReleasesCount = activeReleases?.length || 0
 
@@ -87,16 +86,16 @@ export const useOrgActiveReleaseCount = () => {
   return useMemo(() => {
     const releaseLimitsStore =
       resourceCache.get<OrgActiveReleaseCountStore>({
-        dependencies: [client, count],
+        dependencies: [clientOb, count],
         namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
-      }) || createOrgActiveReleaseCountStore(client, activeReleasesCount)
+      }) || createOrgActiveReleaseCountStore(clientOb, activeReleasesCount)
 
     resourceCache.set({
       namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
       value: releaseLimitsStore,
-      dependencies: [client, count],
+      dependencies: [clientOb, count],
     })
 
     return releaseLimitsStore
-  }, [activeReleasesCount, client, count, resourceCache])
+  }, [activeReleasesCount, clientOb, count, resourceCache])
 }

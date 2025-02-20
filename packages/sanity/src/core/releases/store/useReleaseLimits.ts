@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
-import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
@@ -42,23 +41,23 @@ function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
  *
  * @returns An Observable of the cached value for the release limits
  */
-export const useReleaseLimits: () => ReleaseLimitsStore = () => {
+export const useReleaseLimits: (clientOb: any) => ReleaseLimitsStore = (clientOb) => {
   const resourceCache = useResourceCache()
-  const client = useClient()
+  // const client = useClient()
 
   return useMemo(() => {
     const releaseLimitsStore =
       resourceCache.get<ReleaseLimitsStore>({
-        dependencies: [client],
+        dependencies: [clientOb],
         namespace: RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE,
-      }) || createReleaseLimitsStore(client)
+      }) || createReleaseLimitsStore(clientOb)
 
     resourceCache.set({
       namespace: RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE,
       value: releaseLimitsStore,
-      dependencies: [client],
+      dependencies: [clientOb],
     })
 
     return releaseLimitsStore
-  }, [client, resourceCache])
+  }, [clientOb, resourceCache])
 }
