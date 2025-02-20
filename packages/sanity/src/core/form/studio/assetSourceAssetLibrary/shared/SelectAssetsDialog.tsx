@@ -14,7 +14,7 @@ export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
   libraryId: string
   onClose: () => void
-  onSelect: (selection: AssetSelectionItem[]) => void
+  onSelect: (selection: AssetSelectionItem[]) => Promise<void>
   selection: AssetSelectionItem[]
   selectionType?: 'single' | 'multiple'
   selectAssetType?: AssetType
@@ -34,6 +34,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const {dialogHeaderTitle, libraryId, onClose, onSelect, selectionType = 'single'} = props
 
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
+  const [didSelect, setDidSelect] = useState(false)
 
   const pluginApiVersion = assetLibraryConfig.__internal.pluginApiVersion
   const appBasePath = assetLibraryConfig.__internal.appBasePath
@@ -46,8 +47,13 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     onClose()
   }, [onClose])
 
-  const handleSelect = useCallback(() => {
-    onSelect(assetSelection)
+  const handleSelect = useCallback(async () => {
+    try {
+      setDidSelect(true)
+      await onSelect(assetSelection)
+    } catch (error) {
+      setDidSelect(false)
+    }
   }, [onSelect, assetSelection])
 
   const handlePluginMessage = useCallback((message: PluginPostMessage) => {
@@ -78,6 +84,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
               />
               <Button
                 onClick={handleSelect}
+                loading={didSelect}
                 disabled={assetSelection.length === 0}
                 text={t('asset-source.dialog.button.select')}
                 size="large"
