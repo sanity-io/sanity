@@ -110,10 +110,5 @@ export function ScheduledPublishingEnabledProvider({
  */
 export function useScheduledPublishingEnabled(): ScheduledPublishingEnabledContextValue {
   const context = useContext(ScheduledPublishingEnabledContext)
-  if (!context) {
-    throw new Error(
-      'useScheduledPublishingEnabled must be used within a ScheduledPublishingEnabledProvider',
-    )
-  }
   return context
 }
