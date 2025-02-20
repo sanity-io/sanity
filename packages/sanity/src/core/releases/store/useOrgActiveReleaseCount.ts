@@ -5,11 +5,11 @@ import {BehaviorSubject, catchError, map, type Observable, of, switchMap, tap, t
 
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
-import {fetchReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
+import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 import {useActiveReleases} from './useActiveReleases'
 
-interface ReleaseLimits {
-  orgActiveReleaseCount$: Observable<number | null>
+interface OrgActiveReleaseCountStore {
+  orgActiveReleaseCount$: Observable<ReleaseLimits['orgActiveReleaseCount']>
 }
 
 // @todo make this 60_000
@@ -19,7 +19,7 @@ const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount
 function createOrgActiveReleaseCountStore(
   versionedClient: SanityClient,
   activeReleasesCount: number,
-): ReleaseLimits {
+): OrgActiveReleaseCountStore {
   const latestFetchState = new BehaviorSubject<number | null>(null)
   const staleFlag$ = new BehaviorSubject<boolean>(false)
   const activeReleaseCountAtFetch = new BehaviorSubject<number | null>(null)
@@ -80,6 +80,7 @@ function createOrgActiveReleaseCountStore(
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
+  // @todo use default API version
   const client = useClient({apiVersion: 'vX'})
 
   const activeReleasesCount = activeReleases?.length || 0
@@ -88,7 +89,7 @@ export const useOrgActiveReleaseCount = () => {
 
   return useMemo(() => {
     const releaseLimitsStore =
-      resourceCache.get<ReleaseLimits>({
+      resourceCache.get<OrgActiveReleaseCountStore>({
         dependencies: [client, count],
         namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
       }) || createOrgActiveReleaseCountStore(client, activeReleasesCount)

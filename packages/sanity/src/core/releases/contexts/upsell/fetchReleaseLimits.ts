@@ -1,11 +1,11 @@
-/* eslint-disable no-console */
 import {type ClientError, type SanityClient} from '@sanity/client'
-import {catchError, delay, map, type Observable, of, tap} from 'rxjs'
+import {catchError, map, type Observable, of} from 'rxjs'
 
-interface ReleaseLimits {
-  defaultOrgActiveReleaseLimit: number
+export interface ReleaseLimits {
   orgActiveReleaseCount: number
+  defaultOrgActiveReleaseLimit: number
   datasetReleaseLimit: number
+  // internal server error has no fallback number - it uses null
   orgActiveReleaseLimit: number | null
 }
 
@@ -13,35 +13,11 @@ interface ReleaseLimitsResponse {
   data: ReleaseLimits
 }
 
-const USE_STUB = false
-
-const stubFetchReleasesLimits = ({versionedClient}: {versionedClient: SanityClient}) =>
-  of({
-    defaultOrgActiveReleaseLimit: 2,
-    orgActiveReleaseCount: 6,
-    orgActiveReleaseLimit: 20,
-    datasetReleaseLimit: 6,
-
-    // orgActiveReleaseCount: 6,
-    // orgActiveReleaseLimit: 6,
-    // datasetReleaseLimit: 10,
-  } as ReleaseLimits).pipe(
-    tap(() => console.log('fetchReleasesLimits')),
-    delay(3000),
-  )
-
-// export const stubFetchReleasesLimits = () =>
-//   throwError(() => new Error('Simulated API failure')).pipe(
-//     tap(() => console.log('fetchReleasesLimits - Simulating failure')),
-//     delay(3000),
-//   )
-
 /**
  * @internal
  * fetches subscriptions for this project
  */
-// export function fetchReleaseLimits({
-export function _fetchReleaseLimits({
+export function fetchReleaseLimits({
   versionedClient,
 }: {
   versionedClient: SanityClient
@@ -53,13 +29,18 @@ export function _fetchReleaseLimits({
     })
     .pipe(
       catchError((error: ClientError) => {
-        console.error(error.message)
-        // body will still contain the limits and current count (if available)
-        // so still want to return these and just silently log the error
-        return of(error.response.body as ReleaseLimitsResponse)
+        console.error(error)
+
+        if (typeof error.response.body !== 'string' && 'data' in error.response.body) {
+          // body will still contain the limits and current count (if available)
+          // so still want to return these and just silently log the error
+          return of(error.response.body as ReleaseLimitsResponse)
+        }
+
+        // for internal server errors, or as a fallback
+        // propagate up the error
+        throw error
       }),
       map(({data}) => data),
     )
 }
-
-export const fetchReleaseLimits = USE_STUB ? stubFetchReleasesLimits : _fetchReleaseLimits
