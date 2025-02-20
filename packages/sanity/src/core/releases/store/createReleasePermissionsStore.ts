@@ -39,6 +39,10 @@ export function createReleasePermissionsStore(
     ...args: Parameters<T>
   ): Promise<boolean> => {
     if (!isContentReleasesEnabled) {
+      /**
+       * When content releases feature flag is disabled
+       * assume allowed permissions to provide upsell
+       */
       return true
     }
 
