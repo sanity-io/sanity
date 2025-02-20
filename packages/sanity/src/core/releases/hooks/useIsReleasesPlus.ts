@@ -14,5 +14,6 @@ export const useIsReleasesPlus = () => {
   const {orgActiveReleaseLimit, defaultOrgActiveReleaseLimit = 0} = releaseLimit || {}
 
   // presume not releases+ if null releaseLimit
+  // (because of internal server error or network error)
   return orgActiveReleaseLimit && orgActiveReleaseLimit >= defaultOrgActiveReleaseLimit
 }

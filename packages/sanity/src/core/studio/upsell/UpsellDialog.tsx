@@ -3,7 +3,6 @@ import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -48,15 +47,6 @@ interface UpsellDialogProps {
 
 export function UpsellDialog(props: UpsellDialogProps) {
   const {data, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
-  const [stableInterpolation, setStableInterpolation] = useState(interpolation)
-
-  useEffect(() => {
-    // prevent interpolation from resetting on re-render
-    // so that it keeps the value it was first rendered with
-    if (interpolation !== undefined) {
-      setStableInterpolation(interpolation)
-    }
-  }, [interpolation])
 
   return (
     <Dialog
@@ -109,7 +99,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
         <Stack space={4} paddingBottom={2}>
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}
-            interpolation={stableInterpolation}
+            interpolation={interpolation}
           />
         </Stack>
       </Box>
