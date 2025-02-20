@@ -677,7 +677,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         patch.execute(toMutationPatches(event.patches), initialValue.value)
       }
     }
-  }, [editState.draft, editState.published, initialValue.value, patch, telemetry, readOnly])
+  }, [
+    editState.draft,
+    editState.published,
+    initialValue.value,
+    patch,
+    telemetry,
+    readOnly,
+    isCreateLinked,
+  ])
 
   const formState = useFormState({
     schemaType: schemaType!,
