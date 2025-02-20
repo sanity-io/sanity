@@ -221,11 +221,13 @@ export const ReleaseRevertButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
+  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
 
-  const handleMoveToConfirmStatus = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
-    [guardWithReleaseLimitUpsell],
-  )
+  const handleMoveToConfirmStatus = useCallback(async () => {
+    setIsPendingGuardResponse(true)
+    await guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm'))
+    setIsPendingGuardResponse(false)
+  }, [guardWithReleaseLimitUpsell])
 
   const isReleasesPlus = useIsReleasesPlus()
 
@@ -238,7 +240,7 @@ export const ReleaseRevertButton = ({
         onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
-        disabled={disabled || mode === 'disabled'}
+        disabled={isPendingGuardResponse || disabled || mode === 'disabled'}
       />
       {revertReleaseStatus !== 'idle' && (
         <ConfirmReleaseDialog
