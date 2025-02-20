@@ -8,7 +8,7 @@ import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
-import {getPublishedId, isDraftId, isPublishedId} from '../../../../util/draftUtils'
+import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -60,12 +60,14 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   const {createRelease} = useReleaseOperations()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
-  const releaseId = isVersion ? fromRelease : documentId
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: getPublishedId(documentId),
     type,
-    version: releaseId,
-    permission: isDraftId(documentId) ? 'discardDraft' : 'discardVersion',
+    version: isVersion ? fromRelease : undefined,
+    // Note: the result of this discard permission check is disregarded for the published document
+    // version. Discarding is never available for the published document version. Therefore, the
+    // parameters provided here are not configured to handle published document versions.
+    permission: fromRelease === 'draft' ? 'discardDraft' : 'discardVersion',
   })
   const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
 
@@ -88,7 +90,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
         {isVersion && (
           <IntentLink
             intent="release"
-            params={{id: releaseId}}
+            params={{id: fromRelease}}
             rel="noopener noreferrer"
             style={{textDecoration: 'none'}}
             disabled={disabled}
