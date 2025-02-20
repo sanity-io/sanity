@@ -10,7 +10,8 @@ const helpText = `
 Options:
   --workspace The name of the workspace to fetch the stored schema for
   --path If you are not using the default static file path, you can specify it here.
-  --custom-id you can specify a custom id for the schema. Useful if you want to store the schema in a different path than the default one.
+  --id-prefix you can specify a custom id prefix for the stored schemas. Useful if you want to store the schema in a different path than the default one.
+  --verbose Enable verbose logging
 
 Examples
   # if no options are provided all workspace schemas will be stored

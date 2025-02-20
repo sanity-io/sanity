@@ -1,6 +1,5 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-
-import {type ManifestSchemaType} from '../../../manifest/manifestTypes'
+import {type SanityDocumentLike} from '@sanity/types'
 
 export interface FetchSchemaFlags {
   id: string
@@ -22,14 +21,21 @@ export default async function fetchSchemaAction(
   const projectId = client.config().projectId
   const dataset = client.config().dataset
 
-  const schema = await client
+  const schemas = await client
     .withConfig({
       dataset: dataset,
       projectId: projectId,
     })
-    .fetch<ManifestSchemaType>(`*[_type == "sanity.workspace.schema" && _id == "${schemaId}"]`)
+    .fetch<SanityDocumentLike[]>(`*[_type == "sanity.workspace.schema" && _id == "${schemaId}"]`)
 
-  spinner.succeed('Schema fetched')
-  // print schema as json
-  output.success(JSON.stringify(schema, null, 2))
+  //ids are unique so we can just take the first one
+  const schema = schemas[0]
+  if (!schema) {
+    spinner.fail(`Schema ${schemaId} not found`)
+    return
+  }
+
+  spinner.succeed('Schema fetched:')
+
+  spinner.info(`${JSON.stringify(schema, null, 2)}`)
 }

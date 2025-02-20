@@ -25,6 +25,7 @@ import {
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   'build'?: boolean
   'schema-required'?: boolean
+  'verbose'?: boolean
 }
 
 export default async function deployStudioAction(
@@ -149,6 +150,7 @@ export default async function deployStudioAction(
         extOptions: {
           'path': `${sourceDir}/static`,
           'schema-required': flags['schema-required'],
+          'verbose': flags.verbose,
         },
         extraArguments: [],
       }

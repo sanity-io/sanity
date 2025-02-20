@@ -13,6 +13,7 @@ Options
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the studio prior to deploy, instead deploying the version currently in \`dist/\`
   --schema-required Require schema extraction and storing to be successful
+  --verbose Enable verbose logging
   -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
 
 Examples
