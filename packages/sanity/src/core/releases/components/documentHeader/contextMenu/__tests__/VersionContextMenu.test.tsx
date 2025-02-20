@@ -6,6 +6,7 @@ import {createTestProvider} from '../../../../../../../test/testUtils/TestProvid
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {type ReleaseDocument} from '../../../../store/types'
 import {VersionContextMenu} from '../VersionContextMenu'
@@ -72,9 +73,7 @@ describe('VersionContextMenu', () => {
   }
 
   it('renders the menu items correctly', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
 
@@ -97,9 +96,7 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateRelease when "New release" is clicked', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
 
@@ -122,9 +119,7 @@ describe('VersionContextMenu', () => {
   })
 
   it('hides discard version on published chip', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
     const publishedProps = {
@@ -139,9 +134,7 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onDiscard when "Discard version" is clicked', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
 
@@ -158,9 +151,7 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateRelease when a "new release" is clicked', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
 
@@ -183,9 +174,7 @@ describe('VersionContextMenu', () => {
   })
 
   it('calls onCreateVersion when a release is clicked and sets the perspective to the release', async () => {
-    mockUseReleasePermissions.mockReturnValue({
-      checkWithPermissionGuard: async () => true,
-    })
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
 

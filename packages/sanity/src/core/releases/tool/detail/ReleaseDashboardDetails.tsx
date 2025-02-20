@@ -6,7 +6,7 @@ import {
   WarningOutlineIcon,
 } from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -44,19 +44,25 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const shouldDisplayError = isActive && typeof release.error !== 'undefined'
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
   const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
+  const isMounted = useRef(false)
   useEffect(() => {
+    isMounted.current = true
+
     // only run if the release is active
     if (isActive) {
       checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
-        setShouldDisplayPermissionWarning(!hasPermission)
+        if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
         checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
-          setShouldDisplayPermissionWarning(!hasPermission)
+          if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
         })
       }
+    }
+    return () => {
+      isMounted.current = false
     }
   }, [
     checkWithPermissionGuard,

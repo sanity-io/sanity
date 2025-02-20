@@ -123,8 +123,16 @@ export function ReleasesOverview() {
     ]
   }, [hasReleases, releasesMetadata, releases])
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+    isMounted.current = true
+    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
+      if (isMounted.current) setHasCreatePermission(hasPermissions)
+    })
+
+    return () => {
+      isMounted.current = false
+    }
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
