@@ -4,19 +4,15 @@ import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
-import {fetchReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
+import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
-interface ReleaseLimits {
-  releaseLimits$: Observable<{
-    defaultOrgActiveReleaseLimit: number
-    datasetReleaseLimit: number
-    orgActiveReleaseLimit: number | null
-  } | null>
+interface ReleaseLimitsStore {
+  releaseLimits$: Observable<Omit<ReleaseLimits, 'orgActiveReleaseCount'> | null>
 }
 
 const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 
-function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimits {
+function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimitsStore {
   const releaseLimits$ = fetchReleaseLimits({versionedClient}).pipe(
     map((data) => ({
       defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
@@ -46,13 +42,14 @@ function createReleaseLimitsStore(versionedClient: SanityClient): ReleaseLimits 
  *
  * @returns An Observable of the cached value for the release limits
  */
-export const useReleaseLimits: () => ReleaseLimits = () => {
+export const useReleaseLimits: () => ReleaseLimitsStore = () => {
   const resourceCache = useResourceCache()
+  // @todo use default API version
   const client = useClient({apiVersion: 'vX'})
 
   return useMemo(() => {
     const releaseLimitsStore =
-      resourceCache.get<ReleaseLimits>({
+      resourceCache.get<ReleaseLimitsStore>({
         dependencies: [client],
         namespace: RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE,
       }) || createReleaseLimitsStore(client)
