@@ -47,7 +47,7 @@ describe('createWeightedSearch', () => {
       search({query: 'harry', types: []} as SearchTerms, {perspective: ['r123', 'drafts']}),
     )
 
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'X'})
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
   })
 
   it('should order hits by score by default', async () => {
