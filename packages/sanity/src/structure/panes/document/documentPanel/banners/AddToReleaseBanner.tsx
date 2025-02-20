@@ -1,8 +1,9 @@
 import {Flex, Text} from '@sanity/ui'
-import {type CSSProperties, useCallback} from 'react'
+import {useCallback} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  getVersionInlineBadge,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -50,24 +51,7 @@ export function AddToReleaseBanner({
                   currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
               }}
               components={{
-                Label: ({children}) => {
-                  return (
-                    <span
-                      style={
-                        {
-                          color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
-                          backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
-                          borderRadius: 3,
-                          textDecoration: 'none',
-                          padding: '0px 2px',
-                          fontWeight: 500,
-                        } as CSSProperties
-                      }
-                    >
-                      {children}
-                    </span>
-                  )
-                },
+                VersionBadge: getVersionInlineBadge(currentRelease),
               }}
             />
           </Text>

@@ -23,6 +23,7 @@ import {
   getExpandOperations,
   getPublishedId,
   getVersionFromId,
+  isGoingToUnpublish,
   isPublishedPerspective,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
@@ -585,6 +586,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const isCreateLinked = isSanityCreateLinkedDocument(value)
   const isNonExistent = !value?._id
+  const willBeUnpublished = isGoingToUnpublish(value)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -606,6 +608,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return (
+      willBeUnpublished ||
       !ready ||
       revisionId !== null ||
       hasNoPermission ||
@@ -630,6 +633,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     selectedPerspectiveName,
     selectedReleaseId,
     value._id,
+    willBeUnpublished,
     ready,
     revisionId,
     isDeleting,
