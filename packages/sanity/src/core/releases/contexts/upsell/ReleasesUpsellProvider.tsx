@@ -245,7 +245,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
   )
 
-  const interpolation = releaseCount ? {releaseLimit: releaseCount} : undefined
+  const interpolation = releaseCount === null ? undefined : {releaseLimit: releaseCount}
 
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
