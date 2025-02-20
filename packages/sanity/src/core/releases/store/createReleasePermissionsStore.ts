@@ -22,7 +22,9 @@ export const isReleasePermissionError = (error: unknown): error is ReleasePermis
  *
  * @internal
  */
-export function createReleasePermissionsStore(): useReleasePermissionsValue {
+export function createReleasePermissionsStore(
+  isContentReleasesEnabled: boolean,
+): useReleasePermissionsValue {
   let permissions: {[key: string]: boolean} = {}
 
   /**
@@ -36,6 +38,10 @@ export function createReleasePermissionsStore(): useReleasePermissionsValue {
     action: T,
     ...args: Parameters<T>
   ): Promise<boolean> => {
+    if (!isContentReleasesEnabled) {
+      return true
+    }
+
     if (permissions[action.name] === undefined) {
       try {
         await action(...args, {
