@@ -59,6 +59,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(props: AssetSou
           title: t('asset-source.dialog.insert-asset-error'),
         })
         console.error(error)
+        throw error
       }
     },
     [client, handleClose, onSelect, t, toast],
