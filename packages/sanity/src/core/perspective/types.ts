@@ -1,6 +1,12 @@
-import {type ClientPerspective, type ReleaseId} from '@sanity/client'
+import {type ClientPerspective} from '@sanity/client'
 
 import {type ReleaseDocument} from '../releases/store/types'
+
+/**
+ * @beta
+ */
+// todo: replace with branded type from @sanity/id-utils
+export type ReleaseId = string
 
 /**
  * @beta

@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
@@ -43,7 +42,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
 
   const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !editState?.draft
   const {rev, since} = params
-  const historyVersion = params.historyVersion as ReleaseId | undefined
+  const historyVersion = params.historyVersion
 
   const documentId = useMemo(() => {
     if (showingPublishedOnDraft) {

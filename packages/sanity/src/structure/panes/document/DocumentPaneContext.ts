@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {
   type ObjectSchemaType,
   type Path,
@@ -16,6 +15,7 @@ import {
   type EditStateFor,
   type PatchEvent,
   type PermissionCheckResult,
+  type ReleaseId,
   type StateTree,
   type TimelineStore,
 } from 'sanity'

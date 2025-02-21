@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
@@ -6,7 +5,7 @@ import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {EMPTY_ARRAY} from '../util/empty'
-import {type PerspectiveContextValue, type SelectedPerspective} from './types'
+import {type PerspectiveContextValue, type ReleaseId, type SelectedPerspective} from './types'
 
 /**
  * @internal

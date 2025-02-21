@@ -15,6 +15,7 @@ export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,
+  type ReleaseId,
   type SelectedPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
