@@ -108,5 +108,5 @@ function walk(entry: Entry): Promise<File[]> {
 }
 
 export function isPortableTextItem(item: {type: string; kind: string}) {
-  return item.type === 'application/portable-text'
+  return item.type === 'application/portable-text' || item.type === 'application/x-portable-text'
 }
