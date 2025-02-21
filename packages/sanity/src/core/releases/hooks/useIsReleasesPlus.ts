@@ -1,5 +1,8 @@
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useReleaseLimits} from '../store/useReleaseLimits'
 
 /**
@@ -8,12 +11,23 @@ import {useReleaseLimits} from '../store/useReleaseLimits'
  */
 export const useIsReleasesPlus = (): boolean => {
   const {releaseLimits$} = useReleaseLimits()
+  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
 
-  const releaseLimit = useObservable(releaseLimits$, null)
+  /**
+   * Only provide observable to cache store if releases is feature enabled
+   */
+  const releaseLimitEnabled$ = useMemo(
+    () => (isReleasesFeatureEnabled ? releaseLimits$ : of(null)),
+    [isReleasesFeatureEnabled, releaseLimits$],
+  )
+
+  const releaseLimit = useObservable(releaseLimitEnabled$, null)
+
+  if (!isReleasesFeatureEnabled) return false
 
   const {orgActiveReleaseLimit, defaultOrgActiveReleaseLimit = 0} = releaseLimit || {}
 
   // presume not releases+ if null releaseLimit
   // (because of internal server error or network error)
-  return !!orgActiveReleaseLimit && orgActiveReleaseLimit >= defaultOrgActiveReleaseLimit
+  return !!orgActiveReleaseLimit && orgActiveReleaseLimit > defaultOrgActiveReleaseLimit
 }
