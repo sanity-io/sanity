@@ -13,7 +13,7 @@ import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {DEFAULT_RELEASE} from '../../../util/const'
+import {getReleaseDefaults} from '../../../util/const'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
@@ -75,7 +75,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermission) => {
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 

@@ -11,7 +11,7 @@ import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {DEFAULT_RELEASE, LATEST} from '../../releases/util/const'
+import {getReleaseDefaults, LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {
   getRangePosition,
@@ -74,7 +74,7 @@ export function ReleasesList({
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
+    checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults())).then(
       (hasPermission) => {
         if (isMounted.current) setHasCreatePermission(hasPermission)
       },

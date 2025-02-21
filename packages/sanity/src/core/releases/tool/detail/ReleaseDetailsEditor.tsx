@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 
-import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
+import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
@@ -31,9 +31,12 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
-      if (isMounted.current) setHasUpdatePermission(hasPermission)
-    })
+    if (getIsReleaseOpen(release)) {
+      // title and description will be readOnly if release is not 'active'
+      checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
+        if (isMounted.current) setHasUpdatePermission(hasPermission)
+      })
+    }
 
     return () => {
       isMounted.current = false

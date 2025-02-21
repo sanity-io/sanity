@@ -10,7 +10,7 @@ import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {DEFAULT_RELEASE} from '../../util/const'
+import {getReleaseDefaults} from '../../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseForm} from './ReleaseForm'
 
@@ -28,9 +28,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const telemetry = useTelemetry()
   const createReleaseMetadata = useCreateReleaseMetadata()
 
-  const [release, setRelease] = useState((): EditableReleaseDocument => {
-    return DEFAULT_RELEASE
-  })
+  const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleOnSubmit = useCallback(
