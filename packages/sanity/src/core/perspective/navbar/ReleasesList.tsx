@@ -184,7 +184,8 @@ export function ReleasesList({
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"
             tooltipProps={{
-              content: !hasCreatePermission && t('release.action.permission.error'),
+              disabled: hasCreatePermission === true,
+              content: t('release.action.permission.error'),
             }}
           />
         </>

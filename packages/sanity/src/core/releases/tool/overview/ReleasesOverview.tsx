@@ -264,7 +264,8 @@ export function ReleasesOverview() {
         text={tCore('release.action.create-new')}
         paddingY={3}
         tooltipProps={{
-          content: !hasCreatePermission && tCore('release.action.permission.error'),
+          disabled: hasCreatePermission === true,
+          content: tCore('release.action.permission.error'),
         }}
       />
     ),
