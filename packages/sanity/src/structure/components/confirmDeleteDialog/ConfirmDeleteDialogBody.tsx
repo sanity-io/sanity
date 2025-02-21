@@ -241,24 +241,14 @@ export function ConfirmDeleteDialogBody({
                                   }}
                                   // eslint-disable-next-line react/jsx-no-bind
                                   onClick={() => {
-                                    navigator.clipboard
-                                      .writeText(documentId)
-                                      .then(() => {
-                                        toast.push({
-                                          status: 'success',
-                                          title: t(
-                                            'confirm-delete-dialog.cdr-table.id-copied-toast.title',
-                                          ),
-                                        })
+                                    navigator.clipboard.writeText(documentId).catch(() => {
+                                      toast.push({
+                                        status: 'error',
+                                        title: t(
+                                          'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed',
+                                        ),
                                       })
-                                      .catch(() => {
-                                        toast.push({
-                                          status: 'error',
-                                          title: t(
-                                            'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed',
-                                          ),
-                                        })
-                                      })
+                                    })
                                   }}
                                 />
                               )}
