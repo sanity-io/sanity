@@ -1,9 +1,10 @@
-import {createSanityInstance} from '@sanity/sdk'
-import {SanityProvider} from '@sanity/sdk-react/context'
+import {type SanityConfig} from '@sanity/sdk'
+import {SanityApp} from '@sanity/sdk-react/components'
+import {ExampleComponent} from './ExampleComponent'
 
 export function App() {
 
-  const sanityConfig = {
+  const sanityConfig: SanityConfig = {
     auth: {
       authScope: 'global'
     }
@@ -15,11 +16,11 @@ export function App() {
     // dataset: 'my-dataset',
   }
 
-  const sanityInstance = createSanityInstance(sanityConfig)
   return (
-    <SanityProvider sanityInstance={sanityInstance}>
-      Hello world!
-    </SanityProvider>
+    <SanityApp sanityConfig={sanityConfig}>
+      {/* add your own components here! */}
+      <ExampleComponent />
+    </SanityApp>
   )
 }
 

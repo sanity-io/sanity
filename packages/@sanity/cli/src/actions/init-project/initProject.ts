@@ -1268,7 +1268,7 @@ export default async function initSanity(
       ]
 
       const chosenOrg = await prompt.single({
-        message: 'Select organization to attach project to',
+        message: `Select organization to attach ${isCoreAppTemplate ? 'application' : 'project'} to`,
         type: 'list',
         choices: organizationChoices,
       })
