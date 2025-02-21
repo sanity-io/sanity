@@ -16,12 +16,12 @@ export const useIsReleasesPlus = (): boolean => {
   /**
    * Only provide observable to cache store if releases is feature enabled
    */
-  const releaseLimitEnabled$ = useMemo(
+  const releasesLimitForPlus$ = useMemo(
     () => (isReleasesFeatureEnabled ? releaseLimits$ : of(null)),
     [isReleasesFeatureEnabled, releaseLimits$],
   )
 
-  const releaseLimit = useObservable(releaseLimitEnabled$, null)
+  const releaseLimit = useObservable(releasesLimitForPlus$, null)
 
   if (!isReleasesFeatureEnabled) return false
 

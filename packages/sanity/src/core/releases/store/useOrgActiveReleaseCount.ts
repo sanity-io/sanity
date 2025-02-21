@@ -11,8 +11,7 @@ interface OrgActiveReleaseCountStore {
   orgActiveReleaseCount$: Observable<ReleaseLimits['orgActiveReleaseCount']>
 }
 
-// @todo make this 60_000
-const STATE_TTL_MS = 15_000
+const STATE_TTL_MS = 60_000
 const ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE = 'orgActiveReleaseCount'
 
 function createOrgActiveReleaseCountStore(
@@ -70,8 +69,8 @@ function createOrgActiveReleaseCountStore(
  *
  * Returns a shared observable to a cache of the org's active release count.
  *
- * This cache expires after a TTL or whenever the active releases in the current
- * dataset changes.
+ * This cache expires after a TTL or whenever the active releases in the
+ * count of active releases in the dataset changes.
  *
  * @returns An Observable of the cached value for org's active release count.
  */
@@ -82,6 +81,7 @@ export const useOrgActiveReleaseCount = () => {
 
   const activeReleasesCount = activeReleases?.length || 0
 
+  // dependencies must be objects not primitives, so nesting activeReleasesCount in an object
   const count = useMemo(() => ({activeReleasesCount}), [activeReleasesCount])
 
   return useMemo(() => {
@@ -89,7 +89,7 @@ export const useOrgActiveReleaseCount = () => {
       resourceCache.get<OrgActiveReleaseCountStore>({
         dependencies: [client, count],
         namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
-      }) || createOrgActiveReleaseCountStore(client, activeReleasesCount)
+      }) || createOrgActiveReleaseCountStore(client, count.activeReleasesCount)
 
     resourceCache.set({
       namespace: ORG_ACTIVE_RELEASE_COUNT_RESOURCE_CACHE_NAMESPACE,
@@ -98,5 +98,5 @@ export const useOrgActiveReleaseCount = () => {
     })
 
     return releaseLimitsStore
-  }, [activeReleasesCount, client, count, resourceCache])
+  }, [client, count, resourceCache])
 }
