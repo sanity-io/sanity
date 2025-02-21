@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -181,7 +180,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       const fetchLimitsCount = async () => {
         try {
-          console.log('Guard called, checking caches...')
           // if either fails then catch the error
           return await Promise.all([
             firstValueFrom(orgActiveReleaseCount$),

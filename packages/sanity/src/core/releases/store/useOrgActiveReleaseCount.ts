@@ -32,7 +32,7 @@ function createOrgActiveReleaseCountStore(
       ) {
         staleFlag$.next(false)
 
-        return fetchReleaseLimits(client).pipe(
+        return fetchReleaseLimits(client, 'orgActiveReleaseCount').pipe(
           tap(() => activeReleaseCountAtFetch.next(activeReleasesCount)),
           map((data) => data.orgActiveReleaseCount),
           catchError((error) => {

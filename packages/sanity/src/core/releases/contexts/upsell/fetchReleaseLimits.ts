@@ -17,7 +17,10 @@ interface ReleaseLimitsResponse {
  * @internal
  * fetches subscriptions for this project
  */
-export function fetchReleaseLimits(client: SanityClient): Observable<ReleaseLimits> {
+export function fetchReleaseLimits(
+  client: SanityClient,
+  storeOrigin: string,
+): Observable<ReleaseLimits> {
   const {projectId} = client.config()
 
   // This endpoint is prone to optimisation and further work
@@ -30,7 +33,7 @@ export function fetchReleaseLimits(client: SanityClient): Observable<ReleaseLimi
   return clientX.observable
     .request<ReleaseLimitsResponse>({
       uri: `projects/${projectId}/new-content-release-allowed`,
-      tag: 'new-content-release-allowed',
+      tag: `new-content-release-allowed-${storeOrigin}`,
     })
     .pipe(
       catchError((error: ClientError) => {
