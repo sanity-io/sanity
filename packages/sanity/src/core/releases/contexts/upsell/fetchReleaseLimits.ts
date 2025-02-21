@@ -33,6 +33,15 @@ export function fetchReleaseLimits(
   return clientX.observable
     .request<ReleaseLimitsResponse>({
       uri: `projects/${projectId}/new-content-release-allowed`,
+      /**
+       * In a particular case when both releaseLimits
+       * and orgActiveReleaseCount stores are empty, 2 fetch calls are made
+       * to guard the create/archive/revert actions - browsers behave differently.
+       *
+       * Chromium based browsers will stall the second network request until the first
+       * resolves by attaching the store name to the tag, this spoofs 2 unique requests
+       * allowing both the fire in parallel.
+       */
       tag: `new-content-release-allowed-${storeOrigin}`,
     })
     .pipe(
