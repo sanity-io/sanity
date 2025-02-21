@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
@@ -26,6 +27,7 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   layout?: GeneralPreviewLayoutKey
   onClick?: (e: MouseEvent<HTMLElement>) => void
   onItemSelect?: ItemSelectHandler
+  previewPerspective?: StackablePerspective[]
 }
 
 export function SearchResultItem({
@@ -35,6 +37,7 @@ export function SearchResultItem({
   layout,
   onClick,
   onItemSelect,
+  previewPerspective,
   ...rest
 }: SearchResultItemProps) {
   const schema = useSchema()
@@ -103,6 +106,7 @@ export function SearchResultItem({
         <SearchResultItemPreview
           documentId={documentId}
           layout={layout}
+          perspective={previewPerspective}
           presence={documentPresence}
           schemaType={type}
         />

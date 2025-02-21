@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
-import {usePerspective} from '../../../../../../../perspective/usePerspective'
+import {type PerspectiveStack} from '../../../../../../../perspective/types'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
@@ -21,6 +21,7 @@ interface SearchResultItemPreviewProps {
   documentId: string
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
+  perspective?: PerspectiveStack
   schemaType: SchemaType
   showBadge?: boolean
 }
@@ -46,22 +47,13 @@ export function SearchResultItemPreview({
   presence,
   schemaType,
   showBadge = true,
+  perspective,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedPerspective} = usePerspective()
 
   const observable = useMemo(() => {
-    return getPreviewStateObservable(
-      documentPreviewStore,
-      schemaType,
-      documentId, // eslint-disable-next-line no-nested-ternary
-      !selectedPerspective || selectedPerspective === 'drafts'
-        ? ['drafts']
-        : selectedPerspective === 'published'
-          ? ['published']
-          : perspectiveStack,
-    )
-  }, [documentPreviewStore, schemaType, documentId, selectedPerspective, perspectiveStack])
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspective)
+  }, [documentPreviewStore, schemaType, documentId, perspective])
 
   const {isLoading, snapshot} = useObservable(observable, {
     snapshot: null,

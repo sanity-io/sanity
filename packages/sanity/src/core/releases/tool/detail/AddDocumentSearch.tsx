@@ -24,7 +24,13 @@ export function AddDocumentSearch({
     <LayerProvider zOffset={1}>
       <SearchProvider disabledDocumentIds={idsInRelease} canDisableAction>
         <PortalProvider>
-          <SearchPopover onClose={onClose} onItemSelect={onClose} open={open} disableIntentLink />
+          <SearchPopover
+            onClose={onClose}
+            onItemSelect={onClose}
+            open={open}
+            previewPerspective={[releaseId]}
+            disableIntentLink
+          />
         </PortalProvider>
       </SearchProvider>
     </LayerProvider>
