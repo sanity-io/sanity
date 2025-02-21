@@ -13,6 +13,14 @@ interface ReleaseLimitsResponse {
   data: ReleaseLimits
 }
 
+function isErrorAtLimits(error: ClientError) {
+  return (
+    error.statusCode === 403 &&
+    typeof error.response.body !== 'string' &&
+    'data' in error.response.body
+  )
+}
+
 /**
  * @internal
  * fetches subscriptions for this project
@@ -48,7 +56,7 @@ export function fetchReleaseLimits(
       catchError((error: ClientError) => {
         console.error(error)
 
-        if (typeof error.response.body !== 'string' && 'data' in error.response.body) {
+        if (isErrorAtLimits(error)) {
           // body will still contain the limits and current count (if available)
           // so still want to return these and just silently log the error
           return of(error.response.body as ReleaseLimitsResponse)
