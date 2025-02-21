@@ -355,9 +355,11 @@ export function createRequestAction(
         },
       })
     } catch (e) {
-      if (isReleaseLimitError(e)) {
+      // if dryRunning then essentially this is a silent request
+      // so don't want to create disruptive upsell because of limit
+      if (!options?.dryRun && isReleaseLimitError(e)) {
         // free accounts do not return limit, 0 is implied
-        onReleaseLimitReached(e.details.limit || 0, !!options?.dryRun)
+        onReleaseLimitReached(e.details.limit || 0)
       }
 
       throw e

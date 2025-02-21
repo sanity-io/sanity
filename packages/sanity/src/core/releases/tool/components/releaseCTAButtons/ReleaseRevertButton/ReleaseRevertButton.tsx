@@ -9,6 +9,7 @@ import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
+import {useIsReleasesPlus} from '../../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
@@ -212,9 +213,6 @@ const ConfirmReleaseDialog = ({
   )
 }
 
-// TODO:  This is going to be disabled until we have the proper "releases plus" flag
-const isRevertEnabled = false
-
 export const ReleaseRevertButton = ({
   release,
   documents,
@@ -223,13 +221,17 @@ export const ReleaseRevertButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
+  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
 
-  const handleMoveToConfirmStatus = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm')),
-    [guardWithReleaseLimitUpsell],
-  )
+  const handleMoveToConfirmStatus = useCallback(async () => {
+    setIsPendingGuardResponse(true)
+    await guardWithReleaseLimitUpsell(() => setRevertReleaseStatus('confirm'))
+    setIsPendingGuardResponse(false)
+  }, [guardWithReleaseLimitUpsell])
 
-  if (!isRevertEnabled) return null
+  const isReleasesPlus = useIsReleasesPlus()
+
+  if (!isReleasesPlus) return null
 
   return (
     <>
@@ -238,7 +240,7 @@ export const ReleaseRevertButton = ({
         onClick={handleMoveToConfirmStatus}
         text={t('action.revert')}
         tone="critical"
-        disabled={disabled || mode === 'disabled'}
+        disabled={isPendingGuardResponse || disabled || mode === 'disabled'}
       />
       {revertReleaseStatus !== 'idle' && (
         <ConfirmReleaseDialog

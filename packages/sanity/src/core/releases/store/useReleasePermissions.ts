@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {createReleasePermissionsStore} from './createReleasePermissionsStore'
 
@@ -18,20 +19,21 @@ export interface useReleasePermissionsValue {
  */
 export function useReleasePermissions(): useReleasePermissionsValue {
   const resourceCache = useResourceCache()
+  const contentReleasesFeature = useFeatureEnabled('contentReleases')
 
   return useMemo(() => {
     const releasePermissionsStore =
       resourceCache.get<useReleasePermissionsValue>({
-        dependencies: [],
+        dependencies: [contentReleasesFeature],
         namespace: RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE,
-      }) || createReleasePermissionsStore()
+      }) || createReleasePermissionsStore(contentReleasesFeature.enabled)
 
     resourceCache.set({
       namespace: RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE,
       value: releasePermissionsStore,
-      dependencies: [],
+      dependencies: [contentReleasesFeature],
     })
 
     return releasePermissionsStore
-  }, [resourceCache])
+  }, [contentReleasesFeature, resourceCache])
 }
