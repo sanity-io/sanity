@@ -1,5 +1,5 @@
 import {type ClientError, type ObservableSanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, share} from 'rxjs'
 
 export interface ReleaseLimits {
   orgActiveReleaseCount: number
@@ -27,13 +27,14 @@ export function fetchReleaseLimits(clientOb: ObservableSanityClient): Observable
   // some other way
 
   return clientOb
+    .withConfig({apiVersion: 'vX'})
     .request<ReleaseLimitsResponse>({
       uri: `projects/${projectId}/new-content-release-allowed`,
       // tag: `new-${new Date().getTime()}`,
       tag: 'new-content-release-allowed',
     })
     .pipe(
-      shareReplay(1),
+      share(),
       catchError((error: ClientError) => {
         console.error(error)
 
