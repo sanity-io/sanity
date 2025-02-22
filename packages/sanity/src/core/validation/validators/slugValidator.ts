@@ -54,8 +54,11 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
 
   const constraints = [
     '_type == $docType',
-    `!(_id in [$draft, $published])`,
-    `!(_id in path("${VERSION_FOLDER}.**.${published}"))`,
+    `!( 
+      _id == $published || 
+      _id == $draft || 
+      _id in path("${VERSION_FOLDER}.**.${published}")
+    )`,
     `${atPath} == $slug`,
   ].join(' && ')
 
