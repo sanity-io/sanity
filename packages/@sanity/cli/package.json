@@ -115,7 +115,7 @@
     "minimist": "^1.2.5",
     "open": "^8.4.0",
     "ora": "^8.0.1",
-    "p-filter": "^2.1.0",
+    "p-map": "^4.0.0",
     "p-timeout": "^4.0.0",
     "preferred-pm": "^3.0.3",
     "promise-props-recursive": "^2.0.2",

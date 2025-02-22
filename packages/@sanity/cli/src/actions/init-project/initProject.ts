@@ -8,7 +8,7 @@ import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
-import pFilter from 'p-filter'
+import pMap from 'p-map'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 
@@ -106,6 +106,16 @@ export interface ProjectOrganization {
   id: string
   name: string
   slug: string
+}
+
+interface OrganizationCreateResponse {
+  id: string
+  name: string
+  createdByUserId: string
+  slug: string | null
+  defaultRoleName: string | null
+  members: unknown[]
+  features: unknown[]
 }
 
 // eslint-disable-next-line max-statements, complexity
@@ -257,13 +267,14 @@ export default async function initSanity(
   const hasToken = userConfig.get('authToken')
 
   debug(hasToken ? 'User already has a token' : 'User has no token')
+  let user: SanityUser | undefined
   if (hasToken) {
     trace.log({step: 'login', alreadyLoggedIn: true})
-    const user = await getUserData(apiClient)
+    user = await getUserData(apiClient)
     success('You are logged in as %s using %s', user.email, getProviderName(user.provider))
   } else if (!unattended) {
     trace.log({step: 'login'})
-    await getOrCreateUser()
+    user = await getOrCreateUser()
   }
 
   // skip project / dataset prompting
@@ -712,6 +723,7 @@ export default async function initSanity(
     const {extOptions, ...otherArgs} = args
     const loginArgs: CliCommandArguments<LoginFlags> = {...otherArgs, extOptions: {}}
     await login(loginArgs, {...context, telemetry: trace.newContext('login')})
+    return getUserData(apiClient)
   }
 
   async function getProjectDetails(): Promise<{
@@ -858,7 +870,22 @@ export default async function initSanity(
           ? 'No projects found for user, prompting for name'
           : 'Using a coupon - skipping project selection',
       )
-      const projectName = await prompt.single({type: 'input', message: 'Project name:'})
+      const projectName = await prompt.single({
+        type: 'input',
+        message: 'Project name:',
+        default: 'My Sanity Project',
+        validate(input) {
+          if (!input || input.trim() === '') {
+            return 'Project name cannot be empty'
+          }
+
+          if (input.length > 80) {
+            return 'Project name cannot be longer than 80 characters'
+          }
+
+          return true
+        },
+      })
 
       return createProject(apiClient, {
         displayName: projectName,
@@ -1242,47 +1269,90 @@ export default async function initSanity(
     return cliFlags
   }
 
+  async function createOrganization(
+    props: {name?: string} = {},
+  ): Promise<OrganizationCreateResponse> {
+    const name =
+      props.name ||
+      (await prompt.single({
+        type: 'input',
+        message: 'Organization name:',
+        default: user ? user.name : undefined,
+        validate(input) {
+          if (input.length === 0) {
+            return 'Organization name cannot be empty'
+          } else if (input.length > 100) {
+            return 'Organization name cannot be longer than 100 characters'
+          }
+          return true
+        },
+      }))
+
+    const spinner = context.output.spinner('Creating organization').start()
+    const client = apiClient({requireProject: false, requireUser: true})
+    const organization = await client.request({
+      uri: '/organizations',
+      method: 'POST',
+      body: {name},
+    })
+    spinner.succeed()
+
+    return organization
+  }
+
   async function getOrganizationId(organizations: ProjectOrganization[]) {
-    let orgId = flags.organization
-    if (unattended) {
-      return orgId || undefined
+    // In unattended mode, if the user hasn't specified an organization, sending null as
+    // organization ID to the API will create a new organization for the user with their
+    // user name. If they _have_ specified an organization, we'll use that.
+    if (unattended || flags.organization) {
+      return flags.organization || undefined
     }
 
-    const shouldPrompt = organizations.length > 0 && !orgId
-    if (shouldPrompt) {
-      debug(`User has ${organizations.length} organization(s), checking attach access`)
-      const withGrant = await getOrganizationsWithAttachGrant(organizations)
-      if (withGrant.length === 0) {
-        debug('User lacks project attach grant in all organizations, not prompting')
-        return undefined
-      }
-
-      debug('User has attach access to %d organizations, prompting.', withGrant.length)
-      const organizationChoices = [
-        {value: 'none', name: 'None'},
-        new prompt.Separator(),
-        ...withGrant.map((organization) => ({
-          value: organization.id,
-          name: `${organization.name} [${organization.id}]`,
-        })),
-      ]
-
-      const chosenOrg = await prompt.single({
-        message: `Select organization to attach ${isCoreAppTemplate ? 'application' : 'project'} to`,
-        type: 'list',
-        choices: organizationChoices,
-      })
-
-      if (chosenOrg && chosenOrg !== 'none') {
-        orgId = chosenOrg
-      }
-    } else if (orgId) {
-      debug(`User has defined organization flag explicitly (%s)`, orgId)
-    } else if (organizations.length === 0) {
-      debug('User has no organizations, skipping selection prompt')
+    // If the user has no organizations, prompt them to create one with the same name as
+    // their user, but allow them to customize it if they want
+    if (organizations.length === 0) {
+      return createOrganization().then((org) => org.id)
     }
 
-    return orgId || undefined
+    // If the user has organizations, let them choose from them, but also allow them to
+    // create a new one in case they do not have access to any of them, or they want to
+    // create a personal/other organization.
+    debug(`User has ${organizations.length} organization(s), checking attach access`)
+    const withGrantInfo = await getOrganizationsWithAttachGrantInfo(organizations)
+    const withAttach = withGrantInfo.filter(({hasAttachGrant}) => hasAttachGrant)
+
+    debug('User has attach access to %d organizations.', withAttach.length)
+    const organizationChoices = [
+      ...withGrantInfo.map(({organization, hasAttachGrant}) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+        disabled: hasAttachGrant ? false : 'Insufficient permissions',
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
+
+    // If the user only has a single organization (and they have attach access to it),
+    // we'll default to that one. Otherwise, we'll default to the organization with the
+    // same name as the user if it exists.
+    const defaultOrganizationId =
+      withAttach.length === 1
+        ? withAttach[0].organization.id
+        : organizations.find((org) => org.name === user?.name)?.id
+
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
+
+    if (chosenOrg === '-new-') {
+      return createOrganization().then((org) => org.id)
+    }
+
+    return chosenOrg || undefined
   }
 
   async function hasProjectAttachGrant(orgId: string) {
@@ -1301,8 +1371,15 @@ export default async function initSanity(
     )
   }
 
-  function getOrganizationsWithAttachGrant(organizations: ProjectOrganization[]) {
-    return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
+  function getOrganizationsWithAttachGrantInfo(organizations: ProjectOrganization[]) {
+    return pMap(
+      organizations,
+      async (organization) => ({
+        hasAttachGrant: await hasProjectAttachGrant(organization.id),
+        organization,
+      }),
+      {concurrency: 3},
+    )
   }
 
   async function createOrAppendEnvVars(
