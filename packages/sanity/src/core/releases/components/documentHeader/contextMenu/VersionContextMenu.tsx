@@ -105,7 +105,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           text={t('release.action.copy-to')}
           disabled={disabled || !hasCreatePermission}
           tooltipProps={{
-            disabled: !hasCreatePermission,
+            disabled: hasCreatePermission === true,
             content: t('release.action.permission.error'),
           }}
         >
@@ -144,7 +144,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               text={t('release.action.discard-version')}
               disabled={disabled || locked || !hasDiscardPermission}
               tooltipProps={{
-                content: !hasDiscardPermission && t('release.action.permission.error'),
+                disabled: hasDiscardPermission === true,
+                content: t('release.action.permission.error'),
               }}
             />
           </>
