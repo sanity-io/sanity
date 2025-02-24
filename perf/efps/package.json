@@ -23,7 +23,7 @@
     "@types/serve-handler": "^6.1.4",
     "@types/yargs": "^17.0.7",
     "@vitejs/plugin-react": "^4.3.4",
-    "babel-plugin-react-compiler": "19.0.0-beta-21e868a-20250216",
+    "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.0.3",
