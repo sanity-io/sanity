@@ -91,6 +91,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const {data: documentVersions} = useDocumentVersions({documentId})
   const isCreatingDocument = displayed && !displayed._createdAt
+  const onlyHasVersions =
+    (!editState?.published && !editState?.draft && documentVersions?.length > 0) ||
+    isCreatingDocument
 
   const filteredReleases: FilterReleases = useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: null}
@@ -231,7 +234,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftDisabled: boolean = useMemo(() => {
     // Draft is disabled when the document has no published or draft but has versions
-    if (!editState?.published && !editState?.draft && documentVersions?.length) {
+    if (onlyHasVersions) {
       return true
     }
 
@@ -244,14 +247,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     if (isCreatingDocument && selectedReleaseId) return true
     if (isLiveEdit) return true
     return false
-  }, [
-    documentVersions?.length,
-    editState?.draft,
-    editState?.published,
-    isCreatingDocument,
-    isLiveEdit,
-    selectedReleaseId,
-  ])
+  }, [editState?.draft, isCreatingDocument, isLiveEdit, onlyHasVersions, selectedReleaseId])
 
   return (
     <>
