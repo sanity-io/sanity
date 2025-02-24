@@ -172,14 +172,28 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   ])
 
   const isDraftDisabled: boolean = useMemo(() => {
+    // Draft is disabled when the document has no published or draft but has versions
+    if (!editState?.published && !editState?.draft && documentVersions?.length) {
+      return true
+    }
+
     // Draft is disabled when we are creating a new document inside a release
     // or when the document is live edit and there is no draft
-    if (editState?.draft) return false
+    if (!editState?.draft) {
+      return false
+    }
 
     if (isCreatingDocument && selectedReleaseId) return true
     if (isLiveEdit) return true
     return false
-  }, [editState?.draft, isCreatingDocument, isLiveEdit, selectedReleaseId])
+  }, [
+    documentVersions?.length,
+    editState?.draft,
+    editState?.published,
+    isCreatingDocument,
+    isLiveEdit,
+    selectedReleaseId,
+  ])
 
   return (
     <>
