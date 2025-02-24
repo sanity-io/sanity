@@ -131,7 +131,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.7"
   },
   "engines": {
     "node": ">=18"
