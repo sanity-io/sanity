@@ -94,5 +94,4 @@ export const SCHEDULED_PUBLISHING_TOOL_NAME = 'schedules'
 
 export const TOOL_TITLE = 'Schedules'
 
-// TODO: Update once the docs are live
 export const RELEASES_DOCS_URL = 'https://www.sanity.io/blog/introducing-content-releases'
