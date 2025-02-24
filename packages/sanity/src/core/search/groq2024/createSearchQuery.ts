@@ -133,13 +133,9 @@ export function createSearchQuery(
   let activePerspective: string | string[] | undefined
 
   switch (true) {
-    // No perspective provided, use raw
-    case !perspective?.length:
-      activePerspective = 'raw'
-      break
     // Raw perspective provided.
     case isRaw:
-      activePerspective = 'raw'
+      activePerspective = undefined
       break
     // Any other perspective provided.
     case typeof perspective !== 'undefined':
