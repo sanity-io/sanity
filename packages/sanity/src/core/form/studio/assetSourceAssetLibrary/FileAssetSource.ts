@@ -5,8 +5,7 @@ import {AssetLibrarySource} from './shared/AssetLibrarySource'
 
 export const FileSource: AssetSource = {
   name: 'sanity-asset-library-asset-source',
-  title: 'Asset Library',
-  // i18nKey: 'asset-source.file.title',
+  i18nKey: 'asset-source.asset-library.file.title',
   component: AssetLibrarySource,
   icon: DocumentsIcon,
 }
