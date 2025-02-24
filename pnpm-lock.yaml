@@ -9867,11 +9867,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-compiler-runtime@19.0.0-beta-21e868a-20250216:
-    resolution: {integrity: sha512-iuvC3CeBVNHGdNbyD64+fJG87P0+FT+h0DJrhF43RUqTNklLxnEJC5+B9bWQP65RtLVP6uZkIbbhoOnw5/SXSA==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-
   react-compiler-runtime@19.0.0-beta-e1e972c-20250221:
     resolution: {integrity: sha512-6nONLW+4zbfAt6mLG6SV73tKlZLJqmezqX0EF9ZKzab84Pje/4CMVs8QVw4OeRS+FFtPcfWU4fOK28nq7lM4Hg==}
     peerDependencies:
@@ -21437,14 +21432,6 @@ snapshots:
       react: 19.0.0
       reactcss: 1.2.3(react@19.0.0)
       tinycolor2: 1.6.0
-
-  react-compiler-runtime@19.0.0-beta-21e868a-20250216(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  react-compiler-runtime@19.0.0-beta-21e868a-20250216(react@19.0.0):
-    dependencies:
-      react: 19.0.0
 
   react-compiler-runtime@19.0.0-beta-e1e972c-20250221(react@18.3.1):
     dependencies:
