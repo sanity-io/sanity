@@ -10,8 +10,8 @@ import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {getReleaseDefaults} from '../../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
 
 interface CreateReleaseDialogProps {

@@ -32,7 +32,8 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
     isMounted.current = true
 
     if (getIsReleaseOpen(release)) {
-      // title and description will be readOnly if release is not 'active'
+      // title and description will be readOnly if release is not 'open'
+      // so only need to check permission to edit if release is 'open'
       checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
         if (isMounted.current) setHasUpdatePermission(hasPermission)
       })

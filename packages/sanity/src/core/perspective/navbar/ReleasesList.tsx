@@ -11,8 +11,9 @@ import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {getReleaseDefaults, LATEST} from '../../releases/util/const'
+import {LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDefaults} from '../../releases/util/util'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,

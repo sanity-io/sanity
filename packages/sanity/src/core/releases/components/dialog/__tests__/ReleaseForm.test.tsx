@@ -108,27 +108,6 @@ describe('ReleaseForm', () => {
         metadata: {...valueMock.metadata, description: 'New Description'},
       })
     })
-
-    /*it('should call onChange when publishAt input value changes', () => {
-    const publishAtInput = screen.getByTestId('release-form-publish-at')
-    fireEvent.change(publishAtInput, {target: {value: '2022-01-01'}})
-
-    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: '2022-01-01'})
-  })
-
-  it('should call onChange with undefined when publishAt input value is empty', () => {
-    const publishAtInput = screen.getByTestId('release-form-publish-at')
-    fireEvent.change(publishAtInput, {target: {value: ' '}})
-
-    expect(onChangeMock).toHaveBeenCalledWith({...valueMock, publishAt: ''})
-  })*/
-
-    /*it('should show an error when the publishAt input value is invalid', () => {
-    const publishAtInput = screen.getByTestId('release-form-publish-at')
-    fireEvent.change(publishAtInput, {target: {value: 'invalid-date'}})
-
-    expect(screen.getByTestId('input-validation-icon-error')).toBeInTheDocument()
-  })*/
   })
 
   describe('when updating an existing release', () => {
@@ -168,7 +147,6 @@ describe('ReleaseForm', () => {
           },
           _rev: '',
         },
-        // Add more mock data if needed
       ]
       mockUseActiveReleases.mockReturnValue({
         data: mockData,
