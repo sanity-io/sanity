@@ -52,7 +52,7 @@ describe('Studio', () => {
     spy.mockReset()
     spy.mockRestore()
   })
-  it(`SSR to markup for hydration doesn't throw`, () => {
+  it(`SSR to markup for hydration doesn't throw`, async () => {
     const spy = vi.spyOn(console, 'error')
     const node = document.createElement('div')
     document.body.appendChild(node)
@@ -63,7 +63,8 @@ describe('Studio', () => {
       node.innerHTML = html
 
       document.head.innerHTML += sheet.getStyleTags()
-      act(() => hydrateRoot(node, <Studio config={config} />))
+      const root = await act(() => hydrateRoot(node, <Studio config={config} />))
+      await act(() => root.unmount())
     } finally {
       sheet.seal()
     }
