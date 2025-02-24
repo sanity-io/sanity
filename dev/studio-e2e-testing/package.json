@@ -18,7 +18,7 @@
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.6.0",
-    "@sanity/ui": "^2.14.1",
+    "@sanity/ui": "^2.14.2",
     "@sanity/vision": "3.76.3",
     "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "react": "^19.0.0",
