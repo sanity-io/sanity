@@ -33,8 +33,8 @@ import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
-import {DEFAULT_RELEASE} from '../../util/const'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getReleaseDefaults} from '../../util/util'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
@@ -91,6 +91,7 @@ export function ReleasesOverview() {
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
 
   const mediaIndex = useMediaIndex()
 
@@ -124,8 +125,16 @@ export function ReleasesOverview() {
     ]
   }, [hasReleases, releasesMetadata, releases])
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then(setHasCreatePermission)
+    isMounted.current = true
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+      if (isMounted.current) setHasCreatePermission(hasPermissions)
+    })
+
+    return () => {
+      isMounted.current = false
+    }
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
@@ -234,25 +243,41 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
-  const handleOnClickCreateRelease = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [guardWithReleaseLimitUpsell],
-  )
+  const handleOnClickCreateRelease = useCallback(async () => {
+    setIsPendingGuardResponse(true)
+    await guardWithReleaseLimitUpsell(() => {
+      setIsCreateReleaseDialogOpen(true)
+    })
+    setIsPendingGuardResponse(false)
+  }, [guardWithReleaseLimitUpsell])
 
   const createReleaseButton = useMemo(
     () => (
       <UIButton
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={
+          isPendingGuardResponse ||
+          !hasCreatePermission ||
+          isCreateReleaseDialogOpen ||
+          mode === 'disabled'
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         paddingY={3}
         tooltipProps={{
-          content: !hasCreatePermission && tCore('release.action.permission.error'),
+          disabled: hasCreatePermission === true,
+          content: tCore('release.action.permission.error'),
         }}
       />
     ),
-    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
+    [
+      isPendingGuardResponse,
+      hasCreatePermission,
+      isCreateReleaseDialogOpen,
+      mode,
+      handleOnClickCreateRelease,
+      tCore,
+    ],
   )
 
   const handleOnCreateRelease = useCallback(

@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -38,31 +39,32 @@ export const ReleaseMenu = ({
   const [hasUnarchivePermission, setHasUnarchivePermission] = useState<boolean | null>(null)
   const [hasDeletePermission, setHasDeletePermission] = useState<boolean | null>(null)
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
 
     if (!releaseMenuDisabled) {
       if (release.state !== 'published') {
         if (release.state === 'archived') {
           checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
-            if (shouldUpdate) setHasUnarchivePermission(hasPermission)
+            if (isMounted.current) setHasUnarchivePermission(hasPermission)
           })
         } else {
           checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
-            if (shouldUpdate) setHasArchivePermission(hasPermission)
+            if (isMounted.current) setHasArchivePermission(hasPermission)
           })
         }
       }
 
       if (release.state === 'archived' || release.state == 'published') {
         checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
-          if (shouldUpdate) setHasDeletePermission(hasPermission)
+          if (isMounted.current) setHasDeletePermission(hasPermission)
         })
       }
     }
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [
     release._id,

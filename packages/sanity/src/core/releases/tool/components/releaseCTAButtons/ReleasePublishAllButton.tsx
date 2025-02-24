@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -46,10 +46,17 @@ export const ReleasePublishAllButton = ({
   const isPublishButtonDisabled =
     disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishPermission
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) =>
-      setPublishPermission(hasPermission),
-    )
+    isMounted.current = true
+
+    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+      if (isMounted.current) setPublishPermission(hasPermission)
+    })
+
+    return () => {
+      isMounted.current = false
+    }
   }, [checkWithPermissionGuard, publishRelease, release._id, release.metadata.intendedPublishAt])
 
   const handleConfirmPublishAll = useCallback(async () => {

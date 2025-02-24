@@ -10,7 +10,7 @@ export const activeScheduledRelease: ReleaseDocument = {
   metadata: {
     title: 'active Release',
     releaseType: 'scheduled',
-    intendedPublishAt: '2023-10-10T10:00:00Z',
+    intendedPublishAt: '2023-10-10T10:00:00.000Z',
     description: 'active Release description',
   },
 }

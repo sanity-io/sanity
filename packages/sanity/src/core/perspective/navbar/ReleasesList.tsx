@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
@@ -11,8 +11,9 @@ import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {DEFAULT_RELEASE, LATEST} from '../../releases/util/const'
+import {LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDefaults} from '../../releases/util/util'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -70,10 +71,19 @@ export function ReleasesList({
 
   const {t} = useTranslation()
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
-      setHasCreatePermission,
+    isMounted.current = true
+
+    checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults())).then(
+      (hasPermission) => {
+        if (isMounted.current) setHasCreatePermission(hasPermission)
+      },
     )
+
+    return () => {
+      isMounted.current = false
+    }
   }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
 
   const handleCreateBundleClick = useCallback(
@@ -175,7 +185,8 @@ export function ReleasesList({
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"
             tooltipProps={{
-              content: !hasCreatePermission && t('release.action.permission.error'),
+              disabled: hasCreatePermission === true,
+              content: t('release.action.permission.error'),
             }}
           />
         </>

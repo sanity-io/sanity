@@ -90,7 +90,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document has live edit enabled and cannot be unpublished',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
-    "You are viewing a read-only document that was archived as part of <VersionBadge> a release</VersionBadge>. It can't be edited",
+    "You are viewing a read-only document that was archived as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
@@ -121,9 +121,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
-  /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
+  /** Description for the archived release banner, rendered when viewing the history of a version document from the published view */
   'banners.published-release.description':
-    "You are viewing a read-only document that was published as part of <VersionBadge> a release</VersionBadge>. It can't be edited",
+    "You are viewing a read-only document that was published as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
   /** The text for the reload button */
   'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
   /** The text for the reference change banner if the reason is that the reference has been changed */
@@ -137,7 +137,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
   /** The text for the banner that appears when a document is not in the current global release */
-  'banners.release.not-in-release': 'Not in the <Label>{{title}}</Label> release.',
+  'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
+
+  /** The text content for the unpublished document banner when is part of a release */
+  'banners.unpublished-release-banner.text':
+    'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
 
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
@@ -189,8 +193,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.cdr-table.dataset.label': 'Dataset',
   /** The header for the document ID column in the list of cross-dataset references found */
   'confirm-delete-dialog.cdr-table.document-id.label': 'Document ID',
-  /** The toast title when the copy button has been clicked */
-  'confirm-delete-dialog.cdr-table.id-copied-toast.title': 'Copied document ID to clipboard!',
   /** The toast title when the copy button has been clicked but copying failed */
   'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */

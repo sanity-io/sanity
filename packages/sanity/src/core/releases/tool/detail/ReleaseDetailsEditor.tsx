@@ -1,6 +1,6 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
-import {TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
+import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
@@ -27,15 +27,20 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
     [hasUpdatePermission, timer, updateRelease],
   )
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    let shouldUpdate = true
+    isMounted.current = true
 
-    checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
-      if (shouldUpdate) setHasUpdatePermission(hasPermission)
-    })
+    if (getIsReleaseOpen(release)) {
+      // title and description will be readOnly if release is not 'open'
+      // so only need to check permission to edit if release is 'open'
+      checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
+        if (isMounted.current) setHasUpdatePermission(hasPermission)
+      })
+    }
 
     return () => {
-      shouldUpdate = false
+      isMounted.current = false
     }
   }, [checkWithPermissionGuard, release, release._id, updateRelease])
 

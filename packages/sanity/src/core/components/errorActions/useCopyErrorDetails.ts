@@ -28,14 +28,7 @@ export function useCopyErrorDetails(error: unknown, eventId?: string | null): ()
           })
           return EMPTY
         }),
-        tap((errorDetailsString) => {
-          navigator.clipboard.writeText(errorDetailsString)
-          toast.push({
-            status: 'success',
-            title: strings['copy-error-details.toast.succeeded'],
-            id: TOAST_ID,
-          })
-        }),
+        tap((errorDetailsString) => navigator.clipboard.writeText(errorDetailsString)),
         catchError((copyErrorError) => {
           console.error(copyErrorError)
           toast.push({

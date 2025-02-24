@@ -27,6 +27,7 @@ import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
+import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
 
 interface DocumentPanelProps {
@@ -197,6 +198,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <DeletedDocumentBanners />
+        <UnpublishedDocumentBanner />
       </>
     )
   }, [

@@ -22,21 +22,25 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
     // this is used to replace the `null` values in any `dependencies` so that
     // they can be used in the `MultiKeyWeakMap` which doesn't accept null
     const nullReplacer = {}
+    // this is used to replace `[]` dependencies to maintain the
+    // same referential integrity in the weak map lookup
+    const emptyDependenciesReplacer = [nullReplacer]
+
+    const removeNullDependencies = (dependencies: (object | null)[]) =>
+      dependencies.length
+        ? dependencies.map((dep) => (dep === null ? nullReplacer : dep))
+        : emptyDependenciesReplacer
 
     return {
       get: ({namespace, dependencies}) => {
-        const dependenciesWithoutNull = dependencies.map((dep) =>
-          dep === null ? nullReplacer : dep,
-        )
+        const dependenciesWithoutNull = removeNullDependencies(dependencies)
         const namespaceMap = namespaces.get(namespace)
         return namespaceMap?.get(dependenciesWithoutNull)
       },
 
       set: ({namespace, dependencies, value}) => {
         const namespaceMap = namespaces.get(namespace) || createMultiKeyWeakMap()
-        const dependenciesWithoutNull = dependencies.map((dep) =>
-          dep === null ? nullReplacer : dep,
-        )
+        const dependenciesWithoutNull = removeNullDependencies(dependencies)
         namespaces.set(namespace, namespaceMap)
         namespaceMap.set(dependenciesWithoutNull, value)
       },

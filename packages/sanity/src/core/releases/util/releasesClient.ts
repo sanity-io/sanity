@@ -8,7 +8,7 @@ import {type SourceClientOptions} from '../../config/types'
  * TODO: Remove after API version is stable and support releases
  */
 export const RELEASES_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  apiVersion: 'X',
+  apiVersion: 'v2025-02-19',
 }
 
 /**

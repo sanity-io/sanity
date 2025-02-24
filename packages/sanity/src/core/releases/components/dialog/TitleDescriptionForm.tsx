@@ -81,6 +81,9 @@ const DescriptionTextArea = styled.textarea((props) => {
   `
 })
 
+export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
+  release.state !== 'archived' && release.state !== 'published'
+
 export function TitleDescriptionForm({
   release,
   onChange,
@@ -90,7 +93,7 @@ export function TitleDescriptionForm({
   onChange: (changedValue: EditableReleaseDocument) => void
   disabled?: boolean
 }): React.JSX.Element {
-  const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
+  const isReleaseOpen = getIsReleaseOpen(release)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [scrollHeight, setScrollHeight] = useState(46)

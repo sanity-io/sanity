@@ -2,7 +2,7 @@ import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -58,10 +58,17 @@ export const ReleaseScheduleButton = ({
   const isScheduleButtonDisabled =
     disabled || isValidatingDocuments || !schedulePermission || hasDocumentValidationErrors
 
+  const isMounted = useRef(false)
   useEffect(() => {
-    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) =>
-      setSchedulePermission(hasPermission),
-    )
+    isMounted.current = true
+
+    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+      if (isMounted.current) setSchedulePermission(hasPermission)
+    })
+
+    return () => {
+      isMounted.current = false
+    }
   }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {

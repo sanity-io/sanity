@@ -18,6 +18,8 @@ import {
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnFalse,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {
@@ -61,9 +63,7 @@ describe('ReleaseMenuButton', () => {
 
       mockUseBundleDocuments.mockRestore()
 
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
     })
 
     describe('archive release', () => {
@@ -373,9 +373,7 @@ describe('ReleaseMenuButton', () => {
 
       mockUseBundleDocuments.mockRestore()
 
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: vi.fn().mockResolvedValue(false),
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
     })
 
     test('will disable archive menu', async () => {

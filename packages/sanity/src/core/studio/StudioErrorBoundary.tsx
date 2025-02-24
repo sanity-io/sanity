@@ -122,8 +122,8 @@ export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
                   <Stack space={4}>
                     {message && (
-                      <Code size={1}>
-                        <strong>Error: {message}</strong>
+                      <Code weight={'bold'} size={1}>
+                        {message}
                       </Code>
                     )}
                     {stack && <Code size={1}>{stack}</Code>}

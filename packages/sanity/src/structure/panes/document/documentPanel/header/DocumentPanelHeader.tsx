@@ -220,7 +220,7 @@ export const DocumentPanelHeader = memo(
       <TooltipDelayGroupProvider>
         <Card hidden={collapsed} style={{lineHeight: 0}}>
           <Flex>
-            <Flex flex={1} wrap="wrap" gap={1} padding={3} paddingBottom={0}>
+            <Flex flex={1} gap={1} padding={3} paddingBottom={0} style={{overflowX: 'scroll'}}>
               <DocumentPerspectiveList />
             </Flex>
 

@@ -16,6 +16,8 @@ import {
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
+  useReleasesPermissionsMockReturnFalse,
+  useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesList} from '../ReleasesList'
 
@@ -40,9 +42,7 @@ describe('ReleasesList', () => {
         ...useActiveReleasesMockReturn,
         data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
       })
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: async () => true,
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -122,9 +122,7 @@ describe('ReleasesList', () => {
         ...useActiveReleasesMockReturn,
         data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
       })
-      mockUseReleasePermissions.mockReturnValue({
-        checkWithPermissionGuard: async () => false,
-      })
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
       const wrapper = await createTestProvider()
       render(
         <Menu>
