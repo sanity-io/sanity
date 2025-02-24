@@ -15,9 +15,10 @@ export interface SelectAssetsDialogProps {
   libraryId: string
   onClose: () => void
   onSelect: (selection: AssetSelectionItem[]) => Promise<void>
+  ref: React.Ref<HTMLDivElement>
+  selectAssetType?: AssetType
   selection: AssetSelectionItem[]
   selectionType?: 'single' | 'multiple'
-  selectAssetType?: AssetType
 }
 
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
@@ -31,17 +32,24 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   const authType = useAuthType()
 
-  const {dialogHeaderTitle, libraryId, onClose, onSelect, selectionType = 'single'} = props
+  const {
+    dialogHeaderTitle,
+    libraryId,
+    onClose,
+    onSelect,
+    selectionType = 'single',
+    ref,
+    selectAssetType,
+  } = props
 
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
 
   const pluginApiVersion = assetLibraryConfig.__internal.pluginApiVersion
   const appBasePath = assetLibraryConfig.__internal.appBasePath
-  const assetType = props.selectAssetType
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${assetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+    `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
 
   const handleClose = useCallback(() => {
     onClose()
@@ -71,6 +79,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       id="sanity-asset-library-plugin-dialog-select-assets"
       onClose={handleClose}
       open
+      ref={ref}
       width={3}
       footer={
         <Flex width="full" gap={3} justify="flex-end" padding={2}>

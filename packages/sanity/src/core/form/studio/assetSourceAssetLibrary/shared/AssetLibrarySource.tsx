@@ -4,14 +4,17 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {forwardRef, memo, useCallback} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback} from 'react'
 
 import {useClient} from '../../../../../core/hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 
-const AssetLibraryAssetSource = function AssetLibraryAssetSource(props: AssetSourceComponentProps) {
+const AssetLibraryAssetSource = function AssetLibraryAssetSource(
+  props: AssetSourceComponentProps,
+  ref: ForwardedRef<HTMLDivElement>,
+) {
   const {t} = useTranslation()
   const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
 
@@ -76,6 +79,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(props: AssetSou
           context: assetType,
         })
       }
+      ref={ref}
       onClose={handleClose}
       onSelect={handleSelect}
       selection={[]}

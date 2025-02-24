@@ -20,6 +20,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'announcement.floating-button.dismiss-label': 'Dismiss announcements',
   /**Aria label to be used in the floating button in the studio announcement card */
   'announcement.floating-button.open-label': 'Open announcements',
+  /** Asset source: Asset Library Menu Items for Asset Library */
+  'asset-source.asset-library.image.title': 'Asset Library',
+  // eslint-disable-next-line sort-keys
+  'asset-source.asset-library.file.title': 'Asset Library',
   /** Menu item for deleting the asset */
   'asset-source.asset-list.menu.delete': 'Delete',
   /** Menu item for showing where a particular asset is used */
