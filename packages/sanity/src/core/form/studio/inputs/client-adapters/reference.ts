@@ -116,7 +116,7 @@ export function getReferenceInfo(
 
           const publishedDocumentExists$ = documentPreviewStore
             .observePaths({_id: publishedId}, ['_rev'])
-            .pipe(map((res: any) => Boolean(res._rev)))
+            .pipe(map((res) => Boolean((res as {_id: string; _rev: string} | undefined)?._rev)))
 
           const previewState$ = getPreviewStateObservable(
             documentPreviewStore,
