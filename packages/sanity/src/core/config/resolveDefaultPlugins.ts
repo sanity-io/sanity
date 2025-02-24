@@ -50,7 +50,7 @@ export function getDefaultPluginsOptions(
     },
     releases: {
       ...workspace.releases,
-      enabled: workspace.releases?.enabled ?? false,
+      enabled: workspace.releases?.enabled ?? true,
     },
   }
 }
