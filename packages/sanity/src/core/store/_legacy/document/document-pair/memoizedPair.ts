@@ -29,10 +29,11 @@ export const memoizedPair: (
       const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
       return merge(
         of(pair),
-        // merge in draft events and published events to makes sure they receive
+        // merge in draft, published, and version events to makes sure they receive
         // the events they need for as long as the pair is subscribed to
         pair.draft.events.pipe(mergeMap(() => EMPTY)),
         pair.published.events.pipe(mergeMap(() => EMPTY)),
+        pair.version?.events.pipe(mergeMap(() => EMPTY)) ?? EMPTY,
       ).subscribe(subscriber)
     }).pipe(
       share({
