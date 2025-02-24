@@ -5,6 +5,11 @@ on:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [next]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   install:
     timeout-minutes: 30

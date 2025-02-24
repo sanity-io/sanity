@@ -3,6 +3,11 @@ on:
   push:
     branches: [next]
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   formatCheck:
     timeout-minutes: 30
