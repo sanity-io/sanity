@@ -1,7 +1,8 @@
 import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type ReleaseDocument} from '../store/types'
-import {LATEST} from './const'
+import {type EditableReleaseDocument, type ReleaseDocument} from '../store/types'
+import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
+import {createReleaseId} from './createReleaseId'
 
 /**
  * @beta
@@ -73,3 +74,13 @@ export function isReleaseScheduledOrScheduling(release: ReleaseDocument): boolea
     (release.state === 'scheduled' || release.state === 'scheduling')
   )
 }
+
+/** @internal */
+export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
+  _id: createReleaseId(),
+  metadata: {
+    title: '',
+    description: '',
+    releaseType: DEFAULT_RELEASE_TYPE,
+  },
+})

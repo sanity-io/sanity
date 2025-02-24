@@ -33,8 +33,8 @@ import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
-import {DEFAULT_RELEASE} from '../../util/const'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {getReleaseDefaults} from '../../util/util'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
@@ -127,7 +127,7 @@ export function ReleasesOverview() {
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 

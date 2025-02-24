@@ -15,9 +15,9 @@ import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../../store/useReleasePermissions'
-import {DEFAULT_RELEASE} from '../../../../util/const'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDefaults} from '../../../../util/util'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 import {useDocumentRevertStates} from './useDocumentRevertStates'
 import {usePostPublishTransactions} from './usePostPublishTransactions'
@@ -240,7 +240,7 @@ export const ReleaseRevertButton = ({
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
