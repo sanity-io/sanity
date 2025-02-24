@@ -6,6 +6,7 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   Hotkeys,
+  isPublishedId,
   usePerspective,
   useSource,
 } from 'sanity'
@@ -29,6 +30,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
+  const {value} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -59,10 +61,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
   /* Version / Bundling handling */
+  const canShowAction = firstActionState && !selectedReleaseId && !isPublishedId(value._id)
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && !selectedReleaseId && (
+      {canShowAction && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
