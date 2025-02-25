@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.77.1",
+  "version": "3.77.2",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
