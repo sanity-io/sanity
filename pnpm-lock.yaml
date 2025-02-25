@@ -423,8 +423,8 @@ importers:
         specifier: ^1.1.10
         version: 1.1.10(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/editor':
-        specifier: ^1.35.4
-        version: 1.35.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
+        specifier: ^1.36.1
+        version: 1.36.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
@@ -1351,8 +1351,8 @@ importers:
         specifier: ^1.1.10
         version: 1.1.10(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/editor':
-        specifier: ^1.35.4
-        version: 1.35.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
+        specifier: ^1.36.1
+        version: 1.36.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4225,18 +4225,12 @@ packages:
       '@sanity/types': ^3.77.1
       '@types/react': 18 || 19
 
-  '@portabletext/block-tools@1.1.9':
-    resolution: {integrity: sha512-Yov1p6AKil/iPuGPrw89QpwbaCfwrLfFDcw7EgQnTfbWLH0N2uZRiVxMynXUfew7mH4Gq4VWnNxIdyfdmLN0Lg==}
-    peerDependencies:
-      '@sanity/types': ^3.76.3
-      '@types/react': 18 || 19
-
-  '@portabletext/editor@1.35.4':
-    resolution: {integrity: sha512-N+tfndK32AE5EA2cfwH9xY6nshXSnOdfQfNEX2tbx4UZZ0EEUzofXB9CqgK9XlrY2HbyKJefkWidfKIaXNny3w==}
+  '@portabletext/editor@1.36.1':
+    resolution: {integrity: sha512-0bH26g99YIBulEU1J0Ca373GVvWYzuq1wVE/dxlr4SnPh9y6UEeX+dWBCaOIxyDT9EVkXsT83PoB2XTXUlHh8A==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/schema': ^3.76.3
-      '@sanity/types': ^3.76.3
+      '@sanity/schema': ^3.77.1
+      '@sanity/types': ^3.77.1
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.2
 
@@ -14525,16 +14519,9 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/block-tools@1.1.9(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)':
+  '@portabletext/editor@1.36.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
     dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.0.10
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
-
-  '@portabletext/editor@1.35.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.1)':
-    dependencies:
-      '@portabletext/block-tools': 1.1.9(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
+      '@portabletext/block-tools': 1.1.10(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
@@ -14557,9 +14544,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.35.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
+  '@portabletext/editor@1.36.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.1)':
     dependencies:
-      '@portabletext/block-tools': 1.1.9(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
+      '@portabletext/block-tools': 1.1.10(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
