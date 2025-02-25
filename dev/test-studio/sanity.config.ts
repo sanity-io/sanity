@@ -78,9 +78,6 @@ const sharedSettings = definePlugin({
       enabled: true,
     },
   },
-  search: {
-    strategy: 'groq2024',
-  },
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
@@ -240,6 +237,9 @@ export default defineConfig([
       eventsAPI: {
         releases: true,
       },
+    },
+    search: {
+      strategy: 'groq2024',
     },
     releases: {
       enabled: true,
