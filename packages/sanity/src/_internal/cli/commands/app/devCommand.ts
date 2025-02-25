@@ -11,7 +11,7 @@ Notes
   Changing the hostname or port number might require a new entry to the CORS-origins allow list.
 
 Options
-  --port <port> TCP port to start server on. [default: 3333]
+  --port <port> TCP port to start server on. [default: 3334]
   --host <host> The local network interface at which to listen. [default: "127.0.0.1"]
 
 Examples
@@ -45,12 +45,12 @@ export async function getDevAction(): Promise<
   // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {
     // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
-    const mod: typeof import('../../actions/dev/devAction') = require('../../actions/dev/devAction.ts')
+    const mod: typeof import('../../actions/app/devAction') = require('../../actions/app/devAction.ts')
 
     return mod.default
   }
 
-  const mod = await import('../../actions/dev/devAction')
+  const mod = await import('../../actions/app/devAction')
 
   return mod.default
 }
