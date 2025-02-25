@@ -100,11 +100,9 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
 const usePerspectiveMockValue: Mocked<ReturnType<typeof usePerspective>> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  setPerspective: vi.fn(),
   selectedPerspective: 'drafts',
-  toggleExcludedPerspective: vi.fn(),
-  isPerspectiveExcluded: vi.fn(),
   perspectiveStack: [],
+  excludedPerspectives: [],
 } as const
 
 const getPaneMock = ({
