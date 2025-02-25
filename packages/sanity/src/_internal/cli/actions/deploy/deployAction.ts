@@ -28,6 +28,7 @@ export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   'verbose'?: boolean
 }
 
+// eslint-disable-next-line complexity
 export default async function deployStudioAction(
   args: CliCommandArguments<DeployStudioActionFlags>,
   context: CliCommandContext,
@@ -115,7 +116,7 @@ export default async function deployStudioAction(
     debug('Error creating user application', err)
     throw err
   }
-
+  let schemaStoringSuccess = false
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
@@ -155,56 +156,68 @@ export default async function deployStudioAction(
         extraArguments: [],
       }
 
-      await storeManifestSchemas(storeManifestSchemasArgs, context)
-    }
-
-    // Ensure that the directory exists, is a directory and seems to have valid content
-    spinner = output.spinner('Verifying local content').start()
-    try {
-      await checkDir(sourceDir)
-      spinner.succeed()
-    } catch (err) {
-      spinner.fail()
-      debug('Error checking directory', err)
-      throw err
-    }
-
-    // Now create a tarball of the given directory
-    const parentDir = path.dirname(sourceDir)
-    const base = path.basename(sourceDir)
-    const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
-
-    spinner = output.spinner(`Deploying to ${isCoreApp ? 'CORE' : 'Sanity.Studio'}`).start()
-    try {
-      const {location} = await createDeployment({
-        client,
-        applicationId: userApplication.id,
-        version: installedSanityVersion,
-        isAutoUpdating,
-        tarball,
-        isCoreApp,
-      })
-
-      spinner.succeed()
-
-      // And let the user know we're done
-      output.print(
-        `\nSuccess! ${isCoreApp ? 'Application deployed' : `Studio deployed to ${chalk.cyan(location)}`}`,
+      const storeManifestSchemasError = await storeManifestSchemas(
+        storeManifestSchemasArgs,
+        context,
       )
-
-      if ((isCoreApp && !appId) || (!isCoreApp && !configStudioHost)) {
-        output.print(
-          `\nAdd ${chalk.cyan(isCoreApp ? `appId: '${userApplication.id}'` : `studioHost: '${userApplication.appHost}'`)}`,
-        )
-        output.print(
-          `to ${isCoreApp ? '__experimental_coreAppConfiguration' : 'defineCliConfig root properties'} in sanity.cli.js or sanity.cli.ts`,
-        )
-        output.print(`to avoid prompting ${isCoreApp ? '' : 'for hostname'} on next deploy.`)
+      if (!storeManifestSchemasError) {
+        schemaStoringSuccess = true
       }
-    } catch (err) {
-      spinner.fail()
-      debug('Error deploying studio', err)
-      throw err
     }
+  }
+
+  // Ensure that the directory exists, is a directory and seems to have valid content
+  spinner = output.spinner('Verifying local content').start()
+  try {
+    await checkDir(sourceDir)
+    spinner.succeed()
+  } catch (err) {
+    spinner.fail()
+    debug('Error checking directory', err)
+    throw err
+  }
+
+  // Now create a tarball of the given directory
+  const parentDir = path.dirname(sourceDir)
+  const base = path.basename(sourceDir)
+  const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
+
+  spinner = output.spinner(`Deploying to ${isCoreApp ? 'CORE' : 'Sanity.Studio'}`).start()
+  try {
+    const {location} = await createDeployment({
+      client,
+      applicationId: userApplication.id,
+      version: installedSanityVersion,
+      isAutoUpdating,
+      tarball,
+      isCoreApp,
+    })
+
+    spinner.succeed()
+
+    output.print()
+
+    if (schemaStoringSuccess) {
+      output.print(`You can list stored schemas with ${chalk.cyan('sanity schema list')}`)
+    }
+
+    // And let the user know we're done
+    output.print(
+      `\nSuccess! ${isCoreApp ? 'Application deployed' : `Studio deployed to ${chalk.cyan(location)}`}`,
+    )
+
+    if ((isCoreApp && !appId) || (!isCoreApp && !configStudioHost)) {
+      output.print(
+        `\nAdd ${chalk.cyan(isCoreApp ? `appId: '${userApplication.id}'` : `studioHost: '${userApplication.appHost}'`)}`,
+      )
+      output.print(
+        `to ${isCoreApp ? '__experimental_coreAppConfiguration' : 'defineCliConfig root properties'} in sanity.cli.js or sanity.cli.ts`,
+      )
+      output.print(`to avoid prompting ${isCoreApp ? '' : 'for hostname'} on next deploy.`)
+    }
+  } catch (err) {
+    spinner.fail()
+    debug('Error deploying studio', err)
+    throw err
   }
 }

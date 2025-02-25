@@ -15,7 +15,7 @@ import {
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {getTimer} from '../../util/timing'
 
-const MANIFEST_FILENAME = 'create-manifest.json'
+export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
 

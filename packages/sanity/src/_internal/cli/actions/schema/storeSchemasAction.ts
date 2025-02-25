@@ -9,6 +9,8 @@ import {
   type ManifestSchemaType,
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
+import {MANIFEST_FILENAME} from '../manifest/extractManifestAction'
+import {SANITY_WORKSPACE_SCHEMA_ID} from './schemaListAction'
 
 export interface StoreManifestSchemasFlags {
   'path'?: string
@@ -49,9 +51,9 @@ export default async function storeManifestSchemas(
     let manifest: CreateManifest
 
     try {
-      manifest = JSON.parse(readFileSync(`${manifestPath}/create-manifest.json`, 'utf-8'))
+      manifest = JSON.parse(readFileSync(`${manifestPath}/${MANIFEST_FILENAME}`, 'utf-8'))
     } catch (error) {
-      spinner.fail(`Manifest not found at ${manifestPath}/create-manifest.json`)
+      spinner.fail(`Manifest not found at ${manifestPath}/${MANIFEST_FILENAME}`)
       output.error(error)
       throw error
     }
@@ -61,7 +63,7 @@ export default async function storeManifestSchemas(
     let error: Error | undefined
 
     const saveSchema = async (workspace: ManifestWorkspaceFile) => {
-      const id = `${idPrefix || 'sanity.workspace.schema'}.${workspace.name}`
+      const id = `${idPrefix || SANITY_WORKSPACE_SCHEMA_ID}.${workspace.name}`
       try {
         if (workspace.projectId !== projectId) {
           throw new Error(
@@ -77,7 +79,7 @@ export default async function storeManifestSchemas(
             projectId: workspace.projectId,
           })
           .transaction()
-          .createOrReplace({_type: 'sanity.workspace.schema', _id: id, workspace, schema})
+          .createOrReplace({_type: SANITY_WORKSPACE_SCHEMA_ID, _id: id, workspace, schema})
           .commit()
         storedCount++
         spinner.text = `Stored ${storedCount} schemas so far...`
@@ -89,18 +91,10 @@ export default async function storeManifestSchemas(
         )
       } finally {
         if (verbose) {
-          spinner.info(
-            `${JSON.stringify(
-              {
-                id,
-                workspace: workspace.name,
-                projectId: workspace.projectId,
-                dataset: workspace.dataset,
-              },
-              null,
-              2,
-            )}`,
-          )
+          spinner.indent = 2
+          spinner.text = `${chalk.white('• ')}schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}, workspace: ${workspace.name}`
+          spinner.render()
+          spinner.indent = 0
         }
       }
     }

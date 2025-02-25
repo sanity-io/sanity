@@ -3,12 +3,13 @@ import {readFileSync} from 'node:fs'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
+import {MANIFEST_FILENAME} from '../../manifest/extractManifestAction'
 import storeManifestSchemas from '../storeSchemasAction'
 
 // Mock dependencies
 vi.mock('node:fs', () => ({
   readFileSync: vi.fn((path) => {
-    if (path.includes('create-manifest.json')) {
+    if (path.includes(MANIFEST_FILENAME)) {
       return JSON.stringify({
         workspaces: [
           {
