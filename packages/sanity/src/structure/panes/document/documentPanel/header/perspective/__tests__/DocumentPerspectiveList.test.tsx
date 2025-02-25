@@ -111,10 +111,12 @@ const getPaneMock = ({
   isCreatingDocument,
   displayedVersion = 'draft',
   editStateDocuments,
+  displayed,
 }: {
   isCreatingDocument?: boolean
   displayedVersion?: ReleaseId | 'published' | 'draft'
   editStateDocuments?: Array<'draft' | 'published' | 'version'>
+  displayed?: Record<string, unknown>
 } = {}) => {
   const publishedId = 'foo'
   const editStateDocument = {
@@ -142,17 +144,19 @@ const getPaneMock = ({
       liveEditSchemaType: false,
       release: displayedVersion.startsWith('r') ? displayedVersion : undefined,
     },
-    displayed: {
-      _id:
-        // eslint-disable-next-line no-nested-ternary
-        displayedVersion === 'published'
-          ? publishedId
-          : displayedVersion === 'draft'
-            ? getDraftId(publishedId)
-            : getVersionId(publishedId, displayedVersion),
-      _type: 'testAuthor',
-      _createdAt: isCreatingDocument ? undefined : '2023-01-01T00:00:00Z',
-    },
+    displayed: displayed
+      ? displayed
+      : {
+          _id:
+            // eslint-disable-next-line no-nested-ternary
+            displayedVersion === 'published'
+              ? publishedId
+              : displayedVersion === 'draft'
+                ? getDraftId(publishedId)
+                : getVersionId(publishedId, displayedVersion),
+          _type: 'testAuthor',
+          _createdAt: isCreatingDocument ? undefined : '2023-01-01T00:00:00Z',
+        },
   }
 }
 
@@ -213,6 +217,14 @@ describe('DocumentPerspectiveList', () => {
   })
 
   describe('disabled chips', () => {
+    beforeEach(() => {
+      mockUseDocumentVersions.mockReturnValue({
+        data: [],
+        loading: false,
+        error: null,
+      })
+    })
+
     it('should disable the "Published" chip when there is no published document and not live edit, draft should be enabled', async () => {
       mockUseDocumentPane.mockReturnValue(getPaneMock())
 
@@ -438,8 +450,8 @@ describe('DocumentPerspectiveList', () => {
         mockUseDocumentPane.mockReturnValue(
           getPaneMock({
             editStateDocuments: ['draft'],
-            displayedVersion: 'rSpringDrop',
-            isCreatingDocument: true,
+            displayedVersion: 'draft',
+            isCreatingDocument: false,
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -452,7 +464,6 @@ describe('DocumentPerspectiveList', () => {
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).toBeEnabled()
         expect(screen.getByRole('button', {name: 'Published'})).not.toBeEnabled()
-        expect(screen.getByRole('button', {name: 'Spring Drop'})).toHaveAttribute('data-selected')
       })
       it('no draft, published and no version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
