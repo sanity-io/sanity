@@ -109,7 +109,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.28.0",
+    "@sanity/client": "^6.28.1",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/mutate": "^0.12.1",
@@ -128,7 +128,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/coverage-v8": "^3.0.6",
+    "@vitest/coverage-v8": "^3.0.7",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "depcheck": "^1.4.7",
@@ -172,7 +172,7 @@
     "typescript": "5.7.3",
     "vite": "^6.1.1",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^3.0.6",
+    "vitest": "^3.0.7",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {

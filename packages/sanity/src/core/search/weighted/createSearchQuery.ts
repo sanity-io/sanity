@@ -194,7 +194,7 @@ export function createSearchQuery(
     },
     options: {
       tag,
-      perspective: isRaw ? undefined : searchOpts.perspective,
+      perspective: isRaw || !searchOpts.perspective?.length ? 'raw' : searchOpts.perspective,
     },
     searchSpec: specs,
     terms,
