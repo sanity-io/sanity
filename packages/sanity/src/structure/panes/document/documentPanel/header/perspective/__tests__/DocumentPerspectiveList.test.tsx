@@ -100,11 +100,9 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
 const usePerspectiveMockValue: Mocked<ReturnType<typeof usePerspective>> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  setPerspective: vi.fn(),
   selectedPerspective: 'drafts',
-  toggleExcludedPerspective: vi.fn(),
-  isPerspectiveExcluded: vi.fn(),
   perspectiveStack: [],
+  excludedPerspectives: [],
 } as const
 
 const getPaneMock = ({
@@ -260,6 +258,27 @@ describe('DocumentPerspectiveList', () => {
       render(<DocumentPerspectiveList />, {wrapper})
 
       expect(screen.getByRole('button', {name: 'Published'})).toBeEnabled()
+    })
+
+    it('should disable the "Draft" chip when the document only has one version, no pinned version', async () => {
+      mockUseDocumentPane.mockReturnValue(
+        getPaneMock({
+          editStateDocuments: [],
+          displayedVersion: 'rSpringDrop',
+          isCreatingDocument: true,
+        }),
+      )
+
+      mockUsePerspective.mockReturnValue({
+        ...usePerspectiveMockValue,
+        selectedPerspectiveName: undefined,
+      })
+      mockUseDocumentVersions.mockReturnValue({data: ['rSpringDrop'], loading: false, error: null})
+
+      const wrapper = await getTestProvider({liveEdit: false})
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Draft'})).toBeDisabled()
     })
   })
 
