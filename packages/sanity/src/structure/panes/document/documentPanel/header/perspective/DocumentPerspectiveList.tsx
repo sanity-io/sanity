@@ -86,9 +86,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const filteredReleases = useFilteredReleases({displayed, documentId})
   const {data: documentVersions} = useDocumentVersions({documentId})
 
-  const onlyHasVersions =
-    (!editState?.published && !editState?.draft && documentVersions?.length > 0) ||
-    isCreatingDocument
+  const onlyHasVersions = !editState?.published && !editState?.draft && documentVersions?.length > 0
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
@@ -179,13 +177,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftDisabled: boolean = useMemo(() => {
     // Draft is disabled when the document has no published or draft but has versions
-    if (onlyHasVersions) {
+    if (onlyHasVersions || (isCreatingDocument && selectedReleaseId)) {
       return true
     }
 
     // Draft is disabled when we are creating a new document inside a release
     // or when the document is live edit and there is no draft
-    if (!editState?.draft) {
+    if (!editState?.draft && !isLiveEdit) {
       return false
     }
 
