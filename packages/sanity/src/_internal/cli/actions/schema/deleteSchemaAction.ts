@@ -9,10 +9,15 @@ export default async function deleteSchemaAction(
   context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
+  const {apiClient, output} = context
+
+  if (!flags.ids) {
+    output.error('No schema ids provided')
+    return
+  }
   //split ids by comma
   const schemaIds = flags.ids.split(',')
 
-  const {apiClient, output} = context
   const client = apiClient({
     requireUser: true,
     requireProject: true,
@@ -34,7 +39,7 @@ export default async function deleteSchemaAction(
       })
       .delete(schemaId.trim())
 
-    if (!deletedSchema) {
+    if (!deletedSchema.results.length) {
       output.error(`No schema found with id: ${schemaId}`)
       return
     }
