@@ -20,7 +20,7 @@ export interface StoreManifestSchemasFlags {
   'verbose'?: boolean
 }
 
-export default async function storeManifestSchemas(
+export default async function storeSchemasAction(
   args: CliCommandArguments<StoreManifestSchemasFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
@@ -126,5 +126,7 @@ export default async function storeManifestSchemas(
     // if this flag is set, throw the error and exit without deploying otherwise just log the error
     if (flags['schema-required']) throw err
     return err
+  } finally {
+    output.print(`List stored schemas with: ${chalk.cyan('sanity schema list')}`)
   }
 }

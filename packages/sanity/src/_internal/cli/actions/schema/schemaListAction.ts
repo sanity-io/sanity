@@ -38,7 +38,7 @@ const printSchemaList = ({schemas, output, dataset, projectId}: PrintSchemaListA
   rows.forEach((row) => output.print(printRow(row)))
 }
 
-export default async function fetchSchemaAction(
+export default async function storeSchemaAction(
   args: CliCommandArguments<SchemaListFlags>,
   context: CliCommandContext,
 ): Promise<void> {

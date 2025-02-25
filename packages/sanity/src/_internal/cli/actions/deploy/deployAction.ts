@@ -116,7 +116,7 @@ export default async function deployStudioAction(
     debug('Error creating user application', err)
     throw err
   }
-  let schemaStoringSuccess = false
+
   // Always build the project, unless --no-build is passed
   const shouldBuild = flags.build
   if (shouldBuild) {
@@ -145,25 +145,21 @@ export default async function deployStudioAction(
         output.error(`Schema extraction error: ${extractManifestError.message}`)
         throw extractManifestError
       }
-
-      const storeManifestSchemasArgs = {
-        ...args,
-        extOptions: {
-          'path': `${sourceDir}/static`,
-          'schema-required': flags['schema-required'],
-          'verbose': flags.verbose,
-        },
-        extraArguments: [],
-      }
-
-      const storeManifestSchemasError = await storeManifestSchemas(
-        storeManifestSchemasArgs,
-        context,
-      )
-      if (!storeManifestSchemasError) {
-        schemaStoringSuccess = true
-      }
     }
+  }
+
+  if (!isCoreApp) {
+    const storeManifestSchemasArgs = {
+      ...args,
+      extOptions: {
+        'path': `${sourceDir}/static`,
+        'schema-required': flags['schema-required'],
+        'verbose': flags.verbose,
+      },
+      extraArguments: [],
+    }
+
+    await storeManifestSchemas(storeManifestSchemasArgs, context)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
@@ -196,10 +192,6 @@ export default async function deployStudioAction(
     spinner.succeed()
 
     output.print()
-
-    if (schemaStoringSuccess) {
-      output.print(`You can list stored schemas with ${chalk.cyan('sanity schema list')}`)
-    }
 
     // And let the user know we're done
     output.print(
