@@ -1,12 +1,12 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {type UserApplication} from '../helpers'
-import * as _helpers from '../helpers'
-import undeployStudioAction from '../undeployAction'
+import {type UserApplication} from '../../deploy/helpers'
+import * as _helpers from '../../deploy/helpers'
+import undeployCoreAppAction from '../undeployAction'
 
 // Mock dependencies
-vi.mock('../helpers')
+vi.mock('../../deploy/helpers')
 
 const helpers = vi.mocked(_helpers)
 type SpinnerInstance = {
@@ -15,19 +15,19 @@ type SpinnerInstance = {
   fail: Mock<() => SpinnerInstance>
 }
 
-describe('undeployStudioAction', () => {
+describe('undeployCoreAppAction', () => {
   let mockContext: CliCommandContext
 
   const mockApplication: UserApplication = {
     id: 'app-id',
+    organizationId: 'org-id',
     appHost: 'app-host',
-    organizationId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     urlType: 'internal',
-    projectId: 'example',
+    projectId: null,
     title: null,
-    type: 'studio',
+    type: 'coreApp',
   }
 
   let spinnerInstance: SpinnerInstance
@@ -58,13 +58,13 @@ describe('undeployStudioAction', () => {
   it('does nothing if there is no user application', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(null)
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'Your project has not been assigned a studio hostname',
+      'Your project has not been assigned a Core application ID',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'or you do not have studioHost set in sanity.cli.js or sanity.cli.ts.',
+      'or you do not have __experimental_coreAppConfiguration set in sanity.cli.js or sanity.cli.ts.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
@@ -76,7 +76,7 @@ describe('undeployStudioAction', () => {
       true,
     ) // User confirms
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -86,10 +86,10 @@ describe('undeployStudioAction', () => {
     expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
       client: expect.anything(),
       applicationId: 'app-id',
-      appType: 'studio',
+      appType: 'coreApp',
     })
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining('Studio undeploy scheduled.'),
+      expect.stringContaining('Application undeploy scheduled.'),
     )
   })
 
@@ -99,7 +99,7 @@ describe('undeployStudioAction', () => {
       false,
     ) // User cancels
 
-    await undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -118,7 +118,7 @@ describe('undeployStudioAction', () => {
     ) // User confirms
 
     await expect(
-      undeployStudioAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
+      undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
     ).rejects.toThrow(errorMessage)
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()

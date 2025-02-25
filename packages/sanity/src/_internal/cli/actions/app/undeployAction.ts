@@ -1,11 +1,11 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 import {debug as debugIt} from '../../debug'
-import {deleteUserApplication, getUserApplication} from './helpers'
+import {deleteUserApplication, getUserApplication} from '../deploy/helpers'
 
 const debug = debugIt.extend('undeploy')
 
-export default async function undeployStudioAction(
+export default async function undeployCoreAppAction(
   _: CliCommandArguments<Record<string, unknown>>,
   context: CliCommandContext,
 ): Promise<void> {
@@ -13,22 +13,27 @@ export default async function undeployStudioAction(
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true,
+    requireProject: false,
   }).withConfig({apiVersion: 'v2024-08-01'})
 
-  // Check that the project has a studio hostname
-  let spinner = output.spinner('Checking project info').start()
+  // Check that the project has a Core application ID
+  let spinner = output.spinner('Checking application info').start()
 
   const userApplication = await getUserApplication({
     client,
-    appHost: cliConfig && 'studioHost' in cliConfig ? cliConfig.studioHost : undefined,
+    appId:
+      cliConfig && '__experimental_coreAppConfiguration' in cliConfig
+        ? cliConfig.__experimental_coreAppConfiguration?.appId
+        : undefined,
   })
 
   spinner.succeed()
 
   if (!userApplication) {
-    output.print('Your project has not been assigned a studio hostname')
-    output.print('or you do not have studioHost set in sanity.cli.js or sanity.cli.ts.')
+    output.print('Your project has not been assigned a Core application ID')
+    output.print(
+      'or you do not have __experimental_coreAppConfiguration set in sanity.cli.js or sanity.cli.ts.',
+    )
     output.print('Nothing to undeploy.')
     return
   }
@@ -49,21 +54,21 @@ export default async function undeployStudioAction(
     return
   }
 
-  spinner = output.spinner('Undeploying studio').start()
+  spinner = output.spinner('Undeploying application').start()
   try {
     await deleteUserApplication({
       client,
       applicationId: userApplication.id,
-      appType: 'studio',
+      appType: 'coreApp',
     })
     spinner.succeed()
   } catch (err) {
     spinner.fail()
-    debug('Error undeploying studio', err)
+    debug('Error undeploying application', err)
     throw err
   }
 
   output.print(
-    `Studio undeploy scheduled. It might take a few minutes before ${url} is unavailable.`,
+    `Application undeploy scheduled. It might take a few minutes before ${url} is unavailable.`,
   )
 }
