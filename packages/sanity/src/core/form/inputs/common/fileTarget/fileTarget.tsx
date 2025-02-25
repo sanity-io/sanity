@@ -126,6 +126,19 @@ export function fileTarget<ComponentProps>(
     const handleDrop = useCallback(
       (event: DragEvent) => {
         enteredElements.current = []
+
+        const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
+          type: item.type,
+          kind: item.kind,
+        }))
+
+        // Skip items that is PTE blocks
+        const isPortableTextBlock = fileTypes.some((item) => isPortableTextItem(item))
+
+        if (isPortableTextBlock) {
+          return
+        }
+
         event.preventDefault()
         event.stopPropagation()
         const dataTransfer = event.nativeEvent.dataTransfer
@@ -144,6 +157,18 @@ export function fileTarget<ComponentProps>(
     const handleDragOver = useCallback(
       (event: DragEvent) => {
         if (onFiles) {
+          const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
+            type: item.type,
+            kind: item.kind,
+          }))
+
+          // Skip items that is PTE blocks
+          const isPortableTextBlock = fileTypes.some((item) => isPortableTextItem(item))
+
+          if (isPortableTextBlock) {
+            return
+          }
+
           event.preventDefault()
           event.stopPropagation()
         }
@@ -181,6 +206,18 @@ export function fileTarget<ComponentProps>(
 
     const handleDragLeave = useCallback(
       (event: DragEvent) => {
+        const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
+          type: item.type,
+          kind: item.kind,
+        }))
+
+        // Skip items that is PTE blocks
+        const isPortableTextBlock = fileTypes.some((item) => isPortableTextItem(item))
+
+        if (isPortableTextBlock) {
+          return
+        }
+
         event.stopPropagation()
         const idx = enteredElements.current.indexOf(event.currentTarget)
         if (idx > -1) {
