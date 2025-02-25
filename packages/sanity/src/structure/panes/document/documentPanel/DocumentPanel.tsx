@@ -161,7 +161,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
-      !isCreatingDocument
+      !isCreatingDocument &&
+      typeof selectedReleaseId !== 'undefined'
     ) {
       return (
         <AddToReleaseBanner
