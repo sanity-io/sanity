@@ -7,8 +7,6 @@ const description = 'Lists all schemas in the current dataset.'
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
-Lists all schemas in the current dataset.
-
 Options
   --json get schemas as json
   --id <schema_id> fetch a specific schema by its ID

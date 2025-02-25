@@ -2,7 +2,7 @@ import {type CliCommandArguments, type CliCommandDefinition} from '@sanity/cli'
 
 import {type StoreManifestSchemasFlags} from '../../actions/schema/storeSchemasAction'
 
-const description = ''
+const description = 'Store schemas into the current dataset.'
 
 const helpText = `
 **Note**: This command is experimental and subject to change.

@@ -67,7 +67,7 @@ export default async function storeManifestSchemas(
       try {
         if (workspace.projectId !== projectId) {
           throw new Error(
-            `No rights to store schema for workspace ${workspace.name} with projectId: ${workspace.projectId}`,
+            `↳ No permissions to store schema for workspace ${workspace.name} with projectId: ${workspace.projectId}`,
           )
         }
         const schema = JSON.parse(
@@ -87,14 +87,15 @@ export default async function storeManifestSchemas(
       } catch (err) {
         error = err
         spinner.fail(
-          `Error storing schema for workspace '${workspace.name}':\n${chalk.red(`-${err.message}`)}`,
+          `Error storing schema for workspace '${workspace.name}':\n${chalk.red(`- ${err.message}`)}`,
         )
       } finally {
         if (verbose) {
-          spinner.indent = 2
-          spinner.text = `${chalk.white('• ')}schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}, workspace: ${workspace.name}`
-          spinner.render()
-          spinner.indent = 0
+          output.print(
+            chalk.gray(
+              `↳ schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}, workspace: ${workspace.name}\n`,
+            ),
+          )
         }
       }
     }
@@ -104,23 +105,20 @@ export default async function storeManifestSchemas(
       const workspaceToSave = manifest.workspaces.find(
         (workspace) => workspace.name === workspaceName,
       )
-      if (workspaceToSave) {
-        await saveSchema(workspaceToSave)
-      } else {
+      if (!workspaceToSave) {
         spinner.fail(`Workspace ${workspaceName} not found in manifest`)
-        error = new Error(
-          `Workspace ${workspaceName} not found in manifest: projectID: ${projectId}`,
-        )
+        throw new Error(`Workspace ${workspaceName} not found in manifest: projectID: ${projectId}`)
       }
+      await saveSchema(workspaceToSave as ManifestWorkspaceFile)
+      spinner.succeed(`Stored 1 schemas`)
     } else {
       await Promise.all(
         manifest.workspaces.map(async (workspace): Promise<void> => {
           await saveSchema(workspace)
         }),
       )
+      spinner.succeed(`Stored ${storedCount}/${manifest.workspaces.length} schemas`)
     }
-
-    spinner.succeed(`Stored ${storedCount}/${manifest.workspaces.length} schemas`)
 
     if (error) throw error
     return undefined

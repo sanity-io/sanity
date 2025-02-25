@@ -32,7 +32,7 @@ export default async function deleteSchemaAction(
         dataset: dataset,
         projectId: projectId,
       })
-      .delete(schemaId)
+      .delete(schemaId.trim())
 
     if (!deletedSchema) {
       output.error(`No schema found with id: ${schemaId}`)

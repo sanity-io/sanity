@@ -7,8 +7,6 @@ const description = 'Delete schemas by their IDs.'
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
-Delete schemas by their IDs.
-
 Options
   --ids <schema_id_1,schema_id_2,...> comma-separated list of schema IDs to delete
 
