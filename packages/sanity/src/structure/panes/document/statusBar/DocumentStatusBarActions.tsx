@@ -29,7 +29,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
+<<<<<<< HEAD
   const {editState} = useDocumentPane()
+=======
+  const {value, compareValue} = useDocumentPane()
+>>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -59,7 +63,17 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
+<<<<<<< HEAD
   const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
+=======
+  /**
+   * If there is null compareValue, it means the draft is yet to be saved.
+   * In this case the value is the published ID, but the action should show -
+   * so that it's consistent with the usual draft document actions.
+   */
+  const canShowAction =
+    firstActionState && !selectedReleaseId && (!isPublishedId(value._id) || compareValue === null)
+>>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
 
   /* Version / Bundling handling */
   return (
