@@ -25,6 +25,11 @@ export default async function storeSchemasAction(
   context: CliCommandContext,
 ): Promise<Error | undefined> {
   const flags = args.extOptions
+  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
+  if (typeof flags['id-prefix'] === 'boolean') throw new Error('Id prefix is empty')
+  if (typeof flags.workspace === 'boolean') throw new Error('Workspace is empty')
+
+  const schemaRequired = flags['schema-required']
   const workspaceName = flags.workspace
   const idPrefix = flags['id-prefix']
   const verbose = flags.verbose
@@ -63,7 +68,7 @@ export default async function storeSchemasAction(
     let error: Error | undefined
 
     const saveSchema = async (workspace: ManifestWorkspaceFile) => {
-      const id = `${idPrefix || SANITY_WORKSPACE_SCHEMA_ID}.${workspace.name}`
+      const id = `${idPrefix ? `${idPrefix}.` : ''}${SANITY_WORKSPACE_SCHEMA_ID}.${workspace.name}`
       try {
         if (workspace.projectId !== projectId) {
           throw new Error(
@@ -87,14 +92,13 @@ export default async function storeSchemasAction(
       } catch (err) {
         error = err
         spinner.fail(
-          `Error storing schema for workspace '${workspace.name}':\n${chalk.red(`- ${err.message}`)}`,
+          `Error storing schema for workspace '${workspace.name}':\n${chalk.red(`${err.message}`)}`,
         )
+        if (schemaRequired) throw err
       } finally {
         if (verbose) {
           output.print(
-            chalk.gray(
-              `↳ schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}, workspace: ${workspace.name}\n`,
-            ),
+            chalk.gray(`↳ schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}`),
           )
         }
       }
@@ -124,9 +128,9 @@ export default async function storeSchemasAction(
     return undefined
   } catch (err) {
     // if this flag is set, throw the error and exit without deploying otherwise just log the error
-    if (flags['schema-required']) throw err
+    if (schemaRequired) throw err
     return err
   } finally {
-    output.print(`List stored schemas with: ${chalk.cyan('sanity schema list')}`)
+    output.print(`${chalk.gray('↳ List stored schemas with:')} ${chalk.cyan('sanity schema list')}`)
   }
 }

@@ -43,6 +43,7 @@ export default async function storeSchemaAction(
   context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
+  if (typeof flags.id === 'boolean') throw new Error('Id is empty')
   const {apiClient, output} = context
   const client = apiClient({
     requireUser: true,
