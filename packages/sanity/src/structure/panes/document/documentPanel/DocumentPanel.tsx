@@ -150,14 +150,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (params?.historyVersion) {
       return <ArchivedReleaseDocumentBanner />
     }
+    const isCreatingDocument = displayed && !displayed._createdAt
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
-
     if (isScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    if (displayed?._id && getVersionFromId(displayed._id) !== selectedReleaseId && ready) {
+    if (
+      displayed?._id &&
+      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      ready &&
+      !isCreatingDocument
+    ) {
       return (
         <AddToReleaseBanner
           documentId={value._id}
