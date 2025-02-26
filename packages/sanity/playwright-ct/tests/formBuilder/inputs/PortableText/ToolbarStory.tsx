@@ -87,6 +87,15 @@ export function ToolbarStory(props: InputStoryProps) {
                                 ],
                               }),
                             ],
+                            components: {
+                              input: (inputProps: InputProps) => {
+                                const editorProps = {
+                                  ...inputProps,
+                                  initialActive: false,
+                                } as PortableTextInputProps
+                                return inputProps.renderDefault(editorProps)
+                              },
+                            },
                           }),
                         ],
                       }),

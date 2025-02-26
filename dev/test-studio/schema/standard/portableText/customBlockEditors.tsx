@@ -29,10 +29,10 @@ export const ptCustomBlockEditors = defineType({
     },
     {
       name: 'initialActive',
-      title: 'Activated on mount (no click required)',
+      title: 'Inactivate on mount (click required)',
       type: 'array',
       components: {
-        input: (props: PortableTextInputProps) => <BlockEditor {...props} initialActive />,
+        input: (props: PortableTextInputProps) => <BlockEditor {...props} initialActive={false} />,
       },
       of: [{type: 'block'}],
     },
