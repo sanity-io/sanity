@@ -15,7 +15,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -116,7 +116,7 @@ jobs:
 
   playwright-test:
     timeout-minutes: 30
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -231,7 +231,7 @@ jobs:
   merge-reports:
     if: always()
     needs: [playwright-test]
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -289,7 +289,7 @@ jobs:
       actions: write # needed to delete the cache
     timeout-minutes: 30
     name: Cleanup (${{ matrix.project }})
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     needs: [playwright-test]
 
     strategy:
