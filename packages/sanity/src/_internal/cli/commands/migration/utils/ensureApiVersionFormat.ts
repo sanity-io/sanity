@@ -15,7 +15,7 @@ export function ensureApiVersion(version: string): ApiVersion {
   // Check if the version matches the expected pattern
   if (!VERSION_PATTERN.test(normalizedVersion)) {
     throw new Error(
-      `Invalid API version format: ${normalizedVersion}. Expected format: v1-2-3 or vX`,
+      `Invalid API version format: ${normalizedVersion}. Expected format: vYYYY-MM-DD or vX`,
     )
   }
 
