@@ -18,7 +18,7 @@ import {debug} from '../../debug'
 import {DEFAULT_API_VERSION, MIGRATIONS_DIRECTORY} from './constants'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
-import {ensureVersionPrefix} from './utils/esureVersionPrefix'
+import {ensureApiVersionFormat} from './utils/ensureApiVersionFormat'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = `
@@ -183,7 +183,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       projectId: project ?? projectConfig.projectId!,
       apiHost: projectConfig.apiHost!,
       token: projectConfig.token!,
-      apiVersion: ensureVersionPrefix(apiVersion ?? DEFAULT_API_VERSION),
+      apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const
     if (dry) {
       dryRunHandler()
