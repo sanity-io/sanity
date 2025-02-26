@@ -529,7 +529,7 @@ export interface PortableTextInputProps
   hotkeys?: HotkeyOptions
   /**
    * Whether the input is activated and should receive events on mount.
-   * By default, PTE inputs need to be manually activated by focusing them.
+   * By default, this value is set to `true`
    */
   initialActive?: boolean
   /**
