@@ -149,7 +149,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
-  const [isActive, setIsActive] = useState(initialActive ?? false)
+  const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
   const telemetry = useTelemetry()

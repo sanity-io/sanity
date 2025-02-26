@@ -8,7 +8,7 @@ import {InputStory} from './InputStory'
 test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {
     test(`Show call to action on focus`, async ({mount}) => {
-      const component = await mount(<InputStory />)
+      const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -18,7 +18,7 @@ test.describe('Portable Text Input', () => {
     })
 
     test(`Show call to action on hover`, async ({mount}) => {
-      const component = await mount(<InputStory />)
+      const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -29,6 +29,14 @@ test.describe('Portable Text Input', () => {
 
     test(`Immediately activate on mount when 'initialActive' is true`, async ({mount}) => {
       const component = await mount(<InputStory ptInputProps={{initialActive: true}} />)
+
+      const $portableTextInput = component.getByTestId('field-body')
+      const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
+      await expect($activeOverlay).not.toBeAttached()
+    })
+
+    test(`Immediately activate on mount when 'initialActive' is unset`, async ({mount}) => {
+      const component = await mount(<InputStory />)
 
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
