@@ -5,7 +5,7 @@ const portMap: Record<string, number> = {
   'blitzjs': 3000,
   'gatsby': 8000,
   'remix': 3000,
-  'astro': 3000,
+  'astro': 4321,
   'hexo': 4000,
   'eleventy': 8080,
   'docusaurus': 3000,

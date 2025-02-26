@@ -5,10 +5,15 @@ on:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [next]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -70,7 +75,7 @@ jobs:
   playwright-ct-test:
     timeout-minutes: 30
     needs: [install]
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -163,7 +168,7 @@ jobs:
   merge-reports:
     if: always()
     needs: [playwright-ct-test]
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -247,7 +252,7 @@ jobs:
       actions: write # needed to delete the cache
     timeout-minutes: 30
     name: Cleanup (${{ matrix.project }})
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest
     needs: [playwright-ct-test]
 
     strategy:

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.77.0",
+  "version": "3.77.2",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -123,9 +123,9 @@
   "dependencies": {
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
-    "@sanity/client": "^6.28.0",
     "date-fns": "^4.1.0",
-    "@sanity/types": "3.77.0",
+    "@sanity/client": "^6.28.1",
+    "@sanity/types": "3.77.2",
     "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.1"
   },
@@ -133,7 +133,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.7"
   },
   "engines": {
     "node": ">=18"
