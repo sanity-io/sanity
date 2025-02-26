@@ -29,7 +29,18 @@ const storeSchemaCommand = {
   action: async (args, context) => {
     const mod = await import('../../actions/schema/storeSchemasAction')
 
-    return mod.default(args as unknown as CliCommandArguments<StoreManifestSchemasFlags>, context)
+    const extendedArgs = {
+      ...args,
+      extOptions: {
+        ...args.extOptions,
+        'schema-required': true,
+      },
+    }
+
+    return mod.default(
+      extendedArgs as unknown as CliCommandArguments<StoreManifestSchemasFlags>,
+      context,
+    )
   },
 } satisfies CliCommandDefinition
 

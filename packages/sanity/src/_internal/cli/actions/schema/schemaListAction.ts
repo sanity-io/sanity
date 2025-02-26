@@ -1,11 +1,15 @@
 import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityDocument} from '@sanity/client'
 import chalk from 'chalk'
-import {size, sortBy} from 'lodash'
+import {size, sortBy, uniqBy} from 'lodash'
+
+import {type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
+import {getManifestPath, readManifest, throwIfProjectIdMismatch} from './storeSchemasAction'
 
 export interface SchemaListFlags {
   json: boolean
   id: string
+  path: string
 }
 
 type PrintSchemaListArgs = {
@@ -13,18 +17,22 @@ type PrintSchemaListArgs = {
   output: CliOutputter
   dataset: string
   projectId: string
+  path: string
 }
 
-export const SANITY_WORKSPACE_SCHEMA_ID = 'sanity.workspace.schema'
+export const SANITY_WORKSPACE_SCHEMA_TYPE = 'sanity.workspace.schema'
 
-const printSchemaList = ({schemas, output, dataset, projectId}: PrintSchemaListArgs) => {
+const printSchemaList = ({
+  schemas,
+  output,
+}: Omit<PrintSchemaListArgs, 'path' | 'dataset' | 'projectId'>) => {
   const ordered = sortBy(
     schemas.map(({_createdAt: createdAt, _id: id, workspace}) => {
-      return [id, workspace.title, dataset, projectId, createdAt].map(String)
+      return [id, workspace.name, workspace.dataset, workspace.projectId, createdAt].map(String)
     }),
     ['createdAt'],
   )
-  const headings = ['Id', 'Title', 'Dataset', 'ProjectId', 'CreatedAt']
+  const headings = ['Id', 'Workspace', 'Dataset', 'ProjectId', 'CreatedAt']
   const rows = ordered.reverse()
 
   const maxWidths = rows.reduce(
@@ -38,12 +46,11 @@ const printSchemaList = ({schemas, output, dataset, projectId}: PrintSchemaListA
   rows.forEach((row) => output.print(printRow(row)))
 }
 
-export default async function storeSchemaAction(
+export default async function fetchSchemaAction(
   args: CliCommandArguments<SchemaListFlags>,
   context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  if (typeof flags.id === 'boolean') throw new Error('Id is empty')
   const {apiClient, output} = context
   const client = apiClient({
     requireUser: true,
@@ -51,50 +58,65 @@ export default async function storeSchemaAction(
   }).withConfig({apiVersion: 'v2024-08-01'})
 
   const projectId = client.config().projectId
-  const dataset = client.config().dataset
 
-  if (!projectId || !dataset) {
-    output.error('Project ID and Dataset must be defined.')
+  if (!projectId) {
+    output.error('Project ID must be defined.')
     return
   }
 
-  let schemas: SanityDocument[]
+  const manifestPath = getManifestPath(context, flags.path)
+  const manifest = readManifest(manifestPath, output)
 
-  if (flags.id) {
-    // Fetch a specific schema by id
-    schemas = await client
-      .withConfig({
-        dataset: dataset,
-        projectId: projectId,
-      })
-      .fetch<SanityDocument[]>(`*[_type == $type && _id == $id]`, {
-        id: flags.id,
-        type: SANITY_WORKSPACE_SCHEMA_ID,
-      })
-  } else {
-    // Fetch all schemas
-    schemas = await client
-      .withConfig({
-        dataset: dataset,
-        projectId: projectId,
-      })
-      .fetch<SanityDocument[]>(`*[_type == $type]`, {
-        type: SANITY_WORKSPACE_SCHEMA_ID,
-      })
-  }
+  // Gather all schemas
+  const results = await Promise.allSettled(
+    uniqBy<ManifestWorkspaceFile>(manifest.workspaces, 'dataset').map(async (workspace) => {
+      throwIfProjectIdMismatch(workspace, projectId)
+      if (flags.id) {
+        // Fetch a specific schema by id
+        return await client
+          .withConfig({
+            dataset: workspace.dataset,
+            projectId: workspace.projectId,
+          })
+          .getDocument(flags.id)
+      }
+      // Fetch all schemas
+      return await client
+        .withConfig({
+          dataset: workspace.dataset,
+          projectId: workspace.projectId,
+          useCdn: false,
+        })
+        .fetch<SanityDocument[]>(`*[_type == $type]`, {
+          type: SANITY_WORKSPACE_SCHEMA_TYPE,
+        })
+    }),
+  )
+
+  // Log errors and collect successful results
+  const schemas = results
+    .map((result, index) => {
+      if (result.status === 'rejected') {
+        const workspace = manifest.workspaces[index]
+        output.error(
+          chalk.red(
+            `Failed to fetch schemas for workspace '${workspace.name}': ${result.reason.message}`,
+          ),
+        )
+        return []
+      }
+      return result.value
+    })
+    .flat()
 
   if (schemas.length === 0) {
-    if (flags.id) {
-      output.error(`No schema found with id: ${flags.id}`)
-    } else {
-      output.error(`No schemas found`)
-    }
+    output.error(`No schemas found`)
     return
   }
 
   if (flags.json) {
-    output.print(`${JSON.stringify(flags.id ? schemas[0] : schemas, null, 2)}`)
+    output.print(`${JSON.stringify(schemas, null, 2)}`)
   } else {
-    printSchemaList({schemas, output, dataset, projectId})
+    printSchemaList({schemas: schemas as SanityDocument[], output})
   }
 }

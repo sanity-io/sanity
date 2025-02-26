@@ -1,16 +1,13 @@
 import {readFileSync} from 'node:fs'
 import path, {join, resolve} from 'node:path'
 
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
+import {type Ora} from 'ora'
 
-import {
-  type CreateManifest,
-  type ManifestSchemaType,
-  type ManifestWorkspaceFile,
-} from '../../../manifest/manifestTypes'
+import {type ManifestSchemaType, type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
 import {MANIFEST_FILENAME} from '../manifest/extractManifestAction'
-import {SANITY_WORKSPACE_SCHEMA_ID} from './schemaListAction'
+import {SANITY_WORKSPACE_SCHEMA_TYPE} from './schemaListAction'
 
 export interface StoreManifestSchemasFlags {
   'path'?: string
@@ -20,61 +17,80 @@ export interface StoreManifestSchemasFlags {
   'verbose'?: boolean
 }
 
+export const getManifestPath = (context: CliCommandContext, customPath?: string) => {
+  const defaultOutputDir = resolve(join(context.workDir, 'dist'))
+
+  const outputDir = resolve(defaultOutputDir)
+  const defaultStaticPath = join(outputDir, 'static')
+
+  const staticPath = customPath ?? defaultStaticPath
+  const manifestPath = path.resolve(process.cwd(), staticPath)
+  return manifestPath
+}
+
+export const readManifest = (readPath: string, output?: CliOutputter, spinner?: Ora) => {
+  try {
+    return JSON.parse(readFileSync(`${readPath}/${MANIFEST_FILENAME}`, 'utf-8'))
+  } catch (error) {
+    const errorMessage = `Manifest not found at ${readPath}/${MANIFEST_FILENAME}`
+    if (spinner) spinner.fail(errorMessage)
+    if (output) output.error(errorMessage)
+    throw error
+  }
+}
+
+// At the moment schema store deos not support studios where workspaces have multiple projects
+export const throwIfProjectIdMismatch = (
+  workspace: ManifestWorkspaceFile,
+  projectId: string,
+): void => {
+  if (workspace.projectId !== projectId) {
+    throw new Error(
+      `↳ No permissions to store schema for workspace ${workspace.name} with projectId: ${workspace.projectId}`,
+    )
+  }
+}
+
 export default async function storeSchemasAction(
   args: CliCommandArguments<StoreManifestSchemasFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
   const flags = args.extOptions
-  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
-  if (typeof flags['id-prefix'] === 'boolean') throw new Error('Id prefix is empty')
-  if (typeof flags.workspace === 'boolean') throw new Error('Workspace is empty')
 
   const schemaRequired = flags['schema-required']
   const workspaceName = flags.workspace
   const idPrefix = flags['id-prefix']
   const verbose = flags.verbose
-  const {output, workDir, apiClient} = context
 
-  const defaultOutputDir = resolve(join(workDir, 'dist'))
+  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
+  if (typeof idPrefix === 'boolean') throw new Error('Id prefix is empty')
+  if (typeof workspaceName === 'boolean') throw new Error('Workspace is empty')
 
-  const outputDir = resolve(defaultOutputDir)
-  const defaultStaticPath = join(outputDir, 'static')
-
-  const staticPath = flags.path ?? defaultStaticPath
+  const {output, apiClient} = context
 
   const spinner = output.spinner({}).start('Storing schemas')
 
+  const manifestPath = getManifestPath(context, flags.path)
+
   try {
-    const manifestPath = path.resolve(process.cwd(), staticPath)
     const client = apiClient({
       requireUser: true,
       requireProject: true,
     }).withConfig({apiVersion: 'v2024-08-01'})
 
     const projectId = client.config().projectId
+    if (!projectId) throw new Error('Project ID is not defined')
 
-    let manifest: CreateManifest
-
-    try {
-      manifest = JSON.parse(readFileSync(`${manifestPath}/${MANIFEST_FILENAME}`, 'utf-8'))
-    } catch (error) {
-      spinner.fail(`Manifest not found at ${manifestPath}/${MANIFEST_FILENAME}`)
-      output.error(error)
-      throw error
-    }
+    const manifest = readManifest(manifestPath, output, spinner)
 
     let storedCount = 0
 
     let error: Error | undefined
 
     const saveSchema = async (workspace: ManifestWorkspaceFile) => {
-      const id = `${idPrefix ? `${idPrefix}.` : ''}${SANITY_WORKSPACE_SCHEMA_ID}.${workspace.name}`
+      const id = `${idPrefix ? `${idPrefix}.` : ''}${SANITY_WORKSPACE_SCHEMA_TYPE}.${workspace.name}`
       try {
-        if (workspace.projectId !== projectId) {
-          throw new Error(
-            `↳ No permissions to store schema for workspace ${workspace.name} with projectId: ${workspace.projectId}`,
-          )
-        }
+        throwIfProjectIdMismatch(workspace, projectId)
         const schema = JSON.parse(
           readFileSync(`${manifestPath}/${workspace.schema}`, 'utf-8'),
         ) as ManifestSchemaType
@@ -84,7 +100,7 @@ export default async function storeSchemasAction(
             projectId: workspace.projectId,
           })
           .transaction()
-          .createOrReplace({_type: SANITY_WORKSPACE_SCHEMA_ID, _id: id, workspace, schema})
+          .createOrReplace({_type: SANITY_WORKSPACE_SCHEMA_TYPE, _id: id, workspace, schema})
           .commit()
         storedCount++
         spinner.text = `Stored ${storedCount} schemas so far...`
@@ -107,7 +123,7 @@ export default async function storeSchemasAction(
     // If a workspace name is provided, only save the schema for that workspace
     if (workspaceName) {
       const workspaceToSave = manifest.workspaces.find(
-        (workspace) => workspace.name === workspaceName,
+        (workspace: ManifestWorkspaceFile) => workspace.name === workspaceName,
       )
       if (!workspaceToSave) {
         spinner.fail(`Workspace ${workspaceName} not found in manifest`)
@@ -117,7 +133,7 @@ export default async function storeSchemasAction(
       spinner.succeed(`Stored 1 schemas`)
     } else {
       await Promise.all(
-        manifest.workspaces.map(async (workspace): Promise<void> => {
+        manifest.workspaces.map(async (workspace: ManifestWorkspaceFile): Promise<void> => {
           await saveSchema(workspace)
         }),
       )

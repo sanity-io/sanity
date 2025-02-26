@@ -16,6 +16,8 @@ export default async function deleteSchemaAction(
 ): Promise<void> {
   const flags = args.extOptions
   if (typeof flags.dataset === 'boolean') throw new Error('Dataset is empty')
+  if (typeof flags.ids === 'boolean') throw new Error('Ids are empty')
+  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
 
   const {apiClient, output} = context
 
