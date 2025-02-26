@@ -8,6 +8,8 @@ The tests expects to find the below env variables. Either define it in your shel
 - `SANITY_E2E_PROJECT_ID`: Project ID of the studio
 - `SANITY_E2E_DATASET`: Dataset name of the studio
 
+Make sure that the project that you are running in the e2e tests allows the origin of your local studio (this is default __http://localhost:3339__) in https://sanity.io/manage > your project > API > Add CORS origin
+
 ## Running tests
 
 To run E2E tests run the following commands from the root of the project
