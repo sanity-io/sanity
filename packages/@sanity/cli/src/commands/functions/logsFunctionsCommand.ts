@@ -1,3 +1,5 @@
+import {logsAction} from '@sanity/runtime-cli'
+
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -9,6 +11,10 @@ Examples
   sanity functions logs --id abcd1234
 `
 
+const defaultFlags = {
+  id: undefined,
+}
+
 const logsFunctionsCommand: CliCommandDefinition = {
   name: 'logs',
   group: 'functions',
@@ -16,10 +22,20 @@ const logsFunctionsCommand: CliCommandDefinition = {
   signature: '',
   description: 'Retrieve logs for a Sanity Function',
   async action(args, context) {
-    const {output} = context
+    const {apiClient, output} = context
     const {print} = output
+    const flags = {...defaultFlags, ...args.extOptions}
 
-    print(`Functions stuff`)
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
+
+    if (flags.id) {
+      const result = await logsAction(flags.id, client.config().token)
+
+      print(JSON.stringify(result, null, 2))
+    }
   },
 }
 

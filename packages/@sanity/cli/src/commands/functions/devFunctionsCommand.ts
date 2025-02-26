@@ -1,3 +1,6 @@
+import {devAction} from '@sanity/runtime-cli'
+import open from 'open'
+
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -12,6 +15,10 @@ Examples
   sanity functions dev --port 3333
 `
 
+const defaultFlags = {
+  port: 8080,
+}
+
 const devFunctionsCommand: CliCommandDefinition = {
   name: 'dev',
   group: 'functions',
@@ -21,8 +28,12 @@ const devFunctionsCommand: CliCommandDefinition = {
   async action(args, context) {
     const {output} = context
     const {print} = output
+    const flags = {...defaultFlags, ...args.extOptions}
 
-    print(`Functions stuff`)
+    devAction(flags.port)
+
+    print(`Server is running on port ${flags.port}\n`)
+    open(`http://localhost:${flags.port}`)
   },
 }
 
