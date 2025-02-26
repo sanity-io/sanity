@@ -2,7 +2,7 @@ import {type APIConfig} from '@sanity/migrate'
 
 type ApiVersion = APIConfig['apiVersion']
 
-const VERSION_PATTERN = /^v\d+-\d+-\d+$|^vX$/ // Matches version strings like v2025-02-26 or vX
+const VERSION_PATTERN = /^v\d+-\d+-\d+$|^vX$/ // Matches version strings like vYYYY-MM-DD or vX
 
 /**
  * Ensures that the provided API version string is in the correct format.
