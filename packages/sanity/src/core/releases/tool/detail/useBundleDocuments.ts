@@ -9,10 +9,13 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
+  concatMap,
   distinctUntilChanged,
+  expand,
   filter,
   map,
   mergeMap,
+  reduce,
   startWith,
   switchAll,
   switchMap,
@@ -182,22 +185,42 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
 
   if (!release.finalDocumentStates?.length) return of({loading: false, results: []})
 
-  return from(release.finalDocumentStates || []).pipe(
-    mergeMap(({id: documentId}) => {
-      const document$ = observableClient
-        .request<{documents: DocumentInRelease['document'][]}>({
-          url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
-        })
-        .pipe(map(({documents: [document]}) => document))
+  function batchRequestDocumentFromHistory(startIndex: number) {
+    const finalIndex = startIndex + 10
+    return observableClient
+      .request<{documents: DocumentInRelease['document'][]}>({
+        url: `/data/history/${dataset}/documents/${release.finalDocumentStates
+          ?.slice(startIndex, finalIndex)
+          .map((d) => d.id)
+          .join(',')}?lastRevision=true`,
+      })
+      .pipe(map(({documents}) => ({documents, finalIndex})))
+  }
 
-      const previewValues$ = document$.pipe(
-        switchMap((document) => {
+  const documents$ = batchRequestDocumentFromHistory(0).pipe(
+    expand((response) => {
+      if (release.finalDocumentStates && response.finalIndex < release.finalDocumentStates.length) {
+        // Continue with next batch
+        return batchRequestDocumentFromHistory(response.finalIndex)
+      }
+      // End recursion by emitting an empty observable
+      return of()
+    }),
+    reduce(
+      (documents: DocumentInRelease['document'][], batch) => documents.concat(batch.documents),
+      [],
+    ),
+  )
+
+  return documents$.pipe(
+    mergeMap((documents) => {
+      return from(documents).pipe(
+        concatMap((document) => {
           const schemaType = schema.get(document._type)
           if (!schemaType) {
             throw new Error(`Schema type not found for document type ${document._type}`)
           }
-
-          return documentPreviewStore.observeForPreview(document, schemaType).pipe(
+          const previewValues$ = documentPreviewStore.observeForPreview(document, schemaType).pipe(
             take(1),
             map((version) => ({
               isLoading: false,
@@ -211,25 +234,25 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
               ),
             })),
             startWith({isLoading: true, values: {}}),
+            filter(({isLoading}) => !isLoading),
+          )
+
+          return previewValues$.pipe(
+            map((previewValues) => ({
+              document,
+              previewValues,
+              memoKey: uuid(),
+              validation: {validation: [], hasError: false, isValidating: false},
+            })),
           )
         }),
-        filter(({isLoading}) => !isLoading),
-      )
-
-      return combineLatest([document$, previewValues$]).pipe(
-        map(([document, previewValues]) => ({
-          document,
-          previewValues,
-          memoKey: uuid(),
-          validation: {validation: [], hasError: false, isValidating: false},
+        toArray(),
+        map((results) => ({
+          loading: false,
+          results,
         })),
       )
     }),
-    toArray(),
-    map((results) => ({
-      loading: false,
-      results,
-    })),
   )
 }
 
