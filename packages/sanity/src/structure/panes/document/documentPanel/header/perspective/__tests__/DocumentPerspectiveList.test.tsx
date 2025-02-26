@@ -259,6 +259,27 @@ describe('DocumentPerspectiveList', () => {
 
       expect(screen.getByRole('button', {name: 'Published'})).toBeEnabled()
     })
+
+    it('should disable the "Draft" chip when the document only has one version, no pinned version', async () => {
+      mockUseDocumentPane.mockReturnValue(
+        getPaneMock({
+          editStateDocuments: [],
+          displayedVersion: 'rSpringDrop',
+          isCreatingDocument: true,
+        }),
+      )
+
+      mockUsePerspective.mockReturnValue({
+        ...usePerspectiveMockValue,
+        selectedPerspectiveName: undefined,
+      })
+      mockUseDocumentVersions.mockReturnValue({data: ['rSpringDrop'], loading: false, error: null})
+
+      const wrapper = await getTestProvider({liveEdit: false})
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Draft'})).toBeDisabled()
+    })
   })
 
   describe('selected chips', () => {
