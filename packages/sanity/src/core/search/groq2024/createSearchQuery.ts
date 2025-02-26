@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
 import {groupBy} from 'lodash'
@@ -68,8 +69,6 @@ export function createSearchQuery(
     )
     .filter(({paths}) => paths.length !== 0)
 
-  const isRaw = isPerspectiveRaw(perspective)
-
   // Note: Computing this is unnecessary when `!isScored`.
   const flattenedSpecs = specs
     .map(({typeName, paths}) => paths.map((path) => ({...path, typeName})))
@@ -93,6 +92,18 @@ export function createSearchQuery(
   const sortOrder = options?.sort ?? [{field: '_score', direction: 'desc'}]
   const isScored = sortOrder.some(({field}) => field === '_score')
 
+  let activePerspective: ClientPerspective | undefined = perspective
+
+  // No perspective, or empty perspective array, provided.
+  if (
+    typeof perspective === 'undefined' ||
+    (Array.isArray(perspective) && perspective.length === 0)
+  ) {
+    activePerspective = 'raw'
+  }
+
+  const isRaw = isPerspectiveRaw(activePerspective)
+
   const filters: string[] = [
     '_type in $__types',
     // If the search request doesn't use scoring, directly filter documents.
@@ -100,6 +111,7 @@ export function createSearchQuery(
     options.filter ? `(${options.filter})` : [],
     searchTerms.filter ? `(${searchTerms.filter})` : [],
     isRaw ? [] : '!(_id in path("versions.**"))',
+    includeDrafts === false ? `!(_id in path('drafts.**'))` : [],
     options.cursor ?? [],
   ].flat()
 
@@ -129,22 +141,6 @@ export function createSearchQuery(
     .concat(options?.comments || [])
     .map((s) => `// ${s}`)
     .join('\n')
-
-  let activePerspective: string | string[] | undefined
-
-  switch (true) {
-    // Raw perspective provided.
-    case isRaw:
-      activePerspective = undefined
-      break
-    // Any other perspective provided.
-    case typeof perspective !== 'undefined':
-      activePerspective = perspective
-      break
-    // No perspective provided.
-    default:
-      activePerspective = includeDrafts ? 'previewDrafts' : 'published'
-  }
 
   return {
     query: [pragma, query].join('\n'),
