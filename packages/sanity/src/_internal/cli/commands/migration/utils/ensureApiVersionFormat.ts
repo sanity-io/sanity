@@ -9,7 +9,7 @@ const VERSION_PATTERN = /^v\d+-\d+-\d+$|^vX$/ // Matches version strings like vY
  * If the version does not start with 'v', it will be prefixed with 'v'.
  * If the version does not match the expected pattern, an error will be thrown.
  */
-export function ensureApiVersion(version: string): ApiVersion {
+export function ensureApiVersionFormat(version: string): ApiVersion {
   const normalizedVersion = version.startsWith('v') ? version : `v${version}`
 
   // Check if the version matches the expected pattern
