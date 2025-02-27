@@ -84,6 +84,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
       onSelect={handleSelect}
       selection={[]}
       libraryId={libraryId}
+      selectAssetType={assetType}
     />
   )
 }
