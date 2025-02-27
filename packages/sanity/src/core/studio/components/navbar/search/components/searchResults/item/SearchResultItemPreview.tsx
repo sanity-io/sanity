@@ -55,9 +55,10 @@ export function SearchResultItemPreview({
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspective)
   }, [documentPreviewStore, schemaType, documentId, perspective])
 
-  const {isLoading, snapshot} = useObservable(observable, {
+  const {isLoading, snapshot, original} = useObservable(observable, {
     snapshot: null,
     isLoading: true,
+    original: null,
   })
 
   const versionsInfo = useDocumentVersionInfo(documentId)
@@ -96,7 +97,7 @@ export function SearchResultItemPreview({
   return (
     <SearchResultItemPreviewBox>
       <SanityDefaultPreview
-        {...getPreviewValueWithFallback({snapshot})}
+        {...getPreviewValueWithFallback({snapshot, original})}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}
         icon={schemaType.icon}
