@@ -32,9 +32,13 @@ const logsFunctionsCommand: CliCommandDefinition = {
     })
 
     if (flags.id) {
-      const result = await logsAction(flags.id, client.config().token)
-
-      print(JSON.stringify(result, null, 2))
+      const token = client.config().token
+      if (token) {
+        const result = await logsAction(flags.id, token)
+        print(JSON.stringify(result, null, 2))
+      }
+    } else {
+      print('You must provide a function ID')
     }
   },
 }
