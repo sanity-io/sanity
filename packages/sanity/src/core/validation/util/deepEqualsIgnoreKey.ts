@@ -8,7 +8,7 @@
 // works when type predicate is called inline in the condition that starts the
 // control flow branch.
 // see here: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-export function deepEquals(a: unknown, b: unknown): boolean {
+export function deepEqualsIgnoreKey(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true
   }
@@ -16,7 +16,7 @@ export function deepEquals(a: unknown, b: unknown): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length != b.length) return false
     for (let i = 0; i < a.length; i++) {
-      if (!deepEquals(a[i], b[i])) {
+      if (!deepEqualsIgnoreKey(a[i], b[i])) {
         return false
       }
     }
@@ -65,7 +65,7 @@ export function deepEquals(a: unknown, b: unknown): boolean {
         continue
       }
 
-      if (!deepEquals(a[key], b[key])) {
+      if (!deepEqualsIgnoreKey(a[key], b[key])) {
         return false
       }
     }
