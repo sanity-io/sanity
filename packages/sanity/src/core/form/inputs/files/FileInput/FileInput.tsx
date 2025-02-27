@@ -512,7 +512,10 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
                 return (
                   <MenuItem
                     key={assetSource.name}
-                    text={assetSource.title}
+                    text={
+                      (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+                      startCase(assetSource.name)
+                    }
                     onClick={() => {
                       this.setState({isMenuOpen: false})
                       this.handleSelectFileFromAssetSource(assetSource)
