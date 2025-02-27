@@ -107,7 +107,7 @@ async function extractManifest(
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.fail(err)
+    spinner.fail(err.message)
     output.print(chalk.gray(EXTRACT_FAILURE_MESSAGE))
     throw err
   }

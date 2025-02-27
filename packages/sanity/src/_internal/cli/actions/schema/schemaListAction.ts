@@ -115,7 +115,7 @@ export default async function fetchSchemaAction(
   }
 
   if (flags.json) {
-    output.print(`${JSON.stringify(schemas, null, 2)}`)
+    output.print(`${JSON.stringify(flags.id ? schemas[0] : schemas, null, 2)}`)
   } else {
     printSchemaList({schemas: schemas as SanityDocument[], output})
   }
