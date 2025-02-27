@@ -1,10 +1,11 @@
 import {useClient} from '../../../../../core/hooks'
+import {isDev} from '../../../../environment'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type SanityAssetLibraryConfig} from '../types'
 
 // TODO: figure out how to configure this stuff
 
-const IS_LOCAL_DEV = true // Set to true to work against local Asset Library dev server
+const IS_LOCAL_DEV = false && isDev // Set to true to work against local Asset Library dev server
 
 export function useSanityAssetLibraryConfig(): SanityAssetLibraryConfig {
   const isLocalDev = IS_LOCAL_DEV
