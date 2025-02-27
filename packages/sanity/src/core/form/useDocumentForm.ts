@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import deepEquals from 'react-fast-compare'
 
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
@@ -36,7 +37,6 @@ import {
   usePresenceStore,
 } from '../store'
 import {EMPTY_ARRAY, getDraftId, getPublishedId, getVersionFromId, useUnique} from '../util'
-import {deepEquals} from '../validation/util/deepEquals'
 import {
   type FormState,
   getExpandOperations,
@@ -422,7 +422,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       // to avoid the blur event to be triggered, we set a flag to disable it for a short period of time.
       disableBlurRef.current = true
 
-      // Reset focus path when url params path changes
       if (!deepEquals(focusPathRef.current, nextPath)) {
         setFocusPath(nextPath)
         handleSetOpenPath(nextPath)
