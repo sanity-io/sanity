@@ -4,18 +4,18 @@ import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
 import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   ReleaseAvatar,
   useActiveReleases,
+  type VersionInfoDocumentStub,
 } from '../../releases'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
-  versions?: VersionsRecord | Record<string, {snapshot: DocumentStatusProps['draft']}>
+  versions?: Record<string, VersionInfoDocumentStub | undefined>
   singleLine?: boolean
 }
 
@@ -57,7 +57,10 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           tone="caution"
         />
       )}
-      {versionsList.map(([versionName, {snapshot}]) => {
+      {versionsList.map(([versionName, snapshot]) => {
+        if (!snapshot) {
+          return null
+        }
         const release = releases?.find(
           (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
         )

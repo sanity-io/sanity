@@ -18,6 +18,7 @@ import {
   type SanityDocument,
   type SchemaType,
   useDocumentPreviewStore,
+  useDocumentVersionInfo,
 } from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
@@ -33,15 +34,16 @@ const PreviewCell = (props: {
   }
 }) => {
   const {documentPreviewStore, row, schemaType} = props
-  const title = 'Document title'
   const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id),
     [documentPreviewStore, row.original._id, schemaType],
   )
-  const {draft, published, isLoading} = useObservable(previewStateObservable, {
-    draft: null,
+
+  const versionsInfo = useDocumentVersionInfo(row.original._id)
+
+  const {snapshot, isLoading} = useObservable(previewStateObservable, {
+    snapshot: null,
     isLoading: true,
-    published: null,
   })
   if (isLoading) {
     return (
@@ -50,10 +52,15 @@ const PreviewCell = (props: {
       </Text>
     )
   }
-  const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
+  const displayValue = (snapshot?.title ?? 'Untitled') as string
+
   return (
     <Flex align="center" gap={3}>
-      <DocumentStatusIndicator draft={draft} published={published} versions={undefined} />
+      <DocumentStatusIndicator
+        draft={versionsInfo.draft}
+        published={versionsInfo.published}
+        versions={undefined}
+      />
       <Text size={1}>{displayValue}</Text>
     </Flex>
   )

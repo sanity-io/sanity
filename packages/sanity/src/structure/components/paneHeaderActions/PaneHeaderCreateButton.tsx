@@ -1,9 +1,9 @@
-import {type ReleaseId} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
+  type ReleaseId,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,

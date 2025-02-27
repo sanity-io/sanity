@@ -147,7 +147,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const hasRef = value._ref
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
-  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
+  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.isPublished
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
     onChange([

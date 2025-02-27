@@ -23,11 +23,7 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {
-  type DocumentPreviewStore,
-  getPreviewValueWithFallback,
-  prepareForPreview,
-} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -35,7 +31,6 @@ import {validateDocumentWithReferences, type ValidationStatus} from '../../../va
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
@@ -47,7 +42,10 @@ export interface DocumentInRelease {
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
-  previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
+  previewValues: {
+    isLoading: boolean
+    values: PreviewValue | undefined | null
+  }
 }
 
 type ReleaseDocumentsObservableResult = Observable<{loading: boolean; results: DocumentInRelease[]}>
@@ -133,21 +131,15 @@ const getActiveReleaseDocumentsObservable = ({
                 } satisfies PreviewValue,
               })
             }
-
-            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-              map((version) => ({
-                isLoading: false,
-                values: prepareForPreview(
-                  getPreviewValueWithFallback({
-                    value: document,
-                    version: version.snapshot,
-                    perspective: releaseId,
-                  }),
-                  schemaType,
-                ),
-              })),
-              startWith({isLoading: true, values: {}}),
-            )
+            return documentPreviewStore
+              .observeForPreview(document, schemaType, {perspective: [releaseId]})
+              .pipe(
+                map(({snapshot}) => ({
+                  isLoading: false,
+                  values: snapshot,
+                })),
+                startWith({isLoading: true, values: {}}),
+              )
           }),
           switchAll(),
         )
@@ -199,16 +191,9 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
 
           return documentPreviewStore.observeForPreview(document, schemaType).pipe(
             take(1),
-            map((version) => ({
+            map(({snapshot}) => ({
               isLoading: false,
-              values: prepareForPreview(
-                getPreviewValueWithFallback({
-                  value: document,
-                  version: version.snapshot || document,
-                  perspective: getReleaseIdFromReleaseDocumentId(release._id),
-                }),
-                schemaType,
-              ),
+              values: snapshot,
             })),
             startWith({isLoading: true, values: {}}),
           )

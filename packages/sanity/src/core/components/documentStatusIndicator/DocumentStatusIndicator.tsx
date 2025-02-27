@@ -1,16 +1,15 @@
-import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
+import {type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 interface DocumentStatusProps {
-  draft?: PreviewValue | Partial<SanityDocument> | null
-  published?: PreviewValue | Partial<SanityDocument> | null
-  versions: VersionsRecord | undefined
+  draft?: VersionInfoDocumentStub | undefined
+  published?: VersionInfoDocumentStub | undefined
+  versions?: Record<string, VersionInfoDocumentStub | undefined>
 }
 
 const Dot = styled.div<{$index: number}>`
@@ -50,7 +49,10 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
   const versionsList = useMemo(
     () =>
       versions
-        ? Object.keys(versions).map((versionName) => {
+        ? Object.entries(versions).map(([versionName, snapshot]) => {
+            if (!snapshot) {
+              return undefined
+            }
             const release = releases?.find(
               (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
             )

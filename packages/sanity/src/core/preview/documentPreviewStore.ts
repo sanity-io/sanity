@@ -2,6 +2,7 @@ import {
   type MutationEvent,
   type QueryParams,
   type SanityClient,
+  type StackablePerspective,
   type WelcomeEvent,
 } from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
@@ -34,7 +35,11 @@ import {
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
-  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig},
+  options?: {
+    viewOptions?: PrepareViewOptions
+    perspective?: StackablePerspective[]
+    apiConfig?: ApiConfig
+  },
 ) => Observable<PreparedSnapshot>
 
 /**
@@ -140,8 +145,9 @@ export function createDocumentPreviewStore({
   function observeDocumentTypeFromId(
     id: string,
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )

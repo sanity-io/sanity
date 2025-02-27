@@ -22,7 +22,7 @@ export function DocumentReviewHeader({
   toggleIsExpanded,
 }: {
   document: SanityDocument
-  previewValues: PreviewValue
+  previewValues: PreviewValue | undefined | null
   isLoading: boolean
   releaseId: string
   validation?: DocumentValidationStatus

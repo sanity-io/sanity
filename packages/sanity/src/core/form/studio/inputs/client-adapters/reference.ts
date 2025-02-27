@@ -1,30 +1,13 @@
-import {type SanityClient} from '@sanity/client'
+import {type SanityClient, type StackablePerspective} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
-import {omit} from 'lodash'
-import {combineLatest, from, type Observable, of} from 'rxjs'
-import {map, mergeMap, scan, startWith, switchMap} from 'rxjs/operators'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, mergeMap, switchMap} from 'rxjs/operators'
 
-import {type PerspectiveStack} from '../../../../perspective/types'
-import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
-import {
-  type VersionsRecord,
-  type VersionTuple,
-} from '../../../../preview/utils/getPreviewStateObservable'
+import {type DocumentPreviewStore, getPreviewStateObservable} from '../../../../preview'
 import {createSearch} from '../../../../search'
-import {
-  collate,
-  type CollatedHit,
-  getDraftId,
-  getIdPair,
-  getVersionId,
-  isRecord,
-} from '../../../../util'
-import {
-  type PreviewDocumentValue,
-  type ReferenceInfo,
-  type ReferenceSearchHit,
-} from '../../../inputs/ReferenceInput/types'
+import {collate, type CollatedHit, getDraftId, getIdPair} from '../../../../util'
+import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -48,11 +31,7 @@ export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
   id: string,
   referenceType: ReferenceSchemaType,
-  {version}: {version?: string} = {},
-  perspective: {ids: string[]; stack: PerspectiveStack} = {
-    ids: [],
-    stack: [],
-  },
+  {version, perspective}: {version?: string; perspective?: StackablePerspective[]} = {},
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId, versionId} = getIdPair(id, {version})
 
@@ -80,11 +59,10 @@ export function getReferenceInfo(
           id,
           type: undefined,
           availability,
+          isPublished: null,
           preview: {
-            draft: undefined,
-            published: undefined,
-            version: undefined,
-            versions: {},
+            snapshot: null,
+            original: null,
           },
         } as const)
       }
@@ -112,11 +90,10 @@ export function getReferenceInfo(
               id,
               type: undefined,
               availability: {available: true, reason: 'READABLE'},
+              isPublished: null,
               preview: {
-                draft: undefined,
-                published: undefined,
-                version: undefined,
-                versions: {},
+                snapshot: null,
+                original: null,
               },
             } as const)
           }
@@ -129,91 +106,27 @@ export function getReferenceInfo(
               id,
               type: typeName,
               availability: {available: true, reason: 'READABLE'},
+              isPublished: null,
               preview: {
-                draft: undefined,
-                published: undefined,
-                version: undefined,
-                versions: {},
+                snapshot: null,
+                original: null,
               },
             } as const)
           }
-          const previewPaths = getPreviewPaths(refSchemaType?.preview) || []
-          const draftPreview$ = documentPreviewStore.observeForPreview(
-            {_id: draftId},
+
+          const publishedDocumentExists$ = documentPreviewStore
+            .observePaths({_id: publishedId}, ['_rev'])
+            .pipe(map((res) => Boolean((res as {_id: string; _rev: string} | undefined)?._rev)))
+
+          const previewState$ = getPreviewStateObservable(
+            documentPreviewStore,
             refSchemaType,
+            publishedId,
+            perspective,
           )
 
-          const publishedPreview$ = documentPreviewStore.observeForPreview(
-            {_id: publishedId},
-            refSchemaType,
-          )
-
-          const versions$ = from(perspective.ids).pipe(
-            mergeMap<string, Observable<VersionTuple>>((bundleId) =>
-              documentPreviewStore
-                .observePaths({_id: getVersionId(id, bundleId)}, previewPaths)
-                .pipe(
-                  // eslint-disable-next-line max-nested-callbacks
-                  map((result) =>
-                    result
-                      ? [
-                          bundleId,
-                          {
-                            snapshot: {
-                              _id: versionId,
-                              ...prepareForPreview(result, refSchemaType),
-                            },
-                          },
-                        ]
-                      : [bundleId, {snapshot: null}],
-                  ),
-                ),
-            ),
-            scan((byBundleId, [bundleId, value]) => {
-              if (value.snapshot === null) {
-                return omit({...byBundleId}, [bundleId])
-              }
-
-              return {
-                ...byBundleId,
-                [bundleId]: value,
-              }
-            }, {}),
-            startWith<VersionsRecord>({}),
-          )
-
-          // Iterate the release stack in descending precedence, returning the highest precedence existing
-          // version document.
-          const versionPreview$ = versionId
-            ? versions$.pipe(
-                map((versions) => {
-                  for (const bundleId of perspective.stack) {
-                    if (bundleId in versions) {
-                      return versions[bundleId]
-                    }
-                  }
-                  return null
-                }),
-                startWith(undefined),
-              )
-            : undefined
-
-          const value$ = combineLatest([
-            draftPreview$,
-            publishedPreview$,
-            ...(versionPreview$ ? [versionPreview$] : []),
-            versions$,
-          ]).pipe(
-            map(([draft, published, versionValue, versions]) => ({
-              draft,
-              published,
-              ...(versionValue ? {version: versionValue} : {}),
-              versions: versions,
-            })),
-          )
-
-          return value$.pipe(
-            map((value): ReferenceInfo => {
+          return combineLatest([previewState$, publishedDocumentExists$]).pipe(
+            map(([previewState, publishedDocumentExists]): ReferenceInfo => {
               const availability =
                 // eslint-disable-next-line no-nested-ternary
                 pairAvailability.version?.available ||
@@ -229,19 +142,8 @@ export function getReferenceInfo(
                 type: typeName,
                 id: publishedId,
                 availability,
-                preview: {
-                  draft: (isRecord(value.draft.snapshot) ? value.draft.snapshot : undefined) as
-                    | PreviewDocumentValue
-                    | undefined,
-                  published: (isRecord(value.published.snapshot)
-                    ? value.published.snapshot
-                    : undefined) as PreviewDocumentValue | undefined,
-                  version: (isRecord(value.version?.snapshot)
-                    ? value.version.snapshot
-                    : undefined) as PreviewDocumentValue | undefined,
-
-                  versions: isRecord(value.versions) ? value.versions : {},
-                },
+                isPublished: publishedDocumentExists,
+                preview: {snapshot: previewState.snapshot, original: previewState.original},
               }
             }),
           )

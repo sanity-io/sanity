@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
@@ -44,9 +45,10 @@ export function createPreviewObserver(context: {
     options: {
       viewOptions?: PrepareViewOptions
       apiConfig?: ApiConfig
+      perspective?: StackablePerspective[]
     } = {},
   ): Observable<PreparedSnapshot> {
-    const {viewOptions = {}, apiConfig} = options
+    const {viewOptions = {}, apiConfig, perspective} = options
     if (isCrossDatasetReferenceSchemaType(type)) {
       // if the value is of type crossDatasetReference, but has no _ref property, we cannot prepare any value for the preview
       // and the most appropriate thing to do is to return `undefined` for snapshot
@@ -56,12 +58,16 @@ export function createPreviewObserver(context: {
 
       const refApiConfig = {projectId: value._projectId, dataset: value._dataset}
 
-      return observeDocumentTypeFromId(value._ref, refApiConfig).pipe(
+      return observeDocumentTypeFromId(value._ref, refApiConfig, perspective).pipe(
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.type === typeName)
             if (refType) {
-              return observeForPreview(value, refType, {apiConfig: refApiConfig, viewOptions})
+              return observeForPreview(value, refType, {
+                apiConfig: refApiConfig,
+                viewOptions,
+                perspective,
+              })
             }
           }
           return of({snapshot: undefined})
@@ -82,7 +88,7 @@ export function createPreviewObserver(context: {
           if (typeName) {
             const refType = type.to.find((toType) => toType.name === typeName)
             if (refType) {
-              return observeForPreview(value, refType)
+              return observeForPreview(value, refType, {perspective})
             }
           }
           // todo: in case we can't read the document type, we can figure out the reason why e.g. whether it's because
@@ -95,7 +101,7 @@ export function createPreviewObserver(context: {
     }
     const paths = getPreviewPaths(type.preview)
     if (paths) {
-      return observePaths(value, paths, apiConfig).pipe(
+      return observePaths(value, paths, apiConfig, perspective).pipe(
         map((snapshot) => ({
           type: type,
           snapshot: snapshot ? prepareForPreview(snapshot, type, viewOptions) : null,
