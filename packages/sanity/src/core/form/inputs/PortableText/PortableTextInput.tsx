@@ -13,7 +13,11 @@ import {
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
-import {EventListenerPlugin, MarkdownPlugin} from '@portabletext/editor/plugins'
+import {
+  EventListenerPlugin,
+  MarkdownPlugin,
+  type MarkdownPluginConfig,
+} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
@@ -93,6 +97,19 @@ export interface RenderPortableTextInputEditableProps extends PortableTextEditab
 }
 
 /**
+ * @beta
+ */
+export interface RenderPortableTextInputPluginsProps {
+  renderMarkdownPlugin: (props: {config: MarkdownPluginConfig}) => ReactNode
+  renderDefault: (props: {
+    renderMarkdownPlugin: (props: {
+      config: MarkdownPluginConfig
+      renderDefault: (props: {config: MarkdownPluginConfig}) => ReactNode
+    }) => ReactNode
+  }) => ReactNode
+}
+
+/**
  * Input component for editing block content
  * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
  *
@@ -126,6 +143,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     renderBlockActions,
     renderCustomMarkers,
     renderEditable,
+    renderPlugins,
     schemaType,
     value,
     resolveUploader,
@@ -395,29 +413,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
               <UpdateValuePlugin value={value} />
-              <MarkdownPlugin
-                config={{
-                  boldDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
-                  codeDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'code')?.value,
-                  italicDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'em')?.value,
-                  strikeThroughDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'strike-through')
-                      ?.value,
-                  defaultStyle: ({schema}) =>
-                    schema.styles.find((style) => style.value === 'normal')?.value,
-                  blockquoteStyle: ({schema}) =>
-                    schema.styles.find((style) => style.value === 'blockquote')?.value,
-                  headingStyle: ({schema, level}) =>
-                    schema.styles.find((style) => style.value === `h${level}`)?.value,
-                  orderedListStyle: ({schema}) =>
-                    schema.lists.find((list) => list.value === 'number')?.value,
-                  unorderedListStyle: ({schema}) =>
-                    schema.lists.find((list) => list.value === 'bullet')?.value,
-                }}
-              />
+              <RenderPlugins renderPlugins={renderPlugins} />
               <Compositor
                 {...props}
                 elementRef={elementRef}
@@ -443,6 +439,41 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       )}
     </Box>
   )
+}
+
+const markdownConfig: MarkdownPluginConfig = {
+  boldDecorator: ({schema}) =>
+    schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
+  codeDecorator: ({schema}) =>
+    schema.decorators.find((decorator) => decorator.value === 'code')?.value,
+  italicDecorator: ({schema}) =>
+    schema.decorators.find((decorator) => decorator.value === 'em')?.value,
+  strikeThroughDecorator: ({schema}) =>
+    schema.decorators.find((decorator) => decorator.value === 'strike-through')?.value,
+  defaultStyle: ({schema}) => schema.styles.find((style) => style.value === 'normal')?.value,
+  blockquoteStyle: ({schema}) => schema.styles.find((style) => style.value === 'blockquote')?.value,
+  headingStyle: ({schema, level}) =>
+    schema.styles.find((style) => style.value === `h${level}`)?.value,
+  orderedListStyle: ({schema}) => schema.lists.find((list) => list.value === 'number')?.value,
+  unorderedListStyle: ({schema}) => schema.lists.find((list) => list.value === 'bullet')?.value,
+}
+
+function RenderPlugins(props: {renderPlugins?: PortableTextInputProps['renderPlugins']}) {
+  if (!props.renderPlugins) {
+    return <MarkdownPlugin config={markdownConfig} />
+  }
+
+  return props.renderPlugins({
+    renderMarkdownPlugin: (markdownPluginProps) => <MarkdownPlugin {...markdownPluginProps} />,
+    renderDefault: (defaultProps) => (
+      <>
+        {defaultProps.renderMarkdownPlugin({
+          config: markdownConfig,
+          renderDefault: (markdownPluginProps) => <MarkdownPlugin {...markdownPluginProps} />,
+        })}
+      </>
+    ),
+  })
 }
 
 /**
