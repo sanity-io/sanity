@@ -32,7 +32,7 @@ export function getPreviewValueWithFallback({
   if (document && !original && !snapshot) {
     return getMissingDocumentFallback(document)
   }
-  return assignWith({}, original, snapshot, (objValue, srcValue) => {
+  return assignWith({}, snapshot, original, (objValue, srcValue) => {
     return typeof srcValue === 'undefined' ? objValue : srcValue
   }) as PreviewValue
 }
