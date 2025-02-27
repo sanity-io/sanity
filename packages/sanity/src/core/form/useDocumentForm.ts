@@ -1,4 +1,4 @@
-import {type ReleaseId, type SanityDocument} from '@sanity/client'
+import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -28,6 +28,7 @@ import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {useTranslation} from '../i18n/hooks/useTranslation'
+import {type ReleaseId} from '../perspective/types'
 import {isPublishedPerspective} from '../releases/util/util'
 import {
   type DocumentPresence,
