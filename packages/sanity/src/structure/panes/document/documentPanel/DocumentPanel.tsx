@@ -26,6 +26,7 @@ import {
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
+import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
@@ -150,19 +151,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (params?.historyVersion) {
       return <ArchivedReleaseDocumentBanner />
     }
-    const isCreatingDocument = displayed && !displayed._createdAt
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
     if (isScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
+    const isPinnedDraftOrPublish: boolean =
+      selectedPerspective === 'drafts' || selectedPerspective === 'published'
 
     if (
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
-      !isCreatingDocument &&
-      typeof selectedReleaseId !== 'undefined'
+      !isPinnedDraftOrPublish
     ) {
       return (
         <AddToReleaseBanner
@@ -200,12 +201,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <DeprecatedDocumentTypeBanner />
         <DeletedDocumentBanners />
         <UnpublishedDocumentBanner />
+        <OpenReleaseToEditBanner
+          documentId={displayed?._id ?? documentId}
+          isPinnedDraftOrPublished={isPinnedDraftOrPublish}
+        />
       </>
     )
   }, [
     params?.historyVersion,
-    displayed,
     selectedPerspective,
+    displayed,
     selectedReleaseId,
     ready,
     activeView.type,
@@ -214,8 +219,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isPermissionsLoading,
     permissions?.granted,
     requiredPermission,
-    value._id,
     documentId,
+    value._id,
     schemaType,
   ])
 
