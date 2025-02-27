@@ -1,5 +1,3 @@
-import {logsAction} from '@sanity/runtime-cli'
-
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -34,6 +32,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
     if (flags.id) {
       const token = client.config().token
       if (token) {
+        const {logsAction} = await import('@sanity/runtime-cli')
         const result = await logsAction(flags.id, token)
         print(JSON.stringify(result, null, 2))
       }

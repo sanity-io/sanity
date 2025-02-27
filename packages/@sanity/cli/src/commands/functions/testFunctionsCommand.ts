@@ -1,5 +1,3 @@
-import {testAction} from '@sanity/runtime-cli'
-
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -39,6 +37,7 @@ const testFunctionsCommand: CliCommandDefinition = {
     const flags = {...defaultFlags, ...args.extOptions}
 
     if (flags.path) {
+      const {testAction} = await import('@sanity/runtime-cli')
       const {json, logs, error} = await testAction(flags.path, {
         data: flags.data,
         file: flags.file,

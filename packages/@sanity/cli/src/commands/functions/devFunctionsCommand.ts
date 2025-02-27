@@ -1,4 +1,3 @@
-import {devAction} from '@sanity/runtime-cli'
 import open from 'open'
 
 import {type CliCommandDefinition} from '../../types'
@@ -29,6 +28,8 @@ const devFunctionsCommand: CliCommandDefinition = {
     const {output} = context
     const {print} = output
     const flags = {...defaultFlags, ...args.extOptions}
+
+    const {devAction} = await import('@sanity/runtime-cli')
 
     devAction(flags.port)
 
