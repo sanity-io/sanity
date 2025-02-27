@@ -31,6 +31,7 @@ import {
   type ReactNode,
 } from 'react'
 
+import {type RenderPortableTextInputPluginsProps} from '../inputs'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {
@@ -575,6 +576,10 @@ export interface PortableTextInputProps
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */
   rangeDecorations?: RangeDecoration[]
+  /**
+   * @beta
+   */
+  renderPlugins?: (props: RenderPortableTextInputPluginsProps) => ReactNode
 }
 
 /**
