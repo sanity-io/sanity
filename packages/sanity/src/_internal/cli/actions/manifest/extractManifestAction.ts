@@ -4,6 +4,7 @@ import {dirname, join, resolve} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import chalk from 'chalk'
 import {minutesToMilliseconds} from 'date-fns'
 import readPkgUp from 'read-pkg-up'
 
@@ -29,8 +30,8 @@ const CREATE_TIMER = 'create-manifest'
 const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
 const EXTRACT_FAILURE_MESSAGE =
-  "Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
-  `Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
+  "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
+  `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
 
 interface ExtractFlags {
   path?: string
@@ -106,7 +107,8 @@ async function extractManifest(
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.info(EXTRACT_FAILURE_MESSAGE)
+    output.error(err)
+    output.print(chalk.gray(EXTRACT_FAILURE_MESSAGE))
     throw err
   }
 }
