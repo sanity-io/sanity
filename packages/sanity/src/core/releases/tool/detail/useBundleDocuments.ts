@@ -9,6 +9,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
+  catchError,
   concatMap,
   distinctUntilChanged,
   expand,
@@ -53,7 +54,11 @@ export interface DocumentInRelease {
   previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
 }
 
-type ReleaseDocumentsObservableResult = Observable<{loading: boolean; results: DocumentInRelease[]}>
+type ReleaseDocumentsObservableResult = Observable<{
+  loading: boolean
+  results: DocumentInRelease[]
+  error: Error | null
+}>
 
 const getActiveReleaseDocumentsObservable = ({
   schema,
@@ -164,7 +169,10 @@ const getActiveReleaseDocumentsObservable = ({
           })),
         )
       }),
-      map((results) => ({loading: false, results})),
+      map((results) => ({loading: false, results, error: null})),
+      catchError((error) => {
+        return of({loading: false, results: [], error})
+      }),
     )
 }
 
@@ -183,7 +191,7 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
   const observableClient = client.observable
   const dataset = client.config().dataset
 
-  if (!release.finalDocumentStates?.length) return of({loading: false, results: []})
+  if (!release.finalDocumentStates?.length) return of({loading: false, results: [], error: null})
 
   function batchRequestDocumentFromHistory(startIndex: number) {
     const finalIndex = startIndex + 10
@@ -250,8 +258,12 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
         map((results) => ({
           loading: false,
           results,
+          error: null,
         })),
       )
+    }),
+    catchError((error) => {
+      return of({loading: false, results: [], error})
     }),
   )
 }
@@ -295,12 +307,13 @@ const getReleaseDocumentsObservable = ({
         releaseId,
       })
     }),
-    startWith({loading: true, results: []}),
+    startWith({loading: true, results: [], error: null}),
   )
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
   results: DocumentInRelease[]
+  error: null | Error
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
@@ -320,5 +333,5 @@ export function useBundleDocuments(releaseId: string): {
     [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
   )
 
-  return useObservable(releaseDocumentsObservable, {loading: true, results: []})
+  return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
 }
