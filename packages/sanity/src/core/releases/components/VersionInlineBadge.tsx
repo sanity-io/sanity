@@ -12,7 +12,6 @@ const StyledVersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
     color: var(--card-badge-${$tone ?? 'default'}-fg-color);
     background-color: var(--card-badge-${$tone ?? 'default'}-bg-color);
     border-radius: 3px;
-    padding: 0px 2px;
     text-decoration: none;
     padding: 0px 2px;
     font-weight: 500;
