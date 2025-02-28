@@ -196,6 +196,7 @@ export const VersionChip = memo(function VersionChip(props: {
         {/* This span is needed to make the tooltip work in disabled buttons */}
         <span style={{display: 'inline-flex'}}>
           <ChipButton
+            data-testid={`document-header-${text.replaceAll(' ', '-')}-chip`}
             ref={chipRef}
             disabled={disabled}
             mode="bleed"
