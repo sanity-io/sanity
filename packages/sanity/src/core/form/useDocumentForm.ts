@@ -1,4 +1,4 @@
-import {type ReleaseId, type SanityDocument} from '@sanity/client'
+import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -52,10 +52,10 @@ import {CreatedDraft} from './__telemetry__/form.telemetry'
 interface DocumentFormOptions {
   documentType: string
   documentId: string
-  releaseId?: ReleaseId
+  releaseId?: string
   initialValue?: SanityDocumentLike
   initialFocusPath?: Path
-  selectedPerspectiveName?: ReleaseId | 'published'
+  selectedPerspectiveName?: string | 'published'
   readOnly?: boolean | ((editState: EditStateFor) => boolean)
   /**
    * Usually the historical _rev value selected, if not defined, it will use the current document value
