@@ -21,7 +21,7 @@ import {ReleaseSummary} from './ReleaseSummary'
 import {useBundleDocuments} from './useBundleDocuments'
 
 export type ReleaseInspector = 'activity'
-const MotionCard = motion(Card)
+const MotionCard = motion.create(Card)
 
 export const ReleaseDetail = () => {
   const router = useRouter()
