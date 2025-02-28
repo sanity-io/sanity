@@ -7,8 +7,8 @@ import {
   isDraftId,
   isPublishedId,
   useActiveReleases,
-  useDocumentVersionList,
   useDocumentVersions,
+  useDocumentVersionSortedList,
   useSetPerspective,
   useTranslation,
   VersionInlineBadge,
@@ -25,7 +25,7 @@ export function OpenReleaseToEditBanner({
   documentId: string
   isPinnedDraftOrPublished: boolean
 }): React.JSX.Element | null {
-  const {onlyHasVersions} = useDocumentVersionList({documentId})
+  const {onlyHasVersions} = useDocumentVersionSortedList({documentId})
 
   /** this banner should only be rendered in specific cases
    * 1. when the document is not a draft or published

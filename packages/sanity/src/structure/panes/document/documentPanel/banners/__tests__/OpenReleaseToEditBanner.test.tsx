@@ -3,7 +3,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   type ReleaseDocument,
   useActiveReleases,
-  useDocumentVersionList,
+  useDocumentVersionSortedList,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -22,12 +22,14 @@ vi.mock('sanity', async () => {
     useReleasesIds: vi.fn(),
     useActiveReleases: vi.fn(),
     useArchivedReleases: vi.fn(),
-    useDocumentVersionList: vi.fn(),
+    useDocumentVersionSortedList: vi.fn(),
   }
 })
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseDocumentVersionList = useDocumentVersionList as Mock<typeof useDocumentVersionList>
+const mockUseDocumentVersionSortedList = useDocumentVersionSortedList as Mock<
+  typeof useDocumentVersionSortedList
+>
 
 const release1: ReleaseDocument = {
   _rev: 'activeRev',
@@ -75,7 +77,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionList.mockReturnValue({
+    mockUseDocumentVersionSortedList.mockReturnValue({
       sortedDocumentList: [],
       onlyHasVersions: false,
     })
@@ -95,7 +97,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionList.mockReturnValue({
+    mockUseDocumentVersionSortedList.mockReturnValue({
       sortedDocumentList: [],
       onlyHasVersions: false,
     })
@@ -117,7 +119,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionList.mockReturnValue({
+    mockUseDocumentVersionSortedList.mockReturnValue({
       sortedDocumentList: [release1],
       onlyHasVersions: true,
     })
@@ -139,7 +141,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
     })
 
-    mockUseDocumentVersionList.mockReturnValue({
+    mockUseDocumentVersionSortedList.mockReturnValue({
       sortedDocumentList: [release1, release2],
       onlyHasVersions: true,
     })
