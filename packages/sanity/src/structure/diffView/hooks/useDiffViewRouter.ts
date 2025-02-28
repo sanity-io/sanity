@@ -3,7 +3,7 @@ import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {
-  DIFF_SEARCH_PARAM_SEPERATOR,
+  DIFF_SEARCH_PARAM_DELIMITER,
   DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER,
   DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER,
   DIFF_VIEW_SEARCH_PARAMETER,
@@ -49,13 +49,13 @@ export function useDiffViewRouter(): DiffViewRouter {
               [DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER]: [
                 previousDocument.type,
                 previousDocument.id,
-              ].join(DIFF_SEARCH_PARAM_SEPERATOR),
+              ].join(DIFF_SEARCH_PARAM_DELIMITER),
             }
           : {}),
         ...(nextDocument
           ? {
               [DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER]: [nextDocument.type, nextDocument.id].join(
-                DIFF_SEARCH_PARAM_SEPERATOR,
+                DIFF_SEARCH_PARAM_DELIMITER,
               ),
             }
           : {}),

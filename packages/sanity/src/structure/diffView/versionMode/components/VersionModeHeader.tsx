@@ -81,7 +81,7 @@ export const VersionModeHeader: ComponentType<
       if (typeof documents?.previous !== 'undefined') {
         navigateDiffView({
           previousDocument: {
-            ...documents?.previous,
+            ...documents.previous,
             id: selectedDocumentId,
           },
         })
@@ -173,7 +173,8 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
 }) => {
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])
-  const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tStructure} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   return (
     <MenuButton
@@ -186,7 +187,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
           paddingRight={3}
           radius="full"
           selected
-          {...getMenuButtonProps({selected, t})}
+          {...getMenuButtonProps({selected, tCore, tStructure})}
         />
       }
       menu={
@@ -317,11 +318,21 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
 
 function getMenuButtonProps({
   selected,
-  t,
+  tCore,
+  tStructure,
 }: {
   selected?: ReleaseDocument | 'published' | 'draft'
-  t: TFunction
-}): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight'> {
+  tCore: TFunction
+  tStructure: TFunction
+}): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
+  if (typeof selected === 'undefined') {
+    return {
+      text: tCore('common.loading'),
+      tone: 'neutral',
+      disabled: true,
+    }
+  }
+
   if (isReleaseDocument(selected)) {
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
@@ -336,7 +347,7 @@ function getMenuButtonProps({
   const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
 
   return {
-    text: t(['compare-versions.status', selected].join('.')),
+    text: tStructure(['compare-versions.status', selected].join('.')),
     icon: <ReleaseAvatar padding={1} tone={tone} />,
     tone,
   }

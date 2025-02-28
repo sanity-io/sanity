@@ -16,4 +16,4 @@ export const DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER = 'nextDocument'
 /**
  * @internal
  */
-export const DIFF_SEARCH_PARAM_SEPERATOR = ';'
+export const DIFF_SEARCH_PARAM_DELIMITER = ';'

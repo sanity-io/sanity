@@ -1,31 +1,51 @@
 import {type ReleaseId} from '@sanity/client'
-import {type SanityDocument} from '@sanity/types'
-import {BoundaryElementProvider, Box, Card, DialogProvider, PortalProvider} from '@sanity/ui'
+import {type Path, type SanityDocument} from '@sanity/types'
+import {
+  BoundaryElementProvider,
+  Card,
+  Container as UiContainer,
+  DialogProvider,
+  PortalProvider,
+} from '@sanity/ui'
 import {noop} from 'lodash'
-import {type CSSProperties, forwardRef, useMemo, useRef, useState} from 'react'
+import {
+  type CSSProperties,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   ChangeIndicatorsTracker,
+  createPatchChannel,
+  FormBuilder,
   getPublishedId,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isReleaseId,
   isVersionId,
-  PerspectiveProvider,
+  LoadingBlock,
+  useDocumentForm,
   useEditState,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {ConnectorContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {DocumentPaneProvider, FormViewComponent} from '../..'
+import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
-import {PathSyncChannelSubscriber} from './PathSyncChannelSubscriber'
 import {Scroller} from './Scroller'
 
 const DiffViewPaneLayout = styled(Card)`
   position: relative;
   grid-area: var(--grid-area);
+`
+
+const Container = styled(UiContainer)`
+  width: auto;
 `
 
 interface DiffViewPaneProps {
@@ -44,18 +64,58 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
   {role, documentType, documentId, scrollElement, syncChannel, compareDocument},
   ref,
 ) {
-  const paneId = ['diffView', role].join('.')
-  const publishedVersionId = getPublishedId(documentId)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
   const compareValue = useCompareValue({compareDocument})
+  const [patchChannel] = useState(() => createPatchChannel())
+
+  const {
+    formState,
+    onChange,
+    onFocus,
+    onBlur,
+    onSetActiveFieldGroup,
+    onSetCollapsedFieldSet,
+    onSetCollapsedPath,
+    collapsedFieldSets,
+    ready,
+    collapsedPaths,
+    schemaType,
+    value,
+    onProgrammaticFocus,
+    ...documentForm
+  } = useDocumentForm({
+    documentId: getPublishedId(documentId),
+    documentType,
+    selectedPerspectiveName: perspectiveName(documentId),
+    releaseId: getVersionFromId(documentId),
+    comparisonValue: compareValue,
+  })
+
+  const isLoading = formState === null || !ready
+
+  const pathSyncChannel = usePathSyncChannel({
+    id: role,
+    syncChannel,
+  })
+
+  const onPathOpen = useCallback(
+    (path: Path) => {
+      documentForm.onPathOpen(path)
+      pathSyncChannel.push({source: role, path})
+    },
+    [documentForm, pathSyncChannel, role],
+  )
+
+  useEffect(() => {
+    const subscription = pathSyncChannel.path.subscribe((path) => onProgrammaticFocus(path))
+    return () => subscription.unsubscribe()
+  }, [onProgrammaticFocus, pathSyncChannel.path])
 
   return (
     <ConnectorContext.Provider
       value={{
-        // Only display change indicators in the next document pane.
-        isEnabled: role === 'next',
         // Render the change indicators inertly, because the diff view modal does not currently
         // provide a way to display document inspectors.
         isInteractive: false,
@@ -89,37 +149,39 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                   } as CSSProperties
                 }
               >
-                <PerspectiveProvider
-                  selectedPerspectiveName={perspectiveName(documentId)}
-                  excludedPerspectives={[]}
-                >
-                  <DocumentPaneProvider
-                    index={0}
-                    paneKey={paneId}
-                    itemId={paneId}
-                    pane={{
-                      id: paneId,
-                      type: 'document',
-                      // Providing a falsey value allows the title to be computed automatically based
-                      // on the document's values.
-                      title: '',
-                      options: {
-                        type: documentType,
-                        id: publishedVersionId,
-                      },
-                    }}
-                    compareValue={compareValue}
-                  >
-                    <PortalProvider element={portalElement}>
-                      <DialogProvider position="absolute">
-                        <PathSyncChannelSubscriber id={role} syncChannel={syncChannel} />
-                        <Box ref={containerElement}>
-                          <FormViewComponent hidden={false} margins={[0, 0, 0, 0]} />
-                        </Box>
-                      </DialogProvider>
-                    </PortalProvider>
-                  </DocumentPaneProvider>
-                </PerspectiveProvider>
+                <PortalProvider element={portalElement}>
+                  <DialogProvider position="absolute">
+                    {isLoading ? (
+                      <LoadingBlock showText />
+                    ) : (
+                      <Container ref={containerElement} padding={4} width={1}>
+                        <FormBuilder
+                          // eslint-disable-next-line camelcase
+                          __internal_patchChannel={patchChannel}
+                          id={`diffView-pane-${role}`}
+                          onChange={onChange}
+                          onPathFocus={onFocus}
+                          onPathOpen={onPathOpen}
+                          onPathBlur={onBlur}
+                          onFieldGroupSelect={onSetActiveFieldGroup}
+                          onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                          onSetPathCollapsed={onSetCollapsedPath}
+                          collapsedPaths={collapsedPaths}
+                          collapsedFieldSets={collapsedFieldSets}
+                          focusPath={formState.focusPath}
+                          changed={formState.changed}
+                          focused={formState.focused}
+                          groups={formState.groups}
+                          validation={formState.validation}
+                          members={formState.members}
+                          presence={formState.presence}
+                          schemaType={schemaType}
+                          value={value}
+                        />
+                      </Container>
+                    )}
+                  </DialogProvider>
+                </PortalProvider>
               </Scroller>
               <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
             </DiffViewPaneLayout>

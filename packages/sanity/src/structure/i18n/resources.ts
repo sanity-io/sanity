@@ -171,6 +171,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The label used in the changes inspector for the to selector */
   'changes.to.label': 'To',
 
+  /** The error message shown when the specified document comparison mode is not supported */
+  'compare-version.error.invalidModeParam':
+    '"{{input}}" is not a supported document comparison mode.',
+  /** The error message shown when the next document for comparison could not be extracted from the URL */
+  'compare-version.error.invalidNextDocumentParam': 'The next document parameter is invalid.',
+  /** The error message shown when the document comparison URL could not be parsed */
+  'compare-version.error.invalidParams.title': 'Unable to compare documents',
+  /** The error message shown when the previous document for comparison could not be extracted from the URL */
+  'compare-version.error.invalidPreviousDocumentParam':
+    'The previous document parameter is invalid.',
   /** The text for the "Compare versions" action for a document */
   'compare-versions.menu-item.title': 'Compare versions',
   /** The string used to label draft documents */
