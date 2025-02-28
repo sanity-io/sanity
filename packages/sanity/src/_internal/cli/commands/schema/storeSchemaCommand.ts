@@ -2,16 +2,17 @@ import {type CliCommandArguments, type CliCommandDefinition} from '@sanity/cli'
 
 import {type StoreManifestSchemasFlags} from '../../actions/schema/storeSchemasAction'
 
-const description = 'Store schemas into the current dataset.'
+const description = 'Store schemas into workspace datasets.'
 
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
 Options:
-  --workspace The name of the workspace to fetch the stored schema for
-  --path If you are not using the default static file path, you can specify it here.
-  --id-prefix you can specify a custom id prefix for the stored schemas. Useful if you want to store the schema in a different path than the default one.
-  --verbose Enable verbose logging
+  --workspace <workspace_name> store schema for a specific workspace
+  --manifest-dir <directory> directory containing your manifest file if it's not in the default location
+  --id-prefix <prefix> add a prefix to the schema ID
+  --schema-required fail if schema file is not found
+  --verbose print detailed information during store
 
 Examples
   # if no options are provided all workspace schemas will be stored

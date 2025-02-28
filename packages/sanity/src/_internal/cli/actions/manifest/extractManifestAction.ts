@@ -33,7 +33,7 @@ const EXTRACT_FAILURE_MESSAGE =
   "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
   `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
 
-interface ExtractFlags {
+export interface ExtractManifestFlags {
   path?: string
 }
 
@@ -42,7 +42,7 @@ interface ExtractFlags {
  * @returns `undefined` if extract succeeded - caught error if it failed
  */
 export async function extractManifestSafe(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
   if (!EXTRACT_MANIFEST_ENABLED) {
@@ -61,7 +61,7 @@ export async function extractManifestSafe(
 }
 
 async function extractManifest(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
   const {output, workDir} = context

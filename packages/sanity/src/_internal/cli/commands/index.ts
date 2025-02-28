@@ -1,5 +1,6 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
+import {SCHEMA_STORE_ENABLED} from '../actions/schema/storeSchemasAction'
 import appGroup from './app/appGroup'
 import appBuildCommand from './app/buildCommand'
 import appDeployCommand from './app/deployCommand'
@@ -62,7 +63,8 @@ import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
 
-const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
+// Base commands that are always included
+const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   appGroup,
   appDeployCommand,
   appDevCommand,
@@ -118,12 +120,18 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   validateSchemaCommand,
   extractSchemaCommand,
   previewCommand,
-  fetchSchemaCommand,
-  storeSchemaCommand,
   execCommand,
   manifestGroup,
   extractManifestCommand,
-  deleteSchemaCommand,
+]
+
+// Internal schema commands that are only included when enabled
+const internalSchemaCommands = [fetchSchemaCommand, storeSchemaCommand, deleteSchemaCommand]
+
+// Include experimental commands only when the feature flag is enabled
+const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
+  ...baseCommands,
+  ...(SCHEMA_STORE_ENABLED ? internalSchemaCommands : []),
 ]
 
 /**

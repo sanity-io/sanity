@@ -4,12 +4,17 @@ import chalk from 'chalk'
 import {size, sortBy, uniqBy} from 'lodash'
 
 import {type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
-import {getManifestPath, readManifest, throwIfProjectIdMismatch} from './storeSchemasAction'
+import {
+  getManifestPath,
+  readManifest,
+  SCHEMA_STORE_ENABLED,
+  throwIfProjectIdMismatch,
+} from './storeSchemasAction'
 
 export interface SchemaListFlags {
-  json: boolean
-  id: string
-  path: string
+  'json': boolean
+  'id': string
+  'manifest-dir': string
 }
 
 type PrintSchemaListArgs = {
@@ -46,11 +51,18 @@ const printSchemaList = ({
   rows.forEach((row) => output.print(printRow(row)))
 }
 
-export default async function fetchSchemaAction(
+export default async function schemaListAction(
   args: CliCommandArguments<SchemaListFlags>,
   context: CliCommandContext,
 ): Promise<void> {
+  if (!SCHEMA_STORE_ENABLED) {
+    return
+  }
+
   const flags = args.extOptions
+  if (typeof flags.id === 'boolean') throw new Error('Schema ID is empty')
+  if (typeof flags['manifest-dir'] === 'boolean') throw new Error('Manifest directory is empty')
+
   const {apiClient, output} = context
   const client = apiClient({
     requireUser: true,
@@ -58,14 +70,16 @@ export default async function fetchSchemaAction(
   }).withConfig({apiVersion: 'v2024-08-01'})
 
   const projectId = client.config().projectId
+  const dataset = client.config().dataset
 
-  if (!projectId) {
-    output.error('Project ID must be defined.')
+  if (!projectId || !dataset) {
+    output.error('Project ID and dataset must be defined.')
     return
   }
 
-  const manifestPath = getManifestPath(context, flags.path)
-  const manifest = readManifest(manifestPath, output)
+  const manifestDir = flags['manifest-dir']
+  const manifestPath = getManifestPath(context, manifestDir)
+  const manifest = await readManifest(manifestPath, context)
 
   // Gather all schemas
   const results = await Promise.allSettled(

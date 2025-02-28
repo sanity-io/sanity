@@ -10,7 +10,7 @@ const helpText = `
 Options
   --ids <schema_id_1,schema_id_2,...> comma-separated list of schema IDs to delete
   --dataset <dataset_name> delete schemas from a specific dataset
-  --path <path> path to the manifest file if it is not in the default location
+  --manifest-dir <directory> directory containing your manifest file if it's not in the default location
 
 Examples
   # Delete single schema

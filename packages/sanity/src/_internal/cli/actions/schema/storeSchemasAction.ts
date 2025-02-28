@@ -1,16 +1,23 @@
-import {readFileSync} from 'node:fs'
+import {readFileSync, statSync} from 'node:fs'
 import path, {join, resolve} from 'node:path'
 
-import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
 import {type Ora} from 'ora'
 
 import {type ManifestSchemaType, type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
-import {MANIFEST_FILENAME} from '../manifest/extractManifestAction'
+import {
+  type ExtractManifestFlags,
+  extractManifestSafe,
+  MANIFEST_FILENAME,
+} from '../manifest/extractManifestAction'
 import {SANITY_WORKSPACE_SCHEMA_TYPE} from './schemaListAction'
 
+const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_SCHEMA_STORE_ENABLED'
+export const SCHEMA_STORE_ENABLED = process.env[FEATURE_ENABLED_ENV_NAME] === 'true'
+
 export interface StoreManifestSchemasFlags {
-  'path'?: string
+  'manifest-dir'?: string
   'workspace'?: string
   'id-prefix'?: string
   'schema-required'?: boolean
@@ -28,14 +35,49 @@ export const getManifestPath = (context: CliCommandContext, customPath?: string)
   return manifestPath
 }
 
-export const readManifest = (readPath: string, output?: CliOutputter, spinner?: Ora) => {
+/**
+ * Helper function to read and parse a manifest file with logging
+ */
+const readAndParseManifest = (manifestPath: string, context: CliCommandContext) => {
+  const content = readFileSync(manifestPath, 'utf-8')
+  const stats = statSync(manifestPath)
+  const lastModified = stats.mtime.toISOString()
+  context.output.print(
+    chalk.gray(`\n↳ Read manifest from ${manifestPath} (last modified: ${lastModified})`),
+  )
+  return JSON.parse(content)
+}
+
+export const readManifest = async (readPath: string, context: CliCommandContext, spinner?: Ora) => {
+  const manifestPath = `${readPath}/${MANIFEST_FILENAME}`
+
   try {
-    return JSON.parse(readFileSync(`${readPath}/${MANIFEST_FILENAME}`, 'utf-8'))
+    return readAndParseManifest(manifestPath, context)
   } catch (error) {
-    const errorMessage = `Manifest not found at ${readPath}/${MANIFEST_FILENAME}`
-    if (spinner) spinner.fail(errorMessage)
-    if (output) output.error(errorMessage)
-    throw error
+    // Still log that we're attempting extraction
+    spinner!.text = 'Manifest not found, attempting to extract it...'
+
+    await extractManifestSafe(
+      {
+        extOptions: {path: readPath},
+        groupOrCommand: 'extract',
+        argv: [],
+        argsWithoutOptions: [],
+        extraArguments: [],
+      } as CliCommandArguments<ExtractManifestFlags>,
+      context,
+    )
+
+    // Try reading the manifest again after extraction
+    try {
+      return readAndParseManifest(manifestPath, context)
+    } catch (retryError) {
+      const errorMessage = `Failed to read manifest at ${manifestPath}`
+      spinner?.fail(errorMessage)
+      // We should log the error too for consistency
+      context.output.error(errorMessage)
+      throw retryError
+    }
   }
 }
 
@@ -55,14 +97,19 @@ export default async function storeSchemasAction(
   args: CliCommandArguments<StoreManifestSchemasFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
+  if (!SCHEMA_STORE_ENABLED) {
+    return undefined
+  }
+
   const flags = args.extOptions
 
   const schemaRequired = flags['schema-required']
   const workspaceName = flags.workspace
   const idPrefix = flags['id-prefix']
   const verbose = flags.verbose
+  const manifestDir = flags['manifest-dir']
 
-  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
+  if (typeof manifestDir === 'boolean') throw new Error('Manifest directory is empty')
   if (typeof idPrefix === 'boolean') throw new Error('Id prefix is empty')
   if (typeof workspaceName === 'boolean') throw new Error('Workspace is empty')
 
@@ -70,7 +117,7 @@ export default async function storeSchemasAction(
 
   const spinner = output.spinner({}).start('Storing schemas')
 
-  const manifestPath = getManifestPath(context, flags.path)
+  const manifestPath = getManifestPath(context, manifestDir)
 
   try {
     const client = apiClient({
@@ -81,7 +128,7 @@ export default async function storeSchemasAction(
     const projectId = client.config().projectId
     if (!projectId) throw new Error('Project ID is not defined')
 
-    const manifest = readManifest(manifestPath, output, spinner)
+    const manifest = await readManifest(manifestPath, context, spinner)
 
     let storedCount = 0
 

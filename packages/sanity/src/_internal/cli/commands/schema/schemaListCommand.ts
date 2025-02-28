@@ -10,7 +10,7 @@ const helpText = `
 Options
   --json get schemas as json
   --id <schema_id> fetch a specific schema by its ID
-  --path <path> path to your manifest file if it's not in the default location
+  --manifest-dir <directory> directory containing your manifest file if it's not in the default location
 
 Examples
   # Get full json schemas

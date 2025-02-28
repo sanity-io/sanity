@@ -2,22 +2,30 @@ import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
 
 import {type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
-import {getManifestPath, readManifest, throwIfProjectIdMismatch} from './storeSchemasAction'
+import {
+  getManifestPath,
+  readManifest,
+  SCHEMA_STORE_ENABLED,
+  throwIfProjectIdMismatch,
+} from './storeSchemasAction'
 
 export interface DeleteSchemaFlags {
-  ids: string
-  path: string
-  dataset: string
+  'ids': string
+  'manifest-dir': string
+  'dataset': string
 }
 
 export default async function deleteSchemaAction(
   args: CliCommandArguments<DeleteSchemaFlags>,
   context: CliCommandContext,
 ): Promise<void> {
+  if (!SCHEMA_STORE_ENABLED) {
+    return
+  }
   const flags = args.extOptions
   if (typeof flags.dataset === 'boolean') throw new Error('Dataset is empty')
   if (typeof flags.ids === 'boolean') throw new Error('Ids are empty')
-  if (typeof flags.path === 'boolean') throw new Error('Path is empty')
+  if (typeof flags['manifest-dir'] === 'boolean') throw new Error('Manifest directory is empty')
 
   const {apiClient, output} = context
 
@@ -36,8 +44,9 @@ export default async function deleteSchemaAction(
     return
   }
 
-  const manifestPath = getManifestPath(context, flags.path)
-  const manifest = readManifest(manifestPath, output)
+  const manifestDir = flags['manifest-dir']
+  const manifestPath = getManifestPath(context, manifestDir)
+  const manifest = await readManifest(manifestPath, context)
 
   const results = await Promise.allSettled(
     manifest.workspaces.flatMap((workspace: ManifestWorkspaceFile) => {
