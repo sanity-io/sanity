@@ -288,6 +288,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const isLocked = editState.transactionSyncLock?.enabled
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
+    // in cases where the document has no draft or published, but has a version,
+    // and that version doesn't match current pinned version
+    // we disable editing
+    if (
+      editState.version &&
+      !editState.draft &&
+      !editState.published &&
+      selectedPerspectiveName !== getVersionFromId(editState.version._id)
+    ) {
+      return true
+    }
+
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && editState.draft?._id) {
       return true
