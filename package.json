@@ -165,7 +165,7 @@
     "prettier": "^3.3.3",
     "read-package-up": "^11.0.0",
     "rimraf": "^5.0.10",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "semver": "^7.3.5",
     "turbo": "^2.4.4",
