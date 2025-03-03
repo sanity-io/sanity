@@ -111,6 +111,7 @@ interface DocumentFormValue {
  *
  * Use this as a base point to create your own form.
  */
+// eslint-disable-next-line max-statements
 export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue {
   const {
     documentType,
