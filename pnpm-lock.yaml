@@ -1636,8 +1636,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^4.1.21
-        version: 4.1.21(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^4.1.22
+        version: 4.1.22(react@18.3.1)(rxjs@7.8.2)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -10120,8 +10120,8 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  react-rx@4.1.21:
-    resolution: {integrity: sha512-sMDf3jPo6CY+ATtkta9oA8l7XvYrTDIg0uDPDcP51iv8812pJp/dUSOokfP+WcsGHnFN7OPzsHS/T4+QwuBLvA==}
+  react-rx@4.1.22:
+    resolution: {integrity: sha512-YrcjA572/4M8vsxul9bi4nWsqvYlg5V5cHWR2rvuNGAC+Mu9K3Xk0Q6M9GZ4gUYE5MeRWGfQ+RunFP+erkveaw==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -21811,19 +21811,19 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-rx@4.1.21(react@18.3.1)(rxjs@7.8.2):
+  react-rx@4.1.22(react@18.3.1)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 18.3.1
-      react-compiler-runtime: 19.0.0-beta-e1e972c-20250221(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-40c6c23-20250301(react@18.3.1)
       rxjs: 7.8.2
       use-effect-event: 1.0.2(react@18.3.1)
 
-  react-rx@4.1.21(react@19.0.0)(rxjs@7.8.2):
+  react-rx@4.1.22(react@19.0.0)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.0.0
-      react-compiler-runtime: 19.0.0-beta-e1e972c-20250221(react@19.0.0)
+      react-compiler-runtime: 19.0.0-beta-40c6c23-20250301(react@19.0.0)
       rxjs: 7.8.2
       use-effect-event: 1.0.2(react@19.0.0)
 
@@ -22420,7 +22420,7 @@ snapshots:
       lodash: 4.17.21
       react: 19.0.0
       react-is: 18.3.1
-      react-rx: 4.1.21(react@19.0.0)(rxjs@7.8.2)
+      react-rx: 4.1.22(react@19.0.0)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
