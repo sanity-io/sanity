@@ -138,12 +138,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.action.add-to-release': 'Add to release',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.open-to-edit': 'Open release to edit',
-  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
-  'banners.release.navigate-to-edit-description': 'The document only exists in the',
-  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
-  'banners.release.navigate-to-edit-description-end_one': 'release',
-  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
-  'banners.release.navigate-to-edit-description-end_other': 'releases',
+  /** The text for the banner that appears when there are multiple versions but no drafts or published, only one extra releases */
+  'banners.release.navigate-to-edit-description-multiple_one':
+    'This document is part of the <VersionBadge/> release and {{count}} more release.',
+  /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
+  'banners.release.navigate-to-edit-description-multiple_other':
+    'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
+  'banners.release.navigate-to-edit-description-single':
+    'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
 
