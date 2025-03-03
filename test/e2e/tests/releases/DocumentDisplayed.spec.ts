@@ -18,6 +18,7 @@ test.describe('Draft pinned version', () => {
    */
 
   test('draft, no publish, no version - shows draft displayed', async ({page}) => {
+    test.slow()
     // specific document set up for this test in mind
     await page.goto('/test/content/species;bd339577-7a28-4254-a74c-7989bf618a43')
 
@@ -33,6 +34,7 @@ test.describe('Draft pinned version', () => {
   })
 
   test('draft, publish, no version - shows draft from published displayed', async ({page}) => {
+    test.slow()
     // specific document set up for this test in mind
     await page.goto('/test/content/species;a88ce001-506d-45b2-b95d-ab2a674e7fc0')
 
@@ -50,6 +52,7 @@ test.describe('Draft pinned version', () => {
 
   test.describe('No draft, no publish, with version', () => {
     test(`single version - shows version displayed`, async ({page}) => {
+      test.slow()
       // specific document set up for this test in mind
       await page.goto('/test/content/species;d590cd97-1c40-4269-b4e3-948dc479dcff')
 
@@ -72,6 +75,7 @@ test.describe('Draft pinned version', () => {
     })
 
     test('multiple version - shows first version displayed', async ({page}) => {
+      test.slow()
       // specific document set up for this test in mind
       await page.goto('/test/content/species;49e39ee0-3320-4e23-b995-b66a2e1d0a12')
 
@@ -95,6 +99,7 @@ test.describe('Draft pinned version', () => {
     })
 
     test(`displayed document is read only`, async ({page}) => {
+      test.slow()
       // specific document set up for this test in mind
       await page.goto('/test/content/species;d590cd97-1c40-4269-b4e3-948dc479dcff')
 
@@ -114,6 +119,7 @@ test.describe('Draft pinned version', () => {
 
 test.describe('Published pinned version', () => {
   test('draft, publish, no version - shows draft displayed', async ({page}) => {
+    test.slow()
     // specific document set up for this test in mind
     await page.goto(
       '/test/content/species;a88ce001-506d-45b2-b95d-ab2a674e7fc0?perspective=published',
@@ -157,6 +163,7 @@ test.describe('Published pinned version', () => {
 })
 
 test.describe('Realeases pinned versions', () => {
+  test.slow()
   test('draft, no publish, no version - shows draft', async ({page}) => {
     // specific document set up for this test in mind
     await page.goto(
