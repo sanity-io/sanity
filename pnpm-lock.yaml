@@ -239,7 +239,7 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: ^3.6.0
+        specifier: ^3.7.0
         version: 3.7.0(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.14.5
@@ -363,7 +363,7 @@ importers:
         specifier: ^4.0.0
         version: 4.1.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/icons':
-        specifier: ^3.6.0
+        specifier: ^3.7.0
         version: 3.7.0(react@19.0.0)
       '@sanity/ui':
         specifier: ^2.14.5
@@ -444,7 +444,7 @@ importers:
         specifier: ^4.0.0
         version: 4.1.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/icons':
-        specifier: ^3.6.0
+        specifier: ^3.7.0
         version: 3.7.0(react@19.0.0)
       '@sanity/image-url':
         specifier: ^1.0.2
@@ -471,7 +471,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
-        specifier: ^2.1.4
+        specifier: ^2.1.5
         version: 2.1.5(@sanity/client@6.28.2(debug@4.4.0))
       '@sanity/react-loader':
         specifier: ^1.10.35
@@ -498,8 +498,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 2.13.3
-        version: 2.13.3(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.2)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)
+        specifier: 2.13.7
+        version: 2.13.7(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.2)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -4766,18 +4766,19 @@ packages:
       '@sanity/types':
         optional: true
 
-  '@sanity/visual-editing@2.13.3':
-    resolution: {integrity: sha512-l6NOzsGa6BPXWJsO6KAKKedtPiI9P38UFUxsT1CDltM6e2NWvpeBOdO1D8vak6veZsWSjIvTee/SSgYrtaaICA==}
+  '@sanity/visual-editing@2.13.7':
+    resolution: {integrity: sha512-nfgtm9aVjAlSeyNgvvLKRfqVOlw9f81luF65S6BnSbWtnPm5bqlAIzhA4hU9zxWQbLZnqWgv2em1Tj4XqaFzSA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.28.0
+      '@sanity/client': ^6.28.1
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc'
       react: ^18.3 || >=19.0.0-rc
       react-dom: ^18.3 || >=19.0.0-rc
       react-is: ^18.3 || >=19.0.0-rc
       react-router: '>= 6 || >= 7'
+      styled-components: ^6.1.15
       svelte: '>= 4'
     peerDependenciesMeta:
       '@remix-run/react':
@@ -15595,7 +15596,7 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@2.13.3(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.2)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)':
+  '@sanity/visual-editing@2.13.7(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.2)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
       '@sanity/comlink': 3.0.1
       '@sanity/icons': 3.7.0(react@19.0.0)
@@ -15608,6 +15609,7 @@ snapshots:
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
       react: 19.0.0
+      react-compiler-runtime: 19.0.0-beta-40c6c23-20250301(react@19.0.0)
       react-dom: 19.0.0(react@19.0.0)
       react-is: 18.3.1
       rxjs: 7.8.2
