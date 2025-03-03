@@ -712,8 +712,8 @@ importers:
         specifier: 3.78.0
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       '@sanity/telemetry':
         specifier: ^0.7.7
         version: 0.7.9(react@19.0.0)
@@ -4677,8 +4677,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@1.1.0':
-    resolution: {integrity: sha512-idYE5tas37DqCerGqyLnlJpT98YXCDyWb8ot3koxZ1Dh8eWylG1TGQmytAjNtAerOuTARJDbuPrpDQWojUcOrQ==}
+  '@sanity/runtime-cli@1.1.1':
+    resolution: {integrity: sha512-8iScG1ZFz/hAIa4yRJmSleUsCj+Ej8GSNKL6xXJnAQFMhw7RWlKO0GQq3fkiCVbmqELSG76v7CH9uHNZ9nu+DQ==}
     engines: {node: '>=20.11.0'}
     hasBin: true
 
@@ -15365,7 +15365,7 @@ snapshots:
       - '@sanity/types'
       - debug
 
-  '@sanity/runtime-cli@1.1.0':
+  '@sanity/runtime-cli@1.1.1':
     dependencies:
       '@hono/node-server': 1.13.8(hono@4.7.2)
       '@oclif/core': 4.2.8
