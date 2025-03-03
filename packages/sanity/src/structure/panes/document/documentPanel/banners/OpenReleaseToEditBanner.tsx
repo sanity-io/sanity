@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
@@ -76,7 +75,7 @@ export function OpenReleaseToEditBannerInner({
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleGoToEdit = useCallback(async () => {
-    setPerspective(releaseId as ReleaseId)
+    setPerspective(releaseId)
   }, [releaseId, setPerspective])
 
   return (
