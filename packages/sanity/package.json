@@ -178,7 +178,7 @@
     "@sanity/logos": "^2.1.13",
     "@sanity/migrate": "3.77.2",
     "@sanity/mutator": "3.77.2",
-    "@sanity/presentation-comlink": "^1.0.8",
+    "@sanity/presentation-comlink": "^1.0.9",
     "@sanity/preview-url-secret": "^2.1.4",
     "@sanity/schema": "3.77.2",
     "@sanity/telemetry": "^0.7.7",
