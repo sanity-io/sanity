@@ -3,6 +3,7 @@ import {
   type EditAction,
   type IdentifiedSanityDocumentStub,
   type SanityClient,
+  type SingleActionResult,
 } from '@sanity/client'
 
 import {getPublishedId, getVersionId} from '../../util'
@@ -25,7 +26,10 @@ export interface ReleaseOperationsStore {
   archive: (releaseId: string, opts?: operationsOptions) => Promise<void>
   unarchive: (releaseId: string, opts?: operationsOptions) => Promise<void>
   updateRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
-  createRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
+  createRelease: (
+    release: EditableReleaseDocument,
+    opts?: operationsOptions,
+  ) => Promise<SingleActionResult>
   deleteRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
   revertRelease: (
     revertReleaseId: string,
@@ -54,15 +58,7 @@ export function createReleaseOperationsStore(options: {
   const requestAction = createRequestAction(options.onReleaseLimitReached)
 
   const handleCreateRelease = (release: EditableReleaseDocument, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      {
-        actionType: 'sanity.action.release.create',
-        releaseId: getReleaseIdFromReleaseDocumentId(release._id),
-        [METADATA_PROPERTY_NAME]: release.metadata,
-      },
-      opts,
-    )
+    client.releases.create(getReleaseIdFromReleaseDocumentId(release._id), release.metadata, opts)
 
   const handleUpdateRelease = async (
     release: EditableReleaseDocument,
