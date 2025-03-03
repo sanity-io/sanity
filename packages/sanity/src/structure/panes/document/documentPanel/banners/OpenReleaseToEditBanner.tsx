@@ -2,6 +2,7 @@ import {type ReleaseId} from '@sanity/client'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
   isDraftId,
@@ -65,7 +66,7 @@ export function OpenReleaseToEditBannerInner({
         .filter((version) => {
           return documentVersions.find((release) => {
             const r = getVersionFromId(release) ?? ''
-            return version._id.includes(r)
+            return getReleaseIdFromReleaseDocumentId(version._id) === r
           })
         })
         .map((version) => version.metadata.title),
