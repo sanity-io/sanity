@@ -1,12 +1,14 @@
 import path from 'node:path'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import aliases from '@repo/dev-aliases'
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'playwright-ct', 'results')
 const isCI = !!process.env.CI
+const monorepoPath = path.resolve(__dirname, '..', '..')
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -19,11 +21,11 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 6 : 0,
+  forbidOnly: isCI,
+  /* Flaky tests require us to allow up to 6 retries */
+  retries: 6,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: isCI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: isCI
     ? [['list'], ['blob']]
@@ -55,20 +57,20 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     /* Configure Playwright vite config */
-    /*
     ctViteConfig: {
       resolve: {
-        alias: {
-          '@sanity/util/content': path.join(
-            __dirname,
-            './packages/@sanity/util/src/content/index.ts'
-          ),
-        },
+        alias: Object.fromEntries(
+          Object.entries(aliases).map(([pkgName, pkgPath]) => {
+            return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
+          }),
+        ),
+        dedupe: ['@sanity/ui', 'styled-components'],
       },
     },
-    */
     /* Where to find playwright-ct template files */
     ctTemplateDir: './playwright-ct/template',
+    /* Don't wait for animations */
+    contextOptions: {reducedMotion: 'reduce'},
   },
 
   /* Configure projects for major browsers */
@@ -79,6 +81,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         permissions: ['clipboard-read', 'clipboard-write'],
         contextOptions: {
+          reducedMotion: 'reduce',
           // chromium-specific permissions
           permissions: ['clipboard-read', 'clipboard-write'],
         },
