@@ -48,49 +48,67 @@ test.describe('Draft pinned version', () => {
     )
   })
 
-  test(`no draft, no publish, single version - shows version displayed`, async ({page}) => {
-    // specific document set up for this test in mind
-    await page.goto('/test/content/species;d590cd97-1c40-4269-b4e3-948dc479dcff')
+  test.describe('No draft, no publish, with version', () => {
+    test(`single version - shows version displayed`, async ({page}) => {
+      // specific document set up for this test in mind
+      await page.goto('/test/content/species;d590cd97-1c40-4269-b4e3-948dc479dcff')
 
-    // wait to load
-    await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-    await expect(page.getByTestId('document-header-(DO-NOT-PUBLISH)-ASAP-A-chip')).toBeVisible()
-    await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      // wait to load
+      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
+      await expect(page.getByTestId('document-header-(DO-NOT-PUBLISH)-ASAP-A-chip')).toBeVisible()
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-    // chilp
-    await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
+      // chilp
+      await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
 
-    await expect(page.getByTestId('document-header-(DO-NOT-PUBLISH)-ASAP-A-chip')).toHaveAttribute(
-      'data-selected',
-    )
+      await expect(
+        page.getByTestId('document-header-(DO-NOT-PUBLISH)-ASAP-A-chip'),
+      ).toHaveAttribute('data-selected')
 
-    // field
-    await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
-      '(DO NOT CHANGE) ASAP A',
-    )
-  })
+      // field
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+        '(DO NOT CHANGE) ASAP A',
+      )
+    })
 
-  test('no draft, no publish, multiple version - shows first version displayed', async ({page}) => {
-    // specific document set up for this test in mind
-    await page.goto('/test/content/species;49e39ee0-3320-4e23-b995-b66a2e1d0a12')
+    test('multiple version - shows first version displayed', async ({page}) => {
+      // specific document set up for this test in mind
+      await page.goto('/test/content/species;49e39ee0-3320-4e23-b995-b66a2e1d0a12')
 
-    // Wait for document to load
-    await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-    await expect(
-      page.getByTestId('document-header-(DO-NOT-PUBLISH)-Undecided-A-chip'),
-    ).toBeVisible()
-    await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      // Wait for document to load
+      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
+      await expect(
+        page.getByTestId('document-header-(DO-NOT-PUBLISH)-Undecided-A-chip'),
+      ).toBeVisible()
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-    // chip
-    await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
-    await expect(
-      page.getByTestId('document-header-(DO-NOT-PUBLISH)-Undecided-A-chip'),
-    ).not.toHaveAttribute('data-selected')
+      // chip
+      await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
+      await expect(
+        page.getByTestId('document-header-(DO-NOT-PUBLISH)-Undecided-A-chip'),
+      ).not.toHaveAttribute('data-selected')
 
-    // field
-    await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
-      '(DO NOT CHANGE) ASAP A',
-    )
+      // field
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+        '(DO NOT CHANGE) ASAP A',
+      )
+    })
+
+    test(`displayed document is read only`, async ({page}) => {
+      // specific document set up for this test in mind
+      await page.goto('/test/content/species;d590cd97-1c40-4269-b4e3-948dc479dcff')
+
+      // wait to load
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+
+      // field
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+        '(DO NOT CHANGE) ASAP A',
+      )
+      await expect(
+        page.getByTestId('field-name').getByTestId('string-input').isDisabled(),
+      ).toBeTruthy()
+    })
   })
 })
 
