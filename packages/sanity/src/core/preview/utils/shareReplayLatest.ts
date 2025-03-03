@@ -40,7 +40,7 @@ export function shareReplayLatest<T>(
   )
 }
 function _shareReplayLatest<T>(config: ShareReplayLatestConfig<T>): MonoTypeOperatorFunction<T> {
-  return (source: Observable<T>): Observable<T> => {
+  return (source: Observable<T>) => {
     let latest: T | undefined
     let emitted = false
 
