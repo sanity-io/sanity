@@ -179,7 +179,7 @@
     "@sanity/migrate": "3.77.2",
     "@sanity/mutator": "3.77.2",
     "@sanity/presentation-comlink": "^1.0.9",
-    "@sanity/preview-url-secret": "^2.1.4",
+    "@sanity/preview-url-secret": "^2.1.5",
     "@sanity/schema": "3.77.2",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.77.2",
