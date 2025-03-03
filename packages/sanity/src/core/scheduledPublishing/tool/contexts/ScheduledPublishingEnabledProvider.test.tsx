@@ -10,6 +10,7 @@ import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
+import {cachedUsedScheduledPublishing} from './useHasUsedScheduledPublishing'
 
 vi.mock('../../../hooks/useFeatureEnabled', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({}),
@@ -55,6 +56,7 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockClient(scheduleResponse)
+    cachedUsedScheduledPublishing.clear()
   })
 
   it('should not show scheduled publishing if user opt out and the feature is not enabled (any plan)', async () => {
@@ -68,7 +70,8 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     expect(value.result.current).toEqual({
       enabled: false,
       mode: null,
-      hasUsedScheduledPublishing: {used: true, loading: false},
+      // Workspace is not enabled, so we won't do a request to check if they have used it or not.
+      hasUsedScheduledPublishing: {used: false, loading: false},
     })
   })
   it('should not show scheduled publishing  if user opt out and the feature is enabled (any plan)', () => {
@@ -82,7 +85,8 @@ describe('ScheduledPublishingEnabledProvider - previously used', () => {
     expect(value.result.current).toEqual({
       enabled: false,
       mode: null,
-      hasUsedScheduledPublishing: {used: true, loading: false},
+      // Workspace is not enabled, so we won't do a request to check if they have used it or not.
+      hasUsedScheduledPublishing: {used: false, loading: false},
     })
   })
 
@@ -166,6 +170,7 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockClient([])
+    cachedUsedScheduledPublishing.clear()
   })
 
   it('should not show scheduled publishing  if user opt out and the feature is enabled (any plan)', () => {
@@ -221,7 +226,8 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
     expect(value.result.current).toEqual({
       enabled: true,
       mode: 'default',
-      hasUsedScheduledPublishing: {used: false, loading: false},
+      // Users have opted in, so we are not checking if they used it, we are just returning a default true value
+      hasUsedScheduledPublishing: {used: true, loading: false},
     })
   })
   it('should  show upsell mode if they have not used it before and opted in, and feature is not available (free plans)', () => {
@@ -238,7 +244,8 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
     expect(value.result.current).toEqual({
       enabled: true,
       mode: 'upsell',
-      hasUsedScheduledPublishing: {used: false, loading: false},
+      // Users have opted in, so we are not checking if they used it, we are just returning a default true value
+      hasUsedScheduledPublishing: {used: true, loading: false},
     })
   })
 })
