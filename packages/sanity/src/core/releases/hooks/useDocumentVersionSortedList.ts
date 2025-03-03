@@ -8,7 +8,7 @@ import {useDocumentVersions} from './useDocumentVersions'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
-interface useDocumentVersionSortedListState {
+export interface useDocumentVersionSortedListState {
   sortedDocumentList: ReleaseDocument[]
   onlyHasVersions: boolean
 }
