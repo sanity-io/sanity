@@ -166,7 +166,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       return selectedReleaseId
     }
 
-    // check if the selected version is the only version, if it isn't and it doesn't exist in hte release
+    // check if the selected version is the only version, if it isn't and it doesn't exist in the release
     // then it needs to use the documentVersions
     if (selectedReleaseId && (!documentVersions || !onlyHasVersions)) {
       return selectedReleaseId
