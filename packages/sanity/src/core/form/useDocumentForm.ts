@@ -277,6 +277,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       editState.version &&
       !editState.draft &&
       !editState.published &&
+      onlyHasVersions &&
       selectedPerspectiveName !== getVersionFromId(editState.version._id)
     ) {
       return true
@@ -314,10 +315,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isNonExistent,
     connectionState,
     editState,
-    liveEdit,
+    onlyHasVersions,
     selectedPerspectiveName,
+    liveEdit,
     releaseId,
-    value,
+    value._id,
     ready,
     isCreateLinked,
     readOnlyProp,
