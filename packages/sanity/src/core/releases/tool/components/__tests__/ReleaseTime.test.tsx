@@ -64,6 +64,6 @@ describe('ReleaseTime', () => {
       } as TableRelease,
     })
 
-    expect(getByDataUi(document.body, 'Box')).toBeEmptyDOMElement()
+    expect(getByDataUi(document.body, 'ToastProvider')).toBeEmptyDOMElement()
   })
 })
