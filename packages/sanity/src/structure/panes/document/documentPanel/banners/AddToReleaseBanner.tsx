@@ -19,6 +19,11 @@ import {Banner} from './Banner'
 // How long to wait after user hit the "Add to release"-button before displaying the "waiting…" toast
 const TOAST_DELAY = 1000
 
+type VersionCreateState = {
+  status: 'creating' | 'created'
+  lastUpdate: Date
+}
+
 export function AddToReleaseBanner({
   documentId,
   currentRelease,
@@ -33,17 +38,19 @@ export function AddToReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
-  const [createVersionRequestedAt, setCreateVersionRequestedAt] = useState<Date | undefined>()
+
+  const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
   const handleAddToRelease = useCallback(async () => {
     if (currentRelease._id) {
-      setCreateVersionRequestedAt(new Date())
+      setVersionCreateState({status: 'creating', lastUpdate: new Date()})
       try {
         await createVersion(
           getReleaseIdFromReleaseDocumentId(currentRelease._id),
           documentId,
           value,
         )
+        setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
           status: 'error',
@@ -55,7 +62,7 @@ export function AddToReleaseBanner({
         // this is because the UI won't reflect that the document was successfully added to the release until we get the result back over the listener
         // once the listener event that adds the document to the release arrives the UI knows that a version exists,
         // and this banner will not be rendered anymore
-        setCreateVersionRequestedAt(undefined)
+        setVersionCreateState(undefined)
       }
     }
   }, [createVersion, currentRelease._id, documentId, t, toast, value])
@@ -66,7 +73,8 @@ export function AddToReleaseBanner({
     status: 'info',
     id: 'add-document-to-release',
     enabled: Boolean(
-      createVersionRequestedAt && now.getTime() - createVersionRequestedAt.getTime() > TOAST_DELAY,
+      versionCreateState?.status === 'created' &&
+        now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
     ),
     closable: true,
     title: t('banners.release.waiting.title'),
@@ -96,7 +104,7 @@ export function AddToReleaseBanner({
             <Button
               text={t('banners.release.action.add-to-release')}
               tone={tone}
-              disabled={Boolean(createVersionRequestedAt)}
+              disabled={Boolean(versionCreateState)}
               onClick={handleAddToRelease}
             />
           </Flex>
