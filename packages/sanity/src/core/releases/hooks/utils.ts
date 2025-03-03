@@ -1,6 +1,6 @@
-import {type ClientPerspective, type ReleaseId} from '@sanity/client'
+import {type ClientPerspective} from '@sanity/client'
 
-import {type PerspectiveStack} from '../../perspective/types'
+import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
 import {DRAFTS_FOLDER} from '../../util/draftUtils'
 import {type ReleaseDocument} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'

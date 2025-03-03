@@ -399,8 +399,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 config={{
                   boldDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
+                  codeDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'code')?.value,
                   italicDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.value === 'em')?.value,
+                  strikeThroughDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'strike-through')
+                      ?.value,
                   defaultStyle: ({schema}) =>
                     schema.styles.find((style) => style.value === 'normal')?.value,
                   blockquoteStyle: ({schema}) =>

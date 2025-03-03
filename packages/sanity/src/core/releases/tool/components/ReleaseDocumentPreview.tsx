@@ -15,7 +15,7 @@ interface ReleaseDocumentPreviewProps {
   documentId: string
   documentTypeName: string
   releaseId: string
-  previewValues: PreviewValue
+  previewValues: PreviewValue | undefined | null
   isLoading: boolean
   releaseState?: ReleaseState
   documentRevision?: string

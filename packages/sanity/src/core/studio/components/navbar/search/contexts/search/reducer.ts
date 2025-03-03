@@ -1,7 +1,12 @@
-import {type ClientPerspective} from '@sanity/client'
-import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
+import {
+  type CurrentUser,
+  type SanityDocumentLike,
+  type SchemaType,
+  type SearchStrategy,
+} from '@sanity/types'
 
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
+import {collate} from '../../../../../../util'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
@@ -42,7 +47,6 @@ export type SearchReducerState = PaginationState & {
   terms: RecentSearch | SearchTerms
   strategy?: SearchStrategy
   disabledDocumentIds?: string[]
-  perspective?: ClientPerspective
   canDisableAction?: boolean
 }
 
@@ -227,7 +231,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           error: null,
           hasLocal: true,
-          hits: state.result.hasLocal ? [...state.result.hits, ...action.hits] : action.hits,
+          hits: collateHits(
+            state.result.hasLocal ? [...state.result.hits, ...action.hits] : action.hits,
+          ),
           loaded: true,
           loading: false,
         },
@@ -590,4 +596,9 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
     return rest
   }
   return terms
+}
+
+function collateHits(hits: SearchHit[]) {
+  const collated = collate(hits.map((h) => h.hit))
+  return collated.map((doc) => ({hit: (doc.draft || doc.published)! as SanityDocumentLike}))
 }

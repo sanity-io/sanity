@@ -497,13 +497,21 @@ export async function createDeployment({
 export interface DeleteUserApplicationOptions {
   client: SanityClient
   applicationId: string
+  appType: 'coreApp' | 'studio'
 }
 
 export async function deleteUserApplication({
   applicationId,
   client,
+  appType,
 }: DeleteUserApplicationOptions): Promise<void> {
-  await client.request({uri: `/user-applications/${applicationId}`, method: 'DELETE'})
+  await client.request({
+    uri: `/user-applications/${applicationId}`,
+    query: {
+      appType,
+    },
+    method: 'DELETE',
+  })
 }
 
 export async function getInstalledSanityVersion(): Promise<string> {

@@ -16,11 +16,11 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.10",
-    "@portabletext/editor": "^1.36.1",
+    "@portabletext/block-tools": "^1.1.11",
+    "@portabletext/editor": "^1.36.5",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.1.0",
-    "@sanity/client": "^6.28.1",
+    "@sanity/client": "^6.28.2",
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
@@ -37,7 +37,7 @@
     "@sanity/react-loader": "^1.10.35",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.14.3",
+    "@sanity/ui": "^2.14.5",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@million/lint": "1.0.14",
-    "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
+    "babel-plugin-react-compiler": "19.0.0-beta-40c6c23-20250301",
     "chokidar": "^3.6.0",
     "vite": "^6.1.0"
   }

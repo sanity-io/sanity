@@ -106,7 +106,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const selected = selectedState === 'selected'
 
   const hasRef = value?._ref
-  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
+  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.isPublished
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
     onChange([

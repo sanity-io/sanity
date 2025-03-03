@@ -77,9 +77,8 @@ export function ContentEditor(props: {
     return (
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({
-          value: mainDocumentState!.document! as SanityDocument,
-          published: previewState.published,
-          draft: previewState.draft,
+          document: mainDocumentState!.document! as SanityDocument,
+          snapshot: previewState.snapshot,
         })}
         schemaType={schemaType}
         status={

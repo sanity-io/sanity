@@ -1,20 +1,19 @@
-import {type CurrentUser, type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion, type Variants} from 'framer-motion'
-import {useEffect, useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components'
-import {FormBuilder} from '../../../../form'
+import {createPatchChannel, FormBuilder, useDocumentForm} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useWorkspace} from '../../../../studio'
 import {MentionUserProvider, useMentionUser, useTasks, useTasksNavigation} from '../../../context'
 import {type TaskDocument, type TaskTarget} from '../../../types'
 import {TasksAddonWorkspaceProvider} from '../addonWorkspace'
 import {getTargetValue} from '../utils'
-import {useTasksFormBuilder} from './useTasksFormBuilder'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},
@@ -35,25 +34,42 @@ const FormBuilderRoot = styled(motion.div)((props) => {
 `
 })
 
+/**
+ * A partial task document with the `_id` and `_type` fields.
+ */
+type TaskDocumentInitialValue = Partial<TaskDocument> & SanityDocumentLike
+
 const TasksFormBuilderInner = ({
   documentId,
   initialValue,
 }: {
   documentId: string
-  currentUser: CurrentUser
-  initialValue?: Partial<TaskDocument>
+  initialValue?: TaskDocumentInitialValue
 }) => {
-  const formBuilderProps = useTasksFormBuilder({
-    documentType: 'tasks.task',
-    documentId,
-    initialValue,
-  })
+  const [patchChannel] = useState(() => createPatchChannel())
+
+  const {
+    formState,
+    onChange,
+    onPathOpen,
+    onFocus,
+    onBlur,
+    onSetActiveFieldGroup,
+    onSetCollapsedFieldSet,
+    onSetCollapsedPath,
+    collapsedFieldSets,
+    ready,
+    collapsedPaths,
+    schemaType,
+    value,
+  } = useDocumentForm({documentId, documentType: 'tasks.task', initialValue})
+
+  const isLoading = formState === null || !ready
+
   // Updates the selected document in the mention user context - to verify the user permissions.
   const {setSelectedDocument} = useMentionUser()
 
-  const target = formBuilderProps.loading
-    ? undefined
-    : (formBuilderProps.value?.target as TaskTarget)
+  const target = isLoading ? undefined : (value?.target as TaskTarget)
 
   const targetId = target?.document?._ref
   const targetType = target?.documentType
@@ -67,11 +83,33 @@ const TasksFormBuilderInner = ({
 
   return (
     <Box>
-      {formBuilderProps.loading ? (
+      {isLoading ? (
         <LoadingBlock showText />
       ) : (
         <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
-          <FormBuilder {...formBuilderProps} />
+          <FormBuilder
+            // eslint-disable-next-line camelcase
+            __internal_patchChannel={patchChannel}
+            id="root"
+            onChange={onChange}
+            onPathFocus={onFocus}
+            onPathOpen={onPathOpen}
+            onPathBlur={onBlur}
+            onFieldGroupSelect={onSetActiveFieldGroup}
+            onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+            onSetPathCollapsed={onSetCollapsedPath}
+            collapsedPaths={collapsedPaths}
+            collapsedFieldSets={collapsedFieldSets}
+            focusPath={formState.focusPath}
+            changed={formState.changed}
+            focused={formState.focused}
+            groups={formState.groups}
+            validation={formState.validation}
+            members={formState.members}
+            presence={formState.presence}
+            schemaType={schemaType}
+            value={value}
+          />
         </FormBuilderRoot>
       )}
     </Box>
@@ -89,7 +127,7 @@ export function TasksFormBuilder() {
     state: {selectedTask, viewMode, duplicateTaskValues},
   } = useTasksNavigation()
 
-  const initialValue: Partial<TaskDocument> | undefined = useMemo(() => {
+  const initialValue: TaskDocumentInitialValue | undefined = useMemo(() => {
     if (!currentUser) return undefined
     if (!selectedTask) return undefined
     if (viewMode === 'duplicate') {
@@ -130,11 +168,7 @@ export function TasksFormBuilder() {
     // This provider needs to be mounted before the TasksAddonWorkspaceProvider.
     <MentionUserProvider>
       <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
-        <TasksFormBuilderInner
-          documentId={selectedTask}
-          currentUser={currentUser}
-          initialValue={initialValue}
-        />
+        <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
       </TasksAddonWorkspaceProvider>
     </MentionUserProvider>
   )

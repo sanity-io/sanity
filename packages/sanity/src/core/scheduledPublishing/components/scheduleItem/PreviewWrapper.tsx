@@ -8,6 +8,7 @@ import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {useDocumentVersionInfo} from '../../../releases'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
@@ -150,12 +151,8 @@ const PreviewWrapper = (props: Props) => {
 
                 {/* Document status */}
                 <Box display={['none', 'block']} marginX={[2, 2, 3]} style={{flexShrink: 0}}>
-                  {previewState?.draft || previewState?.published ? (
-                    <DocumentStatusIndicator
-                      draft={previewState?.draft}
-                      published={previewState?.published}
-                      versions={undefined}
-                    />
+                  {publishedDocumentId ? (
+                    <DocumentVersionsStatus publishedDocumentId={publishedDocumentId} />
                   ) : (
                     <StatusDotPlaceholder />
                   )}
@@ -208,3 +205,8 @@ const PreviewWrapper = (props: Props) => {
 }
 
 export default PreviewWrapper
+
+function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
+  const versionsInfo = useDocumentVersionInfo(publishedDocumentId)
+  return <DocumentStatusIndicator draft={versionsInfo.draft} published={versionsInfo.published} />
+}
