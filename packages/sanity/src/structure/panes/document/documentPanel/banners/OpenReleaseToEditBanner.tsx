@@ -6,6 +6,7 @@ import {
   getVersionFromId,
   isDraftId,
   isPublishedId,
+  Translate,
   useActiveReleases,
   useDocumentVersions,
   useDocumentVersionSortedList,
@@ -86,13 +87,28 @@ export function OpenReleaseToEditBannerInner({
         <Flex direction={'row'} align="center" justify="space-between" flex={1}>
           <Text size={1}>
             <Flex direction={'row'} gap={1}>
-              {t('banners.release.navigate-to-edit-description')}
-              {documentVersionsTitleList.map((title) => (
-                <VersionInlineBadge key={`${title}${documentId}`}>{title}</VersionInlineBadge>
-              ))}
-              {t('banners.release.navigate-to-edit-description-end', {
-                count: documentVersionsTitleList.length,
-              })}
+              {documentVersionsTitleList.length > 1 ? (
+                <Translate
+                  t={t}
+                  i18nKey="banners.release.navigate-to-edit-description-multiple"
+                  components={{
+                    VersionBadge: () => (
+                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                    ),
+                  }}
+                  values={{count: documentVersionsTitleList.length - 1}}
+                />
+              ) : (
+                <Translate
+                  t={t}
+                  i18nKey="banners.release.navigate-to-edit-description-single"
+                  components={{
+                    VersionBadge: () => (
+                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                    ),
+                  }}
+                />
+              )}
             </Flex>
           </Text>
 
