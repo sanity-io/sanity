@@ -109,7 +109,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.28.1",
+    "@sanity/client": "^6.28.2",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/mutate": "^0.12.1",

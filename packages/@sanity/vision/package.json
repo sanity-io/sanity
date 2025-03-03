@@ -76,7 +76,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.28.1",
+    "@sanity/client": "^6.28.2",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
