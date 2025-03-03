@@ -1,22 +1,22 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test.describe('Draft pinned version', () => {
-  /**
-   * Sanity documents where set up. These documents (in the e2e project) should not be changed or altered.
-   * They are set up so that we can reduce the flakiness
-   *
-   * - Only Draft: bd339577-7a28-4254-a74c-7989bf618a43
-   * - Only Published: a88ce001-506d-45b2-b95d-ab2a674e7fc0
-   * - Single version: d590cd97-1c40-4269-b4e3-948dc479dcff
-   * - Multiple versions: 49e39ee0-3320-4e23-b995-b66a2e1d0a12
-   *
-   * Releases:
-   * - Undecided A: rn1Ve3iTh
-   * - ASAP A: r56VOgCmW
-   * - ASAP B: ra6ZDFboX
-   */
+/**
+ * Sanity documents where set up. These documents (in the e2e project) should not be changed or altered.
+ * They are set up so that we can reduce the flakiness
+ *
+ * - Only Draft: bd339577-7a28-4254-a74c-7989bf618a43
+ * - Only Published: a88ce001-506d-45b2-b95d-ab2a674e7fc0
+ * - Single version: d590cd97-1c40-4269-b4e3-948dc479dcff
+ * - Multiple versions: 49e39ee0-3320-4e23-b995-b66a2e1d0a12
+ *
+ * Releases:
+ * - Undecided A: rn1Ve3iTh
+ * - ASAP A: r56VOgCmW
+ * - ASAP B: ra6ZDFboX
+ */
 
+test.describe('Draft pinned version', () => {
   test('draft, no publish, no version - shows draft displayed', async ({page}) => {
     test.slow()
     // specific document set up for this test in mind
