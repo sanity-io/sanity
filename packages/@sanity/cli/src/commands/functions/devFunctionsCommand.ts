@@ -24,6 +24,7 @@ const devFunctionsCommand: CliCommandDefinition = {
   helpText,
   signature: '',
   description: 'Start the Sanity Function emulator',
+  hideFromHelp: true,
   async action(args, context) {
     const {output} = context
     const {print} = output

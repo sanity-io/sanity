@@ -31,6 +31,7 @@ const testFunctionsCommand: CliCommandDefinition = {
   helpText,
   signature: '',
   description: 'Invoke a local Sanity Function',
+  hideFromHelp: true,
   async action(args, context) {
     const {output} = context
     const {print} = output

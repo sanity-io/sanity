@@ -19,6 +19,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
   helpText,
   signature: '',
   description: 'Retrieve logs for a Sanity Function',
+  hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output} = context
     const {print} = output
