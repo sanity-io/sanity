@@ -138,9 +138,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This reference has been removed since you opened it.',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
+  /** Toast description in case an error occurs when adding a document to a release  */
+  'banners.release.error.description':
+    'An error occurred when adding document to the release: {{message}}',
+  /** Toast title in case an error occurs when adding a document to a release  */
+  'banners.release.error.title': 'Error adding document to release',
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
-
+  /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
+  'banners.release.waiting.description':
+    'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
+  /** Title of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
+  'banners.release.waiting.title': 'Adding document to release…',
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
