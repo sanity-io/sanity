@@ -117,9 +117,10 @@ export function AddToReleaseBanner({
 function useCurrentTime(updateIntervalMs: number): Date {
   const [currentTime, setCurrentTime] = useState(new Date())
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setCurrentTime(new Date())
     }, updateIntervalMs)
+    return () => clearInterval(intervalId)
   }, [updateIntervalMs])
   return currentTime
 }
