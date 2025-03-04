@@ -194,8 +194,6 @@ export default async function deployStudioAction(
 
     spinner.succeed()
 
-    output.print()
-
     // And let the user know we're done
     output.print(
       `\nSuccess! ${isCoreApp ? 'Application deployed' : `Studio deployed to ${chalk.cyan(location)}`}`,
