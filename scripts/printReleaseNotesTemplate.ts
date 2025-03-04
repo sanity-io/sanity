@@ -215,7 +215,7 @@ async function createSanityChangelogDocuments(
 
   // Create the changelog entry document with a more detailed structure
   const changeDoc = {
-    _id: changelogId,
+    _id: `drafts.${changelogId}`,
     _type: 'apiChange',
     title: context.title,
     version: {
@@ -237,7 +237,7 @@ async function createSanityChangelogDocuments(
     console.log(`Created version document: ${versionDoc._id}`)
 
     await client.createOrReplace(changeDoc)
-    console.log(`Created changelog document: ${changeDoc._id}`)
+    console.log(`Created changelog document: ${changelogId} (as draft)`)
 
     return changelogId
   } catch (error) {
