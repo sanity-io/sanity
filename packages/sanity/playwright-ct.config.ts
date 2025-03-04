@@ -24,8 +24,6 @@ export default defineConfig({
   forbidOnly: isCI,
   /* Flaky tests require us to allow up to 6 retries */
   retries: 6,
-  /* Opt out of parallel tests on CI. */
-  workers: isCI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: isCI
     ? [['list'], ['blob']]

@@ -60,7 +60,7 @@ const playwrightConfig = createPlaywrightConfig({
     return {
       ...config,
       retries: 4,
-      reporter: excludeGithub(config.reporter),
+      reporter: excludeGithub([['list'], ['blob']]),
       use: {
         ...config.use,
         baseURL: 'http://localhost:3339',
