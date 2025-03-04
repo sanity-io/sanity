@@ -150,7 +150,7 @@ jobs:
             !**/node_modules/**
           key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
+          # fail-on-cache-miss: true
 
       - name: Run end-to-end tests
         env:

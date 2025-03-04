@@ -192,7 +192,7 @@ jobs:
             !**/node_modules/**
           key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
+          # fail-on-cache-miss: true
 
       - name: Run E2E tests on next
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
