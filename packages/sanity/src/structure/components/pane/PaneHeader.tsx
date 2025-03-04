@@ -2,7 +2,7 @@ import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
-import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
 
 export type TabsType = 'default' | 'dropdown'
@@ -20,7 +20,6 @@ export interface PaneHeaderProps {
   tabIndex?: number
   tabs?: ReactNode
   title: ReactNode
-  tabsType?: 'default' | 'dropdown'
 }
 
 /**
@@ -32,18 +31,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {
-    actions,
-    backButton,
-    border,
-    contentAfter,
-    loading,
-    subActions,
-    tabs,
-    tabIndex,
-    title,
-    tabsType = 'default',
-  } = props
+  const {actions, backButton, border, contentAfter, loading, subActions, tabs, tabIndex, title} =
+    props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -94,7 +83,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 tabIndex={tabIndex}
               >
                 {loading && (
-                  <Box padding={2}>
+                  <Box>
                     <TitleTextSkeleton animated radius={1} size={1} />
                   </Box>
                 )}
@@ -112,13 +101,9 @@ export const PaneHeader = forwardRef(function PaneHeader(
               )}
               {showTabsOrSubActions && (
                 <Flex align="center" hidden={collapsed} overflow="auto">
-                  <TabsBox
-                    flex={1}
-                    marginRight={subActions ? 3 : 0}
-                    $scrollGradient={tabsType === 'default'}
-                  >
+                  <Box flex={1} marginRight={subActions ? 3 : 0}>
                     {tabs}
-                  </TabsBox>
+                  </Box>
 
                   {subActions && subActions}
                 </Flex>
