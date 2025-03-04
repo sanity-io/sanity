@@ -336,15 +336,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isNonExistent,
     connectionState,
     editState,
+    value,
     onlyHasVersions,
     selectedPerspectiveName,
     liveEdit,
     releaseId,
-    value._id,
     ready,
     isCreateLinked,
-    readOnlyProp,
     isReleaseLocked,
+    readOnlyProp,
   ])
 
   const {patch} = useDocumentOperation(documentId, documentType, releaseId)
