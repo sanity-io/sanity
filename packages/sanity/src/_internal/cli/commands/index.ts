@@ -127,7 +127,6 @@ const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   extractManifestCommand,
 ]
 
-// Internal schema commands that are only included when enabled
 const internalSchemaCommands = [fetchSchemaCommand, storeSchemaCommand, deleteSchemaCommand]
 
 // Include experimental commands only when the feature flag is enabled

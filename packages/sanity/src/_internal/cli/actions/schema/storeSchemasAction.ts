@@ -64,7 +64,6 @@ export const readManifest = async (readPath: string, context: CliCommandContext)
       context,
     )
 
-    // Try reading the manifest again after extraction
     try {
       return readAndParseManifest(manifestPath, context)
     } catch (retryError) {
@@ -76,7 +75,7 @@ export const readManifest = async (readPath: string, context: CliCommandContext)
   }
 }
 
-// At the moment schema store deos not support studios where workspaces have multiple projects
+// At the moment schema store does not support studios where workspaces have multiple projects
 export const throwIfProjectIdMismatch = (
   workspace: ManifestWorkspaceFile,
   projectId: string,
@@ -159,7 +158,6 @@ export default async function storeSchemasAction(
       }
     }
 
-    // If a workspace name is provided, only save the schema for that workspace
     if (workspaceName) {
       const workspaceToSave = manifest.workspaces.find(
         (workspace: ManifestWorkspaceFile) => workspace.name === workspaceName,
@@ -182,7 +180,6 @@ export default async function storeSchemasAction(
     if (error) throw error
     return undefined
   } catch (err) {
-    // if this flag is set, throw the error and exit without deploying otherwise just log the error
     if (schemaRequired) throw err
     return err
   } finally {

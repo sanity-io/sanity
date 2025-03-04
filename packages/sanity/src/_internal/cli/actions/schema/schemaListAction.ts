@@ -81,12 +81,10 @@ export default async function schemaListAction(
   const manifestPath = getManifestPath(context, manifestDir)
   const manifest = await readManifest(manifestPath, context)
 
-  // Gather all schemas
-  const results = await Promise.allSettled(
+  const schemaResults = await Promise.allSettled(
     uniqBy<ManifestWorkspaceFile>(manifest.workspaces, 'dataset').map(async (workspace) => {
       throwIfProjectIdMismatch(workspace, projectId)
       if (flags.id) {
-        // Fetch a specific schema by id
         const schemaRes = await client
           .withConfig({
             dataset: workspace.dataset,
@@ -99,7 +97,6 @@ export default async function schemaListAction(
         }
         return schemaRes
       }
-      // Fetch all schemas
       return await client
         .withConfig({
           dataset: workspace.dataset,
@@ -112,8 +109,7 @@ export default async function schemaListAction(
     }),
   )
 
-  // Log errors and collect successful results
-  const schemas = results
+  const schemas = schemaResults
     .map((result, index) => {
       if (result.status === 'rejected') {
         const workspace = manifest.workspaces[index]
