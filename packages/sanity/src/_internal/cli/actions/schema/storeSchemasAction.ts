@@ -138,6 +138,7 @@ export default async function storeSchemasAction(
           .withConfig({
             dataset: workspace.dataset,
             projectId: workspace.projectId,
+            useCdn: false,
           })
           .transaction()
           .createOrReplace({_type: SANITY_WORKSPACE_SCHEMA_TYPE, _id: id, workspace, schema})

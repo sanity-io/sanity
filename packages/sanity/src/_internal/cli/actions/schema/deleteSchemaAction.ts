@@ -64,6 +64,7 @@ export default async function deleteSchemaAction(
             .withConfig({
               dataset: flags.dataset || workspace.dataset,
               projectId: workspace.projectId,
+              useCdn: false,
             })
             .delete(schemaId.trim())
 

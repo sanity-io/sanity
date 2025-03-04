@@ -91,6 +91,7 @@ export default async function schemaListAction(
           .withConfig({
             dataset: workspace.dataset,
             projectId: workspace.projectId,
+            useCdn: false,
           })
           .getDocument(flags.id)
         if (!schemaRes) {
