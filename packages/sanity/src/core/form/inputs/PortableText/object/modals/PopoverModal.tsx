@@ -8,6 +8,7 @@ import {type PortableTextEditorElement} from 'sanity/_singletons'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'
@@ -81,6 +82,7 @@ function Content(props: PopoverEditDialogProps) {
   const handleFocusLockWhiteList = useCallback((element: HTMLElement) => {
     // This is needed in order for focusLock not to trap focus in the
     // popover when closing the popover and focus is to be returned to the editor
+    console.log('made it', element)
     if (isClosedRef.current) return false
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
@@ -90,8 +92,13 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex ref={containerElement} direction="column" height="fill">
+      <Flex direction="column" height="fill">
+        <FocusLock
+          autoFocus={!supportsTouch}
+          ref={containerElement}
+          whiteList={handleFocusLockWhiteList}
+          returnFocus={{preventScroll: false}}
+        >
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>
@@ -107,15 +114,16 @@ function Content(props: PopoverEditDialogProps) {
               />
             </Flex>
           </ContentHeaderBox>
-          <ContentScrollerBox flex={1}>
-            <PresenceOverlay margins={[0, 0, 1, 0]}>
-              <Box padding={3} ref={setContentElement}>
-                {props.children}
-              </Box>
-            </PresenceOverlay>
-          </ContentScrollerBox>
-        </Flex>
-      </FocusLock>
+        </FocusLock>
+
+        <ContentScrollerBox flex={1} tabIndex={-1}>
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
+            <Box data-testid="percy" padding={3} ref={setContentElement}>
+              {props.children}
+            </Box>
+          </PresenceOverlay>
+        </ContentScrollerBox>
+      </Flex>
     </VirtualizerScrollInstanceProvider>
   )
 }
