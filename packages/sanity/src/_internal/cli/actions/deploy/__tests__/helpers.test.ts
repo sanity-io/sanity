@@ -294,11 +294,15 @@ describe('deleteUserApplication', () => {
     await deleteUserApplication({
       client: mockClient,
       applicationId: 'app-id',
+      appType: 'studio',
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 
@@ -307,12 +311,19 @@ describe('deleteUserApplication', () => {
     mockClientRequest.mockRejectedValueOnce(new Error(errorMessage))
 
     await expect(
-      deleteUserApplication({client: mockClient, applicationId: 'app-id'}),
+      deleteUserApplication({
+        client: mockClient,
+        applicationId: 'app-id',
+        appType: 'studio',
+      }),
     ).rejects.toThrow(errorMessage)
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 })

@@ -1,4 +1,6 @@
-import {Card, Container, Flex, Heading, Stack} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {motion} from 'framer-motion'
 import {useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -19,18 +21,22 @@ import {ReleaseSummary} from './ReleaseSummary'
 import {useBundleDocuments} from './useBundleDocuments'
 
 export type ReleaseInspector = 'activity'
+const MotionCard = motion.create(Card)
 
 export const ReleaseDetail = () => {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
-
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
-  const {loading: documentsLoading, results} = useBundleDocuments(releaseId)
+  const {
+    loading: documentsLoading,
+    results,
+    error: bundleDocumentsError,
+  } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
@@ -43,8 +49,33 @@ export const ReleaseDetail = () => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const detailContent = useMemo(() => {
+    if (bundleDocumentsError) {
+      return (
+        <Box padding={3}>
+          <MotionCard
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            tone="critical"
+            padding={4}
+            radius={4}
+          >
+            <Flex gap={3}>
+              <Text size={1}>
+                <ErrorOutlineIcon />
+              </Text>
+              <Stack space={4}>
+                <Text size={1} weight="semibold">
+                  {t('loading-release-documents.error.title')}
+                </Text>
+                <Text size={1}>{t('loading-release-documents.error.description')}</Text>
+              </Stack>
+            </Flex>
+          </MotionCard>
+        </Box>
+      )
+    }
     if (documentsLoading) {
-      return <LoadingBlock title={t('document-loading')} />
+      return <LoadingBlock title={t('loading-release-documents')} showText />
     }
     if (!releaseInDetail) return null
 
@@ -56,7 +87,14 @@ export const ReleaseDetail = () => {
         scrollContainerRef={scrollContainerRef}
       />
     )
-  }, [releaseInDetail, documentsLoading, history.documentsHistory, results, t])
+  }, [
+    bundleDocumentsError,
+    documentsLoading,
+    releaseInDetail,
+    results,
+    history.documentsHistory,
+    t,
+  ])
 
   if (loading) {
     return (

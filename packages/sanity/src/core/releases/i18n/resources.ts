@@ -130,8 +130,6 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Yes, discard version',
 
-  /** Text for when documents of a release are loading */
-  'document-loading': 'Loading documents',
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
@@ -161,6 +159,14 @@ const releasesLocaleStrings = {
   'footer.status.unarchived': 'Unarchived',
   /** Label text for the loading state whilst release is being loaded */
   'loading-release': 'Loading release',
+
+  /** Text for when documents of a release are loading */
+  'loading-release-documents': 'Loading documents',
+  /** Title text for when loading documents on a release failed */
+  'loading-release-documents.error.title': 'Something went wrong',
+  /** Description text for when loading documents on a release failed */
+  'loading-release-documents.error.description':
+    "We're unable to load the documents for this release. Please try again later.",
 
   /** Label for the release menu */
   'menu.label': 'Release menu',

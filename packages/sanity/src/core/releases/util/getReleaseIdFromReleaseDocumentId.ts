@@ -1,5 +1,4 @@
-import {type ReleaseId} from '@sanity/client'
-
+import {type ReleaseId} from '../../perspective/types'
 import {RELEASE_DOCUMENTS_PATH} from '../store/constants'
 
 const PATH_ID_PREFIX = `${RELEASE_DOCUMENTS_PATH}.`

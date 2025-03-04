@@ -202,20 +202,25 @@ export const VersionChip = memo(function VersionChip(props: {
             onClick={onClick}
             selected={selected}
             tone={tone}
-            iconRight={locked && LockIcon}
             onContextMenu={contextMenuHandler}
-            padding={1}
-            paddingRight={2}
+            padding={2}
+            paddingRight={3}
             radius="full"
             $isArchived={releaseState === 'archived'}
-          >
-            <Flex align="center" gap={0}>
-              <ReleaseAvatar padding={1} tone={tone} />
-              <Box flex="none" padding={1}>
-                <Text size={1}>{text}</Text>
-              </Box>
-            </Flex>
-          </ChipButton>
+            text={
+              <Flex align="center" gap={1}>
+                <ReleaseAvatar padding={1} tone={tone} />
+                <Box flex="none" padding={1}>
+                  <Text size={1}>{text}</Text>
+                </Box>
+                {locked && (
+                  <Box paddingRight={1}>
+                    <LockIcon />
+                  </Box>
+                )}
+              </Flex>
+            }
+          />
         </span>
       </Tooltip>
 

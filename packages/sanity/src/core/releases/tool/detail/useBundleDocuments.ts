@@ -9,10 +9,14 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
+  catchError,
+  concatMap,
   distinctUntilChanged,
+  expand,
   filter,
   map,
   mergeMap,
+  reduce,
   startWith,
   switchAll,
   switchMap,
@@ -23,11 +27,7 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {
-  type DocumentPreviewStore,
-  getPreviewValueWithFallback,
-  prepareForPreview,
-} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -35,7 +35,6 @@ import {validateDocumentWithReferences, type ValidationStatus} from '../../../va
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
@@ -47,10 +46,17 @@ export interface DocumentInRelease {
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
-  previewValues: {isLoading: boolean; values: ReturnType<typeof prepareForPreview>}
+  previewValues: {
+    isLoading: boolean
+    values: PreviewValue | undefined | null
+  }
 }
 
-type ReleaseDocumentsObservableResult = Observable<{loading: boolean; results: DocumentInRelease[]}>
+type ReleaseDocumentsObservableResult = Observable<{
+  loading: boolean
+  results: DocumentInRelease[]
+  error: Error | null
+}>
 
 const getActiveReleaseDocumentsObservable = ({
   schema,
@@ -133,21 +139,15 @@ const getActiveReleaseDocumentsObservable = ({
                 } satisfies PreviewValue,
               })
             }
-
-            return documentPreviewStore.observeForPreview(document, schemaType).pipe(
-              map((version) => ({
-                isLoading: false,
-                values: prepareForPreview(
-                  getPreviewValueWithFallback({
-                    value: document,
-                    version: version.snapshot,
-                    perspective: releaseId,
-                  }),
-                  schemaType,
-                ),
-              })),
-              startWith({isLoading: true, values: {}}),
-            )
+            return documentPreviewStore
+              .observeForPreview(document, schemaType, {perspective: [releaseId]})
+              .pipe(
+                map(({snapshot}) => ({
+                  isLoading: false,
+                  values: snapshot,
+                })),
+                startWith({isLoading: true, values: {}}),
+              )
           }),
           switchAll(),
         )
@@ -161,7 +161,10 @@ const getActiveReleaseDocumentsObservable = ({
           })),
         )
       }),
-      map((results) => ({loading: false, results})),
+      map((results) => ({loading: false, results, error: null})),
+      catchError((error) => {
+        return of({loading: false, results: [], error})
+      }),
     )
 }
 
@@ -180,56 +183,73 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
   const observableClient = client.observable
   const dataset = client.config().dataset
 
-  if (!release.finalDocumentStates?.length) return of({loading: false, results: []})
+  if (!release.finalDocumentStates?.length) return of({loading: false, results: [], error: null})
 
-  return from(release.finalDocumentStates || []).pipe(
-    mergeMap(({id: documentId}) => {
-      const document$ = observableClient
-        .request<{documents: DocumentInRelease['document'][]}>({
-          url: `/data/history/${dataset}/documents/${documentId}?lastRevision=true`,
-        })
-        .pipe(map(({documents: [document]}) => document))
+  function batchRequestDocumentFromHistory(startIndex: number) {
+    const finalIndex = startIndex + 10
+    return observableClient
+      .request<{documents: DocumentInRelease['document'][]}>({
+        url: `/data/history/${dataset}/documents/${release.finalDocumentStates
+          ?.slice(startIndex, finalIndex)
+          .map((d) => d.id)
+          .join(',')}?lastRevision=true`,
+      })
+      .pipe(map(({documents}) => ({documents, finalIndex})))
+  }
 
-      const previewValues$ = document$.pipe(
-        switchMap((document) => {
+  const documents$ = batchRequestDocumentFromHistory(0).pipe(
+    expand((response) => {
+      if (release.finalDocumentStates && response.finalIndex < release.finalDocumentStates.length) {
+        // Continue with next batch
+        return batchRequestDocumentFromHistory(response.finalIndex)
+      }
+      // End recursion by emitting an empty observable
+      return of()
+    }),
+    reduce(
+      (documents: DocumentInRelease['document'][], batch) => documents.concat(batch.documents),
+      [],
+    ),
+  )
+
+  return documents$.pipe(
+    mergeMap((documents) => {
+      return from(documents).pipe(
+        concatMap((document) => {
           const schemaType = schema.get(document._type)
           if (!schemaType) {
             throw new Error(`Schema type not found for document type ${document._type}`)
           }
-
-          return documentPreviewStore.observeForPreview(document, schemaType).pipe(
+          const previewValues$ = documentPreviewStore.observeForPreview(document, schemaType).pipe(
             take(1),
-            map((version) => ({
+            map(({snapshot}) => ({
               isLoading: false,
-              values: prepareForPreview(
-                getPreviewValueWithFallback({
-                  value: document,
-                  version: version.snapshot || document,
-                  perspective: getReleaseIdFromReleaseDocumentId(release._id),
-                }),
-                schemaType,
-              ),
+              values: snapshot,
             })),
             startWith({isLoading: true, values: {}}),
+            filter(({isLoading}) => !isLoading),
+          )
+
+          return previewValues$.pipe(
+            map((previewValues) => ({
+              document,
+              previewValues,
+              memoKey: uuid(),
+              validation: {validation: [], hasError: false, isValidating: false},
+            })),
           )
         }),
-        filter(({isLoading}) => !isLoading),
-      )
-
-      return combineLatest([document$, previewValues$]).pipe(
-        map(([document, previewValues]) => ({
-          document,
-          previewValues,
-          memoKey: uuid(),
-          validation: {validation: [], hasError: false, isValidating: false},
+        toArray(),
+        map((results) => ({
+          loading: false,
+          results,
+          error: null,
         })),
       )
     }),
-    toArray(),
-    map((results) => ({
-      loading: false,
-      results,
-    })),
+    catchError((error) => {
+      return of({loading: false, results: [], error})
+    }),
   )
 }
 
@@ -272,12 +292,13 @@ const getReleaseDocumentsObservable = ({
         releaseId,
       })
     }),
-    startWith({loading: true, results: []}),
+    startWith({loading: true, results: [], error: null}),
   )
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
   results: DocumentInRelease[]
+  error: null | Error
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
@@ -297,5 +318,5 @@ export function useBundleDocuments(releaseId: string): {
     [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
   )
 
-  return useObservable(releaseDocumentsObservable, {loading: true, results: []})
+  return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
 }

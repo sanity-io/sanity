@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {
   type ObjectSchemaType,
   type Path,
@@ -16,6 +15,7 @@ import {
   type EditStateFor,
   type PatchEvent,
   type PermissionCheckResult,
+  type ReleaseId,
   type StateTree,
   type TimelineStore,
 } from 'sanity'
@@ -88,7 +88,7 @@ export interface DocumentPaneContextValue {
   /**
    * TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
    *
-   * @deprecated use `usePerspective()`ﬁ instead
+   * @deprecated use `usePerspective()` instead
    */
   selectedReleaseId: ReleaseId | undefined
   permissions?: PermissionCheckResult | null
@@ -97,9 +97,6 @@ export interface DocumentPaneContextValue {
   isPermissionsLoading: boolean
   isInitialValueLoading?: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
-  __internal_tasks?: {
-    footerAction: React.ReactNode
-  }
 
   // History specific values
   revisionId: string | null

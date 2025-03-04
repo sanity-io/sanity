@@ -51,7 +51,11 @@ export default async function undeployStudioAction(
 
   spinner = output.spinner('Undeploying studio').start()
   try {
-    await deleteUserApplication({client, applicationId: userApplication.id})
+    await deleteUserApplication({
+      client,
+      applicationId: userApplication.id,
+      appType: 'studio',
+    })
     spinner.succeed()
   } catch (err) {
     spinner.fail()

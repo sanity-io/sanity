@@ -40,7 +40,7 @@ import {
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
-import {usePresentationPreviewHeader} from './PreviewHeader'
+import {PreviewHeader} from './PreviewHeader'
 
 const MotionFlex = motion.create(Flex)
 
@@ -125,11 +125,7 @@ export const Preview = memo(
     const prefersReducedMotion = usePrefersReducedMotion()
     const ref = useRef<HTMLIFrameElement | null>(null)
 
-    const PreviewHeader = usePresentationPreviewHeader({
-      ...props,
-      iframeRef: ref,
-      options: header,
-    })
+    const previewHeader = <PreviewHeader {...props} iframeRef={ref} options={header} />
 
     // Forward the iframe ref to the parent component
     useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
@@ -279,7 +275,7 @@ export const Preview = memo(
     return (
       <MotionConfig transition={prefersReducedMotion ? {duration: 0} : undefined}>
         <TooltipDelayGroupProvider>
-          <PreviewHeader />
+          {previewHeader}
 
           {/* @TODO: Move this to <PreviewFrame /> */}
           <Card flex={1} tone="transparent">

@@ -142,7 +142,6 @@ export function PreviewReferenceValue(props: {
     <ReferencePreview
       id={value._ref}
       layout={layout}
-      preview={referenceInfo.result?.preview}
       refType={refType}
       renderPreview={renderPreview}
       showTypeLabel={showTypeLabel}

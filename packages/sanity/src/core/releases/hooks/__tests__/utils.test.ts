@@ -1,6 +1,6 @@
-import {type ReleaseId} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
 import {type ReleaseDocument} from '../../store/types'
 import {createReleaseId} from '../../util/createReleaseId'

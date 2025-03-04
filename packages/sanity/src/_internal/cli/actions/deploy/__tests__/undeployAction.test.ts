@@ -21,6 +21,7 @@ describe('undeployStudioAction', () => {
   const mockApplication: UserApplication = {
     id: 'app-id',
     appHost: 'app-host',
+    organizationId: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     urlType: 'internal',
@@ -85,6 +86,7 @@ describe('undeployStudioAction', () => {
     expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
       client: expect.anything(),
       applicationId: 'app-id',
+      appType: 'studio',
     })
     expect(mockContext.output.print).toHaveBeenCalledWith(
       expect.stringContaining('Studio undeploy scheduled.'),

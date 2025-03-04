@@ -31,8 +31,8 @@
     "start": "../.bin/sanity start --port 4000"
   },
   "dependencies": {
-    "@sanity/icons": "^3.6.0",
-    "@sanity/ui": "^2.14.3",
+    "@sanity/icons": "^3.7.0",
+    "@sanity/ui": "^2.15.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",

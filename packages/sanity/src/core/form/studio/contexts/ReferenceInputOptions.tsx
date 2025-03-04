@@ -1,8 +1,8 @@
-import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {type ComponentType, type HTMLProps, type ReactNode, useContext, useMemo} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {type TemplatePermissionsResult} from '../../../store'
 
 /** @internal */

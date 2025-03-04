@@ -1,10 +1,10 @@
-import {type ReleaseId} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
 import {
   getDraftId,
   getVersionId,
   type ReleaseDocument,
+  type ReleaseId,
   useActiveReleases,
   useDocumentVersions,
   usePerspective,

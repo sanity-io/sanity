@@ -193,6 +193,7 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
       res.set(publishedId, entry)
     }
 
+    // note: this attaches versions to the `draft` property, which is likely ok for most practical purposes
     entry[publishedId === doc._id ? 'published' : 'draft'] = doc
     return res
   }, new Map())

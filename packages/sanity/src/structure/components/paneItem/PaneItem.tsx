@@ -19,6 +19,7 @@ import {
 import {
   type FIXME,
   type GeneralPreviewLayoutKey,
+  getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
   useDocumentPresence,
@@ -181,7 +182,7 @@ export function PaneItem(props: PaneItemProps) {
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
   const {documentId, documentType} = props
   // Preload the edit state for the document, and keep it alive until mouse leave
-  useEditState(documentId, documentType)
+  useEditState(getPublishedId(documentId), documentType)
 
   return null
 }

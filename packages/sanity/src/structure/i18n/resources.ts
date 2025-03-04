@@ -411,8 +411,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
-  /** The title of the reconnecting toast */
-  'panes.document-pane-provider.reconnecting.title': 'Connection lost. Reconnecting…',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */
