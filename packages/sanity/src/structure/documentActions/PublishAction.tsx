@@ -5,6 +5,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   InsufficientPermissionsMessage,
+  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -52,7 +53,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, documentId, documentType} = useDocumentPane()
+  const {changesOpen, documentId, documentType, value, compareValue} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -153,11 +154,22 @@ export const PublishAction: DocumentActionComponent = (props) => {
       return null
     }
     if (liveEdit) {
+      // Live edit documents are not publishable by this action, they are published automatically
+      return null
+    }
+
+    /**
+     * If there is null compareValue, it means the draft is yet to be saved
+     * and so value has the published ID.
+     * This conditional case is for when the published document is being shown,
+     * and so it should only be true if the draft has been saved (compareValue !== null)
+     */
+    if (isPublishedId(value._id) && compareValue !== null) {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: t('action.publish.live-edit.label'),
-        title: t('action.publish.live-edit.tooltip'),
+        label: t('action.publish.label'),
+        title: getDisabledReason('ALREADY_PUBLISHED', (published || {})._updatedAt, t),
         disabled: true,
       }
     }
@@ -166,7 +178,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: 'Publish',
+        label: t('action.publish.label'),
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
@@ -207,18 +219,21 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     release,
-    currentUser,
-    editState?.transactionSyncLock?.enabled,
-    handle,
-    hasValidationErrors,
-    isPermissionsLoading,
     liveEdit,
+    value._id,
+    compareValue,
+    isPermissionsLoading,
     permissions?.granted,
-    publish.disabled,
     publishScheduled,
+    editState?.transactionSyncLock?.enabled,
     publishState,
+    hasValidationErrors,
+    publish.disabled,
     t,
     title,
+    handle,
+    published,
+    currentUser,
   ])
 }
 

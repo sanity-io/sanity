@@ -6,7 +6,6 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   Hotkeys,
-  isPublishedId,
   usePerspective,
   useSource,
 } from 'sanity'
@@ -30,7 +29,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
-  const {value, compareValue} = useDocumentPane()
+  const {editState} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -60,13 +59,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
-  /**
-   * If there is null compareValue, it means the draft is yet to be saved.
-   * In this case the value is the published ID, but the action should show -
-   * so that it's consistent with the usual draft document actions.
-   */
-  const canShowAction =
-    firstActionState && !selectedReleaseId && (!isPublishedId(value._id) || compareValue === null)
+  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
 
   /* Version / Bundling handling */
   return (
