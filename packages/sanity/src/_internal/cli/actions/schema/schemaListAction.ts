@@ -87,12 +87,16 @@ export default async function schemaListAction(
       throwIfProjectIdMismatch(workspace, projectId)
       if (flags.id) {
         // Fetch a specific schema by id
-        return await client
+        const schemaRes = await client
           .withConfig({
             dataset: workspace.dataset,
             projectId: workspace.projectId,
           })
           .getDocument(flags.id)
+        if (!schemaRes) {
+          throw new Error(`Schema "${flags.id}" not found in dataset "${workspace.dataset}"`)
+        }
+        return schemaRes
       }
       // Fetch all schemas
       return await client

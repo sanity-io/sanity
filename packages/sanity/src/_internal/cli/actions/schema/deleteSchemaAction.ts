@@ -24,8 +24,8 @@ export default async function deleteSchemaAction(
   }
   const flags = args.extOptions
   if (typeof flags.dataset === 'boolean') throw new Error('Dataset is empty')
-  if (typeof flags.ids === 'boolean') throw new Error('Ids are empty')
   if (typeof flags['manifest-dir'] === 'boolean') throw new Error('Manifest directory is empty')
+  if (typeof flags.ids !== 'string') throw new Error('--ids is required')
 
   const {apiClient, output} = context
 
@@ -68,6 +68,7 @@ export default async function deleteSchemaAction(
             .delete(schemaId.trim())
 
           if (!deletedSchema.results.length) {
+            output.error(`Schema ${schemaId} not found in workspace: ${workspace.name}`)
             return false
           }
 
@@ -95,5 +96,10 @@ export default async function deleteSchemaAction(
     })
     .filter(Boolean).length
 
-  output.print(`Successfully deleted ${deletedCount} schemas`)
+  if (deletedCount === 0) {
+    output.error('No schemas were deleted')
+    return
+  }
+
+  output.success(`Successfully deleted ${deletedCount} schemas`)
 }
