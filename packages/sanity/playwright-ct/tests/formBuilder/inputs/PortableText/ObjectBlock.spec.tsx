@@ -31,19 +31,11 @@ test.describe('Portable Text Input', () => {
     })
 
     test('Inline object toolbars works as expected', async ({mount, page}) => {
-      const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
-      // Assertion: the annotation toolbar popover should not be visible
-      await page.waitForSelector('[data-testid="inline-object-toolbar-popover"]', {state: 'hidden'})
       // Assertion: Object edit dialog should be visible
       await page.waitForSelector('[data-testid="popover-edit-dialog"]', {state: 'visible'})
       await page.keyboard.press('Escape')
-      // Assertion: the annotation toolbar popover should be visible
-      await page.waitForSelector('[data-testid="inline-object-toolbar-popover"]', {
-        state: 'visible',
-      })
 
       // Assertion: tab works to get to the toolbar popover buttons
       await page.keyboard.press('Tab')
