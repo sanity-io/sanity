@@ -5,7 +5,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   InsufficientPermissionsMessage,
-  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -177,7 +176,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: t('action.publish.label'),
+        label: 'Publish',
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
@@ -225,9 +224,14 @@ export const PublishAction: DocumentActionComponent = (props) => {
     permissions?.granted,
     publishScheduled,
     editState?.transactionSyncLock?.enabled,
-    publishState,
+    handle,
     hasValidationErrors,
+    isPermissionsLoading,
+    liveEdit,
+    permissions?.granted,
     publish.disabled,
+    publishScheduled,
+    publishState,
     t,
     title,
     handle,

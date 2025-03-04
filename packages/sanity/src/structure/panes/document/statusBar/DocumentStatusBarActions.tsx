@@ -31,6 +31,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const {__internal_tasks} = useSource()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const {editState} = useDocumentPane()
 =======
   const {value, compareValue} = useDocumentPane()
@@ -38,6 +39,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 =======
   const {editState} = useDocumentPane()
 >>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
+=======
+>>>>>>> 18db762b02 (fix: using named version of api in client uses for releases upsell)
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -69,6 +72,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
 =======
   /**
@@ -83,11 +87,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
 >>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
 
+=======
+>>>>>>> 18db762b02 (fix: using named version of api in client uses for releases upsell)
   /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {canShowAction && (
+      {firstActionState && !selectedReleaseId && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
