@@ -53,9 +53,6 @@ export const readManifest = async (readPath: string, context: CliCommandContext)
   try {
     return readAndParseManifest(manifestPath, context)
   } catch (error) {
-    // Still log that we're attempting extraction
-    context.output.error(`Manifest not found, attempting to extract it...${manifestPath}`)
-
     await extractManifestSafe(
       {
         extOptions: {path: readPath},
