@@ -49,6 +49,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.disabled.not-ready': 'Operation not ready',
   /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
+  /** Label for the "Publish" document action */
+  'action.publish.label': 'Publish',
   /** Label for the "Publish" document action when the document has live edit enabled.*/
   'action.publish.live-edit.label': 'Publish',
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
