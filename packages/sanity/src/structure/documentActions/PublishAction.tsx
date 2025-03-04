@@ -53,7 +53,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, documentId, documentType, value, compareValue} = useDocumentPane()
+  const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -159,17 +159,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
 
     /**
-     * If there is null compareValue, it means the draft is yet to be saved
-     * and so value has the published ID.
-     * This conditional case is for when the published document is being shown,
-     * and so it should only be true if the draft has been saved (compareValue !== null)
+     * When draft is null, if not a published or version document
+     * then it means the draft is yet to be saved - in this case don't disabled
+     * the publish button due to ALREADY_PUBLISHED reason
      */
-    if (isPublishedId(value._id) && compareValue !== null) {
+    if (isPublishedId(value._id) && draft !== null) {
       return {
         tone: 'default',
         icon: PublishIcon,
         label: t('action.publish.label'),
-        title: getDisabledReason('ALREADY_PUBLISHED', (published || {})._updatedAt, t),
+        title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
         disabled: true,
       }
     }
@@ -221,7 +220,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     release,
     liveEdit,
     value._id,
-    compareValue,
+    draft,
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
@@ -232,7 +231,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     t,
     title,
     handle,
-    published,
+    published?._updatedAt,
     currentUser,
   ])
 }
