@@ -15,7 +15,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -26,7 +26,7 @@ jobs:
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 18
 
@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         env:
           cache-name: cache-node-modules
         with:
@@ -67,7 +67,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -104,7 +104,7 @@ jobs:
       # Caches build from either PR or next
       - name: Cache build
         id: cache-e2e-build
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         env:
           cache-name: cache-e2e-build
         with:
@@ -116,7 +116,7 @@ jobs:
 
   playwright-test:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -131,7 +131,7 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 18
 
@@ -149,7 +149,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         env:
           cache-name: cache-node-modules
         with:
@@ -172,7 +172,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v4
+        uses: useblacksmith/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -182,7 +182,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Restore build cache
-        uses: actions/cache/restore@v4
+        uses: useblacksmith/cache/restore@v5
         id: restore-build
         env:
           cache-name: cache-e2e-build
@@ -231,10 +231,10 @@ jobs:
   merge-reports:
     if: always()
     needs: [playwright-test]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 18
 
@@ -252,7 +252,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         env:
           cache-name: cache-node-modules
         with:
@@ -289,7 +289,7 @@ jobs:
       actions: write # needed to delete the cache
     timeout-minutes: 30
     name: Cleanup (${{ matrix.project }})
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [playwright-test]
 
     strategy:
@@ -304,7 +304,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: useblacksmith/setup-node@v5
         with:
           node-version: 18
 
