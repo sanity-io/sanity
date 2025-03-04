@@ -5,6 +5,7 @@ import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 interface ReleaseLimitsStore {
   releaseLimits$: Observable<Omit<ReleaseLimits, 'orgActiveReleaseCount'> | null>
@@ -44,7 +45,7 @@ function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
  */
 export const useReleaseLimits: () => ReleaseLimitsStore = () => {
   const resourceCache = useResourceCache()
-  const client = useClient()
+  const client = useClient({apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion})
 
   return useMemo(() => {
     const releaseLimitsStore =

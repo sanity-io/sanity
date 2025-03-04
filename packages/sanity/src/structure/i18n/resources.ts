@@ -56,9 +56,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
   'action.publish.live-edit.publish-disabled':
     'Cannot publish since Live Edit is enabled for this document type',
-  /** Tooltip for the "Publish" document action when the document has live edit enabled.*/
-  'action.publish.live-edit.tooltip':
-    'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
   /** Tooltip when publish button is disabled because there are no changes.*/
   'action.publish.no-changes.tooltip': 'No unpublished changes',
   /** Label for the "Publish" document action when there are no changes.*/

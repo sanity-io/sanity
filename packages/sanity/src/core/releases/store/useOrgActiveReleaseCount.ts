@@ -5,6 +5,7 @@ import {BehaviorSubject, catchError, map, type Observable, of, switchMap, tap, t
 import {useClient} from '../../hooks/useClient'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 import {useActiveReleases} from './useActiveReleases'
 
 interface OrgActiveReleaseCountStore {
@@ -77,7 +78,7 @@ function createOrgActiveReleaseCountStore(
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  const client = useClient()
+  const client = useClient({apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion})
 
   const activeReleasesCount = activeReleases?.length || 0
 
