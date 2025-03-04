@@ -358,34 +358,35 @@ jobs:
           path: playwright-report
           retention-days: 30
 
-  cleanup:
-    permissions:
-      contents: read
-      actions: write # needed to delete the cache
-    timeout-minutes: 30
-    name: Cleanup (${{ matrix.project }})
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    needs: [playwright-test]
+  # Cleanup isn't needed during the blacksmith trial, as we're not using gh cache, we're using the blacksmith drop-in
+  # cleanup:
+  #   permissions:
+  #     contents: read
+  #     actions: write # needed to delete the cache
+  #   timeout-minutes: 30
+  #   name: Cleanup (${{ matrix.project }})
+  #   runs-on: blacksmith-2vcpu-ubuntu-2204
+  #   needs: [playwright-test]
 
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
+  #   strategy:
+  #     # we want to know if a test fails on a specific node version
+  #     fail-fast: false
+  #     matrix:
+  #       # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+  #       project: [chromium, firefox]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup node
-        uses: useblacksmith/setup-node@v5
-        with:
-          node-version: 18
+  #     - name: Setup node
+  #       uses: useblacksmith/setup-node@v5
+  #       with:
+  #         node-version: 18
 
-      # Delete the cache so it is only used once
-      - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
-        env:
-          cache-name: cache-e2e-build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     # Delete the cache so it is only used once
+  #     - name: Delete Cache
+  #       run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+  #       env:
+  #         cache-name: cache-e2e-build
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
