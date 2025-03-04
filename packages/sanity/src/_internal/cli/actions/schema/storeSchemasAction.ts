@@ -3,7 +3,6 @@ import path, {join, resolve} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
-import {type Ora} from 'ora'
 
 import {type ManifestSchemaType, type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
 import {
@@ -43,19 +42,19 @@ const readAndParseManifest = (manifestPath: string, context: CliCommandContext) 
   const stats = statSync(manifestPath)
   const lastModified = stats.mtime.toISOString()
   context.output.print(
-    chalk.gray(`\n↳ Read manifest from ${manifestPath} (last modified: ${lastModified})`),
+    chalk.gray(`↳ Read manifest from ${manifestPath} (last modified: ${lastModified})`),
   )
   return JSON.parse(content)
 }
 
-export const readManifest = async (readPath: string, context: CliCommandContext, spinner?: Ora) => {
+export const readManifest = async (readPath: string, context: CliCommandContext) => {
   const manifestPath = `${readPath}/${MANIFEST_FILENAME}`
 
   try {
     return readAndParseManifest(manifestPath, context)
   } catch (error) {
     // Still log that we're attempting extraction
-    spinner!.text = 'Manifest not found, attempting to extract it...'
+    context.output.error(`Manifest not found, attempting to extract it...${manifestPath}`)
 
     await extractManifestSafe(
       {
@@ -73,7 +72,6 @@ export const readManifest = async (readPath: string, context: CliCommandContext,
       return readAndParseManifest(manifestPath, context)
     } catch (retryError) {
       const errorMessage = `Failed to read manifest at ${manifestPath}`
-      spinner?.fail(errorMessage)
       // We should log the error too for consistency
       context.output.error(errorMessage)
       throw retryError
@@ -115,8 +113,6 @@ export default async function storeSchemasAction(
 
   const {output, apiClient} = context
 
-  const spinner = output.spinner({}).start('Storing schemas')
-
   const manifestPath = getManifestPath(context, manifestDir)
 
   try {
@@ -128,7 +124,7 @@ export default async function storeSchemasAction(
     const projectId = client.config().projectId
     if (!projectId) throw new Error('Project ID is not defined')
 
-    const manifest = await readManifest(manifestPath, context, spinner)
+    const manifest = await readManifest(manifestPath, context)
 
     let storedCount = 0
 
@@ -150,11 +146,9 @@ export default async function storeSchemasAction(
           .createOrReplace({_type: SANITY_WORKSPACE_SCHEMA_TYPE, _id: id, workspace, schema})
           .commit()
         storedCount++
-        spinner.text = `Stored ${storedCount} schemas so far...`
-        if (verbose) spinner.succeed(`Schema stored for workspace '${workspace.name}'`)
       } catch (err) {
         error = err
-        spinner.fail(
+        output.error(
           `Error storing schema for workspace '${workspace.name}':\n${chalk.red(`${err.message}`)}`,
         )
         if (schemaRequired) throw err
@@ -173,18 +167,18 @@ export default async function storeSchemasAction(
         (workspace: ManifestWorkspaceFile) => workspace.name === workspaceName,
       )
       if (!workspaceToSave) {
-        spinner.fail(`Workspace ${workspaceName} not found in manifest`)
+        output.error(`Workspace ${workspaceName} not found in manifest`)
         throw new Error(`Workspace ${workspaceName} not found in manifest: projectID: ${projectId}`)
       }
       await saveSchema(workspaceToSave as ManifestWorkspaceFile)
-      spinner.succeed(`Stored 1 schemas`)
+      output.success(`Stored 1 schemas`)
     } else {
       await Promise.all(
         manifest.workspaces.map(async (workspace: ManifestWorkspaceFile): Promise<void> => {
           await saveSchema(workspace)
         }),
       )
-      spinner.succeed(`Stored ${storedCount}/${manifest.workspaces.length} schemas`)
+      output.success(`Stored ${storedCount}/${manifest.workspaces.length} schemas`)
     }
 
     if (error) throw error
