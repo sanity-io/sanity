@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
+import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentPreviewStore} from '../store'
 import {type Previewable} from './types'
 
@@ -37,17 +38,33 @@ function useDocumentPreview(props: {
 }): State {
   const {enabled = true, ordering, schemaType, value: previewValue} = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
+  const {perspectiveStack, selectedPerspective} = usePerspective()
   const observable = useMemo<Observable<State>>(() => {
     // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
     if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
     return observeForPreview(previewValue as Previewable, schemaType, {
+      perspective:
+        // eslint-disable-next-line no-nested-ternary
+        selectedPerspective === 'drafts'
+          ? ['drafts']
+          : selectedPerspective === 'published'
+            ? ['published']
+            : perspectiveStack,
       viewOptions: {ordering: ordering},
     }).pipe(
       map((event) => ({isLoading: false, value: event.snapshot || undefined})),
       catchError((error) => of({isLoading: false, error})),
     )
-  }, [enabled, previewValue, schemaType, observeForPreview, ordering])
+  }, [
+    enabled,
+    previewValue,
+    schemaType,
+    observeForPreview,
+    selectedPerspective,
+    perspectiveStack,
+    ordering,
+  ])
 
   return useObservable(observable, INITIAL_STATE)
 }

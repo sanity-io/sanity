@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {
   type I18nTextRecord,
   type Path,
@@ -9,8 +8,9 @@ import {
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {type DocumentAvailability} from '../../../preview'
-import {type VersionsRecord} from '../../../preview/utils/getPreviewStateObservable'
+import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -22,13 +22,9 @@ export type PreviewDocumentValue = PreviewValue & {
 export interface ReferenceInfo {
   id: string
   type: string | undefined
+  isPublished: boolean | null
   availability: DocumentAvailability
-  preview: {
-    draft: PreviewDocumentValue | undefined
-    published: PreviewDocumentValue | undefined
-    version: PreviewDocumentValue | undefined
-    versions: VersionsRecord
-  }
+  preview: PreviewState
 }
 
 export interface ReferenceTemplate {

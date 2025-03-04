@@ -1,7 +1,8 @@
+import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
-import {useIntentLink, useRouter} from 'sanity/router'
+import {useIntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
@@ -26,6 +27,7 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   layout?: GeneralPreviewLayoutKey
   onClick?: (e: MouseEvent<HTMLElement>) => void
   onItemSelect?: ItemSelectHandler
+  previewPerspective?: StackablePerspective[]
 }
 
 export function SearchResultItem({
@@ -35,12 +37,12 @@ export function SearchResultItem({
   layout,
   onClick,
   onItemSelect,
+  previewPerspective,
   ...rest
 }: SearchResultItemProps) {
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-  const perspective = useRouter().stickyParams.perspective
   const params = useMemo(() => ({id: documentId, type: type?.name}), [documentId, type?.name])
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
@@ -59,9 +61,6 @@ export function SearchResultItem({
         .subscribe(setCreatePermission)
     }
   }, [documentId, documentType, grantsStore, state.canDisableAction])
-
-  // if the perspective is set within the searchState then it means it should override the router perspective
-  const pickedPerspective = state.perspective ? state.perspective[0] : perspective
 
   // the current search result exists in the release provided by the search provider
   const existsInRelease = state.disabledDocumentIds?.some((id) =>
@@ -107,7 +106,7 @@ export function SearchResultItem({
         <SearchResultItemPreview
           documentId={documentId}
           layout={layout}
-          perspective={pickedPerspective}
+          perspective={previewPerspective}
           presence={documentPresence}
           schemaType={type}
         />

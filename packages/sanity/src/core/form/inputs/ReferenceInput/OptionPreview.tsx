@@ -76,7 +76,6 @@ export function OptionPreview(props: {
       <ReferencePreview
         id={referenceInfo.id}
         layout="default"
-        preview={referenceInfo.preview}
         refType={refType}
         renderPreview={renderPreview}
         showTypeLabel={props.type.to.length > 1}

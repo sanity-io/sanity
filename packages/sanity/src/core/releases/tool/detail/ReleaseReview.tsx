@@ -56,7 +56,9 @@ export function ReleaseReview({
     return documents.filter(({previewValues, document}) => {
       const fallbackTitle = typeof document.title === 'string' ? document.title : 'Untitled'
       const title =
-        typeof previewValues.values.title === 'string' ? previewValues.values.title : fallbackTitle
+        typeof previewValues.values?.title === 'string'
+          ? previewValues.values?.title
+          : fallbackTitle
       return title.toLowerCase().includes(searchTerm.toLowerCase())
     })
   }, [searchTerm, documents])

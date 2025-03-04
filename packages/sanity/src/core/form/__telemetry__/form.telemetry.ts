@@ -28,3 +28,13 @@ export const PortableTextInvalidValueResolve = defineEvent<{
   description:
     'The portable text got an invalid value from the form and pressed button to resolve it.',
 })
+
+/**
+ * When a draft is successfully created
+ * @internal
+ */
+export const CreatedDraft = defineEvent({
+  name: 'New Draft Created',
+  version: 1,
+  description: 'User created a new draft',
+})

@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   Hotkeys,
   usePerspective,
+  useSource,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -27,7 +28,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {__internal_tasks} = useSource()
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)

@@ -46,7 +46,7 @@ export default async function startSanityDevServer(
   }
 }
 
-function getDevServerConfig({
+export function getDevServerConfig({
   flags,
   workDir,
   cliConfig,

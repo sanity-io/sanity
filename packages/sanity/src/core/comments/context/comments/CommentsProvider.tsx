@@ -1,10 +1,10 @@
-import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsContext} from 'sanity/_singletons'
 
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
+import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store'
 import {useAddonDataset, useWorkspace} from '../../../studio'
 import {getPublishedId} from '../../../util'
