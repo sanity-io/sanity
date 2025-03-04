@@ -118,6 +118,7 @@ export default async function deployStudioAction(
   }
 
   // Always build the project, unless --no-build is passed
+  let extractManifestError: Error | undefined
   const shouldBuild = flags.build
   if (shouldBuild) {
     const buildArgs = {
@@ -132,7 +133,7 @@ export default async function deployStudioAction(
     }
 
     if (!isCoreApp) {
-      const extractManifestError = await extractManifestSafe(
+      extractManifestError = await extractManifestSafe(
         {
           ...buildArgs,
           extOptions: {},
@@ -159,7 +160,9 @@ export default async function deployStudioAction(
       extraArguments: [],
     }
 
-    await storeManifestSchemas(storeManifestSchemasArgs, context)
+    if (!extractManifestError) {
+      await storeManifestSchemas(storeManifestSchemasArgs, context)
+    }
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
