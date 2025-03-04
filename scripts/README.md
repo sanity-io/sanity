@@ -10,7 +10,7 @@ The `printReleaseNotesTemplate.ts` script generates a GitHub release notes templ
 
 - Generates a GitHub release notes template based on git commit history
 - Creates an `apiVersion` document in Sanity Studio
-- Creates an `apiChange` document in Sanity Studio with changelog details
+- Creates an `apiChange` document in Sanity Studio with changelog details (as a draft)
 - Automatically categorizes commits into features and bugfixes
 - Creates a structured changelog with highlights, features, and bugfixes
 - Links the GitHub release notes to the Sanity changelog
@@ -112,7 +112,7 @@ To test that the Sanity documents are created as expected, you have several opti
 1. The script extracts commit history between the specified tags/branches
 2. It categorizes commits into features and bugfixes based on commit messages
 3. It creates an `apiVersion` document in Sanity Studio
-4. It creates an `apiChange` document with structured content in Sanity Studio
+4. It creates an `apiChange` document with structured content in Sanity Studio (as a draft)
 5. It generates a GitHub release template that links to the Sanity changelog
 
 ### Example Output
