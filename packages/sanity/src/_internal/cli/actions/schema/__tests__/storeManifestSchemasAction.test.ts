@@ -151,7 +151,7 @@ describe('storeManifestSchemas', () => {
       await storeManifestSchemas(createArgs(), mockContext)
 
       expect(mockCommit).toHaveBeenCalled()
-      expect(spinnerInstance.succeed).toHaveBeenCalledWith('Stored 1/1 schemas')
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 1/1 schemas')
       expect(mockContext.output.print).toHaveBeenCalledWith(
         expect.stringContaining('sanity schema list'),
       )
@@ -161,7 +161,7 @@ describe('storeManifestSchemas', () => {
       await storeManifestSchemas(createArgs({workspace: 'testWorkspace'}), mockContext)
 
       expect(mockCommit).toHaveBeenCalled()
-      expect(spinnerInstance.succeed).toHaveBeenCalledWith('Stored 1 schemas')
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 1 schemas')
     })
 
     it('should handle multiple workspaces', async () => {
@@ -170,7 +170,7 @@ describe('storeManifestSchemas', () => {
       await storeManifestSchemas(createArgs(), mockContext)
 
       expect(mockCommit).toHaveBeenCalledTimes(2)
-      expect(spinnerInstance.succeed).toHaveBeenCalledWith('Stored 2/2 schemas')
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 2/2 schemas')
     })
   })
 
@@ -204,7 +204,7 @@ describe('storeManifestSchemas', () => {
       const result = await storeManifestSchemas(createArgs(), mockContext)
 
       expect(result).toBeInstanceOf(Error)
-      expect(spinnerInstance.fail).toHaveBeenCalled()
+      expect(mockContext.output.error).toHaveBeenCalled()
     })
 
     it('should continue on non-required schema failure', async () => {
@@ -217,7 +217,7 @@ describe('storeManifestSchemas', () => {
 
       await storeManifestSchemas(createArgs({'schema-required': false}), mockContext)
 
-      expect(spinnerInstance.fail).toHaveBeenCalled()
+      expect(mockContext.output.error).toHaveBeenCalled()
       expect(mockContext.output.print).toHaveBeenCalledWith(
         expect.stringContaining('sanity schema list'),
       )
@@ -242,7 +242,7 @@ describe('storeManifestSchemas', () => {
       const result = await storeManifestSchemas(createArgs(), mockContext)
 
       expect(result).toBe(mockError)
-      expect(spinnerInstance.fail).toHaveBeenCalled()
+      expect(mockContext.output.error).toHaveBeenCalled()
     })
 
     it('should handle invalid workspace name', async () => {
@@ -250,9 +250,95 @@ describe('storeManifestSchemas', () => {
       const result = await storeManifestSchemas(args, mockContext)
 
       expect(result).toBeInstanceOf(Error)
-      expect(spinnerInstance.fail).toHaveBeenCalledWith(
+      expect(mockContext.output.error).toHaveBeenCalledWith(
         expect.stringContaining('Workspace nonExistentWorkspace not found in manifest'),
       )
+    })
+
+    it('should handle missing schema files gracefully', async () => {
+      mockManifestFile()
+
+      // Set up the mock to throw when reading the schema file
+      vi.mocked(readFileSync).mockImplementation((filepath) => {
+        if (String(filepath).includes(MANIFEST_FILENAME)) {
+          return JSON.stringify(TEST_MANIFEST)
+        }
+        throw new Error(`File not found: ${filepath}`)
+      })
+
+      const result = await storeManifestSchemas(createArgs(), mockContext)
+
+      expect(result).toBeInstanceOf(Error)
+      expect(mockContext.output.error).toHaveBeenCalled()
+    })
+
+    it('should handle invalid schema JSON', async () => {
+      mockManifestFile()
+
+      // Return invalid JSON for the schema file
+      vi.mocked(readFileSync).mockImplementation((filepath) => {
+        if (String(filepath).includes(MANIFEST_FILENAME)) {
+          return JSON.stringify(TEST_MANIFEST)
+        } else if (String(filepath).includes('testSchema.json')) {
+          return '{invalid-json'
+        }
+        throw new Error(`File not found: ${filepath}`)
+      })
+
+      const result = await storeManifestSchemas(createArgs(), mockContext)
+
+      expect(result).toBeInstanceOf(Error)
+      expect(mockContext.output.error).toHaveBeenCalledWith(
+        expect.stringContaining('Error storing schema'),
+      )
+    })
+
+    it('should handle empty workspaces array', async () => {
+      // Mock manifest with empty workspaces array
+      vi.mocked(readFileSync).mockImplementation((filepath) => {
+        if (String(filepath).includes(MANIFEST_FILENAME)) {
+          return JSON.stringify({workspaces: []})
+        }
+        throw new Error(`File not found: ${filepath}`)
+      })
+
+      await storeManifestSchemas(createArgs(), mockContext)
+
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 0/0 schemas')
+    })
+
+    it('should handle workspace with missing properties', async () => {
+      // Mock manifest with a workspace missing required properties
+      vi.mocked(readFileSync).mockImplementation((filepath) => {
+        if (String(filepath).includes(MANIFEST_FILENAME)) {
+          return JSON.stringify({
+            workspaces: [
+              {
+                name: 'incompleteWorkspace',
+                // Missing projectId, dataset, schema
+              },
+            ],
+          })
+        } else if (String(filepath).includes('testSchema.json')) {
+          return JSON.stringify(TEST_SCHEMA)
+        }
+        throw new Error(`File not found: ${filepath}`)
+      })
+
+      const result = await storeManifestSchemas(createArgs(), mockContext)
+
+      expect(result).toBeInstanceOf(Error)
+      expect(mockContext.output.error).toHaveBeenCalled()
+    })
+
+    // Test for concurrent operations
+    it('should handle multiple workspace schemas concurrently', async () => {
+      mockManifestFile(TEST_MANIFEST_MULTI)
+
+      await storeManifestSchemas(createArgs(), mockContext)
+
+      expect(mockCommit).toHaveBeenCalledTimes(2)
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 2/2 schemas')
     })
   })
 
@@ -274,7 +360,7 @@ describe('storeManifestSchemas', () => {
 
       await storeManifestSchemas(createArgs(), mockContext)
 
-      expect(spinnerInstance.succeed).toHaveBeenCalledWith('Stored 1/1 schemas')
+      expect(mockContext.output.success).toHaveBeenCalledWith('Stored 1/1 schemas')
     })
 
     it('should handle manifest extraction failure', async () => {
@@ -325,7 +411,7 @@ describe('storeManifestSchemas', () => {
     const result = await storeManifestSchemas(args, mockContext)
 
     expect(result).toBeInstanceOf(Error)
-    expect(spinnerInstance.fail).toHaveBeenCalledWith(
+    expect(mockContext.output.error).toHaveBeenCalledWith(
       expect.stringContaining('Failed to read manifest at'),
     )
   })
