@@ -30,10 +30,14 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
 <<<<<<< HEAD
+<<<<<<< HEAD
   const {editState} = useDocumentPane()
 =======
   const {value, compareValue} = useDocumentPane()
 >>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
+=======
+  const {editState} = useDocumentPane()
+>>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -64,6 +68,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
 =======
   /**
@@ -74,6 +79,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const canShowAction =
     firstActionState && !selectedReleaseId && (!isPublishedId(value._id) || compareValue === null)
 >>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
+=======
+  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
+>>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
 
   /* Version / Bundling handling */
   return (
