@@ -39,7 +39,7 @@ function humanize(arr: any, conjunction: any) {
 
 function buildTitle(type: any) {
   if (!type.to || type.to.length === 0) {
-    return 'Reference'
+    return 'Global Document Reference'
   }
   return `Global Document Reference to ${humanize(
     arrify(type.to).map((toType: any) => toType.title),
@@ -54,7 +54,7 @@ export const GlobalDocumentReferenceType = {
   extend(subTypeDef: any, createMemberType: any) {
     if (!subTypeDef.to) {
       throw new Error(
-        `Missing "to" field in reference definition. Check the type ${subTypeDef.name}`,
+        `Missing "to" field in global document reference definition. Check the type ${subTypeDef.name}`,
       )
     }
     const parsed = Object.assign(
@@ -94,7 +94,7 @@ export const GlobalDocumentReferenceType = {
         },
         extend: (extensionDef: any) => {
           if (extensionDef.of) {
-            throw new Error('Cannot override `of` of subtypes of "reference"')
+            throw new Error('Cannot override `of` of subtypes of "globalDocumentReference"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
             type: parent,
