@@ -8,6 +8,11 @@ import {type ObjectSchemaType, type PreviewConfig} from '../schema'
 /** @beta */
 export interface GlobalDocumentReferenceValue {
   _type: string
+  /** The reference to the document. This is a string of the form `a:b:c`,
+   * where:
+   * - `a` is the resource type, for example `dataset` or `asset-library`
+   * - `b` is the resource ID, for example data set name or asset library ID
+   * - `c` is the document ID */
   _ref: `${string}:${string}:${string}`
   _key?: string
   _weak?: boolean
