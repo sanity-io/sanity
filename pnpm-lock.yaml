@@ -7904,10 +7904,6 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
-  hono@4.7.0:
-    resolution: {integrity: sha512-hV97aIR4WYbG30k234sD9B3VNr1ZWdQRmrVF76LKFlmI7O9Yo70mG9+mFwyQ6Sjrz4wH71GfnBxv6CPjcx3QNw==}
-    engines: {node: '>=16.9.0'}
-
   hono@4.7.2:
     resolution: {integrity: sha512-8V5XxoOF6SI12jkHkzX/6aLBMU5GEF5g387EjVSQipS0DlxWgWGSMeEayY3CRBjtTUQYwLHx9JYouWqKzy2Vng==}
     engines: {node: '>=16.9.0'}
@@ -13729,10 +13725,6 @@ snapshots:
       - encoding
       - supports-color
 
-  '@hono/node-server@1.13.8(hono@4.7.0)':
-    dependencies:
-      hono: 4.7.0
-
   '@hono/node-server@1.13.8(hono@4.7.2)':
     dependencies:
       hono: 4.7.2
@@ -14038,7 +14030,7 @@ snapshots:
       '@axiomhq/js': 1.0.0-rc.3
       '@babel/core': 7.26.0
       '@babel/types': 7.26.0
-      '@hono/node-server': 1.13.8(hono@4.7.0)
+      '@hono/node-server': 1.13.8(hono@4.7.2)
       '@million/install': 1.0.14
       '@rollup/pluginutils': 5.1.4(rollup@4.34.8)
       '@rrweb/types': 2.0.0-alpha.16
@@ -14046,7 +14038,7 @@ snapshots:
       ci-info: 4.1.0
       esbuild: 0.20.2
       faster-babel-types: 0.1.0(@babel/types@7.26.0)
-      hono: 4.7.0
+      hono: 4.7.2
       isomorphic-fetch: 3.0.0(encoding@0.1.13)
       nanoid: 5.0.9
       ohash: 1.1.4
@@ -14235,7 +14227,7 @@ snapshots:
       minimatch: 9.0.5
       nopt: 7.2.1
       npm-install-checks: 6.3.0
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       npm-pick-manifest: 9.1.0
       npm-registry-fetch: 17.1.0
       pacote: 18.0.6
@@ -19484,8 +19476,6 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono@4.7.0: {}
-
   hono@4.7.2: {}
 
   hosted-git-info@2.8.9: {}
@@ -19617,7 +19607,7 @@ snapshots:
   init-package-json@6.0.3:
     dependencies:
       '@npmcli/package-json': 5.2.0
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       promzard: 1.0.2
       read: 3.0.1
       semver: 7.7.1
@@ -20344,7 +20334,7 @@ snapshots:
 
   libnpmaccess@8.0.6:
     dependencies:
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       npm-registry-fetch: 17.1.0
     transitivePeerDependencies:
       - supports-color
@@ -20353,7 +20343,7 @@ snapshots:
     dependencies:
       ci-info: 4.1.0
       normalize-package-data: 6.0.2
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       npm-registry-fetch: 17.1.0
       proc-log: 4.2.0
       semver: 7.7.1
@@ -21001,7 +20991,7 @@ snapshots:
     dependencies:
       npm-install-checks: 6.3.0
       npm-normalize-package-bin: 3.0.1
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       semver: 7.7.1
 
   npm-registry-fetch@17.1.0:
@@ -21012,7 +21002,7 @@ snapshots:
       minipass: 7.1.2
       minipass-fetch: 3.0.5
       minizlib: 2.1.2
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       proc-log: 4.2.0
     transitivePeerDependencies:
       - supports-color
@@ -21357,7 +21347,7 @@ snapshots:
       cacache: 18.0.4
       fs-minipass: 3.0.3
       minipass: 7.1.2
-      npm-package-arg: 11.0.2
+      npm-package-arg: 11.0.3
       npm-packlist: 8.0.2
       npm-pick-manifest: 9.1.0
       npm-registry-fetch: 17.1.0
