@@ -108,6 +108,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     isLoading: documentListIsLoading,
     items,
     fromCache,
+    connected,
     onLoadFullList,
     onRetry,
   } = useDocumentList({
@@ -194,7 +195,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           fontSize={[2, 2, 1]}
           icon={textInputIcon}
           iconRight={
-            loadingVariant === 'subtle' && !searchInputValue ? DelayedSubtleSpinnerIcon : null
+            !connected || (loadingVariant === 'subtle' && !searchInputValue)
+              ? DelayedSubtleSpinnerIcon
+              : null
           }
           onChange={handleQueryChange}
           onClear={handleClearSearch}

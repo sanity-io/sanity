@@ -41,6 +41,7 @@ interface DocumentListState {
   error: {message: string} | null
   isLoadingFullList: boolean
   isLoading: boolean
+  connected?: boolean
   fromCache?: boolean
   items: DocumentListPaneItem[]
 }
@@ -168,6 +169,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
             ...prev,
             error: null,
             fromCache: event.result.fromCache,
+            connected: event.result.connected,
             isLoading: false,
             items: removePublishedWithDrafts(event.result.documents),
             isLoadingFullList: false,
@@ -198,7 +200,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     onRetry$,
   ])
 
-  const {error, items, isLoading, fromCache, isLoadingFullList} = useObservable(
+  const {error, items, isLoading, fromCache, connected, isLoadingFullList} = useObservable(
     queryResults$,
     INITIAL_QUERY_STATE,
   )
@@ -208,6 +210,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     onRetry,
     isLoading,
     items,
+    connected,
     fromCache,
     onLoadFullList,
     isLoadingFullList,
