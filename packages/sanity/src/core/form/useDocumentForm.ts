@@ -498,7 +498,7 @@ const useConnectionToast = (connectionState: ConnectionState) => {
         pushToast({
           id: 'sanity/reconnecting',
           status: 'warning',
-          title: t('panes.document-pane-provider.reconnecting.title'),
+          title: t('form.reconnecting.toast.title'),
         })
       }, 2000) // 2 seconds, we can iterate on the value
     }
