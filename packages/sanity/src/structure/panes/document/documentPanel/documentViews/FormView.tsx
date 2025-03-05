@@ -18,12 +18,12 @@ import {
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {FormHeader} from './FormHeader'
-import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
   hidden: boolean
