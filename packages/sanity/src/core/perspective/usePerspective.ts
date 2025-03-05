@@ -13,7 +13,7 @@ import {type PerspectiveContextValue} from './types'
  * ```ts
  * function MyComponent() {
  *  const {perspectiveStack} = usePerspective()
- *  // ... do something with the perspective stack ...
+ *  // ... do something with the perspective stack , like passing it to the client perspective.
  * }
  * ```
  */
