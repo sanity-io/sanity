@@ -18,5 +18,22 @@ export const ASSET_LIBRARY_ASSET_FIELD = {
   name: 'assetLibraryAsset',
   type: 'globalDocumentReference',
   hidden: true,
-  to: [], // Just have to be *something* to be valid
+  to: [
+    {
+      type: 'sanity.asset',
+    },
+  ],
+  // resourceType: 'asset-library',
+  // resourceId: 'al32RNT8lVAT',
+  // weak: true,
+  // to: [
+  //   {
+  //     type: 'sanity.asset',
+  //     preview: {
+  //       select: {
+  //         title: 'title',
+  //       },
+  //     },
+  //   },
+  // ],
 }
