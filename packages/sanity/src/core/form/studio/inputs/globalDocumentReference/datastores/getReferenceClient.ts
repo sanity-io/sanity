@@ -140,10 +140,15 @@ export function getReferenceClient(
       ): Observable<SanityDocument<R> | null> {
         const tag = searchParams?.get('tag') || undefined
         searchParams?.delete('tag')
-        return client.observable
-          .request({
+        return client
+          .withConfig({
+            useProjectHostname: false,
+            apiHost: 'https://api.sanity.work',
+            apiVersion: 'vX',
+          })
+          .observable.request({
             useGlobalApi: true,
-            uri: `/vX/asset-library/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
+            uri: `/asset-libraries/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
           })
@@ -158,22 +163,33 @@ export function getReferenceClient(
       }> {
         const tag = searchParams?.get('tag') || undefined
         searchParams?.delete('tag')
-        return client.observable.request({
-          useGlobalApi: true,
-          uri: `/vX/asset-library/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
-          method: 'GET',
-          tag,
-        })
+        return client
+          .withConfig({
+            useProjectHostname: false,
+            apiHost: 'https://api.sanity.work',
+            apiVersion: 'vX',
+          })
+          .observable.request({
+            useGlobalApi: true,
+            uri: `/vX/asset-libraries/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
+            method: 'GET',
+            tag,
+          })
       },
       query<
         R = Any,
         Q extends Record<string, unknown> | undefined = QueryWithoutParams,
         G extends string = string,
       >(query: G, params: Q) {
-        return client.observable
-          .request<{result: ClientReturn<G, R>}>({
+        return client
+          .withConfig({
+            useProjectHostname: false,
+            apiHost: 'https://api.sanity.work',
+            apiVersion: 'vX',
+          })
+          .observable.request<{result: ClientReturn<G, R>}>({
             useGlobalApi: true,
-            uri: `/vX/asset-library/${schemaType.resourceId}/query`,
+            uri: `/asset-libraries/${schemaType.resourceId}/query`,
             method: 'POST',
             body: {query, params},
             tag: 'gdr.query',
@@ -191,6 +207,5 @@ export function getReferenceClient(
       },
     } satisfies ReferenceClient
   }
-
-  throw new Error('Invalid resource type')
+  throw new Error(`Invalid resource type "${schemaType.resourceType}"`)
 }
