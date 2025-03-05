@@ -48,7 +48,7 @@
     "docs:report": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReport",
     "docs:report:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCleanup",
     "docs:report:create": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCreate",
-    "e2e:build": "pnpm --filter studio-e2e-testing build",
+    "e2e:build": "pnpm turbo run build --filter=studio-e2e-testing",
     "e2e:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/e2e/cleanup",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",

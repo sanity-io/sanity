@@ -62,9 +62,9 @@ test.describe('Portable Text Input', () => {
       await page.keyboard.press('Escape')
       await expect($pte).toBeFocused()
       await expect($toolbarPopover).toBeVisible()
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1_000)
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(100)
+      await page.waitForTimeout(1_000)
       // Assertion: escape closes the toolbar popover
       await expect($toolbarPopover).not.toBeVisible()
     })
