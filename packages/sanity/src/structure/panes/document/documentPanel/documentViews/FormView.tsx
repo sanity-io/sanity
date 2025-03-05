@@ -11,6 +11,7 @@ import {
   fromMutationPatches,
   type PatchMsg,
   PresenceOverlay,
+  useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
@@ -23,7 +24,6 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {FormHeader} from './FormHeader'
-import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
   hidden: boolean

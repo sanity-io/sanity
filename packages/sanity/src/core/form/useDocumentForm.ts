@@ -8,7 +8,6 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
 import {pathFor} from '@sanity/util/paths'
 import {throttle} from 'lodash'
 import {
@@ -24,6 +23,7 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
+import {useConditionalToast} from '../hooks/useConditionalToast'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
@@ -571,22 +571,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 }
 
 const useConnectionToast = (connectionState: ConnectionState) => {
-  const {push: pushToast} = useToast()
   const {t} = useTranslation('studio')
 
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>
-    if (connectionState === 'reconnecting') {
-      timeout = setTimeout(() => {
-        pushToast({
-          id: 'sanity/reconnecting',
-          status: 'warning',
-          title: t('form.reconnecting.toast.title'),
-        })
-      }, 2000) // 2 seconds, we can iterate on the value
-    }
-    return () => {
-      if (timeout) clearTimeout(timeout)
-    }
-  }, [connectionState, pushToast, t])
+  useConditionalToast({
+    enabled: connectionState === 'reconnecting',
+    delay: 2000,
+    id: 'sanity/reconnecting',
+    status: 'warning',
+    title: t('form.reconnecting.toast.title'),
+  })
 }

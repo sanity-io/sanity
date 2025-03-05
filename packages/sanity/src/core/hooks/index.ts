@@ -1,4 +1,5 @@
 export * from './useClient'
+export * from './useConditionalToast'
 export * from './useConnectionState'
 export * from './useDataset'
 export * from './useDateTimeFormat'
