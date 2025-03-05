@@ -8,6 +8,7 @@ import {
 } from '@sanity/ui'
 import {noop} from 'lodash'
 import {
+  type ComponentType,
   type CSSProperties,
   forwardRef,
   useCallback,
@@ -28,11 +29,13 @@ import {
   LoadingBlock,
   useDocumentForm,
   useEditState,
+  useMiddlewareComponents,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {ConnectorContext} from 'sanity/_singletons'
+import {CommentsEnabledContext, ConnectorContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {Scroller} from './Scroller'
@@ -65,6 +68,84 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+
+  const DocumentLayout = useMiddlewareComponents({
+    pick: pickDocumentLayoutComponent,
+    defaultComponent: useCallback(
+      () => (
+        <DiffViewDocument
+          compareDocument={compareDocument}
+          documentId={documentId}
+          documentType={documentType}
+          role={role}
+          scrollElement={scrollElement}
+          syncChannel={syncChannel}
+        />
+      ),
+      [compareDocument, documentId, documentType, role, scrollElement, syncChannel],
+    ),
+  })
+
+  return (
+    <ConnectorContext.Provider
+      value={{
+        // Render the change indicators inertly, because the diff view modal does not currently
+        // provide a way to display document inspectors.
+        isInteractive: false,
+        onOpenReviewChanges: noop,
+        onSetFocus: noop,
+        isReviewChangesOpen: false,
+      }}
+    >
+      <ChangeIndicatorsTracker>
+        <VirtualizerScrollInstanceProvider
+          scrollElement={scrollElement}
+          containerElement={containerElement}
+        >
+          <BoundaryElementProvider element={boundaryElement}>
+            <DiffViewPaneLayout
+              ref={setBoundaryElement}
+              style={
+                {
+                  '--grid-area': `${role}-document`,
+                } as CSSProperties
+              }
+              borderLeft={role === 'next'}
+            >
+              <Scroller
+                ref={ref}
+                style={
+                  {
+                    // The scroll position is synchronised between panes. This style hides the
+                    // scrollbar for all panes except the one displaying the next document.
+                    '--scrollbar-width': role !== 'next' && 'none',
+                  } as CSSProperties
+                }
+              >
+                <PortalProvider element={portalElement}>
+                  <DialogProvider position="absolute">
+                    <Container ref={containerElement} padding={4} width={1}>
+                      <DocumentLayout documentId={documentId} documentType={documentType} />
+                    </Container>
+                  </DialogProvider>
+                </PortalProvider>
+              </Scroller>
+              <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
+            </DiffViewPaneLayout>
+          </BoundaryElementProvider>
+        </VirtualizerScrollInstanceProvider>
+      </ChangeIndicatorsTracker>
+    </ConnectorContext.Provider>
+  )
+})
+
+const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
+  role,
+  documentType,
+  documentId,
+  syncChannel,
+  compareDocument,
+}) => {
   const compareValue = useCompareValue({compareDocument})
   const [patchChannel] = useState(() => createPatchChannel())
 
@@ -107,88 +188,45 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
   )
 
   useEffect(() => {
-    const subscription = pathSyncChannel.path.subscribe((path) => onProgrammaticFocus(path))
+    const subscription = pathSyncChannel.path.subscribe(onProgrammaticFocus)
     return () => subscription.unsubscribe()
   }, [onProgrammaticFocus, pathSyncChannel.path])
 
-  return (
-    <ConnectorContext.Provider
+  return isLoading ? (
+    <LoadingBlock showText />
+  ) : (
+    <CommentsEnabledContext.Provider
       value={{
-        // Render the change indicators inertly, because the diff view modal does not currently
-        // provide a way to display document inspectors.
-        isInteractive: false,
-        onOpenReviewChanges: noop,
-        onSetFocus: noop,
-        isReviewChangesOpen: false,
+        enabled: false,
+        mode: null,
       }}
     >
-      <ChangeIndicatorsTracker>
-        <VirtualizerScrollInstanceProvider
-          scrollElement={scrollElement}
-          containerElement={containerElement}
-        >
-          <BoundaryElementProvider element={boundaryElement}>
-            <DiffViewPaneLayout
-              ref={setBoundaryElement}
-              style={
-                {
-                  '--grid-area': `${role}-document`,
-                } as CSSProperties
-              }
-              borderLeft={role === 'next'}
-            >
-              <Scroller
-                ref={ref}
-                style={
-                  {
-                    // The scroll position is synchronised between panes. This style hides the
-                    // scrollbar for all panes except the one displaying the next document.
-                    '--scrollbar-width': role !== 'next' && 'none',
-                  } as CSSProperties
-                }
-              >
-                <PortalProvider element={portalElement}>
-                  <DialogProvider position="absolute">
-                    {isLoading ? (
-                      <LoadingBlock showText />
-                    ) : (
-                      <Container ref={containerElement} padding={4} width={1}>
-                        <FormBuilder
-                          // eslint-disable-next-line camelcase
-                          __internal_patchChannel={patchChannel}
-                          id={`diffView-pane-${role}`}
-                          onChange={onChange}
-                          onPathFocus={onFocus}
-                          onPathOpen={onPathOpen}
-                          onPathBlur={onBlur}
-                          onFieldGroupSelect={onSetActiveFieldGroup}
-                          onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                          onSetPathCollapsed={onSetCollapsedPath}
-                          collapsedPaths={collapsedPaths}
-                          collapsedFieldSets={collapsedFieldSets}
-                          focusPath={formState.focusPath}
-                          changed={formState.changed}
-                          focused={formState.focused}
-                          groups={formState.groups}
-                          validation={formState.validation}
-                          members={formState.members}
-                          presence={formState.presence}
-                          schemaType={schemaType}
-                          value={value}
-                        />
-                      </Container>
-                    )}
-                  </DialogProvider>
-                </PortalProvider>
-              </Scroller>
-              <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
-            </DiffViewPaneLayout>
-          </BoundaryElementProvider>
-        </VirtualizerScrollInstanceProvider>
-      </ChangeIndicatorsTracker>
-    </ConnectorContext.Provider>
+      <FormBuilder
+        // eslint-disable-next-line camelcase
+        __internal_patchChannel={patchChannel}
+        id={`diffView-pane-${role}`}
+        onChange={onChange}
+        onPathFocus={onFocus}
+        onPathOpen={onPathOpen}
+        onPathBlur={onBlur}
+        onFieldGroupSelect={onSetActiveFieldGroup}
+        onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+        onSetPathCollapsed={onSetCollapsedPath}
+        collapsedPaths={collapsedPaths}
+        collapsedFieldSets={collapsedFieldSets}
+        focusPath={formState.focusPath}
+        changed={formState.changed}
+        focused={formState.focused}
+        groups={formState.groups}
+        validation={formState.validation}
+        members={formState.members}
+        presence={formState.presence}
+        schemaType={schemaType}
+        value={value}
+      />
+    </CommentsEnabledContext.Provider>
   )
-})
+}
 
 function perspectiveName(documentId: string): string | undefined {
   if (isVersionId(documentId)) {
