@@ -1,13 +1,8 @@
 import {type ComponentType} from 'react'
-import {type DocumentLayoutProps, type PluginOptions, useMiddlewareComponents} from 'sanity'
+import {type DocumentLayoutProps, useMiddlewareComponents} from 'sanity'
 
 import {DocumentLayout} from './DocumentLayout'
-
-function pick(plugin: PluginOptions) {
-  return plugin.document?.components?.unstable_layout as ComponentType<
-    Omit<DocumentLayoutProps, 'renderDefault'>
-  >
-}
+import {pickDocumentLayoutComponent} from './pickDocumentLayoutComponent'
 
 /**
  * A hook that returns the document layout composed
@@ -17,7 +12,7 @@ export function useDocumentLayoutComponent(): ComponentType<
   Omit<DocumentLayoutProps, 'renderDefault'>
 > {
   return useMiddlewareComponents({
-    pick,
+    pick: pickDocumentLayoutComponent,
     defaultComponent: DocumentLayout,
   })
 }
