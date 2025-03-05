@@ -15,7 +15,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -26,7 +26,7 @@ jobs:
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -44,7 +44,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -67,7 +67,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -104,7 +104,7 @@ jobs:
       # Caches build from either PR or next
       - name: Cache build
         id: cache-e2e-build
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         env:
           cache-name: cache-e2e-build
         with:
@@ -116,7 +116,7 @@ jobs:
 
   playwright-test:
     timeout-minutes: 30
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -131,7 +131,7 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -149,7 +149,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -172,7 +172,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: useblacksmith/cache/restore@v5
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -182,7 +182,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Restore build cache
-        uses: useblacksmith/cache/restore@v5
+        uses: actions/cache/restore@v4
         id: restore-build
         env:
           cache-name: cache-e2e-build
@@ -192,7 +192,7 @@ jobs:
             !**/node_modules/**
           key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
-          # fail-on-cache-miss: true
+          fail-on-cache-miss: true
 
       - name: Run E2E tests on next
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
@@ -231,10 +231,10 @@ jobs:
   merge-reports:
     if: always()
     needs: [playwright-test]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -252,7 +252,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -283,35 +283,34 @@ jobs:
           path: playwright-report
           retention-days: 30
 
-  # Cleanup isn't needed during the blacksmith trial, as we're not using gh cache, we're using the blacksmith drop-in
-  # cleanup:
-  #   permissions:
-  #     contents: read
-  #     actions: write # needed to delete the cache
-  #   timeout-minutes: 30
-  #   name: Cleanup (${{ matrix.project }})
-  #   runs-on: blacksmith-2vcpu-ubuntu-2204
-  #   needs: [playwright-test]
+  cleanup:
+    permissions:
+      contents: read
+      actions: write # needed to delete the cache
+    timeout-minutes: 30
+    name: Cleanup (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    needs: [playwright-test]
 
-  #   strategy:
-  #     # we want to know if a test fails on a specific node version
-  #     fail-fast: false
-  #     matrix:
-  #       # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-  #       project: [chromium, firefox]
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+        project: [chromium, firefox]
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup node
-  #       uses: useblacksmith/setup-node@v5
-  #       with:
-  #         node-version: 18
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-  #     # Delete the cache so it is only used once
-  #     - name: Delete Cache
-  #       run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
-  #       env:
-  #         cache-name: cache-e2e-build
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Delete the cache so it is only used once
+      - name: Delete Cache
+        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
+        env:
+          cache-name: cache-e2e-build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
