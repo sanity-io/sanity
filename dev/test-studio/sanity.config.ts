@@ -31,6 +31,7 @@ import {
   Item,
   Preview,
 } from './components/formComponents'
+import {ExampleMCPComponent} from './components/mcp/ExampleMCPComponent'
 import {
   CustomLayout,
   CustomLogo,
@@ -104,6 +105,9 @@ const sharedSettings = definePlugin({
   },
   plugins: [
     structureTool({
+      mcp: {
+        component: ExampleMCPComponent,
+      },
       icon: BookIcon,
       structure,
       defaultDocumentNode,

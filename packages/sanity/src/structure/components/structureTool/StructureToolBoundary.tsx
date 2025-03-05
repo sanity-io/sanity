@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+import {MCPComponentWrapper, SourceProvider, type Tool, useWorkspace} from 'sanity'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {setActivePanes} from '../../getIntentState'
@@ -16,7 +16,7 @@ interface StructureToolBoundaryProps {
 export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
-  const {source, defaultDocumentNode, structure} = options || {}
+  const {source, defaultDocumentNode, structure, mcp} = options || {}
 
   // Set active panes to blank on mount and unmount
   useEffect(() => {
@@ -28,15 +28,16 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
 
   // this re-throws if the error it catches is not a PaneResolutionError
   if (error) return <StructureError error={error} />
-
   return (
     <ErrorBoundary onCatch={setError}>
-      <SourceProvider name={source || firstSource.name}>
-        <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
-          <StructureTool onPaneChange={setActivePanes} />
-          <IntentResolver />
-        </StructureToolProvider>
-      </SourceProvider>
+      <MCPComponentWrapper config={mcp}>
+        <SourceProvider name={source || firstSource.name}>
+          <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
+            <StructureTool onPaneChange={setActivePanes} />
+            <IntentResolver />
+          </StructureToolProvider>
+        </SourceProvider>
+      </MCPComponentWrapper>
     </ErrorBoundary>
   )
 }

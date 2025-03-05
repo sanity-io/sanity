@@ -10,6 +10,7 @@ import {
   type LocaleSource,
 } from 'sanity'
 
+import {type MCPConfig} from '../core/mcp/types'
 import {
   type DefaultDocumentNodeResolver,
   type Intent,
@@ -127,6 +128,12 @@ export interface StructureToolOptions {
    * if name is set to “structure”, it is shown on /structure). Usually lowercase or camelcase by convention. Defaults to structure.
    */
   name?: string
+
+  /**
+   * @hidden
+   * @internal
+   */
+  mcp?: MCPConfig
   /**
    * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance.
    * This is not supported yet, but the API is still here.
