@@ -4,8 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
-  isDraftId,
-  isPublishedId,
+  isVersionId,
   Translate,
   useActiveReleases,
   useDocumentVersions,
@@ -34,7 +33,7 @@ export function OpenReleaseToEditBanner({
    * 3. when the global perspective is not set (published or draft)
    */
 
-  if (isDraftId(documentId) || isPublishedId(documentId)) {
+  if (!isVersionId(documentId)) {
     return null
   }
 
