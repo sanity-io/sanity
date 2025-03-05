@@ -44,7 +44,7 @@ function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
  */
 export const useReleaseLimits: () => ReleaseLimitsStore = () => {
   const resourceCache = useResourceCache()
-  const client = useClient()
+  const client = useClient({apiVersion: 'v2025-02-19'})
 
   return useMemo(() => {
     const releaseLimitsStore =
