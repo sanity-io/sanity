@@ -110,7 +110,6 @@ describe('OpenReleaseToEditbanner', () => {
     expect(screen.queryByTestId('open-release-to-edit-banner')).toBeNull()
   })
 
-  // @jordan, here's the trouble child (the latest)
   it('does not show if it only has versions, no draft or publish but is showing a version', async () => {
     const testId = `versions.${getReleaseIdFromReleaseDocumentId(release1._id)}.test`
 
