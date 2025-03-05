@@ -13,7 +13,7 @@ import {
   useActiveReleasesMockReturn,
 } from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useDocumentVersionSortedList} from '../useDocumentVersionSortedList'
+import {useDocumentVersionTypeSortedList} from '../useDocumentVersionTypeSortedList'
 import {
   mockUseDocumentVersions,
   useDocumentVersionsReturn,
@@ -27,11 +27,13 @@ vi.mock('../useDocumentVersions', () => ({
   useDocumentVersions: vi.fn(() => useDocumentVersionsReturn),
 }))
 
-describe('useDocumentVersionSortedList', () => {
+describe('useDocumentVersionTypeSortedList', () => {
   it('should return initial state', async () => {
     const wrapper = await createTestProvider()
 
-    const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {wrapper})
+    const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
+      wrapper,
+    })
 
     expect(result.current.onlyHasVersions).toBe(false)
     expect(result.current.sortedDocumentList).toEqual([])
@@ -41,7 +43,9 @@ describe('useDocumentVersionSortedList', () => {
     mockUseDocumentVersions.mockReturnValue({...useDocumentVersionsReturn, data: []})
 
     const wrapper = await createTestProvider()
-    const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {wrapper})
+    const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
+      wrapper,
+    })
 
     expect(result.current.onlyHasVersions).toBe(false)
     expect(result.current.sortedDocumentList).toEqual([])
@@ -64,7 +68,7 @@ describe('useDocumentVersionSortedList', () => {
       })
 
       const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {
+      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
         wrapper,
       })
 
@@ -91,7 +95,7 @@ describe('useDocumentVersionSortedList', () => {
       })
 
       const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {
+      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
         wrapper,
       })
 
@@ -115,7 +119,7 @@ describe('useDocumentVersionSortedList', () => {
       })
 
       const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {
+      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
         wrapper,
       })
 
@@ -139,7 +143,7 @@ describe('useDocumentVersionSortedList', () => {
       })
 
       const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionSortedList({documentId: 'test'}), {
+      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
         wrapper,
       })
 

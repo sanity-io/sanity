@@ -8,7 +8,7 @@ import {useDocumentVersions} from './useDocumentVersions'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
-export interface useDocumentVersionSortedListState {
+export interface useDocumentVersionTypeSortedListState {
   sortedDocumentList: ReleaseDocument[]
   onlyHasVersions: boolean
 }
@@ -22,11 +22,11 @@ export interface useDocumentVersionSortedListState {
  *
  * @beta
  */
-export const useDocumentVersionSortedList = ({
+export const useDocumentVersionTypeSortedList = ({
   documentId,
 }: {
   documentId: string
-}): useDocumentVersionSortedListState => {
+}): useDocumentVersionTypeSortedListState => {
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
 

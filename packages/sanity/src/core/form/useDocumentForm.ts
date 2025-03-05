@@ -33,7 +33,7 @@ import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
-import {useDocumentVersionSortedList} from '../releases/hooks/useDocumentVersionSortedList'
+import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -151,7 +151,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // if it only has versions then we need to make sure that whatever the first document that is allowed
   // is a version document, but also that it has the right order
   // this will make sure that then the right document appears and so does the right chip within the document header
-  const {sortedDocumentList, onlyHasVersions} = useDocumentVersionSortedList({documentId})
+  const {sortedDocumentList, onlyHasVersions} = useDocumentVersionTypeSortedList({documentId})
   const firstVersion =
     sortedDocumentList.length > 0
       ? documentVersions.find(

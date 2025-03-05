@@ -43,7 +43,7 @@ export {
   useArchivedReleases,
   useDocumentVersionInfo,
   useDocumentVersions,
-  useDocumentVersionSortedList,
+  useDocumentVersionTypeSortedList,
   useIsReleaseActive,
   useReleasesIds,
   useVersionOperations,

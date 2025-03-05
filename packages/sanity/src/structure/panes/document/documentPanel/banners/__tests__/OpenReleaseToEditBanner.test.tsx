@@ -3,7 +3,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   type ReleaseDocument,
   useActiveReleases,
-  useDocumentVersionSortedList,
+  useDocumentVersionTypeSortedList,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -22,13 +22,13 @@ vi.mock('sanity', async () => {
     useReleasesIds: vi.fn(),
     useActiveReleases: vi.fn(),
     useArchivedReleases: vi.fn(),
-    useDocumentVersionSortedList: vi.fn(),
+    useDocumentVersionTypeSortedList: vi.fn(),
   }
 })
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseDocumentVersionSortedList = useDocumentVersionSortedList as Mock<
-  typeof useDocumentVersionSortedList
+const mockuseDocumentVersionTypeSortedList = useDocumentVersionTypeSortedList as Mock<
+  typeof useDocumentVersionTypeSortedList
 >
 
 const release1: ReleaseDocument = {
@@ -77,7 +77,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionSortedList.mockReturnValue({
+    mockuseDocumentVersionTypeSortedList.mockReturnValue({
       sortedDocumentList: [],
       onlyHasVersions: false,
     })
@@ -97,7 +97,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionSortedList.mockReturnValue({
+    mockuseDocumentVersionTypeSortedList.mockReturnValue({
       sortedDocumentList: [],
       onlyHasVersions: false,
     })
@@ -118,7 +118,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockUseDocumentVersionSortedList.mockReturnValue({
+    mockuseDocumentVersionTypeSortedList.mockReturnValue({
       sortedDocumentList: [release1],
       onlyHasVersions: true,
     })
@@ -140,7 +140,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
     })
 
-    mockUseDocumentVersionSortedList.mockReturnValue({
+    mockuseDocumentVersionTypeSortedList.mockReturnValue({
       sortedDocumentList: [release1, release2],
       onlyHasVersions: true,
     })
