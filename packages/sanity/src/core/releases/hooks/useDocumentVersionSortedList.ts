@@ -36,10 +36,14 @@ export const useDocumentVersionSortedList = ({
         (id) => getVersionFromId(id) === getReleaseIdFromReleaseDocumentId(_id),
       )
     })
-    .sort((a, b) => {
+    /**  sort the document lists that exist for a specific document Id based on the order of the release types
+     * it will first put the "asap" releases then "scheduled" and finally "undecided"
+     * orderedReleaseTypes is the order of the release types
+     * */
+    .sort((releasesList, compareReleasesList) => {
       return (
-        orderedReleaseTypes.indexOf(a.metadata.releaseType) -
-        orderedReleaseTypes.indexOf(b.metadata.releaseType)
+        orderedReleaseTypes.indexOf(releasesList.metadata.releaseType) -
+        orderedReleaseTypes.indexOf(compareReleasesList.metadata.releaseType)
       )
     })
 
