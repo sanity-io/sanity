@@ -229,8 +229,8 @@ describe('getReleasesPerspectiveStack()', () => {
       excludedPerspectives: ['rfuture1', 'drafts'],
       expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
     },
-    {selectedPerspectiveName: 'published', excludedPerspectives: [], expected: []},
-    {selectedPerspectiveName: undefined, excludedPerspectives: [], expected: []},
+    {selectedPerspectiveName: 'published', excludedPerspectives: [], expected: ['published']},
+    {selectedPerspectiveName: undefined, excludedPerspectives: [], expected: ['drafts']},
   ]
   it.each(testCases)(
     'should return the correct release stack for %s',

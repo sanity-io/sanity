@@ -59,8 +59,11 @@ export function getReleasesPerspectiveStack({
   releases: ReleaseDocument[]
   excludedPerspectives: string[]
 }): PerspectiveStack {
-  if (!selectedPerspectiveName || selectedPerspectiveName === 'published') {
-    return []
+  if (!selectedPerspectiveName) {
+    return ['drafts']
+  }
+  if (selectedPerspectiveName === 'published') {
+    return ['published']
   }
   const sorted: ClientPerspective = sortReleases(releases).map((release) =>
     getReleaseIdFromReleaseDocumentId(release._id),
