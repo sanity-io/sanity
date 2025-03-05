@@ -41,6 +41,23 @@ export const useDocumentVersionTypeSortedList = ({
      * orderedReleaseTypes is the order of the release types
      * */
     .sort((releasesList, compareReleasesList) => {
+      // reverse order of published at / intended to publish at
+      if (
+        releasesList.metadata.releaseType === 'scheduled' &&
+        compareReleasesList.metadata.releaseType === 'scheduled'
+      ) {
+        const aPublishAt = releasesList.publishAt || releasesList.metadata.intendedPublishAt
+        if (!aPublishAt) {
+          return -1
+        }
+        const bPublishAt =
+          compareReleasesList.publishAt || compareReleasesList.metadata.intendedPublishAt
+        if (!bPublishAt) {
+          return 1
+        }
+        return new Date(aPublishAt).getTime() - new Date(bPublishAt).getTime()
+      }
+
       return (
         orderedReleaseTypes.indexOf(releasesList.metadata.releaseType) -
         orderedReleaseTypes.indexOf(compareReleasesList.metadata.releaseType)
