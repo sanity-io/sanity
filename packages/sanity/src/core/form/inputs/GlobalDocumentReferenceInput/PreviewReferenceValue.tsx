@@ -38,7 +38,7 @@ export function PreviewReferenceValue(props: {
         <Text as="p">
           <Translate
             t={t}
-            i18nKey="inputs.reference.gdr.invalid-type"
+            i18nKey="inputs.reference.global.invalid-type"
             values={{typeName: refTypeName || 'unknown'}}
             components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
           />

@@ -966,7 +966,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
   'inputs.reference.error.search-failed-title': 'Reference search failed',
   /** Label for when the GDR points to an invalid type  */
-  'inputs.reference.gdr.invalid-type': 'The referenced document is of invalid type ({{typeName}})',
+  'inputs.reference.global.invalid-type':
+    'The referenced document is of invalid type ({{typeName}})',
   /** Alternative text for the image shown in cross-dataset reference input */
   'inputs.reference.image-preview-alt-text': 'Image preview of referenced document',
   /** Description for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
