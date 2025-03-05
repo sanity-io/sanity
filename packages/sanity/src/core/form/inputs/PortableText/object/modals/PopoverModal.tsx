@@ -107,7 +107,6 @@ function Content(props: PopoverEditDialogProps) {
               />
             </Flex>
           </ContentHeaderBox>
-
           <ContentScrollerBox flex={1}>
             <PresenceOverlay margins={[0, 0, 1, 0]}>
               <Box padding={3} ref={setContentElement}>
