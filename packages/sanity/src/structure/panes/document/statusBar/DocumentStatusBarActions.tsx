@@ -29,18 +29,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   const {editState} = useDocumentPane()
-=======
-  const {value, compareValue} = useDocumentPane()
->>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
-=======
-  const {editState} = useDocumentPane()
->>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
-=======
->>>>>>> 18db762b02 (fix: using named version of api in client uses for releases upsell)
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -70,30 +59,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
-=======
-  /**
-   * If there is null compareValue, it means the draft is yet to be saved.
-   * In this case the value is the published ID, but the action should show -
-   * so that it's consistent with the usual draft document actions.
-   */
-  const canShowAction =
-    firstActionState && !selectedReleaseId && (!isPublishedId(value._id) || compareValue === null)
->>>>>>> 2a9d780f1f (feat: doc actions show for yet to sync drafts)
-=======
-  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
->>>>>>> 3d90063c5b (feat: doc actions disabled on published version; hidden on live edit types)
 
-=======
->>>>>>> 18db762b02 (fix: using named version of api in client uses for releases upsell)
   /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && !selectedReleaseId && (
+      {canShowAction && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
