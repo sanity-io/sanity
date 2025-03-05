@@ -16,6 +16,7 @@ import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {determineIsCoreApp} from '../../util/determineIsCoreApp'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -46,7 +47,7 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
+  const isCoreApp = determineIsCoreApp(cliConfig)
 
   await checkStudioDependencyVersions(workDir)
 

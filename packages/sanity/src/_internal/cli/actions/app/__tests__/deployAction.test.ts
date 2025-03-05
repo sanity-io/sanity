@@ -1,18 +1,18 @@
 import zlib from 'node:zlib'
 
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '@sanity/cli'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import buildSanityStudio from '../../build/buildAction'
-import deployStudioAction, {type DeployStudioActionFlags} from '../deployAction'
-import * as _helpers from '../helpers'
-import {type UserApplication} from '../helpers'
+import * as _helpers from '../../deploy/helpers'
+import {type UserApplication} from '../../deploy/helpers'
+import deployAppAction, {type DeployAppActionFlags} from '../deployAction'
 
 // Mock dependencies
 vi.mock('tar-fs')
 vi.mock('node:zlib')
-vi.mock('../helpers')
+vi.mock('../../deploy/helpers')
 vi.mock('../../build/buildAction')
 
 const helpers = vi.mocked(_helpers)
@@ -25,20 +25,20 @@ type SpinnerInstance = {
   fail: Mock<() => SpinnerInstance>
 }
 
-describe('deployStudioAction', () => {
+describe('deployAppAction', () => {
   let mockContext: CliCommandContext
   let spinnerInstance: SpinnerInstance
 
-  const mockApplication: UserApplication = {
-    id: 'app-id',
-    appHost: 'app-host',
+  const mockCoreApp: UserApplication = {
+    id: 'core-app-id',
+    appHost: 'core-app-host',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     urlType: 'internal',
-    projectId: 'example',
-    organizationId: null,
+    projectId: null,
+    organizationId: 'org-id',
     title: null,
-    type: 'studio',
+    type: 'coreApp',
   }
 
   beforeEach(() => {
@@ -62,29 +62,35 @@ describe('deployStudioAction', () => {
         spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
       prompt: {single: vi.fn()},
-      cliConfig: {},
+      cliConfig: {
+        // eslint-disable-next-line camelcase
+        __experimental_coreAppConfiguration: {
+          appLocation: 'app',
+          organizationId: 'org-id',
+        },
+      },
     } as unknown as CliCommandContext
   })
 
-  it('builds and deploys the studio if the directory is empty', async () => {
+  it('builds and deploys the app if the directory is empty', async () => {
     const mockSpinner = mockContext.output.spinner('')
 
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateStudio.mockResolvedValueOnce(mockApplication)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
+    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
     zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
-    await deployStudioAction(
+    await deployAppAction(
       {
         argsWithoutOptions: ['customSourceDir'],
         extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
+      } as CliCommandArguments<DeployAppActionFlags>,
       mockContext,
     )
 
@@ -100,7 +106,7 @@ describe('deployStudioAction', () => {
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateCoreApplication).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
@@ -108,50 +114,46 @@ describe('deployStudioAction', () => {
     )
     expect(helpers.createDeployment).toHaveBeenCalledWith({
       client: expect.anything(),
-      applicationId: 'app-id',
+      applicationId: 'core-app-id',
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      isCoreApp: true,
     })
 
-    expect(mockContext.output.print).toHaveBeenCalledWith(
-      '\nSuccess! Studio deployed to https://app-host.sanity.studio',
-    )
+    expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
     expect(mockSpinner.succeed).toHaveBeenCalled()
   })
 
-  it('builds and deploys the studio if the directory is empty and hostname in config', async () => {
+  it('builds and deploys the app if app ID is in config', async () => {
     const mockSpinner = mockContext.output.spinner('')
-    mockContext.cliConfig = {studioHost: 'app-host'}
+    mockContext.cliConfig = {
+      // eslint-disable-next-line camelcase
+      __experimental_coreAppConfiguration: {
+        appId: 'configured-app-id',
+        organizationId: 'org-id',
+      },
+    } as CliConfig
 
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockApplication)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
+    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
     zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
-    await deployStudioAction(
+    await deployAppAction(
       {
         argsWithoutOptions: ['customSourceDir'],
         extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
+      } as CliCommandArguments<DeployAppActionFlags>,
       mockContext,
     )
 
-    // Check that buildSanityStudio was called
-    expect(buildSanityStudioMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        extOptions: {build: true},
-        argsWithoutOptions: ['customSourceDir'],
-      }),
-      mockContext,
-      {basePath: '/'},
-    )
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
@@ -159,20 +161,19 @@ describe('deployStudioAction', () => {
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
-        appHost: 'app-host',
+        appId: 'configured-app-id',
       }),
     )
     expect(helpers.createDeployment).toHaveBeenCalledWith({
       client: expect.anything(),
-      applicationId: 'app-id',
+      applicationId: 'core-app-id',
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      isCoreApp: true,
     })
 
-    expect(mockContext.output.print).toHaveBeenCalledWith(
-      '\nSuccess! Studio deployed to https://app-host.sanity.studio',
-    )
+    expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
     expect(mockSpinner.succeed).toHaveBeenCalled()
   })
 
@@ -184,19 +185,19 @@ describe('deployStudioAction', () => {
       true,
     ) // User confirms to proceed
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateStudio.mockResolvedValueOnce(mockApplication)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host.sanity.studio'})
+    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
     zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
-    await deployStudioAction(
+    await deployAppAction(
       {
         argsWithoutOptions: ['customSourceDir'],
         extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
+      } as CliCommandArguments<DeployAppActionFlags>,
       mockContext,
     )
 
@@ -219,11 +220,11 @@ describe('deployStudioAction', () => {
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: false})
 
-    await deployStudioAction(
+    await deployAppAction(
       {
         argsWithoutOptions: ['customSourceDir'],
         extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
+      } as CliCommandArguments<DeployAppActionFlags>,
       mockContext,
     )
 
@@ -240,11 +241,11 @@ describe('deployStudioAction', () => {
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
 
     await expect(
-      deployStudioAction(
+      deployAppAction(
         {
           argsWithoutOptions: ['nonexistentDir'],
           extOptions: {},
-        } as CliCommandArguments<DeployStudioActionFlags>,
+        } as CliCommandArguments<DeployAppActionFlags>,
         mockContext,
       ),
     ).rejects.toThrow('Example error')
@@ -252,23 +253,39 @@ describe('deployStudioAction', () => {
     expect(mockSpinner.fail).toHaveBeenCalled()
   })
 
-  it('throws an error if "graphql" is passed as a source directory', async () => {
-    await expect(
-      deployStudioAction(
-        {
-          argsWithoutOptions: ['graphql'],
-          extOptions: {},
-        } as CliCommandArguments<DeployStudioActionFlags>,
-        mockContext,
-      ),
-    ).rejects.toThrow('Did you mean `sanity graphql deploy`?')
+  it('skips build when --no-build flag is passed', async () => {
+    // Mock utility functions
+    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
+    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.checkDir.mockResolvedValueOnce()
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
+
+    await deployAppAction(
+      {
+        argsWithoutOptions: [],
+        extOptions: {build: false},
+        groupOrCommand: 'deploy',
+        argv: ['deploy', '--no-build'],
+        extraArguments: [],
+      } as CliCommandArguments<DeployAppActionFlags>,
+      mockContext,
+    )
+
+    // Check that buildSanityStudio was NOT called
+    expect(buildSanityStudioMock).not.toHaveBeenCalled()
+    expect(helpers.createDeployment).toHaveBeenCalled()
   })
 
   it('returns an error if API responds with 402', async () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateStudio.mockRejectedValueOnce({
+    helpers.getOrCreateCoreApplication.mockRejectedValueOnce({
       statusCode: 402,
       message: 'Application limit reached',
       error: 'Payment Required',
@@ -279,18 +296,18 @@ describe('deployStudioAction', () => {
     >)
     zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
 
-    await deployStudioAction(
+    await deployAppAction(
       {
         argsWithoutOptions: ['customSourceDir'],
         extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
+      } as CliCommandArguments<DeployAppActionFlags>,
       mockContext,
     )
 
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateCoreApplication).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
@@ -299,5 +316,48 @@ describe('deployStudioAction', () => {
     )
 
     expect(mockContext.output.error).toHaveBeenCalledWith('Application limit reached')
+  })
+
+  it('suggests adding appId to config when not configured', async () => {
+    // Create a context without appId in the config
+    mockContext.cliConfig = {
+      // eslint-disable-next-line camelcase
+      __experimental_coreAppConfiguration: {
+        organizationId: 'org-id',
+      },
+    } as CliConfig
+
+    // Mock utility functions
+    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
+    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
+      typeof tar.pack
+    >)
+    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
+
+    await deployAppAction(
+      {
+        argsWithoutOptions: [],
+        extOptions: {},
+        groupOrCommand: 'deploy',
+        argv: ['deploy'],
+        extraArguments: [],
+      } as CliCommandArguments<DeployAppActionFlags>,
+      mockContext,
+    )
+
+    // Verify the hint to add appId to config is shown
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining("Add appId: 'core-app-id'"),
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('to __experimental_coreAppConfiguration'),
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('to avoid prompting on next deploy'),
+    )
   })
 })

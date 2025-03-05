@@ -21,10 +21,9 @@ const coreAppTemplate: ProjectTemplate = {
   },
   appLocation: './src/App.tsx',
   scripts: {
-    // this will eventually run a concurrently process with another in-flight utility
-    dev: 'sanity app dev',
-    build: 'sanity app build',
-    start: 'sanity app start',
+    dev: 'sanity dev',
+    build: 'sanity build',
+    start: 'sanity start',
   },
 }
 
