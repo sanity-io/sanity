@@ -8,10 +8,7 @@ import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} fr
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {
-  FileSource as AssetLibraryFileSource,
-  ImageSource as AssetLibraryImageSource,
-} from '../form/studio/assetSourceAssetLibrary'
+import {createSanityAssetLibraryImageSource} from '../form/studio/assetSourceAssetLibrary'
 import {
   FileSource as DefaultFileSource,
   ImageSource as DefaultImageSource,
@@ -500,6 +497,16 @@ function resolveSource({
     })
   }
 
+  const assetLibraryImageSource = createSanityAssetLibraryImageSource({
+    name: 'sanity-asset-library-asset-source',
+    libraryId: null,
+  })
+
+  const assetLibraryFileSource = createSanityAssetLibraryImageSource({
+    name: 'sanity-asset-library-asset-source',
+    libraryId: null,
+  })
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -594,7 +601,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultFileSource, AssetLibraryFileSource],
+          initialValue: [DefaultFileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -607,7 +614,7 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultImageSource, AssetLibraryImageSource],
+          initialValue: [DefaultImageSource, assetLibraryImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),

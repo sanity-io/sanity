@@ -4,7 +4,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 
 import {useClient} from '../../../../../core/hooks'
 import {useTranslation} from '../../../../i18n'
@@ -12,14 +12,43 @@ import {DEFAULT_API_VERSION} from '../constants'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 
 const AssetLibraryAssetSource = function AssetLibraryAssetSource(
-  props: AssetSourceComponentProps,
+  props: AssetSourceComponentProps & {libraryId: string | null},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {t} = useTranslation()
-  const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
-
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const toast = useToast()
+
+  const {
+    accept,
+    assetType = 'image',
+    dialogHeaderTitle,
+    libraryId,
+    onClose,
+    onSelect,
+    selectedAssets,
+  } = props
+  const [resolvedLibraryId, setResolvedLibraryId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (libraryId) {
+      setResolvedLibraryId(libraryId)
+    }
+    client.request({uri: `/projects/${client.config().projectId}`}).then((project) => {
+      const {organizationId} = project
+      client
+        .withConfig({
+          useProjectHostname: false,
+        })
+        .request({uri: `/asset-libraries`, query: {organizationId}, useGlobalApi: true})
+        .then((result) => {
+          const libraryIdFromResult = result.data[0]?.id
+          if (libraryIdFromResult) {
+            setResolvedLibraryId(libraryIdFromResult)
+          }
+        })
+    })
+  }, [client, libraryId])
 
   const handleClose = useCallback(() => {
     if (onClose) {
@@ -28,6 +57,9 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
   }, [onClose])
   const handleSelect: SelectAssetsDialogProps['onSelect'] = useCallback(
     async (selection) => {
+      if (!resolvedLibraryId) {
+        return
+      }
       const asset = selection[0]
       // Link asset from asset library to current dataset
       try {
@@ -47,7 +79,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
             kind: 'assetDocumentId',
             value: assetDocument._id,
             assetLibraryProps: {
-              assetLibraryId: libraryId,
+              assetLibraryId: resolvedLibraryId,
               assetId: asset.assetId,
               assetInstanceId: asset.instanceId,
             },
@@ -65,11 +97,12 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
         throw error
       }
     },
-    [client, handleClose, onSelect, t, toast],
+    [client, handleClose, libraryId, onSelect, resolvedLibraryId, t, toast],
   )
 
-  // TODO: Get libraryId from somewhere
-  const libraryId = 'al32RNT8lVAT'
+  if (!resolvedLibraryId) {
+    return null
+  }
 
   return (
     <SelectAssetsDialog
@@ -83,7 +116,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
       onClose={handleClose}
       onSelect={handleSelect}
       selection={[]}
-      libraryId={libraryId}
+      libraryId={resolvedLibraryId}
       selectAssetType={assetType}
     />
   )
