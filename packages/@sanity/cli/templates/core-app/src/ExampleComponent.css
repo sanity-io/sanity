@@ -1,0 +1,26 @@
+.example-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.example-heading {
+  color: #333;
+  margin-top: 0;
+  font-size: 1.8rem;
+}
+
+.example-text {
+  color: #666;
+  line-height: 1.6;
+}
+
+.code-hint {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  font-family: monospace;
+  margin-top: 1.5rem;
+  border-left: 3px solid #e0e0e0;
+}

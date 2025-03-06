@@ -10,6 +10,7 @@ import {customAlphabet} from 'nanoid'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
+import {determineIsCoreApp} from '../../util/determineIsCoreApp'
 
 export const debug = debugIt.extend('deploy')
 
@@ -450,7 +451,7 @@ export async function getOrCreateUserApplicationFromConfig(
   },
 ): Promise<UserApplication> {
   const {context} = options
-  const isCoreApp = context.cliConfig && '__experimental_coreAppConfiguration' in context.cliConfig
+  const isCoreApp = determineIsCoreApp(context.cliConfig)
 
   if (isCoreApp) {
     return getOrCreateCoreAppFromConfig(options)

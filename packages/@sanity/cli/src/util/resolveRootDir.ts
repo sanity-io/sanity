@@ -7,9 +7,9 @@ import {debug} from '../debug'
 /**
  * Resolve project root directory, falling back to cwd if it cannot be found
  */
-export function resolveRootDir(cwd: string, isCoreApp = false): string {
+export function resolveRootDir(cwd: string): string {
   try {
-    return resolveProjectRoot(cwd, 0, isCoreApp) || cwd
+    return resolveProjectRoot(cwd) || cwd
   } catch (err) {
     throw new Error(`Error occurred trying to resolve project root:\n${err.message}`)
   }
@@ -25,8 +25,8 @@ function hasSanityConfig(basePath: string, configName: string): boolean {
   return buildConfigs.some(Boolean)
 }
 
-function resolveProjectRoot(basePath: string, iterations = 0, isCoreApp = false): string | false {
-  const configName = isCoreApp ? 'sanity.cli' : 'sanity.config'
+function resolveProjectRoot(basePath: string, iterations = 0): string | false {
+  const configName = 'sanity.config'
   if (hasSanityConfig(basePath, configName)) {
     return basePath
   }
@@ -37,7 +37,7 @@ function resolveProjectRoot(basePath: string, iterations = 0, isCoreApp = false)
     return false
   }
 
-  return resolveProjectRoot(parentDir, iterations + 1, isCoreApp)
+  return resolveProjectRoot(parentDir, iterations + 1)
 }
 
 function isSanityV2StudioRoot(basePath: string): boolean {
