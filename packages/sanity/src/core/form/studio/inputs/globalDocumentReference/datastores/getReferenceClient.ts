@@ -10,6 +10,8 @@ import {
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import {map, type Observable} from 'rxjs'
 
+import {globalDocumentReferenceApiVersion as apiVersion} from '../constants'
+
 export type ReferenceClient = {
   getDocument<R extends Record<string, Any>>(
     id: string,
@@ -57,7 +59,7 @@ export function getReferenceClient(
           .withConfig({
             useProjectHostname: false,
             apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .observable.request({
             uri: `/projects/${projectId}/datasets/${datasetName}/doc/${id}?${searchParams?.toString() || ''}`,
@@ -79,7 +81,7 @@ export function getReferenceClient(
           .withConfig({
             useProjectHostname: false,
             apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .observable.request({
             uri: `/projects/${projectId}/datasets/${datasetName}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
@@ -96,7 +98,7 @@ export function getReferenceClient(
           .withConfig({
             useProjectHostname: false,
             apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .request<{result: ClientReturn<G, R>}>({
             url: `/projects/${projectId}/datasets/${datasetName}/query`,
@@ -123,8 +125,7 @@ export function getReferenceClient(
           allParams.includeResult = 'true'
         }
         const paramsString = new URLSearchParams(allParams).toString()
-        // todo: fix url
-        const uri = `https://api.sanity.work/vX/projects/${projectId}/datasets/${datasetName}/listen?${paramsString}`
+        const uri = `${client.config().apiHost}/${apiVersion}/projects/${projectId}/datasets/${datasetName}/listen?${paramsString}`
         return connectEventSource(
           () => new EventSource(uri, {withCredentials: true}),
           ['welcome', 'mutation'],
@@ -143,8 +144,7 @@ export function getReferenceClient(
         return client
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .observable.request({
             useGlobalApi: true,
@@ -166,12 +166,11 @@ export function getReferenceClient(
         return client
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .observable.request({
             useGlobalApi: true,
-            uri: `/vX/asset-libraries/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
+            uri: `/${apiVersion}/asset-libraries/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
           })
@@ -184,8 +183,7 @@ export function getReferenceClient(
         return client
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion: 'vX',
+            apiVersion,
           })
           .observable.request<{result: ClientReturn<G, R>}>({
             useGlobalApi: true,
@@ -202,7 +200,7 @@ export function getReferenceClient(
       >(query: G, params: Q) {
         const allParams = {...params, tag: 'listen', query}
         const paramsString = new URLSearchParams(allParams).toString()
-        const uri = `https://api.sanity.work/vX/asset-libraries/${schemaType.resourceId}/listen?${paramsString}`
+        const uri = `${client.config().apiHost}/${apiVersion}/asset-libraries/${schemaType.resourceId}/listen?${paramsString}`
         return connectEventSource(() => new EventSource(uri, {}), ['welcome', 'mutation'])
       },
     } satisfies ReferenceClient
