@@ -35,17 +35,8 @@ export default defineType({
   },
   fields: [
     defineField({
-      name: 'timeOfDeath',
-      title: 'Time of death',
-      type: 'datetime',
-      options: {
-        displayTimeZone: 'Europe/Oslo',
-        allowTimeZoneSwitch: false,
-      },
-    }),
-    defineField({
       name: 'name',
-      title: 'Name',
+      title: 'Name is a really long thing how is it   ',
       type: 'string',
       options: {
         search: {weight: 100},
