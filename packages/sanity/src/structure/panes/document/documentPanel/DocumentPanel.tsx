@@ -4,6 +4,7 @@ import {
   getVersionFromId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
+  isSystemBundle,
   type ReleaseDocument,
   ScrollContainer,
   usePerspective,
@@ -156,8 +157,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (isScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
-    const isPinnedDraftOrPublish: boolean =
-      selectedPerspective === 'drafts' || selectedPerspective === 'published'
+    const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
     if (
       displayed?._id &&
