@@ -160,7 +160,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         )
       : undefined
 
-  const selectedStateId = useMemo(() => {
+  const activeDocumentReleaseId = useMemo(() => {
     // if a document version exists with the selected release id, then it should use that
     if (documentVersions.some((id) => getVersionFromId(id) === selectedReleaseId)) {
       return selectedReleaseId
@@ -175,7 +175,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return getVersionFromId(firstVersion ?? '')
   }, [documentVersions, onlyHasVersions, selectedReleaseId, firstVersion])
 
-  const editState = useEditState(documentId, documentType, 'default', selectedStateId)
+  const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useConnectionToast(connectionState)
