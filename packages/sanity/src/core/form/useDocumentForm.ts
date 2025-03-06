@@ -31,8 +31,13 @@ import {useValidationStatus} from '../hooks/useValidationStatus'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
+import {usePerspective} from '../perspective/usePerspective'
+import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
+import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
+import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
 import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {
@@ -112,6 +117,7 @@ interface DocumentFormValue {
  *
  * Use this as a base point to create your own form.
  */
+// eslint-disable-next-line max-statements
 export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue {
   const {
     documentType,
@@ -129,6 +135,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
+  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {selectedReleaseId} = usePerspective()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -141,7 +149,36 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {validation: validationRaw} = useValidationStatus(documentId, documentType, releaseId)
   const validation = useUnique(validationRaw)
 
-  const editState = useEditState(documentId, documentType, 'default', releaseId)
+  // if it only has versions then we need to make sure that whatever the first document that is allowed
+  // is a version document, but also that it has the right order
+  // this will make sure that then the right document appears and so does the right chip within the document header
+  const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId})
+  const onlyHasVersions = useOnlyHasVersions({documentId})
+  const firstVersion =
+    sortedDocumentList.length > 0
+      ? documentVersions.find(
+          (id) =>
+            getVersionFromId(id) === getReleaseIdFromReleaseDocumentId(sortedDocumentList[0]._id),
+        )
+      : undefined
+
+  const activeDocumentReleaseId = useMemo(() => {
+    // if a document version exists with the selected release id, then it should use that
+    if (documentVersions.some((id) => getVersionFromId(id) === selectedReleaseId)) {
+      return selectedReleaseId
+    }
+
+    // check if the selected version is the only version, if it isn't and it doesn't exist in the release
+    // then it needs to use the documentVersions
+    if (selectedReleaseId && (!documentVersions || !onlyHasVersions)) {
+      return selectedReleaseId
+    }
+
+    return getVersionFromId(firstVersion ?? '')
+  }, [documentVersions, onlyHasVersions, selectedReleaseId, firstVersion])
+
+  const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
+
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useConnectionToast(connectionState)
 
@@ -169,6 +206,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
             {_id: documentId, _type: documentType})
       )
     }
+    // if no version is selected, but there is only version, it should default to the version it finds
+    if (!selectedPerspectiveName && onlyHasVersions) {
+      return editState.version || editState.draft || editState.published || baseValue
+    }
     return editState?.draft || editState?.published || baseValue
   }, [
     documentId,
@@ -180,6 +221,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     liveEdit,
     releaseId,
     selectedPerspectiveName,
+    onlyHasVersions,
   ])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
@@ -249,6 +291,19 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const isLocked = editState.transactionSyncLock?.enabled
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
+    // in cases where the document has no draft or published, but has a version,
+    // and that version doesn't match current pinned version
+    // we disable editing
+    if (
+      editState.version &&
+      !editState.draft &&
+      !editState.published &&
+      onlyHasVersions &&
+      selectedPerspectiveName !== getVersionFromId(editState.version._id)
+    ) {
+      return true
+    }
+
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && editState.draft?._id) {
       return true
@@ -283,14 +338,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isNonExistent,
     connectionState,
     editState,
-    liveEdit,
-    selectedPerspectiveName,
-    releaseId,
     value,
+    onlyHasVersions,
+    selectedPerspectiveName,
+    liveEdit,
+    releaseId,
     ready,
     isCreateLinked,
-    readOnlyProp,
     isReleaseLocked,
+    readOnlyProp,
   ])
 
   const {patch} = useDocumentOperation(documentId, documentType, releaseId)

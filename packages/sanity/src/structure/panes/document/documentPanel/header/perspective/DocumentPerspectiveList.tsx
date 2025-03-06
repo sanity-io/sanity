@@ -15,6 +15,7 @@ import {
   useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
+  useOnlyHasVersions,
   usePerspective,
   useSchema,
   useSetPerspective,
@@ -83,6 +84,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
+  const onlyHasVersions = useOnlyHasVersions({documentId})
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
@@ -172,14 +174,21 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   ])
 
   const isDraftDisabled: boolean = useMemo(() => {
+    // Draft is disabled when the document has no published or draft but has versions
+    if (onlyHasVersions || (isCreatingDocument && selectedReleaseId)) {
+      return true
+    }
+
     // Draft is disabled when we are creating a new document inside a release
     // or when the document is live edit and there is no draft
-    if (editState?.draft) return false
+    if (!editState?.draft && !isLiveEdit) {
+      return false
+    }
 
     if (isCreatingDocument && selectedReleaseId) return true
     if (isLiveEdit) return true
     return false
-  }, [editState?.draft, isCreatingDocument, isLiveEdit, selectedReleaseId])
+  }, [editState?.draft, isCreatingDocument, isLiveEdit, onlyHasVersions, selectedReleaseId])
 
   return (
     <>

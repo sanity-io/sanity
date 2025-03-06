@@ -5,6 +5,7 @@ import {
 } from '@sanity/cli'
 
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
+import {determineIsCoreApp} from '../../util/determineIsCoreApp'
 
 const helpText = `
 Notes
@@ -27,30 +28,39 @@ const devCommand: CliCommandDefinition = {
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,
   ) => {
-    const devAction = await getDevAction()
+    const devAction = await getDevAction(context)
 
     return devAction(args, context)
   },
   helpText,
 }
 
-export async function getDevAction(): Promise<
+export async function getDevAction(
+  context: CliCommandContext,
+): Promise<
   (
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,
   ) => Promise<void>
 > {
-  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
-  // NOTE: this `if` statement is not included in the output bundle
-  if (__DEV__) {
-    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
-    const mod: typeof import('../../actions/dev/devAction') = require('../../actions/dev/devAction.ts')
+  const isCoreApp = determineIsCoreApp(context.cliConfig)
 
+  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
+  if (__DEV__) {
+    if (isCoreApp) {
+      // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+      const mod = require('../../actions/app/devAction.ts')
+      return mod.default
+    }
+    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+    const mod = require('../../actions/dev/devAction.ts')
     return mod.default
   }
-
+  if (isCoreApp) {
+    const mod = await import('../../actions/app/devAction')
+    return mod.default
+  }
   const mod = await import('../../actions/dev/devAction')
-
   return mod.default
 }
 

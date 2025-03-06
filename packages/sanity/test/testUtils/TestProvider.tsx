@@ -50,30 +50,32 @@ export async function createTestProvider({
       <RouterProvider router={router} state={{}} onNavigate={noop}>
         <ThemeProvider theme={studioTheme}>
           <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
-            <ToastProvider>
-              <LayerProvider>
-                <WorkspaceProvider workspace={workspace}>
-                  <SourceProvider source={workspace.unstable_sources[0]}>
-                    <CopyPasteProvider>
-                      <ResourceCacheProvider>
-                        <AddonDatasetContext.Provider
-                          value={{
-                            createAddonDataset: async () => Promise.resolve(null),
-                            isCreatingDataset: false,
-                            client: null,
-                            ready: true,
-                          }}
-                        >
-                          <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                            {children}
-                          </PerspectiveContext.Provider>
-                        </AddonDatasetContext.Provider>
-                      </ResourceCacheProvider>
-                    </CopyPasteProvider>
-                  </SourceProvider>
-                </WorkspaceProvider>
-              </LayerProvider>
-            </ToastProvider>
+            <ResourceCacheProvider>
+              <ToastProvider>
+                <LayerProvider>
+                  <WorkspaceProvider workspace={workspace}>
+                    <SourceProvider source={workspace.unstable_sources[0]}>
+                      <CopyPasteProvider>
+                        <ResourceCacheProvider>
+                          <AddonDatasetContext.Provider
+                            value={{
+                              createAddonDataset: async () => Promise.resolve(null),
+                              isCreatingDataset: false,
+                              client: null,
+                              ready: true,
+                            }}
+                          >
+                            <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                              {children}
+                            </PerspectiveContext.Provider>
+                          </AddonDatasetContext.Provider>
+                        </ResourceCacheProvider>
+                      </CopyPasteProvider>
+                    </SourceProvider>
+                  </WorkspaceProvider>
+                </LayerProvider>
+              </ToastProvider>
+            </ResourceCacheProvider>
           </LocaleProviderBase>
         </ThemeProvider>
       </RouterProvider>
