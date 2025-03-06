@@ -117,7 +117,7 @@
     "@sanity/prettier-config": "^1.0.3",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.169",
-    "@sanity/ui": "^2.14.5",
+    "@sanity/ui": "^2.15.2",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.17.7",
@@ -156,7 +156,7 @@
     "globby": "^11.1.0",
     "husky": "^9.0.11",
     "js-yaml": "^4.1.0",
-    "lerna": "^8.2.0",
+    "lerna": "^8.2.1",
     "lint-staged": "^12.1.2",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
@@ -192,7 +192,7 @@
       "@sanity/ui@2": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
-      "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
+      "eslint-plugin-react-hooks": "0.0.0-experimental-d55cc79b-20250228",
       "vite": "$vite"
     }
   },

@@ -29,6 +29,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, showMenu, states} = props
   const {__internal_tasks} = useSource()
+  const {editState} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -58,11 +59,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
+  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
+
   /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && !selectedReleaseId && (
+      {canShowAction && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>

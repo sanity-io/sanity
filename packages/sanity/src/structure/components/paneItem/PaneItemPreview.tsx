@@ -39,20 +39,15 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const versionsInfo = useDocumentVersionInfo(value._id)
 
-  const {perspectiveStack, selectedPerspective} = usePerspective()
+  const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(() => {
     return getPreviewStateObservable(
       props.documentPreviewStore,
       schemaType,
       value._id,
-      // eslint-disable-next-line no-nested-ternary
-      !selectedPerspective || selectedPerspective === 'drafts'
-        ? ['drafts']
-        : selectedPerspective === 'published'
-          ? ['published']
-          : perspectiveStack,
+      perspectiveStack,
     )
-  }, [props.documentPreviewStore, schemaType, value._id, selectedPerspective, perspectiveStack])
+  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack])
 
   const {
     snapshot,

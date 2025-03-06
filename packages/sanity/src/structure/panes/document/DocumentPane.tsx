@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
+import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
@@ -145,9 +146,11 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CommentsWrapper documentId={options.id} documentType={options.type}>
-          <DocumentLayout documentId={options.id} documentType={options.type} />
-        </CommentsWrapper>
+        <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
+          <CommentsWrapper documentId={options.id} documentType={options.type}>
+            <DocumentLayout documentId={options.id} documentType={options.type} />
+          </CommentsWrapper>
+        </DiffViewDocumentLayout>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProviderWrapper>
   )

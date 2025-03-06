@@ -40,8 +40,13 @@ export function useReferenceInput(options: Options) {
   const schema = useSchema()
   const perspective = usePerspective()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
-    useReferenceInputOptions()
+  const {
+    EditReferenceLinkComponent,
+    onEditReference,
+    activePath,
+    initialValueTemplateItems,
+    ...inheritedOptions
+  } = useReferenceInputOptions()
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
@@ -52,7 +57,7 @@ export function useReferenceInput(options: Options) {
     return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 
-  const disableNew = schemaType.options?.disableNew === true
+  const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
 
   const template = options.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(

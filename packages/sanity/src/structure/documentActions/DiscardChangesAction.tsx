@@ -83,7 +83,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       tone: 'critical',
       icon: ResetIcon,
       disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
-      title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
+      title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
       dialog,

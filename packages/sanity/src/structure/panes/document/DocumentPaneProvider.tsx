@@ -11,9 +11,6 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
-  isGoingToUnpublish,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
   isVersionId,
   type PartialContext,
   useCopyPaste,
@@ -27,6 +24,8 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
+import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
+import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -90,7 +89,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const perspective = usePerspective()
 
-  const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
+  const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
@@ -98,16 +97,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
-      isReleaseLocked: isReleaseDocument(perspective.selectedPerspective)
-        ? isReleaseScheduledOrScheduling(perspective.selectedPerspective)
-        : false,
     }
-  }, [
-    forcedVersion,
-    perspective.selectedPerspectiveName,
-    perspective.selectedReleaseId,
-    perspective.selectedPerspective,
-  ])
+  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+
+  const diffViewRouter = useDiffViewRouter()
 
   const initialValue = useDocumentPaneInitialValue({
     paneOptions,
@@ -165,16 +158,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
-      const value = editState?.version || editState?.draft || editState?.published
-      const willBeUnpublished = value ? isGoingToUnpublish(value) : false
-
       const isDeleted = getIsDeleted(editState)
       const seeingHistoryDocument = revisionId !== null
-      return (
-        seeingHistoryDocument || isDeleting || isDeleted || isReleaseLocked || willBeUnpublished
-      )
+      return seeingHistoryDocument || isDeleting || isDeleted
     },
-    [getIsDeleted, isDeleting, isReleaseLocked, revisionId],
+    [getIsDeleted, isDeleting, revisionId],
   )
 
   const getDisplayed = useCallback(
@@ -306,6 +294,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
+  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
       setPaneParams({
@@ -354,9 +344,36 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       ) {
         handleInspectorAction(item)
       }
+
+      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          previousDocument: {
+            type: documentType,
+            id: previousId,
+          },
+          nextDocument: {
+            type: documentType,
+            id: value._id,
+          },
+        })
+        return true
+      }
+
       return false
     },
-    [previewUrl, telemetry, pushToast, t, handleHistoryOpen, handleInspectorAction],
+    [
+      previewUrl,
+      previousId,
+      telemetry,
+      pushToast,
+      t,
+      handleHistoryOpen,
+      handleInspectorAction,
+      diffViewRouter,
+      documentType,
+      value._id,
+    ],
   )
 
   useEffect(() => {

@@ -59,12 +59,13 @@ const playwrightConfig = createPlaywrightConfig({
 
     return {
       ...config,
-      retries: process.env.CI ? 4 : 0,
-      reporter: excludeGithub(config.reporter),
+      retries: 4,
+      reporter: excludeGithub([['list'], ['blob']]),
       use: {
         ...config.use,
         baseURL: 'http://localhost:3339',
         headless: HEADLESS,
+        contextOptions: {reducedMotion: 'reduce'},
       },
       projects,
       webServer: {

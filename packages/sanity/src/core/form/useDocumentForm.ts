@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
@@ -28,8 +29,12 @@ import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {useTranslation} from '../i18n/hooks/useTranslation'
+import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
-import {isPublishedPerspective} from '../releases/util/util'
+import {isReleaseDocument} from '../releases/store/types'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
+import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {
   type DocumentPresence,
   type EditStateFor,
@@ -123,6 +128,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
+  const {data: releases} = useActiveReleases()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -223,12 +229,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const ready = connectionState === 'connected' && editState.ready
 
+  const selectedPerspective = useMemo(() => {
+    return getSelectedPerspective(selectedPerspectiveName, releases)
+  }, [selectedPerspectiveName, releases])
+
+  const isReleaseLocked = useMemo(
+    () =>
+      isReleaseDocument(selectedPerspective)
+        ? isReleaseScheduledOrScheduling(selectedPerspective)
+        : false,
+    [selectedPerspective],
+  )
+
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
     const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
+    const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && editState.draft?._id) {
@@ -250,7 +269,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       createActionDisabled ||
       reconnecting ||
       isLocked ||
-      isCreateLinked
+      isCreateLinked ||
+      willBeUnpublished ||
+      isReleaseLocked
 
     if (isReadOnly) return true
     if (typeof readOnlyProp === 'function') return readOnlyProp(editState)
@@ -269,6 +290,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     ready,
     isCreateLinked,
     readOnlyProp,
+    isReleaseLocked,
   ])
 
   const {patch} = useDocumentOperation(documentId, documentType, releaseId)
@@ -476,7 +498,7 @@ const useConnectionToast = (connectionState: ConnectionState) => {
         pushToast({
           id: 'sanity/reconnecting',
           status: 'warning',
-          title: t('panes.document-pane-provider.reconnecting.title'),
+          title: t('form.reconnecting.toast.title'),
         })
       }, 2000) // 2 seconds, we can iterate on the value
     }

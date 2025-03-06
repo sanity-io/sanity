@@ -29,7 +29,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn(
     (): PerspectiveContextValue => ({
-      perspectiveStack: [],
+      perspectiveStack: ['drafts'],
       excludedPerspectives: [],
       selectedPerspective: 'drafts',
       selectedPerspectiveName: undefined,

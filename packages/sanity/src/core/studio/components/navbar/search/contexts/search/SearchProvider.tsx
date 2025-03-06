@@ -4,7 +4,6 @@ import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
-import {usePerspective} from '../../../../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
@@ -52,7 +51,6 @@ export function SearchProvider({
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const {perspectiveStack} = usePerspective()
   const {data: releases} = useActiveReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -186,7 +184,6 @@ export function SearchProvider({
     terms,
     cursor,
     strategy,
-    perspectiveStack,
     releases,
   ])
 
