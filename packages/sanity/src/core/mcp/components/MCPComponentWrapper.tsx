@@ -1,9 +1,8 @@
 import {useGlobalKeyDown} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ComponentType, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {GLOBAL_MCP_KEY} from '../constants'
-import {type MCPAgentContext, type MCPComponentProps, type MCPConfig, type MCPEvent} from '../types'
+import {type MCPAgentContext, type MCPConfig, type MCPEvent} from '../types'
 import {MCPNoopProvider, MCPProvider} from './MCPProvider'
 
 /**
@@ -15,14 +14,16 @@ export function MCPComponentWrapper(props: {config?: MCPConfig; children?: React
   if (!Component) {
     return <MCPNoopProvider>{props.children} </MCPNoopProvider>
   }
-  return <MCPStateProvider component={Component}>{props.children}</MCPStateProvider>
+  return (
+    <MCPStateProvider hotkey={props.config?.hotkey} component={Component}>
+      {props.children}
+    </MCPStateProvider>
+  )
 }
-const isMCPHotKey = isHotkey(`mod+${GLOBAL_MCP_KEY}`)
 
-function MCPStateProvider(props: {
-  component: ComponentType<MCPComponentProps>
-  children?: ReactNode
-}) {
+const DEFAULT_KEY = 'mod+j'
+
+function MCPStateProvider(props: MCPConfig & {children: ReactNode}) {
   const Component = props.component
   const [context, setContext] = useState<MCPAgentContext>({})
   const [active, setActive] = useState<boolean>(false)
@@ -32,6 +33,8 @@ function MCPStateProvider(props: {
     })
   }, [])
 
+  const isMCPHotKey = useMemo(() => isHotkey(props.hotkey || DEFAULT_KEY), [props.hotkey])
+
   const reactContext = useMemo(
     () => ({
       onEvent: handleEvent,
@@ -39,12 +42,15 @@ function MCPStateProvider(props: {
     [handleEvent],
   )
 
-  const handleGlobalKeyDown = useCallback((event: KeyboardEvent) => {
-    if (isMCPHotKey(event)) {
-      event.preventDefault()
-      setActive((current) => !current)
-    }
-  }, [])
+  const handleGlobalKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isMCPHotKey(event)) {
+        event.preventDefault()
+        setActive((current) => !current)
+      }
+    },
+    [isMCPHotKey],
+  )
 
   useGlobalKeyDown(handleGlobalKeyDown)
 

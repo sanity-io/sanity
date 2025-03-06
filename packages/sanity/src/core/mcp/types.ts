@@ -31,6 +31,12 @@ export type MCPComponentProps = {
  * @hidden
  */
 export interface MCPConfig {
+  /**
+   * Hotkey to invoke MCP dialog
+   * Parsed by https://www.npmjs.com/package/is-hotkey
+   * Default is mod+j
+   */
+  hotkey?: string
   component: ComponentType<MCPComponentProps>
 }
 
