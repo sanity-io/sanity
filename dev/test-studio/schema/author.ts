@@ -36,7 +36,7 @@ export default defineType({
   fields: [
     defineField({
       name: 'name',
-      title: 'Name is a really long thing how is it   ',
+      title: 'Name',
       type: 'string',
       options: {
         search: {weight: 100},
