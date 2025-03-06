@@ -33,6 +33,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
   useEffect(() => {
     if (libraryId) {
       setResolvedLibraryId(libraryId)
+      return
     }
     client.request({uri: `/projects/${client.config().projectId}`}).then((project) => {
       const {organizationId} = project

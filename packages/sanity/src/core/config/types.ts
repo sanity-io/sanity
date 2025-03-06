@@ -1022,4 +1022,18 @@ export interface BetaFeatures {
     documents?: boolean
     releases?: boolean
   }
+  /**
+   * Config for the asset library.
+   */
+  assetLibrary?: {
+    /**
+     * Whether the asset library is enabled.
+     */
+    enabled: boolean
+    /**
+     * The ID of the asset library.
+     * If not provided, the asset library will be automatically detected.
+     */
+    libraryId?: string
+  }
 }

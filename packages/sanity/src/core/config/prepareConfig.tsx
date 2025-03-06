@@ -8,7 +8,10 @@ import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} fr
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {createSanityAssetLibraryImageSource} from '../form/studio/assetSourceAssetLibrary'
+import {
+  createSanityAssetLibraryFileSource,
+  createSanityAssetLibraryImageSource,
+} from '../form/studio/assetSourceAssetLibrary'
 import {
   FileSource as DefaultFileSource,
   ImageSource as DefaultImageSource,
@@ -24,6 +27,8 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
+  assetLibraryEnabledReducer,
+  assetLibraryLibraryIdReducer,
   createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -59,6 +64,7 @@ import {
   type Config,
   type ConfigContext,
   type MissingConfigFile,
+  type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
   type Source,
@@ -83,6 +89,29 @@ function normalizeIcon(
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
+// Create asset library sources with configuration
+const createAssetLibrarySources = (config: PluginOptions) => {
+  const libraryId = assetLibraryLibraryIdReducer({config, initialValue: undefined})
+  const enabled = assetLibraryEnabledReducer({config, initialValue: false})
+
+  // Only create sources if asset library is enabled
+  if (!enabled) {
+    return {fileSource: null, imageSource: null}
+  }
+
+  const fileSource = createSanityAssetLibraryFileSource({
+    name: 'sanity-asset-library',
+    libraryId: libraryId || null,
+  })
+
+  const imageSource = createSanityAssetLibraryImageSource({
+    name: 'sanity-asset-library',
+    libraryId: libraryId || null,
+  })
+
+  return {fileSource, imageSource}
+}
 
 /**
  * Takes in a config (created from the `defineConfig` function) and returns
@@ -331,6 +360,8 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
+  const assetLibrarySources = createAssetLibrarySources(config)
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -497,16 +528,6 @@ function resolveSource({
     })
   }
 
-  const assetLibraryImageSource = createSanityAssetLibraryImageSource({
-    name: 'sanity-asset-library-asset-source',
-    libraryId: null,
-  })
-
-  const assetLibraryFileSource = createSanityAssetLibraryImageSource({
-    name: 'sanity-asset-library-asset-source',
-    libraryId: null,
-  })
-
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -601,7 +622,9 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultFileSource],
+          initialValue: assetLibrarySources.fileSource
+            ? [DefaultFileSource, assetLibrarySources.fileSource]
+            : [DefaultFileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -614,7 +637,9 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [DefaultImageSource, assetLibraryImageSource],
+          initialValue: assetLibrarySources.imageSource
+            ? [DefaultImageSource, assetLibrarySources.imageSource]
+            : [DefaultImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
@@ -690,6 +715,10 @@ function resolveSource({
       create: {
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
+      },
+      assetLibrary: {
+        enabled: assetLibraryEnabledReducer({config, initialValue: false}),
+        libraryId: assetLibraryLibraryIdReducer({config, initialValue: undefined}),
       },
     },
     // eslint-disable-next-line camelcase
