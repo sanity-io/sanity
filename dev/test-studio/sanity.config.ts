@@ -106,6 +106,7 @@ const sharedSettings = definePlugin({
   plugins: [
     structureTool({
       mcp: {
+        hotkey: 'mod+shift+k',
         component: ExampleMCPComponent,
       },
       icon: BookIcon,
