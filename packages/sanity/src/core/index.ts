@@ -45,6 +45,7 @@ export {
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
   useIsReleaseActive,
+  useOnlyHasVersions,
   useReleasesIds,
   useVersionOperations,
   VersionChip,

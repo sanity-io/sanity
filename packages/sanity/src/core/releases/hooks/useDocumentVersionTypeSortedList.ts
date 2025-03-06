@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {getVersionFromId} from '../../util/draftUtils'
 import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -10,15 +10,13 @@ const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 export interface useDocumentVersionTypeSortedListState {
   sortedDocumentList: ReleaseDocument[]
-  onlyHasVersions: boolean
 }
 
 /**
  * Fetches the document versions for a given document and sorts them by release type
- * Returns a boolean if the document has only versions
  *
  * @param documentId - document id related to the document version list
- * @returns object with sortedDocumentList and if the document has only versions
+ * @returns object with sortedDocumentList
  *
  * @beta
  */
@@ -64,19 +62,13 @@ export const useDocumentVersionTypeSortedList = ({
       )
     })
 
-  const onlyHasVersions =
-    documentVersions &&
-    documentVersions.length > 0 &&
-    !documentVersions.some((version) => !isVersionId(version))
-
   return useMemo(
     () => ({
       /**
        * Sorted document list by existing document versions and release type
        */
       sortedDocumentList: sortedDocumentList,
-      onlyHasVersions,
     }),
-    [sortedDocumentList, onlyHasVersions],
+    [sortedDocumentList],
   )
 }

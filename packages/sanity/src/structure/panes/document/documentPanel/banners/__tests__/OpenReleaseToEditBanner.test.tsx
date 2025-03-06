@@ -3,7 +3,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   type ReleaseDocument,
   useActiveReleases,
-  useDocumentVersionTypeSortedList,
+  useOnlyHasVersions,
 } from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -22,14 +22,12 @@ vi.mock('sanity', async () => {
     useReleasesIds: vi.fn(),
     useActiveReleases: vi.fn(),
     useArchivedReleases: vi.fn(),
-    useDocumentVersionTypeSortedList: vi.fn(),
+    useOnlyHasVersions: vi.fn(),
   }
 })
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockuseDocumentVersionTypeSortedList = useDocumentVersionTypeSortedList as Mock<
-  typeof useDocumentVersionTypeSortedList
->
+const mockuseUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
 
 const release1: ReleaseDocument = {
   _rev: 'activeRev',
@@ -77,10 +75,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockuseDocumentVersionTypeSortedList.mockReturnValue({
-      sortedDocumentList: [],
-      onlyHasVersions: false,
-    })
+    mockuseUseOnlyHasVersions.mockReturnValue(false)
 
     const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 
@@ -97,10 +92,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockuseDocumentVersionTypeSortedList.mockReturnValue({
-      sortedDocumentList: [],
-      onlyHasVersions: false,
-    })
+    mockuseUseOnlyHasVersions.mockReturnValue(false)
 
     const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
     render(<OpenReleaseToEditBanner documentId={'test'} isPinnedDraftOrPublished />, {
@@ -118,10 +110,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
       loading: false,
     })
-    mockuseDocumentVersionTypeSortedList.mockReturnValue({
-      sortedDocumentList: [release1],
-      onlyHasVersions: true,
-    })
+    mockuseUseOnlyHasVersions.mockReturnValue(true)
 
     const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
     render(<OpenReleaseToEditBanner documentId={testId} isPinnedDraftOrPublished={false} />, {
@@ -140,10 +129,7 @@ describe('OpenReleaseToEditbanner', () => {
       dispatch: vi.fn(),
     })
 
-    mockuseDocumentVersionTypeSortedList.mockReturnValue({
-      sortedDocumentList: [release1, release2],
-      onlyHasVersions: true,
-    })
+    mockuseUseOnlyHasVersions.mockReturnValue(true)
 
     const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
     render(<OpenReleaseToEditBanner documentId={testId2} isPinnedDraftOrPublished />, {

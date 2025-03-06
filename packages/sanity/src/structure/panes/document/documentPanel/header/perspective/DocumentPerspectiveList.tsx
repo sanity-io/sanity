@@ -15,7 +15,7 @@ import {
   useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
-  useDocumentVersions,
+  useOnlyHasVersions,
   usePerspective,
   useSchema,
   useSetPerspective,
@@ -84,9 +84,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
-  const {data: documentVersions} = useDocumentVersions({documentId})
-
-  const onlyHasVersions = !editState?.published && !editState?.draft && documentVersions?.length > 0
+  const onlyHasVersions = useOnlyHasVersions({documentId})
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {

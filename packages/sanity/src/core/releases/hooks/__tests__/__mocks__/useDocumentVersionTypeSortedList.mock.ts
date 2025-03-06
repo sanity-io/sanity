@@ -8,7 +8,6 @@ import {
 export const useDocumentVersionTypeSortedListReturn: Mocked<useDocumentVersionTypeSortedListState> =
   {
     sortedDocumentList: [],
-    onlyHasVersions: false,
   }
 
 export const mockuseDocumentVersionTypeSortedList = useDocumentVersionTypeSortedList as Mock<

@@ -35,7 +35,6 @@ describe('useDocumentVersionTypeSortedList', () => {
       wrapper,
     })
 
-    expect(result.current.onlyHasVersions).toBe(false)
     expect(result.current.sortedDocumentList).toEqual([])
   })
 
@@ -47,7 +46,6 @@ describe('useDocumentVersionTypeSortedList', () => {
       wrapper,
     })
 
-    expect(result.current.onlyHasVersions).toBe(false)
     expect(result.current.sortedDocumentList).toEqual([])
   })
 
@@ -113,77 +111,6 @@ describe('useDocumentVersionTypeSortedList', () => {
         activeScheduledRelease,
         scheduledLaterRelease,
       ])
-    })
-
-    it('should return onlyVersions true if only versions exist', async () => {
-      mockUseActiveReleases.mockReturnValue({
-        ...useActiveReleasesMockReturn,
-        data: [activeUndecidedRelease, activeScheduledRelease, activeASAPRelease],
-      })
-
-      mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
-        data: [
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeASAPRelease._id)),
-        ],
-      })
-
-      const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
-        wrapper,
-      })
-
-      expect(result.current.onlyHasVersions).toBe(true)
-    })
-
-    it('should return onlyVersions false if draft exists', async () => {
-      mockUseActiveReleases.mockReturnValue({
-        ...useActiveReleasesMockReturn,
-        data: [activeUndecidedRelease, activeScheduledRelease, activeASAPRelease],
-      })
-
-      mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
-        data: [
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeASAPRelease._id)),
-          'drafts.test',
-        ],
-      })
-
-      const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
-        wrapper,
-      })
-
-      expect(result.current.onlyHasVersions).toBe(false)
-    })
-
-    it('should return onlyVersions false if published exists', async () => {
-      mockUseActiveReleases.mockReturnValue({
-        ...useActiveReleasesMockReturn,
-        data: [activeUndecidedRelease, activeScheduledRelease, activeASAPRelease],
-      })
-
-      mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
-        data: [
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
-          getVersionId('test', getReleaseIdFromReleaseDocumentId(activeASAPRelease._id)),
-          'test',
-        ],
-      })
-
-      const wrapper = await createTestProvider()
-      const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
-        wrapper,
-      })
-
-      expect(result.current.onlyHasVersions).toBe(false)
     })
   })
 })

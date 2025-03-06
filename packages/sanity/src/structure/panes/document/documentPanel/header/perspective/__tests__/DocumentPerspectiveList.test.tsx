@@ -6,7 +6,7 @@ import {
   type ReleaseDocument,
   type ReleaseId,
   useActiveReleases,
-  useDocumentVersions,
+  useOnlyHasVersions,
   usePerspective,
 } from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
@@ -22,13 +22,14 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useFilteredReleases} from '../../../../../../hooks/useFilteredReleases'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useDocumentVersions: vi.fn(),
+  useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
@@ -58,12 +59,14 @@ vi.mock('sanity/router', () => {
 })
 
 vi.mock('../../../../useDocumentPane')
+vi.mock('../../../../../../hooks/useFilteredReleases')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
+const mockUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
+const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
@@ -167,10 +170,13 @@ describe('DocumentPerspectiveList', () => {
       data: [mockCurrent],
       dispatch: vi.fn(),
     })
-    mockUseDocumentVersions.mockReturnValue({
-      data: ['versions.rSpringDrop.KJAiOpAH5r6P3dWt1df9ql'],
-      loading: false,
-      error: null,
+
+    mockUseOnlyHasVersions.mockReturnValue(false)
+
+    mockUseFilteredReleases.mockReturnValue({
+      currentReleases: [mockCurrent],
+      notCurrentReleases: [],
+      inCreation: null,
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()
@@ -198,7 +204,14 @@ describe('DocumentPerspectiveList', () => {
         getPaneMock({isCreatingDocument: true, displayedVersion: 'rSpringDrop'}),
       )
       // no document versions are available, but the user is creating this document, so we want to show the chip anyways.
-      mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+      mockUseOnlyHasVersions.mockReturnValue(false)
+
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [mockCurrent],
+        notCurrentReleases: [],
+        inCreation: null,
+      })
+
       // the selected perspective is the release perspective
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockValue,
@@ -216,10 +229,12 @@ describe('DocumentPerspectiveList', () => {
 
   describe('disabled chips', () => {
     beforeEach(() => {
-      mockUseDocumentVersions.mockReturnValue({
-        data: [],
-        loading: false,
-        error: null,
+      mockUseOnlyHasVersions.mockReturnValue(false)
+
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [],
+        notCurrentReleases: [],
+        inCreation: null,
       })
     })
 
@@ -273,7 +288,13 @@ describe('DocumentPerspectiveList', () => {
         ...usePerspectiveMockValue,
         selectedPerspectiveName: undefined,
       })
-      mockUseDocumentVersions.mockReturnValue({data: ['rSpringDrop'], loading: false, error: null})
+      mockUseOnlyHasVersions.mockReturnValue(true)
+
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [mockCurrent],
+        notCurrentReleases: [],
+        inCreation: null,
+      })
 
       const wrapper = await getTestProvider({liveEdit: false})
       render(<DocumentPerspectiveList />, {wrapper})
@@ -458,7 +479,13 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+        mockUseOnlyHasVersions.mockReturnValue(false)
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()
@@ -478,7 +505,13 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+        mockUseOnlyHasVersions.mockReturnValue(false)
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).toBeEnabled()
@@ -497,7 +530,13 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+        mockUseOnlyHasVersions.mockReturnValue(false)
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()
