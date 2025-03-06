@@ -14,6 +14,7 @@ Notes
 Options
   --port <port> TCP port to start server on. [default: 3333]
   --host <host> The local network interface at which to listen. [default: "127.0.0.1"]
+  --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
 
 Examples
   sanity dev --host=0.0.0.0

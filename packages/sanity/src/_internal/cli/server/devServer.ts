@@ -19,6 +19,7 @@ export interface DevServerOptions {
   vite?: UserViteConfig
   appLocation?: string
   isApp?: boolean
+  skipStartLog?: boolean
 }
 
 export interface DevServer {
@@ -36,6 +37,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactCompiler,
     appLocation,
     isApp,
+    skipStartLog,
   } = options
 
   const startTime = Date.now()
@@ -71,15 +73,16 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   debug('Listening on specified port')
   await server.listen()
 
-  const startupDuration = Date.now() - startTime
-  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
-  const appType = isApp ? 'Sanity application' : 'Sanity Studio'
-  info(
-    `${appType} ` +
-      `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
-      `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
-      `and running at ${chalk.cyan(url)}`,
-  )
-
+  if (!skipStartLog) {
+    const startupDuration = Date.now() - startTime
+    const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
+    const appType = isApp ? 'Sanity application' : 'Sanity Studio'
+    info(
+      `${appType} ` +
+        `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+        `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
+        `and running at ${chalk.cyan(url)}`,
+    )
+  }
   return {close: () => server.close()}
 }
