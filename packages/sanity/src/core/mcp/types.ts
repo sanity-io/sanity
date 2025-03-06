@@ -1,4 +1,5 @@
-import {type Path, type PortableTextBlock, type SanityDocumentLike} from '@sanity/types'
+import {type EditorSelection} from '@portabletext/editor'
+import {type Path, type SanityDocumentLike} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 /**
  * @internal
@@ -7,10 +8,10 @@ import {type ComponentType, type ReactNode} from 'react'
 export interface MCPAgentContext {
   list?: TODO
   presence?: TODO
-  selection?: {
-    document?: SanityDocumentLike
+  focus?: {
     path?: Path
-    contents?: string | PortableTextBlock[]
+    selection?: EditorSelection
+    document?: SanityDocumentLike
   }
 }
 
@@ -21,6 +22,7 @@ export interface MCPAgentContext {
 export type MCPComponentProps = {
   children?: ReactNode
   active?: boolean
+  onDeactivate?: () => void
   context: MCPAgentContext
 }
 
@@ -38,11 +40,18 @@ export interface MCPConfig {
  */
 export type TODO = never
 
+export type MCPFocusEvent = {
+  type: 'UPDATE_FOCUS'
+  path?: Path
+  selection?: EditorSelection
+  document?: SanityDocumentLike
+}
+
 /**
  * @internal
  * @hidden
  */
-export type MCPEvent = never
+export type MCPEvent = MCPFocusEvent
 
 /**
  * @internal

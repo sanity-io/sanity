@@ -29,6 +29,7 @@ import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {useTranslation} from '../i18n/hooks/useTranslation'
+import {useMCPEmitter} from '../mcp/hooks/useMCPEmitter'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
@@ -460,6 +461,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   const focusPathRef = useRef<Path>([])
 
+  const emitMCPEvent = useMCPEmitter()
+
   const handleFocus = useCallback(
     (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
       const nextFocusPath = pathFor(_nextFocusPath)
@@ -469,9 +472,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }
+      if (nextFocusPath.length !== 0) {
+        emitMCPEvent({
+          type: 'UPDATE_FOCUS',
+          document: formDocumentValue,
+          path: nextFocusPath,
+          selection: payload?.selection,
+        })
+      }
       updatePresenceThrottled(nextFocusPath, payload)
     },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
+    [updatePresenceThrottled, handleSetOpenPath, onFocusPath, emitMCPEvent, formDocumentValue],
   )
 
   const disableBlurRef = useRef(false)
@@ -495,6 +506,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     [onFocusPath, setFocusPath],
   )
 
+  useEffect(() => {}, [])
+
   const handleProgrammaticFocus = useCallback(
     (nextPath: Path) => {
       // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
@@ -516,6 +529,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     },
     [onFocusPath, handleSetOpenPath],
   )
+
   return {
     editState,
     connectionState,

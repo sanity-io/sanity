@@ -49,6 +49,7 @@
     "chokidar": "^3.5.3",
     "globby": "^11.1.0",
     "history": "^5.3.0",
+    "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
     "qs": "^6.10.2",
     "react": "^19.0.0",
@@ -67,6 +68,7 @@
     "@million/lint": "1.0.14",
     "babel-plugin-react-compiler": "19.0.0-beta-40c6c23-20250301",
     "chokidar": "^3.6.0",
+    "react-focus-lock": "^2.13.5",
     "vite": "^6.2.0"
   }
 }

@@ -1,9 +1,15 @@
+import {useGlobalKeyDown} from '@sanity/ui'
+import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentType, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useMCPHotkeys} from '../hooks/useMCPHotkeys'
+import {GLOBAL_MCP_KEY} from '../constants'
 import {type MCPAgentContext, type MCPComponentProps, type MCPConfig, type MCPEvent} from '../types'
 import {MCPNoopProvider, MCPProvider} from './MCPProvider'
 
+/**
+ * @hidden
+ * @internal
+ */
 export function MCPComponentWrapper(props: {config?: MCPConfig; children?: ReactNode}) {
   const Component = props.config?.component
   if (!Component) {
@@ -11,6 +17,7 @@ export function MCPComponentWrapper(props: {config?: MCPConfig; children?: React
   }
   return <MCPStateProvider component={Component}>{props.children}</MCPStateProvider>
 }
+const isMCPHotKey = isHotkey(`mod+${GLOBAL_MCP_KEY}`)
 
 function MCPStateProvider(props: {
   component: ComponentType<MCPComponentProps>
@@ -32,20 +39,37 @@ function MCPStateProvider(props: {
     [handleEvent],
   )
 
-  useMCPHotkeys({
-    active: active,
-    onDeactivate: () => setActive(true),
-    onActivate: () => setActive(false),
-  })
+  const handleGlobalKeyDown = useCallback((event: KeyboardEvent) => {
+    if (isMCPHotKey(event)) {
+      event.preventDefault()
+      setActive((current) => !current)
+    }
+  }, [])
+
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   return (
     <MCPProvider value={reactContext}>
-      <Component active={active} context={context} />
+      <Component active={active} context={context} onDeactivate={() => setActive(false)} />
       {props.children}
     </MCPProvider>
   )
 }
 
 function reduceMCPEvent(state: MCPAgentContext, event: MCPEvent): MCPAgentContext {
-  return event
+  switch (true) {
+    case event.type === 'UPDATE_FOCUS': {
+      return {
+        ...state,
+        focus: {
+          document: event.document,
+          path: event.path,
+          selection: event.selection,
+        },
+      }
+    }
+    default: {
+      return state
+    }
+  }
 }
