@@ -127,7 +127,7 @@
     "@sanity/client": "^6.28.2",
     "@sanity/types": "3.78.0",
     "get-random-values-esm": "1.0.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
