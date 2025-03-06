@@ -51,8 +51,26 @@ describe('undeployCoreAppAction', () => {
         spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
       prompt: {single: vi.fn()},
-      cliConfig: {},
+      cliConfig: {
+        // eslint-disable-next-line camelcase
+        __experimental_coreAppConfiguration: {
+          appId: 'app-id',
+        },
+      },
     } as unknown as CliCommandContext
+  })
+
+  it('prints an error if there is no appId', async () => {
+    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, {
+      ...mockContext,
+      cliConfig: {},
+    })
+
+    expect(mockContext.output.print).toHaveBeenCalledWith('No Core application ID provided.')
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      'Please set `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
 
   it('does nothing if there is no user application', async () => {
@@ -61,10 +79,7 @@ describe('undeployCoreAppAction', () => {
     await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'Your project has not been assigned a Core application ID',
-    )
-    expect(mockContext.output.print).toHaveBeenCalledWith(
-      'or you do not have __experimental_coreAppConfiguration set in sanity.cli.js or sanity.cli.ts.',
+      'Application with the given ID does not exist.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })

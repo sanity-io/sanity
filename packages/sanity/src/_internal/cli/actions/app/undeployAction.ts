@@ -27,7 +27,7 @@ export default async function undeployCoreAppAction(
 
   if (!appId) {
     spinner.fail()
-    output.print(`No Core application ID found.`)
+    output.print(`No Core application ID provided.`)
     output.print(
       'Please set `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
     )
@@ -43,6 +43,7 @@ export default async function undeployCoreAppAction(
   spinner.succeed()
 
   if (!userApplication) {
+    spinner.fail()
     output.print('Application with the given ID does not exist.')
     output.print('Nothing to undeploy.')
     return

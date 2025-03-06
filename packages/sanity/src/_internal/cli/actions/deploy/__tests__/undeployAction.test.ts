@@ -69,7 +69,7 @@ describe('undeployStudioAction', () => {
       'Your project has not been assigned a studio hostname',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'or you do not have studioHost set in sanity.cli.js or sanity.cli.ts.',
+      'or the `studioHost` provided does not exist.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
