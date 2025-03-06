@@ -81,7 +81,7 @@ export function OpenReleaseToEditBannerInner({
     <Banner
       tone={tone}
       paddingY={0}
-      data-testId="open-release-to-edit-banner"
+      data-testid="open-release-to-edit-banner"
       content={
         <Flex direction={'row'} align="center" justify="space-between" flex={1}>
           <Text size={1}>
