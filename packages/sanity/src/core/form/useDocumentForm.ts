@@ -204,7 +204,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
             {_id: documentId, _type: documentType})
       )
     }
-    // if no version is selected, but there is only version, it should default to the version version it finds
+    // if no version is selected, but there is only version, it should default to the version it finds
     if (!selectedPerspectiveName && onlyHasVersions) {
       return editState.version || editState.draft || editState.published || baseValue
     }
