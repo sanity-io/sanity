@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
 
-import {renderGlobalDocumentReferenceInput} from '../../../../../test/form'
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {set} from '../../patch'
-import {GlobalDocumentReferenceInput} from './GlobalDocumentReferenceInput'
+import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {set} from '../../../patch'
+import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput'
 
 const AVAILABLE = {
   available: true,
@@ -81,7 +81,7 @@ describe('render states', () => {
     const value = {
       _type: 'productReference',
       _ref: 'dataset:myProject.myDataset:foo',
-    }
+    } satisfies GlobalDocumentReferenceValue
 
     const {result} = await renderGlobalDocumentReferenceInput({
       fieldDefinition: {
@@ -268,7 +268,7 @@ describe('user interaction happy paths', () => {
     const value = {
       _type: 'globalDocumentReference',
       _ref: 'dataset:myProject.myDataset:some-product',
-    }
+    } satisfies GlobalDocumentReferenceValue
 
     const {onChange, onPathFocus, result} = await renderGlobalDocumentReferenceInput({
       getReferenceInfo,
@@ -369,7 +369,7 @@ describe('user interaction happy paths', () => {
     const value = {
       _type: 'productReference',
       _ref: 'dataset:myProject.myDataset:some-product',
-    }
+    } satisfies GlobalDocumentReferenceValue
 
     const {onChange, result} = await renderGlobalDocumentReferenceInput({
       getReferenceInfo,
