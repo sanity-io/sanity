@@ -4,15 +4,19 @@
 // Use --no-warnings flag to suppress experimental feature warnings
 // Example: node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts
 
-// Using require instead of import to avoid ESM issues
-const execa = require('execa')
-const yargs = require('yargs/yargs')
-const {hideBin} = require('yargs/helpers')
-const {createClient} = require('@sanity/client')
-const {uuid} = require('@sanity/uuid')
-const fs = require('node:fs')
-const path = require('node:path')
-const os = require('node:os')
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+
+import {createClient} from '@sanity/client'
+import {uuid} from '@sanity/uuid'
+import execa from 'execa'
+import yargs from 'yargs'
+import {hideBin} from 'yargs/helpers'
+
+// For loading package.json
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Hardcoded project ID and dataset
 const PROJECT_ID = '3do82whm'
@@ -111,7 +115,8 @@ async function main() {
     flags.from || execa.sync('git describe --abbrev=0', {shell: true}).stdout.trim()
 
   // Get current version
-  const packageJson = require('../package.json')
+  const packageJsonPath = path.join(__dirname, '..', 'package.json')
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
   const currentVersion = packageJson.version
 
   // Generate changelog
