@@ -1,6 +1,7 @@
-import {type SanityClient} from '@sanity/client'
+/* eslint-disable no-console */
+import {type SanityClient, type SanityDocument} from '@sanity/client'
 
-export const RELEASES_STUDIO_CLIENT_OPTIONS = {
+export const CLIENT_OPTIONS = {
   apiVersion: 'v2025-02-19',
 }
 
@@ -15,7 +16,7 @@ export const createRelease = async ({
   releaseId: string
   metadata: Record<string, any>
 }) => {
-  await sanityClient.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS).request({
+  await sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -30,7 +31,7 @@ export const createRelease = async ({
   })
 }
 
-export const archiveRelease = async ({
+export const archiveRelease = ({
   sanityClient,
   dataset,
   releaseId,
@@ -39,7 +40,7 @@ export const archiveRelease = async ({
   dataset: string | undefined
   releaseId: string
 }) => {
-  await sanityClient.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS).request({
+  sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -53,7 +54,7 @@ export const archiveRelease = async ({
   })
 }
 
-export const deleteRelease = async ({
+export const deleteRelease = ({
   sanityClient,
   dataset,
   releaseId,
@@ -63,7 +64,7 @@ export const deleteRelease = async ({
   releaseId: string
 }) => {
   // delete release
-  await sanityClient.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS).request({
+  sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -77,7 +78,27 @@ export const deleteRelease = async ({
   })
 }
 
-export const discardVersion = async ({
+export const archiveAndDeleteRelease = async ({
+  sanityClient,
+  dataset,
+  releaseId,
+}: {
+  sanityClient: SanityClient
+  dataset: string | undefined
+  releaseId: string
+}) => {
+  console.log(releaseId)
+  console.log(!isArchived({sanityClient, releaseId}))
+  if (!isArchived({sanityClient, releaseId})) {
+    await archiveRelease({sanityClient, dataset, releaseId})
+
+    await waitForReleaseToBeArchived({sanityClient, releaseId})
+  }
+
+  await deleteRelease({sanityClient, dataset, releaseId})
+}
+
+export const discardVersion = ({
   sanityClient,
   dataset,
   versionId,
@@ -86,8 +107,8 @@ export const discardVersion = async ({
   dataset: string | undefined
   versionId: string
 }) => {
-  // delete release
-  await sanityClient.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS).request({
+  // discard release
+  sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -106,5 +127,91 @@ export const discardVersion = async ({
  * @internal
  */
 export function getRandomReleaseId() {
-  return Math.random().toString(36).slice(2, 11)
+  return Math.random().toString(36).slice(2)
+}
+
+export const createDocument = (
+  sanityClient: SanityClient,
+  documentMetada: Partial<SanityDocument> & {_id: string; _type: string},
+) => {
+  return sanityClient.withConfig(CLIENT_OPTIONS).create({
+    ...documentMetada,
+  })
+}
+
+/** Delete all the releases in a dataset */
+export const deleteAllReleases = async ({
+  sanityClient,
+  dataset,
+}: {
+  sanityClient: SanityClient
+  dataset: string | undefined
+}) => {
+  const query = `*[_type == "system.release"]`
+  const releases = await sanityClient.fetch(query)
+
+  await Promise.all(
+    releases.map((release: {_id: string}) =>
+      archiveAndDeleteRelease({
+        sanityClient,
+        dataset,
+        releaseId: release._id.replace('_.releases.', ''),
+      }),
+    ),
+  )
+}
+
+/**
+ * Polls the Sanity release status until it is 'archived'
+ */
+async function waitForReleaseToBeArchived({
+  sanityClient,
+  releaseId,
+  interval = 5000,
+  timeout = 60000,
+}: {
+  sanityClient: SanityClient
+  releaseId: string
+  interval?: number
+  timeout?: number
+}) {
+  const startTime = Date.now()
+
+  return new Promise<void>((resolve, reject) => {
+    // eslint-disable-next-line consistent-return
+    const checkStatus = async () => {
+      const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0]`
+      const release = await sanityClient.fetch(query)
+
+      if (!release) {
+        return undefined
+      }
+
+      if (release.state === 'archived') {
+        return resolve()
+      }
+
+      if (Date.now() - startTime >= timeout) {
+        return reject(new Error(`Timed out waiting for release ${releaseId} to be archived`))
+      }
+
+      setTimeout(checkStatus, interval)
+    }
+
+    checkStatus()
+  })
+}
+
+/** Checks if Sanity release status is archived */
+async function isArchived({
+  sanityClient,
+  releaseId,
+}: {
+  sanityClient: SanityClient
+  releaseId: string
+}) {
+  const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0]`
+  const release = await sanityClient.fetch(query)
+
+  return release.state === 'archived'
 }
