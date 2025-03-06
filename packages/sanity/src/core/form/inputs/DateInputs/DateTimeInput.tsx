@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import {Box, Card, Flex, Inline} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -228,7 +228,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
     <Root
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      data-testid="datetime-input"
+      data-testid={`field-${id}`}
       radius={2}
     >
       <Flex direction={'column'}>
@@ -242,35 +242,38 @@ export function DateTimeInput(props: DateTimeInputProps) {
             presence={presence}
             inputId={id}
             content={
-              <Inline space={3}>
+              <Stack space={2}>
                 <FormFieldHeaderText
                   deprecated={schemaType.deprecated}
                   description={schemaType.description}
                   inputId={id}
                   validation={validation}
                   title={schemaType.title}
-                />
-                {displayTimeZone && (
-                  <ButtonTimeZoneElementQuery>
-                    <ButtonTimeZone
-                      tooltipContent={
-                        <Translate
-                          t={t}
-                          i18nKey={'time-zone.time-zone-tooltip-input'}
-                          values={{
-                            title,
-                            alternativeName: timeZone.alternativeName,
-                            offset: timeZone.offset,
-                          }}
+                  suffix={
+                    displayTimeZone && (
+                      <ButtonTimeZoneElementQuery>
+                        <ButtonTimeZone
+                          data-testid="timezone-button"
+                          tooltipContent={
+                            <Translate
+                              t={t}
+                              i18nKey={'time-zone.time-zone-tooltip-input'}
+                              values={{
+                                title,
+                                alternativeName: timeZone.alternativeName,
+                                offset: timeZone.offset,
+                              }}
+                            />
+                          }
+                          allowTimeZoneSwitch={allowTimeZoneSwitch}
+                          useElementQueries
+                          timeZoneScope={timeZoneScope}
                         />
-                      }
-                      allowTimeZoneSwitch={allowTimeZoneSwitch}
-                      useElementQueries
-                      timeZoneScope={timeZoneScope}
-                    />
-                  </ButtonTimeZoneElementQuery>
-                )}
-              </Inline>
+                      </ButtonTimeZoneElementQuery>
+                    )
+                  }
+                />
+              </Stack>
             }
           />
         </Box>

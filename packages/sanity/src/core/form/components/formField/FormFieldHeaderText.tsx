@@ -31,6 +31,10 @@ export interface FormFieldHeaderTextProps {
   inputId?: string
   title?: ReactNode
   deprecated?: DeprecatedProperty
+  /**
+   * Additional content to be rendered alongside the title
+   */
+  suffix?: ReactNode
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -39,27 +43,37 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY} = props
+  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
-  const hasLabelSuffix = deprecated || hasValidations
+  const hasLabelSuffix = deprecated || hasValidations || suffix
 
   return (
     <Stack space={3}>
       <Flex align="center" paddingY={1}>
-        <Text as="label" htmlFor={inputId} weight="medium" size={1}>
-          {title || (
-            <span style={{color: 'var(--card-muted-fg-color)'}}>
-              {t('form.field.untitled-field-label')}
-            </span>
-          )}
-        </Text>
+        <Flex align="center">
+          <Text as="label" htmlFor={inputId} weight="medium" size={1}>
+            {title || (
+              <span style={{color: 'var(--card-muted-fg-color)'}}>
+                {t('form.field.untitled-field-label')}
+              </span>
+            )}
+          </Text>
+        </Flex>
 
-        {hasLabelSuffix && (
+        {/* Always render the LabelSuffix with flex layout when there's a suffix */}
+        {suffix && (
+          <Box marginLeft={2} data-testid="form-field-suffix">
+            {suffix}
+          </Box>
+        )}
+
+        {/* Only render the validation and deprecated indicators in the LabelSuffix */}
+        {(deprecated || hasValidations) && (
           <LabelSuffix align="center" flex={1}>
             {deprecated && (
               <Box marginLeft={2}>
-                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                <Badge data-testid={`deprecated-badge-${inputId}`} tone="caution">
                   {t('form.field.deprecated-label')}
                 </Badge>
               </Box>
@@ -67,7 +81,12 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
             {hasValidations && (
               <Box marginLeft={2}>
-                <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+                <FormFieldValidationStatus
+                  data-testid={`input-validation-icon-error`}
+                  fontSize={1}
+                  placement="top"
+                  validation={validation}
+                />
               </Box>
             )}
           </LabelSuffix>
