@@ -12,13 +12,13 @@ export function useSanityAssetLibraryConfig(): SanityAssetLibraryConfig {
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const host = client.config().apiHost
   const isStaging = host.includes('sanity.work')
-  const deployedFrontendHost = isStaging ? 'https://www.sanity.work' : 'https://www.sanity.io'
+  const deployedFrontendHost = isStaging ? 'https://assets.sanity.work' : 'https://assets.sanity.io'
   const appHost = isLocalDev ? 'http://localhost:3001' : deployedFrontendHost
   const env: 'staging' | 'production' = isStaging ? 'staging' : 'production'
 
   const internalConfig = {
     apiVersion: DEFAULT_API_VERSION,
-    appBasePath: '/app/asset-libraries',
+    appBasePath: '',
     pluginApiVersion: 'v1',
     hosts: {
       cdn: isStaging ? 'https://sanity-cdn.work' : 'https://sanity-cdn.com',
