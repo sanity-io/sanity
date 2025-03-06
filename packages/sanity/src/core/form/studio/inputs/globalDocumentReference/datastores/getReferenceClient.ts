@@ -10,7 +10,10 @@ import {
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import {map, type Observable} from 'rxjs'
 
-import {globalDocumentReferenceApiVersion as apiVersion} from '../constants'
+import {
+  globalDatasetApiVersion,
+  globalDocumentReferenceApiVersion as apiVersion,
+} from '../constants'
 
 export type ReferenceClient = {
   getDocument<R extends Record<string, Any>>(
@@ -58,10 +61,10 @@ export function getReferenceClient(
         return client
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion,
+            apiVersion: globalDatasetApiVersion,
           })
           .observable.request({
+            useGlobalApi: true,
             uri: `/projects/${projectId}/datasets/${datasetName}/doc/${id}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
@@ -80,10 +83,10 @@ export function getReferenceClient(
         return client
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion,
+            apiVersion: globalDatasetApiVersion,
           })
           .observable.request({
+            useGlobalApi: true,
             uri: `/projects/${projectId}/datasets/${datasetName}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
@@ -97,14 +100,14 @@ export function getReferenceClient(
         return client.observable
           .withConfig({
             useProjectHostname: false,
-            apiHost: 'https://api.sanity.work',
-            apiVersion,
+            apiVersion: globalDatasetApiVersion,
           })
           .request<{result: ClientReturn<G, R>}>({
             url: `/projects/${projectId}/datasets/${datasetName}/query`,
+            useGlobalApi: true,
             method: 'POST',
             body: {query, params},
-            tag: 'gdr.query',
+            tag: 'sanity.studio.gdr.query',
           })
           .pipe(map((res) => res.result))
       },
@@ -125,7 +128,7 @@ export function getReferenceClient(
           allParams.includeResult = 'true'
         }
         const paramsString = new URLSearchParams(allParams).toString()
-        const uri = `${client.config().apiHost}/${apiVersion}/projects/${projectId}/datasets/${datasetName}/listen?${paramsString}`
+        const uri = `${client.config().apiHost}/${globalDatasetApiVersion}/projects/${projectId}/datasets/${datasetName}/listen?${paramsString}`
         return connectEventSource(
           () => new EventSource(uri, {withCredentials: true}),
           ['welcome', 'mutation'],
