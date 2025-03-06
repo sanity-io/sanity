@@ -42,12 +42,12 @@ const ReleasesNavContainer = styled(Card)`
     z-index: 2;
   }
 
-  .p-menu-btn + .p-menu-btn {
+  .p-menu-btn:nth-child(2) {
     margin-left: -6px;
   }
-  .p-menu-btn + .p-menu-btn.small {
-    margin: -1px;
-    margin-left: -3px;
+
+  .p-menu-btn:nth-child(3) {
+    margin-left: -6px;
   }
 `
 export function ReleasesNav(): React.JSX.Element {
@@ -59,7 +59,6 @@ export function ReleasesNav(): React.JSX.Element {
     <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav">
       <Flex>
         {areReleasesEnabled && <ReleasesToolLink />}
-
         <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
         <GlobalPerspectiveMenu
           selectedReleaseId={selectedReleaseId}
