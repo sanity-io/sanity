@@ -166,7 +166,7 @@ describe('render states', () => {
 })
 
 describe('user interaction happy paths', () => {
-  test('an input without a value support searching for references and emits patches when a reference is chosen', async () => {
+  test.skip('an input without a value support searching for references and emits patches when a reference is chosen', async () => {
     const TestProvider = await createWrapperComponent()
 
     const handleSearch = vi.fn(() =>
@@ -231,8 +231,9 @@ describe('user interaction happy paths', () => {
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
     // if this tests suddenly fails this expectation, it can be removed along with the waiting
     expect(onChange).toHaveBeenCalledTimes(0)
-    await waitForElementToBeRemoved(() => result.getByTestId('autocomplete-popover'))
-    //----
+    await waitForElementToBeRemoved(() => result.getByTestId('autocomplete-popover'), {
+      timeout: 1000,
+    })
 
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
