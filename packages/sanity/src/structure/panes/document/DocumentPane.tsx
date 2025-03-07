@@ -94,7 +94,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         }
       : {path: [], state: 'none'}
   }, [parentRefPath, groupIndex, routerPanesStateLength])
-
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (options.type === '*' && !isLoaded) {

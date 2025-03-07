@@ -7,6 +7,7 @@ import {
   type GeneralPreviewLayoutKey,
   useActiveReleases,
   useI18nText,
+  useMCPEmitter,
   usePerspective,
   useSchema,
   useTranslation,
@@ -73,7 +74,7 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
  */
 
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
-  const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
+  const {childItemId, index, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
   const {perspectiveStack} = usePerspective()
@@ -181,6 +182,42 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     }
     return SearchIcon
   }, [loadingVariant, searchInputValue])
+
+  const emitMCPEvent = useMCPEmitter()
+  useEffect(() => {
+    emitMCPEvent({
+      type: 'UPDATE_PANE',
+      paneType: 'documentList',
+      index,
+      active: Boolean(isActive),
+      id: pane.id,
+      pane,
+      query: {
+        filter,
+        perspective: perspectiveStack,
+        params,
+        searchQuery: searchQuery?.trim(),
+      },
+      results: items.map((item) => ({_id: item._id, _type: item._type})),
+    })
+    return () => {
+      emitMCPEvent({
+        type: 'REMOVE_PANE',
+        id: pane.id,
+      })
+    }
+  }, [
+    emitMCPEvent,
+    searchQuery,
+    filter,
+    pane,
+    params,
+    perspectiveStack,
+    index,
+    isActive,
+    items,
+    childItemId,
+  ])
 
   return (
     <>

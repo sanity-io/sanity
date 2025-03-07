@@ -4,14 +4,13 @@ import {type MCPComponentProps} from 'sanity'
 
 export function ExampleMCPComponent(props: MCPComponentProps) {
   const {active, onDeactivate} = props
+  //eslint-disable-next-line no-console
+  console.log('MCP context', props.context)
   return active ? (
     <Dialog id="mcp-dialog" width={1} onClose={onDeactivate} onClick={onDeactivate}>
       <Stack padding={3} space={3}>
         <Heading as="h2">Hello world</Heading>
-        <Stack space={1}>
-          <Text>Context:</Text>
-          <pre>{JSON.stringify(props.context, null, 2)}</pre>
-        </Stack>
+        <Text>MCP Context logged to console</Text>
       </Stack>
     </Dialog>
   ) : null

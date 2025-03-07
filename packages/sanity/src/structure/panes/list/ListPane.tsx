@@ -1,5 +1,6 @@
 import {Card, Code} from '@sanity/ui'
-import {useI18nText} from 'sanity'
+import {useEffect} from 'react'
+import {useI18nText, useMCPEmitter} from 'sanity'
 
 import {Pane} from '../../components'
 import {_DEBUG} from '../../constants'
@@ -18,6 +19,23 @@ export function ListPane(props: ListPaneProps) {
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups} = pane
   const showIcons = displayOptions?.showIcons !== false
   const {title} = useI18nText(pane)
+  const emitMCPEvent = useMCPEmitter()
+  useEffect(() => {
+    emitMCPEvent({
+      type: 'UPDATE_PANE',
+      paneType: 'list',
+      id: pane.id,
+      index,
+      active: Boolean(isActive),
+      pane,
+    })
+    return () => {
+      emitMCPEvent({
+        type: 'REMOVE_PANE',
+        id: pane.id,
+      })
+    }
+  }, [emitMCPEvent, index, isActive, pane])
 
   return (
     <Pane

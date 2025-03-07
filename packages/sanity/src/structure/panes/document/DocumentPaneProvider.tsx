@@ -15,6 +15,7 @@ import {
   type PartialContext,
   useCopyPaste,
   useDocumentForm,
+  useMCPEmitter,
   usePerspective,
   useSchema,
   useSource,
@@ -48,7 +49,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+  const {children, index, isActive, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -384,6 +385,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onChange,
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
+
+  const emitMCPEvent = useMCPEmitter()
+  useEffect(() => {
+    emitMCPEvent({
+      type: 'UPDATE_PANE',
+      paneType: 'document',
+      id: pane.id,
+      active: Boolean(isActive),
+      index,
+      pane,
+      document: value,
+    })
+    return () => {
+      emitMCPEvent({
+        type: 'REMOVE_PANE',
+        id: pane.id,
+      })
+    }
+  }, [emitMCPEvent, index, isActive, pane, value])
 
   const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])

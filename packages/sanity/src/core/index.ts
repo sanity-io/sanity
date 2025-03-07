@@ -20,6 +20,7 @@ export {
   MCPProvider,
   type MCPProviderContextValue,
 } from './mcp'
+export {useMCPEmitter} from './mcp/hooks/useMCPEmitter'
 export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
