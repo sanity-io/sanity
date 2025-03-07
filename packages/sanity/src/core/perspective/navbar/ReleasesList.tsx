@@ -14,6 +14,7 @@ import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
 import {LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../releases/util/util'
+import {usePerspective} from '../usePerspective'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -68,6 +69,7 @@ export function ReleasesList({
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {selectedPerspectiveName} = usePerspective()
 
   const {t} = useTranslation()
 
@@ -104,7 +106,8 @@ export function ReleasesList({
   )
 
   const range: LayerRange = useMemo(() => {
-    let lastIndex = 0
+    const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
+    let lastIndex = isDraftsPerspective ? 1 : 0
 
     const {asap, scheduled} = sortedReleaseTypeReleases
     const countAsapReleases = asap.length
@@ -135,7 +138,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [selectedReleaseId, sortedReleaseTypeReleases])
+  }, [selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
