@@ -163,7 +163,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
                 {' '}
                 {event.release ? (
                   <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                    {event.release.metadata.title}
+                    {event.release.metadata.title || t('release.placeholder-untitled-release')}
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">

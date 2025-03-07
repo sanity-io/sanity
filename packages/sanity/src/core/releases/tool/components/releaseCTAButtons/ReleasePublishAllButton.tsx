@@ -30,6 +30,7 @@ export const ReleasePublishAllButton = ({
   const {publishRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
   const telemetry = useTelemetry()
@@ -74,7 +75,9 @@ export const ReleasePublishAllButton = ({
             <Translate
               t={t}
               i18nKey="toast.publish.success"
-              values={{title: release.metadata.title}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
             />
           </Text>
         ),
@@ -93,7 +96,9 @@ export const ReleasePublishAllButton = ({
             <Translate
               t={t}
               i18nKey="toast.publish.error"
-              values={{title: release.metadata.title}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
             />
           </Text>
         ),
@@ -108,6 +113,7 @@ export const ReleasePublishAllButton = ({
     telemetry,
     toast,
     t,
+    tCore,
     perspective.selectedPerspective,
     setPerspective,
   ])
@@ -136,7 +142,7 @@ export const ReleasePublishAllButton = ({
               t={t}
               i18nKey="publish-dialog.confirm-publish-description"
               values={{
-                title: release.metadata.title,
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 releaseDocumentsLength: documents.length,
                 count: documents.length,
               }}
@@ -145,7 +151,7 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Dialog>
     )
-  }, [publishBundleStatus, t, handleConfirmPublishAll, release, documents.length])
+  }, [publishBundleStatus, t, tCore, handleConfirmPublishAll, release, documents.length])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments && publishPermission) return null

@@ -89,7 +89,9 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                         }}
                         i18nKey="events.open.release"
                         values={{
-                          releaseTitle: event.release.metadata.title,
+                          releaseTitle:
+                            event.release.metadata.title ||
+                            t('release.placeholder-untitled-release'),
                         }}
                         t={t}
                       />
@@ -106,7 +108,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                       }}
                       i18nKey="events.inspect.release"
                       values={{
-                        releaseTitle: event.release.metadata.title,
+                        releaseTitle:
+                          event.release.metadata.title || t('release.placeholder-untitled-release'),
                       }}
                       t={t}
                     />

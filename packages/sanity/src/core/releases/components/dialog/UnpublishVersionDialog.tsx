@@ -33,14 +33,14 @@ export function UnpublishVersionDialog(props: {
   const {data} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
-  const releaseInDetail = data
+  const release = data
     .concat(archivedReleases)
     .find(
       (candidate) =>
         getReleaseIdFromReleaseDocumentId(candidate._id) === getVersionFromId(documentVersionId),
     )
 
-  const tone = getReleaseTone(releaseInDetail as ReleaseDocument)
+  const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
@@ -99,7 +99,7 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: releaseInDetail?.metadata.title,
+              title: release?.metadata.title || coreT('release.placeholder-untitled-release'),
             }}
             components={{
               Label: ({children}) => {

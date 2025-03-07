@@ -55,6 +55,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
 
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
@@ -73,9 +74,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!isBundleDocumentRow(rowProps.datum)) return null
       if (rowProps.datum.isPending) return null
 
-      return <DocumentActions document={rowProps.datum} releaseTitle={release.metadata.title} />
+      return (
+        <DocumentActions
+          document={rowProps.datum}
+          releaseTitle={release.metadata.title || tCore('release.placeholder-untitled-release')}
+        />
+      )
     },
-    [release.metadata.title, release.state],
+    [release.metadata.title, release.state, tCore],
   )
 
   const documentTableColumnDefs = useMemo(
