@@ -20,7 +20,7 @@ The `printReleaseNotesTemplate.ts` script generates a GitHub release notes templ
 This script requires Node.js version 22 or above, which can run TypeScript files directly.
 
 ```bash
-# Basic usage (dry run - doesn't create Sanity documents)
+# Basic usage (dry run - shows documents that would be created without actually creating them)
 node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --dryRun
 
 # Create Sanity documents and generate release notes
@@ -81,7 +81,7 @@ To use the script, you have three authentication options:
 
 - `--from`: Previous release tag (defaults to the latest tag)
 - `--to`: Current release branch/tag (defaults to 'next')
-- `--dryRun`: Generate template without creating Sanity documents (defaults to false)
+- `--dryRun`: Show documents that would be created without actually creating them (defaults to false)
 - `--title`: Custom title for the release (defaults to "Sanity Studio v{version}")
 - `--product`: Product name (defaults to "Sanity Studio")
 - `--debug`: Show document structure before creating (defaults to false)
