@@ -68,7 +68,7 @@ describe('undeployCoreAppAction', () => {
 
     expect(mockContext.output.print).toHaveBeenCalledWith('No Core application ID provided.')
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'Please set `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
+      'Please set appId in `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
