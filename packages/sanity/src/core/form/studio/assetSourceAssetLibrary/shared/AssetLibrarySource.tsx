@@ -23,7 +23,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
     accept,
     assetType = 'image',
     dialogHeaderTitle,
-    libraryId,
+    libraryId: libraryIdProp,
     onClose,
     onSelect,
     selectedAssets,
@@ -31,8 +31,8 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
   const [resolvedLibraryId, setResolvedLibraryId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (libraryId) {
-      setResolvedLibraryId(libraryId)
+    if (libraryIdProp) {
+      setResolvedLibraryId(libraryIdProp)
       return
     }
     client.request({uri: `/projects/${client.config().projectId}`}).then((project) => {
@@ -49,7 +49,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
           }
         })
     })
-  }, [client, libraryId])
+  }, [client, libraryIdProp])
 
   const handleClose = useCallback(() => {
     if (onClose) {
@@ -69,8 +69,8 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
           url: `/assets/asset-library-link/${client.config().dataset}`,
           withCredentials: true,
           body: {
-            assetLibraryId: libraryId,
-            assetInstanceId: asset.instanceId,
+            assetLibraryId: resolvedLibraryId,
+            assetInstanceId: asset.assetInstanceId,
             assetId: asset.assetId,
           },
         })
@@ -82,7 +82,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
             assetLibraryProps: {
               assetLibraryId: resolvedLibraryId,
               assetId: asset.assetId,
-              assetInstanceId: asset.instanceId,
+              assetInstanceId: asset.assetInstanceId,
             },
           },
         ]
@@ -98,7 +98,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
         throw error
       }
     },
-    [client, handleClose, libraryId, onSelect, resolvedLibraryId, t, toast],
+    [client, handleClose, onSelect, resolvedLibraryId, t, toast],
   )
 
   if (!resolvedLibraryId) {
