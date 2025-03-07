@@ -19,17 +19,6 @@ const Dot = styled.div({
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
 
-const Container = styled.div`
-  flex: none;
-
-  // The children in button is rendered inside a span, we need to absolutely position it.
-  span:has(> [data-ui='status-icon']) {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    padding: 0;
-  }
-`
 /**
  * represents the calendar icon for the releases tool.
  * It will be hidden if users have turned off releases.
@@ -48,29 +37,28 @@ export function ReleasesToolLink(): React.JSX.Element {
   )
 
   return (
-    <Container data-testid="releases-tool-link">
-      <Tooltip content={t('release.navbar.tooltip')}>
-        <Button
-          as={ToolLink}
-          name={RELEASES_TOOL_NAME}
-          data-as="a"
-          icon={CalendarIcon}
-          mode="bleed"
-          padding={2}
-          radius="full"
-          selected={activeToolName === RELEASES_TOOL_NAME}
-          space={2}
-        >
-          {hasError && (
-            <Dot
-              data-ui="status-icon"
-              style={{
-                backgroundColor: `var(--card-badge-critical-dot-color)`,
-              }}
-            />
-          )}
-        </Button>
-      </Tooltip>
-    </Container>
+    <Tooltip content={t('release.navbar.tooltip')}>
+      <Button
+        as={ToolLink}
+        name={RELEASES_TOOL_NAME}
+        data-as="a"
+        className="p-menu-btn"
+        icon={CalendarIcon}
+        mode="bleed"
+        padding={3}
+        radius="full"
+        data-testid="releases-tool-link"
+        selected={activeToolName === RELEASES_TOOL_NAME}
+      >
+        {hasError && (
+          <Dot
+            data-ui="error-status-icon"
+            style={{
+              backgroundColor: `var(--card-badge-critical-dot-color)`,
+            }}
+          />
+        )}
+      </Button>
+    </Tooltip>
   )
 }

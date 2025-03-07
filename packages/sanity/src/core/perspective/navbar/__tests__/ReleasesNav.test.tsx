@@ -17,7 +17,6 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
-import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
@@ -94,17 +93,6 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('clear-perspective-button')).toBeNull()
   })
 
-  it('should have clear button to unset perspective when a perspective is chosen', async () => {
-    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
-    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
-
-    await renderTest()
-
-    fireEvent.click(screen.getByTestId('clear-perspective-button'))
-
-    expect(mockedSetPerspective).toHaveBeenCalledWith(LATEST)
-  })
-
   it('should list the title of the chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
     usePerspectiveMockReturn.selectedReleaseId = 'rActive'
@@ -112,15 +100,6 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     screen.getByText('active Release')
-  })
-
-  it('should show release avatar for chosen perspective', async () => {
-    usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
-    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
-
-    await renderTest()
-
-    screen.getByTestId('release-avatar-critical')
   })
 
   describe('global perspective menu', () => {

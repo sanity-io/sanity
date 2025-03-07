@@ -271,19 +271,17 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
+                <ReleasesNav />
+                {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
+                <PresenceMenu />
                 {shouldRender.configIssues && <ConfigIssuesButton />}
                 {shouldRender.resources && <ResourcesButton />}
-
-                <PresenceMenu />
 
                 {/* Search button (mobile) */}
                 {shouldRender.searchFullscreen && (
                   <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
                 )}
-
-                <ReleasesNav />
-                {actionNodes}
 
                 {shouldRender.tools && (
                   <CapabilityGate capability="globalUserMenu">
