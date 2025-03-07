@@ -78,7 +78,7 @@ export interface Asset {
 export interface AssetSelectionItem {
   assetId: string
   assetType: string
-  instanceId: string
+  assetInstanceId: string
 }
 
 export type PluginPostMessageTokenRequest = {
