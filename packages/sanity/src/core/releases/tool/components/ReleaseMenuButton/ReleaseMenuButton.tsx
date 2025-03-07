@@ -1,10 +1,10 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuButton} from '../../../../../ui-components'
+import {Button, Dialog, Popover} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
@@ -14,6 +14,7 @@ import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
@@ -26,9 +27,15 @@ export type ReleaseMenuButtonProps = {
   ignoreCTA?: boolean
   release: ReleaseDocument
   documentsCount: number
+  documents: DocumentInRelease[]
 }
 
-export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseMenuButtonProps) => {
+export const ReleaseMenuButton = ({
+  ignoreCTA,
+  release,
+  documentsCount,
+  documents,
+}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
   const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
@@ -37,6 +44,10 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
+
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const releaseMenuRef = useRef<HTMLDivElement | null>(null)
+  const [openPopover, setOpenPopover] = useState(false)
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -126,13 +137,13 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       archive,
       handleUnarchive,
       unschedule,
-      release._id,
       telemetry,
       toast,
       t,
       releaseTitle,
       selectedReleaseId,
       setPerspective,
+      release._id,
     ],
   )
 
@@ -188,38 +199,47 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
     )
   }, [selectedAction, t, isPerformingOperation, release, documentsCount, handleAction])
 
+  const handleOnButtonClick = () => {
+    if (openPopover) closePopover()
+    else setOpenPopover(true)
+  }
+
+  const closePopover = () => {
+    setOpenPopover(false)
+  }
+
   return (
     <>
-      <MenuButton
-        button={
-          <Button
-            disabled={releaseMenuDisabled || isPerformingOperation}
-            icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
-            mode="bleed"
-            tooltipProps={{content: t('menu.tooltip')}}
-            aria-label={t('menu.label')}
-            data-testid="release-menu-button"
-          />
-        }
-        id="release-menu"
-        menu={
-          <Menu>
+      <Popover
+        content={
+          <Menu ref={releaseMenuRef}>
             <ReleaseMenu
               ignoreCTA={ignoreCTA}
               release={release}
               setSelectedAction={setSelectedAction}
               disabled={isPerformingOperation}
+              documents={documents}
             />
           </Menu>
         }
-        popover={{
-          constrainSize: false,
-          fallbackPlacements: ['top-end'],
-          placement: 'bottom',
-          portal: true,
-          tone: 'default',
-        }}
-      />
+        open={openPopover}
+        ref={popoverRef}
+        constrainSize={false}
+        fallbackPlacements={['top-end']}
+        portal
+        tone="default"
+        placement="bottom"
+      >
+        <Button
+          disabled={releaseMenuDisabled || isPerformingOperation}
+          icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
+          mode="bleed"
+          tooltipProps={{content: t('menu.tooltip')}}
+          aria-label={t('menu.label')}
+          data-testid="release-menu-button"
+          onClick={handleOnButtonClick}
+        />
+      </Popover>
       {confirmActionDialog}
     </>
   )

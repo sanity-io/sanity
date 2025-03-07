@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -19,12 +19,14 @@ interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   disabled?: boolean
+  isMenuItem?: boolean
 }
 
 export const ReleasePublishAllButton = ({
   release,
   documents,
   disabled,
+  isMenuItem = false,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishRelease} = useReleaseOperations()
@@ -170,20 +172,36 @@ export const ReleasePublishAllButton = ({
 
   return (
     <>
-      <Button
-        tooltipProps={{
-          disabled: !isPublishButtonDisabled,
-          content: publishTooltipContent,
-          placement: 'bottom',
-        }}
-        icon={PublishIcon}
-        disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        text={t('action.publish-all-documents')}
-        onClick={() => setPublishBundleStatus('confirm')}
-        loading={publishBundleStatus === 'publishing'}
-        data-testid="publish-all-button"
-        tone="positive"
-      />
+      {isMenuItem ? (
+        <MenuItem
+          tooltipProps={{
+            disabled: !isPublishButtonDisabled,
+            content: publishTooltipContent,
+            placement: 'bottom',
+          }}
+          tone="primary"
+          icon={PublishIcon}
+          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+          text={t('action.publish-all-documents')}
+          onClick={() => setPublishBundleStatus('confirm')}
+          data-testid="schedule-button"
+        />
+      ) : (
+        <Button
+          tooltipProps={{
+            disabled: !isPublishButtonDisabled,
+            content: publishTooltipContent,
+            placement: 'bottom',
+          }}
+          icon={PublishIcon}
+          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+          text={t('action.publish-all-documents')}
+          onClick={() => setPublishBundleStatus('confirm')}
+          loading={publishBundleStatus === 'publishing'}
+          data-testid="publish-all-button"
+          tone="positive"
+        />
+      )}
       {confirmPublishDialog}
     </>
   )

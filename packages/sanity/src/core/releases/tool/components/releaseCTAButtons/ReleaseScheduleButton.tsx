@@ -2,9 +2,10 @@ import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
+import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
@@ -23,15 +24,17 @@ interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   disabled?: boolean
+  isMenuItem?: boolean
 }
 
 export const ReleaseScheduleButton = ({
   release,
   disabled,
   documents,
+  isMenuItem = false,
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
-  const {schedule} = useReleaseOperations()
+  const {schedule, updateRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
 
   const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
@@ -76,6 +79,26 @@ export const ReleaseScheduleButton = ({
 
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
+
+    // this means that it will linely need to change the releaseType to scheduled
+    if (isMenuItem) {
+      const newRelease = {
+        ...release,
+        metadata: {
+          ...release.metadata,
+          releaseType: 'scheduled' as const,
+          ...(typeof release.updatedDate === 'undefined'
+            ? {}
+            : {
+                intendedPublishAt: publishAt.toISOString(),
+              }),
+        },
+      }
+
+      if (!isEqual(newRelease, release)) {
+        updateRelease(newRelease)
+      }
+    }
 
     if (isScheduledDateInPast()) {
       // rerender dialog to recalculate isScheduledDateInPast
@@ -124,10 +147,11 @@ export const ReleaseScheduleButton = ({
     }
   }, [
     publishAt,
+    isMenuItem,
     isScheduledDateInPast,
+    release,
+    updateRelease,
     schedule,
-    release._id,
-    release.metadata.title,
     telemetry,
     toast,
     t,
@@ -285,20 +309,36 @@ export const ReleaseScheduleButton = ({
 
   return (
     <>
-      <Button
-        tooltipProps={{
-          disabled: !tooltipText,
-          content: scheduleTooltipContent,
-          placement: 'bottom',
-        }}
-        tone="primary"
-        icon={ClockIcon}
-        disabled={isScheduleButtonDisabled || status === 'scheduling'}
-        text={t('action.schedule')}
-        onClick={handleOnInitialSchedule}
-        loading={status === 'scheduling'}
-        data-testid="schedule-button"
-      />
+      {isMenuItem ? (
+        <MenuItem
+          tooltipProps={{
+            disabled: !tooltipText,
+            content: scheduleTooltipContent,
+            placement: 'bottom',
+          }}
+          tone="primary"
+          icon={ClockIcon}
+          disabled={isScheduleButtonDisabled || status === 'scheduling'}
+          text={t('action.schedule')}
+          onClick={handleOnInitialSchedule}
+          data-testid="schedule-button"
+        />
+      ) : (
+        <Button
+          tooltipProps={{
+            disabled: !tooltipText,
+            content: scheduleTooltipContent,
+            placement: 'bottom',
+          }}
+          tone="primary"
+          icon={ClockIcon}
+          disabled={isScheduleButtonDisabled || status === 'scheduling'}
+          text={t('action.schedule')}
+          onClick={handleOnInitialSchedule}
+          loading={status === 'scheduling'}
+          data-testid="schedule-button"
+        />
+      )}
       {confirmScheduleDialog}
     </>
   )

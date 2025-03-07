@@ -26,6 +26,7 @@ import {getReleaseDefaults} from '../../util/util'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
+import {useBundleDocuments} from '../detail/useBundleDocuments'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
 import {
@@ -53,6 +54,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'publishedAt',
   direction: 'desc',
 }
+// eslint-disable-next-line max-statements
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -79,6 +81,8 @@ export function ReleasesOverview() {
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
+  const [releaseId, setReleaseId] = useState<string>('')
+  const {results: documents} = useBundleDocuments(releaseId)
 
   const mediaIndex = useMediaIndex()
 
@@ -291,6 +295,7 @@ export function ReleasesOverview() {
     ({datum}: {datum: TableRelease | unknown}) => {
       const release = datum as TableRelease
 
+      setReleaseId(release._id)
       if (release.isDeleted) return null
 
       const documentsCount =
@@ -298,9 +303,15 @@ export function ReleasesOverview() {
           ? release.documentsMetadata?.documentCount
           : release.finalDocumentStates?.length) ?? 0
 
-      return <ReleaseMenuButton release={release} documentsCount={documentsCount} />
+      return (
+        <ReleaseMenuButton
+          release={release}
+          documentsCount={documentsCount}
+          documents={documents}
+        />
+      )
     },
-    [releaseGroupMode],
+    [documents, releaseGroupMode],
   )
 
   const filteredReleases = useMemo(() => {
