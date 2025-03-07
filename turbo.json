@@ -18,7 +18,8 @@
     "SANITY_E2E_DATASET",
     "EXTRACT_SANITY_PROJECT_ID",
     "EXTRACT_SANITY_DATASET",
-    "EXTRACT_SANITY_API_TOKEN"
+    "EXTRACT_SANITY_API_TOKEN",
+    "SANITY_WEB_AUTH_TOKEN"
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [

@@ -11,7 +11,7 @@ The `printReleaseNotesTemplate.ts` script generates a GitHub release notes templ
 - Generates a GitHub release notes template based on git commit history
 - Creates an `apiVersion` document in Sanity Studio
 - Creates an `apiChange` document in Sanity Studio with changelog details (as a draft)
-- Automatically categorizes commits into features and bugfixes
+- Automatically categorizes commits into features and bugfixes using conventional commit format
 - Creates a structured changelog with highlights, features, and bugfixes
 - Links the GitHub release notes to the Sanity changelog
 
@@ -35,7 +35,7 @@ node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.
 # Debug mode - show document structure before creating
 node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --debug
 
-# Using a direct token instead of CLI config
+# Using a direct token instead of environment variable
 node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --token "your-sanity-api-token"
 ```
 
@@ -53,32 +53,39 @@ The script uses the following for authentication:
 
 - Project ID: Hardcoded to "3do82whm"
 - Dataset: Hardcoded to "next"
-- Auth Token: Retrieved directly from your Sanity CLI configuration file at `~/.config/sanity/config.json`
+- Auth Token: Retrieved from one of the following sources (in order of precedence):
+  1. Command-line argument (`--token`)
+  2. Environment variable (`SANITY_WEB_AUTH_TOKEN`)
+  3. `.env` file in the project root
 
-To use the script, you must be logged in with the Sanity CLI:
+To use the script, you have three authentication options:
 
-```bash
-# Login to Sanity CLI if you haven't already
-sanity login
-```
+1. **Create a .env file** in the project root:
 
-Alternatively, you can provide a token directly using the `--token` flag:
+   ```
+   SANITY_WEB_AUTH_TOKEN=your-sanity-api-token
+   ```
 
-```bash
-node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --token "your-sanity-api-token"
-```
+2. **Set the environment variable** directly:
 
-The script will automatically read your authentication token from the Sanity CLI configuration file.
+   ```bash
+   SANITY_WEB_AUTH_TOKEN=your-sanity-api-token node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts
+   ```
+
+3. **Provide a token as a command-line argument**:
+   ```bash
+   node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --token "your-sanity-api-token"
+   ```
 
 ### Options
 
 - `--from`: Previous release tag (defaults to the latest tag)
-- `--to`: Current release branch/tag (defaults to 'next' or current branch if on v3)
+- `--to`: Current release branch/tag (defaults to 'next')
 - `--dryRun`: Generate template without creating Sanity documents (defaults to false)
 - `--title`: Custom title for the release (defaults to "Sanity Studio v{version}")
-- `--product`: Product tag (defaults to "Sanity Studio")
+- `--product`: Product name (defaults to "Sanity Studio")
 - `--debug`: Show document structure before creating (defaults to false)
-- `--token`: Sanity API token (overrides CLI config)
+- `--token`: Sanity auth token (alternative to SANITY_WEB_AUTH_TOKEN env var)
 
 ### Testing Document Structure
 
@@ -90,7 +97,7 @@ To test that the Sanity documents are created as expected, you have several opti
    node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --debug
    ```
 
-2. **Direct Token**: If you don't have the Sanity CLI set up, you can use a token directly:
+2. **Direct Token**: If you don't have authentication set up, you can use a token directly:
 
    ```bash
    node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts --token "your-sanity-api-token"
@@ -104,51 +111,15 @@ To test that the Sanity documents are created as expected, you have several opti
 ### Requirements
 
 - Node.js 22+ (for direct TypeScript execution)
-- Sanity CLI authentication (run `sanity login` first)
+- Sanity authentication token
 - Git repository with commit history
 
 ### Workflow
 
 1. The script extracts commit history between the specified tags/branches
-2. It categorizes commits into features and bugfixes based on commit messages
+2. It categorizes commits into features and bugfixes based on conventional commit messages
+   - `feat:` messages go into features
+   - `fix:` messages go into bugfixes
+   - Other types of commits are filtered out
 3. It creates an `apiVersion` document in Sanity Studio
 4. It creates an `apiChange` document with structured content in Sanity Studio (as a draft)
-5. It generates a GitHub release template that links to the Sanity changelog
-
-### Example Output
-
-The GitHub release template will look like:
-
-```
-# Sanity Studio v3.16.0
-
-This release includes various improvements and bug fixes.
-
-For the complete changelog with all details, please visit:
-[www.sanity.io/changelog/e215973b-784d-46a8-9f5d-6ffac4dc9ace](https://www.sanity.io/changelog/e215973b-784d-46a8-9f5d-6ffac4dc9ace)
-
-## Install or upgrade Sanity Studio
-
-To upgrade to this version, run:
-
-pnpm add sanity@latest
-
-To initiate a new Sanity Studio project or learn more about upgrading, please refer to our comprehensive guide on [Installing and Upgrading Sanity Studio](https://www.sanity.io/docs/upgrade).
-```
-
-This format drives traffic to the Sanity changelog where users can find the complete details of the release.
-
-### URL Formats
-
-The script uses two different URL formats:
-
-1. **Public-facing URL** (used in GitHub release template):
-
-   ```
-   https://www.sanity.io/changelog/e215973b-784d-46a8-9f5d-6ffac4dc9ace
-   ```
-
-2. **Internal Studio URL** (for editing, shown in console output):
-   ```
-   https://admin.sanity.io/structure/docs;changelog;apiChange;e215973b-784d-46a8-9f5d-6ffac4dc9ace?perspective=rOVi7MsdW
-   ```
