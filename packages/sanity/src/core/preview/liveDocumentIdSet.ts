@@ -41,7 +41,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         )
     }
     return versionedClient(client, apiVersion)
-      .observable.listen(query, params, {
+      .observable.listen(`*[${queryFilter}]`, params, {
         visibility: 'transaction',
         events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,
