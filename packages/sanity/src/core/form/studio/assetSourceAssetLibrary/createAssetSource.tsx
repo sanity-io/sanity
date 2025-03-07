@@ -10,6 +10,11 @@ export interface CreateSanityAssetLibrarySourceProps {
   name: string
 }
 
+/**
+ * Create a new image asset source for the asset library
+ *
+ * @beta
+ */
 export function createSanityAssetLibraryImageSource(
   props: CreateSanityAssetLibrarySourceProps,
 ): AssetSource {
@@ -23,6 +28,11 @@ export function createSanityAssetLibraryImageSource(
   }
 }
 
+/**
+ * Create a new file asset source for the asset library
+ *
+ * @beta
+ */
 export function createSanityAssetLibraryFileSource(
   props: CreateSanityAssetLibrarySourceProps,
 ): AssetSource {
