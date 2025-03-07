@@ -1,17 +1,8 @@
 import {LaunchIcon, SparklesIcon} from '@sanity/icons'
-import {
-  Badge,
-  // eslint-disable-next-line no-restricted-imports
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Stack,
-  Text,
-  useToast,
-} from '@sanity/ui'
+import {Badge, Card, Flex, Inline, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
+import {Button} from '../../../ui-components/button/Button'
 import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
@@ -120,7 +111,7 @@ function StartInCreateBannerStudioApp(
 
   return (
     <Flex>
-      <Card borderTop padding={3} flex={1} tone="primary">
+      <Card radius={3} padding={3} flex={1} tone="primary">
         <Flex justify="space-between" align="center" gap={4}>
           <Flex gap={3} align="flex-start" flex={1} paddingY={1}>
             <Text size={1}>
@@ -155,7 +146,6 @@ function StartInCreateBannerStudioApp(
               disabled={!appId}
               iconRight={LaunchIcon}
               onClick={startLinking}
-              space={3}
               text={t('start-in-create-link.label')}
               tone="primary"
             />

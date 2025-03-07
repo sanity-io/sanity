@@ -76,7 +76,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
-                size="large"
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
