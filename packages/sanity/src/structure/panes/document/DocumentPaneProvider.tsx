@@ -24,6 +24,8 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
+import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
+import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -97,6 +99,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       selectedReleaseId: perspective.selectedReleaseId,
     }
   }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+
+  const diffViewRouter = useDiffViewRouter()
 
   const initialValue = useDocumentPaneInitialValue({
     paneOptions,
@@ -290,6 +294,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
+  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
       setPaneParams({
@@ -338,9 +344,36 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       ) {
         handleInspectorAction(item)
       }
+
+      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          previousDocument: {
+            type: documentType,
+            id: previousId,
+          },
+          nextDocument: {
+            type: documentType,
+            id: value._id,
+          },
+        })
+        return true
+      }
+
       return false
     },
-    [previewUrl, telemetry, pushToast, t, handleHistoryOpen, handleInspectorAction],
+    [
+      previewUrl,
+      previousId,
+      telemetry,
+      pushToast,
+      t,
+      handleHistoryOpen,
+      handleInspectorAction,
+      diffViewRouter,
+      documentType,
+      value._id,
+    ],
   )
 
   useEffect(() => {

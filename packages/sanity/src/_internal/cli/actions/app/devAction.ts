@@ -15,7 +15,7 @@ export default async function startAppDevServer(
   const config = getDevServerConfig({
     flags: {
       ...flags,
-      port: flags.port || '3334',
+      port: flags.port || '3333',
     },
     workDir,
     cliConfig,

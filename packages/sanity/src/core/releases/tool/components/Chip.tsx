@@ -1,11 +1,17 @@
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
+import {type ComponentType, type ReactNode} from 'react'
 
-export function Chip(props: {avatar?: ReactNode; text: ReactNode; icon?: ReactNode}) {
+type Props = {
+  avatar?: ReactNode
+  text: ReactNode
+  icon?: ReactNode
+} & Pick<CardProps, 'tone'>
+
+export const Chip: ComponentType<Props> = ({tone, ...props}) => {
   const {avatar, text, icon} = props
 
   return (
-    <Card muted radius="full">
+    <Card muted radius="full" tone={tone}>
       <Flex align={'center'}>
         {icon && (
           <Box padding={1} marginLeft={1}>

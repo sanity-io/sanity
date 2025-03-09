@@ -49,9 +49,8 @@ export function DraftLiveEditBanner({
 
   return (
     <Banner
-      paddingY={0}
       content={
-        <Flex align="center" justify="space-between" gap={2} paddingTop={1}>
+        <Flex align="center" justify="space-between" gap={2}>
           <Text size={1} weight="medium">
             <Translate
               t={t}

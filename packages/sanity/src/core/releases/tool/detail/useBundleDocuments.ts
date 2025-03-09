@@ -27,7 +27,11 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {
+  type DocumentPreviewStore,
+  getPreviewValueWithFallback,
+  prepareForPreview,
+} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -74,7 +78,7 @@ const getActiveReleaseDocumentsObservable = ({
   const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
 
-  const groqFilter = `_id in path("versions.${releaseId}.*")`
+  const groqFilter = `_id in path("versions.${releaseId}.**")`
 
   return documentPreviewStore
     .unstable_observeDocumentIdSet(groqFilter, undefined, {
@@ -224,7 +228,10 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
             take(1),
             map(({snapshot}) => ({
               isLoading: false,
-              values: snapshot,
+              values: prepareForPreview(
+                getPreviewValueWithFallback({snapshot, original: document}),
+                schemaType,
+              ),
             })),
             startWith({isLoading: true, values: {}}),
             filter(({isLoading}) => !isLoading),

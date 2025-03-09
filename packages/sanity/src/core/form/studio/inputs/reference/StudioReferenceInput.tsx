@@ -68,8 +68,13 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {selectedReleaseId} = usePerspective()
   const {path, schemaType} = props
-  const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
-    useReferenceInputOptions()
+  const {
+    EditReferenceLinkComponent,
+    onEditReference,
+    activePath,
+    initialValueTemplateItems,
+    ...inheritedOptions
+  } = useReferenceInputOptions()
   const {strategy: searchStrategy} = source.search
 
   const documentValue = useFormValue([]) as FIXME
@@ -79,7 +84,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
-  const disableNew = schemaType.options?.disableNew === true
+  const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
   const getClient = source.getClient
 
   const handleSearch = useCallback(

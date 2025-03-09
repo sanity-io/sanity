@@ -5,14 +5,12 @@ import {
 } from '@sanity/cli'
 
 import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
-import {SCHEMA_STORE_ENABLED} from '../../actions/schema/storeSchemasAction'
 
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the application prior to deploy, instead deploying the version currently in \`dist/\`
-  ${SCHEMA_STORE_ENABLED ? '--verbose Enable verbose logging for the schema store' : ''}
   -y, --yes Unattended mode, answers "yes" to any "yes/no" prompt and otherwise uses defaults
 
 Examples

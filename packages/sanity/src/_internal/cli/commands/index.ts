@@ -1,12 +1,5 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
-import {SCHEMA_STORE_ENABLED} from '../actions/schema/storeSchemasAction'
-import appGroup from './app/appGroup'
-import appBuildCommand from './app/buildCommand'
-import appDeployCommand from './app/deployCommand'
-import appDevCommand from './app/devCommand'
-import appStartCommand from './app/startCommand'
-import appUndeployCommand from './app/undeployCommand'
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -64,14 +57,7 @@ import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
 
-// Base commands that are always included
 const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
-  appGroup,
-  appDeployCommand,
-  appDevCommand,
-  appBuildCommand,
-  appStartCommand,
-  appUndeployCommand,
   buildCommand,
   datasetGroup,
   deployCommand,

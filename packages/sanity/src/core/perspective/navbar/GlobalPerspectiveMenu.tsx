@@ -40,9 +40,9 @@ export function GlobalPerspectiveMenu({
             data-testid="global-perspective-menu-button"
             iconRight={ChevronDownIcon}
             mode="bleed"
-            padding={2}
+            padding={3}
             radius="full"
-            space={2}
+            className="p-menu-btn"
           />
         }
         id="releases-menu"

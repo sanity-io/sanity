@@ -77,7 +77,7 @@ function createOrgActiveReleaseCountStore(
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  const client = useClient()
+  const client = useClient({apiVersion: 'v2025-02-19'})
 
   const activeReleasesCount = activeReleases?.length || 0
 

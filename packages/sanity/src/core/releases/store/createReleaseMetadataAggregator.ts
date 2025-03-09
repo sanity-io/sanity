@@ -108,7 +108,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       .listen(
         `*[(${releaseIds.reduce(
           (accQuery, releaseId, index) =>
-            `${accQuery}${index === 0 ? '' : ' ||'} _id in path("versions.${releaseId}.*")`,
+            `${accQuery}${index === 0 ? '' : ' ||'} _id in path("versions.${releaseId}.**")`,
           '',
         )})]`,
         {},

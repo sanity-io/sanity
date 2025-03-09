@@ -2,6 +2,10 @@ import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../type
 import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
 import docsCommand from './docs/docsCommand'
+import devfunctionsCommand from './functions/devFunctionsCommand'
+import functionsGroup from './functions/functionsGroup'
+import logsfunctionsCommand from './functions/logsFunctionsCommand'
+import testfunctionsCommand from './functions/testFunctionsCommand'
 import helpCommand from './help/helpCommand'
 import initCommand from './init/initCommand'
 import installCommand from './install/installCommand'
@@ -39,4 +43,8 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   telemetryStatusCommand,
   generateTypegenCommand,
   typegenGroup,
+  functionsGroup,
+  devfunctionsCommand,
+  logsfunctionsCommand,
+  testfunctionsCommand,
 ]

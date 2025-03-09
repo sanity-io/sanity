@@ -65,7 +65,7 @@ const startCommand: CliCommandDefinition = {
         }))
 
       if (shouldRunDevServer) {
-        const devAction = await getDevAction()
+        const devAction = await getDevAction(context)
         await devAction(args, context)
       } else {
         // Indicate that this isn't an expected exit

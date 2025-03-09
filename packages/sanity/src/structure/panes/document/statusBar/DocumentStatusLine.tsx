@@ -1,11 +1,12 @@
 import {
+  Box,
   // eslint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Skeleton,
   Text,
 } from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'framer-motion'
 import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import {
   AvatarSkeleton,
@@ -32,6 +33,7 @@ const RELATIVE_TIME_OPTIONS = {
 } as const
 
 const MotionButton = motion.create(Button)
+const MotionBox = motion.create(Box)
 
 const ButtonSkeleton = () => {
   return (
@@ -61,7 +63,8 @@ const DocumentStatusButton = ({
     <MotionButton
       data-testid="pane-footer-document-status"
       animate={{opacity: 1}}
-      initial={{opacity: 0}} // Width of the skeleton
+      initial={{opacity: 0}}
+      exit={{opacity: 0}}
       mode="bleed"
       onClick={inspector?.name === HISTORY_INSPECTOR_NAME ? onHistoryClose : onHistoryOpen}
       padding={2}
@@ -214,13 +217,20 @@ export function DocumentStatusLine() {
     }
   }, [syncState.isSyncing, lastUpdated])
 
-  if (status) {
-    return <DocumentStatusPulse status={status || undefined} />
-  }
-
-  if (eventsEnabled) {
-    return <EventsStatus />
-  }
-
-  return <TimelineStatus />
+  return (
+    <AnimatePresence>
+      {status ? (
+        <MotionBox
+          paddingLeft={2}
+          animate={{opacity: 1}}
+          initial={{opacity: 0}}
+          exit={{opacity: 0}}
+        >
+          <DocumentStatusPulse status={status || undefined} />
+        </MotionBox>
+      ) : (
+        <>{eventsEnabled ? <EventsStatus /> : <TimelineStatus />}</>
+      )}
+    </AnimatePresence>
+  )
 }

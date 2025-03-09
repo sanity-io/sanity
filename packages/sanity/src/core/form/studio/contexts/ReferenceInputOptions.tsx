@@ -54,6 +54,11 @@ export interface ReferenceInputOptions {
    * Similar to `EditReferenceChildLink` expect without the wrapping component
    */
   onEditReference?: (options: EditReferenceOptions) => void
+
+  /**
+   * Prevent creation of documents from reference fields.
+   */
+  disableNew?: boolean
 }
 
 /**
@@ -75,6 +80,7 @@ export function ReferenceInputOptionsProvider(
     EditReferenceLinkComponent,
     onEditReference,
     initialValueTemplateItems,
+    disableNew,
   } = props
 
   const contextValue = useMemo(
@@ -83,8 +89,15 @@ export function ReferenceInputOptionsProvider(
       EditReferenceLinkComponent,
       onEditReference,
       initialValueTemplateItems,
+      disableNew,
     }),
-    [activePath, EditReferenceLinkComponent, onEditReference, initialValueTemplateItems],
+    [
+      activePath,
+      EditReferenceLinkComponent,
+      onEditReference,
+      initialValueTemplateItems,
+      disableNew,
+    ],
   )
 
   return (
