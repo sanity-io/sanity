@@ -156,7 +156,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || value.metadata.description
 
   return (
-    <Stack space={4}>
+    <Stack space={3}>
       <TitleInput
         onChange={handleTitleChange}
         value={value.metadata.title}
