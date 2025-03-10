@@ -1,13 +1,12 @@
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable complexity */
-import {SplitPane} from '@rexxars/react-split-pane'
 import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
-import {Box, Flex, type ToastContextValue} from '@sanity/ui'
+import {type ToastContextValue} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {
   getActivePerspective,
   hasPinnedPerspective,
@@ -24,17 +23,8 @@ import {prefixApiVersion} from '../util/prefixApiVersion'
 import {ResizeObserver} from '../util/resizeObserver'
 import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
-import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
-import {
-  InputBackgroundContainerLeft,
-  InputContainer,
-  Root,
-  SplitpaneContainer,
-  StyledLabel,
-} from './VisionGui.styled'
-import {VisionGuiControls} from './VisionGuiControls'
-import {VisionGuiHeader} from './VisionGuiHeader'
-import {VisionGuiResult} from './VisionGuiResult'
+import {type ParamsEditorChangeEvent} from './ParamsEditor'
+import {VisionGuiComponent} from './VisionGuiComponent'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
@@ -47,10 +37,11 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
 const sanityUrl =
   /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
-interface PaneSizeOptions {
+export interface PaneSizeOptions {
   defaultSize: number
   size?: number
   allowResize: boolean
@@ -62,7 +53,7 @@ function narrowBreakpoint(): boolean {
   return typeof window !== 'undefined' && window.innerWidth > 600
 }
 
-function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
+export function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
   return {
     defaultSize: rootHeight / (narrowBreakpoint() ? 2 : 1),
     size: rootHeight > 550 ? undefined : rootHeight * 0.4,
@@ -643,7 +634,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   }
 
   render() {
-    const {datasets, t} = this.props
+    const {datasets} = this.props
     const {
       apiVersion,
       customApiVersion,
@@ -666,110 +657,41 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     } = this.state
 
     return (
-      <Root
-        direction="column"
-        height="fill"
-        ref={this._visionRoot}
-        sizing="border"
-        overflow="hidden"
-        data-testid="vision-root"
-      >
-        <VisionGuiHeader
-          apiVersion={apiVersion}
-          customApiVersion={customApiVersion}
-          dataset={dataset}
-          datasets={datasets}
-          onChangeDataset={this.handleChangeDataset}
-          onChangeApiVersion={this.handleChangeApiVersion}
-          _customApiVersionElement={this._customApiVersionElement}
-          onCustomApiVersionChange={this.handleCustomApiVersionChange}
-          isValidApiVersion={isValidApiVersion}
-          pinnedPerspective={this.props.pinnedPerspective}
-          onChangePerspective={this.handleChangePerspective}
-          url={url}
-          perspective={perspective}
-        />
-        <SplitpaneContainer flex="auto">
-          <SplitPane
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
-            minSize={280}
-            defaultSize={400}
-            maxSize={-400}
-          >
-            <Box height="stretch" flex={1}>
-              {/*
-                  The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
-                  - It sets the initial size of the panes to 1/2 of the total available height of the container
-                  - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
-                  - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
-                  - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
-                  - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
-                  - Disables resize if the container height is less then 500px
-                  This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
-                */}
-              <SplitPane
-                className="sidebarPanes"
-                split="horizontal"
-                defaultSize={
-                  narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-                }
-                size={paneSizeOptions.size}
-                allowResize={paneSizeOptions.allowResize}
-                minSize={narrowBreakpoint() ? paneSizeOptions.minSize : 100}
-                maxSize={paneSizeOptions.maxSize}
-                primary="first"
-              >
-                <InputContainer
-                  display="flex"
-                  ref={this._queryEditorContainer}
-                  data-testid="vision-query-editor"
-                >
-                  <Box flex={1}>
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('query.label')}</StyledLabel>
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <VisionCodeMirror
-                      initialValue={query}
-                      onChange={this.handleQueryChange}
-                      ref={this._editorQueryRef}
-                    />
-                  </Box>
-                </InputContainer>
-                <InputContainer display="flex" ref={this._paramsEditorContainer}>
-                  <ParamsEditor
-                    value={rawParams}
-                    onChange={this.handleParamsChange}
-                    paramsError={paramsError}
-                    hasValidParams={hasValidParams}
-                    editorRef={this._editorParamsRef}
-                  />
-
-                  <VisionGuiControls
-                    hasValidParams={hasValidParams}
-                    queryInProgress={queryInProgress}
-                    listenInProgress={listenInProgress}
-                    onQueryExecution={this.handleQueryExecution}
-                    onListenExecution={this.handleListenExecution}
-                  />
-                </InputContainer>
-              </SplitPane>
-            </Box>
-            <VisionGuiResult
-              error={error}
-              queryInProgress={queryInProgress}
-              queryResult={queryResult}
-              listenInProgress={listenInProgress}
-              listenMutations={listenMutations}
-              dataset={dataset}
-              queryTime={queryTime}
-              e2eTime={e2eTime}
-            />
-          </SplitPane>
-        </SplitpaneContainer>
-      </Root>
+      <VisionGuiComponent
+        apiVersion={apiVersion}
+        customApiVersion={customApiVersion}
+        customApiVersionElementRef={this._customApiVersionElement}
+        dataset={dataset}
+        datasets={datasets}
+        error={error}
+        e2eTime={e2eTime}
+        hasValidParams={hasValidParams}
+        isValidApiVersion={isValidApiVersion}
+        pinnedPerspective={this.props.pinnedPerspective}
+        url={url}
+        perspective={perspective}
+        query={query}
+        queryInProgress={queryInProgress}
+        queryResult={queryResult}
+        queryTime={queryTime}
+        rawParams={rawParams}
+        visionRootRef={this._visionRoot}
+        queryEditorContainerRef={this._queryEditorContainer}
+        paramsEditorContainerRef={this._paramsEditorContainer}
+        handleQueryChange={this.handleQueryChange}
+        handleParamsChange={this.handleParamsChange}
+        handleQueryExecution={this.handleQueryExecution}
+        handleListenExecution={this.handleListenExecution}
+        handleChangeApiVersion={this.handleChangeApiVersion}
+        handleChangeDataset={this.handleChangeDataset}
+        handleChangePerspective={this.handleChangePerspective}
+        handleCustomApiVersionChange={this.handleCustomApiVersionChange}
+        listenInProgress={listenInProgress}
+        listenMutations={listenMutations}
+        narrowBreakpoint={narrowBreakpoint()}
+        paneSizeOptions={paneSizeOptions}
+        paramsError={paramsError}
+      />
     )
   }
 }

@@ -53,7 +53,7 @@ export interface VisionGuiHeaderProps {
   apiVersion: string
   onChangeApiVersion: (evt: ChangeEvent<HTMLSelectElement>) => void
   datasets: string[]
-  _customApiVersionElement: RefObject<HTMLInputElement | null>
+  customApiVersionElementRef: RefObject<HTMLInputElement | null>
   onCustomApiVersionChange: (evt: ChangeEvent<HTMLInputElement>) => void
   isValidApiVersion: boolean
   pinnedPerspective: PerspectiveContextValue
@@ -69,7 +69,7 @@ export function VisionGuiHeader({
   apiVersion,
   onChangeApiVersion,
   datasets,
-  _customApiVersionElement,
+  customApiVersionElementRef,
   onCustomApiVersionChange,
   isValidApiVersion,
   pinnedPerspective,
@@ -140,7 +140,7 @@ export function VisionGuiHeader({
               </Card>
 
               <TextInput
-                ref={_customApiVersionElement}
+                ref={customApiVersionElementRef}
                 value={customApiVersion}
                 onChange={onCustomApiVersionChange}
                 customValidity={
