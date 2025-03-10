@@ -1,46 +1,20 @@
 /* eslint-disable complexity */
 import {SplitPane} from '@rexxars/react-split-pane'
-import {
-  type ClientPerspective,
-  type ListenEvent,
-  type MutationEvent,
-  type SanityClient,
-} from '@sanity/client'
-import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Hotkeys,
-  Inline,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-  type ToastContextValue,
-  Tooltip,
-} from '@sanity/ui'
+import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
+import {ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Hotkeys, Text, type ToastContextValue, Tooltip} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ChangeEvent,
-  type ComponentType,
-  createRef,
-  Fragment,
-  PureComponent,
-  type RefObject,
-  useMemo,
-} from 'react'
-import isEqual from 'react-fast-compare'
-import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
+import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
+import {type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {
+  getActivePerspective,
+  hasPinnedPerspective,
+  hasPinnedPerspectiveChanged,
   isSupportedPerspective,
   isVirtualPerspective,
-  SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
 } from '../perspectives'
 import {type VisionProps} from '../types'
@@ -54,18 +28,15 @@ import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
-import {PerspectivePopover} from './PerspectivePopover'
 import {QueryErrorDialog} from './QueryErrorDialog'
 import {ResultView} from './ResultView'
 import {SaveCsvButton, SaveJsonButton} from './SaveResultButtons'
 import {
   ControlsContainer,
   DownloadsCard,
-  Header,
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
   InputContainer,
-  QueryCopyLink,
   Result,
   ResultContainer,
   ResultFooter,
@@ -78,6 +49,7 @@ import {
   TimingsCard,
   TimingsTextContainer,
 } from './VisionGui.styled'
+import {VisionGuiHeader} from './VisionGuiHeader'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
@@ -168,7 +140,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _visionRoot: RefObject<HTMLDivElement | null>
   _queryEditorContainer: RefObject<HTMLDivElement | null>
   _paramsEditorContainer: RefObject<HTMLDivElement | null>
-  _operationUrlElement: RefObject<HTMLInputElement | null>
   _customApiVersionElement: RefObject<HTMLInputElement | null>
   _resizeListener: ResizeObserver | undefined
   _querySubscription: Subscription | undefined
@@ -214,7 +185,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     this._visionRoot = createRef()
-    this._operationUrlElement = createRef()
     this._queryEditorContainer = createRef()
     this._paramsEditorContainer = createRef()
     this._customApiVersionElement = createRef()
@@ -277,7 +247,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
-    this.handleCopyUrl = this.handleCopyUrl.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleResize = this.handleResize.bind(this)
@@ -688,23 +657,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     )
   }
 
-  handleCopyUrl() {
-    const el = this._operationUrlElement.current
-    if (!el) {
-      return
-    }
-
-    try {
-      el.select()
-      document.execCommand('copy')
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Unable to copy to clipboard :(')
-    }
-  }
-
   render() {
-    const {datasets, t, pinnedPerspective} = this.props
+    const {datasets, t} = this.props
     const {
       apiVersion,
       customApiVersion,
@@ -738,134 +692,21 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         overflow="hidden"
         data-testid="vision-root"
       >
-        <Header paddingX={3} paddingY={2}>
-          <Grid columns={[1, 4, 8, 12]}>
-            {/* Dataset selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
-                </Card>
-                <Select value={dataset} onChange={this.handleChangeDataset}>
-                  {datasets.map((ds) => (
-                    <option key={ds}>{ds}</option>
-                  ))}
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* API version selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
-                </Card>
-                <Select
-                  value={customApiVersion === false ? apiVersion : 'other'}
-                  onChange={this.handleChangeApiVersion}
-                >
-                  {API_VERSIONS.map((version) => (
-                    <option key={version}>{version}</option>
-                  ))}
-                  <option key="other" value="other">
-                    {t('settings.other-api-version-label')}
-                  </option>
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* Custom API version input */}
-            {customApiVersion !== false && (
-              <Box padding={1} column={2}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel textOverflow="ellipsis">
-                      {t('settings.custom-api-version-label')}
-                    </StyledLabel>
-                  </Card>
-
-                  <TextInput
-                    ref={this._customApiVersionElement}
-                    value={customApiVersion}
-                    onChange={this.handleCustomApiVersionChange}
-                    customValidity={
-                      isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
-                    }
-                    maxLength={11}
-                  />
-                </Stack>
-              </Box>
-            )}
-
-            {/* Perspective selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingBottom={1}>
-                  <Inline space={1}>
-                    <Box>
-                      <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
-                    </Box>
-
-                    <Box>
-                      <PerspectivePopover />
-                    </Box>
-                  </Inline>
-                </Card>
-                <Select value={perspective || 'default'} onChange={this.handleChangePerspective}>
-                  {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
-                    if (perspectiveName === 'pinnedRelease') {
-                      return (
-                        <Fragment key="pinnedRelease">
-                          <PinnedReleasePerspectiveOption
-                            pinnedPerspective={pinnedPerspective}
-                            t={t}
-                          />
-                          <option key="default" value="default">
-                            {t('settings.perspectives.default')}
-                          </option>
-                          <hr />
-                        </Fragment>
-                      )
-                    }
-                    return <option key={perspectiveName}>{perspectiveName}</option>
-                  })}
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* Query URL (for copying) */}
-            {typeof url === 'string' ? (
-              <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel>
-                      {t('query.url')}&nbsp;
-                      <QueryCopyLink onClick={this.handleCopyUrl}>
-                        [{t('action.copy-url-to-clipboard')}]
-                      </QueryCopyLink>
-                    </StyledLabel>
-                  </Card>
-                  <Flex flex={1} gap={1}>
-                    <Box flex={1}>
-                      <TextInput readOnly type="url" ref={this._operationUrlElement} value={url} />
-                    </Box>
-                    <Tooltip content={t('action.copy-url-to-clipboard')}>
-                      <Button
-                        aria-label={t('action.copy-url-to-clipboard')}
-                        type="button"
-                        mode="ghost"
-                        icon={CopyIcon}
-                        onClick={this.handleCopyUrl}
-                      />
-                    </Tooltip>
-                  </Flex>
-                </Stack>
-              </Box>
-            ) : (
-              <Box flex={1} />
-            )}
-          </Grid>
-        </Header>
+        <VisionGuiHeader
+          apiVersion={apiVersion}
+          customApiVersion={customApiVersion}
+          dataset={dataset}
+          datasets={datasets}
+          onChangeDataset={this.handleChangeDataset}
+          onChangeApiVersion={this.handleChangeApiVersion}
+          _customApiVersionElement={this._customApiVersionElement}
+          onCustomApiVersionChange={this.handleCustomApiVersionChange}
+          isValidApiVersion={isValidApiVersion}
+          pinnedPerspective={this.props.pinnedPerspective}
+          onChangePerspective={this.handleChangePerspective}
+          url={url}
+          perspective={perspective}
+        />
         <SplitpaneContainer flex="auto">
           <SplitPane
             // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
@@ -1082,66 +923,4 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       </Root>
     )
   }
-}
-
-function getActivePerspective({
-  visionPerspective,
-  pinnedPerspective,
-}: {
-  visionPerspective: ClientPerspective | SupportedPerspective | undefined
-  pinnedPerspective: PerspectiveContextValue
-}): ClientPerspective | undefined {
-  if (visionPerspective !== 'pinnedRelease') {
-    return visionPerspective
-  }
-
-  if (pinnedPerspective.perspectiveStack.length !== 0) {
-    return pinnedPerspective.perspectiveStack
-  }
-
-  if (typeof pinnedPerspective.selectedPerspectiveName !== 'undefined') {
-    return [pinnedPerspective.selectedPerspectiveName]
-  }
-
-  return undefined
-}
-
-const PinnedReleasePerspectiveOption: ComponentType<{
-  pinnedPerspective: PerspectiveContextValue
-  t: TFunction
-}> = ({pinnedPerspective, t}) => {
-  const name =
-    typeof pinnedPerspective.selectedPerspective === 'object'
-      ? pinnedPerspective.selectedPerspective.metadata.title
-      : pinnedPerspective.selectedPerspectiveName
-
-  const label = hasPinnedPerspective(pinnedPerspective)
-    ? `(${t('settings.perspectives.pinned-release-label')})`
-    : t('settings.perspectives.pinned-release-label')
-
-  const text = useMemo(
-    () => [name, label].filter((value) => typeof value !== 'undefined').join(' '),
-    [label, name],
-  )
-
-  return (
-    <option value="pinnedRelease" disabled={!hasPinnedPerspective(pinnedPerspective)}>
-      {text}
-    </option>
-  )
-}
-
-function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
-  return typeof selectedPerspectiveName !== 'undefined'
-}
-
-function hasPinnedPerspectiveChanged(
-  previous: PerspectiveContextValue,
-  next: PerspectiveContextValue,
-): boolean {
-  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
-
-  return (
-    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
-  )
 }

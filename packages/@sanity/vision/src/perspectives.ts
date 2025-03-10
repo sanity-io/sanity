@@ -1,3 +1,7 @@
+import {type ClientPerspective} from '@sanity/client'
+import isEqual from 'react-fast-compare'
+import {type PerspectiveContextValue} from 'sanity'
+
 export const SUPPORTED_PERSPECTIVES = ['pinnedRelease', 'raw', 'published', 'drafts'] as const
 
 export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
@@ -25,4 +29,41 @@ export function isVirtualPerspective(
     typeof maybeVirtualPerspective === 'string' &&
     VIRTUAL_PERSPECTIVES.includes(maybeVirtualPerspective as VirtualPerspective)
   )
+}
+
+export function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
+  return typeof selectedPerspectiveName !== 'undefined'
+}
+
+export function hasPinnedPerspectiveChanged(
+  previous: PerspectiveContextValue,
+  next: PerspectiveContextValue,
+): boolean {
+  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
+
+  return (
+    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
+  )
+}
+
+export function getActivePerspective({
+  visionPerspective,
+  pinnedPerspective,
+}: {
+  visionPerspective: ClientPerspective | SupportedPerspective | undefined
+  pinnedPerspective: PerspectiveContextValue
+}): ClientPerspective | undefined {
+  if (visionPerspective !== 'pinnedRelease') {
+    return visionPerspective
+  }
+
+  if (pinnedPerspective.perspectiveStack.length !== 0) {
+    return pinnedPerspective.perspectiveStack
+  }
+
+  if (typeof pinnedPerspective.selectedPerspectiveName !== 'undefined') {
+    return [pinnedPerspective.selectedPerspectiveName]
+  }
+
+  return undefined
 }
