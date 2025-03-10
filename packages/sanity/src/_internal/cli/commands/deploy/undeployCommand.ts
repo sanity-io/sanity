@@ -5,6 +5,7 @@ import {
 } from '@sanity/cli'
 
 import {type UndeployStudioActionFlags} from '../../actions/deploy/undeployAction'
+import {determineIsCoreApp} from '../../util/determineIsCoreApp'
 
 const helpText = `
 Options
@@ -23,7 +24,20 @@ const undeployCommand: CliCommandDefinition = {
     args: CliCommandArguments<UndeployStudioActionFlags>,
     context: CliCommandContext,
   ) => {
-    const mod = await import('../../actions/deploy/undeployAction')
+    let mod: {
+      default: (
+        args: CliCommandArguments<UndeployStudioActionFlags>,
+        context: CliCommandContext,
+      ) => Promise<void>
+    }
+
+    const isCoreApp = determineIsCoreApp(context.cliConfig)
+
+    if (isCoreApp) {
+      mod = await import('../../actions/app/undeployAction')
+    } else {
+      mod = await import('../../actions/deploy/undeployAction')
+    }
 
     return mod.default(args, context)
   },
