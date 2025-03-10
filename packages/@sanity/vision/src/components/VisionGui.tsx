@@ -1,8 +1,7 @@
 /* eslint-disable complexity */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text, type ToastContextValue, Tooltip} from '@sanity/ui'
+import {Box, Flex, type ToastContextValue} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
@@ -740,31 +739,14 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                   </Box>
                 </InputContainer>
                 <InputContainer display="flex" ref={this._paramsEditorContainer}>
-                  <Card
-                    flex={1}
-                    tone={hasValidParams ? 'default' : 'critical'}
-                    data-testid="params-editor"
-                  >
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('params.label')}</StyledLabel>
-                        {paramsError && (
-                          <Tooltip placement="top-end" portal content={paramsError}>
-                            <Box padding={1} marginX={2}>
-                              <Text>
-                                <ErrorOutlineIcon />
-                              </Text>
-                            </Box>
-                          </Tooltip>
-                        )}
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <ParamsEditor
-                      value={rawParams}
-                      onChange={this.handleParamsChange}
-                      editorRef={this._editorParamsRef}
-                    />
-                  </Card>
+                  <ParamsEditor
+                    value={rawParams}
+                    onChange={this.handleParamsChange}
+                    paramsError={paramsError}
+                    hasValidParams={hasValidParams}
+                    editorRef={this._editorParamsRef}
+                  />
+
                   <VisionGuiControls
                     hasValidParams={hasValidParams}
                     queryInProgress={queryInProgress}

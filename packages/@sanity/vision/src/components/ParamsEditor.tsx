@@ -1,3 +1,5 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
 import {debounce} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
@@ -5,6 +7,7 @@ import {type TFunction, useTranslation} from 'sanity'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from '../util/tryParseParams'
+import {InputBackgroundContainerLeft, StyledLabel} from './VisionGui.styled'
 
 const defaultValue = `{\n  \n}`
 
@@ -19,6 +22,8 @@ export interface ParamsEditorProps {
   value: string
   onChange: (changeEvt: ParamsEditorChangeEvent) => void
   editorRef: React.RefObject<VisionCodeMirrorHandle | null>
+  paramsError: string | undefined
+  hasValidParams: boolean
 }
 
 export interface ParamsEditorChange {
@@ -26,7 +31,7 @@ export interface ParamsEditorChange {
 }
 
 export function ParamsEditor(props: ParamsEditorProps) {
-  const {onChange} = props
+  const {onChange, paramsError, hasValidParams} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {raw: value, error, parsed, valid} = eventFromValue(props.value, t)
   const [isValid, setValid] = useState(valid)
@@ -51,11 +56,27 @@ export function ParamsEditor(props: ParamsEditorProps) {
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
   return (
-    <VisionCodeMirror
-      initialValue={props.value || defaultValue}
-      onChange={handleChange}
-      ref={props.editorRef}
-    />
+    <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
+      <InputBackgroundContainerLeft>
+        <Flex>
+          <StyledLabel muted>{t('params.label')}</StyledLabel>
+          {paramsError && (
+            <Tooltip animate placement="top" portal content={<Text size={1}>{paramsError}</Text>}>
+              <Box padding={1} marginX={2}>
+                <Text>
+                  <ErrorOutlineIcon />
+                </Text>
+              </Box>
+            </Tooltip>
+          )}
+        </Flex>
+      </InputBackgroundContainerLeft>
+      <VisionCodeMirror
+        initialValue={props.value || defaultValue}
+        onChange={handleChange}
+        ref={props.editorRef}
+      />
+    </Card>
   )
 }
 
