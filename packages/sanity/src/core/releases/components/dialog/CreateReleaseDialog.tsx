@@ -1,6 +1,6 @@
 import {ArrowRightIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, useToast} from '@sanity/ui'
+import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
@@ -89,23 +89,26 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       id="create-release-dialog"
       onClose={onCancel}
       width={1}
+      padding={false}
     >
-      <form onSubmit={handleOnSubmit}>
-        <Box paddingX={4} paddingBottom={4}>
-          <ReleaseForm onChange={handleOnChange} value={release} />
-        </Box>
-        <Flex justify="flex-end" paddingTop={5}>
-          <Button
-            size="large"
-            disabled={isSubmitting}
-            iconRight={ArrowRightIcon}
-            type="submit"
-            text={dialogTitle}
-            loading={isSubmitting}
-            data-testid="submit-release-button"
-          />
-        </Flex>
-      </form>
+      <Card padding={4} borderTop>
+        <form onSubmit={handleOnSubmit}>
+          <Box paddingBottom={4}>
+            <ReleaseForm onChange={handleOnChange} value={release} />
+          </Box>
+          <Flex justify="flex-end" paddingTop={5}>
+            <Button
+              size="large"
+              disabled={isSubmitting}
+              iconRight={ArrowRightIcon}
+              type="submit"
+              text={dialogTitle}
+              loading={isSubmitting}
+              data-testid="submit-release-button"
+            />
+          </Flex>
+        </form>
+      </Card>
     </Dialog>
   )
 }
