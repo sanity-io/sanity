@@ -72,6 +72,12 @@ export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum:
             onClick={handlePinRelease}
             radius="full"
             selected={isReleasePinned}
+            aria-label={
+              isReleasePinned
+                ? `${t('dashboard.details.unpin-release')}: "${release.metadata.title}"`
+                : `${t('dashboard.details.pin-release')}: "${release.metadata.title}"`
+            }
+            aria-live="assertive"
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
