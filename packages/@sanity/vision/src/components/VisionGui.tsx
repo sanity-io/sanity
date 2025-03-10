@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {type ListenEvent, type MutationEvent, type SanityClient} from '@sanity/client'
-import {ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Hotkeys, Text, type ToastContextValue, Tooltip} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text, type ToastContextValue, Tooltip} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
@@ -27,13 +27,13 @@ import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {
-  ControlsContainer,
   InputBackgroundContainerLeft,
   InputContainer,
   Root,
   SplitpaneContainer,
   StyledLabel,
 } from './VisionGui.styled'
+import {VisionGuiControls} from './VisionGuiControls'
 import {VisionGuiHeader} from './VisionGuiHeader'
 import {VisionGuiResult} from './VisionGuiResult'
 
@@ -765,67 +765,13 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                       editorRef={this._editorParamsRef}
                     />
                   </Card>
-                  {/* Controls (listen/run) */}
-                  <ControlsContainer>
-                    <Card padding={3} paddingX={3}>
-                      <Tooltip
-                        content={
-                          <Card radius={4}>
-                            <Text size={1} muted>
-                              {t('params.error.params-invalid-json')}
-                            </Text>
-                          </Card>
-                        }
-                        placement="top"
-                        disabled={hasValidParams}
-                        portal
-                      >
-                        <Flex justify="space-evenly">
-                          <Box flex={1}>
-                            <Tooltip
-                              content={
-                                <Card radius={4}>
-                                  <Hotkeys keys={['Ctrl', 'Enter']} />
-                                </Card>
-                              }
-                              placement="top"
-                              portal
-                            >
-                              <Button
-                                width="fill"
-                                onClick={this.handleQueryExecution}
-                                type="button"
-                                icon={queryInProgress ? StopIcon : PlayIcon}
-                                disabled={listenInProgress || !hasValidParams}
-                                tone={queryInProgress ? 'positive' : 'primary'}
-                                text={
-                                  queryInProgress
-                                    ? t('action.query-cancel')
-                                    : t('action.query-execute')
-                                }
-                              />
-                            </Tooltip>
-                          </Box>
-                          <Box flex={1} marginLeft={3}>
-                            <Button
-                              width="fill"
-                              onClick={this.handleListenExecution}
-                              type="button"
-                              icon={listenInProgress ? StopIcon : PlayIcon}
-                              text={
-                                listenInProgress
-                                  ? t('action.listen-cancel')
-                                  : t('action.listen-execute')
-                              }
-                              mode="ghost"
-                              disabled={!hasValidParams}
-                              tone={listenInProgress ? 'positive' : 'default'}
-                            />
-                          </Box>
-                        </Flex>
-                      </Tooltip>
-                    </Card>
-                  </ControlsContainer>
+                  <VisionGuiControls
+                    hasValidParams={hasValidParams}
+                    queryInProgress={queryInProgress}
+                    listenInProgress={listenInProgress}
+                    onQueryExecution={this.handleQueryExecution}
+                    onListenExecution={this.handleListenExecution}
+                  />
                 </InputContainer>
               </SplitPane>
             </Box>
