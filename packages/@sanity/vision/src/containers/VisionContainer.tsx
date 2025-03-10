@@ -26,6 +26,16 @@ export function VisionContainer(props: VisionProps) {
         [props.client.config().dataset || 'production']
       : // Otherwise use the loaded list, obviously
         loadedDatasets
+  const projectId = props.client.config().projectId
 
-  return <VisionGui {...props} datasets={datasets} toast={toast} t={t} />
+  return (
+    <VisionGui
+      {...props}
+      key={projectId}
+      datasets={datasets}
+      toast={toast}
+      t={t}
+      projectId={projectId}
+    />
+  )
 }

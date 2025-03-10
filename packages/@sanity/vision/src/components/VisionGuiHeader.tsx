@@ -9,7 +9,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {type PerspectiveContextValue, type TFunction, useTranslation} from 'sanity'
+import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
@@ -56,7 +56,6 @@ export interface VisionGuiHeaderProps {
   customApiVersionElementRef: RefObject<HTMLInputElement | null>
   onCustomApiVersionChange: (evt: ChangeEvent<HTMLInputElement>) => void
   isValidApiVersion: boolean
-  pinnedPerspective: PerspectiveContextValue
   onChangePerspective: (evt: ChangeEvent<HTMLSelectElement>) => void
   url?: string
   perspective?: SupportedPerspective
@@ -72,11 +71,11 @@ export function VisionGuiHeader({
   customApiVersionElementRef,
   onCustomApiVersionChange,
   isValidApiVersion,
-  pinnedPerspective,
   onChangePerspective,
   url,
   perspective,
 }: VisionGuiHeaderProps) {
+  const pinnedPerspective = usePerspective()
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
