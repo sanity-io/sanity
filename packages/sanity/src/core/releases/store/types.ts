@@ -10,7 +10,21 @@ import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 /**
  * @beta
  */
-export type ReleaseType = 'asap' | 'scheduled' | 'undecided'
+export const releaseTypes = ['asap', 'scheduled', 'undecided'] as const
+
+/**
+ * @beta
+ */
+export type ReleaseType = (typeof releaseTypes)[number]
+
+/**
+ * @beta
+ */
+export function isReleaseType(maybeReleaseType: unknown): maybeReleaseType is ReleaseType {
+  return (
+    typeof maybeReleaseType === 'string' && releaseTypes.includes(maybeReleaseType as ReleaseType)
+  )
+}
 
 /**
  * @beta
