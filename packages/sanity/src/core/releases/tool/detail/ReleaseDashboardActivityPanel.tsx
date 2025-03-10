@@ -10,7 +10,6 @@ import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
@@ -32,6 +31,7 @@ export function ReleaseDashboardActivityPanel({
   show,
 }: ReleaseDashboardActivityPanelProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   return (
     <AnimatePresence>
       {show && (
@@ -68,7 +68,7 @@ export function ReleaseDashboardActivityPanel({
                 )}
                 <ReleaseActivityList
                   releaseTitle={
-                    release.metadata.title || getReleaseIdFromReleaseDocumentId(release._id)
+                    release.metadata.title || tCore('release.placeholder-untitled-release')
                   }
                   releaseId={release._id}
                   events={events.events}

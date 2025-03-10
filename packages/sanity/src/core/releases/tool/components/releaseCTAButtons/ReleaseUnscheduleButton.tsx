@@ -25,6 +25,7 @@ export const ReleaseUnscheduleButton = ({
   const toast = useToast()
   const {unschedule} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'unscheduling'>('idle')
 
@@ -41,7 +42,9 @@ export const ReleaseUnscheduleButton = ({
             <Translate
               t={t}
               i18nKey="toast.unschedule.success"
-              values={{title: release.metadata.title}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
             />
           </Text>
         ),
@@ -54,7 +57,10 @@ export const ReleaseUnscheduleButton = ({
             <Translate
               t={t}
               i18nKey="toast.unschedule.error"
-              values={{title: release.metadata.title, error: schedulingError.message}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                error: schedulingError.message,
+              }}
             />
           </Text>
         ),
@@ -63,7 +69,7 @@ export const ReleaseUnscheduleButton = ({
     } finally {
       setStatus('idle')
     }
-  }, [unschedule, release._id, release.metadata.title, telemetry, toast, t])
+  }, [unschedule, release._id, release.metadata.title, telemetry, toast, t, tCore])
 
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
@@ -92,7 +98,7 @@ export const ReleaseUnscheduleButton = ({
               t={t}
               i18nKey="unschedule-dialog.confirm-description"
               values={{
-                title: release.metadata.title,
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 documentsLength: documents.length,
                 count: documents.length,
               }}
@@ -101,7 +107,7 @@ export const ReleaseUnscheduleButton = ({
         </Text>
       </Dialog>
     )
-  }, [release.metadata.title, documents.length, handleConfirmSchedule, status, t])
+  }, [release.metadata.title, documents.length, handleConfirmSchedule, status, t, tCore])
 
   return (
     <>
