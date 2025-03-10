@@ -30,7 +30,7 @@ export default async function deleteSchemaAction(
   const {apiClient, output} = context
 
   //split ids by comma
-  const schemaIds = flags.ids.split(',')
+  const schemaIds = flags.ids.split(',').map((id) => id.trim())
 
   const client = apiClient({
     requireUser: true,
@@ -66,7 +66,7 @@ export default async function deleteSchemaAction(
               projectId: workspace.projectId,
               useCdn: false,
             })
-            .delete(schemaId.trim())
+            .delete(schemaId)
 
           if (!deletedSchema.results.length) {
             output.error(`Schema ${schemaId} not found in workspace: ${workspace.name}`)
