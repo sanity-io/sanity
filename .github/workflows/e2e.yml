@@ -25,23 +25,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      
+
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         id: pnpm-install
         with:
           run_install: false
-          
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-          
+
       - name: Generate hash for cache key
         id: hash
         run: echo "hash=${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
-          
+
       - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v4
@@ -54,28 +54,28 @@ jobs:
             ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
             ${{ runner.os }}-pnpm-store-
             ${{ runner.os }}-
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Store Playwright's Version
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
-          
+
       - name: Cache Playwright Browsers
         id: cache-playwright-browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
-          
+
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
-        
+
       - name: Cache project node_modules
         uses: actions/cache@v4
         with:
@@ -104,7 +104,7 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
-          
+
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
@@ -172,7 +172,7 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
-          
+
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
@@ -237,7 +237,7 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
-          
+
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
