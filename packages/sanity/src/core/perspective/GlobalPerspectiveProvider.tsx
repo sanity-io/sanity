@@ -1,5 +1,5 @@
 import {Text, useToast} from '@sanity/ui'
-import {type ReactNode, useEffect, useMemo} from 'react'
+import {type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -80,6 +80,7 @@ const ResetPerspectiveHandler = () => {
  */
 export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   const router = useRouter()
+  const channelRef = useRef<BroadcastChannel | null>(null)
 
   const selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
@@ -90,6 +91,36 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
     [router.stickyParams.excludedPerspectives],
   )
+
+  useEffect(() => {
+    channelRef.current = new BroadcastChannel('perspective-sync')
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'UPDATE_PERSPECTIVE') {
+        router.navigateStickyParams({
+          perspective: event.data.value || '',
+        })
+      }
+    }
+
+    channelRef.current.addEventListener('message', handleMessage)
+
+    return () => {
+      if (channelRef.current) {
+        channelRef.current.removeEventListener('message', handleMessage)
+        channelRef.current.close()
+        channelRef.current = null
+      }
+    }
+  }, [router])
+
+  // Broadcast updates when perspective changes
+  useEffect(() => {
+    if (channelRef.current) {
+      channelRef.current.postMessage({type: 'UPDATE_PERSPECTIVE', value: selectedPerspectiveName})
+    }
+  }, [selectedPerspectiveName])
+
   return (
     <PerspectiveProvider
       selectedPerspectiveName={selectedPerspectiveName}

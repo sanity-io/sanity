@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {useSetPerspective} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
@@ -121,6 +122,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
+  const setPerspective = useSetPerspective()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -162,9 +164,10 @@ export const VersionChip = memo(function VersionChip(props: {
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
       await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      setPerspective(getReleaseIdFromReleaseDocumentId(targetRelease))
       close()
     },
-    [createVersion, docId, close],
+    [createVersion, docId, setPerspective, close],
   )
 
   const referenceElement = useMemo(() => {

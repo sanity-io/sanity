@@ -193,16 +193,22 @@ export function PaneRouterProvider(props: {
       // Duplicate the current pane, with optional overrides for payload, parameters
       duplicateCurrent: (options): void => {
         modifyCurrentGroup((siblings, item) => {
-          const duplicatedItem = {
+          console.log({item, siblings})
+          const newItem = {
             ...item,
+            id: '6c3816fa-94cc-4750-b856-dc16b2765e61',
+            params: {template: 'species'},
+          }
+          const duplicatedItem = {
+            ...newItem,
             payload: options?.payload || item.payload,
-            params: options?.params || item.params,
+            params: options?.params || newItem.params,
           }
 
           return [
-            ...siblings.slice(0, siblingIndex),
+            ...siblings.slice(0, siblingIndex + 1),
             duplicatedItem,
-            ...siblings.slice(siblingIndex),
+            ...siblings.slice(siblingIndex + 1),
           ]
         })
       },

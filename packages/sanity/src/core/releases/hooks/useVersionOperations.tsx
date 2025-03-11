@@ -3,7 +3,6 @@ import {useToast} from '@sanity/ui'
 
 import {useTranslation} from '../../i18n'
 import {type ReleaseId} from '../../perspective/types'
-import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
@@ -23,8 +22,6 @@ export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
   const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
 
-  const setPerspective = useSetPerspective()
-
   const toast = useToast()
   const {t} = useTranslation()
 
@@ -36,7 +33,6 @@ export function useVersionOperations(): VersionOperationsValue {
     const origin = getDocumentVariantType(documentId)
     try {
       await createVersion(releaseId, documentId, initialValue)
-      setPerspective(releaseId)
       telemetry.log(AddedVersion, {
         documentOrigin: origin,
       })

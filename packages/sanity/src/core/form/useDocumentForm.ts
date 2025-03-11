@@ -294,6 +294,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     // in cases where the document has no draft or published, but has a version,
     // and that version doesn't match current pinned version
     // we disable editing
+    // WHAT THE...
     if (
       editState.version &&
       !editState.draft &&

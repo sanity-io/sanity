@@ -1,14 +1,16 @@
-import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, CalendarIcon, CopyIcon, TransferIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo, useEffect, useRef, useState} from 'react'
+import {usePerspective} from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {structureLocaleNamespace, useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
-import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
+import {getDraftId, getPublishedId, getVersionId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -49,7 +51,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     type,
   } = props
   const {t} = useTranslation()
+  const {t: tStructure} = useTranslation(structureLocaleNamespace)
   const {mode} = useReleasesUpsell()
+  const {onMenuAction} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const isPublished = isPublishedId(documentId) && !isVersion
   const optionsReleaseList = releases.map((release) => ({
     value: release,
@@ -83,6 +88,11 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     }
   }, [checkWithPermissionGuard, createRelease])
 
+  const previousId = selectedReleaseId
+    ? getVersionId(documentId, selectedReleaseId)
+    : getDraftId(documentId)
+  const nextId = isVersion ? getVersionId(documentId, fromRelease) : getDraftId(documentId)
+
   return (
     <>
       <Menu>
@@ -115,7 +125,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                 <MenuItem
                   as="a"
                   key={option.value._id}
-                  onClick={() => onCreateVersion(option.value._id)}
+                  onClick={() => {
+                    onCreateVersion(option.value._id)
+                    // setPerspective()
+                  }}
                   renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
                   disabled={disabled || isReleaseScheduled}
                   tooltipProps={{
@@ -134,6 +147,24 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             disabled={mode === 'disabled'}
           />
         </MenuGroup>
+        <MenuItem
+          icon={TransferIcon}
+          onClick={() =>
+            onMenuAction({
+              action: 'compareVersions',
+              group: 'inspectors',
+              previousId,
+              nextId,
+              title: tStructure('compare-versions.menu-item.title'),
+              icon: TransferIcon,
+            })
+          }
+          text={tStructure('compare-versions.menu-item.title')}
+          tooltipProps={{
+            disabled: hasDiscardPermission === true,
+            content: t('release.action.permission.error'),
+          }}
+        />
         {!isPublished && (
           <>
             <MenuDivider />

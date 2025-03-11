@@ -62,6 +62,8 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 export function ReferenceField(props: ReferenceFieldProps) {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, open, inputId, children, inputProps} = props
+
+  // console.log({schemaType})
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
   const {selectedReleaseId} = usePerspective()
 

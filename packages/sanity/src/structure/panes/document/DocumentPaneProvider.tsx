@@ -345,16 +345,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         handleInspectorAction(item)
       }
 
-      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+      if (
+        item.action === 'compareVersions' &&
+        typeof (item.previousId || previousId) !== 'undefined'
+      ) {
         diffViewRouter.navigateDiffView({
           mode: 'version',
           previousDocument: {
             type: documentType,
-            id: previousId,
+            id: item.previousId || previousId,
           },
           nextDocument: {
             type: documentType,
-            id: value._id,
+            id: item.nextId || value._id,
           },
         })
         return true

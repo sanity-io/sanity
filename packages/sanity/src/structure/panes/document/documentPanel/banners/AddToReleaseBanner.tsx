@@ -7,6 +7,7 @@ import {
   LATEST,
   type ReleaseDocument,
   Translate,
+  useSetPerspective,
   useTranslation,
   useVersionOperations,
 } from 'sanity'
@@ -38,6 +39,7 @@ export function AddToReleaseBanner({
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
+  const setPerspective = useSetPerspective()
 
   const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
@@ -50,6 +52,7 @@ export function AddToReleaseBanner({
           documentId,
           value,
         )
+        setPerspective(getReleaseIdFromReleaseDocumentId(currentRelease._id))
         setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
@@ -65,7 +68,7 @@ export function AddToReleaseBanner({
         setVersionCreateState(undefined)
       }
     }
-  }, [createVersion, currentRelease._id, documentId, t, toast, value])
+  }, [createVersion, currentRelease._id, documentId, setPerspective, t, toast, value])
 
   const now = useCurrentTime(200)
 

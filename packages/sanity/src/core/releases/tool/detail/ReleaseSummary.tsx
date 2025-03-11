@@ -132,6 +132,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       try {
         await createVersion(releaseId, documentToAdd._id)
+        // setPerspective()
 
         const origin = getDocumentVariantType(documentToAdd._id)
 
