@@ -70,11 +70,11 @@ interface QueryExecutionOptions {
 interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
-  clientDataset: string | undefined
+  defaultDataset: string
 }
 
 export function VisionGui(props: VisionGuiProps) {
-  const {datasets, config, projectId, clientDataset} = props
+  const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
@@ -87,7 +87,6 @@ export function VisionGui(props: VisionGuiProps) {
   const querySubscriptionRef = useRef<Subscription | undefined>(undefined)
   const listenSubscriptionRef = useRef<Subscription | undefined>(undefined)
 
-  const defaultDataset = config.defaultDataset || clientDataset || datasets[0]
   const [localStorage] = useState(() => getLocalStorage(projectId || 'default'))
 
   const {storedDataset, storedApiVersion, storedQuery, storedParams, storedPerspective} =
