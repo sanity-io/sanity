@@ -1,0 +1,41 @@
+name: Setup Environment
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "Node.js version"
+        required: false
+        default: "18"
+        type: string
+    outputs:
+      cache-hash:
+        description: "Hash of the lock file for caching"
+        value: ${{ jobs.setup.outputs.cache-hash }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hash: ${{ steps.set-cache-hash.outputs.cache-hash }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Set cache hash
+        id: set-cache-hash
+        run: echo "cache-hash=${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT 
