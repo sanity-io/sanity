@@ -1,5 +1,5 @@
 import {debounce} from 'lodash'
-import {type ClipboardEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -18,7 +18,6 @@ export interface ParamsEditorChangeEvent {
 export interface ParamsEditorProps {
   value: string
   onChange: (changeEvt: ParamsEditorChangeEvent) => void
-  onPasteCapture: (event: ClipboardEvent<HTMLDivElement>) => void
 }
 
 export interface ParamsEditorChange {
@@ -26,7 +25,7 @@ export interface ParamsEditorChange {
 }
 
 export function ParamsEditor(props: ParamsEditorProps) {
-  const {onChange, onPasteCapture} = props
+  const {onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {raw: value, error, parsed, valid} = eventFromValue(props.value, t)
   const [isValid, setValid] = useState(valid)
@@ -50,13 +49,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
   )
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
-  return (
-    <VisionCodeMirror
-      value={props.value || defaultValue}
-      onChange={handleChange}
-      onPasteCapture={onPasteCapture}
-    />
-  )
+  return <VisionCodeMirror value={props.value || defaultValue} onChange={handleChange} />
 }
 
 function eventFromValue(

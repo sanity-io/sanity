@@ -23,7 +23,6 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {debounce} from 'lodash'
 import {
   type ChangeEvent,
   type ComponentType,
@@ -272,13 +271,12 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this.handleListenExecution = this.handleListenExecution.bind(this)
     this.handleListenerEvent = this.handleListenerEvent.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
-    this.handleQueryChange = debounce(this.handleQueryChange, 300).bind(this)
+    this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
     this.handleCopyUrl = this.handleCopyUrl.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleResize = this.handleResize.bind(this)
-    this.handleOnPasteCapture = this.handleOnPasteCapture.bind(this)
     this.setPerspective = this.setPerspective.bind(this)
   }
 
@@ -330,8 +328,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
   }
 
-  handlePaste(evt: React.ClipboardEvent<HTMLDivElement> | ClipboardEvent, stopPropagation = false) {
-    if (!evt?.clipboardData) {
+  handlePaste(evt: ClipboardEvent) {
+    if (!evt.clipboardData) {
       return
     }
 
@@ -384,10 +382,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     evt.preventDefault()
-    if (stopPropagation) {
-      // Stops propagation for the pasteEvent that occurs in the CodeMirror element if it has a match
-      evt.stopPropagation()
-    }
     this.setState(
       (prevState) => ({
         dataset: this.props.datasets.includes(usedDataset) ? usedDataset : prevState.dataset,
@@ -424,10 +418,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         })
       },
     )
-  }
-
-  handleOnPasteCapture(ev: React.ClipboardEvent<HTMLDivElement>) {
-    this.handlePaste(ev, true)
   }
 
   cancelQuery() {
@@ -904,11 +894,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         <StyledLabel muted>{t('query.label')}</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <VisionCodeMirror
-                      value={query}
-                      onChange={this.handleQueryChange}
-                      onPasteCapture={this.handleOnPasteCapture}
-                    />
+                    <VisionCodeMirror value={query} onChange={this.handleQueryChange} />
                   </Box>
                 </InputContainer>
                 <InputContainer display="flex" ref={this._paramsEditorContainer}>
@@ -927,11 +913,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         )}
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <ParamsEditor
-                      value={rawParams}
-                      onChange={this.handleParamsChange}
-                      onPasteCapture={this.handleOnPasteCapture}
-                    />
+                    <ParamsEditor value={rawParams} onChange={this.handleParamsChange} />
                   </Card>
                   {/* Controls (listen/run) */}
                   <ControlsContainer>
