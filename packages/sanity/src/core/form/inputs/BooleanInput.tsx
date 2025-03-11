@@ -1,5 +1,4 @@
 import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-// eslint-disable-next-line no-restricted-imports
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
@@ -67,9 +66,9 @@ export function BooleanInput(props: BooleanInputProps) {
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
         <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
           <FormFieldBaseHeader
-            __internal_comments={comments}
-            __internal_slot={slot}
-            actions={actions}
+            //__internal_comments={comments}
+            //__internal_slot={slot}
+            // actions={actions}
             fieldFocused={Boolean(focused)}
             fieldHovered={hovered}
             presence={presence}

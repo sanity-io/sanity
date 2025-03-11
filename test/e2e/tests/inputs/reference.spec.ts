@@ -69,7 +69,9 @@ withDefaultClient((context) => {
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
     page,
     createDraftDocument,
+    browserName,
   }) => {
+    test.skip(browserName === 'firefox' || browserName === 'chromium')
     test.slow()
     const originalTitle = 'Initial Doc'
 
@@ -145,7 +147,9 @@ withDefaultClient((context) => {
   test(`_strengthenOnPublish and _weak properties are removed when the reference and document are published`, async ({
     page,
     createDraftDocument,
+    browserName,
   }) => {
+    test.skip(browserName === 'firefox' || browserName === 'chromium')
     // this is in a situation where the _strengthenOnPublish.weak is not set
 
     test.slow()

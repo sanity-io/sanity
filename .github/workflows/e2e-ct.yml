@@ -222,20 +222,6 @@ jobs:
           # Get the first run's ID even though it might be correct it should bring to the right place
           job_name: "playwright-ct-test (chromium, 1, 2)"
 
-      - name: Parse playwright report
-        id: parse-playwright-report
-        if: always()
-        run: pnpm --filter sanity write:playwright-report-as-pr-comment
-        env:
-          GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
-
-      - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
-        if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
-        with:
-          comment_tag: "playwright-ct-report"
-          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-report-pr-comment.md
-
       - uses: actions/upload-artifact@v4
         if: always()
         with:

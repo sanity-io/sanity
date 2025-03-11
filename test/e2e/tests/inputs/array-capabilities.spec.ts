@@ -3,9 +3,13 @@ import {type SanityDocument} from '@sanity/client'
 import {test as base} from '@sanity/test'
 
 const test = base.extend<{testDoc: SanityDocument}>({
-  testDoc: async ({page, sanityClient}, use) => {
+  testDoc: async ({page, sanityClient}, fnUse) => {
+    const referenceDoc = await sanityClient.create({
+      _type: 'author',
+      name: 'Test Author',
+    })
     const testDoc = await sanityClient.create({
-      _type: 'arrayCapabilitiesExample',
+      _type: 'arrayCapabilities',
       title: 'e2e fixture',
       objectArray: [
         {_type: 'something', _key: '5b75c4005e47', first: 'First'},
@@ -16,14 +20,16 @@ const test = base.extend<{testDoc: SanityDocument}>({
         {_type: 'something', _key: '630ae68957fb', first: 'Second'},
       ],
       primitiveArray: ['First', 2],
+      arrayOfReferences: [{_type: 'reference', _ref: referenceDoc._id}],
     })
-    await use(testDoc)
+    await fnUse(testDoc)
     await sanityClient.delete(testDoc._id)
+    await sanityClient.delete(referenceDoc._id)
   },
 })
 
 test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
-  await page.goto(`/test/content/arrayCapabilitiesExample;${testDoc._id}`)
+  await page.goto(`/test/content/input-debug;arrayCapabilities;${testDoc._id}`)
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })

@@ -27,7 +27,7 @@ export interface DocumentStatusBarProps {
 
 const CONTAINER_BREAKPOINT = 480 // px
 
-const AnimatedCard = motion(Card)
+const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props

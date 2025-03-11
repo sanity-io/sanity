@@ -7,13 +7,12 @@ import {
   useMemo,
   useSyncExternalStore,
 } from 'react'
-// eslint-disable-next-line no-restricted-imports
-import {type FieldCommentsProps} from 'sanity'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
 import {type DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'
 import {supportsTouch} from '../../../util'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 import {useHoveredField} from '../useHoveredField'
 
 type FieldActionsProviderProps = PropsWithChildren<{

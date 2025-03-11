@@ -99,6 +99,12 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
               onClick={handlePinRelease}
               radius="full"
               selected={isSelected}
+              aria-label={
+                isSelected
+                  ? `${tRelease('dashboard.details.unpin-release')}: "${release.metadata.title}"`
+                  : `${tRelease('dashboard.details.pin-release')}: "${release.metadata.title}"`
+              }
+              aria-live="assertive"
             />
           )}
           {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
