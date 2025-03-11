@@ -43,13 +43,15 @@ export function ReleaseDashboardFooter(props: {
         )
       }
 
-      return (
-        <ReleasePublishAllButton
-          release={release}
-          documents={documents}
-          disabled={!documents.length}
-        />
-      )
+      if (release.metadata.releaseType === 'asap') {
+        return (
+          <ReleasePublishAllButton
+            release={release}
+            documents={documents}
+            disabled={!documents.length}
+          />
+        )
+      }
     }
 
     if (release.state === 'published') {
@@ -76,7 +78,7 @@ export function ReleaseDashboardFooter(props: {
             release={release}
             documentsCount={documents.length}
             documents={documents}
-            ignoreCTA
+            ignoreCTA={release.metadata.releaseType !== 'undecided'}
           />
         </Flex>
       </Flex>
