@@ -68,6 +68,9 @@ export const DocumentActions = memo(
       t,
     ])
 
+    const isUnpublishActionDisabled =
+      noPermissionToUnpublish || !document.document.publishedDocumentExists || isAlreadyUnpublished
+
     return (
       <>
         <Card tone="default" display="flex">
@@ -81,7 +84,10 @@ export const DocumentActions = memo(
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                   disabled={isDiscardVersionActionDisabled}
-                  tooltipProps={{content: t('permissions.error.discard-version')}}
+                  tooltipProps={{
+                    disabled: !isDiscardVersionActionDisabled,
+                    content: t('permissions.error.discard-version'),
+                  }}
                 />
                 <MenuDivider />
                 <Box padding={3} paddingBottom={2}>
@@ -90,12 +96,11 @@ export const DocumentActions = memo(
                 <MenuItem
                   text={t('action.unpublish')}
                   icon={UnpublishIcon}
-                  disabled={
-                    noPermissionToUnpublish ||
-                    !document.document.publishedDocumentExists ||
-                    isAlreadyUnpublished
-                  }
-                  tooltipProps={{content: unPublishTooltipContent}}
+                  disabled={isUnpublishActionDisabled}
+                  tooltipProps={{
+                    disabled: !isUnpublishActionDisabled,
+                    content: unPublishTooltipContent,
+                  }}
                   onClick={() => setShowUnpublishDialog(true)}
                 />
               </Menu>
