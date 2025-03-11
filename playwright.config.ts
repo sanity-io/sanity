@@ -63,6 +63,7 @@ const playwrightConfig = createPlaywrightConfig({
       reporter: excludeGithub([['list'], ['blob']]),
       use: {
         ...config.use,
+        video: 'retain-on-failure',
         baseURL: 'http://localhost:3339',
         headless: HEADLESS,
         contextOptions: {reducedMotion: 'reduce'},
