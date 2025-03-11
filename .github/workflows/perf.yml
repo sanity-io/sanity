@@ -1,14 +1,33 @@
 name: Performance Tests
 on:
   deployment_status:
+  # Optional: Add manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      reference_tag:
+        description: "npm reference tag for comparison"
+        required: true
+        default: "latest"
+      enable_profiler:
+        description: "Enable profiler"
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.deployment.environment || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    timeout-minutes: 30
+  setup:
+    if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'production' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    outputs:
+      test-hash: ${{ steps.test-hash.outputs.hash }}
+      should-run-full: ${{ steps.determine-scope.outputs.run-full }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'production' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,12 +55,12 @@ jobs:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+            ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-
 
       - name: Install project dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -62,11 +81,174 @@ jobs:
         working-directory: ./perf
         run: npx playwright install --with-deps
 
-      - name: Run Performance Tests
+      # Generate a hash of performance test files to use for caching
+      - name: Calculate test hash
+        id: test-hash
+        shell: bash
+        run: |
+          HASH=$(find ./perf -type f -name "*.js" -o -name "*.ts" | sort | xargs cat | shasum -a 256 | cut -d ' ' -f 1)
+          echo "hash=${HASH}" >> $GITHUB_OUTPUT
+
+      - name: Determine test scope
+        id: determine-scope
+        run: |
+          # Check if we should run full tests or baseline only
+          # For deployment_status events, always run full tests
+          if [[ "${{ github.event_name }}" == "deployment_status" ]]; then
+            echo "run-full=true" >> $GITHUB_OUTPUT
+          else
+            echo "run-full=false" >> $GITHUB_OUTPUT
+          fi
+
+  performance-test:
+    needs: [setup]
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Split tests into 4 parallel shards
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      NODE_OPTIONS: --max_old_space_size=8192
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      # Check if we have cached test results for this exact code
+      - name: Check cached test results
+        id: cache-test-results
+        uses: actions/cache@v4
+        with:
+          path: ./perf/results
+          key: ${{ runner.os }}-perf-results-${{ needs.setup.outputs.test-hash }}-${{ matrix.shardIndex }}
+
+      # Skip test execution if we already have cached results
+      - name: Determine if tests should run
+        id: should-run
+        run: |
+          if [[ "${{ steps.cache-test-results.outputs.cache-hit }}" == "true" ]]; then
+            echo "skip-tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip-tests=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Restore node modules from setup job
+      - name: Restore node modules
+        if: steps.should-run.outputs.skip-tests != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-cache-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install project dependencies
+        if: steps.should-run.outputs.skip-tests != 'true'
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      # Restore playwright browsers from setup
+      - name: Restore Playwright Browsers
+        if: steps.should-run.outputs.skip-tests != 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+
+      - name: Run Performance Tests (Shard)
+        if: steps.should-run.outputs.skip-tests != 'true'
         working-directory: ./perf
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
           PERF_TEST_BRANCH: "next"
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
           PERF_TEST_METRICS_TOKEN: ${{ secrets.PERF_TEST_METRICS_TOKEN }}
-        run: pnpm perf:test:ci
+          # Add Playwright-specific ENV variables
+          PLAYWRIGHT_WORKERS: 4
+          PLAYWRIGHT_SHARD: ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm perf:test:ci -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - name: Upload Performance Results
+        if: always() && steps.should-run.outputs.skip-tests != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-results-${{ matrix.shardIndex }}
+          path: ./perf/results
+          retention-days: 14
+
+  merge-reports:
+    if: always()
+    needs: [setup, performance-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Download result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: perf-results-*
+          merge-multiple: true
+          path: ./perf/results-combined
+
+      - name: Generate combined performance report
+        working-directory: ./perf
+        run: pnpm perf:merge-reports
+
+      - name: Upload combined report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report-combined
+          path: ./perf/report
+          retention-days: 30
+
+  measure-web-vitals:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [setup]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Measure Core Web Vitals
+        env:
+          BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
+        run: pnpm measure-vitals
+
+      - name: Upload Web Vitals Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-vitals-report
+          path: ./perf/web-vitals
+          retention-days: 30

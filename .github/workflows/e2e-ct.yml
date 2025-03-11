@@ -11,70 +11,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install:
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  build:
     strategy:
       fail-fast: false
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox, webkit]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Build packages
-        run: pnpm build --output-logs=full --log-order=grouped
-
-      # Caches build from either PR or next
-      - name: Cache build
-        id: cache-e2e-build
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-e2e-build
-        with:
-          path: |
-            ./*
-            !**/node_modules/**
-          # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+    uses: ./.github/workflows/shared-build.yml
+    with:
+      project: ${{ matrix.project }}
+      cache-name-prefix: cache-e2e-build
+    secrets:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
   playwright-ct-test:
     timeout-minutes: 30
-    needs: [install]
+    needs: [build]
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
