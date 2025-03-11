@@ -1,0 +1,130 @@
+name: Shared Build
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: "Browser project for matrix cache key"
+        required: true
+        type: string
+      node-version:
+        description: "Node.js version"
+        required: false
+        default: "18"
+        type: string
+      cache-name-prefix:
+        description: "Cache name prefix"
+        required: false
+        default: "cache-e2e-build"
+        type: string
+      build-command:
+        description: "Build command to run"
+        required: false
+        default: "pnpm build --output-logs=full --log-order=grouped"
+        type: string
+      e2e-setup-required:
+        description: "Whether E2E setup is required"
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      TURBO_TOKEN:
+        required: false
+      TURBO_TEAM:
+        required: false
+      SANITY_E2E_SESSION_TOKEN_NEW:
+        required: false
+      SANITY_E2E_PROJECT_ID:
+        required: false
+    outputs:
+      cache-key:
+        description: "Cache key for the build artifacts"
+        value: ${{ jobs.build.outputs.cache-key }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ runner.os }}-${{ inputs.project }}-${{ inputs.cache-name-prefix }}-${{ github.run_id }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Run build command
+        run: ${{ inputs.build-command }}
+
+      - name: Build E2E test studio on next
+        if: ${{ inputs.e2e-setup-required && github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+        env:
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+        run: pnpm e2e:setup && pnpm e2e:build
+
+      - name: Build E2E test studio on PR
+        if: ${{ inputs.e2e-setup-required && github.event_name == 'pull_request' }}
+        env:
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ inputs.project }}-${{ github.event.number }}
+        run: pnpm e2e:setup && pnpm e2e:build
+
+      - name: Cache build
+        id: cache-e2e-build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./*
+            !**/node_modules/**
+          key: ${{ runner.os }}-${{ inputs.project }}-${{ inputs.cache-name-prefix }}-${{ github.run_id }} 
