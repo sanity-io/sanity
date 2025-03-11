@@ -136,7 +136,7 @@ export function getReferenceClient(
       },
     } satisfies ReferenceClient
   }
-  if (schemaType.resourceType === 'asset-library') {
+  if (schemaType.resourceType === 'media-library') {
     return {
       getDocument<R extends Record<string, Any>>(
         id: string,
@@ -151,7 +151,7 @@ export function getReferenceClient(
           })
           .observable.request({
             useGlobalApi: true,
-            uri: `/asset-libraries/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
+            uri: `/media-libraries/${schemaType.resourceId}/doc/${id}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
           })
@@ -173,7 +173,7 @@ export function getReferenceClient(
           })
           .observable.request({
             useGlobalApi: true,
-            uri: `/${apiVersion}/asset-libraries/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
+            uri: `/${apiVersion}/media-libraries/${schemaType.resourceId}/doc/${ids.join(',')}?${searchParams?.toString() || ''}`,
             method: 'GET',
             tag,
           })
@@ -190,7 +190,7 @@ export function getReferenceClient(
           })
           .observable.request<{result: ClientReturn<G, R>}>({
             useGlobalApi: true,
-            uri: `/asset-libraries/${schemaType.resourceId}/query`,
+            uri: `/media-libraries/${schemaType.resourceId}/query`,
             method: 'POST',
             body: {query, params},
             tag: 'gdr.query',
@@ -203,7 +203,7 @@ export function getReferenceClient(
       >(query: G, params: Q) {
         const allParams = {...params, tag: 'listen', query}
         const paramsString = new URLSearchParams(allParams).toString()
-        const uri = `${client.config().apiHost}/${apiVersion}/asset-libraries/${schemaType.resourceId}/listen?${paramsString}`
+        const uri = `${client.config().apiHost}/${apiVersion}/media-libraries/${schemaType.resourceId}/listen?${paramsString}`
         return connectEventSource(() => new EventSource(uri, {}), ['welcome', 'mutation'])
       },
     } satisfies ReferenceClient
