@@ -1,8 +1,6 @@
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
-  Button,
   type ButtonMode,
   Card,
   Container,
@@ -17,8 +15,8 @@ import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type SearchParam, useRouter} from 'sanity/router'
 
-import {Button as StudioButton, Tooltip} from '../../../../ui-components'
-import {Button as UIButton} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -50,8 +48,7 @@ import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilte
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
-const MotionStudioButton = motion.create(StudioButton)
-const MotionUiButton = motion.create(Button)
+const MotionButton = motion.create(Button)
 
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
 
@@ -205,7 +202,7 @@ export function ReleasesOverview() {
     }
     return (
       <AnimatePresence>
-        <MotionStudioButton
+        <MotionButton
           {...groupModeButtonBaseProps}
           key="open-group"
           onClick={handleReleaseGroupModeChange}
@@ -219,7 +216,7 @@ export function ReleasesOverview() {
           placement="bottom"
         >
           <div>
-            <MotionUiButton
+            <MotionButton
               {...groupModeButtonBaseProps}
               key="archived-group"
               disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
@@ -252,7 +249,7 @@ export function ReleasesOverview() {
 
   const createReleaseButton = useMemo(
     () => (
-      <UIButton
+      <Button
         icon={AddIcon}
         disabled={
           isPendingGuardResponse ||
@@ -262,7 +259,7 @@ export function ReleasesOverview() {
         }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
-        paddingY={3}
+        size="large"
         tooltipProps={{
           disabled: hasCreatePermission === true,
           content: tCore('release.action.permission.error'),
@@ -361,7 +358,7 @@ export function ReleasesOverview() {
         {showCalendar && renderCalendarFilter}
         <Flex direction="column" flex={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="flex-start" flex={1} gap={3}>
+            <Flex align="center" flex={1} gap={3}>
               <Inline>
                 {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
                 <Stack padding={2} space={4}>
@@ -384,7 +381,7 @@ export function ReleasesOverview() {
                   icon={EarthGlobeIcon}
                   iconRight={ChevronDownIcon}
                   mode="bleed"
-                  padding={2}
+                  size="large"
                   text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
                   onClick={dialogTimeZoneShow}
                 />
