@@ -9,13 +9,13 @@ import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
 import {
-  createSanityAssetLibraryFileSource,
-  createSanityAssetLibraryImageSource,
-} from '../form/studio/assetSourceAssetLibrary'
-import {
   FileSource as DefaultFileSource,
   ImageSource as DefaultImageSource,
 } from '../form/studio/assetSourceDefault'
+import {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
@@ -27,8 +27,6 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
-  assetLibraryEnabledReducer,
-  assetLibraryLibraryIdReducer,
   createFallbackOriginReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -43,6 +41,8 @@ import {
   initialLanguageFilter,
   internalTasksReducer,
   legacySearchEnabledReducer,
+  mediaLibraryEnabledReducer,
+  mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
@@ -90,23 +90,23 @@ function normalizeIcon(
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
 
-// Create asset library sources with configuration
-const createAssetLibrarySources = (config: PluginOptions) => {
-  const libraryId = assetLibraryLibraryIdReducer({config, initialValue: undefined})
-  const enabled = assetLibraryEnabledReducer({config, initialValue: false})
+// Create media library sources with configuration
+const createMediaLibrarySources = (config: PluginOptions) => {
+  const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
+  const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
 
-  // Only create sources if asset library is enabled
+  // Only create sources if media library is enabled
   if (!enabled) {
     return {fileSource: null, imageSource: null}
   }
 
-  const fileSource = createSanityAssetLibraryFileSource({
-    name: 'sanity-asset-library',
+  const fileSource = createSanityMediaLibraryFileSource({
+    name: 'sanity-media-library-file-source',
     libraryId: libraryId || null,
   })
 
-  const imageSource = createSanityAssetLibraryImageSource({
-    name: 'sanity-asset-library',
+  const imageSource = createSanityMediaLibraryImageSource({
+    name: 'sanity-media-library-image-source',
     libraryId: libraryId || null,
   })
 
@@ -360,7 +360,7 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
-  const assetLibrarySources = createAssetLibrarySources(config)
+  const mediaLibrarySources = createMediaLibrarySources(config)
 
   let templates!: Source['templates']
   try {
@@ -622,8 +622,8 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: assetLibrarySources.fileSource
-            ? [DefaultFileSource, assetLibrarySources.fileSource]
+          initialValue: mediaLibrarySources.fileSource
+            ? [DefaultFileSource, mediaLibrarySources.fileSource]
             : [DefaultFileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
@@ -637,8 +637,8 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: assetLibrarySources.imageSource
-            ? [DefaultImageSource, assetLibrarySources.imageSource]
+          initialValue: mediaLibrarySources.imageSource
+            ? [DefaultImageSource, mediaLibrarySources.imageSource]
             : [DefaultImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
@@ -716,9 +716,9 @@ function resolveSource({
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
-      assetLibrary: {
-        enabled: assetLibraryEnabledReducer({config, initialValue: false}),
-        libraryId: assetLibraryLibraryIdReducer({config, initialValue: undefined}),
+      mediaLibrary: {
+        enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
+        libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
       },
     },
     // eslint-disable-next-line camelcase

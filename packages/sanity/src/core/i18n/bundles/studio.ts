@@ -20,10 +20,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'announcement.floating-button.dismiss-label': 'Dismiss announcements',
   /**Aria label to be used in the floating button in the studio announcement card */
   'announcement.floating-button.open-label': 'Open announcements',
-  /** Asset source: Asset Library Menu Items for Asset Library */
-  'asset-source.asset-library.image.title': 'Asset Library',
-  // eslint-disable-next-line sort-keys
-  'asset-source.asset-library.file.title': 'Asset Library',
   /** Menu item for deleting the asset */
   'asset-source.asset-list.menu.delete': 'Delete',
   /** Menu item for showing where a particular asset is used */
@@ -111,6 +107,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.image.asset-list.delete-successful': 'Image was deleted',
   /** Text displayed on button or menu invoking the image asset source */
   'asset-source.image.title': 'Uploaded images',
+  /** Menu Items for Media Library */
+  'asset-source.media-library.image.title': 'Media Library',
+  // eslint-disable-next-line sort-keys
+  'asset-source.media-library.file.title': 'Media Library',
   'asset-source.usage-list.documents-using-file_named_one':
     'One document is using file <code>{{filename}}</code>',
   'asset-source.usage-list.documents-using-file_named_other':

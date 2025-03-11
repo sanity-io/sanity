@@ -1023,16 +1023,16 @@ export interface BetaFeatures {
     releases?: boolean
   }
   /**
-   * Config for the asset library.
+   * Config for the media library.
    */
-  assetLibrary?: {
+  mediaLibrary?: {
     /**
-     * Whether the asset library is enabled.
+     * Whether the media library is enabled.
      */
     enabled: boolean
     /**
-     * The ID of the asset library.
-     * If not provided, the asset library will be automatically detected.
+     * The ID of the media library.
+     * If not provided, the emdia library will be automatically detected.
      */
     libraryId?: string
   }

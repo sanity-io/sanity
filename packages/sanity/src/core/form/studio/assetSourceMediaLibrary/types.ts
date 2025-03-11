@@ -1,34 +1,34 @@
 import {type SanityDocument} from '@sanity/types'
 
 /**
- * Config for the Asset Library Asset Source
+ * Config for the Media Library Asset Source
  * @alpha
  */
-export interface SanityAssetLibraryConfig {
+export interface SanityMediaLibraryConfig {
   /**
    * Internal config for the plugin (will be populated by defaults if not explicitly set)
    * @internal
    */
   __internal: {
     /**
-     * Wether the plugin is running in a local development environment against local Asset Library app
+     * Wether the plugin is running in a local development environment against local Media Library app
      */
     isLocalDev: boolean
     /**
-     * Wether to use the staging or production asset library environment
+     * Wether to use the staging or production Media Library environment
      */
     env: 'staging' | 'production'
     /**
-     * API version needed for using the Asset Library API
+     * API version needed for using the Media Library API
      */
     apiVersion: string
     /**
-     * The version of the plugin API to use (routes served by the Asset Library app will be prefixed with this version)
+     * The version of the plugin API to use (routes served by the Media Library app will be prefixed with this version)
      * @defaultValue 'v1'
      */
     pluginApiVersion: string
     /**
-     * Base path for the Asset Library app
+     * Base path for the Media Library app
      */
     appBasePath: string
     /**
@@ -40,7 +40,7 @@ export interface SanityAssetLibraryConfig {
        */
       cdn: string
       /**
-       * Host for the Asset Library app
+       * Host for the Media Library app
        */
       app: string
       /**
@@ -62,7 +62,7 @@ export interface AssetMenuAction {
 export type AssetType = 'image' | 'file'
 
 /**
- * Simple version of the Asset Library's Asset type (only stuff that is needed for the plugin)
+ * Simple version of the Media Library's Asset type (only stuff that is needed for the plugin)
  * @internal
  */
 export interface Asset {
@@ -72,7 +72,7 @@ export interface Asset {
 }
 
 /**
- * The type that is returned from the Asset Library for an selected asset item
+ * The type that is returned from the Media Library for an selected asset item
  * @internal
  */
 export interface AssetSelectionItem {

@@ -395,7 +395,7 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
-export const assetLibraryEnabledReducer = (opts: {
+export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
 }): boolean => {
@@ -403,13 +403,13 @@ export const assetLibraryEnabledReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.assetLibrary?.enabled
+    const resolver = innerConfig.beta?.mediaLibrary?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'boolean') return resolver
 
     throw new Error(
-      `Expected \`beta.assetLibrary.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`beta.mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
         resolver,
       )}`,
     )
@@ -418,7 +418,7 @@ export const assetLibraryEnabledReducer = (opts: {
   return result
 }
 
-export const assetLibraryLibraryIdReducer = (opts: {
+export const mediaLibraryLibraryIdReducer = (opts: {
   config: PluginOptions
   initialValue: string | undefined
 }): string | undefined => {
@@ -426,13 +426,13 @@ export const assetLibraryLibraryIdReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.assetLibrary?.libraryId
+    const resolver = innerConfig.beta?.mediaLibrary?.libraryId
 
     if (!resolver && typeof resolver !== 'string') return acc
     if (typeof resolver === 'string') return resolver
 
     throw new Error(
-      `Expected \`beta.assetLibrary.libraryId\` to be a string, but received ${getPrintableType(
+      `Expected \`beta.mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
         resolver,
       )}`,
     )

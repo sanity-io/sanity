@@ -6,12 +6,12 @@ import {
 import {useToast} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 
-import {useClient} from '../../../../../core/hooks'
+import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 
-const AssetLibraryAssetSource = function AssetLibraryAssetSource(
+const MediaLibraryAssetSource = function MediaLibraryAssetSource(
   props: AssetSourceComponentProps & {libraryId: string | null},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
@@ -41,7 +41,7 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
         .withConfig({
           useProjectHostname: false,
         })
-        .request({uri: `/asset-libraries`, query: {organizationId}, useGlobalApi: true})
+        .request({uri: `/media-libraries`, query: {organizationId}, useGlobalApi: true})
         .then((result) => {
           const libraryIdFromResult = result.data[0]?.id
           if (libraryIdFromResult) {
@@ -62,14 +62,14 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
         return
       }
       const asset = selection[0]
-      // Link asset from asset library to current dataset
+      // Link asset from media library to current dataset
       try {
         const result = await client.request({
           method: 'POST',
-          url: `/assets/asset-library-link/${client.config().dataset}`,
+          url: `/assets/media-library-link/${client.config().dataset}`,
           withCredentials: true,
           body: {
-            assetLibraryId: resolvedLibraryId,
+            mediaLibraryId: resolvedLibraryId,
             assetInstanceId: asset.assetInstanceId,
             assetId: asset.assetId,
           },
@@ -79,8 +79,8 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
           {
             kind: 'assetDocumentId',
             value: assetDocument._id,
-            assetLibraryProps: {
-              assetLibraryId: resolvedLibraryId,
+            mediaLibraryProps: {
+              mediaLibraryId: resolvedLibraryId,
               assetId: asset.assetId,
               assetInstanceId: asset.assetInstanceId,
             },
@@ -123,4 +123,4 @@ const AssetLibraryAssetSource = function AssetLibraryAssetSource(
   )
 }
 
-export const AssetLibrarySource = memo(forwardRef(AssetLibraryAssetSource))
+export const MediaLibrarySource = memo(forwardRef(MediaLibraryAssetSource))
