@@ -69,7 +69,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         metadata: {
           ...release.metadata,
           releaseType,
-          ...(typeof updatedDate === 'undefined'
+          ...(typeof updatedDate === 'undefined' || releaseType !== 'scheduled'
             ? {}
             : {
                 intendedPublishAt: updatedDate,
@@ -233,10 +233,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     )
   }
 
-  const tone =
-    release.state === 'published'
-      ? 'positive'
-      : getReleaseTone({...release, metadata: {...release.metadata, releaseType}})
+  const tone = release.state === 'published' ? 'positive' : getReleaseTone(release)
 
   const releaseTypeIcon = useMemo(() => {
     if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />
