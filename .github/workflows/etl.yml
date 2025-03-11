@@ -14,12 +14,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
   etl:
+    needs: [build]
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
