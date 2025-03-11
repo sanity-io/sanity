@@ -15,8 +15,8 @@ export function isValidResourceType(resourceType: string): string | true {
   if (!resourceType) {
     return 'The resource type must be a non-empty string'
   }
-  if (resourceType != 'asset-library' && resourceType != 'dataset') {
-    return 'The resource type must be either "asset-library" or "dataset"'
+  if (resourceType != 'media-library' && resourceType != 'dataset') {
+    return 'The resource type must be either "media-library" or "dataset"'
   }
   return true
 }
@@ -29,9 +29,9 @@ export function isValidResourceId(resourceType: string, resourceId: string): str
     }
     return true
   }
-  if (resourceType === 'asset-library') {
-    if (!resourceId.startsWith('al')) {
-      return 'The resource ID for an asset library reference must start with "al"'
+  if (resourceType === 'media-library') {
+    if (!resourceId.startsWith('ml')) {
+      return 'The resource ID for a media library reference must start with "al"'
     }
   }
   return `Cannot validate resource ID for resource type: ${resourceType}`
