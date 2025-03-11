@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.28.2"
+    "@sanity/client": "^6.28.3"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
