@@ -5,7 +5,7 @@ import {test as base} from '@sanity/test'
 const test = base.extend<{testDoc: SanityDocument}>({
   testDoc: async ({page, sanityClient}, use) => {
     const testDoc = await sanityClient.create({
-      _type: 'arrayCapabilitiesExample',
+      _type: 'arrayCapabilities',
       title: 'e2e fixture',
       objectArray: [
         {_type: 'something', _key: '5b75c4005e47', first: 'First'},
