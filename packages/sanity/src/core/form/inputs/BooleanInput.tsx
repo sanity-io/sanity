@@ -9,16 +9,8 @@ import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 import {useFieldActions} from '../field'
 import {type BooleanInputProps} from '../types'
 
-const Root = styled(Card)`
-  line-height: 1;
-`
-
 const CenterAlignedBox = styled(Box)`
   align-self: center;
-`
-
-const ZeroLineHeightBox = styled(Box)`
-  line-height: 0;
 `
 
 /**
@@ -48,7 +40,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   const input = (
-    <ZeroLineHeightBox padding={3}>
+    <Box padding={3}>
       <LayoutSpecificInput
         label={schemaType.title}
         {...elementProps}
@@ -57,18 +49,18 @@ export function BooleanInput(props: BooleanInputProps) {
         indeterminate={indeterminate}
         style={{margin: -4}}
       />
-    </ZeroLineHeightBox>
+    </Box>
   )
 
   return (
-    <Root border data-testid="boolean-input" radius={2} tone={tone}>
+    <Card border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex>
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
         <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
           <FormFieldBaseHeader
-            //__internal_comments={comments}
-            //__internal_slot={slot}
-            // actions={actions}
+            __internal_comments={comments}
+            __internal_slot={slot}
+            actions={actions}
             fieldFocused={Boolean(focused)}
             fieldHovered={hovered}
             presence={presence}
@@ -90,6 +82,6 @@ export function BooleanInput(props: BooleanInputProps) {
           </FormFieldStatus>
         </CenterAlignedBox>
       </Flex>
-    </Root>
+    </Card>
   )
 }
