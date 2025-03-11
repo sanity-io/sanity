@@ -7,7 +7,7 @@ import {useClient, usePerspective, useTranslation} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
@@ -80,7 +80,8 @@ export function VisionGui(props: VisionGuiProps) {
   const {perspectiveStack} = usePerspective()
 
   const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
-
+  const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
+  const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
   const visionRootRef = useRef<HTMLDivElement | null>(null)
   const customApiVersionElementRef = useRef<HTMLInputElement | null>(null)
   const querySubscriptionRef = useRef<Subscription | undefined>(undefined)
@@ -208,7 +209,7 @@ export function VisionGui(props: VisionGuiProps) {
       setQueryInProgress(!params.error && Boolean(executionQuery))
       setListenInProgress(false)
       setListenMutations([])
-      setError(new Error(params.error) || undefined)
+      setError(params.error ? new Error(params.error) : undefined)
       setQueryResult(undefined)
       setQueryTime(undefined)
       setE2eTime(undefined)
@@ -457,6 +458,10 @@ export function VisionGui(props: VisionGuiProps) {
         error: undefined,
       })
 
+      // Update the codemirror editor content
+      editorQueryRef.current?.resetEditorContent(parts.query)
+      editorParamsRef.current?.resetEditorContent(JSON.stringify(parts.params, null, 2))
+
       setApiVersion(finalApiVersion)
       setCustomApiVersion(finalCustomApiVersion)
       setPerspectiveState(finalPerspective)
@@ -579,16 +584,7 @@ export function VisionGui(props: VisionGuiProps) {
   }, [perspectiveStack])
 
   return (
-    <Root
-      direction="column"
-      height="fill"
-      ref={visionRootRef}
-      sizing="border"
-      overflow="hidden"
-      style={{
-        border: `1px solid ${Math.random() > 0.5 ? 'red' : 'blue'}`,
-      }}
-    >
+    <Root direction="column" height="fill" ref={visionRootRef} sizing="border" overflow="hidden">
       <VisionGuiHeader
         apiVersion={apiVersion}
         customApiVersion={customApiVersion}
@@ -641,7 +637,7 @@ export function VisionGui(props: VisionGuiProps) {
                       <StyledLabel muted>{t('query.label')}</StyledLabel>
                     </Flex>
                   </InputBackgroundContainerLeft>
-                  <VisionCodeMirror value={query} onChange={setQuery} />
+                  <VisionCodeMirror initialValue={query} onChange={setQuery} ref={editorQueryRef} />
                 </Box>
               </InputContainer>
               <InputContainer display="flex">
@@ -650,6 +646,7 @@ export function VisionGui(props: VisionGuiProps) {
                   onChange={handleParamsChange}
                   paramsError={params.error}
                   hasValidParams={params.valid}
+                  editorRef={editorParamsRef}
                 />
 
                 <VisionGuiControls

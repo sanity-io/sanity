@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
 import {debounce} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -15,9 +15,9 @@ const defaultValue = `{\n  \n}`
 export interface ParamsEditorProps {
   value: string
   onChange: (changeEvt: Params) => void
-  editorRef: React.RefObject<VisionCodeMirrorHandle | null>
   paramsError: string | undefined
   hasValidParams: boolean
+  editorRef: RefObject<VisionCodeMirrorHandle | null>
 }
 
 export interface ParamsEditorChange {
@@ -25,7 +25,7 @@ export interface ParamsEditorChange {
 }
 
 export function ParamsEditor(props: ParamsEditorProps) {
-  const {onChange, paramsError, hasValidParams} = props
+  const {onChange, paramsError, hasValidParams, editorRef} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {raw: value, error, parsed, valid} = parseParams(props.value, t)
   const [isValid, setValid] = useState(valid)
@@ -66,9 +66,9 @@ export function ParamsEditor(props: ParamsEditorProps) {
         </Flex>
       </InputBackgroundContainerLeft>
       <VisionCodeMirror
+        ref={editorRef}
         initialValue={props.value || defaultValue}
         onChange={handleChange}
-        ref={props.editorRef}
       />
     </Card>
   )
