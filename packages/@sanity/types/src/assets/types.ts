@@ -135,8 +135,8 @@ export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string | File
   assetDocumentProps?: ImageAsset
-  assetLibraryProps?: {
-    assetLibraryId: string
+  mediaLibraryProps?: {
+    mediaLibraryId: string
     assetId: string
     assetInstanceId: string
   }
