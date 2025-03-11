@@ -23,7 +23,7 @@ const test = base.extend<{testDoc: SanityDocument}>({
 })
 
 test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
-  await page.goto(`/test/content/arrayCapabilitiesExample;${testDoc._id}`)
+  await page.goto(`/test/content/arrayCapabilities;${testDoc._id}`)
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })
