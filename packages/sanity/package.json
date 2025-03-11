@@ -146,8 +146,7 @@
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:ct": "rimraf playwright-ct/template/.cache && playwright test -c playwright-ct.config.ts",
-    "watch": "pkg-utils watch",
-    "write:playwright-report-as-pr-comment": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.5",
