@@ -25,6 +25,8 @@ interface ReleaseScheduleButtonProps {
   documents: DocumentInRelease[]
   disabled?: boolean
   isMenuItem?: boolean
+  onConfirmDialogOpen?: () => void
+  onConfirmDialogClose?: () => void
 }
 
 export const ReleaseScheduleButton = ({
@@ -32,6 +34,8 @@ export const ReleaseScheduleButton = ({
   disabled,
   documents,
   isMenuItem = false,
+  onConfirmDialogOpen,
+  onConfirmDialogClose,
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
   const {schedule, updateRelease} = useReleaseOperations()
@@ -141,6 +145,7 @@ export const ReleaseScheduleButton = ({
       })
       console.error(schedulingError)
     } finally {
+      onConfirmDialogClose?.()
       setStatus('idle')
     }
   }, [
@@ -154,6 +159,7 @@ export const ReleaseScheduleButton = ({
     toast,
     t,
     tCore,
+    onConfirmDialogClose,
   ])
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
@@ -179,6 +185,13 @@ export const ReleaseScheduleButton = ({
     [zoneDateToUtc],
   )
 
+  const handleOnDialogClose = useCallback(() => {
+    onConfirmDialogClose?.()
+    if (status !== 'scheduling') {
+      setStatus('idle')
+    }
+  }, [onConfirmDialogClose, status])
+
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
 
@@ -198,7 +211,7 @@ export const ReleaseScheduleButton = ({
           documentsLength: documents.length,
           count: documents.length,
         })}
-        onClose={() => status !== 'scheduling' && setStatus('idle')}
+        onClose={handleOnDialogClose}
         footer={{
           confirmButton: {
             text: t('schedule-dialog.confirm-button'),
@@ -256,14 +269,15 @@ export const ReleaseScheduleButton = ({
     isScheduledDateInPast,
     rerenderDialog,
     t,
-    tCore,
     documents.length,
+    handleOnDialogClose,
     handleConfirmSchedule,
     handleBundlePublishAtCalendarChange,
     handleBundleInputChange,
     timezoneAdjustedPublishAt,
     calendarLabels,
     release.metadata.title,
+    tCore,
   ])
 
   const handleOnInitialSchedule = useCallback(() => {
@@ -273,7 +287,8 @@ export const ReleaseScheduleButton = ({
         : new Date(),
     )
     setStatus('confirm')
-  }, [release.metadata.intendedPublishAt])
+    onConfirmDialogOpen?.()
+  }, [onConfirmDialogOpen, release.metadata.intendedPublishAt])
 
   const tooltipText = useMemo(() => {
     if (documents.length === 0) {

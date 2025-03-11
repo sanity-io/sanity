@@ -20,6 +20,8 @@ interface ReleasePublishAllButtonProps {
   documents: DocumentInRelease[]
   disabled?: boolean
   isMenuItem?: boolean
+  onConfirmDialogOpen?: () => void
+  onConfirmDialogClose?: () => void
 }
 
 export const ReleasePublishAllButton = ({
@@ -27,6 +29,8 @@ export const ReleasePublishAllButton = ({
   documents,
   disabled,
   isMenuItem = false,
+  onConfirmDialogOpen,
+  onConfirmDialogClose,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishRelease} = useReleaseOperations()
@@ -92,6 +96,7 @@ export const ReleasePublishAllButton = ({
       })
       console.error(publishingError)
     } finally {
+      onConfirmDialogClose?.()
       setPublishBundleStatus('idle')
     }
   }, [
@@ -103,6 +108,7 @@ export const ReleasePublishAllButton = ({
     tCore,
     perspective.selectedPerspective,
     setPerspective,
+    onConfirmDialogClose,
   ])
 
   const confirmPublishDialog = useMemo(() => {
@@ -113,7 +119,10 @@ export const ReleasePublishAllButton = ({
         id="confirm-publish-dialog"
         data-testid="confirm-publish-dialog"
         header={t('publish-dialog.confirm-publish.title')}
-        onClose={() => setPublishBundleStatus('idle')}
+        onClose={() => {
+          onConfirmDialogClose?.()
+          setPublishBundleStatus('idle')
+        }}
         footer={{
           confirmButton: {
             text: t('action.publish-all-documents'),
@@ -139,7 +148,15 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Dialog>
     )
-  }, [publishBundleStatus, t, tCore, handleConfirmPublishAll, release, documents.length])
+  }, [
+    publishBundleStatus,
+    t,
+    handleConfirmPublishAll,
+    release.metadata.title,
+    tCore,
+    documents.length,
+    onConfirmDialogClose,
+  ])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments && publishPermission) return null
@@ -175,6 +192,11 @@ export const ReleasePublishAllButton = ({
     )
   }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
 
+  const handleInitialPublish = useCallback(() => {
+    setPublishBundleStatus('confirm')
+    onConfirmDialogOpen?.()
+  }, [onConfirmDialogOpen])
+
   return (
     <>
       {isMenuItem ? (
@@ -192,7 +214,7 @@ export const ReleasePublishAllButton = ({
             documents.length === 0
           }
           text={t('action.publish-all-documents')}
-          onClick={() => setPublishBundleStatus('confirm')}
+          onClick={handleInitialPublish}
           data-testid="publish-all-button-menu-item"
         />
       ) : (
@@ -209,7 +231,7 @@ export const ReleasePublishAllButton = ({
             documents.length === 0
           }
           text={t('action.publish-all-documents')}
-          onClick={() => setPublishBundleStatus('confirm')}
+          onClick={handleInitialPublish}
           loading={publishBundleStatus === 'publishing'}
           data-testid="publish-all-button"
           tone="positive"

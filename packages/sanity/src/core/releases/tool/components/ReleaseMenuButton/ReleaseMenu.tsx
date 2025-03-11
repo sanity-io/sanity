@@ -193,9 +193,11 @@ export const ReleaseMenu = ({
         release={release}
         documents={documents}
         isMenuItem
+        onConfirmDialogClose={() => setSelectedAction(undefined)}
+        onConfirmDialogOpen={() => setSelectedAction('schedule')}
       />
     )
-  }, [documents, hasSchedulePermission, ignoreCTA, release, releaseMenuDisabled])
+  }, [documents, hasSchedulePermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
 
   const publishMenuItem = useMemo(() => {
     if (release.state !== 'active' || (ignoreCTA && release.metadata.releaseType !== 'scheduled'))
@@ -207,9 +209,11 @@ export const ReleaseMenu = ({
         documents={documents}
         disabled={releaseMenuDisabled || !hasPublishPermission}
         isMenuItem
+        onConfirmDialogClose={() => setSelectedAction(undefined)}
+        onConfirmDialogOpen={() => setSelectedAction('publish')}
       />
     )
-  }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled])
+  }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
 
   const ActionsOrder = useMemo(() => {
     if (release.metadata.releaseType === 'scheduled') {

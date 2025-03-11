@@ -1,7 +1,7 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, Popover} from '../../../../../ui-components'
@@ -55,6 +55,7 @@ export const ReleaseMenuButton = ({
   const telemetry = useTelemetry()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
 
   const handleDelete = useCallback(async () => {
     await deleteRelease(release._id)
@@ -69,6 +70,7 @@ export const ReleaseMenuButton = ({
 
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
+      if (action === 'publish' || action === 'schedule') return
       if (releaseMenuDisabled) return
 
       const actionLookup = {
@@ -149,13 +151,13 @@ export const ReleaseMenuButton = ({
 
   /** in some instanced, immediately execute the action without requiring confirmation */
   useEffect(() => {
-    if (!selectedAction) return
+    if (!selectedAction || isActionPublishOrSchedule) return
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
-  }, [documentsCount, handleAction, selectedAction])
+  }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction) return null
+    if (!selectedAction || isActionPublishOrSchedule) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
@@ -197,7 +199,15 @@ export const ReleaseMenuButton = ({
         </Stack>
       </Dialog>
     )
-  }, [selectedAction, t, isPerformingOperation, release, documentsCount, handleAction])
+  }, [
+    selectedAction,
+    isActionPublishOrSchedule,
+    t,
+    isPerformingOperation,
+    release,
+    documentsCount,
+    handleAction,
+  ])
 
   const handleOnButtonClick = () => {
     if (openPopover) closePopover()
@@ -208,6 +218,23 @@ export const ReleaseMenuButton = ({
     setOpenPopover(false)
   }
 
+  useClickOutsideEvent(
+    () => {
+      if (!isActionPublishOrSchedule) {
+        closePopover()
+      }
+    },
+    () => [popoverRef.current, releaseMenuRef.current],
+  )
+
+  const handleSetSelectedAction = useCallback(
+    (action: SetStateAction<ReleaseAction | undefined>) => {
+      if (!action) closePopover()
+      setSelectedAction(action)
+    },
+    [],
+  )
+
   return (
     <>
       <Popover
@@ -216,7 +243,7 @@ export const ReleaseMenuButton = ({
             <ReleaseMenu
               ignoreCTA={ignoreCTA}
               release={release}
-              setSelectedAction={setSelectedAction}
+              setSelectedAction={handleSetSelectedAction}
               disabled={isPerformingOperation}
               documents={documents ?? []}
             />
