@@ -36,7 +36,7 @@ import isEqual from 'react-fast-compare'
 import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {
   isSupportedPerspective,
   isVirtualPerspective,
@@ -175,6 +175,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _listenSubscription: Subscription | undefined
   _client: SanityClient
   _localStorage: LocalStorageish
+  _editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
+  _editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 
   constructor(props: VisionGuiProps) {
     super(props)
@@ -216,6 +218,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this._queryEditorContainer = createRef()
     this._paramsEditorContainer = createRef()
     this._customApiVersionElement = createRef()
+    this._editorQueryRef = createRef()
+    this._editorParamsRef = createRef()
 
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,
@@ -382,12 +386,17 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     evt.preventDefault()
+
+    const query = parts.query
+    const rawParams = JSON.stringify(parts.params, null, 2)
+    this._editorQueryRef.current?.resetEditorContent(query)
+    this._editorParamsRef.current?.resetEditorContent(rawParams)
     this.setState(
       (prevState) => ({
         dataset: this.props.datasets.includes(usedDataset) ? usedDataset : prevState.dataset,
-        query: parts.query,
+        query,
         params: parts.params,
-        rawParams: JSON.stringify(parts.params, null, 2),
+        rawParams,
         apiVersion: typeof apiVersion === 'undefined' ? prevState.apiVersion : apiVersion,
         customApiVersion:
           typeof customApiVersion === 'undefined' ? prevState.customApiVersion : customApiVersion,
@@ -894,7 +903,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         <StyledLabel muted>{t('query.label')}</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <VisionCodeMirror value={query} onChange={this.handleQueryChange} />
+                    <VisionCodeMirror
+                      initialValue={query}
+                      onChange={this.handleQueryChange}
+                      ref={this._editorQueryRef}
+                    />
                   </Box>
                 </InputContainer>
                 <InputContainer display="flex" ref={this._paramsEditorContainer}>
@@ -913,7 +926,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         )}
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <ParamsEditor value={rawParams} onChange={this.handleParamsChange} />
+                    <ParamsEditor
+                      value={rawParams}
+                      onChange={this.handleParamsChange}
+                      editorRef={this._editorParamsRef}
+                    />
                   </Card>
                   {/* Controls (listen/run) */}
                   <ControlsContainer>

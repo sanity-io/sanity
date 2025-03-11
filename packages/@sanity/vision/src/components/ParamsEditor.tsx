@@ -2,7 +2,7 @@ import {debounce} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
-import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from '../util/tryParseParams'
 
@@ -18,6 +18,7 @@ export interface ParamsEditorChangeEvent {
 export interface ParamsEditorProps {
   value: string
   onChange: (changeEvt: ParamsEditorChangeEvent) => void
+  editorRef: React.RefObject<VisionCodeMirrorHandle | null>
 }
 
 export interface ParamsEditorChange {
@@ -49,7 +50,13 @@ export function ParamsEditor(props: ParamsEditorProps) {
   )
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
-  return <VisionCodeMirror value={props.value || defaultValue} onChange={handleChange} />
+  return (
+    <VisionCodeMirror
+      initialValue={props.value || defaultValue}
+      onChange={handleChange}
+      ref={props.editorRef}
+    />
+  )
 }
 
 function eventFromValue(
