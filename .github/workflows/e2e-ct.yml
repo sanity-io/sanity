@@ -11,30 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install:
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Build packages
-        # This warms up the turborepo remote cache
-        run: pnpm build --output-logs=full --log-order=grouped
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
 
   playwright-ct-test:
     timeout-minutes: 30
-    needs: [install]
+    needs: [build]
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}

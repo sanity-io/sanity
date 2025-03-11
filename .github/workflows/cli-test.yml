@@ -12,7 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
   cli-test:
+    needs: [build]
     timeout-minutes: 60
     name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
