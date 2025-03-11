@@ -1810,9 +1810,6 @@ importers:
       '@vitest/expect':
         specifier: ^3.0.7
         version: 3.0.7
-      '@vvo/tzdb':
-        specifier: 6.137.0
-        version: 6.137.0
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-bafa41b-20250307
         version: 19.0.0-beta-bafa41b-20250307
@@ -5466,9 +5463,6 @@ packages:
 
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
-
-  '@vvo/tzdb@6.137.0':
-    resolution: {integrity: sha512-er8kaywRTjBTlaBgYynd3Fe/OPUfL3GuRMJOyWRlZ3V7EX4A6pryXTf42FL1ZXjOkDPz+/exAUe03kmb02MLOA==}
 
   '@xstate/fsm@1.6.5':
     resolution: {integrity: sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==}
@@ -16599,8 +16593,6 @@ snapshots:
       '@vue/shared': 3.5.13
 
   '@vue/shared@3.5.13': {}
-
-  '@vvo/tzdb@6.137.0': {}
 
   '@xstate/fsm@1.6.5': {}
 
