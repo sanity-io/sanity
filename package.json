@@ -128,7 +128,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/coverage-v8": "^3.0.7",
+    "@vitest/coverage-v8": "^3.0.8",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "depcheck": "^1.4.7",
@@ -172,7 +172,7 @@
     "typescript": "5.7.3",
     "vite": "^6.2.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^3.0.7",
+    "vitest": "^3.0.8",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
