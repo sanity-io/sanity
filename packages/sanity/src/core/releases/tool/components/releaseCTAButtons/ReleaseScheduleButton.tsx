@@ -87,11 +87,9 @@ export const ReleaseScheduleButton = ({
         metadata: {
           ...release.metadata,
           releaseType: 'scheduled' as const,
-          ...(typeof release.updatedDate === 'undefined'
-            ? {}
-            : {
-                intendedPublishAt: publishAt.toISOString(),
-              }),
+          ...{
+            intendedPublishAt: publishAt.toISOString(),
+          },
         },
       }
 
@@ -277,6 +275,10 @@ export const ReleaseScheduleButton = ({
   }, [release.metadata.intendedPublishAt])
 
   const tooltipText = useMemo(() => {
+    if (documents.length === 0) {
+      return t('schedule-action.validation.no-documents')
+    }
+
     if (!schedulePermission) {
       return t('schedule-button-tooltip.validation.no-permission')
     }
@@ -293,7 +295,14 @@ export const ReleaseScheduleButton = ({
       return t('schedule-button-tooltip.already-scheduled')
     }
     return null
-  }, [hasDocumentValidationErrors, isValidatingDocuments, release, schedulePermission, t])
+  }, [
+    documents.length,
+    hasDocumentValidationErrors,
+    isValidatingDocuments,
+    release,
+    schedulePermission,
+    t,
+  ])
 
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {
@@ -318,7 +327,7 @@ export const ReleaseScheduleButton = ({
           }}
           tone="primary"
           icon={ClockIcon}
-          disabled={isScheduleButtonDisabled || status === 'scheduling'}
+          disabled={isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0}
           text={t('action.schedule')}
           onClick={handleOnInitialSchedule}
           data-testid="schedule-button"
@@ -332,7 +341,7 @@ export const ReleaseScheduleButton = ({
           }}
           tone="primary"
           icon={ClockIcon}
-          disabled={isScheduleButtonDisabled || status === 'scheduling'}
+          disabled={isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0}
           text={t('action.schedule')}
           onClick={handleOnInitialSchedule}
           loading={status === 'scheduling'}
