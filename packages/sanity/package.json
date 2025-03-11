@@ -307,7 +307,7 @@
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/expect": "^3.0.7",
+    "@vitest/expect": "^3.0.8",
     "@vvo/tzdb": "6.137.0",
     "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
     "blob-polyfill": "^9.0.20240710",
@@ -317,7 +317,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.15",
     "swr": "2.2.5",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.8"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
