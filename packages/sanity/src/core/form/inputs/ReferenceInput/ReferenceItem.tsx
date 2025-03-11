@@ -413,6 +413,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   )
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
+      <div>hooks</div>
       <Box paddingX={1}>{item}</Box>
     </ChangeIndicator>
   )
