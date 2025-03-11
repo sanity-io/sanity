@@ -187,6 +187,7 @@ export const ReleaseScheduleButton = ({
     return (
       <Dialog
         id="confirm-schedule-dialog"
+        data-testid="confirm-schedule-dialog"
         /**
          * rerenderDialog should force this function to rerun
          * since the selected scheduled date was in the future when selected
@@ -330,7 +331,7 @@ export const ReleaseScheduleButton = ({
           disabled={isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0}
           text={t('action.schedule')}
           onClick={handleOnInitialSchedule}
-          data-testid="schedule-button"
+          data-testid="schedule-button-menu-item"
         />
       ) : (
         <Button

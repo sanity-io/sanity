@@ -111,6 +111,7 @@ export const ReleasePublishAllButton = ({
     return (
       <Dialog
         id="confirm-publish-dialog"
+        data-testid="confirm-publish-dialog"
         header={t('publish-dialog.confirm-publish.title')}
         onClose={() => setPublishBundleStatus('idle')}
         footer={{
@@ -192,7 +193,7 @@ export const ReleasePublishAllButton = ({
           }
           text={t('action.publish-all-documents')}
           onClick={() => setPublishBundleStatus('confirm')}
-          data-testid="schedule-button"
+          data-testid="publish-all-button-menu-item"
         />
       ) : (
         <Button
