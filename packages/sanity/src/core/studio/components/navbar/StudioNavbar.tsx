@@ -16,6 +16,7 @@ import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
@@ -270,24 +271,24 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
+                <ReleasesNav />
+                {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
+                <PresenceMenu />
                 {shouldRender.configIssues && <ConfigIssuesButton />}
                 {shouldRender.resources && <ResourcesButton />}
-
-                <PresenceMenu />
 
                 {/* Search button (mobile) */}
                 {shouldRender.searchFullscreen && (
                   <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
                 )}
 
-                <ReleasesNav />
-                {actionNodes}
-
                 {shouldRender.tools && (
-                  <Box flex="none" marginLeft={1}>
-                    <UserMenu />
-                  </Box>
+                  <CapabilityGate capability="globalUserMenu">
+                    <Box flex="none" marginLeft={1}>
+                      <UserMenu />
+                    </Box>
+                  </CapabilityGate>
                 )}
               </Flex>
             </TooltipDelayGroupProvider>

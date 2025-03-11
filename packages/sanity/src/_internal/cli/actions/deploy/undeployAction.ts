@@ -34,7 +34,7 @@ export default async function undeployStudioAction(
 
   if (!userApplication) {
     output.print('Your project has not been assigned a studio hostname')
-    output.print('or you do not have studioHost set in sanity.cli.js or sanity.cli.ts.')
+    output.print('or the `studioHost` provided does not exist.')
     output.print('Nothing to undeploy.')
     return
   }

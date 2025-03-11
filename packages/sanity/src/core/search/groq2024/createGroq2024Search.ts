@@ -23,6 +23,9 @@ function getSearchTerms(
 }
 
 /**
+ * Note: When using the `raw` persepctive, `groq2024` may emit uncollated documents, manifesting as
+ * duplicate search results. Consumers must collate the results.
+ *
  * @internal
  */
 export const createGroq2024Search: SearchStrategyFactory<Groq2024SearchResults> = (

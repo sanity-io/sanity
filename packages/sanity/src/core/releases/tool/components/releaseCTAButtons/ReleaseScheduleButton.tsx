@@ -37,6 +37,7 @@ export const ReleaseScheduleButton = ({
   const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
 
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   // in the releases tool we want timezone to be saved for releases
   const timeZoneScope = useMemo(() => ({type: 'contentReleases'}) as const, [])
@@ -96,7 +97,9 @@ export const ReleaseScheduleButton = ({
             <Translate
               t={t}
               i18nKey="toast.schedule.success"
-              values={{title: release.metadata.title}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
             />
           </Text>
         ),
@@ -109,7 +112,10 @@ export const ReleaseScheduleButton = ({
             <Translate
               t={t}
               i18nKey="toast.schedule.error"
-              values={{title: release.metadata.title, error: schedulingError.message}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                error: schedulingError.message,
+              }}
             />
           </Text>
         ),
@@ -127,10 +133,10 @@ export const ReleaseScheduleButton = ({
     telemetry,
     toast,
     t,
+    tCore,
   ])
 
-  const {t: coreT} = useTranslation()
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date | null) => {
@@ -217,7 +223,7 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="schedule-dialog.confirm-description"
               values={{
-                title: release.metadata.title,
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 count: documents.length,
               }}
             />
@@ -230,6 +236,7 @@ export const ReleaseScheduleButton = ({
     isScheduledDateInPast,
     rerenderDialog,
     t,
+    tCore,
     documents.length,
     handleConfirmSchedule,
     handleBundlePublishAtCalendarChange,

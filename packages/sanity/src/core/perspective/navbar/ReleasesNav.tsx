@@ -1,53 +1,70 @@
-import {CloseIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Button, Card, Flex} from '@sanity/ui'
-import {AnimatePresence} from 'framer-motion'
+import {Card, Flex} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
-import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {LATEST} from '../../releases/util/const'
-import {isDraftPerspective} from '../../releases/util/util'
 import {useWorkspace} from '../../studio'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
+const ReleasesNavContainer = styled(Card)`
+  position: relative;
+  --p-bg-color: var(--card-bg-color);
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid var(--card-border-color);
+    border-radius: 9999px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  // The children in button is rendered inside a span, we need to absolutely position the dot for the error.
+  span:has(> [data-ui='error-status-icon']) {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 0;
+  }
+
+  .p-menu-btn {
+    margin: -1px;
+    box-shadow: inset 0 0 0 4px var(--p-bg-color) !important;
+  }
+
+  button.p-menu-btn:hover,
+  a.p-menu-btn:hover {
+    position: relative;
+    z-index: 2;
+  }
+
+  .p-menu-btn:nth-child(2) {
+    margin-left: -6px;
+  }
+
+  .p-menu-btn:nth-child(3) {
+    margin-left: -6px;
+  }
+`
 export function ReleasesNav(): React.JSX.Element {
   const areReleasesEnabled = !!useWorkspace().releases?.enabled
 
   const {selectedPerspective, selectedReleaseId} = usePerspective()
-  const setPerspective = useSetPerspective()
-
-  const handleClearPerspective = () => setPerspective(LATEST)
 
   return (
-    <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
-      <Flex gap={0}>
-        {areReleasesEnabled && (
-          <Box data-testid="releases-tool-link" flex="none">
-            <ReleasesToolLink />
-          </Box>
-        )}
-        <AnimatePresence>
-          <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-        </AnimatePresence>
+    <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav">
+      <Flex>
+        {areReleasesEnabled && <ReleasesToolLink />}
+        <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
         <GlobalPerspectiveMenu
           selectedReleaseId={selectedReleaseId}
           areReleasesEnabled={areReleasesEnabled}
         />
-        {!isDraftPerspective(selectedPerspective) && (
-          <div>
-            <Button
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={handleClearPerspective}
-              data-testid="clear-perspective-button"
-              padding={2}
-              radius="full"
-            />
-          </div>
-        )}
       </Flex>
-    </Card>
+    </ReleasesNavContainer>
   )
 }

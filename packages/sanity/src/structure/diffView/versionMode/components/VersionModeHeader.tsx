@@ -289,7 +289,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
         <ReleaseAvatar padding={2} tone={tone} />
         <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
           <Text size={1} weight="medium">
-            {release.metadata.title}
+            {release.metadata.title || tCore('release.placeholder-untitled-release')}
           </Text>
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
             <Text muted size={1}>
@@ -337,7 +337,7 @@ function getMenuButtonProps({
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
-      text: selected?.metadata.title,
+      text: selected?.metadata.title || tCore('release.placeholder-untitled-release'),
       icon: <ReleaseAvatar padding={1} tone={tone} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
       tone,
