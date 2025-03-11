@@ -207,6 +207,9 @@ const releasesLocaleStrings = {
   'permissions.error.delete': 'You do not have permission to delete this release',
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
+
+  /** Tooltip text for publish release action when there are no documents */
+  'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
@@ -255,6 +258,8 @@ const releasesLocaleStrings = {
   /** Title of unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
+  /** Schedule release button tooltip when there are no documents to schedule */
+  'schedule-action.validation.no-documents': 'There are no documents to schedule',
   /** Schedule release button tooltip when user has no permissions to schedule */
   'schedule-button-tooltip.validation.no-permission': 'You do not have permission to schedule',
   /** Schedule release button tooltip when validation is loading */

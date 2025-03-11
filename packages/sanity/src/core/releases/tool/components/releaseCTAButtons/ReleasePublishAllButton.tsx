@@ -144,6 +144,10 @@ export const ReleasePublishAllButton = ({
     if (!hasDocumentValidationErrors && !isValidatingDocuments && publishPermission) return null
 
     const tooltipText = () => {
+      if (documents.length === 0) {
+        return t('publish-action.validation.no-documents')
+      }
+
       if (!publishPermission) {
         return t('publish-dialog.validation.no-permission')
       }
@@ -168,7 +172,7 @@ export const ReleasePublishAllButton = ({
         </Flex>
       </Text>
     )
-  }, [hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
+  }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
 
   return (
     <>
@@ -181,7 +185,11 @@ export const ReleasePublishAllButton = ({
           }}
           tone="primary"
           icon={PublishIcon}
-          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+          disabled={
+            isPublishButtonDisabled ||
+            publishBundleStatus === 'publishing' ||
+            documents.length === 0
+          }
           text={t('action.publish-all-documents')}
           onClick={() => setPublishBundleStatus('confirm')}
           data-testid="schedule-button"
@@ -194,7 +202,11 @@ export const ReleasePublishAllButton = ({
             placement: 'bottom',
           }}
           icon={PublishIcon}
-          disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
+          disabled={
+            isPublishButtonDisabled ||
+            publishBundleStatus === 'publishing' ||
+            documents.length === 0
+          }
           text={t('action.publish-all-documents')}
           onClick={() => setPublishBundleStatus('confirm')}
           loading={publishBundleStatus === 'publishing'}
