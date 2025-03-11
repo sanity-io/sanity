@@ -85,7 +85,7 @@ export const arrayCapabilities = defineType({
         disableActions: DISABLED_ACTIONS,
       },
       of: [{type: 'reference', to: [{type: 'author'}]}],
-      initialValue: [{_type: 'reference', _ref: '0154f201-bb53-4048-b9e3-7f7cdcad15fb'}],
+      // initialValue: [{_type: 'reference', _ref: '0154f201-bb53-4048-b9e3-7f7cdcad14fb'}],
     },
   ],
 })
