@@ -22,6 +22,9 @@ export function isValidResourceType(resourceType: string): string | true {
 }
 
 export function isValidResourceId(resourceType: string, resourceId: string): string | true {
+  if (!resourceId) {
+    return 'The resource ID must be a non-empty string'
+  }
   if (resourceType === 'dataset') {
     const parts = resourceId.split('.')
     if (parts.length !== 2) {
@@ -30,9 +33,7 @@ export function isValidResourceId(resourceType: string, resourceId: string): str
     return true
   }
   if (resourceType === 'media-library') {
-    if (!resourceId.startsWith('ml')) {
-      return 'The resource ID for a media library reference must start with "al"'
-    }
+    return true
   }
   return `Cannot validate resource ID for resource type: ${resourceType}`
 }
