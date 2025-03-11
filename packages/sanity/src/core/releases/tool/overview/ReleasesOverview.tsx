@@ -23,10 +23,8 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getReleaseDefaults} from '../../util/util'
-import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
-import {useBundleDocuments} from '../detail/useBundleDocuments'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
 import {
@@ -37,6 +35,7 @@ import {
   type Mode,
 } from './queryParamUtils'
 import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
+import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
@@ -81,8 +80,6 @@ export function ReleasesOverview() {
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
-  const [releaseId, setReleaseId] = useState<string>('')
-  const {results: documents} = useBundleDocuments(releaseId)
 
   const mediaIndex = useMediaIndex()
 
@@ -107,7 +104,6 @@ export function ReleasesOverview() {
 
   const tableReleases = useMemo<TableRelease[]>(() => {
     if (!hasReleases || !releasesMetadata) return []
-
     return [
       ...releases.map((release) => ({
         ...release,
@@ -295,7 +291,6 @@ export function ReleasesOverview() {
     ({datum}: {datum: TableRelease | unknown}) => {
       const release = datum as TableRelease
 
-      setReleaseId(release._id)
       if (release.isDeleted) return null
 
       const documentsCount =
@@ -303,15 +298,9 @@ export function ReleasesOverview() {
           ? release.documentsMetadata?.documentCount
           : release.finalDocumentStates?.length) ?? 0
 
-      return (
-        <ReleaseMenuButton
-          release={release}
-          documentsCount={documentsCount}
-          documents={documents}
-        />
-      )
+      return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
-    [documents, releaseGroupMode],
+    [releaseGroupMode],
   )
 
   const filteredReleases = useMemo(() => {
