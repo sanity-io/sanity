@@ -4,6 +4,10 @@ import {test as base} from '@sanity/test'
 
 const test = base.extend<{testDoc: SanityDocument}>({
   testDoc: async ({page, sanityClient}, use) => {
+    const referenceDoc = await sanityClient.create({
+      _type: 'author',
+      name: 'Test Author',
+    })
     const testDoc = await sanityClient.create({
       _type: 'arrayCapabilities',
       title: 'e2e fixture',
@@ -16,14 +20,16 @@ const test = base.extend<{testDoc: SanityDocument}>({
         {_type: 'something', _key: '630ae68957fb', first: 'Second'},
       ],
       primitiveArray: ['First', 2],
+      arrayOfReferences: [{_type: 'reference', _ref: referenceDoc._id}],
     })
     await use(testDoc)
     await sanityClient.delete(testDoc._id)
+    await sanityClient.delete(referenceDoc._id)
   },
 })
 
 test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
-  await page.goto(`/test/content/arrayCapabilities;${testDoc._id}`)
+  await page.goto(`/test/content/input-debug;arrayCapabilities;${testDoc._id}`)
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })
