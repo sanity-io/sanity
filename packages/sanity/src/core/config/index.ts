@@ -1,7 +1,7 @@
 export {
-  createSanityAssetLibraryFileSource,
-  createSanityAssetLibraryImageSource,
-} from '../form/studio/assetSourceAssetLibrary'
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 export * from './components'
 export * from './ConfigPropertyError'
 export * from './ConfigResolutionError'

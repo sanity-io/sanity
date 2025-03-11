@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next'
 import {Button} from '../../../../../ui-components'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
-import {useSanityAssetLibraryConfig} from '../hooks/useSanityAssetLibraryConfig'
+import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
@@ -26,9 +26,9 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
 
-  const assetLibraryConfig = useSanityAssetLibraryConfig()
+  const mediaLibraryConfig = useSanityMediaLibraryConfig()
 
-  const appHost = assetLibraryConfig.__internal.hosts.app
+  const appHost = mediaLibraryConfig.__internal.hosts.app
 
   const authType = useAuthType()
 
@@ -45,8 +45,8 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
 
-  const pluginApiVersion = assetLibraryConfig.__internal.pluginApiVersion
-  const appBasePath = assetLibraryConfig.__internal.appBasePath
+  const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
+  const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
     `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
@@ -76,7 +76,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     <AppDialog
       animate
       header={dialogHeaderTitle}
-      id="sanity-asset-library-plugin-dialog-select-assets"
+      id="sanity-media-library-plugin-dialog-select-assets"
       onClose={handleClose}
       open
       ref={ref}
