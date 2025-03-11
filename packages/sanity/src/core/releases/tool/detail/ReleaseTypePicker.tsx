@@ -15,20 +15,15 @@ import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument, type ReleaseState, type ReleaseType} from '../../store'
+import {type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {type NotArchivedRelease} from '../../util/isNotarchivedRelease'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
-
-type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
-
-export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
-  return release.state !== 'archived'
-}
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
