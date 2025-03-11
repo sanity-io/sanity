@@ -173,7 +173,7 @@
     "@sanity/export": "^3.42.2",
     "@sanity/icons": "^3.7.0",
     "@sanity/image-url": "^1.0.2",
-    "@sanity/import": "^3.37.9",
+    "@sanity/import": "^3.38.0",
     "@sanity/insert-menu": "^1.1.4",
     "@sanity/logos": "^2.1.13",
     "@sanity/migrate": "3.78.1",
