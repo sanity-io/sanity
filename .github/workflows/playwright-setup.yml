@@ -17,14 +17,14 @@ jobs:
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
-          
+
       - name: Cache Playwright Browser
         id: cache-playwright-browser
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ steps.playwright-version.outputs.version }}-${{ inputs.browser }}
-          
+
       - name: Install Playwright Browser
         if: steps.cache-playwright-browser.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ inputs.browser }} 
+        run: npx playwright install --with-deps ${{ inputs.browser }}

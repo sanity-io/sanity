@@ -38,4 +38,4 @@ jobs:
 
       - name: Set cache hash
         id: set-cache-hash
-        run: echo "cache-hash=${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT 
+        run: echo "cache-hash=${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
