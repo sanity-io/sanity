@@ -46,12 +46,22 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({release, documentsCount, ignoreCTA = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({
+  release,
+  documentsCount,
+  ignoreCTA = false,
+  documents = [],
+}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
   return render(
-    <ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} documentsCount={documentsCount} />,
+    <ReleaseMenuButton
+      ignoreCTA={ignoreCTA}
+      release={release}
+      documentsCount={documentsCount}
+      documents={documents}
+    />,
     {wrapper},
   )
 }
