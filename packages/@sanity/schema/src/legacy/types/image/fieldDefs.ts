@@ -14,8 +14,8 @@ export const CROP_FIELD = {
   type: 'sanity.imageCrop',
 }
 
-export const ASSET_LIBRARY_ASSET_FIELD = {
-  name: 'assetLibraryAsset',
+export const MEDIA_LIBRARY_ASSET_FIELD = {
+  name: 'mediaLibraryAsset',
   type: 'globalDocumentReference',
   hidden: true,
   to: [

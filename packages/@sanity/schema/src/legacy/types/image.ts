@@ -2,7 +2,7 @@ import {pick, startCase} from 'lodash'
 
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {ASSET_FIELD, ASSET_LIBRARY_ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD} from './image/fieldDefs'
+import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD, MEDIA_LIBRARY_ASSET_FIELD} from './image/fieldDefs'
 import {createFieldsets} from './object'
 import {lazyGetter} from './utils'
 
@@ -31,7 +31,7 @@ export const ImageType = {
 
     const fields = [
       ASSET_FIELD,
-      ASSET_LIBRARY_ASSET_FIELD,
+      MEDIA_LIBRARY_ASSET_FIELD,
       ...hotspotFields,
       ...(rawSubTypeDef.fields || []),
     ]
