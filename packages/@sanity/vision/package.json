@@ -70,7 +70,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-bafa41b-20250307",
+    "react-compiler-runtime": "19.0.0-beta-e1e972c-20250221",
     "react-fast-compare": "^3.2.2"
   },
   "devDependencies": {
