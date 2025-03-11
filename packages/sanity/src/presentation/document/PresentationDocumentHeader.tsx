@@ -18,14 +18,15 @@ const LocationStack = styled(Stack)`
 
 export function PresentationDocumentHeader(props: {
   documentId: PublishedId
+  version: string | undefined
   options: PresentationPluginOptions
   schemaType: ObjectSchemaType
 }): ReactNode {
-  const {documentId, options, schemaType} = props
-
+  const {documentId, options, schemaType, version} = props
   const context = useContext(PresentationDocumentContext)
   const {state, status} = useDocumentLocations({
     id: documentId,
+    version,
     resolvers: options.resolve?.locations || options.locate,
     type: schemaType.name,
   })
