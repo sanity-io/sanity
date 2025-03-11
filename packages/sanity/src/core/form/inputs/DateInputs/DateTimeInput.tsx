@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
@@ -10,8 +9,7 @@ import {
 } from '@sanity/util/legacyDateFormat'
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
-import {EMPTY_ARRAY, set, type StringInputProps, unset} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -20,11 +18,13 @@ import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneBut
 import {FormFieldHeaderText} from '../../../form/components/formField/FormFieldHeaderText'
 import {type TimeZoneScopeType, useTimeZone} from '../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../i18n'
-import {getPublishedId} from '../../../util'
+import {EMPTY_ARRAY, getPublishedId} from '../../../util'
 import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {FormFieldStatus} from '../../components/formField/FormFieldStatus'
 import {useFormValue} from '../../contexts/FormValue'
 import {useFieldActions} from '../../field'
+import {set, unset} from '../../patch'
+import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
 
@@ -34,10 +34,6 @@ const Root = styled(Card)`
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
-`
-
-const ZeroLineHeightBox = styled(Box)`
-  line-height: 0;
 `
 
 interface ParsedOptions {
