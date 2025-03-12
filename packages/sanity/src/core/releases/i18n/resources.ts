@@ -338,8 +338,6 @@ const releasesLocaleStrings = {
   'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
-  /** Text for toast when release has been published */
-  'toast.publish.success': "The '<strong>{{title}}</strong>' release was published.",
   /** Text for toast when release failed to schedule */
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
