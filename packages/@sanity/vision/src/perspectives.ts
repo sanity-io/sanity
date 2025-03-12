@@ -48,13 +48,13 @@ export function hasPinnedPerspectiveChanged(
 
 export function getActivePerspective({
   visionPerspective,
-  pinnedPerspectiveStack,
+  perspectiveStack,
 }: {
   visionPerspective: ClientPerspective | SupportedPerspective | undefined
-  pinnedPerspectiveStack: PerspectiveContextValue['perspectiveStack']
+  perspectiveStack: PerspectiveContextValue['perspectiveStack']
 }): ClientPerspective | undefined {
   if (visionPerspective !== 'pinnedRelease') {
     return visionPerspective
   }
-  return pinnedPerspectiveStack
+  return perspectiveStack
 }
