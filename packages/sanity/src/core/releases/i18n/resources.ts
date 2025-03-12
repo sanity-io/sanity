@@ -330,8 +330,6 @@ const releasesLocaleStrings = {
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
-  /** Description for toast when new version  of document is created in release */
-  'toast.create-version.success': '{{documentTitle}} added to release',
   /** Description for toast when creating new version of document in release failed */
   'toast.create-version.error': 'Failed to add document to release: {{error}}',
   /** Description for toast when release deletion failed */

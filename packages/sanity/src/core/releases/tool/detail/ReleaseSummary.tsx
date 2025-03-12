@@ -162,12 +162,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (
         documents.find(({document}) => `${document._id}-pending` === pendingDocument.document._id)
       ) {
-        toast.push({
-          id: `add-version-to-release-${pendingDocument.document._id}`,
-          closable: true,
-          status: 'success',
-          title: t('toast.create-version.success', {documentTitle: pendingDocument.document.title}),
-        })
         documentsNoLongerPending.push(pendingDocument.document._id)
       }
     })
