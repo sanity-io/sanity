@@ -89,7 +89,7 @@ export const ReleaseScheduleButton = ({
       telemetry.log(ScheduledRelease)
       toast.push({
         closable: true,
-        status: 'success',
+        status: 'info',
         title: (
           <Text muted size={1}>
             <Translate
