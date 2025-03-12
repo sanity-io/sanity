@@ -50,7 +50,6 @@ export const RELEASE_ACTION_MAP: Record<
       dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
       confirmButtonTone: 'critical',
     },
-    toastSuccessI18nKey: 'toast.archive.success',
     toastFailureI18nKey: 'toast.archive.error',
     telemetry: ArchivedRelease,
   },

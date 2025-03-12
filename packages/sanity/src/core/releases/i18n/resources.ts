@@ -328,8 +328,6 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
 
-  /** Text for toast when release has been archived */
-  'toast.archive.success': "The '<strong>{{title}}</strong>' release was archived.",
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when new version  of document is created in release */
