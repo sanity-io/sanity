@@ -15,7 +15,7 @@ export const CROP_FIELD = {
 }
 
 export const MEDIA_LIBRARY_ASSET_FIELD = {
-  name: 'mediaLibraryAsset',
+  name: 'media',
   type: 'globalDocumentReference',
   hidden: true,
   to: [
