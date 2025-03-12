@@ -11,8 +11,8 @@ import {
 export type ReleaseAction = 'archive' | 'unarchive' | 'delete' | 'unschedule'
 
 interface BaseReleaseActionsMap {
-  toastSuccessI18nKey: string
-  toastFailureI18nKey: string
+  toastSuccessI18nKey?: string
+  toastFailureI18nKey?: string
   telemetry: DefinedTelemetryLog<void>
 }
 
