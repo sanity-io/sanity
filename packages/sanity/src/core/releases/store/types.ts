@@ -1,3 +1,4 @@
+import {type ReleaseFinalDocumentState, type ReleaseState} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
@@ -24,27 +25,6 @@ export function isReleaseType(maybeReleaseType: unknown): maybeReleaseType is Re
   return (
     typeof maybeReleaseType === 'string' && releaseTypes.includes(maybeReleaseType as ReleaseType)
   )
-}
-
-/**
- * @beta
- */
-export type ReleaseState =
-  | 'active'
-  | 'archiving'
-  | 'unarchiving'
-  | 'archived'
-  | 'published'
-  | 'publishing'
-  | 'scheduled'
-  | 'scheduling'
-
-/**
- * @beta
- */
-export type ReleaseFinalDocumentState = {
-  /** Document ID */
-  id: string
 }
 
 /**

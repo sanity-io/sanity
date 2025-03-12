@@ -1,3 +1,4 @@
+import {type ReleaseState} from '@sanity/client'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {act} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
@@ -12,7 +13,7 @@ import {
   scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {type ReleaseDocument, type ReleaseState} from '../../../../index'
+import {type ReleaseDocument} from '../../../../index'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
