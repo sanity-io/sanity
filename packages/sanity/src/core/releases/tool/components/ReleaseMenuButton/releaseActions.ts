@@ -60,7 +60,6 @@ export const RELEASE_ACTION_MAP: Record<
   },
   unschedule: {
     confirmDialog: false,
-    toastSuccessI18nKey: 'toast.unschedule.success',
     toastFailureI18nKey: 'toast.unschedule.error',
     telemetry: UnscheduledRelease,
   },
