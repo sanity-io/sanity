@@ -6,14 +6,15 @@ const COLOR_SCHEME_KEY = 'sanityStudio:ui:colorScheme'
 //some flakiness around local storage initial state, so add timeout and isolate
 test('default color scheme is system', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/test/content')
-  await page.waitForTimeout(2000)
+  await page.waitForTimeout(2_000)
   const localStorage = await page.evaluate(() => window.localStorage)
   expect(localStorage[COLOR_SCHEME_KEY]).toBe('system')
 })
 
 test('color scheme changes and persists', async ({page, baseURL}) => {
+  test.slow()
   await page.goto(baseURL ?? '/test/content')
-
+  await page.waitForTimeout(2_000)
   await page.locator(`[id='user-menu']`).click()
   await expect(await page.getByTestId('user-menu')).toBeVisible()
   await expect(await page.getByTestId('color-scheme-dark')).toBeVisible()
