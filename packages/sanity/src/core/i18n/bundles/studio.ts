@@ -947,7 +947,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Search returned a type that\'s not valid for this reference: "{{returnedType}}"',
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-description':
-    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes />.',
+    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes/>.',
   /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-title': 'Document of invalid type',
   /** Error description for when the user does not have permissions to read the referenced document */
