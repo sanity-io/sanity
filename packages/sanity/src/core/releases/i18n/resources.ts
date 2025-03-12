@@ -350,8 +350,6 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been unschedule */
   'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
-  /** Text for toast when release has been unarchived */
-  'toast.unarchive.success': "The '<strong>{{title}}</strong>' release was unarchived.",
   /** Text for toast when release failed to unarchive */
   'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release deletion failed */

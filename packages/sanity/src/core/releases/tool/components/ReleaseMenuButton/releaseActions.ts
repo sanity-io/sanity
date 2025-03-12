@@ -55,7 +55,6 @@ export const RELEASE_ACTION_MAP: Record<
   },
   unarchive: {
     confirmDialog: false,
-    toastSuccessI18nKey: 'toast.unarchive.success',
     toastFailureI18nKey: 'toast.unarchive.error',
     telemetry: UnarchivedRelease,
   },
