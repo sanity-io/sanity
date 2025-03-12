@@ -27,7 +27,8 @@
     // these is for the perf/efps perf suite and should not be cached
     "VITE_PERF_EFPS_PROJECT_ID",
     "VITE_PERF_EFPS_DATASET",
-    "PERF_EFPS_SANITY_TOKEN"
+    "PERF_EFPS_SANITY_TOKEN",
+    "SANITY_E2E_SESSION_TOKEN"
   ],
   "globalDependencies": [
     ".npmrc",

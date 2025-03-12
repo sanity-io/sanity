@@ -63,7 +63,7 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.7.0",
-    "@sanity/ui": "^2.15.2",
+    "@sanity/ui": "^2.15.5",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
@@ -76,7 +76,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.28.2",
+    "@sanity/client": "^6.28.3",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",

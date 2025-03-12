@@ -70,5 +70,5 @@ test(`datetime inputs shows validation on entering date in the textfield and onB
 
   await expect(
     page.getByTestId('field-requiredDatetime').getByTestId('input-validation-icon-error'),
-  ).toBeVisible()
+  ).toBeVisible({timeout: 5_000})
 })

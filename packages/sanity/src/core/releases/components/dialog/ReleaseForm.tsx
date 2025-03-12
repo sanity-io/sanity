@@ -1,16 +1,45 @@
-import {InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, TabList, TabPanel, Text} from '@sanity/ui'
+import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
+import {
+  type BadgeTone,
+  // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
+  Button,
+  Flex,
+  Menu,
+  // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
+  MenuItem,
+  Stack,
+  TabPanel,
+  Text,
+} from '@sanity/ui'
 import {addHours, isValid, startOfHour} from 'date-fns'
-import {useCallback, useEffect, useState} from 'react'
+import {
+  type ComponentType,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useId,
+  useState,
+} from 'react'
 
-import {Tab, Tooltip} from '../../../../ui-components'
+import {MenuButton, Tooltip} from '../../../../ui-components'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
-import {type EditableReleaseDocument, type ReleaseType} from '../../store/types'
+import {type EditableReleaseDocument, isReleaseType, type ReleaseType} from '../../store/types'
+import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
 
-const RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
+const RELEASE_TYPES: Record<ReleaseType, {tone: BadgeTone}> = {
+  asap: {
+    tone: 'critical',
+  },
+  scheduled: {
+    tone: 'primary',
+  },
+  undecided: {
+    tone: 'suggest',
+  },
+}
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -36,8 +65,14 @@ export function ReleaseForm(props: {
     [onChange, value],
   )
 
-  const handleButtonReleaseTypeChange = useCallback(
-    (pickedReleaseType: ReleaseType) => {
+  const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+    (event) => {
+      const pickedReleaseType = event.currentTarget.dataset.value
+
+      if (!isReleaseType(pickedReleaseType)) {
+        return
+      }
+
       setButtonReleaseType(pickedReleaseType)
 
       // select the start of the next hour
@@ -87,12 +122,17 @@ export function ReleaseForm(props: {
     }
   }, [currentTimezone, intendedPublishAt, timeZone, utcToCurrentZoneDate])
 
+  const menuButtonId = useId()
+  const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
+
   return (
     <Stack space={5}>
-      <Stack space={2} style={{margin: -1}}>
-        <Text muted size={1}>
-          {t('release.dialog.tooltip.title')}
-          <span style={{marginLeft: 10, opacity: 0.5}}>
+      <Stack space={4}>
+        <Flex gap={2} align="center">
+          <Text as="label" htmlFor={menuButtonId}>
+            {t('release.dialog.tooltip.title')}
+          </Text>
+          <Text muted size={1}>
             <Tooltip
               content={
                 <Stack space={3} style={{maxWidth: 320 - 16}}>
@@ -108,49 +148,67 @@ export function ReleaseForm(props: {
             >
               <InfoOutlineIcon />
             </Tooltip>
-          </span>
-        </Text>
-        <Flex gap={1}>
-          <Card
-            border
-            overflow="hidden"
-            padding={1}
-            style={{borderRadius: 3.5, alignSelf: 'baseline'}}
-            tone="inherit"
-          >
-            <Flex gap={1}>
-              <TabList space={0.5}>
-                {RELEASE_TYPES.map((type) => (
-                  <Tab
-                    aria-controls={`release-timing-${type}`}
-                    id={`release-timing-${type}-tab`}
-                    key={type}
-                    onClick={() => handleButtonReleaseTypeChange(type)}
-                    selected={buttonReleaseType === type}
-                    label={t(`release.type.${type}`)}
-                  />
-                ))}
-              </TabList>
-            </Flex>
-          </Card>
-          {buttonReleaseType === 'scheduled' && (
-            <TabPanel
-              aria-labelledby="release-timing-at-time-tab"
-              flex={1}
-              id="release-timing-at-time"
-              style={{outline: 'none'}}
-              tabIndex={-1}
-            >
-              <ScheduleDatePicker
-                initialValue={intendedPublishAt || new Date()}
-                onChange={handleBundlePublishAtCalendarChange}
-                timeZoneScope={timeZoneScope}
-              />
-            </TabPanel>
-          )}
+          </Text>
         </Flex>
+        <Stack space={3}>
+          <MenuButton
+            id={menuButtonId}
+            ref={setMenuButton}
+            button={
+              <Button mode="ghost">
+                <Flex justify="space-between" align="center">
+                  <ReleaseTypeOption
+                    text={t(`release.type.${buttonReleaseType}`)}
+                    tone={RELEASE_TYPES[buttonReleaseType].tone}
+                  />
+                  <Text size={1}>
+                    <ChevronDownIcon />
+                  </Text>
+                </Flex>
+              </Button>
+            }
+            popover={{
+              placement: 'bottom',
+              matchReferenceWidth: true,
+              boundaryElement: menuButton,
+            }}
+            menu={
+              <Menu>
+                {Object.entries(RELEASE_TYPES).map(([type, {tone}]) => (
+                  <MenuItem key={type} data-value={type} onClick={handleButtonReleaseTypeChange}>
+                    <ReleaseTypeOption text={t(`release.type.${type}`)} tone={tone} />
+                  </MenuItem>
+                ))}
+              </Menu>
+            }
+          />
+          <Flex gap={1}>
+            {buttonReleaseType === 'scheduled' && (
+              <TabPanel
+                aria-labelledby="release-timing-at-time-tab"
+                flex={1}
+                id="release-timing-at-time"
+                style={{outline: 'none'}}
+                tabIndex={-1}
+              >
+                <ScheduleDatePicker
+                  initialValue={intendedPublishAt || new Date()}
+                  onChange={handleBundlePublishAtCalendarChange}
+                  timeZoneScope={timeZoneScope}
+                />
+              </TabPanel>
+            )}
+          </Flex>
+        </Stack>
       </Stack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
     </Stack>
   )
 }
+
+const ReleaseTypeOption: ComponentType<{text: string; tone: BadgeTone}> = ({tone, text}) => (
+  <Flex gap={3} align="center">
+    <ReleaseAvatar padding={1} tone={tone} />
+    <Text>{text}</Text>
+  </Flex>
+)

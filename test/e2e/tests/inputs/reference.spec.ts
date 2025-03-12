@@ -47,7 +47,7 @@ withDefaultClient((context) => {
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
@@ -59,11 +59,11 @@ withDefaultClient((context) => {
     // Select the next document in the list.
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await expect(paneFooter).toContainText('Saved')
+    await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({

@@ -76,7 +76,7 @@ export function TestForm(props: TestFormProps) {
   } = props
 
   const {setDocumentMeta} = useCopyPaste()
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>(openPathFromProps)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -99,7 +99,7 @@ export function TestForm(props: TestFormProps) {
   const [patchChannel] = useState(() => createPatchChannel())
 
   useGlobalCopyPasteElementHandler({
-    element: wrapperRef.current,
+    element: wrapperElement,
     focusPath,
     value: document,
   })
@@ -171,7 +171,9 @@ export function TestForm(props: TestFormProps) {
   })
 
   const formStateRef = useRef(formState)
-  formStateRef.current = formState
+  useEffect(() => {
+    formStateRef.current = formState
+  }, [formState])
 
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
@@ -185,13 +187,7 @@ export function TestForm(props: TestFormProps) {
     setFocusPath([])
   }, [setFocusPath])
 
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error(
-      'Attempted to patch the Sanity document during initial render. Input components should only call `onChange()` in an effect or a callback.',
-    )
-  })
-
-  patchRef.current = (event: PatchEvent) => {
+  const patchRef = useRef<(event: PatchEvent) => void>((event: PatchEvent) => {
     setDocument((currentDocumentValue) => {
       const result = applyAll(currentDocumentValue, event.patches)
 
@@ -200,7 +196,7 @@ export function TestForm(props: TestFormProps) {
 
       return result
     })
-  }
+  })
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
@@ -302,7 +298,7 @@ export function TestForm(props: TestFormProps) {
     ],
   )
   return (
-    <div ref={wrapperRef}>
+    <div ref={setWrapperElement}>
       <BoundaryElementProvider element={documentScrollElement}>
         <VirtualizerScrollInstanceProvider
           scrollElement={documentScrollElement}

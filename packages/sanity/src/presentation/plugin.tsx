@@ -1,6 +1,12 @@
 import {type SanityDocument} from '@sanity/client'
 import {lazy, Suspense} from 'react'
-import {definePlugin, getPublishedId, type InputProps, isDocumentSchemaType} from 'sanity'
+import {
+  definePlugin,
+  getPublishedId,
+  getVersionFromId,
+  type InputProps,
+  isDocumentSchemaType,
+} from 'sanity'
 
 import {DEFAULT_TOOL_ICON, DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import {PresentationDocumentHeader} from './document/PresentationDocumentHeader'
@@ -56,13 +62,14 @@ export const presentationTool = definePlugin<PresentationPluginOptions>((options
   function PresentationDocumentInput(props: InputProps) {
     const value = props.value as SanityDocument
     const documentId = value?._id ? getPublishedId(value?._id) : undefined
-
+    const documentVersion = value?._id ? getVersionFromId(value._id) : undefined
     if (isDocumentSchemaType(props.schemaType)) {
       return (
         <PresentationDocumentProvider options={options}>
           {hasLocationsResolver && documentId && (
             <PresentationDocumentHeader
               documentId={documentId}
+              version={documentVersion}
               options={options}
               schemaType={props.schemaType}
             />

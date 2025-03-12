@@ -123,7 +123,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
-    "@sanity/client": "^6.28.2",
+    "@sanity/client": "^6.28.3",
     "@sanity/types": "3.79.0",
     "date-fns": "^4.1.0",
     "get-random-values-esm": "1.0.2",
@@ -133,7 +133,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.8"
   },
   "engines": {
     "node": ">=18"

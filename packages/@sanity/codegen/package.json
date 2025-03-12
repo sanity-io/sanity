@@ -75,7 +75,7 @@
     "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.8"
   },
   "engines": {
     "node": ">=18"
