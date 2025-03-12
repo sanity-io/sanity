@@ -13,7 +13,10 @@ function getMissingDocumentFallback(document: Partial<SanityDocument> | PreviewV
   }
 }
 
-export type Values = {
+/**
+ * @internal
+ */
+export type Sources = {
   /**
    * Preview snapshot with current perspective applied
    * This takes priority of original and fallback
@@ -38,6 +41,6 @@ const EMPTY: {[key: string]: never} = {}
  *
  * @internal
  */
-export function getPreviewValueWithFallback({snapshot, original, fallback}: Values) {
+export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) {
   return snapshot || original || getMissingDocumentFallback(fallback || EMPTY)
 }
