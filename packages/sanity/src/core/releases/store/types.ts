@@ -1,4 +1,4 @@
-import {type ReleaseFinalDocumentState, type ReleaseState} from '@sanity/client'
+import {type ReleaseState} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
@@ -44,7 +44,10 @@ export interface ReleaseDocument extends SanityDocument {
   error?: {
     message: string
   }
-  finalDocumentStates?: ReleaseFinalDocumentState[]
+  finalDocumentStates?: {
+    /** Document ID */
+    id: string
+  }[]
   /**
    * If defined, it takes precedence over the intendedPublishAt, the state should be 'scheduled'
    */
