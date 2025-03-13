@@ -371,7 +371,7 @@ export function VisionGui(props: VisionGuiProps) {
     setQueryInProgress(false)
     setQueryResult(undefined)
     setListenInProgress(shouldExecute)
-    setError(new Error(params.error) || undefined)
+    setError(params.error ? new Error(params.error) : undefined)
     setQueryTime(undefined)
     setE2eTime(undefined)
 
