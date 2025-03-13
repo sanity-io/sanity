@@ -17,15 +17,6 @@ export async function measureFpsForInput({
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
 
-  // Debug: Print all data-testid elements that contain the fieldName
-  await page.evaluate((name) => {
-    const elements = document.querySelectorAll(`[data-testid*="${name}"]`)
-    // eslint-disable-next-line no-console
-    console.log('Found elements with data-testid containing', name, elements.length)
-    // eslint-disable-next-line prettier/prettier, no-console
-    elements.forEach((el) => console.log(el.getAttribute('data-testid')))
-  }, fieldName)
-
   const input = page
     .locator(
       `[data-testid="field-${fieldName}"] input[type="text"], ` +
