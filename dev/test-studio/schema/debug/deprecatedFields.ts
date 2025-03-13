@@ -137,7 +137,7 @@ export const deprecatedFields = defineType({
       to: [{type: 'author'}, {type: 'book'}, {type: 'deprecatedDocument'}],
     }),
     defineField({
-      name: 'crossDatasetReference',
+      name: 'cdReference',
       deprecated: {
         reason: 'This cross dataset reference is deprecated',
       },

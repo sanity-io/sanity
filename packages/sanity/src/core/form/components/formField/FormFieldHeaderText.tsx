@@ -73,7 +73,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           <LabelSuffix align="center" flex={1}>
             {deprecated && (
               <Box marginLeft={2}>
-                <Badge data-testid={`deprecated-badge-${inputId}`} tone="caution">
+                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
                   {t('form.field.deprecated-label')}
                 </Badge>
               </Box>
