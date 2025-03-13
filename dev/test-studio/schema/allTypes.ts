@@ -84,7 +84,7 @@ export const allTypes = defineType({
         }),
     }),
     defineField({
-      name: 'crossDatasetReference',
+      name: 'cdReference',
       title: 'Referanse på tvers av datasett',
       type: 'crossDatasetReference',
       dataset: 'blog',
