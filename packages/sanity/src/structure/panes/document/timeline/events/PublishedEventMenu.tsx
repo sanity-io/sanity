@@ -9,6 +9,7 @@ import {
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
   type PublishDocumentVersionEvent,
@@ -77,7 +78,7 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
             <>
               <IntentLink
                 intent={RELEASES_INTENT}
-                params={{id: event.release?.name}}
+                params={{id: getReleaseIdFromReleaseDocumentId(event.release._id)}}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>
