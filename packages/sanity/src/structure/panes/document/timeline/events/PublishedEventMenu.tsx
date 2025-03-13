@@ -82,11 +82,11 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>
-                  <Flex align={'center'}>
+                  <Flex align={'center'} justify="flex-start">
                     <Text size={1} style={{textDecoration: 'none'}}>
                       <Translate
                         components={{
-                          VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
+                          VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
                         }}
                         i18nKey="events.open.release"
                         values={{
@@ -101,11 +101,11 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 </MenuItem>
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
-                <Flex align={'center'}>
+                <Flex align={'center'} justify="flex-start">
                   <Text size={1}>
                     <Translate
                       components={{
-                        VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
+                        VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
                       }}
                       i18nKey="events.inspect.release"
                       values={{
