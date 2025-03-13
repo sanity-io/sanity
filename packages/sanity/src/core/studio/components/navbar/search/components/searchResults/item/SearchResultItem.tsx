@@ -69,10 +69,14 @@ export function SearchResultItem({
   // should the search items be disasabled
   const disabledAction = (!hasCreatePermission && state.canDisableAction) || existsInRelease
 
+  const documentStub = useMemo(
+    () => ({_id: documentId, _type: documentType}),
+    [documentId, documentType],
+  )
   const preview = useValuePreview({
     enabled: true,
     schemaType: type,
-    value: {_id: documentId},
+    value: documentStub,
   })
 
   const handleClick = useCallback(
@@ -105,6 +109,7 @@ export function SearchResultItem({
       >
         <SearchResultItemPreview
           documentId={documentId}
+          documentType={documentType}
           layout={layout}
           perspective={previewPerspective}
           presence={documentPresence}
