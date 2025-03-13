@@ -300,13 +300,13 @@ interface CreateReleaseApiAction {
 
 interface CreateVersionReleaseApiAction {
   actionType: 'sanity.action.document.version.create'
-  releaseId: string
-  attributes: IdentifiedSanityDocumentStub
+  publishedId: string
+  document: IdentifiedSanityDocumentStub
 }
 
 interface UnpublishVersionReleaseApiAction {
   actionType: 'sanity.action.document.version.unpublish'
-  draftId: string
+  versionId: string
   publishedId: string
 }
 
