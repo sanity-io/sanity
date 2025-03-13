@@ -19,6 +19,7 @@ import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../
 
 interface SearchResultItemPreviewProps {
   documentId: string
+  documentType: string
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   perspective?: PerspectiveStack
@@ -43,6 +44,7 @@ const SearchResultItemPreviewBox = styled(Box)`
  */
 export function SearchResultItemPreview({
   documentId,
+  documentType,
   layout,
   presence,
   schemaType,
@@ -54,6 +56,11 @@ export function SearchResultItemPreview({
   const observable = useMemo(() => {
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspective)
   }, [documentPreviewStore, schemaType, documentId, perspective])
+
+  const documentStub = useMemo(
+    () => ({_id: documentId, _type: documentType}),
+    [documentId, documentType],
+  )
 
   const {isLoading, snapshot, original} = useObservable(observable, {
     snapshot: null,
@@ -97,7 +104,7 @@ export function SearchResultItemPreview({
   return (
     <SearchResultItemPreviewBox>
       <SanityDefaultPreview
-        {...getPreviewValueWithFallback({snapshot, original})}
+        {...getPreviewValueWithFallback({snapshot, original, fallback: documentStub})}
         isPlaceholder={isLoading ?? true}
         layout={layout || 'default'}
         icon={schemaType.icon}

@@ -229,7 +229,7 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
             map(({snapshot}) => ({
               isLoading: false,
               values: prepareForPreview(
-                getPreviewValueWithFallback({snapshot, original: document}),
+                getPreviewValueWithFallback({snapshot, fallback: document}),
                 schemaType,
               ),
             })),

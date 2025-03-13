@@ -794,9 +794,13 @@ async function collateObjectValue({
     })
   }
 
-  // Special handling for weak references
-  if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
-    resultingValue._weak = true
+  // Special handling to avoid reference strength mismatches
+  if (isReferenceSchemaType(targetSchemaType)) {
+    if (targetSchemaType.weak) {
+      resultingValue._weak = true
+    } else {
+      delete resultingValue._weak
+    }
   }
 
   // Special handling for weak references that will be strengthened on publish
@@ -1034,7 +1038,7 @@ function collatePrimitiveValue({
 }
 
 function cleanObjectKeys(obj: TypedObject): TypedObject {
-  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev', '_weak']
+  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev']
   return Object.keys(obj).reduce((acc, key) => {
     if (disallowedKeys.includes(key)) {
       return acc
