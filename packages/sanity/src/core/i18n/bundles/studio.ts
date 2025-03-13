@@ -147,10 +147,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.go-to-yesterday': 'Yesterday',
   /** Label for switch that controls whether or not to include time in given timestamp */
   'calendar.action.include-time-label': 'Include time',
-  /** Action message for selecting the hour */
-  'calendar.action.select-hour': 'Select hour',
-  /** Action message for selecting the minute */
-  'calendar.action.select-minute': 'Select minute',
+  /** Action message for selecting the time */
+  'calendar.action.select-time': 'Select time',
   /** Action message for setting to the current time */
   'calendar.action.set-to-current-time': 'Set to current time',
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
