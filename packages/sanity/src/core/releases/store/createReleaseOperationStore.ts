@@ -5,7 +5,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 
-import {getVersionId} from '../../util'
+import {getPublishedId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
@@ -217,7 +217,7 @@ export function createReleaseOperationsStore(options: {
       {
         actionType: 'sanity.action.document.version.unpublish',
         draftId: documentId,
-        publishedId: documentId,
+        publishedId: getPublishedId(documentId),
       },
     ])
 
