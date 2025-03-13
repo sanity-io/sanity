@@ -23,7 +23,7 @@ export async function measureFpsForInput({
     // eslint-disable-next-line no-console
     console.log('Found elements with data-testid containing', name, elements.length)
     // eslint-disable-next-line prettier/prettier, no-console
-    elements.forEach(el => console.log(el.getAttribute('data-testid')));
+    elements.forEach((el) => console.log(el.getAttribute('data-testid')))
   }, fieldName)
 
   const input = page
