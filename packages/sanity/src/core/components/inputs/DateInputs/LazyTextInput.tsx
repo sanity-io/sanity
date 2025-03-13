@@ -61,12 +61,9 @@ export const LazyTextInput = forwardRef(function LazyTextInput(
     [checkEvent, onKeyPress],
   )
 
-  // Extract id from rest props to use in the data-testid
-  const {id, ...otherProps} = rest
-
   return (
     <TextInput
-      {...otherProps}
+      {...rest}
       data-testid="date-input"
       ref={forwardedRef}
       value={inputValue === undefined ? value : inputValue}
