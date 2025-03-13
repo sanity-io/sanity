@@ -1,4 +1,4 @@
-import {Box, Stack, Text} from '@sanity/ui'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
@@ -23,10 +23,12 @@ export function DiscardVersionDialog(props: {
 }): React.JSX.Element {
   const {onClose, documentId, documentType} = props
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
+  const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
 
   const schemaType = schema.get(documentType)
@@ -35,11 +37,20 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(true)
 
     if (isVersionId(documentId)) {
-      await discardVersion(
-        getVersionFromId(documentId) ||
-          getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
-        documentId,
-      )
+      try {
+        await discardVersion(
+          getVersionFromId(documentId) ||
+            getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
+          documentId,
+        )
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: coreT('release.action.discard-version.failure'),
+          description: err.message,
+        })
+      }
     } else {
       // on the document header you can also discard the draft
       discardChanges.execute()
@@ -48,7 +59,7 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [documentId, onClose, discardVersion, selectedPerspective, discardChanges])
+  }, [documentId, onClose, discardVersion, selectedPerspective, toast, coreT, discardChanges])
 
   return (
     <Dialog

@@ -7,6 +7,7 @@ import {
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
+  useToast,
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {
@@ -22,6 +23,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
@@ -121,6 +123,8 @@ export const VersionChip = memo(function VersionChip(props: {
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -161,10 +165,20 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      try {
+        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.action.create-version.failure'),
+          description: err.message,
+        })
+      }
+
       close()
     },
-    [createVersion, docId, close],
+    [close, createVersion, docId, t, toast],
   )
 
   const referenceElement = useMemo(() => {
