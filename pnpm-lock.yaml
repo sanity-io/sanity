@@ -472,7 +472,7 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^2.1.5
-        version: 2.1.5(@sanity/client@6.28.3(debug@4.4.0))
+        version: 2.1.6(@sanity/client@6.28.3(debug@4.4.0))
       '@sanity/react-loader':
         specifier: ^1.10.35
         version: 1.10.47(@sanity/types@packages+@sanity+types)(react@19.0.0)
@@ -1423,8 +1423,8 @@ importers:
         specifier: ^1.0.10
         version: 1.0.10(@sanity/client@6.28.3(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^2.1.5
-        version: 2.1.5(@sanity/client@6.28.3(debug@4.4.0))
+        specifier: ^2.1.6
+        version: 2.1.6(@sanity/client@6.28.3(debug@4.4.0))
       '@sanity/schema':
         specifier: 3.79.0
         version: link:../@sanity/schema
@@ -4671,11 +4671,11 @@ packages:
     peerDependencies:
       prettier: ^3.2.5
 
-  '@sanity/preview-url-secret@2.1.5':
-    resolution: {integrity: sha512-G/jq1O4o/fyQtSL+ThW227zfsGu6BAE/qbEZ5MFiarLVJedM0P8eRFfwZpH3NLL2NA9vqRRK+nc/qjcttuT2dg==}
+  '@sanity/preview-url-secret@2.1.6':
+    resolution: {integrity: sha512-cvPUREWZo34NGR8sAFaQji6wv8iYiGDIGp9n8W85iKfvrJuQhsvfVvtbDiYrCyPb9GK2e514RE/5dHh/c0UQHA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.28.1
+      '@sanity/client': ^6.28.3
 
   '@sanity/react-loader@1.10.47':
     resolution: {integrity: sha512-StJ9HC0ZPSRtOxcu7MzXj38RgZQc4Qx9WZG71nz3y2a4i0hrmMflxUqPkYUq0b/AgYok9AgJpJnnR5U/I0b0XA==}
@@ -15363,7 +15363,7 @@ snapshots:
       prettier: 3.5.0
       prettier-plugin-packagejson: 2.5.8(prettier@3.5.0)
 
-  '@sanity/preview-url-secret@2.1.5(@sanity/client@6.28.3(debug@4.4.0))':
+  '@sanity/preview-url-secret@2.1.6(@sanity/client@6.28.3(debug@4.4.0))':
     dependencies:
       '@sanity/client': 6.28.3(debug@4.4.0)
       '@sanity/uuid': 3.0.2
@@ -15710,7 +15710,7 @@ snapshots:
       '@sanity/insert-menu': 1.1.5(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.19.2)
       '@sanity/presentation-comlink': 1.0.10(@sanity/client@6.28.3(debug@4.4.0))(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 2.1.5(@sanity/client@6.28.3(debug@4.4.0))
+      '@sanity/preview-url-secret': 2.1.6(@sanity/client@6.28.3(debug@4.4.0))
       '@sanity/ui': 2.15.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(styled-components@6.1.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/visual-editing-csm': 2.0.8(@sanity/client@6.28.3(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 0.1.2
