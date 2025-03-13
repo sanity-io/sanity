@@ -89,11 +89,19 @@ export function useEventsStore({
       return publishEvent?.id || null
     }
     if (rev === '@lastEdited') {
-      const editEvent = events.find((event) => isEditDocumentVersionEvent(event))
+      const editEvent = events.find(isEditDocumentVersionEvent)
       if (editEvent) return editEvent.revisionId
     }
+    if (rev?.startsWith('@release:')) {
+      const releaseId = rev.split(':')[1]
+      const releaseEvent = events.find(
+        (event) => isPublishDocumentVersionEvent(event) && event.releaseId === releaseId,
+      )
+      if (releaseEvent) return releaseEvent.id
+      if (events.length > 0 && !loading) eventsStore.loadMoreEvents()
+    }
     return rev
-  }, [events, rev])
+  }, [events, rev, eventsStore, loading])
 
   const revision$ = useMemo(
     () =>
