@@ -197,17 +197,13 @@ describe('RouterProvider', () => {
     it('should handle null state gracefully', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
-      // Reset the mock to ensure we only track the call we're interested in
       vi.mocked(mockRouter.encode).mockClear()
 
       result.current.resolvePathFromState(null)
 
-      // Verify encode was called with the expected state
       expect(mockRouter.encode).toHaveBeenCalledWith({
         _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
       })
-
-      // We don't need to assert on the return value since it's just what mockRouter.encode returns
     })
 
     it('should properly merge search params when resolving path', () => {
