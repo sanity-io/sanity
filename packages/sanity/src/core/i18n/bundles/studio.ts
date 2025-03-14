@@ -1225,6 +1225,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
+  /** Title for action create a release */
+  'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
   /** Label for description in tooltip to explain release types */
