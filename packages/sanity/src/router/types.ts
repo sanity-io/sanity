@@ -255,7 +255,7 @@ export interface RouterContextValue {
   /**
    * Resolves the path from the given router state. See {@link RouterState}
    */
-  resolvePathFromState: (nextState: RouterState) => string
+  resolvePathFromState: (state: RouterState | null) => string
 
   /**
    * Resolves the intent link for the given intent name and parameters.

@@ -76,6 +76,8 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
 
   const resolveNextParentState = useCallback(
     (_nextState: RouterState | null) => {
+      if (_nextState === null) return null
+
       const {_searchParams, ...nextState} = _nextState || {}
       const nextParentState = addScope(parentStateRef.current, scope, nextState)
       if (__unsafe_disableScopedSearchParams) {
@@ -90,20 +92,16 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   )
 
   const resolvePathFromState = useCallback(
-    (nextState: RouterState) => parent_resolvePathFromState(resolveNextParentState(nextState)),
+    (nextState: RouterState | null) =>
+      parent_resolvePathFromState(resolveNextParentState(nextState)),
     [parent_resolvePathFromState, resolveNextParentState],
   )
 
   const navigate = useCallback(
     (nextState: RouterState | null, options?: NavigateOptions) =>
-      /**
-       * OH NO!! This isn't good
-       * There needs to be some special case to handle options.stickyParams
-       * But... not sure what
-       */
       parent_navigate(
-        // as in, if you are doing what navigateStickyParams does, then nextState is null
-        options?.stickyParams && nextState === null ? null : resolveNextParentState(nextState),
+        // options?.stickyParams && nextState === null ? null :
+        resolveNextParentState(nextState),
         options,
       ),
     [parent_navigate, resolveNextParentState],

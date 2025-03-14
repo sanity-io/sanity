@@ -13,7 +13,7 @@ vi.mock('../stickyParams', () => ({
 const mockOnNavigate = vi.fn()
 
 const mockRouter: Router = {
-  encode: vi.fn((state) => state),
+  encode: vi.fn((state) => state) as unknown as Router['encode'] & {mockClear: () => void},
   decode: vi.fn((path) => path),
   _isRoute: false,
   isNotFound: vi.fn(() => false),
@@ -248,7 +248,9 @@ describe('RouteScope', () => {
       const wrapper = createWrapper()
       const {result} = renderHook(() => useRouter(), {wrapper})
 
-      const path = result.current.resolvePathFromState({
+      vi.mocked(mockRouter.encode).mockClear()
+
+      result.current.resolvePathFromState({
         scopedValue: 'test',
         _searchParams: [['testParam', 'testValue']],
       })
@@ -300,9 +302,6 @@ describe('RouteScope', () => {
         path: {
           _searchParams: [['stickyParam', 'stickyValue']],
           tool: 'desk',
-          testScope: {
-            _searchParams: undefined,
-          },
         },
         replace: undefined,
       })
