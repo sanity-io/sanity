@@ -100,9 +100,9 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
   )
 
   const resolvePathFromState = useCallback(
-    (nextState: RouterState): string => {
+    (nextState: RouterState | null): string => {
       const currentStateParams = state._searchParams || []
-      const nextStateParams = nextState._searchParams || []
+      const nextStateParams = nextState?._searchParams || []
       const nextParams = STICKY_PARAMS.reduce((acc, param) => {
         return replaceStickyParam(
           acc,
