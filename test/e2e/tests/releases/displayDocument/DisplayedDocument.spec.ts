@@ -21,6 +21,9 @@ import {
   getRandomReleaseId,
 } from '../utils/methods'
 
+// skip firefox due to flakyness
+const SKIP_BROWSERS = ['firefox']
+
 // for before all to work with single worker and run only once per tests and describe
 // this is to avoid issues with multiple releases being created per test
 test.describe.configure({mode: 'serial'})
@@ -38,8 +41,13 @@ test.describe('displayedDocument', () => {
   let multipleVersionsDocId: string
   let singleASAPVersionDocument: SanityDocument
 
+  const skipIfFirefox = (browserName: string) => {
+    test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
+  }
+
   test.beforeAll(async ({sanityClient, _testContext, browserName}) => {
-    test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+    skipIfFirefox(browserName)
+
     publishedDocument = await createDocument(sanityClient, {
       ...speciesDocumentNamePublished,
       _id: `${_testContext.getUniqueDocumentId()}`,
@@ -96,7 +104,7 @@ test.describe('displayedDocument', () => {
   })
 
   test.afterAll(async ({sanityClient, browserName}) => {
-    test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+    skipIfFirefox(browserName)
     const dataset = sanityClient.config().dataset
 
     await Promise.all([
@@ -119,7 +127,7 @@ test.describe('displayedDocument', () => {
       _testContext,
       browserName,
     }) => {
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       const customDraft = await createDocument(sanityClient, {
         ...speciesDocumentNameDraft,
@@ -148,7 +156,7 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       test.slow()
       // specific document set up for this test in mind
@@ -169,7 +177,7 @@ test.describe('displayedDocument', () => {
 
   test.describe('draft pinned - No draft, no publish, with version', () => {
     test(`single version - shows version displayed`, async ({page, browserName}) => {
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
       test.slow()
 
       // specific document set up for this test in mind
@@ -191,7 +199,7 @@ test.describe('displayedDocument', () => {
     })
 
     test('multiple version - shows first version displayed', async ({page, browserName}) => {
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       test.slow()
       // specific document set up for this test in mind
@@ -216,7 +224,7 @@ test.describe('displayedDocument', () => {
 
     test(`displayed document is read only`, async ({page, browserName}) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${singleASAPVersionDocument._id}`)
       const input = page.getByTestId('field-name').getByTestId('string-input')
@@ -234,7 +242,7 @@ test.describe('displayedDocument', () => {
   test.describe('published pinned', () => {
     test('draft, publish, no version - shows draft displayed', async ({page, browserName}) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${publishedDocument._id}?perspective=published`)
@@ -259,7 +267,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${publishedWithVersion._id}?perspective=published`)
@@ -288,7 +296,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       const customDraft = await createDocument(sanityClient, {
         ...speciesDocumentNameDraft,
@@ -318,7 +326,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -347,7 +355,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -375,7 +383,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -406,7 +414,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      test.skip(browserName === 'firefox', 'Skip test outside of chromium due to flakiness')
+      skipIfFirefox(browserName)
 
       const dataset = sanityClient.config().dataset
 
