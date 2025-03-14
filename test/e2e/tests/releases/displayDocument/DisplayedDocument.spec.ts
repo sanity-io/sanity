@@ -44,12 +44,12 @@ test.describe('displayedDocument', () => {
   let asapReleaseId: string
   let undecidedReleaseId: string
 
-  const skipIfFirefox = (browserName: string) => {
+  const skipIfBrowser = (browserName: string) => {
     test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
   }
 
   test.beforeAll(async ({sanityClient, _testContext, browserName}) => {
-    skipIfFirefox(browserName)
+    skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
 
     /** Set up release Ids */
@@ -109,7 +109,7 @@ test.describe('displayedDocument', () => {
   })
 
   test.afterAll(async ({sanityClient, browserName}) => {
-    skipIfFirefox(browserName)
+    skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
 
     await Promise.all([
@@ -132,7 +132,7 @@ test.describe('displayedDocument', () => {
       _testContext,
       browserName,
     }) => {
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       const customDraft = await createDocument(sanityClient, {
         ...speciesDocumentNameDraft,
@@ -161,7 +161,7 @@ test.describe('displayedDocument', () => {
       page,
       browserName,
     }) => {
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       test.slow()
       // specific document set up for this test in mind
@@ -182,7 +182,7 @@ test.describe('displayedDocument', () => {
 
   test.describe('draft pinned - No draft, no publish, with version', () => {
     test(`single version - shows version displayed`, async ({page, browserName}) => {
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
       test.slow()
 
       // specific document set up for this test in mind
@@ -204,7 +204,7 @@ test.describe('displayedDocument', () => {
     })
 
     test('multiple version - shows first version displayed', async ({page, browserName}) => {
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       test.slow()
       // specific document set up for this test in mind
@@ -229,7 +229,7 @@ test.describe('displayedDocument', () => {
 
     test(`displayed document is read only`, async ({page, browserName}) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${singleASAPVersionDocument._id}`)
       const input = page.getByTestId('field-name').getByTestId('string-input')
@@ -247,7 +247,7 @@ test.describe('displayedDocument', () => {
   test.describe('published pinned', () => {
     test('draft, publish, no version - shows draft displayed', async ({page, browserName}) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${publishedDocument._id}?perspective=published`)
@@ -272,7 +272,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
       await page.goto(`/test/content/species;${publishedWithVersion._id}?perspective=published`)
@@ -301,7 +301,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       const customDraft = await createDocument(sanityClient, {
         ...speciesDocumentNameDraft,
@@ -331,7 +331,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -360,7 +360,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -388,7 +388,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
       await page.goto(
@@ -419,7 +419,7 @@ test.describe('displayedDocument', () => {
       browserName,
     }) => {
       test.slow()
-      skipIfFirefox(browserName)
+      skipIfBrowser(browserName)
 
       const dataset = sanityClient.config().dataset
 

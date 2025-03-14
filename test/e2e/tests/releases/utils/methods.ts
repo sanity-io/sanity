@@ -160,17 +160,12 @@ export const deleteAllReleases = async ({
     return
   }
 
-  try {
-    await Promise.all(
-      releases.map(async (release: {_id: string}) => {
-        const releaseId = release._id.replace('_.releases.', '')
-        return archiveAndDeleteRelease({sanityClient, dataset, releaseId})
-      }),
-    )
-  } catch (error) {
-    console.error('Error deleting releases:', error)
-    throw error
-  }
+  await Promise.all(
+    releases.map(async (release: {_id: string}) => {
+      const releaseId = release._id.replace('_.releases.', '')
+      return archiveAndDeleteRelease({sanityClient, dataset, releaseId})
+    }),
+  )
 }
 
 /**
