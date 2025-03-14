@@ -100,6 +100,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   return (
     <LazyTextInput
+      data-testid="date-input"
       ref={inputRef}
       {...rest}
       value={inputValue}

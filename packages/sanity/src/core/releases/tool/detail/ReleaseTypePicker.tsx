@@ -213,6 +213,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
               </Card>
             )}
             <LazyTextInput
+              data-testid="date-input"
               value={
                 intendedPublishAtTimezoneAdjusted
                   ? format(intendedPublishAtTimezoneAdjusted, dateInputFormat)
