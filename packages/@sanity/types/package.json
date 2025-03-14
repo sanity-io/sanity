@@ -54,7 +54,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "1.1.4",
+    "@sanity/insert-menu": "1.1.5",
     "@types/react": "^19.0.10",
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
