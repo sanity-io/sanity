@@ -67,21 +67,6 @@ export const ReleasePublishAllButton = ({
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)
       telemetry.log(PublishedRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.publish.success"
-              values={{
-                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-              }}
-            />
-          </Text>
-        ),
-      })
       if (
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id

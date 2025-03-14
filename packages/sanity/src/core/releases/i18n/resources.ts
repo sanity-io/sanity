@@ -328,12 +328,8 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
 
-  /** Text for toast when release has been archived */
-  'toast.archive.success': "The '<strong>{{title}}</strong>' release was archived.",
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
-  /** Description for toast when new version  of document is created in release */
-  'toast.create-version.success': '{{documentTitle}} added to release',
   /** Description for toast when creating new version of document in release failed */
   'toast.create-version.error': 'Failed to add document to release: {{error}}',
   /** Description for toast when release deletion failed */
@@ -342,18 +338,12 @@ const releasesLocaleStrings = {
   'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
-  /** Text for toast when release has been published */
-  'toast.publish.success': "The '<strong>{{title}}</strong>' release was published.",
   /** Text for toast when release failed to schedule */
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
   'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
   /** Text for toast when release failed to unschedule */
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
-  /** Text for toast when release has been unschedule */
-  'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
-  /** Text for toast when release has been unarchived */
-  'toast.unarchive.success': "The '<strong>{{title}}</strong>' release was unarchived.",
   /** Text for toast when release failed to unarchive */
   'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release deletion failed */

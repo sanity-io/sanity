@@ -34,21 +34,6 @@ export const ReleaseUnscheduleButton = ({
       setStatus('unscheduling')
       await unschedule(release._id)
       telemetry.log(UnscheduledRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.unschedule.success"
-              values={{
-                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-              }}
-            />
-          </Text>
-        ),
-      })
     } catch (schedulingError) {
       toast.push({
         status: 'error',

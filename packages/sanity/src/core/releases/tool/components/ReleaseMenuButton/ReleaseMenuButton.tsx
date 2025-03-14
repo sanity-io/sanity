@@ -68,34 +68,39 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
         await actionLookup[action](release._id)
 
         telemetry.log(actionValues.telemetry)
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastSuccessI18nKey}
-                values={{title: releaseTitle}}
-              />
-            </Text>
-          ),
-        })
+
+        if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
+          toast.push({
+            closable: true,
+            status: 'success',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastSuccessI18nKey}
+                  values={{title: releaseTitle}}
+                />
+              </Text>
+            ),
+          })
+        }
       } catch (actionError) {
         if (isReleaseLimitError(actionError)) return
 
-        toast.push({
-          status: 'error',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastFailureI18nKey}
-                values={{title: releaseTitle, error: actionError.toString()}}
-              />
-            </Text>
-          ),
-        })
+        if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
+          toast.push({
+            status: 'error',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastFailureI18nKey}
+                  values={{title: releaseTitle, error: actionError.toString()}}
+                />
+              </Text>
+            ),
+          })
+        }
         console.error(actionError)
       } finally {
         setIsPerformingOperation(false)
