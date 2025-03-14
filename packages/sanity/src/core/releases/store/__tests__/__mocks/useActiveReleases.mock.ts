@@ -1,4 +1,4 @@
-import {vi} from 'vitest'
+import {type Mock, vi} from 'vitest'
 
 import {type ReleaseDocument} from '../../types'
 import {useActiveReleases} from '../../useActiveReleases'

@@ -200,6 +200,7 @@ describe('after releases have loaded', () => {
               validation: {...documentsInRelease.validation, isValidating: true},
             },
           ],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
@@ -221,6 +222,7 @@ describe('after releases have loaded', () => {
         mockUseBundleDocuments.mockReturnValue({
           loading: false,
           results: [documentsInRelease],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
@@ -284,6 +286,7 @@ describe('after releases have loaded', () => {
               },
             },
           ],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
