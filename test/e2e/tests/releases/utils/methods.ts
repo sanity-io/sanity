@@ -137,6 +137,14 @@ export const createDocument = (
   })
 }
 
+/**
+ * This method will delete all the releases that exist within a dataset
+ *
+ * This is a particularly useful usecase in situations where the CI has created releases that you might not have expected
+ * and it's causing the dataset to misbehave. Running this method will make sure that you can start from a clean slate.
+ *
+ * In can also be useful to make sure that before you run the tests that there aren't other releases already in the dataset from other tests that might interfere with your code.
+ */
 export const deleteAllReleases = async ({
   sanityClient,
   dataset,
