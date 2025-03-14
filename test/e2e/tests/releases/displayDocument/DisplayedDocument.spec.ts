@@ -104,8 +104,6 @@ test.describe('displayedDocument', () => {
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseId}),
     ])
 
-    //await deleteAllReleases({sanityClient, dataset})
-
     await sanityClient.delete(publishedDocument._id)
     await sanityClient.delete(publishedDocumentDupe._id)
     await discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id})
