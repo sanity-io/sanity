@@ -59,7 +59,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-markdown": "^5.0.0",
-    "sanity-plugin-media": "^2.3.1",
+    "sanity-plugin-media": "^3.0.0",
     "sanity-plugin-mux-input": "^2.5.0",
     "styled-components": "^6.1.11"
   },
