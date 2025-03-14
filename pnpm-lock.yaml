@@ -423,8 +423,8 @@ importers:
         specifier: ^1.1.13
         version: 1.1.13(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/editor':
-        specifier: ^1.37.0
-        version: 1.37.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)
+        specifier: ^1.39.1
+        version: 1.39.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
@@ -1354,8 +1354,8 @@ importers:
         specifier: ^1.1.13
         version: 1.1.13(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/editor':
-        specifier: ^1.37.0
-        version: 1.37.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^1.39.1
+        version: 1.39.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4202,24 +4202,18 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@1.1.12':
-    resolution: {integrity: sha512-uLPppXAVzyiRck4BgtG4YCwL4RYZC3mrllke6K44BzbQWGzZtlZiTntbZK9/CGQ1ZJkJn9Xw5JnlunkkpyPsjQ==}
-    peerDependencies:
-      '@sanity/types': ^3.78.0
-      '@types/react': 18 || 19
-
   '@portabletext/block-tools@1.1.13':
     resolution: {integrity: sha512-TpcKlOpzKC/DNlyMAfsZjkgekzrcRTmQHmtYt5FlXSC4vmJWEYSZgE4e9VMJG7FMM2j1yNMz4MadUkx6n5/M8A==}
     peerDependencies:
       '@sanity/types': ^3.79.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.37.0':
-    resolution: {integrity: sha512-qMb4TORa/I25Ct5aIUqycZ2bbNoJVsG4WYnkYLu7GejJ5iRt7YfaOFSlNQf/Yp0gun/f09OqQtNTMjJJGURMew==}
+  '@portabletext/editor@1.39.1':
+    resolution: {integrity: sha512-FpBoSPASlJXaPtNbFDL4NvjYW5wixKwHkYk5mBJU4eI99AhmfKb2sEz7+paU5Q0NK247/eyTGpV5WYC9qWh/Ww==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/schema': ^3.78.0
-      '@sanity/types': ^3.78.0
+      '@sanity/schema': ^3.79.0
+      '@sanity/types': ^3.79.0
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.2
 
@@ -5442,10 +5436,10 @@ packages:
   '@xstate/fsm@1.6.5':
     resolution: {integrity: sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==}
 
-  '@xstate/react@5.0.2':
-    resolution: {integrity: sha512-x5GOrE0ZYjU2ba986u0CCp7SaPwzElSn1SW0mZ9MuBgsZ+BW7vTLVOvGmURynwojdso8d6nVbK3c2+MRVqGVgA==}
+  '@xstate/react@5.0.3':
+    resolution: {integrity: sha512-Zdnn0VTPcVdoaAiW0OX6Nkvdoe7SNGjfaZqM61NKhjt2aNULqiicmDu2tOd1ChzlRWYDxGTdbzVqqVyMLpoHJw==}
     peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       xstate: ^5.19.2
     peerDependenciesMeta:
       xstate:
@@ -10058,11 +10052,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-compiler-runtime@19.0.0-beta-40c6c23-20250301:
-    resolution: {integrity: sha512-weI8y7C7JUHAKw5djSUpwuMxDa1+Rd+4feaZw6yFeFOaSjw7zLbi0xczPlkzSw46eB89pIrZutLAj2+ra/GWTg==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-
   react-compiler-runtime@19.0.0-beta-e1e972c-20250221:
     resolution: {integrity: sha512-6nONLW+4zbfAt6mLG6SV73tKlZLJqmezqX0EF9ZKzab84Pje/4CMVs8QVw4OeRS+FFtPcfWU4fOK28nq7lM4Hg==}
     peerDependencies:
@@ -14537,13 +14526,6 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@1.1.12(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)':
-    dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.0.10
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
-
   '@portabletext/block-tools@1.1.13(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
@@ -14551,20 +14533,20 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.37.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@1.39.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.12(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
+      '@portabletext/block-tools': 1.1.13(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 5.0.2(@types/react@19.0.10)(react@18.3.1)(xstate@5.19.2)
+      '@xstate/react': 5.0.3(@types/react@19.0.10)(react@18.3.1)(xstate@5.19.2)
       debug: 4.4.0(supports-color@9.4.0)
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 18.3.1
-      react-compiler-runtime: 19.0.0-beta-40c6c23-20250301(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-e1e972c-20250221(react@18.3.1)
       rxjs: 7.8.2
       slate: 0.112.0
       slate-dom: 0.112.2(slate@0.112.0)
@@ -14576,20 +14558,20 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.37.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.39.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.12(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
+      '@portabletext/block-tools': 1.1.13(@sanity/types@packages+@sanity+types)(@types/react@19.0.10)
       '@portabletext/patches': 1.1.3
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 5.0.2(@types/react@19.0.10)(react@19.0.0)(xstate@5.19.2)
+      '@xstate/react': 5.0.3(@types/react@19.0.10)(react@19.0.0)(xstate@5.19.2)
       debug: 4.4.0(supports-color@9.4.0)
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 19.0.0
-      react-compiler-runtime: 19.0.0-beta-40c6c23-20250301(react@19.0.0)
+      react-compiler-runtime: 19.0.0-beta-e1e972c-20250221(react@19.0.0)
       rxjs: 7.8.2
       slate: 0.112.0
       slate-dom: 0.112.2(slate@0.112.0)
@@ -16413,7 +16395,7 @@ snapshots:
 
   '@xstate/fsm@1.6.5': {}
 
-  '@xstate/react@5.0.2(@types/react@19.0.10)(react@18.3.1)(xstate@5.19.2)':
+  '@xstate/react@5.0.3(@types/react@19.0.10)(react@18.3.1)(xstate@5.19.2)':
     dependencies:
       react: 18.3.1
       use-isomorphic-layout-effect: 1.2.0(@types/react@19.0.10)(react@18.3.1)
@@ -16423,7 +16405,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xstate/react@5.0.2(@types/react@19.0.10)(react@19.0.0)(xstate@5.19.2)':
+  '@xstate/react@5.0.3(@types/react@19.0.10)(react@19.0.0)(xstate@5.19.2)':
     dependencies:
       react: 19.0.0
       use-isomorphic-layout-effect: 1.2.0(@types/react@19.0.10)(react@19.0.0)
@@ -21697,14 +21679,6 @@ snapshots:
       react: 19.0.0
       reactcss: 1.2.3(react@19.0.0)
       tinycolor2: 1.6.0
-
-  react-compiler-runtime@19.0.0-beta-40c6c23-20250301(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  react-compiler-runtime@19.0.0-beta-40c6c23-20250301(react@19.0.0):
-    dependencies:
-      react: 19.0.0
 
   react-compiler-runtime@19.0.0-beta-e1e972c-20250221(react@18.3.1):
     dependencies:
