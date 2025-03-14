@@ -39,14 +39,7 @@ export const archiveRelease = async ({
   dataset: string | undefined
   releaseId: string
 }) => {
-  const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0]`
-  const release = await sanityClient.fetch(query)
-
-  if (release.state === 'archived') {
-    return
-  }
-
-  if (release) {
+  try {
     sanityClient.withConfig(CLIENT_OPTIONS).request({
       uri: `/data/actions/${dataset}`,
       method: 'POST',
@@ -59,6 +52,9 @@ export const archiveRelease = async ({
         ],
       },
     })
+  } catch (error) {
+    console.error('Error archiving release:', error)
+    throw error
   }
 }
 
