@@ -1,6 +1,7 @@
 import {vi} from 'vitest'
 
 import {type ReleaseDocument} from '../../types'
+import {useActiveReleases} from '../../useActiveReleases'
 
 export const useActiveReleasesMockReturn = {
   data: [] as ReleaseDocument[],
@@ -9,4 +10,4 @@ export const useActiveReleasesMockReturn = {
   dispatch: vi.fn(),
 }
 
-export const mockUseActiveReleases = vi.fn().mockReturnValue(useActiveReleasesMockReturn)
+export const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
