@@ -8,7 +8,7 @@ import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
 import {peerDependencies} from '../../../../package.json'
-import {determineIsCoreApp} from './determineIsCoreApp'
+import {determineIsApp} from './determineIsApp'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -34,8 +34,8 @@ interface CheckResult {
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
   // currently there's no check needed for core apps,
   // but this should be removed once they are more mature
-  const isCoreApp = determineIsCoreApp(context.cliConfig)
-  if (isCoreApp) {
+  const isApp = determineIsApp(context.cliConfig)
+  if (isApp) {
     return {didInstall: false, installedSanityVersion: ''}
   }
 

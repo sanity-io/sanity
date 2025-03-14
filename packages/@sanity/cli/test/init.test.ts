@@ -3,14 +3,14 @@ import path from 'node:path'
 
 import {describe, expect} from 'vitest'
 
-import {determineCoreAppTemplate} from '../src/actions/init-project/determineCoreAppTemplate'
+import {determineAppTemplate} from '../src/actions/init-project/determineAppTemplate'
 import templates from '../src/actions/init-project/templates'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {baseTestPath, cliProjectId, getTestRunArgs, runSanityCmdCommand} from './shared/environment'
 
 describeCliTest('CLI: `sanity init v3`', () => {
   // filter out non-studio apps for now, until we add things they can auto-update
-  describe.each(Object.keys(templates).filter((template) => !determineCoreAppTemplate(template)))(
+  describe.each(Object.keys(templates).filter((template) => !determineAppTemplate(template)))(
     'for template %s',
     (template) => {
       testConcurrent('adds autoUpdates: true to cli config', async () => {

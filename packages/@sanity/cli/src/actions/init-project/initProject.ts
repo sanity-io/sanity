@@ -49,7 +49,7 @@ import {createProject} from '../project/createProject'
 import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
 import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
-import {determineCoreAppTemplate} from './determineCoreAppTemplate'
+import {determineAppTemplate} from './determineAppTemplate'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -278,14 +278,14 @@ export default async function initSanity(
   }
 
   // skip project / dataset prompting
-  const isCoreAppTemplate = cliFlags.template ? determineCoreAppTemplate(cliFlags.template) : false // Default to false
+  const isAppTemplate = cliFlags.template ? determineAppTemplate(cliFlags.template) : false // Default to false
 
   let introMessage = 'Fetching existing projects'
   if (cliFlags.quickstart) {
     introMessage = "Eject your existing project's Sanity configuration"
   }
 
-  if (!isCoreAppTemplate) {
+  if (!isAppTemplate) {
     success(introMessage)
     print('')
   }
@@ -678,13 +678,13 @@ export default async function initSanity(
   if (isCurrentDir) {
     print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
     print(
-      `${chalk.cyan(devCommand)} - to run ${isCoreAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
+      `${chalk.cyan(devCommand)} - to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
     )
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
     print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
     print(
-      `Then: ${chalk.cyan(devCommand)} -to run ${isCoreAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
+      `Then: ${chalk.cyan(devCommand)} -to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
     )
   }
 
@@ -748,18 +748,18 @@ export default async function initSanity(
       return data
     }
 
-    if (isCoreAppTemplate) {
+    if (isAppTemplate) {
       const client = apiClient({requireUser: true, requireProject: false})
       const organizations = await client.request({uri: '/organizations'})
 
-      const coreAppOrganizationId = await getOrganizationId(organizations)
+      const appOrganizationId = await getOrganizationId(organizations)
 
       return {
         projectId: '',
         displayName: '',
         datasetName: '',
         isFirstProject: false,
-        organizationId: coreAppOrganizationId,
+        organizationId: appOrganizationId,
       }
     }
 

@@ -5,7 +5,7 @@ import {
 } from '@sanity/cli'
 
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
-import {determineIsCoreApp} from '../../util/determineIsCoreApp'
+import {determineIsApp} from '../../util/determineIsApp'
 
 const helpText = `
 Notes
@@ -43,11 +43,11 @@ export async function getDevAction(
     context: CliCommandContext,
   ) => Promise<void>
 > {
-  const isCoreApp = determineIsCoreApp(context.cliConfig)
+  const isApp = determineIsApp(context.cliConfig)
 
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   if (__DEV__) {
-    if (isCoreApp) {
+    if (isApp) {
       // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
       const mod = require('../../actions/app/devAction.ts')
       return mod.default
@@ -56,7 +56,7 @@ export async function getDevAction(
     const mod = require('../../actions/dev/devAction.ts')
     return mod.default
   }
-  if (isCoreApp) {
+  if (isApp) {
     const mod = await import('../../actions/app/devAction')
     return mod.default
   }
