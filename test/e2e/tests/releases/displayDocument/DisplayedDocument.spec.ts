@@ -22,7 +22,7 @@ import {
 } from '../utils/methods'
 
 // for before all to work with single worker and run only once per tests and describe
-// this is to avoid issues with multiple releases being created (more than 10 limitations)
+// this is to avoid issues with multiple releases being created per test
 test.describe.configure({mode: 'serial'})
 
 test.describe('displayedDocument', () => {
