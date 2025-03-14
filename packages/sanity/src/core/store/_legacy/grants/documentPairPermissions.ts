@@ -15,7 +15,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {type PairListenerOptions, snapshotPair} from '../document'
+import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -183,7 +183,7 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
-  pairListenerOptions?: PairListenerOptions
+  pairListenerOptions?: DocumentStoreExtraOptions
 }
 
 /**

@@ -1,9 +1,14 @@
-import {type Action, type SanityClient} from '@sanity/client'
+import {
+  type Action,
+  type MultipleActionResult,
+  type SanityClient,
+  type SingleMutationResult,
+} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
+import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
+import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -13,7 +18,12 @@ import {
   type MutationPayload,
   type RemoteSnapshotEvent,
 } from '../buffered-doc'
-import {getPairListener, type ListenerEvent, type PairListenerOptions} from '../getPairListener'
+import {
+  type DocumentStoreExtraOptions,
+  getPairListener,
+  type LatencyReportEvent,
+  type ListenerEvent,
+} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
@@ -40,6 +50,13 @@ export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocument
  * @hidden
  * @beta */
 export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
+
+/**
+ * @hidden
+ * @beta
+ * The SingleMutationResult type from `@sanity/client` doesn't reflect what we get back from POST /mutate
+ */
+export type MutationResult = Omit<SingleMutationResult, 'documentId'>
 
 /**
  * @hidden
@@ -156,7 +173,11 @@ function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mut
   })
 }
 
-function commitMutations(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
+function commitMutations(
+  client: SanityClient,
+  idPair: IdPair,
+  mutationParams: Mutation['params'],
+): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
@@ -173,7 +194,7 @@ function submitCommitRequest(
   idPair: IdPair,
   request: CommitRequest,
   serverActionsEnabled: boolean,
-) {
+): Observable<MultipleActionResult | MutationResult> {
   return from(
     serverActionsEnabled
       ? commitActions(client, idPair, request.mutation.params)
@@ -197,16 +218,30 @@ function submitCommitRequest(
   )
 }
 
+type LatencyTrackingEvent = {
+  transactionId: string
+  submittedAt: Date
+  receivedAt: Date
+  deltaMs: number
+}
+
+type LatencyTrackingState = {
+  pending: {type: 'receive' | 'submit'; transactionId: string; timestamp: Date}[]
+  event: LatencyTrackingEvent | undefined
+}
+
 /** @internal */
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
   serverActionsEnabled: Observable<boolean>,
-  pairListenerOptions?: PairListenerOptions,
+  options: DocumentStoreExtraOptions = {},
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const listenerEvents$ = getPairListener(client, idPair, pairListenerOptions).pipe(share())
+  const {onReportLatency, onSyncErrorRecovery, tag} = options
+
+  const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
   const reconnect$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect'),
@@ -248,6 +283,19 @@ export function checkoutPair(
         ),
       ),
     ),
+  )
+
+  // Note: we're only subscribing to this for the side-effect
+  const combinedEvents = defer(() =>
+    onReportLatency
+      ? reportLatency({
+          commits$: commits$,
+          listenerEvents$: listenerEvents$,
+          client,
+          onReportLatency,
+        })
+      : merge(commits$, listenerEvents$),
+  ).pipe(
     mergeMap(() => EMPTY),
     share(),
   )
@@ -256,7 +304,7 @@ export function checkoutPair(
     transactionsPendingEvents$,
     draft: {
       ...draft,
-      events: merge(commits$, reconnect$, draft.events).pipe(map(setVersion('draft'))),
+      events: merge(combinedEvents, reconnect$, draft.events).pipe(map(setVersion('draft'))),
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
     ...(typeof version === 'undefined'
@@ -264,14 +312,81 @@ export function checkoutPair(
       : {
           version: {
             ...version,
-            events: merge(commits$, reconnect$, version.events).pipe(map(setVersion('version'))),
+            events: merge(combinedEvents, reconnect$, version.events).pipe(
+              map(setVersion('version')),
+            ),
             remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
           },
         }),
     published: {
       ...published,
-      events: merge(commits$, reconnect$, published.events).pipe(map(setVersion('published'))),
+      events: merge(combinedEvents, reconnect$, published.events).pipe(
+        map(setVersion('published')),
+      ),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
   }
+}
+
+function reportLatency(options: {
+  commits$: Observable<MultipleActionResult | MutationResult>
+  listenerEvents$: Observable<ListenerEvent>
+  client: SanityClient
+  onReportLatency: (event: LatencyReportEvent) => void
+}) {
+  const {client, commits$, listenerEvents$, onReportLatency} = options
+  const shardInfo = fetch(client.getUrl(client.getDataUrl('ping')))
+    .then((response) => response.headers.get('X-Sanity-Shard') || undefined)
+    .catch(() => undefined)
+
+  const submittedMutations = commits$.pipe(
+    map((ev) => ({
+      type: 'submit' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
+    share(),
+  )
+
+  const receivedMutations = listenerEvents$.pipe(
+    filter((ev) => ev.type === 'mutation'),
+    map((ev) => ({
+      type: 'receive' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
+    share(),
+  )
+
+  return merge(submittedMutations, receivedMutations).pipe(
+    scan(
+      (state: LatencyTrackingState, event): LatencyTrackingState => {
+        const matchingIndex = state.pending.findIndex(
+          (e) => e.transactionId === event.transactionId,
+        )
+        if (matchingIndex > -1) {
+          const matching = state.pending[matchingIndex]
+          const [submitEvent, receiveEvent] =
+            matching.type == 'submit' ? [matching, event] : [event, matching]
+          return {
+            event: {
+              transactionId: event.transactionId,
+              submittedAt: submitEvent.timestamp,
+              receivedAt: submitEvent.timestamp,
+              deltaMs: receiveEvent.timestamp.getTime() - submitEvent.timestamp.getTime(),
+            },
+            pending: state.pending.toSpliced(matchingIndex, 1),
+          }
+        }
+        return {event: undefined, pending: state.pending.concat(event)}
+      },
+      {event: undefined, pending: []},
+    ),
+    map((state) => state.event),
+    filter((event) => !!event),
+    withLatestFrom(shardInfo),
+    tap(([event, shard]) =>
+      onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId}),
+    ),
+  )
 }

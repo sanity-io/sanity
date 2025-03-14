@@ -16,8 +16,9 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore} from './document'
+import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
+import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
@@ -155,6 +156,19 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleReportLatency = useCallback(
+    (event: LatencyReportEvent) => {
+      if (event.latencyMs > 1000) {
+        telemetry.log(HighListenerLatencyOccurred, {
+          latency: event.latencyMs,
+          shard: event.shard,
+          transactionId: event.transactionId,
+        })
+      }
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -169,7 +183,8 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         serverActionsEnabled,
-        pairListenerOptions: {
+        extraOptions: {
+          onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
         },
       })
@@ -191,6 +206,7 @@ export function useDocumentStore(): DocumentStore {
     workspace,
     templates,
     serverActionsEnabled,
+    handleReportLatency,
     handleSyncErrorRecovery,
   ])
 }
