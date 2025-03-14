@@ -152,7 +152,7 @@ export const deleteAllReleases = async ({
   sanityClient: SanityClient
   dataset: string | undefined
 }) => {
-  const query = `*[_type == "system.release"]`
+  const query = `*[_type == "system.release"]{_id}`
   const releases = await sanityClient.fetch(query)
 
   if (!Array.isArray(releases) || releases.length === 0) {
@@ -192,7 +192,7 @@ async function waitForReleaseToBeArchived({
   return new Promise<void>((resolve, reject) => {
     // eslint-disable-next-line consistent-return
     const checkStatus = async () => {
-      const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0]`
+      const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0] {state}`
       const release = await sanityClient.fetch(query)
 
       if (!release) {
