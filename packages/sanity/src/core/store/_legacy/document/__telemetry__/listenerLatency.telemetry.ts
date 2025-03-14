@@ -6,7 +6,7 @@ type Samples = {
   shard?: string
 }
 export const HighListenerLatencyOccurred = defineEvent<Samples>({
-  name: 'High Listener Latency detected',
+  name: 'High Listener Latency Detected',
   version: 1,
   description: 'Emits when a high listener latency is detected',
 })
