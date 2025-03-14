@@ -11,6 +11,7 @@ import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {RELEASES_TOOL_NAME} from '../releases/plugin'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
+import {oversizedButtonStyle} from './styles'
 
 const Dot = styled.div({
   width: 4,
@@ -18,6 +19,10 @@ const Dot = styled.div({
   borderRadius: 3,
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
+
+const OversizedButton = styled(ToolLink)`
+  ${oversizedButtonStyle}
+`
 
 /**
  * represents the calendar icon for the releases tool.
@@ -39,13 +44,12 @@ export function ReleasesToolLink(): React.JSX.Element {
   return (
     <Tooltip content={t('release.navbar.tooltip')}>
       <Button
-        as={ToolLink}
+        as={OversizedButton}
         name={RELEASES_TOOL_NAME}
         data-as="a"
-        className="p-menu-btn"
         icon={CalendarIcon}
         mode="bleed"
-        padding={3}
+        padding={2}
         radius="full"
         data-testid="releases-tool-link"
         selected={activeToolName === RELEASES_TOOL_NAME}
