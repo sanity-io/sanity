@@ -5,7 +5,6 @@ import {
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {
   memo,
   type MouseEvent,
@@ -16,7 +15,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {getVersionId} from '../../../util/draftUtils'
@@ -34,19 +33,12 @@ const ChipButtonContainer = styled.span`
   --border-color: var(--card-border-color);
 `
 
-const ChipButton = styled(Button)(() => {
-  return css`
-    flex: none;
-    transition: none;
-    cursor: pointer;
-    --card-border-color: var(--border-color);
-
-    &[data-disabled='true'] {
-      cursor: default;
-      box-shadow: inset 0 0 0 1px var(--border-color);
-    }
-  `
-})
+const ChipButton = styled(Button)`
+  flex: none;
+  transition: none;
+  cursor: pointer;
+  --card-border-color: var(--border-color);
+`
 
 /**
  * @internal
@@ -187,7 +179,7 @@ export const VersionChip = memo(function VersionChip(props: {
             data-testid={`document-header-${text.replaceAll(' ', '-')}-chip`}
             ref={chipRef}
             disabled={disabled}
-            mode="bleed"
+            mode={disabled ? 'ghost' : 'bleed'}
             onClick={onClick}
             selected={selected}
             tone={tone}
