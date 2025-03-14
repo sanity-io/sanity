@@ -103,6 +103,9 @@ function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
   }
 }
 
+// The minimum supported API version, providing the ability to handle version documents.
+const MINIMUM_API_VERSION = '2025-02-19'
+
 const importDatasetCommand: CliCommandDefinition = {
   name: 'import',
   group: 'dataset',
@@ -161,7 +164,10 @@ const importDatasetCommand: CliCommandDefinition = {
       }
     }
 
-    const importClient = client.clone().config({dataset: targetDataset})
+    const importClient = client.clone().config({
+      apiVersion: MINIMUM_API_VERSION,
+      dataset: targetDataset,
+    })
 
     // Print information about what projectId and dataset it is being imported to
     const {projectId, dataset} = importClient.config()
