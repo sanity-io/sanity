@@ -1,12 +1,12 @@
-import {type Mock, type Mocked, vi} from 'vitest'
+import {vi} from 'vitest'
 
-import {useActiveReleases} from '../../useActiveReleases'
+import {type ReleaseDocument} from '../../types'
 
-export const useActiveReleasesMockReturn: Mocked<ReturnType<typeof useActiveReleases>> = {
-  data: [],
-  dispatch: vi.fn(),
-  error: undefined,
+export const useActiveReleasesMockReturn = {
+  data: [] as ReleaseDocument[],
+  error: undefined as Error | undefined,
   loading: false,
+  dispatch: vi.fn(),
 }
 
-export const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+export const mockUseActiveReleases = vi.fn().mockReturnValue(useActiveReleasesMockReturn)
