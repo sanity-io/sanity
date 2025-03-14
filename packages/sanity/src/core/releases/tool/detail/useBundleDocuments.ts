@@ -7,10 +7,9 @@ import {
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, from, type Observable, of} from 'rxjs'
+import {combineLatest, type Observable, of} from 'rxjs'
 import {
   catchError,
-  concatMap,
   distinctUntilChanged,
   expand,
   filter,
@@ -21,7 +20,6 @@ import {
   switchAll,
   switchMap,
   take,
-  toArray,
 } from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
@@ -214,8 +212,8 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
 
   return documents$.pipe(
     mergeMap((documents) => {
-      return from(documents).pipe(
-        concatMap((document) => {
+      return combineLatest(
+        documents.map((document) => {
           const schemaType = schema.get(document._type)
           if (!schemaType) {
             throw new Error(`Schema type not found for document type ${document._type}`)
@@ -239,7 +237,7 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
             })),
           )
         }),
-        toArray(),
+      ).pipe(
         map((results) => ({
           loading: false,
           results,
