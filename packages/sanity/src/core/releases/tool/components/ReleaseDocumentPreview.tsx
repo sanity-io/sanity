@@ -32,7 +32,6 @@ export function ReleaseDocumentPreview({
   releaseState,
   documentRevision,
   layout,
-  hasValidationError,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
