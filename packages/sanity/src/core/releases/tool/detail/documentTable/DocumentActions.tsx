@@ -4,6 +4,7 @@ import {memo, useMemo, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
@@ -13,14 +14,8 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
-export const DocumentActions = memo(
-  function DocumentActions({
-    document,
-    releaseTitle,
-  }: {
-    document: BundleDocumentRow
-    releaseTitle: string
-  }) {
+const DocumentActionsInner = memo(
+  function DocumentActionsInner({document}: {document: BundleDocumentRow}) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
     const {t: coreT} = useTranslation()
@@ -124,6 +119,25 @@ export const DocumentActions = memo(
       </>
     )
   },
-  (prev, next) =>
-    prev.document.memoKey === next.document.memoKey && prev.releaseTitle === next.releaseTitle,
+  (prev, next) => prev.document.memoKey === next.document.memoKey,
 )
+
+export const DocumentActions = memo(function GuardedDocumentActions(props: {
+  document: BundleDocumentRow
+}) {
+  const schema = useSchema()
+  const type = schema.get(props.document.document._type)
+  const {t} = useTranslation()
+  if (!type) {
+    return (
+      <ContextMenuButton
+        disabled
+        tooltipProps={{
+          content: t('document.type.not-found', {type: props.document.document._type}),
+        }}
+      />
+    )
+  }
+
+  return <DocumentActionsInner {...props} />
+})
