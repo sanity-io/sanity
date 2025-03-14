@@ -130,10 +130,10 @@ export function getRandomReleaseId() {
 
 export const createDocument = (
   sanityClient: SanityClient,
-  documentMetada: Partial<SanityDocument> & {_id: string; _type: string},
+  document: Partial<SanityDocument> & {_id: string; _type: string},
 ) => {
   return sanityClient.withConfig(CLIENT_OPTIONS).create({
-    ...documentMetada,
+    ...document,
   })
 }
 
