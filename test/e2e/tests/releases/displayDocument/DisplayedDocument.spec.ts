@@ -29,17 +29,20 @@ const SKIP_BROWSERS = ['firefox']
 test.describe.configure({mode: 'serial'})
 
 test.describe('displayedDocument', () => {
+  /** documents */
   let publishedDocument: SanityDocument
-  let publishedWithVersion: SanityDocument
   let publishedDocumentDupe: SanityDocument
+
+  /** versions */
+  let publishedWithVersion: SanityDocument
   let versionDocumentOne: SanityDocument
   let versionDocumentTwo: SanityDocument
-
-  let asapReleaseId: string
-  let undecidedReleaseId: string
-
   let multipleVersionsDocId: string
   let singleASAPVersionDocument: SanityDocument
+
+  /** releases */
+  let asapReleaseId: string
+  let undecidedReleaseId: string
 
   const skipIfFirefox = (browserName: string) => {
     test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
@@ -47,18 +50,14 @@ test.describe('displayedDocument', () => {
 
   test.beforeAll(async ({sanityClient, _testContext, browserName}) => {
     skipIfFirefox(browserName)
-
-    publishedDocument = await createDocument(sanityClient, {
-      ...speciesDocumentNamePublished,
-      _id: `${_testContext.getUniqueDocumentId()}`,
-    })
-
     const dataset = sanityClient.config().dataset
 
+    /** Set up release Ids */
     asapReleaseId = getRandomReleaseId()
     undecidedReleaseId = getRandomReleaseId()
 
-    // create releases
+    /** Create Releases */
+
     await createRelease({
       sanityClient,
       dataset,
@@ -71,6 +70,12 @@ test.describe('displayedDocument', () => {
       dataset,
       releaseId: undecidedReleaseId,
       metadata: partialUndecidedReleaseMetadata,
+    })
+
+    /** Create Documents */
+    publishedDocument = await createDocument(sanityClient, {
+      ...speciesDocumentNamePublished,
+      _id: `${_testContext.getUniqueDocumentId()}`,
     })
 
     singleASAPVersionDocument = await createDocument(sanityClient, {
