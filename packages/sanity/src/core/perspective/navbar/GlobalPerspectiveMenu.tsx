@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
+import {oversizedButtonStyle} from '../styles'
 import {type ReleaseId} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
@@ -13,6 +14,9 @@ import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 320px;
+`
+const OversizedButton = styled(Button)`
+  ${oversizedButtonStyle}
 `
 
 export function GlobalPerspectiveMenu({
@@ -36,13 +40,12 @@ export function GlobalPerspectiveMenu({
     <>
       <MenuButton
         button={
-          <Button
+          <OversizedButton
             data-testid="global-perspective-menu-button"
             iconRight={ChevronDownIcon}
             mode="bleed"
-            padding={3}
+            padding={2}
             radius="full"
-            className="p-menu-btn"
           />
         }
         id="releases-menu"
