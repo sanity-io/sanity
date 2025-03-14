@@ -28,6 +28,6 @@
     "sanity-plugin-media": "^3.0.0",
     "sanity-plugin-mux-input": "^2.5.0",
     "sanity-test-studio": "workspace:*",
-    "styled-components": "^6.1.0"
+    "styled-components": "^6.1.15"
   }
 }

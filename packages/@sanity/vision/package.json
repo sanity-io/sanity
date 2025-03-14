@@ -92,6 +92,6 @@
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
-    "styled-components": "^6.1"
+    "styled-components": "^6.1.15"
   }
 }

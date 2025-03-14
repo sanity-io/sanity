@@ -18,6 +18,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.0"
+    "styled-components": "^6.1.15"
   }
 }
