@@ -1,5 +1,5 @@
 import {type SanityConfig} from '@sanity/sdk'
-import {SanityApp} from '@sanity/sdk-react/components'
+import {SanityApp} from '@sanity/sdk-react'
 import {ExampleComponent} from './ExampleComponent'
 import './App.css'
 
@@ -9,12 +9,12 @@ export function App() {
     {
       projectId: 'project-id',
       dataset: 'dataset-name',
-    }
+    },
   ]
 
   return (
     <div className="app-container">
-      <SanityApp sanityConfigs={sanityConfigs}>
+      <SanityApp sanityConfigs={sanityConfigs} fallback={<div>Loading...</div>}>
         {/* add your own components here! */}
         <ExampleComponent />
       </SanityApp>
