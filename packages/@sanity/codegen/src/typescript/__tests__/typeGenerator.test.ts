@@ -425,6 +425,7 @@ export type AllSanitySchemaTypes = OptionalData;"
         },
       },
     ])
+    typeGenerator.generateSchemaTypes()
     const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
     expect(objectNodeOut).toMatchSnapshot()
 
@@ -547,5 +548,32 @@ describe('generateQueryMap', () => {
         }
       }"
     `)
+  })
+
+  test('should handle duplicate type names', () => {
+    const typeGenerator = new TypeGenerator([
+      {
+        name: 'MyType',
+        type: 'type',
+        value: {type: 'string'},
+      },
+      {
+        name: 'my.Type',
+        type: 'type',
+        value: {type: 'number'},
+      },
+    ])
+
+    expect(typeGenerator.generateSchemaTypes()).toMatchInlineSnapshot(`
+      "export type MyType = string;
+
+      export type MyType_2 = number;
+
+      export type AllSanitySchemaTypes = MyType | MyType_2;"
+    `)
+
+    expect(
+      typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'my.Type'}),
+    ).toEqual('export type Inline = MyType_2;')
   })
 })
