@@ -425,7 +425,6 @@ export type AllSanitySchemaTypes = OptionalData;"
         },
       },
     ])
-    typeGenerator.generateSchemaTypes()
     const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
     expect(objectNodeOut).toMatchSnapshot()
 

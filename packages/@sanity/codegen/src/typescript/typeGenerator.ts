@@ -38,6 +38,10 @@ export class TypeGenerator {
 
   constructor(schema: SchemaType) {
     this.schema = schema
+
+    this.schema.forEach((s) => {
+      this.getTypeName(s.name, s)
+    })
   }
 
   /**
@@ -53,7 +57,11 @@ export class TypeGenerator {
     this.schema.forEach((schema) => {
       const typeLiteral = this.getTypeNodeType(schema)
 
-      const schemaName = this.getTypeName(schema.name, schema)
+      const schemaName = this.typeNodeNameMap.get(schema)
+      if (!schemaName) {
+        throw new Error(`Schema name not found for schema ${schema.name}`)
+      }
+
       schemaNames.add(schemaName)
       const typeAlias = t.tsTypeAliasDeclaration(t.identifier(schemaName), null, typeLiteral)
 
@@ -331,11 +339,7 @@ export class TypeGenerator {
       return t.tsTypeReference(t.identifier(generatedName))
     }
 
-    // This seems unnecessary, but the types aren't necessary sorted at this point, we might also have circular references
-    // this is a bit naive, but it works for now, and we can improve it later. PR Welcome!
-    return t.tsTypeReference(
-      t.identifier(uppercaseFirstLetter(sanitizeIdentifier(referencedTypeNode.name))),
-    )
+    return t.tsUnknownKeyword()
   }
 
   // Helper function used to generate TS types for union type nodes.
