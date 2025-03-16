@@ -17,60 +17,20 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
 
       - name: Build packages
+        # This warms up the turborepo remote cache
         run: pnpm build --output-logs=full --log-order=grouped
-
-      # Caches build from either PR or next
-      - name: Cache build
-        id: cache-e2e-build
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-e2e-build
-        with:
-          path: |
-            ./*
-            !**/node_modules/**
-          # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
 
   playwright-ct-test:
     timeout-minutes: 30
@@ -82,41 +42,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox, webkit]
-        # Add more shards here if needed
+        # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
@@ -136,21 +72,12 @@ jobs:
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        # if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true' || matrix.project == 'webkit'
         run: npx playwright install --with-deps
 
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        id: restore-build
-        env:
-          cache-name: cache-e2e-build
-        with:
-          path: |
-            ./*
-            !**/node_modules/**
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
-          # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
+      - name: Build packages
+        # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
+        run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Run end-to-end tests
         env:
@@ -171,34 +98,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
@@ -213,29 +117,6 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@be260d8673c9211a84cdcf37794ebd654ba81eef # v1
-        id: job_html_url
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Get the first run's ID even though it might be correct it should bring to the right place
-          job_name: "playwright-ct-test (chromium, 1, 2)"
-
-      - name: Parse playwright report
-        id: parse-playwright-report
-        if: always()
-        run: pnpm --filter sanity write:playwright-report-as-pr-comment
-        env:
-          GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
-
-      - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
-        if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
-        with:
-          comment_tag: "playwright-ct-report"
-          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-report-pr-comment.md
-
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -245,35 +126,3 @@ jobs:
             ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report
             ${{ github.workspace }}/packages/sanity/playwright-ct/results
           retention-days: 30
-
-  cleanup:
-    permissions:
-      contents: read
-      actions: write # needed to delete the cache
-    timeout-minutes: 30
-    name: Cleanup (${{ matrix.project }})
-    runs-on: ubuntu-latest
-    needs: [playwright-ct-test]
-
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox, webkit]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Delete the cache so it is only used once
-      - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
-        env:
-          cache-name: cache-e2e-build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

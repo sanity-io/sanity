@@ -379,6 +379,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
+  /** Label to indicate that a document type was not found */
+  'document.type.not-found': 'Document type "{{type}}" not found',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
@@ -947,7 +950,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Search returned a type that\'s not valid for this reference: "{{returnedType}}"',
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-description':
-    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes />.',
+    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes/>.',
   /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-title': 'Document of invalid type',
   /** Error description for when the user does not have permissions to read the referenced document */
@@ -1180,9 +1183,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
-  /** Description for toast when version deletion is successfully discarded */
-  'release.action.discard-version.success':
-    '<strong>{{title}}</strong> version was successfully discarded',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New Release',
   /** Tooltip message for not having permissions for creating new releases */
@@ -1195,7 +1195,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
   /** Label for banner when release is scheduled */
-  'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
+  'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
   /** Label for Draft chip in global header */
@@ -1225,6 +1225,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
+  /** Title for action create a release */
+  'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
   /** Label for description in tooltip to explain release types */

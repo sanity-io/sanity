@@ -23,7 +23,6 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {debounce} from 'lodash'
 import {
   type ChangeEvent,
   type ComponentType,
@@ -37,7 +36,7 @@ import isEqual from 'react-fast-compare'
 import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {
   isSupportedPerspective,
   isVirtualPerspective,
@@ -176,6 +175,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _listenSubscription: Subscription | undefined
   _client: SanityClient
   _localStorage: LocalStorageish
+  _editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
+  _editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 
   constructor(props: VisionGuiProps) {
     super(props)
@@ -217,6 +218,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this._queryEditorContainer = createRef()
     this._paramsEditorContainer = createRef()
     this._customApiVersionElement = createRef()
+    this._editorQueryRef = createRef()
+    this._editorParamsRef = createRef()
 
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,
@@ -272,13 +275,12 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     this.handleListenExecution = this.handleListenExecution.bind(this)
     this.handleListenerEvent = this.handleListenerEvent.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
-    this.handleQueryChange = debounce(this.handleQueryChange, 300).bind(this)
+    this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
     this.handleCopyUrl = this.handleCopyUrl.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.handleResize = this.handleResize.bind(this)
-    this.handleOnPasteCapture = this.handleOnPasteCapture.bind(this)
     this.setPerspective = this.setPerspective.bind(this)
   }
 
@@ -330,8 +332,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
   }
 
-  handlePaste(evt: React.ClipboardEvent<HTMLDivElement> | ClipboardEvent, stopPropagation = false) {
-    if (!evt?.clipboardData) {
+  handlePaste(evt: ClipboardEvent) {
+    if (!evt.clipboardData) {
       return
     }
 
@@ -384,16 +386,17 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     evt.preventDefault()
-    if (stopPropagation) {
-      // Stops propagation for the pasteEvent that occurs in the CodeMirror element if it has a match
-      evt.stopPropagation()
-    }
+
+    const query = parts.query
+    const rawParams = JSON.stringify(parts.params, null, 2)
+    this._editorQueryRef.current?.resetEditorContent(query)
+    this._editorParamsRef.current?.resetEditorContent(rawParams)
     this.setState(
       (prevState) => ({
         dataset: this.props.datasets.includes(usedDataset) ? usedDataset : prevState.dataset,
-        query: parts.query,
+        query,
         params: parts.params,
-        rawParams: JSON.stringify(parts.params, null, 2),
+        rawParams,
         apiVersion: typeof apiVersion === 'undefined' ? prevState.apiVersion : apiVersion,
         customApiVersion:
           typeof customApiVersion === 'undefined' ? prevState.customApiVersion : customApiVersion,
@@ -424,10 +427,6 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         })
       },
     )
-  }
-
-  handleOnPasteCapture(ev: React.ClipboardEvent<HTMLDivElement>) {
-    this.handlePaste(ev, true)
   }
 
   cancelQuery() {
@@ -905,9 +904,9 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                       </Flex>
                     </InputBackgroundContainerLeft>
                     <VisionCodeMirror
-                      value={query}
+                      initialValue={query}
                       onChange={this.handleQueryChange}
-                      onPasteCapture={this.handleOnPasteCapture}
+                      ref={this._editorQueryRef}
                     />
                   </Box>
                 </InputContainer>
@@ -930,7 +929,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                     <ParamsEditor
                       value={rawParams}
                       onChange={this.handleParamsChange}
-                      onPasteCapture={this.handleOnPasteCapture}
+                      editorRef={this._editorParamsRef}
                     />
                   </Card>
                   {/* Controls (listen/run) */}

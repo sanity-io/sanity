@@ -59,10 +59,12 @@ const playwrightConfig = createPlaywrightConfig({
 
     return {
       ...config,
-      retries: 4,
+      /* We allow 1 retry to root out flaky tests */
+      retries: 1,
       reporter: excludeGithub([['list'], ['blob']]),
       use: {
         ...config.use,
+        video: 'retain-on-failure',
         baseURL: 'http://localhost:3339',
         headless: HEADLESS,
         contextOptions: {reducedMotion: 'reduce'},

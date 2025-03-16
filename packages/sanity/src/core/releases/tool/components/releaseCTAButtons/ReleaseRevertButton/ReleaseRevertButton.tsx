@@ -42,6 +42,7 @@ const ConfirmReleaseDialog = ({
   release: ReleaseDocument
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
   const getDocumentRevertStates = useDocumentRevertStates(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
@@ -71,8 +72,12 @@ const ConfirmReleaseDialog = ({
         revertReleaseId,
         documentRevertStates,
         {
-          title: t('revert-release.title', {title: release.metadata.title}),
-          description: t('revert-release.description', {title: release.metadata.title}),
+          title: t('revert-release.title', {
+            title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+          }),
+          description: t('revert-release.description', {
+            title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+          }),
           releaseType: 'asap',
         },
         stageNewRevertRelease ? 'staged' : 'immediate',
@@ -105,7 +110,9 @@ const ConfirmReleaseDialog = ({
                 }}
                 t={t}
                 i18nKey="toast.revert-stage.success"
-                values={{title: release.metadata.title}}
+                values={{
+                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                }}
               />
             </Text>
           ),
@@ -121,7 +128,9 @@ const ConfirmReleaseDialog = ({
               <Translate
                 t={t}
                 i18nKey="toast.immediate-revert.success"
-                values={{title: release.metadata.title}}
+                values={{
+                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                }}
               />
             </Text>
           ),
@@ -147,6 +156,7 @@ const ConfirmReleaseDialog = ({
     getDocumentRevertStates,
     revertRelease,
     t,
+    tCore,
     release.metadata.title,
     stageNewRevertRelease,
     telemetry,
@@ -162,7 +172,9 @@ const ConfirmReleaseDialog = ({
   return (
     <Dialog
       id="confirm-revert-dialog"
-      header={t('revert-dialog.confirm-revert.title', {title: release.metadata.title})}
+      header={t('revert-dialog.confirm-revert.title', {
+        title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+      })}
       onClose={() => setRevertReleaseStatus('idle')}
       footer={{
         confirmButton: {

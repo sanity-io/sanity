@@ -33,14 +33,14 @@ export function UnpublishVersionDialog(props: {
   const {data} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
-  const releaseInDetail = data
+  const release = data
     .concat(archivedReleases)
     .find(
       (candidate) =>
         getReleaseIdFromReleaseDocumentId(candidate._id) === getVersionFromId(documentVersionId),
     )
 
-  const tone = getReleaseTone(releaseInDetail as ReleaseDocument)
+  const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
@@ -48,19 +48,29 @@ export function UnpublishVersionDialog(props: {
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 
-    await unpublishVersion(documentVersionId)
+    try {
+      await unpublishVersion(documentVersionId)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={coreT}
+            i18nKey={'release.action.unpublish-version.success'}
+            values={{title: preview?.value?.title || documentVersionId}}
+          />
+        ),
+      })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: coreT('release.action.unpublish-version.failure'),
+        description: err.message,
+      })
+    }
+
     setIsUnpublishing(false)
-    toast.push({
-      closable: true,
-      status: 'success',
-      description: (
-        <Translate
-          t={coreT}
-          i18nKey={'release.action.unpublish-version.success'}
-          values={{title: preview?.value?.title || documentVersionId}}
-        />
-      ),
-    })
 
     onClose()
   }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])
@@ -99,7 +109,7 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: releaseInDetail?.metadata.title,
+              title: release?.metadata.title || coreT('release.placeholder-untitled-release'),
             }}
             components={{
               Label: ({children}) => {

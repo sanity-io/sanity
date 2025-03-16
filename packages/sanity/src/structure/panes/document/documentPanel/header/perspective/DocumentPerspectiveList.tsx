@@ -77,7 +77,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
-  const {params} = usePaneRouter()
+  const {params, setParams} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
@@ -88,9 +88,17 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
+      if (perspective === 'published' && params?.historyVersion) {
+        setParams({
+          ...params,
+          rev: params?.historyEvent || undefined,
+          since: undefined,
+          historyVersion: undefined,
+        })
+      }
       setPerspective(perspective)
     },
-    [setPerspective],
+    [setPerspective, setParams, params],
   )
 
   const schemaType = schema.get(documentType)

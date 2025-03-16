@@ -4,15 +4,17 @@ import {ExampleComponent} from './ExampleComponent'
 import './App.css'
 
 export function App() {
-  const sanityConfig: SanityConfig = {
-    auth: {
-      authScope: 'global'
+  // apps can access many different projects or other sources of data
+  const sanityConfigs: SanityConfig[] = [
+    {
+      projectId: 'project-id',
+      dataset: 'dataset-name',
     }
-  }
+  ]
 
   return (
     <div className="app-container">
-      <SanityApp sanityConfig={sanityConfig}>
+      <SanityApp sanityConfigs={sanityConfigs}>
         {/* add your own components here! */}
         <ExampleComponent />
       </SanityApp>

@@ -10,6 +10,7 @@ import {
   type Previewable,
   type SanityDocument,
   useDocumentStore,
+  usePerspective,
 } from 'sanity'
 
 import {
@@ -128,14 +129,16 @@ function observeForLocations(
 
 export function useDocumentLocations(props: {
   id: string
+  version: string | undefined
   resolvers?: DocumentLocationResolver | DocumentLocationResolvers
   type: string
 }): {
   state: DocumentLocationsState
   status: DocumentLocationsStatus
 } {
-  const {id, resolvers, type} = props
+  const {id, resolvers, type, version} = props
   const documentStore = useDocumentStore()
+  const {perspectiveStack} = usePerspective()
   const [locationsState, setLocationsState] = useState<DocumentLocationsState>(INITIAL_STATE)
 
   const resolver = resolvers && (typeof resolvers === 'function' ? resolvers : resolvers[type])
@@ -149,7 +152,7 @@ export function useDocumentLocations(props: {
 
     // Original/advanced resolver which requires explicit use of Observables
     if (typeof resolver === 'function') {
-      const params = {id, type}
+      const params = {id, type, version, perspectiveStack}
       const context = {documentStore}
       const _result = resolver(params, context)
       return isObservable(_result) ? _result : of(_result)
@@ -162,7 +165,7 @@ export function useDocumentLocations(props: {
 
     // Resolver is explicitly provided state
     return of(resolver)
-  }, [documentStore, id, resolver, type])
+  }, [documentStore, id, resolver, type, version, perspectiveStack])
 
   useEffect(() => {
     const sub = result?.subscribe((state) => {

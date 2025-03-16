@@ -22,9 +22,9 @@ export function ReleaseDashboardHeader(props: {
   setInspector: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }) {
   const {inspector, release, setInspector} = props
-  const title = release.metadata.title
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const title = release.metadata.title || tCore('release.placeholder-untitled-release')
   const router = useRouter()
 
   const handleNavigateToReleasesList = useCallback(() => {

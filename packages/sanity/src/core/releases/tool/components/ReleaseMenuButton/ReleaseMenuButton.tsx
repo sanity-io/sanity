@@ -6,11 +6,14 @@ import {useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuButton} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
+import {usePerspective} from '../../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
@@ -32,6 +35,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -64,38 +69,51 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       const actionValues = RELEASE_ACTION_MAP[action]
 
       try {
+        if (
+          (action === 'archive' || action === 'delete') &&
+          selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)
+        ) {
+          // Reset the perspective to drafts when the release is archived or deleted
+          // To avoid showing the release archived / deleted toast.
+          setPerspective('drafts')
+        }
         setIsPerformingOperation(true)
         await actionLookup[action](release._id)
 
         telemetry.log(actionValues.telemetry)
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastSuccessI18nKey}
-                values={{title: releaseTitle}}
-              />
-            </Text>
-          ),
-        })
+
+        if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
+          toast.push({
+            closable: true,
+            status: 'success',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastSuccessI18nKey}
+                  values={{title: releaseTitle}}
+                />
+              </Text>
+            ),
+          })
+        }
       } catch (actionError) {
         if (isReleaseLimitError(actionError)) return
 
-        toast.push({
-          status: 'error',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastFailureI18nKey}
-                values={{title: releaseTitle, error: actionError.toString()}}
-              />
-            </Text>
-          ),
-        })
+        if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
+          toast.push({
+            status: 'error',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastFailureI18nKey}
+                  values={{title: releaseTitle, error: actionError.toString()}}
+                />
+              </Text>
+            ),
+          })
+        }
         console.error(actionError)
       } finally {
         setIsPerformingOperation(false)
@@ -113,6 +131,8 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       toast,
       t,
       releaseTitle,
+      selectedReleaseId,
+      setPerspective,
     ],
   )
 

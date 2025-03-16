@@ -13,7 +13,7 @@ export function ExampleComponent() {
         <pre>{`import {YourComponent} from './YourComponent'
 
 // Then use it in your JSX 
-<SanityApp sanityConfig={sanityConfig}>
+<SanityApp sanityConfigs={sanityConfigs}>
   <YourComponent />
 </SanityApp>`}</pre>
       </div>

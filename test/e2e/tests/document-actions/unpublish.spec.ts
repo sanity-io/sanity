@@ -19,9 +19,10 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   await createDraftDocument('/test/content/book')
   await titleInput.fill(titleA)
+  // Wait for the document to finish saving
+  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
   await publishButton.click()
   await expect(documentStatus).toContainText('Published just now')
 
@@ -29,7 +30,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await expect(unpublishButton).toBeVisible()
   await unpublishButton.click()
 
-  await page.waitForTimeout(1_000)
+  await page.waitForTimeout(2_000)
 
   await expect(unpublishModal).toBeVisible()
   await page.getByTestId('confirm-button').click()

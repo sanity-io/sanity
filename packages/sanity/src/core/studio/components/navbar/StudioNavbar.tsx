@@ -87,7 +87,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, perspectiveStack} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -265,6 +265,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                           onClose={handleCloseSearch}
                           onOpen={handleOpenSearch}
                           open={searchOpen}
+                          previewPerspective={perspectiveStack}
                         />
                       )}
                     </BoundaryElementProvider>
