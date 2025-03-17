@@ -39,7 +39,7 @@ export function getSharedServerConfig({
   workDir,
   cliConfig,
 }: {
-  flags: {host?: string; port?: string}
+  flags: {host?: string; port?: string | number}
   workDir: string
   cliConfig?: CliConfig
 }): {

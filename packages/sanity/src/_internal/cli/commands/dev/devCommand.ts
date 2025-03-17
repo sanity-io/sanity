@@ -7,6 +7,9 @@ import {
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
 import {determineIsApp} from '../../util/determineIsApp'
 
+// TODO: Add this once we are ready to release it.
+// --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
+
 const helpText = `
 Notes
   Changing the hostname or port number might require a new entry to the CORS-origins allow list.
