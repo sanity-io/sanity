@@ -12,7 +12,7 @@ export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const host = client.config().apiHost
   const isStaging = host.includes('sanity.work')
-  const deployedFrontendHost = isStaging ? 'https://assets.sanity.work' : 'https://assets.sanity.io'
+  const deployedFrontendHost = isStaging ? 'https://media.sanity.work' : 'https://media.sanity.io'
   const appHost = isLocalDev ? 'http://localhost:3001' : deployedFrontendHost
   const env: 'staging' | 'production' = isStaging ? 'staging' : 'production'
 
