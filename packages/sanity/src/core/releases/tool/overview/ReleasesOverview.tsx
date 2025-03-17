@@ -413,7 +413,6 @@ export function ReleasesOverview() {
                       icon={EarthGlobeIcon}
                       iconRight={ChevronDownIcon}
                       mode="bleed"
-                      size="large"
                       text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
                       onClick={dialogTimeZoneShow}
                     />
