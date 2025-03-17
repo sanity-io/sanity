@@ -29,7 +29,7 @@ export function useExcludedPerspective(): ExcludedPerspectiveValue {
         ? existingPerspectives.filter((id) => id !== excluded)
         : [...existingPerspectives, excluded]
 
-      navigate(null, {stickyParams: {excludedPerspectives: nextExcludedPerspectives.toString()}})
+      navigate({stickyParams: {excludedPerspectives: nextExcludedPerspectives.toString()}})
     },
     [excludedPerspectives, navigate],
   )

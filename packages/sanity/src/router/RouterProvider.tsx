@@ -5,8 +5,11 @@ import {RouterContext} from 'sanity/_singletons'
 import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
+  isNavigateOptions,
+  type Navigate,
   type NavigateBaseOptions,
   type NavigateOptions,
+  type NextStateOrOptions,
   type Router,
   type RouterContextValue,
   type RouterState,
@@ -119,22 +122,24 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
     [routerProp, state],
   )
 
-  const navigate = useCallback(
-    (nextState: Record<string, unknown> | null, options: NavigateOptions = {}) => {
-      const currentParams = Array.isArray(state._searchParams) ? state._searchParams : []
+  const navigate: Navigate = useCallback(
+    (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
+      // Determine options and state based on input pattern
+      const isOptionsOnlyPattern = isNavigateOptions(nextStateOrOptions) && !maybeOptions
+      const options = isOptionsOnlyPattern ? nextStateOrOptions : maybeOptions || {}
+
+      const baseState = isNavigateOptions(nextStateOrOptions)
+        ? (getStateFromOptions(nextStateOrOptions, state) ?? state)
+        : nextStateOrOptions
+
+      const currentParams = state._searchParams || []
       const nextStickyParams =
         options.stickyParams ??
         Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key)))
 
-      const hasInvalidParam = Object.keys(nextStickyParams).some(
-        (param) => !STICKY_PARAMS.includes(param),
-      )
-      if (hasInvalidParam) {
-        throw new Error('One or more parameters are not sticky')
-      }
+      validateStickyParams(nextStickyParams)
 
-      const baseState = nextState ?? state
-      const nextParams = Array.isArray(baseState._searchParams) ? baseState._searchParams : []
+      const nextParams = baseState._searchParams || []
       const mergedParams = mergeStickyParams([...currentParams, ...nextParams], nextStickyParams)
 
       onNavigate({
@@ -147,7 +152,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
 
   const handleNavigateStickyParams = useCallback(
     (params: NavigateOptions['stickyParams'], options: NavigateBaseOptions = {}) =>
-      navigate(null, {stickyParams: params, ...options}),
+      navigate({stickyParams: params, ...options}),
     [navigate],
   )
 
@@ -229,4 +234,26 @@ function mergeStickyParams(
 function findParam(searchParams: SearchParam[], key: string): string | undefined {
   const entry = searchParams.find(([k]) => k === key)
   return entry ? entry[1] : undefined
+}
+
+function getStateFromOptions(
+  nextStateOrOptions: NextStateOrOptions,
+  state: RouterState,
+): RouterState | null {
+  const isOptionsOnly = isNavigateOptions(nextStateOrOptions)
+
+  if (isOptionsOnly) {
+    if (nextStateOrOptions.state === null) {
+      return {}
+    }
+    return nextStateOrOptions.state ?? state
+  }
+  return null
+}
+
+function validateStickyParams(nextStickyParams: Record<string, string | undefined>) {
+  const hasInvalidParam = Object.keys(nextStickyParams).some(
+    (param) => !STICKY_PARAMS.includes(param),
+  )
+  if (hasInvalidParam) throw new Error('One or more parameters are not sticky')
 }

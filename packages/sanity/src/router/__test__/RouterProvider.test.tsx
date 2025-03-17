@@ -61,7 +61,7 @@ describe('RouterProvider', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
-        result.current.navigate(null, {
+        result.current.navigate({
           stickyParams: {
             anotherStickyParam: 'anotherStickyParamValue',
           },
@@ -108,7 +108,7 @@ describe('RouterProvider', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
-        result.current.navigate(null, {
+        result.current.navigate({
           stickyParams: {
             stickyFirstParam: 'newStickyFirstParamValue',
             anotherStickyParam: 'anotherStickyParamValue',
@@ -131,7 +131,7 @@ describe('RouterProvider', () => {
 
       expect(() => {
         act(() => {
-          result.current.navigate(null, {stickyParams: {invalidStickyParam: 'invalidValue'}})
+          result.current.navigate({stickyParams: {invalidStickyParam: 'invalidValue'}})
         })
       }).toThrowError('One or more parameters are not sticky')
     })
@@ -141,7 +141,7 @@ describe('RouterProvider', () => {
 
       expect(() => {
         act(() => {
-          result.current.navigate(null, {stickyParams: {disallowedParam: 'disallowedValue'}})
+          result.current.navigate({stickyParams: {disallowedParam: 'disallowedValue'}})
         })
       }).toThrowError('One or more parameters are not sticky')
     })
@@ -222,6 +222,173 @@ describe('RouterProvider', () => {
           ['nonStickyParam', 'nonStickyValue'],
           ['stickyFirstParam', 'stickyFirstParamValue'],
         ],
+      })
+    })
+  })
+
+  describe('new navigate API', () => {
+    it('should keep current state when navigating with options object only', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          stickyParams: {
+            stickyFirstParam: 'newStickyValue',
+          },
+          replace: true,
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          existingKey: 'existingValue',
+          _searchParams: [['stickyFirstParam', 'newStickyValue']],
+        },
+        replace: true,
+      })
+    })
+
+    it('should go to root route when navigating with null state in options', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          state: null,
+          stickyParams: {
+            stickyFirstParam: 'newStickyValue',
+          },
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          _searchParams: [['stickyFirstParam', 'newStickyValue']],
+        },
+      })
+    })
+
+    it('should create new state when navigating with specific state in options', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          state: {
+            newKey: 'newValue',
+          },
+          stickyParams: {
+            stickyFirstParam: 'newStickyValue',
+          },
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          newKey: 'newValue',
+          _searchParams: [['stickyFirstParam', 'newStickyValue']],
+        },
+      })
+    })
+
+    it('should create new state when navigating with state change and no sticky params', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          state: {
+            newKey: 'newValue',
+          },
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          newKey: 'newValue',
+          _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+        },
+      })
+    })
+
+    it('should keep the current state when navigating with undefined state', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          state: undefined,
+          replace: true,
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          existingKey: 'existingValue',
+          _searchParams: [['stickyFirstParam', 'stickyFirstParamValue']],
+        },
+        replace: true,
       })
     })
   })

@@ -138,7 +138,7 @@ describe('RouteScope', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
-        result.current.navigate(null, {
+        result.current.navigate({
           stickyParams: {
             stickyParam: 'newStickyValue',
           },
@@ -159,7 +159,7 @@ describe('RouteScope', () => {
 
       expect(() => {
         act(() => {
-          result.current.navigate(null, {
+          result.current.navigate({
             stickyParams: {invalidParam: 'invalidValue'},
           })
         })
@@ -295,16 +295,136 @@ describe('RouteScope', () => {
       const {result} = renderHook(() => useRouter(), {wrapper})
 
       act(() => {
-        result.current.navigate(null)
+        result.current.navigate({})
       })
 
       expect(mockOnNavigate).toHaveBeenCalledWith({
         path: {
           _searchParams: [['stickyParam', 'stickyValue']],
+          testScope: {
+            _searchParams: undefined,
+          },
           tool: 'desk',
         },
         replace: undefined,
       })
+    })
+  })
+
+  it('should keep current state when navigating with options object only', () => {
+    const wrapper = createWrapper()
+    const {result} = renderHook(() => useRouter(), {wrapper})
+
+    act(() => {
+      result.current.navigate({
+        stickyParams: {
+          stickyParam: 'newStickyValue',
+        },
+        replace: true,
+      })
+    })
+
+    expect(mockOnNavigate).toHaveBeenCalledWith({
+      path: {
+        _searchParams: [['stickyParam', 'newStickyValue']],
+        tool: 'desk',
+      },
+      replace: true,
+    })
+  })
+
+  it('should go to root route when navigating with null state in options', () => {
+    const wrapper = createWrapper()
+    const {result} = renderHook(() => useRouter(), {wrapper})
+
+    act(() => {
+      result.current.navigate({
+        state: null,
+        stickyParams: {
+          stickyParam: 'newStickyValue',
+        },
+      })
+    })
+
+    expect(mockOnNavigate).toHaveBeenCalledWith({
+      path: {
+        _searchParams: [['stickyParam', 'newStickyValue']],
+      },
+    })
+  })
+
+  it('should handle navigate with specific state in options', () => {
+    const wrapper = createWrapper()
+    const {result} = renderHook(() => useRouter(), {wrapper})
+
+    act(() => {
+      result.current.navigate({
+        state: {
+          scopedKey: 'scopedValue',
+        },
+        stickyParams: {
+          stickyParam: 'newStickyValue',
+        },
+      })
+    })
+
+    expect(mockOnNavigate).toHaveBeenCalledWith({
+      path: {
+        _searchParams: [['stickyParam', 'newStickyValue']],
+        tool: 'desk',
+        testScope: {
+          scopedKey: 'scopedValue',
+        },
+      },
+    })
+  })
+
+  it('should keep the current state when navigating with explicitly undefined state', () => {
+    const wrapper = createWrapper()
+    const {result} = renderHook(() => useRouter(), {wrapper})
+
+    act(() => {
+      result.current.navigate({
+        initialValue: 'test',
+      })
+    })
+
+    mockOnNavigate.mockClear()
+
+    act(() => {
+      result.current.navigate({
+        state: undefined,
+        stickyParams: {
+          stickyParam: 'newStickyValue',
+        },
+      })
+    })
+
+    expect(mockOnNavigate).toHaveBeenCalledWith({
+      path: {
+        _searchParams: [['stickyParam', 'newStickyValue']],
+        tool: 'desk',
+      },
+      replace: undefined,
+    })
+  })
+
+  it('should handle navigate with empty object state', () => {
+    const wrapper = createWrapper()
+    const {result} = renderHook(() => useRouter(), {wrapper})
+
+    act(() => {
+      result.current.navigate({
+        state: {},
+      })
+    })
+
+    expect(mockOnNavigate).toHaveBeenCalledWith({
+      path: {
+        _searchParams: [['stickyParam', 'stickyValue']],
+        tool: 'desk',
+        testScope: {},
+      },
     })
   })
 })

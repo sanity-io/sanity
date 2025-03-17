@@ -2,7 +2,13 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
+import {
+  isNavigateOptions,
+  type Navigate,
+  type NavigateOptions,
+  type NextStateOrOptions,
+  type RouterState,
+} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -97,17 +103,35 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
     [parent_resolvePathFromState, resolveNextParentState],
   )
 
-  const navigate = useCallback(
-    (nextState: RouterState | null, options?: NavigateOptions) =>
-      parent_navigate(
-        // options?.stickyParams && nextState === null ? null :
-        resolveNextParentState(nextState),
-        options,
-      ),
+  const navigate: Navigate = useCallback(
+    (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
+      // Check if it's the options-only pattern
+      if (isNavigateOptions(nextStateOrOptions) && !maybeOptions) {
+        const options = nextStateOrOptions
+        const {state} = options
+
+        //keep the current state but apply other options
+        if (state) {
+          const nextState = resolveNextParentState(state)
+          const resolvedState = nextState === null ? {} : nextState
+
+          return parent_navigate(resolvedState, options)
+        }
+
+        //keep the current state
+        return parent_navigate(options)
+      }
+
+      const nextState = isNavigateOptions(nextStateOrOptions)
+        ? resolveNextParentState(null)
+        : resolveNextParentState(nextStateOrOptions)
+
+      return parent_navigate(nextState === null ? {} : nextState, maybeOptions || {})
+    },
     [parent_navigate, resolveNextParentState],
   )
 
-  const childRouter: RouterContextValue = useMemo(() => {
+  const childRouter = useMemo(() => {
     const parentState = parentRouter.state
     const childState = {...(parentState[scope] || {})} as RouterState
     if (__unsafe_disableScopedSearchParams) {
