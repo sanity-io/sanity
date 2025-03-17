@@ -94,13 +94,13 @@ function assertNoErrors(errors: string[]) {
   }
 }
 
-export function assetIdsMatchesWorkspaces(ids: string[], workspaces: {name: string}[]) {
+export function assertIdsMatchesWorkspaces(ids: string[], workspaces: {name: string}[]) {
   const invalidIds = ids
     .map((id) => ({
       id,
       parsedId: parseWorkspaceSchemaId(id, []),
     }))
-    .filter(({id, parsedId}) => !parsedId || !workspaces.some((w) => w.name === parsedId.workspace))
+    .filter(({parsedId}) => !parsedId || !workspaces.some((w) => w.name === parsedId.workspace))
 
   if (invalidIds.length)
     throw new FlagValidationError(

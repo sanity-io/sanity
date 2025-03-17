@@ -152,15 +152,24 @@ describe('deleteSchemasAction', () => {
     )
   })
 
-  it('should throw when id matches no workspaces', async () => {
+  it('should list queries dataset also when id matches no workspaces', async () => {
     const flags: DeleteSchemaFlags = {
       ids: 'sanity.workspace.schema.nonexistentWorkspace',
     }
-
-    await expect(() => deleteSchemaAction(flags, defaultContext)).rejects.toThrowError(
-      'Ids must match workspaces in scope, but got:\n' +
-        '  ["sanity.workspace.schema.nonexistentWorkspace"]',
-    )
+    const status = await deleteSchemaAction(flags, defaultContext)
+    expect(log).toEqual([
+      {
+        print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
+      },
+      {
+        error: [
+          'Deleted 0/1 schemas.',
+          'Ids not found in datasets ["testDataset","reusedDataset"]:',
+          '- "sanity.workspace.schema.nonexistentWorkspace"',
+        ].join('\n'),
+      },
+    ])
+    expect(status).toEqual('failure')
   })
 
   it('should log which datasets where searched when no schema found', async () => {
@@ -182,7 +191,37 @@ describe('deleteSchemasAction', () => {
         error:
           'Deleted 0/3 schemas.\n' +
           'Ids not found in datasets ["testDataset","reusedDataset"]:\n' +
-          '  ["sanity.workspace.schema.testWorkspace","sanity.workspace.schema.testWorkspace2","sanity.workspace.schema.testWorkspace3"]',
+          '- "sanity.workspace.schema.testWorkspace"\n' +
+          '- "sanity.workspace.schema.testWorkspace2"\n' +
+          '- "sanity.workspace.schema.testWorkspace3"',
+      },
+    ])
+    expect(status).toEqual('failure')
+  })
+
+  it('should only check --dataset', async () => {
+    await mockClient.withConfig({dataset: workspace1.dataset}).delete(validStoredSchema1._id)
+    await mockClient.withConfig({dataset: workspace2.dataset}).delete(validStoredSchema2._id)
+    await mockClient.withConfig({dataset: workspace3.dataset}).delete(validStoredSchema3._id)
+
+    const flags: DeleteSchemaFlags = {
+      dataset: workspace1.dataset,
+      ids: [validStoredSchema1, validStoredSchema2, validStoredSchema3].map((s) => s._id).join(','),
+    }
+
+    const status = await deleteSchemaAction(flags, defaultContext)
+
+    expect(log).toEqual([
+      {
+        print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
+      },
+      {
+        error:
+          'Deleted 0/3 schemas.\n' +
+          'Ids not found in dataset "testDataset":\n' +
+          '- "sanity.workspace.schema.testWorkspace"\n' +
+          '- "sanity.workspace.schema.testWorkspace2"\n' +
+          '- "sanity.workspace.schema.testWorkspace3"',
       },
     ])
     expect(status).toEqual('failure')
@@ -206,9 +245,10 @@ describe('deleteSchemasAction', () => {
         error: [
           'Deleted 1/3 schemas.',
           'Successfully deleted ids:',
-          '  ["sanity.workspace.schema.testWorkspace2"]',
+          '- "sanity.workspace.schema.testWorkspace2" (in dataset "reusedDataset")',
           'Ids not found in datasets ["testDataset","reusedDataset"]:',
-          '  ["sanity.workspace.schema.testWorkspace","sanity.workspace.schema.testWorkspace3"]',
+          '- "sanity.workspace.schema.testWorkspace"',
+          '- "sanity.workspace.schema.testWorkspace3"',
         ].join('\n'),
       },
     ])
@@ -241,10 +281,15 @@ describe('deleteSchemasAction', () => {
           'delete error',
       },
       {
+        error:
+          'Failed to delete schema "sanity.workspace.schema.testWorkspace" in dataset "reusedDataset":\n' +
+          'delete error',
+      },
+      {
         error: [
           'Deleted 0/1 schemas.',
           'Failed to delete ids:',
-          '  ["sanity.workspace.schema.testWorkspace"]',
+          '- "sanity.workspace.schema.testWorkspace"',
           'Check logs for errors.',
         ].join('\n'),
       },
@@ -284,6 +329,11 @@ describe('deleteSchemasAction', () => {
       },
       {
         error:
+          'Failed to delete schema "sanity.workspace.schema.testWorkspace2" in dataset "testDataset":\n' +
+          'delete error',
+      },
+      {
+        error:
           'Failed to delete schema "sanity.workspace.schema.testWorkspace2" in dataset "reusedDataset":\n' +
           'delete error',
       },
@@ -291,11 +341,11 @@ describe('deleteSchemasAction', () => {
         error: [
           'Deleted 1/3 schemas.',
           'Successfully deleted ids:',
-          '  ["sanity.workspace.schema.testWorkspace3"]',
+          '- "sanity.workspace.schema.testWorkspace3" (in dataset "reusedDataset")',
           'Ids not found in datasets ["testDataset","reusedDataset"]:',
-          '  ["sanity.workspace.schema.testWorkspace"]',
+          '- "sanity.workspace.schema.testWorkspace"',
           'Failed to delete ids:',
-          '  ["sanity.workspace.schema.testWorkspace2"]',
+          '- "sanity.workspace.schema.testWorkspace2"',
           'Check logs for errors.',
         ].join('\n'),
       },

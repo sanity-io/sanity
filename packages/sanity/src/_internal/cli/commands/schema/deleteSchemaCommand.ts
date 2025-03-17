@@ -1,6 +1,6 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
-const description = 'Delete schema documents by id'
+const description = 'Delete schema documents by id.'
 
 const helpText = `
 **Note**: This command is experimental and subject to change.

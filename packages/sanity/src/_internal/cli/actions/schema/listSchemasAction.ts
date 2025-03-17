@@ -13,7 +13,6 @@ import {createManifestExtractor, isManifestExtractSatisfied} from './utils/mainf
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
-  assetIdsMatchesWorkspaces,
   filterLogReadProjectIdMismatch,
   parseListSchemasConfig,
   type StoreSchemaCommonFlags,
@@ -67,8 +66,6 @@ export async function listSchemasAction(
   const workspaces = manifest.workspaces.filter((workspace) =>
     filterLogReadProjectIdMismatch(workspace, projectId, output),
   )
-
-  if (id) assetIdsMatchesWorkspaces([id], workspaces)
 
   const datasets = uniq(workspaces.map((w) => w.dataset))
 

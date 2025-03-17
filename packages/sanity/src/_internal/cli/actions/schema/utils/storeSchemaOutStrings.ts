@@ -7,3 +7,7 @@ export function getDatasetsOutString(datasets: string[]) {
 export function getStringArrayOutString(array: string[]) {
   return `[${array.map((d) => `"${d}"`).join(',')}]`
 }
+
+export function getStringList(array: string[]) {
+  return array.map((s) => `- "${s}"`).join('\n')
+}
