@@ -10,7 +10,6 @@ This operation requires a manifest file to exist: use --extract-manifest or run 
 Options:
   --workspace <workspace_name> store schema for a specific workspace
   --id-prefix <prefix> add a prefix to the schema id
-  --schema-required fail if schema file is not found
   --manifest-dir <directory> directory containing manifest file (default: ./dist/static)
   --extract-manifest regenerates manifest file based on sanity.config; equivalent of running "sanity manifest extract" first
   --verbose print detailed information during store
