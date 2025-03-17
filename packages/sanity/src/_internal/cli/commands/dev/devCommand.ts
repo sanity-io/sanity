@@ -7,6 +7,9 @@ import {
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
 import {determineIsApp} from '../../util/determineIsApp'
 
+// TODO: Add this once we are ready to release it.
+// --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
+
 const helpText = `
 Notes
   Changing the hostname or port number might require a new entry to the CORS-origins allow list.
@@ -14,7 +17,6 @@ Notes
 Options
   --port <port> TCP port to start server on. [default: 3333]
   --host <host> The local network interface at which to listen. [default: "127.0.0.1"]
-  --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
 
 Examples
   sanity dev --host=0.0.0.0
