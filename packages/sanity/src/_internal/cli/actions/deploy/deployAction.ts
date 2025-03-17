@@ -126,7 +126,10 @@ export default async function deployStudioAction(
       context,
     )
   } else if (shouldBuild) {
-    await createManifestExtractor(context)(`${sourceDir}/static`)
+    await createManifestExtractor({
+      ...context,
+      safe: true,
+    })(`${sourceDir}/static`)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content

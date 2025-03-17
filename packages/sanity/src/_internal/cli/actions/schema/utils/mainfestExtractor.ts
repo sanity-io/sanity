@@ -31,7 +31,7 @@ export async function isManifestExtractSatisfied(args: {
   }
 }
 
-export function createManifestExtractor(context: CliCommandContext) {
+export function createManifestExtractor(context: CliCommandContext & {safe?: boolean}) {
   return async (manifestDir: string) => {
     const error = await extractManifestSafe(
       {
@@ -43,7 +43,7 @@ export function createManifestExtractor(context: CliCommandContext) {
       } as CliCommandArguments<ExtractManifestFlags>,
       context,
     )
-    if (error) {
+    if (!context.safe && error) {
       throw error
     }
   }
