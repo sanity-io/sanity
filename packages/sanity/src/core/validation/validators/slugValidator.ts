@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {memoize} from 'lodash'
 
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId, getPublishedId, VERSION_FOLDER} from '../../util/draftUtils'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
@@ -59,17 +60,19 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient({apiVersion: '2023-11-13'}).fetch<boolean>(
-    `!defined(*[${constraints}][0]._id)`,
-    {
-      docType,
-      draft,
-      published,
-      versionPath,
-      slug,
-    },
-    {tag: 'validation.slug-is-unique'},
-  )
+  return getClient({apiVersion: DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion})
+    .withConfig({perspective: 'raw'})
+    .fetch<boolean>(
+      `!defined(*[${constraints}][0]._id)`,
+      {
+        docType,
+        draft,
+        published,
+        versionPath,
+        slug,
+      },
+      {tag: 'validation.slug-is-unique'},
+    )
 }
 
 function warnOnArraySlug(serializedPath: string) {
