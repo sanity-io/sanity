@@ -1,12 +1,15 @@
 import {type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
-import {type Ora} from 'ora'
 import {vi} from 'vitest'
 
 import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {type ManifestJsonReader} from '../../../../src/_internal/cli/actions/schema/utils/manifestReader'
 import {type createSchemaStoreFixture} from './schemaStoreFixture'
+
+// test code :shrug:
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ANY = any
 
 export function createMockStoreSchemaContext(
   fixture: ReturnType<typeof createSchemaStoreFixture>,
@@ -40,17 +43,17 @@ export function createMockStoreSchemaContext(
 }
 
 export function createMockCliOutputter() {
-  const log: any = []
+  const log: ANY = []
 
   // we want control characters here: its needed to remove chalk colors for better readability in test logs
   // eslint-disable-next-line no-control-regex
   const stripAnsi = (str: string) => str.replace(/\x1B\[[0-9;]*m/g, '')
-  const noChalkLog = (args: any[]) =>
+  const noChalkLog = (args: ANY[]) =>
     args.map((arg) => (typeof arg === 'string' ? stripAnsi(arg) : arg))
 
   const pushLog =
     (method: string) =>
-    (...args: any[]) => {
+    (...args: ANY[]) => {
       const noChalk = noChalkLog(args)
       // if only a single argument, remove the array to "compress" the test log a bit
       log.push({[method]: noChalk.length === 1 ? noChalk[0] : noChalk})
@@ -64,7 +67,7 @@ export function createMockCliOutputter() {
         succeed: pushLog('spinnerSucceed'),
         fail: pushLog('spinnerFail'),
         info: pushLog('spinnerInfo'),
-      } as unknown as Ora
+      } as ANY
     },
     warn: pushLog('warn'),
     error: pushLog('error'),
@@ -93,7 +96,7 @@ export function createMockSanityClient(
       ...config,
       dataset,
     }),
-    withConfig: (newConfig: any) => {
+    withConfig: (newConfig: ANY) => {
       if (newConfig && 'dataset' in newConfig) {
         dataset = newConfig?.dataset
       }
