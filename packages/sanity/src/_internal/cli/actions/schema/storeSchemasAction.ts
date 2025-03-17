@@ -30,10 +30,17 @@ export default function storeSchemasActionForCommand(
   flags: StoreSchemasFlags,
   context: CliCommandContext,
 ): Promise<'success' | 'failure'> {
-  return storeSchemasAction(flags, {
-    ...context,
-    manifestExtractor: createManifestExtractor(context),
-  })
+  return storeSchemasAction(
+    {
+      ...flags,
+      //invoking the command through CLI implies that schema is required
+      'schema-required': true,
+    },
+    {
+      ...context,
+      manifestExtractor: createManifestExtractor(context),
+    },
+  )
 }
 
 /**

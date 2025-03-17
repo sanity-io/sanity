@@ -34,13 +34,7 @@ const storeSchemaCommand = {
   action: async (args, context) => {
     const mod = await import('../../actions/schema/storeSchemasAction')
 
-    const result = await mod.default(
-      {
-        ...args.extOptions,
-        'schema-required': true,
-      },
-      context,
-    )
+    const result = await mod.default(args.extOptions, context)
     if (result === 'failure') process.exit(1)
     return result
   },
