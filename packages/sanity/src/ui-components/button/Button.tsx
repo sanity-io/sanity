@@ -29,7 +29,7 @@ type BaseButtonProps = Pick<
 }
 
 type ButtonWithText = {
-  text: string
+  text: React.ReactNode
   tooltipProps?: TooltipProps | null
   icon?: UIButtonProps['icon']
 }
