@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {EMPTY, merge, Observable, of, ReplaySubject, share, timer} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
 
-import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {checkoutPair, type Pair} from './checkoutPair'
@@ -16,14 +16,14 @@ export const memoizedPair: (
   idPair: IdPair,
   typeName: string,
   serverActionsEnabled: Observable<boolean>,
-  pairListenerOptions?: PairListenerOptions,
+  extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<Pair> = memoize(
   (
     client: SanityClient,
     idPair: IdPair,
     _typeName: string,
     serverActionsEnabled: Observable<boolean>,
-    pairListenerOptions?: PairListenerOptions,
+    pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
       const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
