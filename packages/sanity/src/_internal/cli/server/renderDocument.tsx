@@ -48,19 +48,14 @@ interface RenderDocumentOptions {
   importMap?: {
     imports?: Record<string, string>
   }
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 export function renderDocument(options: RenderDocumentOptions): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!useThreads) {
       resolve(
-        getDocumentHtml(
-          options.studioRootPath,
-          options.props,
-          options.importMap,
-          options.isCoreApp,
-        ),
+        getDocumentHtml(options.studioRootPath, options.props, options.importMap, options.isApp),
       )
       return
     }
@@ -182,7 +177,7 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap, isCoreApp}: RenderDocumentOptions =
+  const {monorepo, studioRootPath, props, importMap, isApp}: RenderDocumentOptions =
     workerData || {}
 
   if (workerData?.dev) {
@@ -233,7 +228,7 @@ function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = getDocumentHtml(studioRootPath, props, importMap, isCoreApp)
+  const html = getDocumentHtml(studioRootPath, props, importMap, isApp)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -246,9 +241,9 @@ function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
-  isCoreApp?: boolean,
+  isApp?: boolean,
 ): string {
-  const Document = getDocumentComponent(studioRootPath, isCoreApp)
+  const Document = getDocumentComponent(studioRootPath, isApp)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -304,7 +299,7 @@ export function addTimestampedImportMapScriptToHtml(
   return root.outerHTML
 }
 
-function getDocumentComponent(studioRootPath: string, isCoreApp?: boolean) {
+function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
   debug('Loading default document component from `sanity` module')
 
   const {BasicDocument} = __DEV__
@@ -315,7 +310,7 @@ function getDocumentComponent(studioRootPath: string, isCoreApp?: boolean) {
     ? require('../../../core/components/DefaultDocument')
     : require('sanity')
 
-  const Document = isCoreApp ? BasicDocument : DefaultDocument
+  const Document = isApp ? BasicDocument : DefaultDocument
 
   debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)

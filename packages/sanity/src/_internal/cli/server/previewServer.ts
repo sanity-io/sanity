@@ -24,11 +24,11 @@ export interface PreviewServerOptions {
   httpHost?: string
 
   vite?: UserViteConfig
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 export async function startPreviewServer(options: PreviewServerOptions): Promise<PreviewServer> {
-  const {httpPort, httpHost, root, vite: extendViteConfig, isCoreApp} = options
+  const {httpPort, httpHost, root, vite: extendViteConfig, isApp} = options
   const startTime = Date.now()
 
   const indexPath = path.join(root, 'index.html')
@@ -42,7 +42,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     }
 
     const error = new Error(
-      `Could not find a production build in the '${root}' directory.\nTry building your ${isCoreApp ? '' : 'studio '}app with 'sanity build' before starting the preview server.`,
+      `Could not find a production build in the '${root}' directory.\nTry building your ${isApp ? 'application' : 'studio '}app with 'sanity build' before starting the preview server.`,
     )
     error.name = 'BUILD_NOT_FOUND'
     throw error
@@ -91,7 +91,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
   const startupDuration = Date.now() - startTime
 
   info(
-    `Sanity ${isCoreApp ? 'application' : 'Studio'} ` +
+    `Sanity ${isApp ? 'application' : 'Studio'} ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
       `and running at ${chalk.cyan(url)} (production preview mode)`,
