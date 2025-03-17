@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@million/lint": "1.0.14",
-    "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
+    "babel-plugin-react-compiler": "19.0.0-beta-3229e95-20250315",
     "chokidar": "^3.6.0",
     "vite": "^6.2.2"
   }
