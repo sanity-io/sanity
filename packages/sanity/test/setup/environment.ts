@@ -3,7 +3,7 @@ import 'blob-polyfill'
 // eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
 import './clipboardItemPolyfill'
 // eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/vitest'
+import '@testing-library/jest-dom'
 
 import {cleanup} from '@testing-library/react'
 import {afterEach, beforeEach, expect, vi} from 'vitest'
