@@ -28,6 +28,9 @@ import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../t
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 
+/** Timeout on request that fetches shard name before reporting latency */
+const FETCH_SHARD_TIMEOUT = 20_000
+
 const isMutationEventForDocId =
   (id: string) =>
   (
@@ -335,7 +338,10 @@ function reportLatency(options: {
   onReportLatency: (event: LatencyReportEvent) => void
 }) {
   const {client, commits$, listenerEvents$, onReportLatency} = options
-  const shardInfo = fetch(client.getUrl(client.getDataUrl('ping')))
+  // Note: this request happens once and the result is then cached indefinitely
+  const shardInfo = fetch(client.getUrl(client.getDataUrl('ping')), {
+    signal: AbortSignal.timeout(FETCH_SHARD_TIMEOUT),
+  })
     .then((response) => response.headers.get('X-Sanity-Shard') || undefined)
     .catch(() => undefined)
 
