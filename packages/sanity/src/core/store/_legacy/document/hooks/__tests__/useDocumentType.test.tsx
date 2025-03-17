@@ -79,7 +79,7 @@ test('should return correct document type on document ID transition', async () =
   const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = (_query, params) =>
-    params.documentId === 'grrm' ? responseGrrm : responseGot
+    params.publishedId === 'grrm' ? responseGrrm : responseGot
 
   let documentId = 'grrm'
   const {result, rerender} = renderHook(() => useDocumentType(documentId, undefined), {
