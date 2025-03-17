@@ -31,8 +31,17 @@ export interface InitialSnapshotEvent {
   document: SanityDocument | null
 }
 
+/**
+ * @internal
+ */
+export interface LatencyReportEvent {
+  shard?: string
+  latencyMs: number
+  transactionId: string
+}
+
 /** @internal */
-export interface PairListenerOptions {
+export interface DocumentStoreExtraOptions {
   tag?: string
 
   /**
@@ -41,6 +50,7 @@ export interface PairListenerOptions {
    * @param error - the {@link OutOfSyncError} recovered from
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
+  onReportLatency?: (event: LatencyReportEvent) => void
 }
 
 /** @internal */
@@ -75,7 +85,7 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 export function getPairListener(
   _client: SanityClient,
   idPair: IdPair,
-  options: PairListenerOptions = {},
+  options: DocumentStoreExtraOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
   const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client

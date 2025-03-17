@@ -1,10 +1,10 @@
 import {processTemplate} from './processTemplate'
 
-const defaultCoreAppTemplate = `
+const defaultAppTemplate = `
 import {defineCliConfig} from 'sanity/cli'
 
 export default defineCliConfig({
-  __experimental_coreAppConfiguration: {
+  __experimental_appConfiguration: {
     organizationId: '%organizationId%',
     appLocation: '%appLocation%',
   },
@@ -16,9 +16,9 @@ export interface GenerateCliConfigOptions {
   appLocation: string
 }
 
-export function createCoreAppCliConfig(options: GenerateCliConfigOptions): string {
+export function createAppCliConfig(options: GenerateCliConfigOptions): string {
   return processTemplate({
-    template: defaultCoreAppTemplate,
+    template: defaultAppTemplate,
     variables: options,
   })
 }

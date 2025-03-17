@@ -5,7 +5,7 @@ import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators
 
 import {getVersionFromId} from '../../../../util'
 import {createSWR} from '../../../../util/rxSwr'
-import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -57,7 +57,7 @@ export const editState = memoize(
       client: SanityClient
       schema: Schema
       serverActionsEnabled: Observable<boolean>
-      pairListenerOptions?: PairListenerOptions
+      extraOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,
     typeName: string,
@@ -70,7 +70,7 @@ export const editState = memoize(
       idPair,
       typeName,
       ctx.serverActionsEnabled,
-      ctx.pairListenerOptions,
+      ctx.extraOptions,
     ).pipe(
       switchMap((versions) =>
         combineLatest([

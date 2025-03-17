@@ -6,7 +6,7 @@ import {
 
 import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
 import {SCHEMA_STORE_FEATURE_ENABLED} from '../../actions/schema/schemaStoreConstants'
-import {determineIsCoreApp} from '../../util/determineIsCoreApp'
+import {determineIsApp} from '../../util/determineIsApp'
 
 const schemaStoreText = [
   '  --schema-required Fail-fast deployment if schema store fails',
@@ -52,9 +52,9 @@ const deployCommand: CliCommandDefinition = {
       ) => Promise<void>
     }
 
-    const isCoreApp = determineIsCoreApp(context.cliConfig)
+    const isApp = determineIsApp(context.cliConfig)
 
-    if (isCoreApp) {
+    if (isApp) {
       mod = await import('../../actions/app/deployAction')
     } else {
       mod = await import('../../actions/deploy/deployAction')

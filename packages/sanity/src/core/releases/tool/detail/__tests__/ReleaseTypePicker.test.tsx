@@ -152,8 +152,8 @@ describe('ReleaseTypePicker', () => {
       // Select the 10th day in the calendar month
       fireEvent.click(within(Calendar).getByTestId('calendar-next-month'))
       fireEvent.click(within(CalendarMonth).getByText('10'))
-      fireEvent.change(screen.getByLabelText('Select hour'), {target: {value: 10}})
-      fireEvent.change(screen.getByLabelText('Select minute'), {target: {value: 55}})
+      fireEvent.change(screen.getByLabelText('Select time'), {target: {value: '10:55'}})
+      fireEvent.blur(screen.getByLabelText('Select time'))
       expect(mockUpdateRelease).not.toHaveBeenCalled()
 
       // Close the popup and check if the release is updated

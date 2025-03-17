@@ -13,7 +13,7 @@ import {
   debug,
   dirIsEmptyOrNonExistent,
   getInstalledSanityVersion,
-  getOrCreateCoreApplication,
+  getOrCreateApplication,
   getOrCreateUserApplicationFromConfig,
   type UserApplication,
 } from '../deploy/helpers'
@@ -36,8 +36,8 @@ export default async function deployAppAction(
   const installedSanityVersion = await getInstalledSanityVersion()
   const appId =
     cliConfig &&
-    '__experimental_coreAppConfiguration' in cliConfig &&
-    cliConfig.__experimental_coreAppConfiguration?.appId
+    '__experimental_appConfiguration' in cliConfig &&
+    cliConfig.__experimental_appConfiguration?.appId
 
   const client = apiClient({
     requireUser: true,
@@ -83,7 +83,7 @@ export default async function deployAppAction(
     if (appId) {
       userApplication = await getOrCreateUserApplicationFromConfig({...configParams, appId})
     } else {
-      userApplication = await getOrCreateCoreApplication(configParams)
+      userApplication = await getOrCreateApplication(configParams)
     }
   } catch (err) {
     if (err.message) {
@@ -134,7 +134,7 @@ export default async function deployAppAction(
       version: installedSanityVersion,
       isAutoUpdating,
       tarball,
-      isCoreApp: true,
+      isApp: true,
     })
 
     spinner.succeed()
@@ -144,7 +144,7 @@ export default async function deployAppAction(
 
     if (!appId) {
       output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
-      output.print(`to __experimental_coreAppConfiguration in sanity.cli.js or sanity.cli.ts`)
+      output.print(`to __experimental_appConfiguration in sanity.cli.js or sanity.cli.ts`)
       output.print(`to avoid prompting on next deploy.`)
     }
   } catch (err) {

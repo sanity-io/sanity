@@ -13,7 +13,7 @@ import {
   createDeployment,
   deleteUserApplication,
   dirIsEmptyOrNonExistent,
-  getOrCreateCoreApplication,
+  getOrCreateApplication,
   getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
 } from '../helpers'
@@ -405,7 +405,7 @@ describe('checkDir', () => {
   })
 })
 
-describe('getOrCreateCoreApplication', () => {
+describe('getOrCreateApplication', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -415,17 +415,17 @@ describe('getOrCreateCoreApplication', () => {
     prompt: mockPrompt,
     cliConfig: {
       // eslint-disable-next-line camelcase
-      __experimental_coreAppConfiguration: {
+      __experimental_appConfiguration: {
         organizationId: 'test-org',
       },
     },
   }
 
-  it('returns an existing core application when selected from the list', async () => {
+  it('returns an existing application when selected from the list', async () => {
     const existingApp = {
-      id: 'core-app-1',
+      id: 'app-1',
       appHost: 'test-org-abc123',
-      title: 'Existing Core App',
+      title: 'Existing App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -436,7 +436,7 @@ describe('getOrCreateCoreApplication', () => {
       return Promise.resolve(choices[2].value)
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -452,18 +452,18 @@ describe('getOrCreateCoreApplication', () => {
         choices: expect.arrayContaining([
           expect.objectContaining({name: 'Create new deployed application'}),
           expect.anything(), // Separator
-          expect.objectContaining({name: 'Existing Core App'}),
+          expect.objectContaining({name: 'Existing App'}),
         ]),
       }),
     )
     expect(result).toEqual(existingApp)
   })
 
-  it('creates a new core application when no existing apps are found', async () => {
+  it('creates a new application when no existing apps are found', async () => {
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -472,14 +472,14 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(async ({body, query}) => {
       expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
       expect(body).toMatchObject({
-        title: 'New Core App',
+        title: 'New App',
         type: 'coreApp',
         urlType: 'internal',
       })
@@ -487,7 +487,7 @@ describe('getOrCreateCoreApplication', () => {
       return newApp
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -502,18 +502,18 @@ describe('getOrCreateCoreApplication', () => {
     expect(result).toEqual(newApp)
   })
 
-  it('creates a new core application when selected from the list', async () => {
+  it('creates a new application when selected from the list', async () => {
     const existingApp = {
-      id: 'core-app-1',
+      id: 'app-1',
       appHost: 'test-org-abc123',
-      title: 'Existing Core App',
+      title: 'Existing App',
       type: 'coreApp',
       urlType: 'internal',
     }
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -527,14 +527,14 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(async ({body, query}) => {
       expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
       expect(body).toMatchObject({
-        title: 'New Core App',
+        title: 'New App',
         type: 'coreApp',
         urlType: 'internal',
       })
@@ -542,7 +542,7 @@ describe('getOrCreateCoreApplication', () => {
       return newApp
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -553,9 +553,9 @@ describe('getOrCreateCoreApplication', () => {
 
   it('retries with a new appHost if creation fails with 409', async () => {
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -564,7 +564,7 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock first creation attempt failing
@@ -576,7 +576,7 @@ describe('getOrCreateCoreApplication', () => {
     // Mock second creation attempt succeeding
     mockClientRequest.mockResolvedValueOnce(newApp)
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -601,7 +601,7 @@ describe('getOrCreateCoreApplication', () => {
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(() =>
       Promise.resolve({
-        id: 'new-core-app',
+        id: 'new-app',
         appHost: 'test-org-xyz789',
         title: 'Valid Title',
         type: 'coreApp',
@@ -609,7 +609,7 @@ describe('getOrCreateCoreApplication', () => {
       }),
     )
 
-    await getOrCreateCoreApplication({
+    await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,

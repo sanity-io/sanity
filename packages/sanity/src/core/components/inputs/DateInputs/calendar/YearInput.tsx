@@ -21,6 +21,7 @@ export const YearInput = (
 
   return (
     <LazyTextInput
+      data-testid="date-input"
       {...restProps}
       fontSize={1}
       onChange={handleChange}
