@@ -556,7 +556,14 @@ export function VisionGui(props: VisionGuiProps) {
   }, [perspectiveStack])
 
   return (
-    <Root direction="column" height="fill" ref={visionRootRef} sizing="border" overflow="hidden">
+    <Root
+      direction="column"
+      height="fill"
+      ref={visionRootRef}
+      sizing="border"
+      overflow="hidden"
+      data-testid="vision-root"
+    >
       <VisionGuiHeader
         apiVersion={apiVersion}
         customApiVersion={customApiVersion}
@@ -602,7 +609,7 @@ export function VisionGui(props: VisionGuiProps) {
               maxSize={paneSizeOptions.maxSize}
               primary="first"
             >
-              <InputContainer display="flex">
+              <InputContainer display="flex" data-testid="vision-query-editor">
                 <Box flex={1}>
                   <InputBackgroundContainerLeft>
                     <Flex>

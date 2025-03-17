@@ -51,7 +51,7 @@ export function VisionGuiResult({
   const csvUrl = hasResult ? getCsvBlobUrl(queryResult) : ''
 
   return (
-    <ResultOuterContainer direction="column">
+    <ResultOuterContainer direction="column" data-testid="vision-result">
       <ResultInnerContainer flex={1}>
         <ResultContainer
           flex={1}

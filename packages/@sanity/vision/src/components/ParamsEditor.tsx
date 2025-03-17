@@ -50,7 +50,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
   return (
-    <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
+    <Card flex={1} tone={hasValidParams ? 'default' : 'critical'} data-testid="params-editor">
       <InputBackgroundContainerLeft>
         <Flex>
           <StyledLabel muted>{t('params.label')}</StyledLabel>

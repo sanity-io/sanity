@@ -115,6 +115,7 @@ export function VisionGuiHeader({
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
             </Card>
             <Select
+              data-testid="api-version-selector"
               value={customApiVersion === false ? apiVersion : 'other'}
               onChange={onChangeApiVersion}
             >
