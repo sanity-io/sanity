@@ -29,6 +29,11 @@ import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user'
 
 /**
+ * Latencies below this value will not be logged
+ */
+const IGNORE_LATENCY_BELOW_MS = 1000
+
+/**
  * @hidden
  * @beta */
 export function useUserStore(): UserStore {
@@ -158,7 +163,7 @@ export function useDocumentStore(): DocumentStore {
 
   const handleReportLatency = useCallback(
     (event: LatencyReportEvent) => {
-      if (event.latencyMs > 1000) {
+      if (event.latencyMs > IGNORE_LATENCY_BELOW_MS) {
         telemetry.log(HighListenerLatencyOccurred, {
           latency: event.latencyMs,
           shard: event.shard,
