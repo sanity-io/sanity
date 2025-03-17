@@ -1,106 +1,157 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
+import uniq from 'lodash/uniq'
 
+import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type ManifestWorkspaceFile} from '../../../manifest/manifestTypes'
+import {type SchemaStoreContext} from './schemaStoreTypes'
+import {createManifestExtractor, isManifestExtractSatisfied} from './utils/mainfestExtractor'
+import {createManifestReader} from './utils/manifestReader'
+import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
-  getManifestPath,
-  readManifest,
-  SCHEMA_STORE_ENABLED,
-  throwIfProjectIdMismatch,
-} from './storeSchemasAction'
+  assetIdsMatchesWorkspaces,
+  filterLogReadProjectIdMismatch,
+  parseDeleteSchemasConfig,
+  type StoreSchemaCommonFlags,
+} from './utils/schemaStoreValidation'
+import {getDatasetsOutString, getStringArrayOutString} from './utils/storeSchemaOutStrings'
 
-export interface DeleteSchemaFlags {
-  'ids': string
-  'manifest-dir': string
-  'dataset': string
+export interface DeleteSchemaFlags extends StoreSchemaCommonFlags {
+  ids?: string
+  dataset?: string
 }
 
-export default async function deleteSchemaAction(
-  args: CliCommandArguments<DeleteSchemaFlags>,
+interface DeleteResult {
+  workspace: ManifestWorkspaceFile
+  schemaId: string
+  deleted: boolean
+}
+
+class DeleteIdError extends Error {
+  public id: string
+  public workspace: ManifestWorkspaceFile
+  constructor(id: string, workspace: ManifestWorkspaceFile, options?: ErrorOptions) {
+    super((options?.cause as {message?: string})?.message, options)
+    this.name = 'DeleteIdError'
+    this.id = id
+    this.workspace = workspace
+  }
+}
+
+export default function deleteSchemasActionForCommand(
+  flags: DeleteSchemaFlags,
   context: CliCommandContext,
-): Promise<void> {
-  if (!SCHEMA_STORE_ENABLED) {
-    return
+): Promise<'success' | 'failure'> {
+  return deleteSchemaAction(flags, {
+    ...context,
+    manifestExtractor: createManifestExtractor(context),
+  })
+}
+
+/**
+ * Deletes all stored schemas matching --ids in workspace datasets.
+ *
+ * Workspaces are determined by on-disk manifest file – not directly from sanity.config.
+ * All schema store actions require a manifest to exist, and can optionally regenerate the file with --extract-manifest.
+ */
+export async function deleteSchemaAction(
+  flags: DeleteSchemaFlags,
+  context: SchemaStoreContext,
+): Promise<'success' | 'failure'> {
+  const {ids, dataset, extractManifest, manifestDir, verbose} = parseDeleteSchemasConfig(
+    flags,
+    context,
+  )
+  const {output, apiClient, jsonReader, manifestExtractor} = context
+
+  // prettier-ignore
+  if (!(await isManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
+    return 'failure'
   }
-  const flags = args.extOptions
-  if (typeof flags.dataset === 'boolean') throw new Error('Dataset is empty')
-  if (typeof flags['manifest-dir'] === 'boolean') throw new Error('Manifest directory is empty')
-  if (typeof flags.ids !== 'string') throw new Error('--ids is required')
 
-  const {apiClient, output} = context
+  const {client, projectId} = createSchemaApiClient(apiClient)
+  const manifest = await createManifestReader({manifestDir, output, jsonReader}).getManifest()
 
-  //split ids by comma
-  const schemaIds = flags.ids.split(',').map((id) => id.trim())
+  const workspaces = manifest.workspaces
+    .filter((workspace) => !dataset || workspace.dataset === dataset)
+    .filter((workspace) => filterLogReadProjectIdMismatch(workspace, projectId, output))
 
-  const client = apiClient({
-    requireUser: true,
-    requireProject: true,
-  }).withConfig({apiVersion: 'v2024-08-01'})
-
-  const projectId = client.config().projectId
-
-  if (!projectId) {
-    output.error('Project ID must be defined.')
-    return
-  }
-
-  const manifestDir = flags['manifest-dir']
-  const manifestPath = getManifestPath(context, manifestDir)
-  const manifest = await readManifest(manifestPath, context)
+  assetIdsMatchesWorkspaces(
+    ids.map((id) => id.schemaId),
+    workspaces,
+  )
 
   const results = await Promise.allSettled(
-    manifest.workspaces.flatMap((workspace: ManifestWorkspaceFile) => {
-      if (flags.dataset && workspace.dataset !== flags.dataset) {
-        return []
-      }
-      return schemaIds.map(async (schemaId) => {
-        const idWorkspace = schemaId.split('.').at(-1)
-        if (idWorkspace !== workspace.name && !flags.dataset) {
-          return false
-        }
-        try {
-          throwIfProjectIdMismatch(workspace, projectId)
-          const deletedSchema = await client
-            .withConfig({
-              dataset: flags.dataset || workspace.dataset,
-              projectId: workspace.projectId,
-              useCdn: false,
-            })
-            .delete(schemaId)
-
-          if (!deletedSchema.results.length) {
-            output.error(`Schema ${schemaId} not found in workspace: ${workspace.name}`)
-            return false
+    workspaces.flatMap((workspace: ManifestWorkspaceFile) => {
+      return ids
+        .filter(({workspace: idWorkspace}) => idWorkspace === workspace.name)
+        .map(async ({schemaId}): Promise<DeleteResult> => {
+          try {
+            const deletedSchema = await client
+              .withConfig({dataset: workspace.dataset})
+              .delete(schemaId)
+            return {workspace, schemaId, deleted: deletedSchema.results.length}
+          } catch (err) {
+            throw new DeleteIdError(schemaId, workspace, {cause: err})
           }
-
-          output.success(`Schema ${schemaId} deleted from workspace: ${workspace.name}`)
-          return true
-        } catch (err) {
-          output.error(
-            `Failed to delete schema ${schemaId} from workspace ${workspace.name}:\n ${err.message}`,
-          )
-          throw err
-        }
-      })
+        })
     }),
   )
 
-  // Log errors and collect results
-  const deletedCount = results
-    .map((result, index) => {
-      if (result.status === 'rejected') {
-        const schemaId = schemaIds[index]
-        output.error(chalk.red(`Failed to delete schema '${schemaId}':\n${result.reason.message}`))
-        return false
-      }
-      return result.value
-    })
-    .filter(Boolean).length
+  const deletedIds = results
+    .filter((r): r is PromiseFulfilledResult<DeleteResult> => r.status === 'fulfilled')
+    .filter((r) => r.value.deleted)
+    .map((r) => r.value.schemaId)
 
-  if (deletedCount === 0) {
-    output.error('No schemas were deleted')
-    return
+  const notFound = uniq(
+    results
+      .filter((r): r is PromiseFulfilledResult<DeleteResult> => r.status === 'fulfilled')
+      .filter((r) => !r.value.deleted)
+      .map((r) => r.value.schemaId),
+  )
+
+  const deleteFailureIds = results
+    .filter((r) => r.status === 'rejected')
+    .map((result) => {
+      const error = result.reason
+      if (error instanceof DeleteIdError) {
+        output.error(
+          chalk.red(
+            `Failed to delete schema "${error.id}" in dataset "${error.workspace.dataset}":\n${error.message}`,
+          ),
+        )
+        if (verbose) output.error(error)
+        return error.id
+      }
+      //hubris inc: given the try-catch wrapping the full promise "this should never happen"
+      throw error
+    })
+
+  const success = deletedIds.length === ids.length
+  if (success) {
+    output.success(`Successfully deleted ${deletedIds.length}/${ids.length} schemas`)
+  } else {
+    const datasets = uniq(workspaces.map((w) => w.dataset))
+    output.error(
+      [
+        `Deleted ${deletedIds.length}/${ids.length} schemas.`,
+        deletedIds.length
+          ? `Successfully deleted ids:\n  ${getStringArrayOutString(deletedIds)}`
+          : undefined,
+        notFound.length
+          ? `Ids not found in ${getDatasetsOutString(datasets)}:\n  ${getStringArrayOutString(notFound)}`
+          : undefined,
+        ...(deleteFailureIds.length
+          ? [
+              `Failed to delete ids:\n  ${getStringArrayOutString(deleteFailureIds)}`,
+              'Check logs for errors.',
+            ]
+          : []),
+      ]
+        .filter(isDefined)
+        .join('\n'),
+    )
   }
 
-  output.success(`Successfully deleted ${deletedCount} schemas`)
+  return success ? 'success' : 'failure'
 }

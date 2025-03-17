@@ -1,24 +1,29 @@
-import {type CliCommandArguments, type CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
 
-import {type StoreManifestSchemasFlags} from '../../actions/schema/storeSchemasAction'
-
-const description = 'Store schemas into workspace datasets.'
+const description = 'Store schema documents into workspace datasets.'
 
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
+This operation requires a manifest file to exist: use --extract-manifest or run "sanity manifest extract" first.
+
 Options:
   --workspace <workspace_name> store schema for a specific workspace
-  --manifest-dir <directory> directory containing your manifest file if it's not in the default location
-  --id-prefix <prefix> add a prefix to the schema ID
+  --id-prefix <prefix> add a prefix to the schema id
   --schema-required fail if schema file is not found
+  --manifest-dir <directory> directory containing manifest file (default: ./dist/static)
+  --extract-manifest regenerates manifest file based on sanity.config; equivalent of running "sanity manifest extract" first
   --verbose print detailed information during store
 
 Examples
-  # if no options are provided all workspace schemas will be stored
+  # Store all workspace schemas
   sanity schema store
+
   # Store the schema for only the workspace 'default'
   sanity schema store --workspace default
+
+  # Ensure manifest file is up-to-date
+  sanity schema store --extract-manifest
 `
 
 const storeSchemaCommand = {
@@ -30,18 +35,15 @@ const storeSchemaCommand = {
   action: async (args, context) => {
     const mod = await import('../../actions/schema/storeSchemasAction')
 
-    const extendedArgs = {
-      ...args,
-      extOptions: {
+    const result = await mod.default(
+      {
         ...args.extOptions,
         'schema-required': true,
       },
-    }
-
-    return mod.default(
-      extendedArgs as unknown as CliCommandArguments<StoreManifestSchemasFlags>,
       context,
     )
+    if (result === 'failure') process.exit(1)
+    return result
   },
 } satisfies CliCommandDefinition
 

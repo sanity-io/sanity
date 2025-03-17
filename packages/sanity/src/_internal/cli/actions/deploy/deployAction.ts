@@ -7,8 +7,9 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
-import {extractManifestSafe} from '../manifest/extractManifestAction'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
 import storeManifestSchemas from '../schema/storeSchemasAction'
+import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {
   checkDir,
   createDeployment,
@@ -100,7 +101,6 @@ export default async function deployStudioAction(
   }
 
   // Always build the project, unless --no-build is passed
-  let extractManifestError: Error | undefined
   const shouldBuild = flags.build
   if (shouldBuild) {
     const buildArgs = {
@@ -113,34 +113,20 @@ export default async function deployStudioAction(
     if (!didCompile) {
       return
     }
+  }
 
-    extractManifestError = await extractManifestSafe(
+  if (SCHEMA_STORE_FEATURE_ENABLED) {
+    await storeManifestSchemas(
       {
-        ...buildArgs,
-        extOptions: {},
-        extraArguments: [],
+        'extract-manifest': shouldBuild,
+        'manifest-dir': `${sourceDir}/static`,
+        'schema-required': flags['schema-required'],
+        'verbose': flags.verbose,
       },
       context,
     )
-
-    if (flags['schema-required'] && extractManifestError) {
-      output.error(`Schema extraction error: ${extractManifestError.message}`)
-      throw extractManifestError
-    }
-  }
-
-  const storeManifestSchemasArgs = {
-    ...args,
-    extOptions: {
-      'path': `${sourceDir}/static`,
-      'schema-required': flags['schema-required'],
-      'verbose': flags.verbose,
-    },
-    extraArguments: [],
-  }
-
-  if (!extractManifestError) {
-    await storeManifestSchemas(storeManifestSchemasArgs, context)
+  } else if (shouldBuild) {
+    await createManifestExtractor(context)(`${sourceDir}/static`)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content

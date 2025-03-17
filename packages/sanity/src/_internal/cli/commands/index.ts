@@ -1,5 +1,6 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../actions/schema/schemaStoreConstants'
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -113,12 +114,12 @@ const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   extractManifestCommand,
 ]
 
-const internalSchemaCommands = [fetchSchemaCommand, storeSchemaCommand, deleteSchemaCommand]
+const featureToggledSchemaCommands = [fetchSchemaCommand, storeSchemaCommand, deleteSchemaCommand]
 
 // Include experimental commands only when the feature flag is enabled
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   ...baseCommands,
-  ...(SCHEMA_STORE_ENABLED ? internalSchemaCommands : []),
+  ...(SCHEMA_STORE_FEATURE_ENABLED ? featureToggledSchemaCommands : []),
 ]
 
 /**
