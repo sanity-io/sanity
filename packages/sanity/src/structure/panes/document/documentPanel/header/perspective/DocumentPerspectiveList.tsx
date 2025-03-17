@@ -31,6 +31,9 @@ import {useDocumentPane} from '../../../useDocumentPane'
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
 
+  if (release.state === 'archived') {
+    return <Text size={1}>{t('release.chip.tooltip.archived')}</Text>
+  }
   if (release.metadata.releaseType === 'asap') {
     return <Text size={1}>{t('release.type.asap')}</Text>
   }
