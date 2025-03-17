@@ -123,4 +123,19 @@ describe('ReleaseDocumentPreview', () => {
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'rActive'])
   })
+
+  it('creates link with release ID perspective when release state is not published', async () => {
+    const {container} = await renderTest({
+      documentId: 'doc123',
+      documentTypeName: 'post',
+      releaseId: activeScheduledRelease._id,
+      previewValues: mockPreviewValues,
+      isLoading: false,
+      releaseState: 'archived',
+    })
+
+    const link = container.querySelector('a')
+    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    expect(searchParams).toBeNull()
+  })
 })

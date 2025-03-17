@@ -23,6 +23,9 @@ interface ReleaseDocumentPreviewProps {
   layout?: PreviewLayoutKey
 }
 
+const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
+  releaseState === 'archived' || releaseState === 'archiving' || releaseState === 'unarchiving'
+
 export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
@@ -71,12 +74,23 @@ export function ReleaseDocumentPreview({
               type: documentTypeName,
               ...intentParams,
             }}
-            searchParams={releaseState === 'published' ? [['perspective', 'published']] : undefined}
+            searchParams={
+              isArchivedRelease(releaseState)
+                ? undefined
+                : [
+                    [
+                      'perspective',
+                      releaseState === 'published'
+                        ? 'published'
+                        : getReleaseIdFromReleaseDocumentId(releaseId),
+                    ],
+                  ]
+            }
             ref={ref}
           />
         )
       }),
-    [documentId, documentTypeName, intentParams, releaseState],
+    [documentId, documentTypeName, intentParams, releaseState, releaseId],
   )
 
   const previewPresence = useMemo(
