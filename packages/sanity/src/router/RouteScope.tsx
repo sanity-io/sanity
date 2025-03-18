@@ -4,9 +4,9 @@ import {RouterContext} from 'sanity/_singletons'
 
 import {
   isNavigateOptions,
-  type Navigate,
   type NavigateOptions,
   type NextStateOrOptions,
+  type RouterContextValue,
   type RouterState,
 } from './types'
 import {useRouter} from './useRouter'
@@ -103,7 +103,7 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
     [parent_resolvePathFromState, resolveNextParentState],
   )
 
-  const navigate: Navigate = useCallback(
+  const navigate: RouterContextValue['navigate'] = useCallback(
     (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
       // Check if it's the options-only pattern
       if (isNavigateOptions(nextStateOrOptions) && !maybeOptions) {
@@ -131,7 +131,7 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
     [parent_navigate, resolveNextParentState],
   )
 
-  const childRouter = useMemo(() => {
+  const childRouter: RouterContextValue = useMemo(() => {
     const parentState = parentRouter.state
     const childState = {...(parentState[scope] || {})} as RouterState
     if (__unsafe_disableScopedSearchParams) {

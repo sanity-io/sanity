@@ -173,7 +173,7 @@ export interface NavigateBaseOptions {
  * @public
  */
 export interface NavigateOptions extends NavigateBaseOptions {
-  stickyParams?: Record<string, string | undefined>
+  stickyParams?: Record<string, string | undefined | null>
 }
 
 /**
@@ -181,16 +181,6 @@ export interface NavigateOptions extends NavigateBaseOptions {
  */
 export interface NavigateOptionsWithState extends NavigateOptions {
   state?: RouterState | null
-}
-
-/**
- * @public
- */
-export type Navigate = {
-  // State-first version - for when you want to navigate to a new state
-  (nextState: RouterState, options?: NavigateOptions): void
-  // Options version - for staying where you are (omit state) or going to root (state: null)
-  (options: NavigateOptions & {state?: RouterState | null}): void
 }
 
 /**
@@ -251,8 +241,18 @@ export interface RouterContextValue {
    * ```tsx
    * router.navigate({stickyParams: {baz: 'qux'}})
    * ```
+   *
+   * @example Navigate with state and sticky params
+   * ```tsx
+   * router.navigate({stickyParams: {baz: 'qux'}, state: null})
+   * ```
    */
-  navigate: Navigate
+  navigate: {
+    // State-first version - for when you want to navigate to a new state
+    (nextState: RouterState, options?: NavigateOptions): void
+    // Options version - for staying where you are (omit state) or going to root (state: null)
+    (options: NavigateOptions & {state?: RouterState | null}): void
+  }
 
   /**
    * Navigates to the given intent.
@@ -272,7 +272,7 @@ export interface RouterContextValue {
   /**
    * The current router state. See {@link RouterState}
    */
-  stickyParams: Record<string, string | undefined>
+  stickyParams: Record<string, string | undefined | null>
 }
 
 /**

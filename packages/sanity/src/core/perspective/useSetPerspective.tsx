@@ -12,7 +12,7 @@ export function useSetPerspective() {
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
       router.navigate({
         stickyParams: {
-          excludedPerspectives: '',
+          excludedPerspectives: null,
           perspective: releaseId === 'drafts' ? '' : releaseId,
         },
       })

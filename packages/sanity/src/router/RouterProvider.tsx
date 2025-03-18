@@ -6,7 +6,6 @@ import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
   isNavigateOptions,
-  type Navigate,
   type NavigateBaseOptions,
   type NavigateOptions,
   type NextStateOrOptions,
@@ -122,7 +121,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
     [routerProp, state],
   )
 
-  const navigate: Navigate = useCallback(
+  const navigate: RouterContextValue['navigate'] = useCallback(
     (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
       // Determine options and state based on input pattern
       const isOptionsOnlyPattern = isNavigateOptions(nextStateOrOptions) && !maybeOptions
@@ -214,7 +213,7 @@ function replaceStickyParam(
 
 function mergeStickyParams(
   currentParams: SearchParam[],
-  newParams?: Record<string, string | undefined>,
+  newParams?: Record<string, string | undefined | null>,
 ): SearchParam[] {
   if (!newParams) return currentParams
 
@@ -222,11 +221,19 @@ function mergeStickyParams(
   const filteredParams = currentParams.filter(([key]) => !Object.hasOwn(newParams, key))
 
   // Type guard function to filter out undefined values
-  const isValidSearchParam = (entry: [string, string | undefined]): entry is [string, string] =>
-    entry[1] !== undefined
+  const isValidSearchParam = (
+    entry: [string, string | undefined | null],
+  ): entry is [string, string] => entry[1] !== undefined
+
+  const convertNullSearchParam = (entry: [string, string | null]): [string, string] => [
+    entry[0],
+    entry[1] === null ? '' : entry[1],
+  ]
 
   // Convert newParams into the correct SearchParam format
-  const newEntries = Object.entries(newParams).filter(isValidSearchParam)
+  const newEntries = Object.entries(newParams)
+    .filter(isValidSearchParam)
+    .map(convertNullSearchParam)
 
   return [...filteredParams, ...newEntries]
 }
@@ -251,7 +258,7 @@ function getStateFromOptions(
   return null
 }
 
-function validateStickyParams(nextStickyParams: Record<string, string | undefined>) {
+function validateStickyParams(nextStickyParams: Record<string, string | undefined | null>) {
   const hasInvalidParam = Object.keys(nextStickyParams).some(
     (param) => !STICKY_PARAMS.includes(param),
   )

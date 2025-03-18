@@ -284,7 +284,7 @@ export function ReleasesOverview() {
         {releaseId: createdReleaseId},
         {
           stickyParams: {
-            excludedPerspectives: '',
+            excludedPerspectives: null,
             perspective: createdReleaseId,
           },
         },
