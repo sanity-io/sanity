@@ -19,8 +19,11 @@ import {type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {type NotArchivedRelease} from '../../util/isNotarchivedRelease'
-import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {
+  getPublishDateFromRelease,
+  isReleaseScheduledOrScheduling,
+  type NotArchivedRelease,
+} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
