@@ -150,7 +150,7 @@ export const ReleaseMenu = ({
   ])
 
   const deleteMenuItem = useMemo(() => {
-    if (release.state === 'active') return null
+    if (release.state !== 'archived' && release.state !== 'published') return null
 
     return (
       <MenuItem
