@@ -77,6 +77,9 @@ const sharedSettings = definePlugin({
     treeArrayEditing: {
       enabled: true,
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   document: {
     actions: documentActions,
@@ -290,11 +293,6 @@ export default defineConfig([
     apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
-    },
-    beta: {
-      mediaLibrary: {
-        enabled: true,
-      },
     },
   },
   {
