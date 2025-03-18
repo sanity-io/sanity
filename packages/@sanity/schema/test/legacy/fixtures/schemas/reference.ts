@@ -119,6 +119,22 @@ export default {
             },
           ],
         },
+        {
+          name: 'pet6',
+          type: 'globalDocumentReference',
+          resourceType: 'dataset',
+          resourceId: 'myProject.myDataset',
+          to: [
+            {
+              type: 'pet',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
+        },
       ],
     },
     {

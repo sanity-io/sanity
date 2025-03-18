@@ -928,7 +928,7 @@ describe('Extract schema test', () => {
     expect(extracted).toMatchSnapshot()
   })
 
-  test('will ignore global document reference types at the moment', () => {
+  test('will extract global document reference types', () => {
     const schema = createSchema(
       {
         name: 'test',
