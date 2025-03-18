@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {
+  isGlobalDocumentReference,
   isReference,
   type SanityDocument,
   type Schema,
@@ -57,7 +58,7 @@ function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
     obj,
     (acc, node) => {
-      if (isReference(node)) {
+      if (isReference(node) && !isGlobalDocumentReference(node)) {
         acc.add(node._ref)
       }
       return acc

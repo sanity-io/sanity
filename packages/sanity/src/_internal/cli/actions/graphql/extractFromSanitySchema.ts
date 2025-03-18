@@ -51,6 +51,18 @@ function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): S
       ]),
     }).get('__placeholder__')
   }
+  if (typeName === 'globalDocumentReference') {
+    return Schema.compile({
+      types: (baseSchema._original?.types || []).concat([
+        {
+          name: `__placeholder__`,
+          type: 'globalDocumentReference',
+          // Just needs _something_ to refer to, doesn't matter what
+          to: [{type: 'sanity.imageAsset'}],
+        },
+      ]),
+    }).get('__placeholder__')
+  }
 
   return Schema.compile({
     types: (baseSchema._original?.types || []).concat([
