@@ -94,9 +94,7 @@ test.describe('Vision', () => {
     // The query executes automatically when a url is pasted, so it should have results
     // Assert that the results are visible
     // It should find the book document assert that by checking the title and the id
-    await expect(resultRegion.getByText(bookTitle)).toBeVisible({
-      timeout: 10_000,
-    })
+    await expect(resultRegion.getByText(bookTitle)).toBeVisible()
     await expect(resultRegion.getByText(bookDocument._id)).toBeVisible()
   })
 

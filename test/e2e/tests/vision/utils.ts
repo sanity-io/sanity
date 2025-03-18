@@ -1,4 +1,4 @@
-import {type Page} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 
 export function encodeQueryString(
   query: string,
@@ -22,16 +22,14 @@ export function encodeQueryString(
 export const openVisionTool = async (page: Page) => {
   await page.goto('/test/vision')
   // Wait for vision to be visible
-  await page.waitForSelector('[data-testid="vision-root"]', {
-    timeout: 30_000,
-  })
+  await expect(page.getByTestId('vision-root')).toBeVisible()
 }
 
 export const getVisionRegions = async (page: Page) => {
-  const queryEditorRegion = page.locator('[data-testid="vision-query-editor"]')
+  const queryEditorRegion = page.getByTestId('vision-query-editor')
   const queryEditor = queryEditorRegion.locator('.cm-content')
-  const paramsRegion = page.locator('[data-testid="params-editor"]')
+  const paramsRegion = page.getByTestId('params-editor')
   const paramsEditor = paramsRegion.locator('.cm-content')
-  const resultRegion = page.locator('[data-testid="vision-result"]')
+  const resultRegion = page.getByTestId('vision-result')
   return {queryEditorRegion, queryEditor, paramsRegion, paramsEditor, resultRegion}
 }
