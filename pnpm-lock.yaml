@@ -718,8 +718,8 @@ importers:
         specifier: ^0.7.7
         version: 0.7.9(react@19.0.0)
       '@sanity/template-validator':
-        specifier: ^2.4.0
-        version: 2.4.0(@types/babel__core@7.20.5)(@types/node@22.13.1)(debug@4.4.0)(typescript@5.7.3)
+        specifier: ^2.4.3
+        version: 2.4.3
       '@sanity/util':
         specifier: 3.79.0
         version: link:../util
@@ -4688,8 +4688,8 @@ packages:
     peerDependencies:
       react: ^18.2 || >=19.0.0-rc
 
-  '@sanity/template-validator@2.4.0':
-    resolution: {integrity: sha512-gkQ4hPbfad7CtLrl5ZFReqKbFEBf9ijsyqNJaKny53QTMlyGgwL0JKxiM+bwAiU0uOUT0vSqdzSAxDJNF0BDpg==}
+  '@sanity/template-validator@2.4.3':
+    resolution: {integrity: sha512-pce+x6opIjiL5jg4bJba6x0+mCT7pFDCwOjYcu5ZOmaQ/mWxypjjPtzWp3+QU6mfCP/bb9z4zKj+PSGIT3q/zw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -15316,19 +15316,11 @@ snapshots:
       rxjs: 7.8.2
       typeid-js: 0.3.0
 
-  '@sanity/template-validator@2.4.0(@types/babel__core@7.20.5)(@types/node@22.13.1)(debug@4.4.0)(typescript@5.7.3)':
+  '@sanity/template-validator@2.4.3':
     dependencies:
       '@actions/core': 1.11.1
       '@actions/github': 6.0.0
-      '@sanity/pkg-utils': 6.13.4(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.0.0-beta-3229e95-20250315)(debug@4.4.0)(typescript@5.7.3)
       yaml: 2.7.0
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - babel-plugin-react-compiler
-      - debug
-      - supports-color
-      - typescript
 
   '@sanity/test@0.0.1-alpha.1':
     dependencies:
