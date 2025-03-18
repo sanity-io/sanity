@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.79.0",
+  "version": "3.80.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^1.1.13",
-    "@portabletext/editor": "^1.39.1",
+    "@portabletext/editor": "^1.40.2",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.1.0",
     "@sanity/client": "^6.28.3",

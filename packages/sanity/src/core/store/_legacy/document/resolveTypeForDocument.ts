@@ -1,6 +1,5 @@
 import {type SanityClient} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
-import {map} from 'rxjs/operators'
 
 import {getPublishedId} from '../../../util'
 
@@ -14,15 +13,13 @@ export function resolveTypeForDocument(
     return of(specifiedType)
   }
 
-  const query = '*[sanity::versionOf($publishedId)]._type'
+  const query = '*[sanity::versionOf($publishedId)][0]._type'
 
-  return client.observable
-    .fetch(
-      query,
-      {publishedId: getPublishedId(id)},
-      {
-        tag: 'document.resolve-type',
-      },
-    )
-    .pipe(map((types) => types[0]))
+  return client.observable.fetch(
+    query,
+    {publishedId: getPublishedId(id)},
+    {
+      tag: 'document.resolve-type',
+    },
+  )
 }

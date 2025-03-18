@@ -13,6 +13,7 @@ export const STANDARD_INPUT_TYPES = [
   'stringsTest',
   'textsTest',
   'urlsTest',
+  'globalDocumentReferenceTest',
 ]
 
 export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [

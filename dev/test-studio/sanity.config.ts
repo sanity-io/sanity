@@ -268,6 +268,18 @@ export default defineConfig([
     },
   },
   {
+    name: 'playground-staging',
+    title: 'playground (Staging)',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/playground-staging',
+    apiHost: 'https://api.sanity.work',
+    auth: {
+      loginMethod: 'token',
+    },
+  },
+  {
     name: 'custom-components',
     title: 'Test Studio',
     subtitle: 'Components API playground',

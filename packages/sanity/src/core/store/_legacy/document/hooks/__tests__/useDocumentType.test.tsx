@@ -31,7 +31,7 @@ test('should return passed document type if already resolved', async () => {
 
 test('should resolve document type from API on undefined type (with loading state)', async () => {
   const client = createMockSanityClient()
-  const response = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
+  const response = defer(() => of('book').pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = vi.fn(() => response)
 
@@ -75,8 +75,8 @@ test('should return correct document type on document type transition', async ()
 test('should return correct document type on document ID transition', async () => {
   const client = createMockSanityClient()
 
-  const responseGrrm = defer(() => of(['author']).pipe(observeOn(asyncScheduler)))
-  const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
+  const responseGrrm = defer(() => of('author').pipe(observeOn(asyncScheduler)))
+  const responseGot = defer(() => of('book').pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = (_query, params) =>
     params.publishedId === 'grrm' ? responseGrrm : responseGot
@@ -102,7 +102,7 @@ test('should return correct document type on document ID transition', async () =
 test('should return correct document type when transitioning from undefined type to specified type', async () => {
   const client = createMockSanityClient()
 
-  const responseGrrm = defer(() => of(['author']).pipe(observeOn(asyncScheduler)))
+  const responseGrrm = defer(() => of('author').pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
@@ -132,7 +132,7 @@ test('should return correct document type when transitioning from undefined type
 test('should return correct document type when transitioning from specified to undefined type', async () => {
   const client = createMockSanityClient()
 
-  const responseGrrm = defer(() => of(['person']).pipe(observeOn(asyncScheduler)))
+  const responseGrrm = defer(() => of('person').pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
@@ -166,7 +166,7 @@ test('should cancel ongoing requests when transitioning document ID', async () =
   const responseDelayedGrrm = defer(() =>
     of(['person']).pipe(observeOn(asyncScheduler), delay(5000), tap(hasResolvedFirst)),
   )
-  const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
+  const responseGot = defer(() => of('book').pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = vi
     .fn<typeof client.observable.fetch>()

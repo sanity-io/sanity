@@ -6,6 +6,7 @@ import common from './validation/types/common'
 import crossDatasetReference from './validation/types/crossDatasetReference'
 import documentVisitor from './validation/types/document'
 import file from './validation/types/file'
+import globalDocumentReference from './validation/types/globalDocumentReference'
 import image from './validation/types/image'
 import object from './validation/types/object'
 import reference from './validation/types/reference'
@@ -22,6 +23,7 @@ const typeVisitors = {
   document: documentVisitor,
   reference: reference,
   crossDatasetReference: crossDatasetReference,
+  globalDocumentReference,
 }
 
 const getNoopVisitor = (visitorContext: any) => (schemaDef: any) => ({
