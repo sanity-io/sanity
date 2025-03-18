@@ -103,6 +103,7 @@ export function TitleDescriptionForm({
       metadata: {
         title: release?.metadata.title,
         description: release?.metadata.description,
+        releaseType: release?.metadata.releaseType,
       },
     } as const
   })

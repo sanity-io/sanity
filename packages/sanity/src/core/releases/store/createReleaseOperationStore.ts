@@ -155,7 +155,10 @@ export function createReleaseOperationsStore(options: {
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
-    await client.createVersion({document: versionDocument, publishedId: getPublishedId(documentId), releaseId}, opts)
+    await client.createVersion(
+      {document: versionDocument, publishedId: getPublishedId(documentId), releaseId},
+      opts,
+    )
   }
 
   const handleDiscardVersion = (releaseId: string, documentId: string, opts?: BaseActionOptions) =>
@@ -171,7 +174,7 @@ export function createReleaseOperationsStore(options: {
     }
 
     return client.unpublishVersion({releaseId, publishedId: getPublishedId(documentId)}, opts)
-}
+  }
 
   const handleRevertRelease = async (
     revertReleaseId: string,
