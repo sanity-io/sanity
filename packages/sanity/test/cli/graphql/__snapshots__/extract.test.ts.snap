@@ -506,6 +506,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract a simple schema
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReference",
         },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "interfaces": [
         "Document",
