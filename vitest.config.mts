@@ -5,6 +5,7 @@ import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   test: {
+    pool: 'vmForks',
     coverage: {
       provider: 'v8',
       reporter: ['html', 'json', 'json-summary'],
