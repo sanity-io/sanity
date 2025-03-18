@@ -81,8 +81,9 @@ test.describe('Vision', () => {
       await getVisionRegions(page)
     await queryEditorRegion.click()
     await queryEditor.focus()
-    // Paste the url into the query editor
-    await page.keyboard.press('Meta+V')
+    // // Paste the url into the query editor
+    await page.keyboard.press('ControlOrMeta+V')
+
     // Assert that the text was correctly inserted
     await expect(queryEditor).toHaveText(query)
 
