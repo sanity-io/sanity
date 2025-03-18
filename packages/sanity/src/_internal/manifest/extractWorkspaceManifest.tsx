@@ -1,3 +1,4 @@
+import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import DOMPurify from 'isomorphic-dompurify'
 import {startCase} from 'lodash-es'
 import {renderToString} from 'react-dom/server'
