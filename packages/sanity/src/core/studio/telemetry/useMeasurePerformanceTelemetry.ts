@@ -52,8 +52,12 @@ export function useMeasurePerformanceTelemetry() {
     [telemetry],
   )
   useEffect(() => {
+    if (!('PerformanceObserver' in globalThis)) {
+      return
+    }
     const observer = new PerformanceObserver(onEvent)
     observer.observe({type: 'event', buffered: true})
+    // eslint-disable-next-line consistent-return
     return () => {
       observer.disconnect()
     }
