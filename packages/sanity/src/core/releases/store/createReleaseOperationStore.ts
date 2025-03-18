@@ -5,7 +5,7 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionId} from '../../util'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
@@ -155,14 +155,23 @@ export function createReleaseOperationsStore(options: {
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
-    await client.createVersion(versionDocument, getPublishedId(documentId), opts)
+    await client.createVersion({document: versionDocument, publishedId: getPublishedId(documentId), releaseId}, opts)
   }
 
   const handleDiscardVersion = (releaseId: string, documentId: string, opts?: BaseActionOptions) =>
-    client.discardVersion(getVersionId(documentId, releaseId), false, opts)
+    client.discardVersion({releaseId, publishedId: getPublishedId(documentId)}, false, opts)
 
-  const handleUnpublishVersion = (documentId: string, opts?: BaseActionOptions) =>
-    client.unpublishVersion(documentId, getPublishedId(documentId), opts)
+  const handleUnpublishVersion = (documentId: string, opts?: BaseActionOptions) => {
+    const releaseId = getVersionFromId(documentId)
+    // in cases where the document is not part of a release, or document is `drafts.`
+    // the releaseId will be undefined
+    // cannot unpublish in this case
+    if (!releaseId) {
+      throw new Error(`Release ID not found for document ${documentId}`)
+    }
+
+    return client.unpublishVersion({releaseId, publishedId: getPublishedId(documentId)}, opts)
+}
 
   const handleRevertRelease = async (
     revertReleaseId: string,
