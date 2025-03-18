@@ -61,7 +61,7 @@
     "@sanity/codegen": "3.79.0",
     "@sanity/runtime-cli": "^1.1.1",
     "@sanity/telemetry": "^0.7.7",
-    "@sanity/template-validator": "^2.4.0",
+    "@sanity/template-validator": "^2.4.3",
     "@sanity/util": "3.79.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
