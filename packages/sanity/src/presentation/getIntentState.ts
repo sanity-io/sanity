@@ -4,11 +4,7 @@ import {encodeJsonParams, type RouterState, type SearchParam} from 'sanity/route
 
 import {type PresentationSearchParams, type PresentationStateParams} from './types'
 
-const preservedSearchParamKeys: Array<keyof PresentationSearchParams> = [
-  'preview',
-  'perspective',
-  'viewport',
-]
+const preservedSearchParamKeys: Array<keyof PresentationSearchParams> = ['preview', 'viewport']
 
 /**
  * @internal
