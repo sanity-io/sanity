@@ -21,9 +21,11 @@ export default defineConfig({
       ),
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
     },
+    typecheck: {
+      enabled: true,
+      // @TODO we have a lot of TS errors to fix in test files before we can remove this line
+      ignoreSourceErrors: true,
+    },
   },
-  plugins: [
-    // @ts-expect-error vite typings error
-    react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}}),
-  ],
+  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}})],
 })
