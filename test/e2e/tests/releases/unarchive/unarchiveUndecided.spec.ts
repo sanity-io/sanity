@@ -82,6 +82,7 @@ test.describe('Unarchive Undecided', () => {
     browserName,
   }) => {
     skipIfBrowser(browserName)
+    test.slow()
     const dataset = sanityClient.config().dataset
     const versionDocumentId = _testContext.getUniqueDocumentId()
 

@@ -11,7 +11,7 @@ export const archiveAndConfirmRelease = async ({page}: {page: Page}) => {
 
   await expect(page.getByTestId('retention-policy-card')).toBeVisible()
 }
-
+/** This method follows the unarchiving and confirming from the release detail page */
 export const unarchiveAndConfirmRelease = async ({page}: {page: Page}) => {
   await page.getByTestId('release-menu-button').click()
   await expect(page.getByTestId('unarchive-release-menu-item')).toBeVisible()
@@ -21,6 +21,7 @@ export const unarchiveAndConfirmRelease = async ({page}: {page: Page}) => {
 
 /** This method follows the scheduling and confirming from the release detail page */
 export const scheduleAndConfirmRelease = async ({page}: {page: Page}) => {
+  await expect(await page.getByTestId('release-menu-button')).toBeVisible()
   await page.getByTestId('release-menu-button').click()
   await expect(page.getByTestId('schedule-button-menu-item')).not.toBeDisabled()
 
@@ -32,6 +33,7 @@ export const scheduleAndConfirmRelease = async ({page}: {page: Page}) => {
   await expect(page.getByTestId('date-input-dialog')).toBeVisible()
   await page.getByRole('textbox', {name: 'Select time'}).click()
 
+  // sets release to happen in 20 minutes
   const date = new Date(new Date().setMinutes(new Date().getMinutes() + 20))
   const timeString = date.toLocaleTimeString('en-US', {
     hour: '2-digit',
