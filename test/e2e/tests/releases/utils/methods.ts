@@ -58,6 +58,34 @@ export const archiveRelease = async ({
   }
 }
 
+export const unarchiveRelease = async ({
+  sanityClient,
+  dataset,
+  releaseId,
+}: {
+  sanityClient: SanityClient
+  dataset: string | undefined
+  releaseId: string
+}) => {
+  try {
+    sanityClient.withConfig(CLIENT_OPTIONS).request({
+      uri: `/data/actions/${dataset}`,
+      method: 'POST',
+      body: {
+        actions: [
+          {
+            actionType: 'sanity.action.release.unarchive',
+            releaseId: releaseId,
+          },
+        ],
+      },
+    })
+  } catch (error) {
+    console.error('Error archiving release:', error)
+    throw error
+  }
+}
+
 export const deleteRelease = ({
   sanityClient,
   dataset,

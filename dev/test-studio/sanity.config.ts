@@ -155,7 +155,7 @@ const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
   projectId: 'ppsg7ml5',
-  dataset: 'test',
+  dataset: 'ritatest',
   plugins: [sharedSettings()],
 
   onUncaughtError: (error, errorInfo) => {
