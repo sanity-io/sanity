@@ -13,5 +13,7 @@ export const partialUndecidedReleaseMetadata = {
 export const partialScheduledReleaseMetadata = {
   title: 'Scheduled Release A',
   description: '',
-  releaseType: 'asap',
+  releaseType: 'scheduled',
+  // tomorrow
+  intendedPublishAt: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
 }
