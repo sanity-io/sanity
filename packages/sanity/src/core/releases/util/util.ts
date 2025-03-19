@@ -1,6 +1,8 @@
+import {type ReleaseState} from '@sanity/client'
+
 import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '../store/types'
+import {type EditableReleaseDocument, type ReleaseDocument} from '../store/types'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
 

@@ -69,8 +69,7 @@ export function createReleaseOperationsStore(options: {
   const handleCreateRelease = (release: EditableReleaseDocument, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
       client.releases.create(
-        getReleaseIdFromReleaseDocumentId(release._id),
-        release.metadata,
+        {releaseId: getReleaseIdFromReleaseDocumentId(release._id), metadata: release.metadata},
         opts,
       ),
       opts,
@@ -88,10 +87,12 @@ export function createReleaseOperationsStore(options: {
 
     await handleReleaseLimitError(
       client.releases.edit(
-        releaseId,
         {
-          set: {metadata: release.metadata},
-          unset: unsetKeys,
+          releaseId,
+          patch: {
+            set: {metadata: release.metadata},
+            unset: unsetKeys,
+          },
         },
         opts,
       ),
@@ -101,15 +102,17 @@ export function createReleaseOperationsStore(options: {
 
   const handlePublishRelease = (releaseId: string, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
-      client.releases.publish(getReleaseIdFromReleaseDocumentId(releaseId), opts),
+      client.releases.publish({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
   const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
       client.releases.schedule(
-        getReleaseIdFromReleaseDocumentId(releaseId),
-        publishAt.toISOString(),
+        {
+          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
+          publishAt: publishAt.toISOString(),
+        },
         opts,
       ),
       opts,
@@ -117,21 +120,21 @@ export function createReleaseOperationsStore(options: {
 
   const handleUnscheduleRelease = (releaseId: string, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
-      client.releases.unschedule(getReleaseIdFromReleaseDocumentId(releaseId), opts),
+      client.releases.unschedule({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
   const handleArchiveRelease = (releaseId: string, opts?: BaseActionOptions) =>
-    client.releases.archive(getReleaseIdFromReleaseDocumentId(releaseId), opts)
+    client.releases.archive({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts)
 
   const handleUnarchiveRelease = (releaseId: string, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
-      client.releases.unarchive(getReleaseIdFromReleaseDocumentId(releaseId), opts),
+      client.releases.unarchive({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
   const handleDeleteRelease = (releaseId: string, opts?: BaseActionOptions) =>
-    client.releases.delete(getReleaseIdFromReleaseDocumentId(releaseId), opts)
+    client.releases.delete({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts)
 
   const handleCreateVersion = async (
     releaseId: string,
