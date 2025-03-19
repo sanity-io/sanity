@@ -108,6 +108,13 @@ const sharedSettings = definePlugin({
       structure,
       defaultDocumentNode,
     }),
+    debugSecrets(),
+    presentationTool({
+      previewUrl: {preview: '/preview/index.html'},
+      resolve: {
+        locations: {simpleBlock: defineLocations({locations: [{title: 'Home', href: '/'}]})},
+      },
+    }),
     languageFilter({
       defaultLanguages: ['nb'],
       supportedLanguages: [
@@ -363,31 +370,5 @@ export default defineConfig([
         input: StegaDebugger,
       },
     },
-  },
-  {
-    name: 'presentation',
-    title: 'Presentation Studio',
-    projectId: 'ppsg7ml5',
-    dataset: 'playground',
-    plugins: [
-      debugSecrets(),
-      presentationTool({
-        name: 'presentation',
-        title: 'Presentation',
-        previewUrl: {
-          preview: '/preview/index.html',
-        },
-        resolve: {
-          locations: {
-            simpleBlock: defineLocations({
-              locations: [{title: 'Home', href: '/'}],
-            }),
-          },
-        },
-      }),
-      assist(),
-      sharedSettings(),
-    ],
-    basePath: '/presentation',
   },
 ]) as WorkspaceOptions[]
