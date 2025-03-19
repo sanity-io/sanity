@@ -72,7 +72,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
       if (release.state !== 'active') return null
       if (!isBundleDocumentRow(rowProps.datum)) return null
-      if (rowProps.datum.isPending || rowProps.datum.isLoading) return null
+      if (rowProps.datum.isPending) return null
 
       return <DocumentActions document={rowProps.datum} />
     },
