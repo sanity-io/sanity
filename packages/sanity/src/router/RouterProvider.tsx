@@ -151,7 +151,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
 
   const handleNavigateStickyParams = useCallback(
     (params: NavigateOptions['stickyParams'], options: NavigateBaseOptions = {}) =>
-      navigate({stickyParams: params, ...options}),
+      navigate({stickyParams: params, ...options, state: undefined}),
     [navigate],
   )
 

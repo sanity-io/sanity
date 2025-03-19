@@ -212,7 +212,7 @@ export interface RouterContextValue {
   navigateUrl: (opts: {path: string; replace?: boolean}) => void
 
   /**
-   * @deprecated Use `navigate(null, {stickyParams: params, ...options})` instead
+   * @deprecated Use `navigate({stickyParams: params, ...options})` instead
    */
   navigateStickyParams: (
     params: NavigateOptions['stickyParams'],
@@ -227,28 +227,24 @@ export interface RouterContextValue {
    *
    * @public
    *
-   * @example Navigate with router state only
-   * ```tsx
-   * router.navigate({foo: 'bar'})
-   * ```
-   *
-   * @example Navigate with router state and sticky params
-   * ```tsx
-   * router.navigate({foo: 'bar'}, {stickyParams: {baz: 'qux'}})
-   * ```
-   *
-   * @example Navigate with sticky params only
+   * @example Navigate with sticky params only, staying on the current path
    * ```tsx
    * router.navigate({stickyParams: {baz: 'qux'}})
    * ```
+   * @remarks `null` sticky parameter value will remove the sticky parameter from the url
    *
    * @example Navigate with state and sticky params
+   * ```tsx
+   * router.navigate({stickyParams: {baz: 'qux'}, state: {foo: 'bar'}})
+   * ```
+   *
+   * @example Navigate to root path
    * ```tsx
    * router.navigate({stickyParams: {baz: 'qux'}, state: null})
    * ```
    */
   navigate: {
-    // State-first version - for when you want to navigate to a new state
+    // legacy, state-first version - for when you want to navigate to a new state
     (nextState: RouterState, options?: NavigateOptions): void
     // Options version - for staying where you are (omit state) or going to root (state: null)
     (options: NavigateOptions & {state?: RouterState | null}): void
