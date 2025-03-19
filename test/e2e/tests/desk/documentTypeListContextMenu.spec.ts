@@ -18,7 +18,6 @@ test('clicking default sort order and direction sets value in storage', async ({
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SORT_KEY}`,
-    withCredentials: true,
   })
 
   // If the value is not null there are existingKeys, delete them in that case
@@ -26,7 +25,6 @@ test('clicking default sort order and direction sets value in storage', async ({
     // Clear the sort order
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${SORT_KEY}`,
-      withCredentials: true,
       method: 'DELETE',
     })
   }
@@ -74,7 +72,6 @@ test('clicking custom sort order and direction sets value in storage', async ({
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
-    withCredentials: true,
   })
 
   // If the value is not null there are existingKeys, delete them in that case
@@ -82,7 +79,6 @@ test('clicking custom sort order and direction sets value in storage', async ({
     // Clear the sort order
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
-      withCredentials: true,
       method: 'DELETE',
     })
   }
@@ -112,7 +108,6 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
-    withCredentials: true,
   })
 
   // If the value is not null there are existingKeys, delete them in that case
@@ -120,7 +115,6 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
     // Clear the sort order
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
-      withCredentials: true,
       method: 'DELETE',
     })
   }

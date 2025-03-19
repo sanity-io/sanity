@@ -40,7 +40,6 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
     async (userIds) => {
       const value = await client.request<(User | null)[]>({
         uri: `/users/${userIds.join(',')}`,
-        withCredentials: true,
         tag: 'users.get',
       })
       const response = Array.isArray(value) ? value : [value]
