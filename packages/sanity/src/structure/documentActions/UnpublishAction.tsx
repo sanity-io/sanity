@@ -41,7 +41,7 @@ export const UnpublishAction: DocumentActionComponent = ({
   const {displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const isDraft = isDraftId(displayed?._id || '')
+  const isDraft = displayed?._id && isDraftId(displayed?._id)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
