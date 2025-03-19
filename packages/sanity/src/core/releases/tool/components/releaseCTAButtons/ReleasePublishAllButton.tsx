@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -197,40 +197,47 @@ export const ReleasePublishAllButton = ({
     onConfirmDialogOpen?.()
   }, [onConfirmDialogOpen])
 
+  const sharedProps = useMemo(
+    () => ({
+      icon: PublishIcon,
+      disabled:
+        isPublishButtonDisabled || publishBundleStatus === 'publishing' || documents.length === 0,
+      text: t('action.publish-all-documents'),
+      handleOnClick: handleInitialPublish,
+      tooltipProps: {
+        disabled: !isPublishButtonDisabled,
+        content: publishTooltipContent,
+        placement: 'bottom',
+      } as Partial<TooltipProps>,
+    }),
+    [
+      documents.length,
+      handleInitialPublish,
+      isPublishButtonDisabled,
+      publishBundleStatus,
+      publishTooltipContent,
+      t,
+    ],
+  )
+
   return (
     <>
       {isMenuItem ? (
         <MenuItem
-          tooltipProps={{
-            disabled: !isPublishButtonDisabled,
-            content: publishTooltipContent,
-            placement: 'bottom',
-          }}
-          icon={PublishIcon}
-          disabled={
-            isPublishButtonDisabled ||
-            publishBundleStatus === 'publishing' ||
-            documents.length === 0
-          }
-          text={t('action.publish-all-documents')}
-          onClick={handleInitialPublish}
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
           data-testid="publish-all-button-menu-item"
         />
       ) : (
         <Button
-          tooltipProps={{
-            disabled: !isPublishButtonDisabled,
-            content: publishTooltipContent,
-            placement: 'bottom',
-          }}
-          icon={PublishIcon}
-          disabled={
-            isPublishButtonDisabled ||
-            publishBundleStatus === 'publishing' ||
-            documents.length === 0
-          }
-          text={t('action.publish-all-documents')}
-          onClick={handleInitialPublish}
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
           loading={publishBundleStatus === 'publishing'}
           data-testid="publish-all-button"
           tone="positive"

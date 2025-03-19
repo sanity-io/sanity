@@ -5,7 +5,7 @@ import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
@@ -332,33 +332,48 @@ export const ReleaseScheduleButton = ({
     )
   }, [isValidatingDocuments, tooltipText])
 
+  const sharedProps = useMemo(
+    () => ({
+      icon: ClockIcon,
+      disabled: isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0,
+      text: t('action.schedule'),
+      handleOnClick: handleOnInitialSchedule,
+      tooltipProps: {
+        disabled: !tooltipText,
+        content: scheduleTooltipContent,
+        placement: 'bottom',
+      } as Partial<TooltipProps>,
+    }),
+    [
+      documents.length,
+      handleOnInitialSchedule,
+      isScheduleButtonDisabled,
+      scheduleTooltipContent,
+      status,
+      t,
+      tooltipText,
+    ],
+  )
+
   return (
     <>
       {isMenuItem ? (
         <MenuItem
-          tooltipProps={{
-            disabled: !tooltipText,
-            content: scheduleTooltipContent,
-            placement: 'bottom',
-          }}
-          icon={ClockIcon}
-          disabled={isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0}
-          text={t('action.schedule')}
-          onClick={handleOnInitialSchedule}
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
           data-testid="schedule-button-menu-item"
         />
       ) : (
         <Button
-          tooltipProps={{
-            disabled: !tooltipText,
-            content: scheduleTooltipContent,
-            placement: 'bottom',
-          }}
+          tooltipProps={sharedProps.tooltipProps}
           tone="primary"
-          icon={ClockIcon}
-          disabled={isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0}
-          text={t('action.schedule')}
-          onClick={handleOnInitialSchedule}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
           loading={status === 'scheduling'}
           data-testid="schedule-button"
         />
