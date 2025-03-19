@@ -71,18 +71,22 @@ export const releasesOverviewColumnDefs: (
             <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
           </Flex>
         ),
-        cell: ({cellProps, datum: release}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-            <Text muted size={1}>
-              <ReleaseTime release={release} />
-            </Text>
-            {isReleaseScheduledOrScheduling(release) && (
-              <Text size={1} data-testid="release-lock-icon">
-                <LockIcon />
+        cell: ({cellProps, datum: release}) => {
+          if (release.isLoading) return null
+
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
+              <Text muted size={1}>
+                <ReleaseTime release={release} />
               </Text>
-            )}
-          </Flex>
-        ),
+              {isReleaseScheduledOrScheduling(release) && (
+                <Text size={1} data-testid="release-lock-icon">
+                  <LockIcon />
+                </Text>
+              )}
+            </Flex>
+          )
+        },
       },
       'active',
     ),

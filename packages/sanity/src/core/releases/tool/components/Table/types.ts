@@ -9,7 +9,7 @@ export interface InjectedTableProps {
 export interface Column<TableData = unknown> {
   header: (props: HeaderProps) => React.JSX.Element
   cell: (props: {
-    datum: TableData
+    datum: TableData & {isLoading?: boolean}
     cellProps: InjectedTableProps
     sorting: boolean
   }) => React.ReactNode

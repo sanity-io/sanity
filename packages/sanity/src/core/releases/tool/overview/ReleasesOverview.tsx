@@ -300,7 +300,7 @@ export function ReleasesOverview() {
     ({datum}: {datum: TableRelease | unknown}) => {
       const release = datum as TableRelease
 
-      if (release.isDeleted) return null
+      if (release.isDeleted || release.isLoading) return null
 
       const documentsCount =
         (releaseGroupMode === 'active'
