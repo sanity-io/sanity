@@ -18,6 +18,7 @@ import {
   type CommandListRenderItemCallback,
 } from '../core/components/commandList/types'
 import {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
+import {DefaultDocument} from '../core/components/DefaultDocument'
 import {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 import {ErrorActions} from '../core/components/errorActions/ErrorActions'
@@ -153,7 +154,8 @@ import {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
 import {MemberField} from '../core/form/members/object/MemberField'
 import {ObjectInputMember} from '../core/form/members/object/ObjectInputMember'
 import {setAtPath} from '../core/form/store/stateTreeHelper'
-import {type DocumentFormNode, type NodeChronologyProps} from '../core/form/store/types/nodes'
+import {type FieldMember} from '../core/form/store/types/members'
+import {type DocumentFormNode} from '../core/form/store/types/nodes'
 import {type StateTree} from '../core/form/store/types/state'
 import {useFormState} from '../core/form/store/useFormState'
 import {getExpandOperations} from '../core/form/store/utils/getExpandOperations'
@@ -166,6 +168,8 @@ import {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilde
 import {FileInput, ImageInput} from '../core/form/studio/inputs'
 import {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
 import {type ImageInputProps} from '../core/form/studio/inputs/StudioImageInput'
+import {type BlockAnnotationProps} from '../core/form/types/blockProps'
+import {type FieldProps} from '../core/form/types/fieldProps'
 import {type FormDocumentValue} from '../core/form/types/formDocumentValue'
 import {
   type ArrayOfObjectsInputProps,
@@ -182,7 +186,7 @@ import {useFormBuilder} from '../core/form/useFormBuilder'
 import {fromMutationPatches} from '../core/form/utils/mutationPatch'
 import {TransformPatches} from '../core/form/utils/TransformPatches'
 import {useClient} from '../core/hooks/useClient'
-import {useConditionalToast} from '../core/hooks/useConditionalToast'
+import {useConnectionState} from '../core/hooks/useConnectionState'
 import {useDataset} from '../core/hooks/useDataset'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
 import {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
@@ -313,6 +317,7 @@ import {useSearchMaxFieldDepth} from '../core/studio/components/navbar/search/ho
 import {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 import {renderStudio} from '../core/studio/renderStudio'
 import {SourceProvider, useSource} from '../core/studio/source'
+import {Studio} from '../core/studio/Studio'
 import {StudioProvider} from '../core/studio/StudioProvider'
 import {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
 import {type InitialValueTemplateItem, type Template} from '../core/templates/types'
@@ -393,6 +398,7 @@ export {
   ArrayOfPrimitivesInput,
   type ArrayOfPrimitivesInputProps,
   AvatarSkeleton,
+  type BlockAnnotationProps,
   BlockEditor,
   BooleanInput,
   type BooleanInputProps,
@@ -430,6 +436,7 @@ export {
   type DateInputProps,
   DateTimeInput,
   type DateTimeInputProps,
+  DefaultDocument,
   defineDocumentFieldAction,
   defineDocumentInspector,
   defineLocale,
@@ -480,6 +487,8 @@ export {
   EventsProvider,
   FieldActionsProvider,
   FieldActionsResolver,
+  type FieldMember,
+  type FieldProps,
   FileInput,
   type FileInputProps,
   Filters,
@@ -597,6 +606,7 @@ export {
   StringInput,
   type StringInputProps,
   stringToPath,
+  Studio,
   type StudioLocaleResourceKeys,
   StudioProvider,
   TagsArrayInput,
@@ -627,6 +637,7 @@ export {
   useCommentsEnabled,
   useConditionalToast,
   useConfigContextFromSource,
+  useConnectionState,
   useCopyPaste,
   useCurrentUser,
   useDataset,
