@@ -9,6 +9,7 @@ import {
   createDocument,
   createRelease,
   getRandomReleaseId,
+  skipIfBrowser,
   unarchiveRelease,
 } from '../utils/methods'
 import {
@@ -16,17 +17,12 @@ import {
   unscheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
 
-// skip firefox due to flakyness
-const SKIP_BROWSERS = ['firefox']
-const skipIfBrowser = (browserName: string) => {
-  test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
-}
-
 test.describe('Unarchive Undecided', () => {
   const undecidedReleaseIdTestOne: string = getRandomReleaseId()
 
-  test.beforeEach(async ({sanityClient, browserName}) => {
+  test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
     skipIfBrowser(browserName)
+    test.slow()
     const dataset = sanityClient.config().dataset
 
     await createRelease({
@@ -35,6 +31,15 @@ test.describe('Unarchive Undecided', () => {
       releaseId: undecidedReleaseIdTestOne,
       metadata: partialUndecidedReleaseMetadata,
     })
+
+    const versionDocumentId = _testContext.getUniqueDocumentId()
+
+    await createDocument(sanityClient, {
+      ...speciesDocumentNameASAP,
+      _id: `versions.${undecidedReleaseIdTestOne}.${versionDocumentId}`,
+    })
+
+    await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName}) => {
@@ -47,23 +52,8 @@ test.describe('Unarchive Undecided', () => {
   })
 
   // Archive -> Unarchive -> Undecided release
-  test('Initially Undecided release type should be ASAP type', async ({
-    page,
-    sanityClient,
-    _testContext,
-    browserName,
-  }) => {
-    skipIfBrowser(browserName)
+  test('Initially Undecided release type should be ASAP type', async ({page, sanityClient}) => {
     const dataset = sanityClient.config().dataset
-    const versionDocumentId = _testContext.getUniqueDocumentId()
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${undecidedReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
-
     await archiveRelease({sanityClient, dataset, releaseId: undecidedReleaseIdTestOne})
     await expect(page.getByTestId('retention-policy-card')).toBeVisible()
 
@@ -78,21 +68,9 @@ test.describe('Unarchive Undecided', () => {
   test('Initially Undecided when set to a scheduled time, then archived and unarchived should be Scheduled release type', async ({
     page,
     sanityClient,
-    _testContext,
-    browserName,
   }) => {
-    skipIfBrowser(browserName)
-
-    test.slow()
     const dataset = sanityClient.config().dataset
-    const versionDocumentId = _testContext.getUniqueDocumentId()
 
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${undecidedReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
     await scheduleAndConfirmReleaseMenu({
       page,
       date: new Date(new Date().setMinutes(new Date().getMinutes() + 20)),

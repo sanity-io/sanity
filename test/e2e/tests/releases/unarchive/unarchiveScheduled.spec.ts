@@ -9,14 +9,10 @@ import {
   createDocument,
   createRelease,
   getRandomReleaseId,
+  skipIfBrowser,
   unarchiveRelease,
 } from '../utils/methods'
 
-// skip firefox due to flakyness
-const SKIP_BROWSERS = ['firefox']
-const skipIfBrowser = (browserName: string) => {
-  test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
-}
 test.describe('Unarchive Scheduled', () => {
   const scheduledReleaseIdTestOne: string = getRandomReleaseId()
 

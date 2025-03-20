@@ -9,6 +9,7 @@ import {
   createRelease,
   deleteRelease,
   getRandomReleaseId,
+  skipIfBrowser,
 } from '../utils/methods'
 import {
   publishAndConfirmReleaseMenu,
@@ -16,16 +17,12 @@ import {
   scheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
 
-// skip firefox due to flakyness
-const SKIP_BROWSERS = ['firefox']
-const skipIfBrowser = (browserName: string) => {
-  test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
-}
 test.describe('Revert Scheduled', () => {
   const scheduledReleaseIdTestOne: string = getRandomReleaseId()
 
-  test.beforeEach(async ({sanityClient, browserName}) => {
+  test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
     skipIfBrowser(browserName)
+    test.slow()
     const dataset = sanityClient.config().dataset
 
     await createRelease({
@@ -41,6 +38,21 @@ test.describe('Revert Scheduled', () => {
         ).toISOString(),
       },
     })
+
+    const versionDocumentId = _testContext.getUniqueDocumentId()
+
+    await createDocument(sanityClient, {
+      ...speciesDocumentNameASAP,
+      name: 'published',
+      _id: `${versionDocumentId}`,
+    })
+
+    await createDocument(sanityClient, {
+      ...speciesDocumentNameASAP,
+      _id: `versions.${scheduledReleaseIdTestOne}.${versionDocumentId}`,
+    })
+
+    await page.goto(`test/releases/${scheduledReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {
@@ -62,28 +74,7 @@ test.describe('Revert Scheduled', () => {
   // Schedule -> Wait -> Revert -> ASAP release
   test('schedule Scheduled release, wait for it to be published. When reverted, should be ASAP release', async ({
     page,
-    sanityClient,
-    _testContext,
-    browserName,
   }) => {
-    skipIfBrowser(browserName)
-    test.setTimeout(180000)
-    test.slow()
-    const versionDocumentId = _testContext.getUniqueDocumentId()
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      name: 'published',
-      _id: `${versionDocumentId}`,
-    })
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${scheduledReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${scheduledReleaseIdTestOne}`)
-
     // schedule the release for (1 minute and 10 seconds) from now
     // this seems to be the lowest interval that works without hanging / flaking
     await scheduleAndConfirmRelease({
@@ -111,30 +102,7 @@ test.describe('Revert Scheduled', () => {
   })
 
   // Publish -> Revert -> ASAP release
-  test('publish Scheduled release, when reverted, should be ASAP release', async ({
-    page,
-    sanityClient,
-    _testContext,
-    browserName,
-  }) => {
-    skipIfBrowser(browserName)
-    test.setTimeout(180000)
-    test.slow()
-    const versionDocumentId = _testContext.getUniqueDocumentId()
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      name: 'published',
-      _id: `${versionDocumentId}`,
-    })
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${scheduledReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${scheduledReleaseIdTestOne}`)
-
+  test('publish Scheduled release, when reverted, should be ASAP release', async ({page}) => {
     await publishAndConfirmReleaseMenu({page})
 
     // retention policy card

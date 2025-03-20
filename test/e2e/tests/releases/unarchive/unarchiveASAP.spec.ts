@@ -9,6 +9,7 @@ import {
   createDocument,
   createRelease,
   getRandomReleaseId,
+  skipIfBrowser,
   unarchiveRelease,
 } from '../utils/methods'
 import {
@@ -16,16 +17,12 @@ import {
   unscheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
 
-// skip firefox due to flakyness
-const SKIP_BROWSERS = ['firefox']
-const skipIfBrowser = (browserName: string) => {
-  test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
-}
 test.describe('Unarchive ASAP', () => {
   const asapReleaseIdTestOne: string = getRandomReleaseId()
 
-  test.beforeEach(async ({sanityClient, browserName}) => {
+  test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
     skipIfBrowser(browserName)
+    test.slow()
     const dataset = sanityClient.config().dataset
 
     await createRelease({
@@ -34,6 +31,15 @@ test.describe('Unarchive ASAP', () => {
       releaseId: asapReleaseIdTestOne,
       metadata: partialASAPReleaseMetadata,
     })
+
+    const versionDocumentId = _testContext.getUniqueDocumentId()
+
+    await createDocument(sanityClient, {
+      ...speciesDocumentNameASAP,
+      _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
+    })
+
+    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName}) => {
@@ -46,22 +52,8 @@ test.describe('Unarchive ASAP', () => {
   })
 
   // Archive -> Unarchive -> ASAP release
-  test('Initially ASAP release type should be ASAP type', async ({
-    page,
-    sanityClient,
-    _testContext,
-    browserName,
-  }) => {
-    skipIfBrowser(browserName)
+  test('Initially ASAP release type should be ASAP type', async ({page, sanityClient}) => {
     const dataset = sanityClient.config().dataset
-    const versionDocumentId = _testContext.getUniqueDocumentId()
-
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
 
     await archiveRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne})
     await expect(page.getByTestId('retention-policy-card')).toBeVisible()
@@ -77,20 +69,9 @@ test.describe('Unarchive ASAP', () => {
   test('Initially ASAP when set to a scheduled time, then archived and unarchived should be Scheduled release type', async ({
     page,
     sanityClient,
-    _testContext,
-    browserName,
   }) => {
-    skipIfBrowser(browserName)
-    test.slow()
     const dataset = sanityClient.config().dataset
-    const versionDocumentId = _testContext.getUniqueDocumentId()
 
-    await createDocument(sanityClient, {
-      ...speciesDocumentNameASAP,
-      _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
-    })
-
-    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
     await scheduleAndConfirmReleaseMenu({
       page,
       date: new Date(new Date().setMinutes(new Date().getMinutes() + 20)),
