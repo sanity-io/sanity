@@ -5,6 +5,7 @@ import {
   type PreviewValue,
   type SanityDocument,
   useDocumentPreviewStore,
+  usePerspective,
 } from 'sanity'
 
 interface PreviewState {
@@ -15,7 +16,7 @@ interface PreviewState {
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
   const [preview, setPreview] = useState<PreviewState>({})
-
+  const {perspectiveStack} = usePerspective()
   useEffect(() => {
     if (!schemaType) {
       return undefined
@@ -24,6 +25,7 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
       documentPreviewStore,
       schemaType,
       documentId,
+      perspectiveStack,
     ).subscribe((state) => {
       setPreview(state)
     })
@@ -31,7 +33,7 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
     return () => {
       subscription?.unsubscribe()
     }
-  }, [documentPreviewStore, schemaType, documentId])
+  }, [documentPreviewStore, schemaType, documentId, perspectiveStack])
 
   return preview
 }
