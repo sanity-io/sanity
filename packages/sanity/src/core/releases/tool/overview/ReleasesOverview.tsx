@@ -445,10 +445,10 @@ export function ReleasesOverview() {
                 )}
               </Box>
             </Flex>
-            {renderCreateReleaseDialog()}
           </>
         )}
       </Flex>
+      {renderCreateReleaseDialog()}
     </Flex>
   )
 }
