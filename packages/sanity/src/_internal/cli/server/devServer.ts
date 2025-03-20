@@ -18,7 +18,8 @@ export interface DevServerOptions {
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
   appLocation?: string
-  isCoreApp?: boolean
+  isApp?: boolean
+  skipStartLog?: boolean
 }
 
 export interface DevServer {
@@ -35,12 +36,13 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     vite: extendViteConfig,
     reactCompiler,
     appLocation,
-    isCoreApp,
+    isApp,
+    skipStartLog,
   } = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isCoreApp})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isApp})
 
   debug('Resolving vite config')
   const mode = 'development'
@@ -51,7 +53,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     server: {port: httpPort, host: httpHost},
     cwd,
     reactCompiler,
-    isCoreApp,
+    isApp,
   })
 
   // Extend Vite configuration with user-provided config
@@ -71,15 +73,16 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   debug('Listening on specified port')
   await server.listen()
 
-  const startupDuration = Date.now() - startTime
-  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
-  const appType = isCoreApp ? 'Sanity application' : 'Sanity Studio'
-  info(
-    `${appType} ` +
-      `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
-      `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
-      `and running at ${chalk.cyan(url)}`,
-  )
-
+  if (!skipStartLog) {
+    const startupDuration = Date.now() - startTime
+    const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
+    const appType = isApp ? 'Sanity application' : 'Sanity Studio'
+    info(
+      `${appType} ` +
+        `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+        `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
+        `and running at ${chalk.cyan(url)}`,
+    )
+  }
   return {close: () => server.close()}
 }

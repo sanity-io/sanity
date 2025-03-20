@@ -43,8 +43,7 @@ const CALENDAR_LABELS: CalendarLabels = {
   goToNextYear: 'Next year',
   goToNextMonth: 'Go to next month',
   goToPreviousMonth: 'Go to previous month',
-  selectHour: 'Select hour',
-  selectMinute: 'Select minute',
+  selectTime: 'Select time',
   setToCurrentTime: 'Set to current time',
   monthNames: [
     'January',

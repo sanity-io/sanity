@@ -1,8 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
-import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {format as formatTZ, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
-import {range} from 'lodash'
 import {
   type ComponentProps,
   type FormEvent,
@@ -20,8 +19,9 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import useDialogTimeZone from '../../../../scheduledPublishing/hooks/useDialogTimeZone'
+import {TimeInput} from '../TimeInput'
 import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
+import {ARROW_KEYS, DEFAULT_TIME_PRESETS} from './constants'
 import {features} from './features'
 import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
@@ -122,22 +122,10 @@ export const Calendar = forwardRef(function Calendar(
 
   const {timeZone} = useTimeZone(timeZoneScope)
 
-  const getDisplayHour = useCallback(() => {
-    if (!timeZone.name) return selectedDate.getHours()
-    const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
-    return zonedDate.getHours()
-  }, [selectedDate, timeZone.name])
-
-  const getDisplayMinutes = useCallback(() => {
-    if (!timeZone.name) return selectedDate.getMinutes()
-    const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
-    return zonedDate.getMinutes()
-  }, [selectedDate, timeZone.name])
-  // @todo: this should be used be used for month below
   const getDisplayMonth = useCallback(() => {
     return Number(format(selectedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
   }, [selectedDate, timeZone.name])
-  // @todo: this should be used for the year beloe
+
   const getDisplayYear = useCallback(() => {
     return Number(format(selectedDate, 'YYYY', {timeZone: timeZone.name}))
   }, [selectedDate, timeZone.name])
@@ -175,36 +163,6 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, selectedDate],
   )
 
-  const handleMinutesChange = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      const minutes = Number(event.currentTarget.value)
-      if (!timeZone) {
-        onSelect(setMinutes(selectedDate, minutes))
-        return
-      }
-      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
-      const newZonedDate = setMinutes(zonedDate, minutes)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
-      onSelect(utcDate)
-    },
-    [onSelect, selectedDate, timeZone],
-  )
-
-  const handleHoursChange = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      const hours = Number(event.currentTarget.value)
-      if (!timeZone) {
-        onSelect(setHours(selectedDate, hours))
-        return
-      }
-      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
-      const newZonedDate = setHours(zonedDate, hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
-      onSelect(utcDate)
-    },
-    [onSelect, selectedDate, timeZone],
-  )
-
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
       if (!timeZone) {
@@ -217,6 +175,14 @@ export const Calendar = forwardRef(function Calendar(
       onSelect(utcDate)
     },
     [onSelect, selectedDate, timeZone],
+  )
+
+  const handleTimeChangeInputChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
+      handleTimeChange(date.getHours(), date.getMinutes())
+    },
+    [handleTimeChange],
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
@@ -407,46 +373,11 @@ export const Calendar = forwardRef(function Calendar(
           {selectTime && (
             <>
               <Flex align="center">
-                <Flex align="center" flex={1}>
-                  <Box>
-                    <Select
-                      aria-label={labels.selectHour}
-                      fontSize={1}
-                      padding={2}
-                      radius={2}
-                      value={getDisplayHour()}
-                      onChange={handleHoursChange}
-                    >
-                      {HOURS_24.map((h) => (
-                        <option key={h} value={h}>
-                          {`${h}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
-
-                  <Box paddingX={1}>
-                    <Text size={1}>:</Text>
-                  </Box>
-
-                  <Box>
-                    <Select
-                      aria-label={labels.selectMinute}
-                      fontSize={1}
-                      padding={2}
-                      radius={2}
-                      value={getDisplayMinutes()}
-                      onChange={handleMinutesChange}
-                    >
-                      {range(0, 60, timeStep).map((m) => (
-                        <option key={m} value={m}>
-                          {`${m}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
-                </Flex>
-
+                <TimeInput
+                  aria-label={labels.selectTime}
+                  value={format(selectedDate, 'HH:mm', {timeZone: timeZone.name})}
+                  onChange={handleTimeChangeInputChange}
+                />
                 <Box marginLeft={2}>
                   <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
                 </Box>

@@ -6,7 +6,7 @@ import {type UndeployStudioActionFlags} from '../deploy/undeployAction'
 
 const debug = debugIt.extend('undeploy')
 
-export default async function undeployCoreAppAction(
+export default async function undeployAppAction(
   _: CliCommandArguments<UndeployStudioActionFlags>,
   context: CliCommandContext,
 ): Promise<void> {
@@ -17,19 +17,19 @@ export default async function undeployCoreAppAction(
     requireProject: false,
   }).withConfig({apiVersion: 'v2024-08-01'})
 
-  // Check that the project has a Core application ID
+  // Check that the project has an application ID
   let spinner = output.spinner('Checking application info').start()
 
   const appId =
-    cliConfig && '__experimental_coreAppConfiguration' in cliConfig
-      ? cliConfig.__experimental_coreAppConfiguration?.appId
+    cliConfig && '__experimental_appConfiguration' in cliConfig
+      ? cliConfig.__experimental_appConfiguration?.appId
       : undefined
 
   if (!appId) {
     spinner.fail()
-    output.print(`No Core application ID provided.`)
+    output.print(`No application ID provided.`)
     output.print(
-      'Please set appId in `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
+      'Please set appId in `__experimental_appConfiguration` in sanity.cli.js or sanity.cli.ts.',
     )
     output.print('Nothing to undeploy.')
     return

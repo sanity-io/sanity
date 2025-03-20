@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -19,12 +19,18 @@ interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   disabled?: boolean
+  isMenuItem?: boolean
+  onConfirmDialogOpen?: () => void
+  onConfirmDialogClose?: () => void
 }
 
 export const ReleasePublishAllButton = ({
   release,
   documents,
   disabled,
+  isMenuItem = false,
+  onConfirmDialogOpen,
+  onConfirmDialogClose,
 }: ReleasePublishAllButtonProps) => {
   const toast = useToast()
   const {publishRelease} = useReleaseOperations()
@@ -67,21 +73,6 @@ export const ReleasePublishAllButton = ({
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)
       telemetry.log(PublishedRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.publish.success"
-              values={{
-                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-              }}
-            />
-          </Text>
-        ),
-      })
       if (
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
@@ -105,6 +96,7 @@ export const ReleasePublishAllButton = ({
       })
       console.error(publishingError)
     } finally {
+      onConfirmDialogClose?.()
       setPublishBundleStatus('idle')
     }
   }, [
@@ -116,6 +108,7 @@ export const ReleasePublishAllButton = ({
     tCore,
     perspective.selectedPerspective,
     setPerspective,
+    onConfirmDialogClose,
   ])
 
   const confirmPublishDialog = useMemo(() => {
@@ -124,8 +117,12 @@ export const ReleasePublishAllButton = ({
     return (
       <Dialog
         id="confirm-publish-dialog"
+        data-testid="confirm-publish-dialog"
         header={t('publish-dialog.confirm-publish.title')}
-        onClose={() => setPublishBundleStatus('idle')}
+        onClose={() => {
+          onConfirmDialogClose?.()
+          setPublishBundleStatus('idle')
+        }}
         footer={{
           confirmButton: {
             text: t('action.publish-all-documents'),
@@ -151,12 +148,24 @@ export const ReleasePublishAllButton = ({
         </Text>
       </Dialog>
     )
-  }, [publishBundleStatus, t, tCore, handleConfirmPublishAll, release, documents.length])
+  }, [
+    publishBundleStatus,
+    t,
+    handleConfirmPublishAll,
+    release.metadata.title,
+    tCore,
+    documents.length,
+    onConfirmDialogClose,
+  ])
 
   const publishTooltipContent = useMemo(() => {
     if (!hasDocumentValidationErrors && !isValidatingDocuments && publishPermission) return null
 
     const tooltipText = () => {
+      if (documents.length === 0) {
+        return t('publish-action.validation.no-documents')
+      }
+
       if (!publishPermission) {
         return t('publish-dialog.validation.no-permission')
       }
@@ -181,24 +190,59 @@ export const ReleasePublishAllButton = ({
         </Flex>
       </Text>
     )
-  }, [hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
+  }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
+
+  const handleInitialPublish = useCallback(() => {
+    setPublishBundleStatus('confirm')
+    onConfirmDialogOpen?.()
+  }, [onConfirmDialogOpen])
+
+  const sharedProps = useMemo(
+    () => ({
+      icon: PublishIcon,
+      disabled:
+        isPublishButtonDisabled || publishBundleStatus === 'publishing' || documents.length === 0,
+      text: t('action.publish-all-documents'),
+      handleOnClick: handleInitialPublish,
+      tooltipProps: {
+        disabled: !isPublishButtonDisabled,
+        content: publishTooltipContent,
+        placement: 'bottom',
+      } as Partial<TooltipProps>,
+    }),
+    [
+      documents.length,
+      handleInitialPublish,
+      isPublishButtonDisabled,
+      publishBundleStatus,
+      publishTooltipContent,
+      t,
+    ],
+  )
 
   return (
     <>
-      <Button
-        tooltipProps={{
-          disabled: !isPublishButtonDisabled,
-          content: publishTooltipContent,
-          placement: 'bottom',
-        }}
-        icon={PublishIcon}
-        disabled={isPublishButtonDisabled || publishBundleStatus === 'publishing'}
-        text={t('action.publish-all-documents')}
-        onClick={() => setPublishBundleStatus('confirm')}
-        loading={publishBundleStatus === 'publishing'}
-        data-testid="publish-all-button"
-        tone="positive"
-      />
+      {isMenuItem ? (
+        <MenuItem
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
+          data-testid="publish-all-button-menu-item"
+        />
+      ) : (
+        <Button
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
+          loading={publishBundleStatus === 'publishing'}
+          data-testid="publish-all-button"
+          tone="positive"
+        />
+      )}
       {confirmPublishDialog}
     </>
   )

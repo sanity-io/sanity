@@ -1,6 +1,7 @@
 import {type StackablePerspective} from '@sanity/client'
 import {
   type CrossDatasetType,
+  type GlobalDocumentReferenceType,
   type PreviewValue,
   type Reference,
   type SanityDocumentLike,
@@ -56,7 +57,7 @@ export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 /**
  * @hidden
  * @beta */
-export type PreviewableType = SchemaType | CrossDatasetType
+export type PreviewableType = SchemaType | CrossDatasetType | GlobalDocumentReferenceType
 
 /**
  * @hidden

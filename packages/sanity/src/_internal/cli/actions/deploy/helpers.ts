@@ -10,7 +10,7 @@ import {customAlphabet} from 'nanoid'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
-import {determineIsCoreApp} from '../../util/determineIsCoreApp'
+import {determineIsApp} from '../../util/determineIsApp'
 
 export const debug = debugIt.extend('deploy')
 
@@ -268,7 +268,7 @@ export async function getOrCreateStudio({
  *
  * @internal
  */
-export async function getOrCreateCoreApplication({
+export async function getOrCreateApplication({
   client,
   context,
   spinner,
@@ -276,8 +276,8 @@ export async function getOrCreateCoreApplication({
   const {prompt, cliConfig} = context
   const organizationId =
     cliConfig &&
-    '__experimental_coreAppConfiguration' in cliConfig &&
-    cliConfig.__experimental_coreAppConfiguration?.organizationId
+    '__experimental_appConfiguration' in cliConfig &&
+    cliConfig.__experimental_appConfiguration?.organizationId
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
@@ -362,7 +362,7 @@ interface StudioConfigOptions extends BaseConfigOptions {
   appHost: string
 }
 
-interface CoreAppConfigOptions extends BaseConfigOptions {
+interface AppConfigOptions extends BaseConfigOptions {
   appId?: string
 }
 
@@ -408,17 +408,17 @@ async function getOrCreateStudioFromConfig({
   }
 }
 
-async function getOrCreateCoreAppFromConfig({
+async function getOrCreateAppFromConfig({
   client,
   context,
   spinner,
   appId,
-}: CoreAppConfigOptions): Promise<UserApplication> {
+}: AppConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
   const organizationId =
     cliConfig &&
-    '__experimental_coreAppConfiguration' in cliConfig &&
-    cliConfig.__experimental_coreAppConfiguration?.organizationId
+    '__experimental_appConfiguration' in cliConfig &&
+    cliConfig.__experimental_appConfiguration?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
@@ -435,7 +435,7 @@ async function getOrCreateCoreAppFromConfig({
   // core apps cannot arbitrarily create ids or hosts, so send them to create option
   output.print('The appId provided in your configuration is not recognized.')
   output.print('Checking existing applications...')
-  return getOrCreateCoreApplication({client, context, spinner})
+  return getOrCreateApplication({client, context, spinner})
 }
 
 /**
@@ -451,10 +451,10 @@ export async function getOrCreateUserApplicationFromConfig(
   },
 ): Promise<UserApplication> {
   const {context} = options
-  const isCoreApp = determineIsCoreApp(context.cliConfig)
+  const isApp = determineIsApp(context.cliConfig)
 
-  if (isCoreApp) {
-    return getOrCreateCoreAppFromConfig(options)
+  if (isApp) {
+    return getOrCreateAppFromConfig(options)
   }
 
   if (!options.appHost) {
@@ -470,7 +470,7 @@ export interface CreateDeploymentOptions {
   version: string
   isAutoUpdating: boolean
   tarball: Gzip
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 export async function createDeployment({
@@ -479,7 +479,7 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-  isCoreApp,
+  isApp,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
@@ -491,7 +491,7 @@ export async function createDeployment({
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
-    query: isCoreApp ? {appType: 'coreApp'} : {appType: 'studio'},
+    query: isApp ? {appType: 'coreApp'} : {appType: 'studio'},
   })
 }
 

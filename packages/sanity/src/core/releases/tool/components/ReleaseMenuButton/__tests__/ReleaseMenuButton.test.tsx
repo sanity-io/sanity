@@ -4,7 +4,9 @@ import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
+  activeASAPRelease,
   activeScheduledRelease,
+  activeUndecidedRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
   scheduledRelease,
@@ -46,12 +48,22 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({release, documentsCount, ignoreCTA = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({
+  release,
+  documentsCount,
+  ignoreCTA = false,
+  documents = [],
+}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
   return render(
-    <ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} documentsCount={documentsCount} />,
+    <ReleaseMenuButton
+      ignoreCTA={ignoreCTA}
+      release={release}
+      documentsCount={documentsCount}
+      documents={documents}
+    />,
     {wrapper},
   )
 }
@@ -333,6 +345,140 @@ describe('ReleaseMenuButton', () => {
 
         // does not require confirmation
         expect(useReleaseOperations().unschedule).toHaveBeenCalledWith(fixture._id)
+      })
+    })
+
+    describe('schedule release', () => {
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('will not allow for scheduling of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        act(() => {
+          fireEvent.click(screen.getByTestId('release-menu-button'))
+        })
+
+        expect(screen.queryByTestId('schedule-button-menu-item')).not.toBeInTheDocument()
+      })
+
+      test.each([
+        {state: 'active', fixture: activeScheduledRelease},
+        {state: 'active', fixture: activeASAPRelease},
+        {state: 'active', fixture: activeUndecidedRelease},
+      ])('will schedule a $state release', async ({fixture}) => {
+        await renderTest({
+          release: fixture,
+          documentsCount: 1,
+          documents: [
+            {
+              memoKey: 'some-m',
+              document: {
+                _id: `some-id`,
+                _type: 'some-type',
+                _createdAt: '2023-01-01T00:00:00Z',
+                _updatedAt: '2023-01-01T00:00:00Z',
+                _rev: 'some-rev',
+                title: 'some title',
+                publishedDocumentExists: true,
+              },
+              validation: {
+                isValidating: false,
+                hasError: false,
+                validation: [],
+              },
+              previewValues: {
+                isLoading: false,
+                values: undefined,
+              },
+            },
+          ],
+        })
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        await waitFor(() => {
+          expect(screen.getByTestId('schedule-button-menu-item')).not.toBeDisabled()
+        })
+
+        fireEvent.click(screen.getByTestId('schedule-button-menu-item'))
+
+        fireEvent.click(screen.getByTestId('publish-all-button-menu-item'))
+
+        expect(screen.queryByTestId('confirm-publish-dialog')).toBeInTheDocument()
+      })
+    })
+
+    describe('publish release', () => {
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('will not allow for publish of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('publish-all-button-menu-item')).not.toBeInTheDocument()
+      })
+
+      test.each([
+        {state: 'active', fixture: activeScheduledRelease},
+        {state: 'active', fixture: activeASAPRelease},
+        {state: 'active', fixture: activeUndecidedRelease},
+      ])('will publish a $state release', async ({fixture}) => {
+        await renderTest({
+          release: fixture,
+          documentsCount: 1,
+          documents: [
+            {
+              memoKey: 'some-m',
+              document: {
+                _id: `some-id`,
+                _type: 'some-type',
+                _createdAt: '2023-01-01T00:00:00Z',
+                _updatedAt: '2023-01-01T00:00:00Z',
+                _rev: 'some-rev',
+                title: 'some title',
+                publishedDocumentExists: true,
+              },
+              validation: {
+                isValidating: false,
+                hasError: false,
+                validation: [],
+              },
+              previewValues: {
+                isLoading: false,
+                values: undefined,
+              },
+            },
+          ],
+        })
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        await waitFor(() => {
+          expect(screen.getByTestId('publish-all-button-menu-item')).not.toBeDisabled()
+        })
+
+        fireEvent.click(screen.getByTestId('publish-all-button-menu-item'))
+
+        expect(screen.queryByTestId('confirm-publish-dialog')).toBeInTheDocument()
       })
     })
 

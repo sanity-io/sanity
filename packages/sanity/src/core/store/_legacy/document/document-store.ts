@@ -23,7 +23,7 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
-import {type PairListenerOptions} from './getPairListener'
+import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -107,7 +107,7 @@ export interface DocumentStoreOptions {
   initialValueTemplates: Template[]
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
-  pairListenerOptions?: PairListenerOptions
+  extraOptions?: DocumentStoreExtraOptions
 }
 
 /** @internal */
@@ -119,7 +119,7 @@ export function createDocumentStore({
   schema,
   i18n,
   serverActionsEnabled,
-  pairListenerOptions,
+  extraOptions = {},
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -129,6 +129,7 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  const {onReportLatency, onSyncErrorRecovery} = extraOptions
   const ctx = {
     client,
     getClient,
@@ -137,13 +138,16 @@ export function createDocumentStore({
     schema,
     i18n,
     serverActionsEnabled,
-    pairListenerOptions,
+    extraOptions,
   }
 
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
+      return checkoutPair(client, idPair, serverActionsEnabled, {
+        onSyncErrorRecovery,
+        onReportLatency,
+      })
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -167,7 +171,7 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         )
       },
       documentEvents(publishedId, type, version) {
@@ -176,7 +180,7 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         )
       },
       editOperations(publishedId, type, version) {
@@ -194,7 +198,7 @@ export function createDocumentStore({
           historyStore,
           schema,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         }).pipe(
           filter(
             (result) =>

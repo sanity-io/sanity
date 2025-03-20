@@ -29,9 +29,9 @@ describe('deployAppAction', () => {
   let mockContext: CliCommandContext
   let spinnerInstance: SpinnerInstance
 
-  const mockCoreApp: UserApplication = {
-    id: 'core-app-id',
-    appHost: 'core-app-host',
+  const mockApp: UserApplication = {
+    id: 'app-id',
+    appHost: 'app-host',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     urlType: 'internal',
@@ -64,7 +64,7 @@ describe('deployAppAction', () => {
       prompt: {single: vi.fn()},
       cliConfig: {
         // eslint-disable-next-line camelcase
-        __experimental_coreAppConfiguration: {
+        __experimental_appConfiguration: {
           appLocation: 'app',
           organizationId: 'org-id',
         },
@@ -78,8 +78,8 @@ describe('deployAppAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
@@ -106,7 +106,7 @@ describe('deployAppAction', () => {
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateCoreApplication).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateApplication).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
@@ -114,11 +114,11 @@ describe('deployAppAction', () => {
     )
     expect(helpers.createDeployment).toHaveBeenCalledWith({
       client: expect.anything(),
-      applicationId: 'core-app-id',
+      applicationId: 'app-id',
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isCoreApp: true,
+      isApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
@@ -129,7 +129,7 @@ describe('deployAppAction', () => {
     const mockSpinner = mockContext.output.spinner('')
     mockContext.cliConfig = {
       // eslint-disable-next-line camelcase
-      __experimental_coreAppConfiguration: {
+      __experimental_appConfiguration: {
         appId: 'configured-app-id',
         organizationId: 'org-id',
       },
@@ -138,8 +138,8 @@ describe('deployAppAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
@@ -166,11 +166,11 @@ describe('deployAppAction', () => {
     )
     expect(helpers.createDeployment).toHaveBeenCalledWith({
       client: expect.anything(),
-      applicationId: 'core-app-id',
+      applicationId: 'app-id',
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isCoreApp: true,
+      isApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
@@ -185,8 +185,8 @@ describe('deployAppAction', () => {
       true,
     ) // User confirms to proceed
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
@@ -257,8 +257,8 @@ describe('deployAppAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
     helpers.checkDir.mockResolvedValueOnce()
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
@@ -285,7 +285,7 @@ describe('deployAppAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateCoreApplication.mockRejectedValueOnce({
+    helpers.getOrCreateApplication.mockRejectedValueOnce({
       statusCode: 402,
       message: 'Application limit reached',
       error: 'Payment Required',
@@ -307,7 +307,7 @@ describe('deployAppAction', () => {
     expect(helpers.dirIsEmptyOrNonExistent).toHaveBeenCalledWith(
       expect.stringContaining('customSourceDir'),
     )
-    expect(helpers.getOrCreateCoreApplication).toHaveBeenCalledWith(
+    expect(helpers.getOrCreateApplication).toHaveBeenCalledWith(
       expect.objectContaining({
         client: expect.anything(),
         context: expect.anything(),
@@ -322,7 +322,7 @@ describe('deployAppAction', () => {
     // Create a context without appId in the config
     mockContext.cliConfig = {
       // eslint-disable-next-line camelcase
-      __experimental_coreAppConfiguration: {
+      __experimental_appConfiguration: {
         organizationId: 'org-id',
       },
     } as CliConfig
@@ -330,8 +330,8 @@ describe('deployAppAction', () => {
     // Mock utility functions
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateCoreApplication.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
+    helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
+    helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
     buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
@@ -351,10 +351,10 @@ describe('deployAppAction', () => {
 
     // Verify the hint to add appId to config is shown
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining("Add appId: 'core-app-id'"),
+      expect.stringContaining("Add appId: 'app-id'"),
     )
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining('to __experimental_coreAppConfiguration'),
+      expect.stringContaining('to __experimental_appConfiguration'),
     )
     expect(mockContext.output.print).toHaveBeenCalledWith(
       expect.stringContaining('to avoid prompting on next deploy'),

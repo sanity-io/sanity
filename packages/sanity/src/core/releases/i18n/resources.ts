@@ -180,11 +180,13 @@ const releasesLocaleStrings = {
   /** Text for when a release is not found */
   'not-found': 'Release not found: {{releaseId}}',
 
+  /** Text for the button name for the release tool */
+  'overview.action.documentation': 'Documentation',
   /** Text for when a release is not found */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
   'overview.description':
-    'Releases are collections of document versions which can be managed and published together.',
+    'Releases are collections of document changes which can be managed, scheduled, and rolled back together.',
   /** Text for the placeholder in the search release input  */
   'overview.search-releases-placeholder': 'Search releases',
   /** Title for the release tool */
@@ -205,6 +207,9 @@ const releasesLocaleStrings = {
   'permissions.error.delete': 'You do not have permission to delete this release',
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
+
+  /** Tooltip text for publish release action when there are no documents */
+  'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
@@ -253,6 +258,8 @@ const releasesLocaleStrings = {
   /** Title of unschedule release dialog */
   'schedule-button.tooltip': 'Are you sure you want to unschedule the release?',
 
+  /** Schedule release button tooltip when there are no documents to schedule */
+  'schedule-action.validation.no-documents': 'There are no documents to schedule',
   /** Schedule release button tooltip when user has no permissions to schedule */
   'schedule-button-tooltip.validation.no-permission': 'You do not have permission to schedule',
   /** Schedule release button tooltip when validation is loading */
@@ -328,12 +335,8 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
 
-  /** Text for toast when release has been archived */
-  'toast.archive.success': "The '<strong>{{title}}</strong>' release was archived.",
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
-  /** Description for toast when new version  of document is created in release */
-  'toast.create-version.success': '{{documentTitle}} added to release',
   /** Description for toast when creating new version of document in release failed */
   'toast.create-version.error': 'Failed to add document to release: {{error}}',
   /** Description for toast when release deletion failed */
@@ -342,18 +345,12 @@ const releasesLocaleStrings = {
   'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
-  /** Text for toast when release has been published */
-  'toast.publish.success': "The '<strong>{{title}}</strong>' release was published.",
   /** Text for toast when release failed to schedule */
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
   'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
   /** Text for toast when release failed to unschedule */
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
-  /** Text for toast when release has been unschedule */
-  'toast.unschedule.success': "The '<strong>{{title}}</strong>' release was unscheduled.",
-  /** Text for toast when release has been unarchived */
-  'toast.unarchive.success': "The '<strong>{{title}}</strong>' release was unarchived.",
   /** Text for toast when release failed to unarchive */
   'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release deletion failed */

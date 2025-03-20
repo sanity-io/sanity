@@ -1,4 +1,3 @@
-import {ArrowRightIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
@@ -81,6 +80,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   }, [])
 
   const dialogTitle = t('release.dialog.create.title')
+  const dialogConfirm = t('release.dialog.create.confirm')
 
   return (
     <Dialog
@@ -100,9 +100,8 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
             <Button
               size="large"
               disabled={isSubmitting}
-              iconRight={ArrowRightIcon}
               type="submit"
-              text={dialogTitle}
+              text={dialogConfirm}
               loading={isSubmitting}
               data-testid="submit-release-button"
             />

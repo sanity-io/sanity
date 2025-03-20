@@ -736,6 +736,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         ref={this._visionRoot}
         sizing="border"
         overflow="hidden"
+        data-testid="vision-root"
       >
         <Header paddingX={3} paddingY={2}>
           <Grid columns={[1, 4, 8, 12]}>
@@ -896,7 +897,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 maxSize={paneSizeOptions.maxSize}
                 primary="first"
               >
-                <InputContainer display="flex" ref={this._queryEditorContainer}>
+                <InputContainer
+                  display="flex"
+                  ref={this._queryEditorContainer}
+                  data-testid="vision-query-editor"
+                >
                   <Box flex={1}>
                     <InputBackgroundContainerLeft>
                       <Flex>
@@ -911,7 +916,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                   </Box>
                 </InputContainer>
                 <InputContainer display="flex" ref={this._paramsEditorContainer}>
-                  <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
+                  <Card
+                    flex={1}
+                    tone={hasValidParams ? 'default' : 'critical'}
+                    data-testid="params-editor"
+                  >
                     <InputBackgroundContainerLeft>
                       <Flex>
                         <StyledLabel muted>{t('params.label')}</StyledLabel>
@@ -996,7 +1005,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 </InputContainer>
               </SplitPane>
             </Box>
-            <ResultOuterContainer direction="column">
+            <ResultOuterContainer direction="column" data-testid="vision-result">
               <ResultInnerContainer flex={1}>
                 <ResultContainer
                   flex={1}

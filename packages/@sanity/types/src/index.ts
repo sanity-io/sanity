@@ -1,6 +1,7 @@
 export * from './assets'
 export * from './crossDatasetReference'
 export * from './documents'
+export * from './globalDocumentReference'
 export * from './images'
 export * from './markers'
 export * from './mutations'
