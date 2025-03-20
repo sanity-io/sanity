@@ -21,7 +21,7 @@ export async function installDeclaredPackages(
     stdio: 'inherit',
   }
 
-  const npmArgs = ['install']
+  const npmArgs = ['install', '--legacy-peer-deps']
   let result: ExecaReturnValue<string> | undefined
   if (packageManager === 'npm') {
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
@@ -60,7 +60,7 @@ export async function installNewPackages(
     stdio: 'inherit',
   }
 
-  const npmArgs = ['install', '--save', ...packages]
+  const npmArgs = ['install', '--legacy-peer-deps', '--save', ...packages]
   let result: ExecaReturnValue<string> | undefined
   if (packageManager === 'npm') {
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
