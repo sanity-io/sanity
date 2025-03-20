@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 
 import {Favicons} from './Favicons'
-import {GlobalErrorHandler} from './globalErrorHandler'
+import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
 
 const globalStyles = `

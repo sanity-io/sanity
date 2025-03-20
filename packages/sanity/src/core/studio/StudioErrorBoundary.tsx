@@ -13,14 +13,14 @@ import {
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {ErrorBoundary} from '../../ui-components/errorBoundary'
+import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorActions} from '../components/errorActions/ErrorActions'
 import {SchemaError} from '../config/SchemaError'
 import {isDev, isProd} from '../environment'
 import {errorReporter} from '../error/errorReporter'
-import {CorsOriginError} from '../store/_legacy/cors'
+import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
 import {isRecord} from '../templates/util/isRecord'
-import {CorsOriginErrorScreen} from './screens'
+import {CorsOriginErrorScreen} from './screens/CorsOriginErrorScreen'
 import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
 
 /**

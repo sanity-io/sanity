@@ -21,7 +21,7 @@ import {
   type ResolvedUploader,
   type UploaderResolver,
 } from '../../../../studio/uploads/types'
-import {type UploadEvent} from '../../../../types'
+import {type UploadEvent} from '../../../../types/event'
 import {type FileInfo, fileTarget} from '../../../common/fileTarget/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
 import {Overlay} from './styles'

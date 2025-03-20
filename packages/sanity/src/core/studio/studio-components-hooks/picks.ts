@@ -6,7 +6,7 @@ import {
   type LogoProps,
   type NavbarProps,
   type ToolMenuProps,
-} from '../../config/studio'
+} from '../../config/studio/types'
 import {type PluginOptions} from '../../config/types'
 
 export function pickToolMenuComponent(

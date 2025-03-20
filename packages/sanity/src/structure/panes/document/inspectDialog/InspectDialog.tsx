@@ -5,7 +5,7 @@ import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {Dialog, Tab} from 'sanity/ui-components'
 
-import {DocTitle} from '../../../components'
+import {DocTitle} from '../../../components/DocTitle'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'

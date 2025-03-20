@@ -5,8 +5,8 @@ import {useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
-import {set, unset} from '../../../patch'
-import {type ArrayOfObjectsInputProps} from '../../../types'
+import {set, unset} from '../../../patch/patch'
+import {type ArrayOfObjectsInputProps} from '../../../types/inputProps'
 
 function isEqual(item: any, otherItem: any): boolean {
   if (item === otherItem) {

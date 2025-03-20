@@ -4,7 +4,7 @@ import {defer, lastValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../hooks/useClient'
-import {getSearchableTypes} from '../common'
+import {getSearchableTypes} from '../common/getSearchableTypes'
 import {type SearchTerms} from '../common/types'
 import {createWeightedSearch} from './createWeightedSearch'
 

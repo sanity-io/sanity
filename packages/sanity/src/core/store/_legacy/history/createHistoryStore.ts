@@ -13,7 +13,8 @@ import {isDev} from '../../../environment'
 import {getDraftId, getIdPair, getPublishedId, getVersionFromId} from '../../../util/draftUtils'
 import {isRecord} from '../../../util/isRecord'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
-import {Timeline, TimelineController} from './history'
+import {Timeline} from './history/Timeline'
+import {TimelineController} from './history/TimelineController'
 
 /**
  * @hidden

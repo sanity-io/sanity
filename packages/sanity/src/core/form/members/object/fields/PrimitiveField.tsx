@@ -1,17 +1,15 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {PatchEvent, set, unset} from '../../../patch'
+import {set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {
-  type PrimitiveFieldProps,
-  type PrimitiveInputProps,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-} from '../../../types'
+import {type PrimitiveFieldProps} from '../../../types/fieldProps'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 

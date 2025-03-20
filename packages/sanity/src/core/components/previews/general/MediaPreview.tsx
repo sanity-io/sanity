@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
-import {CircularProgress} from '../../progress'
+import {CircularProgress} from '../../progress/CircularProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'

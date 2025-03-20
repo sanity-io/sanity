@@ -4,7 +4,7 @@ import {useEffect} from 'react'
 
 import {ConfigResolutionError} from '../config/ConfigResolutionError'
 import {SchemaError} from '../config/SchemaError'
-import {CorsOriginError} from '../store/_legacy/cors'
+import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
 import {globalScope} from '../util/globalScope'
 
 const errorChannel = globalScope.__sanityErrorChannel

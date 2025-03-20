@@ -7,7 +7,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {finalize} from 'rxjs'
 
 import {Button} from '../../../ui-components/button/Button'
-import {Dialog} from '../../../ui-components/dialog'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'

@@ -18,7 +18,7 @@ import {type Router, type RouterState} from 'sanity/router'
 import {
   type FormBuilderCustomMarkersComponent,
   type FormBuilderMarkersComponent,
-} from '../form/types'
+} from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
 import {type ScheduledPublishingPluginOptions} from '../scheduledPublishing/types'
 import {type AuthStore} from '../store/_legacy/authStore/types'
@@ -33,7 +33,7 @@ import {
   type DocumentFieldAction,
   type DocumentFieldActionsResolver,
   type DocumentFieldActionsResolverContext,
-} from './document/fieldActions'
+} from './document/fieldActions/types'
 import {type DocumentInspector} from './document/inspector'
 import {type FormComponents} from './form/types'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'

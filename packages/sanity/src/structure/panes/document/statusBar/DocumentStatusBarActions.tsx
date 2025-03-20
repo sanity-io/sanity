@@ -10,10 +10,10 @@ import {
   useSource,
 } from 'sanity'
 
-import {Button} from '../../../../ui-components/button'
-import {Tooltip} from '../../../../ui-components/tooltip'
-import {RenderActionCollectionState} from '../../../components'
-import {HistoryRestoreAction} from '../../../documentActions'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
+import {HistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'

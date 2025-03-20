@@ -3,7 +3,7 @@ import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@s
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components/button'
+import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'

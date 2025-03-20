@@ -16,7 +16,7 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type DocumentFieldAction} from '../../config/document/fieldActions'
+import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../presence/types'
 import {
   type ArrayOfObjectsInputProps,

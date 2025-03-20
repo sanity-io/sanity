@@ -2,13 +2,11 @@ import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 
-import {
-  DeleteAction,
-  DiscardChangesAction,
-  DuplicateAction,
-  HistoryRestoreAction,
-  PublishAction,
-} from './documentActions'
+import {DeleteAction} from './documentActions/DeleteAction'
+import {DiscardChangesAction} from './documentActions/DiscardChangesAction'
+import {DuplicateAction} from './documentActions/DuplicateAction'
+import {HistoryRestoreAction} from './documentActions/HistoryRestoreAction'
+import {PublishAction} from './documentActions/PublishAction'
 import {UnpublishAction} from './documentActions/UnpublishAction'
 import {LiveEditBadge} from './documentBadges/LiveEditBadge'
 import {getIntentState} from './getIntentState'

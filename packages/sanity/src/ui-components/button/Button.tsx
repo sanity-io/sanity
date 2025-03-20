@@ -8,7 +8,7 @@ import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper/ConditionalWrapper'
-import {Tooltip, type TooltipProps} from '../tooltip'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 type BaseButtonProps = Pick<
   UIButtonProps,

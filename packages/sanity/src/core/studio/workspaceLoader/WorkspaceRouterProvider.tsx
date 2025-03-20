@@ -11,10 +11,10 @@ import {
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
-import {ErrorBoundary} from '../../../ui-components/errorBoundary'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {type Tool, type Workspace} from '../../config/types'
-import {createRouter} from '../router'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
+import {createRouter} from '../router/router'
 import {useRouterHistory} from '../router/RouterHistoryContext'
 import {type RouterHistory, type RouterStateEvent} from '../router/types'
 

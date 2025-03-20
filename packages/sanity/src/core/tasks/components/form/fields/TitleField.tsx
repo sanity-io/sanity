@@ -4,8 +4,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type FormPatch, type PatchEvent, set, unset} from '../../../../form/patch'
-import {type StringFieldProps} from '../../../../form/types'
+import {set, unset} from '../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../form/patch/types'
+import {type StringFieldProps} from '../../../../form/types/fieldProps'
 
 const Root = styled.div((props) => {
   const theme = getTheme_v2(props.theme)

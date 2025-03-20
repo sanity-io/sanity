@@ -3,7 +3,7 @@ import {useObservable} from 'react-rx'
 import {debounce, merge, share, skip, take, timer} from 'rxjs'
 
 import {useDocumentStore} from '../store/_legacy/datastores'
-import {type EditStateFor} from '../store/_legacy/document'
+import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
 
 /** @internal */
 export function useEditState(

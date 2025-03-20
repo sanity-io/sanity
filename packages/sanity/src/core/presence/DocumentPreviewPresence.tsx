@@ -5,7 +5,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '../../ui-components/tooltip'
+import {Tooltip, type TooltipProps} from '../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {type DocumentPresence} from '../store/_legacy/presence/types'
 import {isNonNullable} from '../util/isNonNullable'

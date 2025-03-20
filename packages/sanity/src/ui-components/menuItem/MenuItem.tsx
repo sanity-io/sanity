@@ -25,7 +25,7 @@ import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper/ConditionalWrapper'
-import {Tooltip, type TooltipProps} from '../tooltip'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0

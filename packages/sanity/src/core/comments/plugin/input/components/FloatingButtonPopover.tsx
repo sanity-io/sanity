@@ -4,10 +4,10 @@ import {motion, type Variants} from 'framer-motion'
 import {useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components/button'
-import {Popover, type PopoverProps} from '../../../../../ui-components/popover'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {CommentDisabledIcon} from '../../../components'
+import {CommentDisabledIcon} from '../../../components/icons/CommentDisabledIcon'
 import {commentsLocaleNamespace} from '../../../i18n'
 
 const MotionPopover = styled(motion.create(Popover))`

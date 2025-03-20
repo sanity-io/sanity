@@ -2,7 +2,8 @@ import {type Image, type ImageCrop, type ImageHotspot} from '@sanity/types'
 import {type SVGProps} from 'react'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {DiffTooltip, useDiffAnnotationColor} from '../../../diff'
+import {useDiffAnnotationColor} from '../../../diff/annotations/hooks'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../types'
 import {hexToRgba} from './helpers'
 

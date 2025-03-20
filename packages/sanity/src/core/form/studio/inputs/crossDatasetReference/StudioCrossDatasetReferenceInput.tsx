@@ -18,8 +18,8 @@ import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/searc
 import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useFormValue} from '../../../contexts/FormValue'
-import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {type ObjectInputProps} from '../../../types'
+import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
+import {type ObjectInputProps} from '../../../types/inputProps'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {search} from './datastores/search'
 

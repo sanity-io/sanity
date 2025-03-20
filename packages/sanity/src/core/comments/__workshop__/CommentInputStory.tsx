@@ -4,7 +4,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 import {useState} from 'react'
 
 import {useCurrentUser} from '../../store/user/hooks'
-import {CommentInput} from '../components'
+import {CommentInput} from '../components/pte/comment-input/CommentInput'
 import {CommentMessageSerializer} from '../components/pte/CommentMessageSerializer'
 
 const noop = () => {

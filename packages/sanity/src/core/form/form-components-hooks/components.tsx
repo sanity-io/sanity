@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {type ComponentType, useCallback} from 'react'
 
-import {type PreviewProps} from '../../components/previews'
+import {type PreviewProps} from '../../components/previews/types'
 import {
   defaultResolveAnnotationComponent,
   defaultResolveBlockComponent,
@@ -13,13 +13,10 @@ import {
   defaultResolvePreviewComponent,
 } from '../studio/inputResolver/inputResolver'
 import {defaultResolveItemComponent} from '../studio/inputResolver/itemResolver'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type InputProps,
-  type ItemProps,
-} from '../types'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
 
 function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
   componentProps: Omit<T, 'renderDefault'>
@@ -30,8 +27,6 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
   // NOTE: this will not happen, but we do this to avoid updating too many places
   // TODO: We need to clean up the preview machinery + types to remove this
   if (!componentProps.schemaType) {
-    console.log(componentProps)
-    debugger
     throw new Error('the `schemaType` property must be defined')
   }
 

@@ -4,8 +4,11 @@ import {useCallback} from 'react'
 import {ContextMenuButton} from 'sanity'
 import {Button} from 'sanity/ui-components'
 
-import {MenuButton, type MenuButtonProps} from '../../../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../../../ui-components/menuItem'
+import {
+  MenuButton,
+  type MenuButtonProps,
+} from '../../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,

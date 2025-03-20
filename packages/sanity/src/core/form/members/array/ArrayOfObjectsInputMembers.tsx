@@ -6,7 +6,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {ArrayOfObjectsInputMember} from './ArrayOfObjectsInputMember'
 
 /** @internal */

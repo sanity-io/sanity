@@ -1,6 +1,6 @@
 import {Box, Text} from '@sanity/ui'
 
-import {type LogoProps} from '../../../config/studio'
+import {type LogoProps} from '../../../config/studio/types'
 
 /**
  * @hidden

@@ -9,8 +9,8 @@ import {
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components/button'
-import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
   BlockQuote,

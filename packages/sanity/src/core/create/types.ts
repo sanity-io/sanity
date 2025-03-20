@@ -1,6 +1,6 @@
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
-import {type PatchEvent} from '../form/patch'
+import {type PatchEvent} from '../form/patch/PatchEvent'
 
 /** @internal */
 export interface CreateLinkMetadata {

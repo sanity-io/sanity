@@ -11,7 +11,7 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {type MenuButtonProps} from '../../../ui-components/menuButton'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'

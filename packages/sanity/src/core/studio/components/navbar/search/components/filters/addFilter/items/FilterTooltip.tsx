@@ -3,7 +3,7 @@ import {startCase, uniq} from 'lodash'
 import {useMemo} from 'react'
 
 import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
-import {TextWithTone} from '../../../../../../../../components/textWithTone'
+import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
 import {useSchema} from '../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../i18n/hooks/useTranslation'
 import {isNonNullable} from '../../../../../../../../util/isNonNullable'

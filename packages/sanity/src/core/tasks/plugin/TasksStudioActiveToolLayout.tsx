@@ -2,10 +2,10 @@ import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
-import {type ActiveToolLayoutProps} from '../../config/studio'
+import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
-import {useTasksEnabled} from '../context/enabled'
-import {useTasksNavigation} from '../context/navigation'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},

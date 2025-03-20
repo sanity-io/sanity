@@ -1,7 +1,7 @@
 import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 
-import {type PreviewProps} from '../../components/previews'
-import {type RenderPreviewCallbackProps} from '../../form/types'
+import {type PreviewProps} from '../../components/previews/types'
+import {type RenderPreviewCallbackProps} from '../../form/types/renderCallback'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'

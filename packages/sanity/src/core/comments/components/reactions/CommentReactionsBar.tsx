@@ -16,7 +16,7 @@ import {
   type CommentReactionShortNames,
   type CommentsUIMode,
 } from '../../types'
-import {ReactionIcon} from '../icons'
+import {ReactionIcon} from '../icons/ReactionIcon'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'

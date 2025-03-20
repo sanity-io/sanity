@@ -12,8 +12,8 @@ import {
 } from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 
-import {Button} from '../../../ui-components/button'
-import {Popover} from '../../../ui-components/popover'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover} from '../../../ui-components/popover/Popover'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createLocaleNamespace} from '../i18n'
 import {type CreateLinkedDocumentBannerContentProps} from '../types'

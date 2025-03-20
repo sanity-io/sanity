@@ -1,7 +1,7 @@
 import {type ReactNode, useContext, useMemo} from 'react'
 import {DocumentFieldActionsContext} from 'sanity/_singletons'
 
-import {type DocumentFieldAction} from '../../../config/document/fieldActions'
+import {type DocumentFieldAction} from '../../../config/document/fieldActions/types'
 import {EMPTY_ARRAY} from '../../../util/empty'
 
 export function DocumentFieldActionsProvider(props: {

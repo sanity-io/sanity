@@ -6,7 +6,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar'
+import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'
 import {useUser} from '../../store/user/hooks'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(

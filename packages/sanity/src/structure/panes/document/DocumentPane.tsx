@@ -15,7 +15,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'

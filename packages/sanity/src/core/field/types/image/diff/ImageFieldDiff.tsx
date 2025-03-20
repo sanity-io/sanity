@@ -3,14 +3,12 @@ import {Box, Card, Text} from '@sanity/ui'
 import {type TFunction} from 'i18next'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {
-  ChangeList,
-  DiffCard,
-  DiffTooltip,
-  getAnnotationAtPath,
-  useDocumentChange,
-} from '../../../diff'
-import {FromTo} from '../../../diff/components'
+import {getAnnotationAtPath} from '../../../diff/annotations/helpers'
+import {ChangeList} from '../../../diff/components/ChangeList'
+import {DiffCard} from '../../../diff/components/DiffCard'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromTo} from '../../../diff/components/FromTo'
+import {useDocumentChange} from '../../../diff/hooks/useDocumentChange'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 

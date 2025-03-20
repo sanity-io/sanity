@@ -4,7 +4,7 @@ import {useCallback} from 'react'
 
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {TooltipOfDisabled} from '../../../components/TooltipOfDisabled'
-import {type DocumentFieldActionItem} from '../../../config/document/fieldActions'
+import {type DocumentFieldActionItem} from '../../../config/document/fieldActions/types'
 import {useI18nText} from '../../../i18n/hooks/useI18nText'
 
 export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {

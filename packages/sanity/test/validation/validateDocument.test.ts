@@ -12,7 +12,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config/types'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
-import {createSchema} from '../../src/core/schema'
+import {createSchema} from '../../src/core/schema/createSchema'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {
   resolveTypeForArrayItem,

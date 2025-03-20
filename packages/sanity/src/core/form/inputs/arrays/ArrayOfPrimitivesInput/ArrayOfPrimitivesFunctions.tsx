@@ -5,11 +5,11 @@ import {Grid, Menu} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../../ui-components/menuItem'
-import {Tooltip} from '../../../../../ui-components/tooltip'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {type ArrayInputFunctionsProps} from '../../../types'
+import {type ArrayInputFunctionsProps} from '../../../types/_transitional'
 
 /**
  * @hidden

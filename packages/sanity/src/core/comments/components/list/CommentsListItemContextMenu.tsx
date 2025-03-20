@@ -3,17 +3,17 @@ import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import {type TFunction} from 'i18next'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components/button'
-import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../ui-components/menuItem'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'
-import {ReactionIcon} from '../icons'
-import {CommentReactionsMenuButton} from '../reactions'
+import {ReactionIcon} from '../icons/ReactionIcon'
+import {CommentReactionsMenuButton} from '../reactions/CommentReactionsMenuButton'
 
 const renderMenuButton = ({
   open,

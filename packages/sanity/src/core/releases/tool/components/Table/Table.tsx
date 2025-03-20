@@ -20,8 +20,8 @@ import {
   useRef,
 } from 'react'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {TableHeader} from './TableHeader'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'

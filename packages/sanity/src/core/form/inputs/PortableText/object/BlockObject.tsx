@@ -14,24 +14,26 @@ import {
 } from 'react'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {pathToString} from '../../../../field/paths'
+import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../util/empty'
-import {useFormCallbacks} from '../../../studio/contexts'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
-  type BlockProps,
+  type RenderBlockActionsCallback,
+  type RenderCustomMarkers,
+} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
-import {type RenderBlockActionsCallback} from '../../../types/_transitional'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {ReviewChangesHighlightBlock} from '../_common'
+import {ReviewChangesHighlightBlock} from '../_common/ReviewChangesHighlightBlock'
 import {StyledChangeIndicatorWithProvidedFullPath} from '../_common/StyledChangeIndicatorWithProvidedFullPath'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'

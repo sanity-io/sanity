@@ -1,7 +1,7 @@
 import {isEqual} from 'lodash'
 import {lazy, memo, Suspense} from 'react'
 
-import {PaneRouterProvider} from '../components/paneRouter'
+import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading/LoadingPane'
 import {UnknownPane} from './unknown/UnknownPaneType'

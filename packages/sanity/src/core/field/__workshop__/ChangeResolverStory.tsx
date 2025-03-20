@@ -4,7 +4,8 @@ import {useCallback, useMemo} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {useSchema} from '../../hooks/useSchema'
-import {ChangeResolver, type DocumentChangeContextInstance} from '../diff'
+import {ChangeResolver} from '../diff/components/ChangeResolver'
+import {type DocumentChangeContextInstance} from '../diff/contexts/DocumentChangeContext'
 import {type FieldChangeNode, type ObjectDiff, type StringDiff} from '../types'
 
 export default function ChangeResolverStory() {

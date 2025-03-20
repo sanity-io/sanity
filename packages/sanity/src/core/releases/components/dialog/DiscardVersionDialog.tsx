@@ -2,7 +2,7 @@ import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
-import {LoadingBlock} from '../../../components/loadingBlock'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

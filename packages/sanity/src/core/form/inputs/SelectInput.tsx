@@ -12,8 +12,9 @@ import {
 } from 'react'
 
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
+import {set, unset} from '../patch/patch'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,

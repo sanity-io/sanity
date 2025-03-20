@@ -18,7 +18,7 @@ import {ContextMenuButton} from '../core/components/contextMenuButton/ContextMen
 import {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 import {ErrorActions} from '../core/components/errorActions/ErrorActions'
-import {GetHookCollectionState} from '../core/components/hookCollection'
+import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 import {Hotkeys} from '../core/components/Hotkeys'
 import {DateTimeInput} from '../core/components/inputs/DateInputs/DateTimeInput'
 import {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
@@ -30,12 +30,12 @@ import {
   type PreviewLayoutKey,
   type PreviewProps,
 } from '../core/components/previews/types'
-import {LinearProgress} from '../core/components/progress'
+import {LinearProgress} from '../core/components/progress/LinearProgress'
 import {Resizable} from '../core/components/resizer/Resizable'
 import {StatusButton} from '../core/components/StatusButton'
 import {TextWithTone} from '../core/components/textWithTone/TextWithTone'
 import {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
-import {LegacyLayerProvider} from '../core/components/transitional'
+import {LegacyLayerProvider} from '../core/components/transitional/LegacyLayerProvider'
 import {AvatarSkeleton, UserAvatar} from '../core/components/userAvatar/UserAvatar'
 import {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 import {useZIndex} from '../core/components/zOffsets/useZIndex'
@@ -111,7 +111,7 @@ import {GetFormValueProvider} from '../core/form/contexts/GetFormValue'
 import {FieldActionsProvider} from '../core/form/field/actions/FieldActionsProvider'
 import {FieldActionsResolver} from '../core/form/field/actions/FieldActionsResolver'
 import {useFieldActions} from '../core/form/field/actions/useFieldActions'
-import {BlockEditor, getCalendarLabels} from '../core/form/inputs'
+import {BlockEditor} from '../core/form/inputs'
 import {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
 import {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
@@ -122,9 +122,10 @@ import {BooleanInput} from '../core/form/inputs/BooleanInput'
 import {
   CrossDatasetReferenceInput,
   type CrossDatasetReferenceInputProps,
-} from '../core/form/inputs/CrossDatasetReferenceInput'
+} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
 import {DateInput, type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
 import {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
+import {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
 import {EmailInput} from '../core/form/inputs/EmailInput'
 import {NumberInput} from '../core/form/inputs/NumberInput'
 import {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
@@ -151,12 +152,9 @@ import {
   ReferenceInputOptionsProvider,
 } from '../core/form/studio/contexts/ReferenceInputOptions'
 import {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
-import {
-  FileInput,
-  type FileInputProps,
-  ImageInput,
-  type ImageInputProps,
-} from '../core/form/studio/inputs'
+import {FileInput, ImageInput} from '../core/form/studio/inputs'
+import {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
+import {type ImageInputProps} from '../core/form/studio/inputs/StudioImageInput'
 import {type FormDocumentValue} from '../core/form/types/formDocumentValue'
 import {
   type ArrayOfObjectsInputProps,
@@ -206,13 +204,11 @@ import {
   getVersionInlineBadge,
   VersionInlineBadge,
 } from '../core/releases/components/VersionInlineBadge'
-import {
-  useDocumentVersions,
-  useDocumentVersionTypeSortedList,
-  useIsReleaseActive,
-  useOnlyHasVersions,
-  useVersionOperations,
-} from '../core/releases/hooks'
+import {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
+import {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
+import {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
+import {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
+import {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 import {RELEASES_INTENT} from '../core/releases/plugin'
 import {
   isReleaseDocument,
@@ -287,10 +283,8 @@ import {
 } from '../core/studio/colorScheme'
 import {Filters} from '../core/studio/components/navbar/search/components/filters/Filters'
 import {SearchHeader} from '../core/studio/components/navbar/search/components/SearchHeader'
-import {
-  SearchProvider,
-  useSearchState,
-} from '../core/studio/components/navbar/search/contexts/search'
+import {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
+import {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
 import {useSearchMaxFieldDepth} from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 import {renderStudio} from '../core/studio/renderStudio'

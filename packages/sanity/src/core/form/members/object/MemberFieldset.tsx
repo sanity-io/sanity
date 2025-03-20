@@ -11,7 +11,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 

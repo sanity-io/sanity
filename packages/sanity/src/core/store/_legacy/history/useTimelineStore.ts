@@ -16,10 +16,10 @@ import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useHistoryStore} from '../datastores'
-import {type RemoteSnapshotVersionEvent} from '../document'
+import {type RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
-import {type SelectionState, type TimelineController} from './history'
+import {type SelectionState, type TimelineController} from './history/TimelineController'
 
 interface UseTimelineControllerOpts {
   documentId: string

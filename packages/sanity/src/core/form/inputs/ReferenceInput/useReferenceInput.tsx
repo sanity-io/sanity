@@ -16,7 +16,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {useFormValue} from '../../contexts/FormValue'
-import {useReferenceInputOptions} from '../../studio/contexts'
+import {useReferenceInputOptions} from '../../studio/contexts/ReferenceInputOptions'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {type EditReferenceEvent} from './types'
 

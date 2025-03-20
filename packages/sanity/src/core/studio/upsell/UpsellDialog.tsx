@@ -5,8 +5,8 @@ import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components/button'
-import {Dialog} from '../../../ui-components/dialog'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type UpsellData} from './types'
 import {
   type InterpolationProp,

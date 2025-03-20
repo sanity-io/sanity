@@ -10,15 +10,14 @@ import {
   type LocaleSource,
 } from 'sanity'
 
+import {type Intent} from './structureBuilder/Intent'
 import {
   type DefaultDocumentNodeResolver,
-  type Intent,
-  type MenuItem as StructureToolMenuItem,
   type StructureBuilder,
   type StructureContext,
   type UserComponent,
   type View,
-} from './structureBuilder'
+} from './structureBuilder/types'
 
 /** @internal */
 export interface StructureToolFeatures {

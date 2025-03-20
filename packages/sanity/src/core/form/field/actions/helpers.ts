@@ -1,4 +1,4 @@
-import {type DocumentFieldActionNode} from '../../../config/document/fieldActions'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 
 export function filterActions(actions: DocumentFieldActionNode[]): DocumentFieldActionNode[] {
   return actions

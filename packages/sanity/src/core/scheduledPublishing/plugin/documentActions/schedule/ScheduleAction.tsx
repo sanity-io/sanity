@@ -8,7 +8,7 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
-import {useDocumentPairPermissions} from '../../../../store/_legacy/grants'
+import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'

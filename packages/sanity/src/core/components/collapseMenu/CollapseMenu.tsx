@@ -14,8 +14,8 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {type MenuButtonProps} from '../../../ui-components/menuButton'
-import {Tooltip} from '../../../ui-components/tooltip'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'

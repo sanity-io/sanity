@@ -9,7 +9,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'

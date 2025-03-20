@@ -1,11 +1,11 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 
+import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {
-  CommandList,
   type CommandListGetItemDisabledCallback,
   type CommandListRenderItemCallback,
-} from '../../../../../../../components/commandList'
+} from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'

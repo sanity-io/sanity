@@ -14,8 +14,8 @@ import {
 } from 'react'
 import {isValidElementType} from 'react-is'
 
-import {Tooltip} from '../../../ui-components/tooltip'
-import {type PreviewProps} from '../../components/previews'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {type PreviewProps} from '../../components/previews/types'
 import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'

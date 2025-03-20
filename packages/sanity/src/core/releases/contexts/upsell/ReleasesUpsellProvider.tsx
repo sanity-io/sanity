@@ -12,7 +12,7 @@ import {
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
-} from '../../../studio/upsell'
+} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'

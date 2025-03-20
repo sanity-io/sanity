@@ -5,12 +5,12 @@ import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
+import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {
-  CommandList,
   type CommandListGetItemSelectedCallback,
   type CommandListHandle,
   type CommandListRenderItemCallback,
-} from '../../../../../../../components/commandList'
+} from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'

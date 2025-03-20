@@ -1,4 +1,4 @@
-import {type UpsellDialogViewedInfo} from '../../../studio/upsell'
+import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 
 export interface ReleasesUpsellContextValue {
   /**

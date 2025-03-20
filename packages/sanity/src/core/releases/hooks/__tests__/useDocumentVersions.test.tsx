@@ -2,7 +2,7 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {delay, of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'

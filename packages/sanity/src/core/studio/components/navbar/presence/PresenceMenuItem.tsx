@@ -4,7 +4,7 @@ import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {UserAvatar} from '../../../../components/userAvatar'
+import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type GlobalPresence} from '../../../../store/_legacy/presence/types'
 

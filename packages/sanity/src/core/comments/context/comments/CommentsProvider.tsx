@@ -8,14 +8,14 @@ import {useSchema} from '../../../hooks/useSchema'
 import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
 import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {useAddonDataset} from '../../../studio/addonDataset'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {useWorkspace} from '../../../studio/workspace'
 import {getPublishedId} from '../../../util/draftUtils'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
-  useCommentsEnabled,
-} from '../../hooks'
+} from '../../hooks/use-comment-operations/useCommentOperations'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,

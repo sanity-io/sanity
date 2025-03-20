@@ -4,7 +4,8 @@ import {useCallback, useMemo} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {useSchema} from '../../hooks/useSchema'
-import {ChangeList, type DocumentChangeContextInstance} from '../diff'
+import {ChangeList} from '../diff/components/ChangeList'
+import {type DocumentChangeContextInstance} from '../diff/contexts/DocumentChangeContext'
 import {type ObjectDiff, type StringDiff} from '../types'
 
 export default function ChangeListStory() {

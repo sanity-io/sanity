@@ -1,5 +1,5 @@
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from './constants'
-import {_calcPaneResize} from './helpers'
+import {_calcPaneResize} from './helpers/_calcPaneResize'
 import {_sortElements} from './helpers/_sortElements'
 import {
   type PaneConfigOpts,

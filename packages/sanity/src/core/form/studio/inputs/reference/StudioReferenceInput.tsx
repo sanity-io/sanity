@@ -26,8 +26,8 @@ import {
   type CreateReferenceOption,
   type EditReferenceEvent,
 } from '../../../inputs/ReferenceInput/types'
-import {type ObjectInputProps} from '../../../types'
-import {useReferenceInputOptions} from '../../contexts'
+import {type ObjectInputProps} from '../../../types/inputProps'
+import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 

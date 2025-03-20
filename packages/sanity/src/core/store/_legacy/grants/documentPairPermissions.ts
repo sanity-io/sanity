@@ -12,8 +12,9 @@ import {createHookFromObservableFactory} from '../../../util/createHookFromObser
 import {getDraftId, getIdPair, getPublishedId} from '../../../util/draftUtils'
 import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
-import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
+import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
+import {type DocumentStoreExtraOptions} from '../document/getPairListener'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {

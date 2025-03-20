@@ -4,11 +4,11 @@ import {useMemo} from 'react'
 
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
-import {type PreviewLayoutKey} from '../../../components/previews'
-import {DocumentPreviewPresence} from '../../../presence'
+import {type PreviewLayoutKey} from '../../../components/previews/types'
+import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersionInfo} from '../../../releases/store/useDocumentVersionInfo'
 import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
-import {type RenderPreviewCallback} from '../../types'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 /**
  * Used to preview a referenced type

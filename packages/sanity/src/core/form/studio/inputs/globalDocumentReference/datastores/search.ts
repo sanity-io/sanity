@@ -7,7 +7,7 @@ import {
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {type Groq2024SearchResults} from '../../../../../search'
+import {type Groq2024SearchResults} from '../../../../../search/common/types'
 import {createSearchQuery} from '../../../../../search/groq2024/createSearchQuery'
 import {getNextCursor} from '../../../../../search/groq2024/getNextCursor'
 import {type SearchParams} from '../../../../../search/weighted/createSearchQuery'

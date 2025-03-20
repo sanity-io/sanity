@@ -3,9 +3,9 @@ import {Card, Grid, Stack, useToast} from '@sanity/ui'
 import {useBoolean, useProps} from '@sanity/ui-workshop'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {PresenceOverlay} from '../../presence'
-import {type PatchEvent} from '../patch'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {applyAll} from '../patch/applyPatch'
+import {type PatchEvent} from '../patch/PatchEvent'
 import {FilterFieldInput, FormDebugger, TypeTester} from './_common'
 import {getDummyDocument} from './_common/data'
 

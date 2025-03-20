@@ -9,16 +9,15 @@ import {ArrayOfObjectsItem} from '../members/array/items/ArrayOfObjectsItem'
 import {MemberItemError} from '../members/array/MemberItemError'
 import {MemberField} from '../members/object/MemberField'
 import {type FieldMember} from '../store/types/members'
+import {type ArrayOfObjectsInputProps, type ObjectInputProps} from '../types/inputProps'
 import {
-  type ArrayOfObjectsInputProps,
-  type ObjectInputProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../types'
+} from '../types/renderCallback'
 import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
 
 const pass = ({children}: {children: ReactNode}) => children

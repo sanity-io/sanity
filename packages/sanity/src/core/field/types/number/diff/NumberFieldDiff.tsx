@@ -1,4 +1,4 @@
-import {DiffFromTo} from '../../../diff'
+import {DiffFromTo} from '../../../diff/components/DiffFromTo'
 import {type DiffComponent, type NumberDiff} from '../../../types'
 import {NumberPreview} from '../preview/NumberPreview'
 

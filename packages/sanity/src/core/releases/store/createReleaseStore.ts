@@ -20,7 +20,7 @@ import {
 } from 'rxjs'
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {listenQuery} from '../../store/_legacy/document/listenQuery'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'

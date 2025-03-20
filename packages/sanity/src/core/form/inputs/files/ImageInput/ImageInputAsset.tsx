@@ -3,7 +3,7 @@ import {Box, type CardTone} from '@sanity/ui'
 import {type FocusEvent, memo, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
-import {type InputProps} from '../../../types'
+import {type InputProps} from '../../../types/inputProps'
 import {FileTarget} from '../common/styles'
 import {UploadWarning} from '../common/UploadWarning'
 import {type ImageUrlBuilder} from '../types'

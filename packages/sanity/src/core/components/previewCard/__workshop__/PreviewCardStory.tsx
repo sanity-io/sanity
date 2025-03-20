@@ -2,7 +2,7 @@ import {EditIcon, PublishIcon} from '@sanity/icons'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 
-import {DocumentPreviewPresence} from '../../../presence'
+import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {TextWithTone} from '../../textWithTone/TextWithTone'
 import {PreviewCard} from '../PreviewCard'
 

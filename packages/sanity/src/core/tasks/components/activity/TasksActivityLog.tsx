@@ -5,8 +5,9 @@ import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {CommentDeleteDialog, type CommentInputProps} from '../../../comments/components'
-import {useComments} from '../../../comments/hooks'
+import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
+import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
+import {useComments} from '../../../comments/hooks/useComments'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
@@ -14,8 +15,10 @@ import {
   type CommentThreadItem,
   type CommentUpdatePayload,
 } from '../../../comments/types'
-import {LoadingBlock} from '../../../components/loadingBlock'
-import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {set} from '../../../form/patch/patch'
+import {type PatchEvent} from '../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../form/patch/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useWorkspace} from '../../../studio/workspace'

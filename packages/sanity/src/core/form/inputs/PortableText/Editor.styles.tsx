@@ -4,8 +4,9 @@ import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
+import {ScrollContainer} from '../../../components/scroll/scrollContainer'
+import {TEXT_LEVELS} from './text/constants'
+import {createListName} from './text/helpers'
 
 export const Root = styled(Card)`
   &[data-fullscreen='true'] {

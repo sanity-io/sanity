@@ -2,7 +2,7 @@ import {Card, useClickOutsideEvent} from '@sanity/ui'
 import {type TFunction} from 'i18next'
 import {cloneElement, useCallback, useMemo, useRef, useState} from 'react'
 
-import {Popover, type PopoverProps} from '../../../../ui-components/popover'
+import {Popover, type PopoverProps} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentsUIMode} from '../../types'

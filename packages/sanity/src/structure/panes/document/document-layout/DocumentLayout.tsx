@@ -15,7 +15,9 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {Pane} from '../../../components/pane/Pane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'

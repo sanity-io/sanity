@@ -2,7 +2,8 @@ import {Card, Code, ErrorBoundary, Stack} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 
 import {Button} from '../../../../../../ui-components/button/Button'
-import {PreviewLoader, SanityDefaultPreview} from '../../../../../preview'
+import {PreviewLoader} from '../../../../../preview/components/PreviewLoader'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 
 export const resolvePreviewComponent = () => TestPreview
 

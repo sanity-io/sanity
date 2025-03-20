@@ -3,7 +3,7 @@ import {type TFunction} from 'i18next'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {TextWithTone} from '../../../../../../components/textWithTone'
+import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {Translate, type TranslateComponentMap} from '../../../../../../i18n/Translate'
 import {isRecord} from '../../../../../../util/isRecord'

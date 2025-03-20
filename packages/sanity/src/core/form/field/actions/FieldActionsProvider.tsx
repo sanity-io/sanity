@@ -2,8 +2,8 @@ import {type Path} from '@sanity/types'
 import {memo, type PropsWithChildren, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
-import {type DocumentFieldActionNode} from '../../../config/document/fieldActions'
-import {pathToString} from '../../../field/paths'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {pathToString} from '../../../field/paths/helpers'
 import {supportsTouch} from '../../../util/supportsTouch'
 import {useHoveredField} from '../useHoveredField'
 

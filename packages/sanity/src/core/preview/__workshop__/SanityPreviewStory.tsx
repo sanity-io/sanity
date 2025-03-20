@@ -3,7 +3,7 @@ import {Box, Card, Container} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {type PreviewLayoutKey} from '../../components'
+import {type PreviewLayoutKey} from '../../components/previews/types'
 import {useSchema} from '../../hooks/useSchema'
 import {Preview} from '../components/Preview'
 import {type Previewable} from '../types'

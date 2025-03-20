@@ -3,7 +3,7 @@ import {Card, Flex, Inline, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {LinearProgress} from '../../../../components/progress'
+import {LinearProgress} from '../../../../components/progress/LinearProgress'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {STALE_UPLOAD_MS} from '../constants'

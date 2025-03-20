@@ -23,7 +23,7 @@ import {
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../i18n'

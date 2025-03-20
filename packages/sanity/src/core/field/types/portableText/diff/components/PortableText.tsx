@@ -10,7 +10,7 @@ import {uniq, xor} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {DiffCard} from '../../../../diff'
+import {DiffCard} from '../../../../diff/components/DiffCard'
 import {
   type ArrayDiff,
   type ObjectDiff,

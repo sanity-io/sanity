@@ -1,7 +1,7 @@
 import {Box, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {DiffCard} from '../diff'
+import {DiffCard} from '../diff/components/DiffCard'
 import {type Diff} from '../types'
 
 export default function DiffCardStory() {

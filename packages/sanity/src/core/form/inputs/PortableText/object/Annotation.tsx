@@ -9,16 +9,16 @@ import {EMPTY_ARRAY} from '../../../../util/empty'
 import {pathToString} from '../../../../validation/util/pathToString'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockAnnotationProps} from '../../../types/blockProps'
 import {
-  type BlockAnnotationProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'

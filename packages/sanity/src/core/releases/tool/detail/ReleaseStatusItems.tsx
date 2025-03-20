@@ -2,7 +2,7 @@ import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {RelativeTime} from '../../../components/RelativeTime'
-import {AvatarSkeleton, UserAvatar} from '../../../components/userAvatar'
+import {AvatarSkeleton, UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'

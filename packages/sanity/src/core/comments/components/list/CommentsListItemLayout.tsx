@@ -35,12 +35,12 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
 import {SpacerAvatar} from '../avatars/SpacerAvatar'
 import {FLEX_GAP} from '../constants'
-import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
-import {CommentReactionsBar} from '../reactions'
+import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 

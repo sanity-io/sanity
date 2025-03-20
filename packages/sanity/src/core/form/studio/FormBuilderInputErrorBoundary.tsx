@@ -6,7 +6,7 @@ import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {SchemaError} from '../../config/SchemaError'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {CorsOriginError} from '../../store/_legacy/cors'
+import {CorsOriginError} from '../../store/_legacy/cors/CorsOriginError'
 import {isRecord} from '../../util/isRecord'
 import {Alert} from '../components/Alert'
 

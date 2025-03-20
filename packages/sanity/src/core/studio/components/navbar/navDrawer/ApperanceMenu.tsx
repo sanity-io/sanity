@@ -1,7 +1,7 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
 
-import {Button} from '../../../../../ui-components/button'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type StudioThemeColorSchemeKey} from '../../../../theme/types'
 import {useColorSchemeOptions} from '../../../colorScheme'

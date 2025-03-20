@@ -3,7 +3,7 @@ import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 
 import {ContextMenuButton} from '../../contextMenuButton/ContextMenuButton'
-import {CollapseMenu} from '../'
+import {CollapseMenu} from '../CollapseMenu'
 import {CollapseMenuButton} from '../CollapseMenuButton'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}

@@ -1,8 +1,8 @@
 import {LinkIcon, TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 
-import {MenuButton} from '../../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../../ui-components/menuItem'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type AssetMenuAction} from '../types'

@@ -3,7 +3,7 @@ import {defineField, defineType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core/schema'
+import {createSchema} from '../../src/core/schema/createSchema'
 
 describe('Extract studio manifest', () => {
   describe('serialize validation rules', () => {

@@ -7,8 +7,8 @@ import {Button} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
-import {SerializeError} from '../../structureBuilder'
-import {PaneResolutionError} from '../../structureResolvers'
+import {SerializeError} from '../../structureBuilder/SerializeError'
+import {PaneResolutionError} from '../../structureResolvers/PaneResolutionError'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {

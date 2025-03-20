@@ -7,7 +7,7 @@ import {DefaultAnnotationComponent} from '../../inputs/PortableText/object/Annot
 import {DefaultBlockObjectComponent} from '../../inputs/PortableText/object/BlockObject'
 import {DefaultInlineObjectComponent} from '../../inputs/PortableText/object/InlineObject'
 import {DefaultComponent as DefaultBlockTextComponent} from '../../inputs/PortableText/text/TextBlock'
-import {type BlockAnnotationProps, type BlockProps} from '../../types'
+import {type BlockAnnotationProps, type BlockProps} from '../../types/blockProps'
 
 export function defaultResolveBlockComponent(
   schemaType: SchemaType,

@@ -4,12 +4,12 @@ import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu} from '@sanity/ui'
 import {memo, useCallback, useId, useMemo, useState} from 'react'
 
-import {Button, type ButtonProps} from '../../../../ui-components/button'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {
   type DocumentFieldActionGroup,
   type DocumentFieldActionNode,
-} from '../../../config/document/fieldActions'
+} from '../../../config/document/fieldActions/types'
 import {useI18nText} from '../../../i18n/hooks/useI18nText'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 

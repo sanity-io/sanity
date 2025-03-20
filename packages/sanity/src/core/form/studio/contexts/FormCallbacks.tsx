@@ -5,7 +5,7 @@ import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type PatchEvent} from '../../patch/PatchEvent'
 import {type FormPatch} from '../../patch/types'
-import {type OnPathFocusPayload} from '../../types'
+import {type OnPathFocusPayload} from '../../types/inputProps'
 
 /** @internal */
 export interface FormCallbacksValue {

@@ -4,7 +4,7 @@ import {motion} from 'framer-motion'
 import {type ComponentType, type ReactNode, useCallback, useState} from 'react'
 import {Button, MenuButton, MenuItem, Tab} from 'sanity/ui-components'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 
 function DelayedDiv({children, show}: {show: boolean; children: ReactNode}) {

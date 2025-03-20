@@ -60,7 +60,7 @@ import type {
 import {describe, it} from 'vitest'
 
 import {type PreviewProps} from '../../components/previews/types'
-import {type CrossDatasetReferenceInputProps} from '../inputs/CrossDatasetReferenceInput'
+import {type CrossDatasetReferenceInputProps} from '../inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
 import {type ReferenceInputProps} from '../inputs/ReferenceInput/types'
 import {
   type ArrayFieldProps,

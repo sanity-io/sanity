@@ -18,7 +18,7 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'

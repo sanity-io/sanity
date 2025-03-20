@@ -1,8 +1,8 @@
 import {EarthAmericasIcon} from '@sanity/icons'
 import {Box} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components/button'
-import {Tooltip} from '../../../../ui-components/tooltip'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import useDialogTimeZone from '../../hooks/useDialogTimeZone'
 import useTimeZone from '../../hooks/useTimeZone'
 

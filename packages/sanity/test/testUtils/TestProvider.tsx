@@ -12,10 +12,11 @@ import {usEnglishLocale} from '../../src/core/i18n/locales'
 import {type LocaleResourceBundle} from '../../src/core/i18n/types'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ResourceCacheProvider} from '../../src/core/store/_legacy/ResourceCacheProvider'
-import {CopyPasteProvider} from '../../src/core/studio/copyPaste'
+import {CopyPasteProvider} from '../../src/core/studio/copyPaste/CopyPasteProvider'
 import {SourceProvider} from '../../src/core/studio/source'
 import {WorkspaceProvider} from '../../src/core/studio/workspace'
-import {route, RouterProvider} from '../../src/router'
+import {route} from '../../src/router/route'
+import {RouterProvider} from '../../src/router/RouterProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {

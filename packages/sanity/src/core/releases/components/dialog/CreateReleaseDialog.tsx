@@ -2,7 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
-import {Button} from '../../../../ui-components/button'
+import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'

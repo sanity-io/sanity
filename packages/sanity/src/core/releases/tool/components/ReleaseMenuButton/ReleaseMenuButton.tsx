@@ -4,9 +4,9 @@ import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanit
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button} from '../../../../../ui-components/button'
+import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
-import {Popover} from '../../../../../ui-components/popover'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'

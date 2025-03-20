@@ -3,12 +3,13 @@ import {type PortableTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {type PatchEvent} from '../../patch'
+import {type PatchEvent} from '../../patch/PatchEvent'
 import {
   type RenderBlockActionsCallback,
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
-import {createInsertCallback, createSetCallback} from './callbacks'
+import {createInsertCallback} from './callbacks/insertCallback'
+import {createSetCallback} from './callbacks/setCallback'
 import {createUnsetCallback} from './callbacks/unsetCallback'
 
 interface BlockActionsProps {

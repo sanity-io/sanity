@@ -6,19 +6,19 @@ import {styled} from 'styled-components'
 import {type DocumentInspectorProps} from '../../../config/document/inspector'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {CommentDeleteDialog, CommentsList, CommentsOnboardingPopover} from '../../components'
+import {CommentDeleteDialog} from '../../components/CommentDeleteDialog'
+import {CommentsList} from '../../components/list/CommentsList'
+import {CommentsOnboardingPopover} from '../../components/onboarding/CommentsOnboardingPopover'
 import {CommentsUpsellPanel} from '../../components/upsell/CommentsUpsellPanel'
-import {type CommentsSelectedPath} from '../../context'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {isTextSelectionComment} from '../../helpers'
-import {
-  useComments,
-  useCommentsEnabled,
-  useCommentsOnboarding,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsTelemetry,
-  useCommentsUpsell,
-} from '../../hooks'
+import {useComments} from '../../hooks/useComments'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsOnboarding} from '../../hooks/useCommentsOnboarding'
+import {useCommentsScroll} from '../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
+import {useCommentsTelemetry} from '../../hooks/useCommentsTelemetry'
+import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,

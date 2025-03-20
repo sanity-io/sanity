@@ -16,7 +16,7 @@ import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
 import {ErrorBoundary} from 'sanity/ui-components'
 
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 

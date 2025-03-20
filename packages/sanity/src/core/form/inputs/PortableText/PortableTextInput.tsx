@@ -37,12 +37,12 @@ import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
-import {SANITY_PATCH_TYPE} from '../../patch'
+import {SANITY_PATCH_TYPE} from '../../patch/patch'
 import {type ArrayOfObjectsItemMember} from '../../store/types/members'
 import {type ObjectFormNode} from '../../store/types/nodes'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
-import {type PortableTextInputProps} from '../../types'
+import {type PortableTextInputProps} from '../../types/inputProps'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'

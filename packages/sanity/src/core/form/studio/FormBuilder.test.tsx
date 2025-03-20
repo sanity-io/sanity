@@ -9,11 +9,11 @@ import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {EMPTY_ARRAY} from '../../util/empty'
-import {createPatchChannel} from '../patch'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {useFormState} from '../store/useFormState'
-import {type FormDocumentValue} from '../types'
+import {type FormDocumentValue} from '../types/formDocumentValue'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeEditingEnabled} from './tree-editing'
+import {useTreeEditingEnabled} from './tree-editing/context/enabled/useTreeEditingEnabled'
 
 const schemaTypes = [
   defineType({

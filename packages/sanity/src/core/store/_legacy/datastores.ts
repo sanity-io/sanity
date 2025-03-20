@@ -21,17 +21,18 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {type LatencyReportEvent} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
+import {type LatencyReportEvent} from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
-import {createGrantsStore} from './grants'
+import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
-import {createHistoryStore, type HistoryStore} from './history'
+import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
 import {createPresenceStore, type PresenceStore} from './presence/presence-store'
-import {createProjectStore, type ProjectStore} from './project'
+import {createProjectStore} from './project/projectStore'
+import {type ProjectStore} from './project/types'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user/userStore'
 

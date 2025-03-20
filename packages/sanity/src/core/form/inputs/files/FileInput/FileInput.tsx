@@ -17,21 +17,22 @@ import {get, startCase} from 'lodash'
 import {PureComponent, type ReactNode} from 'react'
 import {type Observable, type Subscription} from 'rxjs'
 
-import {Button} from '../../../../../ui-components/button'
-import {MenuButton} from '../../../../../ui-components/menuButton'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
-import {ImperativeToast} from '../../../../components/transitional'
+import {ImperativeToast} from '../../../../components/transitional/ImperativeToast'
 import {MemberField} from '../../../members/object/MemberField'
 import {MemberFieldError} from '../../../members/object/MemberFieldError'
 import {MemberFieldSet} from '../../../members/object/MemberFieldset'
-import {PatchEvent, setIfMissing, unset} from '../../../patch'
+import {setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {
   type Uploader,
   type UploaderResolver,
   type UploadOptions,
 } from '../../../studio/uploads/types'
-import {type InputProps, type ObjectInputProps} from '../../../types'
+import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {type FileInfo} from '../../common/fileTarget/fileTarget'
 import {ActionsMenu} from '../common/ActionsMenu'

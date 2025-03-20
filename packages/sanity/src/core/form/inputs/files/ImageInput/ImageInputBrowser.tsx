@@ -4,9 +4,9 @@ import {Menu} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
-import {Button} from '../../../../../ui-components/button'
-import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../../ui-components/menuItem'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type BaseImageInputProps} from './types'
 

@@ -25,7 +25,7 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {prepareForPreview} from '../../../preview/utils/prepareForPreview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio/source'

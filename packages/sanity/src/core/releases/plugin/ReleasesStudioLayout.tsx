@@ -1,4 +1,4 @@
-import {type LayoutProps} from '../../config/studio'
+import {type LayoutProps} from '../../config/studio/types'
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
 import {useReleasesToolAvailable} from '../hooks/useReleasesToolAvailable'

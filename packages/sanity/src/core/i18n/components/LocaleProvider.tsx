@@ -3,7 +3,7 @@ import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalS
 import {I18nextProvider} from 'react-i18next'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
 
-import {LoadingBlock} from '../../components/loadingBlock'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {useSource} from '../../studio/source'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'

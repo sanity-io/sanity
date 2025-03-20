@@ -13,16 +13,16 @@ import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
 import {
-  type BlockProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {useMemberValidation} from '../hooks/useMemberValidation'

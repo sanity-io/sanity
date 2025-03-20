@@ -12,7 +12,10 @@ import {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../../src/core/form/studio/defaults'
-import {type ArrayOfObjectsInputProps, type ComplexElementProps} from '../../src/core/form/types'
+import {
+  type ArrayOfObjectsInputProps,
+  type ComplexElementProps,
+} from '../../src/core/form/types/inputProps'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 

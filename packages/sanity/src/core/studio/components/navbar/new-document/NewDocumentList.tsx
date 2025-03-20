@@ -3,7 +3,7 @@ import {Flex, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {CommandList} from '../../../../components/commandList'
+import {CommandList} from '../../../../components/commandList/CommandList'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'

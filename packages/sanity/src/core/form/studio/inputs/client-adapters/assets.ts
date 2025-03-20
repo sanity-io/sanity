@@ -3,7 +3,7 @@ import {type FileAsset, type ImageAsset} from '@sanity/types'
 import {Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../../../preview'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type UploadOptions} from '../../uploads/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 

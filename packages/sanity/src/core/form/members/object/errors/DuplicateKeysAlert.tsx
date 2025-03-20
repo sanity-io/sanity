@@ -8,7 +8,8 @@ import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {PatchEvent, set} from '../../../patch'
+import {set} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type DuplicateKeysError} from '../../../store/types/memberErrors'
 
 interface Props {

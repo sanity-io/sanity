@@ -17,8 +17,8 @@ import {
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components/button'
-import {Dialog} from '../../../../../ui-components/dialog'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../../hooks/useClient'
 import {useListFormat} from '../../../../hooks/useListFormat'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

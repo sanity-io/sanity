@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
 
-import {Pane} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'

@@ -1,7 +1,7 @@
 import {defineType, type Schema} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {getSearchableTypes} from '../getSearchableTypes'
 
 const getSearchableTypeNames = (schema: Schema, explicitlyAllowedTypes?: string[]) =>

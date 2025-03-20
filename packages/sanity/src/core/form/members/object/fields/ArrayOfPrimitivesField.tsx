@@ -16,8 +16,9 @@ import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'
-import {insert, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
+import {insert, set, setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type PatchArg} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
@@ -30,19 +31,20 @@ import {
   type UploaderResolver,
   type UploadProgressEvent,
 } from '../../../studio/uploads/types'
+import {type ArrayInputMoveItemEvent, type UploadEvent} from '../../../types/event'
+import {type ArrayOfPrimitivesFieldProps} from '../../../types/fieldProps'
 import {
-  type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesFieldProps,
   type ArrayOfPrimitivesInputProps,
+} from '../../../types/inputProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfPrimitivesItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-  type UploadEvent,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 function move<T>(arr: T[], from: number, to: number): T[] {

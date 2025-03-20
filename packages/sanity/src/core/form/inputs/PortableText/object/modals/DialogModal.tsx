@@ -2,7 +2,7 @@ import {Box} from '@sanity/ui'
 import {type ReactNode, useId, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
-import {PresenceOverlay} from '../../../../../presence'
+import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type ModalWidth} from './types'
 

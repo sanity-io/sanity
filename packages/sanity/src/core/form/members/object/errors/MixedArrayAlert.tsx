@@ -7,7 +7,8 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {PatchEvent, unset} from '../../../patch'
+import {unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type MixedArrayError} from '../../../store/types/memberErrors'
 
 interface Props {

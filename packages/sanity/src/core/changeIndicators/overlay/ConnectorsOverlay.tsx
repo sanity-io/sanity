@@ -3,7 +3,7 @@ import {sortBy} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements/types'
-import {useOnScroll} from '../../components/scroll'
+import {useOnScroll} from '../../components/scroll/hooks'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'

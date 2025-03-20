@@ -8,7 +8,8 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, setIfMissing, unset} from '../../patch'
+import {setIfMissing, unset} from '../../patch/patch'
+import {PatchEvent} from '../../patch/PatchEvent'
 
 interface UntypedValueInputProps {
   validTypes: string[]

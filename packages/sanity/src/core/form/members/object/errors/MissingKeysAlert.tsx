@@ -9,7 +9,8 @@ import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {PatchEvent, setIfMissing} from '../../../patch'
+import {setIfMissing} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type MissingKeysError} from '../../../store/types/memberErrors'
 
 interface Props {

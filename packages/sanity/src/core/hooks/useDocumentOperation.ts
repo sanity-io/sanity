@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/_legacy/datastores'
-import {type OperationsAPI} from '../store/_legacy/document'
+import {type OperationsAPI} from '../store/_legacy/document/document-pair/operations/types'
 
 /** @internal */
 export function useDocumentOperation(

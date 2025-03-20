@@ -15,21 +15,22 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {PaneContent} from '../../../components/pane/PaneContent'
+import {usePane} from '../../../components/pane/usePane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
 import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
-import {
-  DeletedDocumentBanners,
-  DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
-} from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
+import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
+import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
+import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'

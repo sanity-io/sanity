@@ -15,7 +15,11 @@ import {
 } from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
-import {type SearchHit, type SearchOptions, type SearchTerms} from '../../../../../search'
+import {
+  type SearchHit,
+  type SearchOptions,
+  type SearchTerms,
+} from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'

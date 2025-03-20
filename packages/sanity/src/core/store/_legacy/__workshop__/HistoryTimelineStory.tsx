@@ -8,13 +8,14 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ChangeFieldWrapper} from '../../../changeIndicators/ChangeFieldWrapper'
-import {ChangeList, type DocumentChangeContextInstance} from '../../../field/diff'
+import {ChangeList} from '../../../field/diff/components/ChangeList'
+import {type DocumentChangeContextInstance} from '../../../field/diff/contexts/DocumentChangeContext'
 import {type Chunk} from '../../../field/types'
 import {useConnectionState} from '../../../hooks/useConnectionState'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
-import {useInitialValue} from '../document'
-import {useTimelineSelector} from '../history'
+import {useInitialValue} from '../document/useInitialValue'
+import {useTimelineSelector} from '../history/useTimelineSelector'
 import {useTimelineStore} from '../history/useTimelineStore'
 
 export default function HistoryTimelineStory() {

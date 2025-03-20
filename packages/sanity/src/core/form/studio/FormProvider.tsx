@@ -1,7 +1,7 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 
-import {type DocumentFieldAction} from '../../config/document/fieldActions'
+import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {useSource} from '../../studio/source'
@@ -15,17 +15,15 @@ import {
   usePreviewComponent,
 } from '../form-components-hooks/componentHooks'
 import {FormBuilderProvider} from '../FormBuilderProvider'
-import {type PatchChannel, type PatchEvent} from '../patch'
+import {type PatchChannel} from '../patch/PatchChannel'
+import {type PatchEvent} from '../patch/PatchEvent'
 import {type FormFieldGroup} from '../store/types/fieldGroup'
 import {type StateTree} from '../store/types/state'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type InputProps,
-  type ItemProps,
-  type RenderPreviewCallbackProps,
-} from '../types'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
+import {type RenderPreviewCallbackProps} from '../types/renderCallback'
 
 /**
  * @alpha This API might change.

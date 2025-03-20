@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {useDataset} from '../../../../hooks/useDataset'
 import {useProjectId} from '../../../../hooks/useProjectId'
 import {useSchema} from '../../../../hooks/useSchema'
-import {useCurrentUser} from '../../../../store/user'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useSource} from '../../../../studio/source'
 
 /**

@@ -1,6 +1,9 @@
 import {Box, Flex, Text} from '@sanity/ui'
 
-import {DiffTooltip, FromToArrow, useDiffAnnotationColor, useDocumentChange} from '../../../diff'
+import {useDiffAnnotationColor} from '../../../diff/annotations/hooks'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromToArrow} from '../../../diff/components/FromToArrow'
+import {useDocumentChange} from '../../../diff/hooks/useDocumentChange'
 import {type BooleanDiff, type DiffComponent} from '../../../types'
 import {Checkbox, Switch} from '../preview/BooleanPreview'
 

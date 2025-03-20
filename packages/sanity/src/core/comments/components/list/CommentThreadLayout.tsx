@@ -11,7 +11,7 @@ import {css, styled} from 'styled-components'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type CommentsSelectedPath} from '../../context'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,

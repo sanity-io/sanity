@@ -1,6 +1,6 @@
 import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
 
-import {type SearchHit, type SearchTerms} from '../../../../../../search'
+import {type SearchHit, type SearchTerms} from '../../../../../../search/common/types'
 import {removeDupes} from '../../../../../../util/draftUtils'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'

@@ -5,10 +5,10 @@ import {
   CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
-} from '../../../comments/components'
+} from '../../../comments/components/pte/comment-input/CommentInput'
 import {hasCommentMessageValue} from '../../../comments/helpers'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../../context/enabled'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
 import {tasksLocaleNamespace} from '../../i18n'
 import {ActivityItem} from './TasksActivityItem'
 

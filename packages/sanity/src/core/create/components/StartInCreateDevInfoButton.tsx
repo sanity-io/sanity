@@ -5,8 +5,8 @@ import {Badge, Card, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components/button'
-import {Popover} from '../../../ui-components/popover'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover} from '../../../ui-components/popover/Popover'
 import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type CompatibleStudioAppId, type StudioApp} from '../studio-app/fetchCreateCompatibleAppId'
 

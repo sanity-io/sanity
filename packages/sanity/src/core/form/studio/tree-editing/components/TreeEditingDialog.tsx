@@ -22,7 +22,7 @@ import {
   type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
   type TreeEditingState,
-} from '../utils'
+} from '../utils/build-tree-editing-state/buildTreeEditingState'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {TreeEditingLayout} from './layout/TreeEditingLayout'
 

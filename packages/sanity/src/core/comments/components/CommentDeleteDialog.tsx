@@ -3,7 +3,7 @@ import {type TFunction} from 'i18next'
 import {useCallback} from 'react'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
-import {TextWithTone} from '../../components/textWithTone'
+import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../i18n'
 

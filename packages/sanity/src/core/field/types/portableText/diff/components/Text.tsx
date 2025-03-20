@@ -3,7 +3,7 @@ import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} f
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {DiffCard} from '../../../../diff'
+import {DiffCard} from '../../../../diff/components/DiffCard'
 import {type ObjectDiff, type StringDiff, type StringDiffSegment} from '../../../../types'
 import {InlineBox} from './styledComponents'
 

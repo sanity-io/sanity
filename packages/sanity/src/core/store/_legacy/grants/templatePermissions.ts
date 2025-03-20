@@ -11,7 +11,7 @@ import {createHookFromObservableFactory} from '../../../util/createHookFromObser
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
-import {useInitialValueResolverContext} from '../document'
+import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 

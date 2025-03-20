@@ -16,13 +16,9 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
-import {
-  type ArrayOfObjectsInputProps,
-  type PortableTextInputProps,
-  type RenderCustomMarkers,
-} from '../../types'
-import {type RenderBlockActionsCallback} from '../../types/_transitional'
+import {TreeEditingEnabledProvider} from '../../studio/tree-editing/context/enabled/TreeEditingEnabledProvider'
+import {type RenderBlockActionsCallback, type RenderCustomMarkers} from '../../types/_transitional'
+import {type ArrayOfObjectsInputProps, type PortableTextInputProps} from '../../types/inputProps'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
@@ -33,7 +29,7 @@ import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
-import {TextBlock} from './text'
+import {TextBlock} from './text/TextBlock'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>

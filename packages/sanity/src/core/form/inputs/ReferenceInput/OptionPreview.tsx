@@ -4,7 +4,7 @@ import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Alert} from '../../components/Alert'
-import {type RenderPreviewCallback} from '../../types'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 import {ReferencePreview} from './ReferencePreview'
 import {type ReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'

@@ -13,19 +13,17 @@ import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n/components/LocaleProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store/_legacy/ResourceCacheProvider'
-import {UserColorManagerProvider} from '../user-color'
-import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {UserColorManagerProvider} from '../user-color/provider'
+import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
-import {
-  AuthenticateScreen,
-  ConfigErrorsScreen,
-  NotAuthenticatedScreen,
-  NotFoundScreen,
-} from './screens'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {NotFoundScreen} from './screens/NotFoundScreen'
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'

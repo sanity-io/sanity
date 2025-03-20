@@ -2,7 +2,7 @@ import {LaunchIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Button} from '../../../ui-components/button'
+import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getCreateDocumentUrl} from '../createDocumentUrls'
 import {createLocaleNamespace} from '../i18n'

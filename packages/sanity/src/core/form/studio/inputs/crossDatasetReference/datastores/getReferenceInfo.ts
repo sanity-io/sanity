@@ -5,11 +5,8 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../../FIXME'
-import {
-  type DocumentAvailability,
-  type DocumentPreviewStore,
-  type Previewable,
-} from '../../../../../preview'
+import {type DocumentPreviewStore} from '../../../../../preview/documentPreviewStore'
+import {type DocumentAvailability, type Previewable} from '../../../../../preview/types'
 import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
 import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
 import {isRecord} from '../../../../../util/isRecord'

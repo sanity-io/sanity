@@ -2,8 +2,8 @@ import {Box, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
-import {PopoverDialog} from '../../components/popoverDialog'
-import {PresenceOverlay} from '../../presence'
+import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]

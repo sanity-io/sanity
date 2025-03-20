@@ -7,7 +7,11 @@ import {Translate} from '../../../i18n/Translate'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage, type CommentsUIMode} from '../../types'
-import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
+import {
+  CommentInput,
+  type CommentInputHandle,
+  type CommentInputProps,
+} from '../pte/comment-input/CommentInput'
 
 const EMPTY_PT_ARRAY: PortableTextBlock[] = []
 

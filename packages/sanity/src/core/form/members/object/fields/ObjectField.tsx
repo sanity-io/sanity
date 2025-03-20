@@ -3,24 +3,24 @@ import {isShallowEmptyObject} from '@sanity/util/content'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
+import {setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type PatchArg} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
 import {type ObjectFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {type ObjectFieldProps} from '../../../types/fieldProps'
+import {type ArrayOfObjectsInputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {
-  type ArrayOfObjectsInputProps,
-  type ObjectFieldProps,
-  type ObjectInputProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {createDescriptionId} from '../../common/createDescriptionId'
 

@@ -2,10 +2,10 @@ import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
-import {type DocumentFieldActionNode} from '../../../config/document/fieldActions'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../../presence/types'
-import {useFieldActions} from '../../field/actions'
-import {type FieldCommentsProps} from '../../types'
+import {useFieldActions} from '../../field/actions/useFieldActions'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 

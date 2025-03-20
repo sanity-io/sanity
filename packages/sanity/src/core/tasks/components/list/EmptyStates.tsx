@@ -5,9 +5,10 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksEnabled} from '../../context/enabled'
-import {type SidebarTabsIds, useTasksNavigation} from '../../context/navigation'
-import {useTasks} from '../../context/tasks'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {type SidebarTabsIds} from '../../context/navigation/types'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
+import {useTasks} from '../../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
 

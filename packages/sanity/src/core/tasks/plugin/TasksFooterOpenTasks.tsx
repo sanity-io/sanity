@@ -5,8 +5,8 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useTasksNavigation} from '../context/navigation'
-import {useTasks} from '../context/tasks'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
+import {useTasks} from '../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../i18n'
 
 const ButtonContainer = styled.div`

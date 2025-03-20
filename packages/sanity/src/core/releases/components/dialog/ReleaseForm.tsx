@@ -21,8 +21,8 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {Tooltip} from '../../../../ui-components/tooltip'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type EditableReleaseDocument, isReleaseType, type ReleaseType} from '../../store/types'

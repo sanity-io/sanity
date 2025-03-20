@@ -7,7 +7,7 @@ import {
 import {EMPTY} from 'rxjs'
 
 import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput/FileInput'
-import {type ObjectInputProps} from '../../src/core/form/types'
+import {type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
