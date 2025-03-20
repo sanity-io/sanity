@@ -306,6 +306,7 @@
     "@types/resolve-from": "^4.0.0",
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
+    "@types/wicg-task-scheduling": "^2024.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/expect": "^3.0.8",
     "@vvo/tzdb": "6.137.0",
