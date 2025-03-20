@@ -231,6 +231,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           fromRelease: 'published',
           isVersion: false,
           disabled: !editState?.published,
+          originalRev: editState?.published?._rev,
         }}
       />
       <VersionChip
@@ -275,6 +276,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           fromRelease: 'draft',
           isVersion: false,
           disabled: !editState?.draft,
+          originalRev: editState?.draft?._rev,
         }}
       />
       {filteredReleases.inCreation && (
@@ -297,6 +299,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
             releaseState: filteredReleases.inCreation.state,
             isVersion: true,
+            originalRev: displayed?._rev,
           }}
         />
       )}
@@ -320,6 +323,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
               releaseState: release.state,
               isVersion: true,
+              originalRev: displayed?._rev,
             }}
           />
         ))}

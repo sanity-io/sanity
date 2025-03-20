@@ -38,6 +38,7 @@ export interface ReleaseOperationsStore {
     releaseId: string,
     documentId: string,
     initialvalue?: Record<string, unknown>,
+    originalRev?: string,
     opts?: operationsOptions,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string, opts?: operationsOptions) => Promise<void>
@@ -166,6 +167,7 @@ export function createReleaseOperationsStore(options: {
     releaseId: string,
     documentId: string,
     initialValue?: Record<string, unknown>,
+    originalRev?: string,
     opts?: operationsOptions,
   ) => {
     // the documentId will show you where the document is coming from and which
@@ -182,6 +184,7 @@ export function createReleaseOperationsStore(options: {
       ...(document || {}),
       ...(initialValue || {}),
       _id: getVersionId(documentId, releaseId),
+      _originalRev: originalRev,
     }) as IdentifiedSanityDocumentStub
 
     await requestAction(
@@ -239,6 +242,7 @@ export function createReleaseOperationsStore(options: {
           getReleaseIdFromReleaseDocumentId(revertReleaseId),
           document._id,
           document,
+          document._originalRev as string,
         ),
       ),
     )

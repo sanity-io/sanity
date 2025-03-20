@@ -11,6 +11,7 @@ export interface VersionOperationsValue {
     releaseId: ReleaseId,
     documentId: string,
     initialValue?: Record<string, unknown>,
+    originalRev?: string,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<void>
   unpublishVersion: (documentId: string) => Promise<void>
@@ -27,9 +28,10 @@ export function useVersionOperations(): VersionOperationsValue {
     releaseId: ReleaseId,
     documentId: string,
     initialValue?: Record<string, unknown>,
+    originalRev?: string,
   ) => {
     const origin = getDocumentVariantType(documentId)
-    await createVersion(releaseId, documentId, initialValue)
+    await createVersion(releaseId, documentId, initialValue, originalRev)
     setPerspective(releaseId)
     telemetry.log(AddedVersion, {
       documentOrigin: origin,

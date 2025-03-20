@@ -63,6 +63,7 @@ export const VersionChip = memo(function VersionChip(props: {
     releaseState?: ReleaseState
     isVersion: boolean
     disabled?: boolean
+    originalRev?: string
   }
 }) {
   const {
@@ -80,9 +81,9 @@ export const VersionChip = memo(function VersionChip(props: {
       documentType,
       menuReleaseId,
       fromRelease,
-      releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
+      originalRev = undefined,
     },
   } = props
 
@@ -146,7 +147,12 @@ export const VersionChip = memo(function VersionChip(props: {
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
       try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+        await createVersion(
+          getReleaseIdFromReleaseDocumentId(targetRelease),
+          docId,
+          undefined,
+          originalRev,
+        )
       } catch (err) {
         toast.push({
           closable: true,
@@ -158,7 +164,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
       close()
     },
-    [close, createVersion, docId, t, toast],
+    [close, createVersion, docId, originalRev, t, toast],
   )
 
   const referenceElement = useMemo(() => {
