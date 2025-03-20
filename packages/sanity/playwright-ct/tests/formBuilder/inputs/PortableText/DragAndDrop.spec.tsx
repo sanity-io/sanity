@@ -33,16 +33,6 @@ const document: SanityDocument = {
       markDefs: [],
     },
     {
-      _type: 'block',
-      _key: 'g',
-      children: [
-        {_type: 'span', _key: 'h', text: 'Hello '},
-        {_type: 'inlineObjectWithTextProperty', _key: 'i', text: 'there'},
-        {_type: 'span', _key: 'j', text: ' playwright'},
-      ],
-      markDefs: [],
-    },
-    {
       _type: 'testObjectBlock',
       _key: 'k',
       text: 'Hello world',
@@ -70,10 +60,7 @@ test.describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz'
-      await dragAndDrop(
-        '.pt-block.pt-object-block [draggable="true"]',
-        '.pt-block.pt-text-block:nth-child(3)',
-      )
+      await dragAndDrop('.pt-editable [draggable="true"]', '.pt-block.pt-text-block:nth-child(3)')
 
       await expect(page.locator('.pt-block:nth-child(4)')).toContainText('Baz')
     })
@@ -91,7 +78,7 @@ test.describe('Portable Text Input', () => {
 
       // Drag and drop the 'Hello world' block to the position of 'Baz' without dropping it
       await dragWithoutDrop(
-        '.pt-block.pt-object-block [draggable="true"]',
+        '.pt-editable [draggable="true"]',
         '.pt-block.pt-text-block:nth-child(3)',
       )
 

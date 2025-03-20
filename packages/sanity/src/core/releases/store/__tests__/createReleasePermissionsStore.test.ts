@@ -1,25 +1,28 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createReleasePermissionsStore} from '../createReleasePermissionsStore'
-import {type useReleasePermissionsValue} from '../useReleasePermissions'
-
-const createStore = () => createReleasePermissionsStore()
 
 describe('useReleasePermissions', () => {
-  let store: useReleasePermissionsValue
+  describe('when content release feature is enabled', () => {
+    it('should return true when action succeeds', async () => {
+      const mockAction = vi.fn().mockResolvedValueOnce(undefined)
+      const result = await createReleasePermissionsStore(true).checkWithPermissionGuard(mockAction)
 
-  beforeEach(() => {
-    store = createStore()
+      expect(result).toBe(true)
+      expect(mockAction).toHaveBeenCalledWith({
+        dryRun: true,
+        skipCrossDatasetReferenceValidation: true,
+      })
+    })
   })
 
-  it('should return true when action succeeds', async () => {
-    const mockAction = vi.fn().mockResolvedValueOnce(undefined)
-    const result = await store.checkWithPermissionGuard(mockAction)
+  describe('when content release feature is disabled', () => {
+    it('should allow permissions', async () => {
+      const mockAction = vi.fn()
+      const result = await createReleasePermissionsStore(false).checkWithPermissionGuard(mockAction)
 
-    expect(result).toBe(true)
-    expect(mockAction).toHaveBeenCalledWith({
-      dryRun: true,
-      skipCrossDatasetReferenceValidation: true,
+      expect(result).toBe(true)
+      expect(mockAction).not.toHaveBeenCalled()
     })
   })
 })

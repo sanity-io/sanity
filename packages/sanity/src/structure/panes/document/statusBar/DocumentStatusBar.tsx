@@ -1,4 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
+import {motion} from 'framer-motion'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   type CreateLinkMetadata,
@@ -25,6 +26,8 @@ export interface DocumentStatusBarProps {
 }
 
 const CONTAINER_BREAKPOINT = 480 // px
+
+const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
@@ -74,37 +77,43 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   }
 
   return (
-    <Card tone={showingRevision ? 'caution' : undefined}>
-      <Flex direction="column" ref={setRootElement} sizing="border">
-        {shouldRender && (
-          <Flex
-            align="stretch"
-            gap={1}
-            justify="space-between"
-            paddingY={2}
-            paddingLeft={showingRevision ? 3 : 4}
-            paddingRight={showingRevision ? 2 : 3}
-          >
-            <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
-              <Flex align="center">
-                {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
-                <SpacerButton size="large" />
-              </Flex>
-              <DocumentBadges />
+    <AnimatedCard
+      key={showingRevision ? 'revision' : 'published'}
+      initial={{opacity: 0.2}}
+      animate={{opacity: 1, transition: {duration: 0.3}}}
+      tone={showingRevision ? 'caution' : undefined}
+      radius={3}
+      ref={setRootElement}
+      sizing="border"
+      padding={2}
+    >
+      {shouldRender && (
+        <Flex
+          align="stretch"
+          gap={1}
+          justify="space-between"
+          paddingLeft={showingRevision ? 0 : 1}
+          paddingRight={showingRevision ? 0 : 1}
+        >
+          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
+            <Flex align="center">
+              {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+              <SpacerButton />
             </Flex>
-
-            <Flex
-              align="flex-start"
-              justify="flex-end"
-              ref={actionsBoxRef}
-              style={{flexShrink: 0, marginLeft: 'auto'}}
-            >
-              <SpacerButton size="large" />
-              {actions}
-            </Flex>
+            <DocumentBadges />
           </Flex>
-        )}
-      </Flex>
-    </Card>
+
+          <Flex
+            align="flex-start"
+            justify="flex-end"
+            ref={actionsBoxRef}
+            style={{flexShrink: 0, marginLeft: 'auto'}}
+          >
+            <SpacerButton />
+            {actions}
+          </Flex>
+        </Flex>
+      )}
+    </AnimatedCard>
   )
 }

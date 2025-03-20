@@ -1935,6 +1935,84 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         },
         {
           "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
@@ -6659,6 +6737,84 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceCustomFilterSuffix",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -12778,6 +12934,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "fields": [
@@ -23076,6 +23310,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -31997,6 +32309,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         },
         {
           "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
@@ -36732,6 +37122,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         },
         {
           "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
@@ -40759,6 +41227,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -43828,6 +44374,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "fields": [

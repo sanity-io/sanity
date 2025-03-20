@@ -1,15 +1,12 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type SanityDocumentLike} from '@sanity/types'
-import {LayerProvider, PortalProvider, useToast} from '@sanity/ui'
-import {useCallback} from 'react'
+import {type SanityDocument} from '@sanity/client'
+import {LayerProvider, PortalProvider} from '@sanity/ui'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
-import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
-import {AddedVersion} from '../../__telemetry__/releases.telemetry'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from './useBundleDocuments'
+
+export type AddedDocument = Pick<SanityDocument, '_id' | '_type' | 'title'> &
+  Partial<SanityDocument>
 
 export function AddDocumentSearch({
   open,
@@ -17,58 +14,21 @@ export function AddDocumentSearch({
   releaseId,
 }: {
   open: boolean
-  onClose: () => void
+  onClose: (document?: AddedDocument) => void
   releaseId: string
 }): React.JSX.Element {
-  const {createVersion} = useReleaseOperations()
-  const toast = useToast()
-  const telemetry = useTelemetry()
-
-  const {results} = useBundleDocuments(getReleaseIdFromReleaseDocumentId(releaseId))
+  const {results} = useBundleDocuments(releaseId)
   const idsInRelease: string[] = results.map((doc) => doc.document._id)
-
-  const addDocument = useCallback(
-    async (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => {
-      try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(releaseId), item._id)
-
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: `${item.title} added to release`,
-        })
-
-        const origin = getDocumentVariantType(item._id)
-
-        telemetry.log(AddedVersion, {
-          documentOrigin: origin,
-        })
-      } catch (error) {
-        /* empty */
-
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: error.message,
-        })
-      }
-    },
-    [createVersion, releaseId, telemetry, toast],
-  )
-
-  const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
 
   return (
     <LayerProvider zOffset={1}>
-      {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-      <SearchProvider perspective={['raw']} disabledDocumentIds={idsInRelease} canDisableAction>
+      <SearchProvider disabledDocumentIds={idsInRelease} canDisableAction>
         <PortalProvider>
           <SearchPopover
-            onClose={handleClose}
-            onItemSelect={addDocument}
+            onClose={onClose}
+            onItemSelect={onClose}
             open={open}
+            previewPerspective={[releaseId]}
             disableIntentLink
           />
         </PortalProvider>

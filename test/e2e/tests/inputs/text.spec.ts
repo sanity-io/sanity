@@ -18,57 +18,58 @@ test.describe('inputs: text', () => {
   test('correctly applies kanji edits', async ({page, sanityClient, createDraftDocument}) => {
     const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
 
-    function getRemoteValue() {
-      return sanityClient
-        .getDocument(`drafts.${documentId}`)
-        .then((doc) => (doc ? doc.simple : null))
+    // Function to get the remote document value from Sanity
+    async function getRemoteValue() {
+      const doc = await sanityClient.getDocument(`drafts.${documentId}`)
+      return doc ? doc.simple : null
     }
 
-    await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
+    await expect(page.getByTestId('field-simple')).toBeVisible({timeout: 30_000})
     const field = page.getByTestId('field-simple').getByRole('textbox')
+    const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
 
     // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/sanity.studio.document.commit/)
     await field.fill(kanji)
-    await response
+    await expect.poll(getRemoteValue, {timeout: 30_000}).toBe(kanji)
 
     // Expect the document to now have the base value
     let currentExpectedValue = kanji
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
     let nextExpectedValue = `${p1Prefix}${kanji}`
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    // Wait for the document to finish saving
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = `${p1Prefix}${kanji}`
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Now move to the end of the paragraph and add a suffix
     const p1Suffix = ' (end of paragraph 1)'
     nextExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
     nextExpectedValue = `${currentExpectedValue}${p2Suffix}`
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
   })
 
   test(`value can be changed after the document has been published`, async ({

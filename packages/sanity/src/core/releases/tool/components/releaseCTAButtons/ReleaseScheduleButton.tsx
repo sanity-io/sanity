@@ -2,9 +2,10 @@ import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
+import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
@@ -23,20 +24,27 @@ interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   disabled?: boolean
+  isMenuItem?: boolean
+  onConfirmDialogOpen?: () => void
+  onConfirmDialogClose?: () => void
 }
 
 export const ReleaseScheduleButton = ({
   release,
   disabled,
   documents,
+  isMenuItem = false,
+  onConfirmDialogOpen,
+  onConfirmDialogClose,
 }: ReleaseScheduleButtonProps) => {
   const toast = useToast()
-  const {schedule} = useReleaseOperations()
+  const {schedule, updateRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
 
   const [schedulePermission, setSchedulePermission] = useState<boolean>(false)
 
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
@@ -76,6 +84,24 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
+    // this means that it will linely need to change the releaseType to scheduled
+    if (isMenuItem) {
+      const newRelease = {
+        ...release,
+        metadata: {
+          ...release.metadata,
+          releaseType: 'scheduled' as const,
+          ...{
+            intendedPublishAt: publishAt.toISOString(),
+          },
+        },
+      }
+
+      if (!isEqual(newRelease, release)) {
+        updateRelease(newRelease)
+      }
+    }
+
     if (isScheduledDateInPast()) {
       // rerender dialog to recalculate isScheduledDateInPast
       setRerenderDialog((cur) => cur + 1)
@@ -88,13 +114,15 @@ export const ReleaseScheduleButton = ({
       telemetry.log(ScheduledRelease)
       toast.push({
         closable: true,
-        status: 'success',
+        status: 'info',
         title: (
           <Text muted size={1}>
             <Translate
               t={t}
               i18nKey="toast.schedule.success"
-              values={{title: release.metadata.title}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+              }}
             />
           </Text>
         ),
@@ -107,28 +135,34 @@ export const ReleaseScheduleButton = ({
             <Translate
               t={t}
               i18nKey="toast.schedule.error"
-              values={{title: release.metadata.title, error: schedulingError.message}}
+              values={{
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                error: schedulingError.message,
+              }}
             />
           </Text>
         ),
       })
       console.error(schedulingError)
     } finally {
+      onConfirmDialogClose?.()
       setStatus('idle')
     }
   }, [
     publishAt,
+    isMenuItem,
     isScheduledDateInPast,
+    release,
+    updateRelease,
     schedule,
-    release._id,
-    release.metadata.title,
     telemetry,
     toast,
     t,
+    tCore,
+    onConfirmDialogClose,
   ])
 
-  const {t: coreT} = useTranslation()
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date | null) => {
@@ -151,6 +185,13 @@ export const ReleaseScheduleButton = ({
     [zoneDateToUtc],
   )
 
+  const handleOnDialogClose = useCallback(() => {
+    onConfirmDialogClose?.()
+    if (status !== 'scheduling') {
+      setStatus('idle')
+    }
+  }, [onConfirmDialogClose, status])
+
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
 
@@ -159,6 +200,7 @@ export const ReleaseScheduleButton = ({
     return (
       <Dialog
         id="confirm-schedule-dialog"
+        data-testid="confirm-schedule-dialog"
         /**
          * rerenderDialog should force this function to rerun
          * since the selected scheduled date was in the future when selected
@@ -169,7 +211,7 @@ export const ReleaseScheduleButton = ({
           documentsLength: documents.length,
           count: documents.length,
         })}
-        onClose={() => status !== 'scheduling' && setStatus('idle')}
+        onClose={handleOnDialogClose}
         footer={{
           confirmButton: {
             text: t('schedule-dialog.confirm-button'),
@@ -214,7 +256,7 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="schedule-dialog.confirm-description"
               values={{
-                title: release.metadata.title,
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 count: documents.length,
               }}
             />
@@ -228,12 +270,14 @@ export const ReleaseScheduleButton = ({
     rerenderDialog,
     t,
     documents.length,
+    handleOnDialogClose,
     handleConfirmSchedule,
     handleBundlePublishAtCalendarChange,
     handleBundleInputChange,
     timezoneAdjustedPublishAt,
     calendarLabels,
     release.metadata.title,
+    tCore,
   ])
 
   const handleOnInitialSchedule = useCallback(() => {
@@ -243,9 +287,14 @@ export const ReleaseScheduleButton = ({
         : new Date(),
     )
     setStatus('confirm')
-  }, [release.metadata.intendedPublishAt])
+    onConfirmDialogOpen?.()
+  }, [onConfirmDialogOpen, release.metadata.intendedPublishAt])
 
   const tooltipText = useMemo(() => {
+    if (documents.length === 0) {
+      return t('schedule-action.validation.no-documents')
+    }
+
     if (!schedulePermission) {
       return t('schedule-button-tooltip.validation.no-permission')
     }
@@ -262,7 +311,14 @@ export const ReleaseScheduleButton = ({
       return t('schedule-button-tooltip.already-scheduled')
     }
     return null
-  }, [hasDocumentValidationErrors, isValidatingDocuments, release, schedulePermission, t])
+  }, [
+    documents.length,
+    hasDocumentValidationErrors,
+    isValidatingDocuments,
+    release,
+    schedulePermission,
+    t,
+  ])
 
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
   const scheduleTooltipContent = useMemo(() => {
@@ -276,22 +332,52 @@ export const ReleaseScheduleButton = ({
     )
   }, [isValidatingDocuments, tooltipText])
 
+  const sharedProps = useMemo(
+    () => ({
+      icon: ClockIcon,
+      disabled: isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0,
+      text: t('action.schedule'),
+      handleOnClick: handleOnInitialSchedule,
+      tooltipProps: {
+        disabled: !tooltipText,
+        content: scheduleTooltipContent,
+        placement: 'bottom',
+      } as Partial<TooltipProps>,
+    }),
+    [
+      documents.length,
+      handleOnInitialSchedule,
+      isScheduleButtonDisabled,
+      scheduleTooltipContent,
+      status,
+      t,
+      tooltipText,
+    ],
+  )
+
   return (
     <>
-      <Button
-        tooltipProps={{
-          disabled: !tooltipText,
-          content: scheduleTooltipContent,
-          placement: 'bottom',
-        }}
-        tone="primary"
-        icon={ClockIcon}
-        disabled={isScheduleButtonDisabled || status === 'scheduling'}
-        text={t('action.schedule')}
-        onClick={handleOnInitialSchedule}
-        loading={status === 'scheduling'}
-        data-testid="schedule-button"
-      />
+      {isMenuItem ? (
+        <MenuItem
+          tooltipProps={sharedProps.tooltipProps}
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
+          data-testid="schedule-button-menu-item"
+        />
+      ) : (
+        <Button
+          tooltipProps={sharedProps.tooltipProps}
+          tone="primary"
+          icon={sharedProps.icon}
+          disabled={sharedProps.disabled}
+          text={sharedProps.text}
+          onClick={sharedProps.handleOnClick}
+          loading={status === 'scheduling'}
+          data-testid="schedule-button"
+        />
+      )}
       {confirmScheduleDialog}
     </>
   )

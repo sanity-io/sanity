@@ -5,6 +5,7 @@ import {
 } from '@sanity/cli'
 
 import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
+import {determineIsApp} from '../../util/determineIsApp'
 
 const helpText = `
 Options
@@ -22,12 +23,25 @@ Examples
 const deployCommand: CliCommandDefinition = {
   name: 'deploy',
   signature: '[SOURCE_DIR] [--no-build] [--source-maps] [--no-minify]',
-  description: 'Builds and deploys Sanity Studio to Sanity hosting',
+  description: 'Builds and deploys Sanity Studio or application to Sanity hosting',
   action: async (
     args: CliCommandArguments<DeployStudioActionFlags>,
     context: CliCommandContext,
   ) => {
-    const mod = await import('../../actions/deploy/deployAction')
+    let mod: {
+      default: (
+        args: CliCommandArguments<DeployStudioActionFlags>,
+        context: CliCommandContext,
+      ) => Promise<void>
+    }
+
+    const isApp = determineIsApp(context.cliConfig)
+
+    if (isApp) {
+      mod = await import('../../actions/app/deployAction')
+    } else {
+      mod = await import('../../actions/deploy/deployAction')
+    }
 
     return mod.default(args, context)
   },

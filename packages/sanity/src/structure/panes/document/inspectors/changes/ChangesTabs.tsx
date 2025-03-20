@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
 import {type DocumentInspectorProps, useSource, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -45,24 +45,24 @@ export function ChangesTabs(props: DocumentInspectorProps) {
 
   return (
     <FadeInFlex direction="column" padding={0} height="fill" data-ready={isReady ? '' : undefined}>
-      <Flex align="center" padding={3} gap={2}>
-        <TabList space={1} flex={1}>
-          <Tab
-            aria-controls="history-panel"
-            id="history-tab"
-            label={t('changes.tab.history')}
-            onClick={() => setPaneRouterTab('history')}
-            selected={paneRouterTab === 'history'}
-          />
-          <Tab
-            aria-controls="review-changes-panel"
-            id="changes-tab"
-            label={t('changes.tab.review-changes')}
-            onClick={() => setPaneRouterTab('review')}
-            selected={paneRouterTab === 'review'}
-          />
-        </TabList>
-        <Box flex="none">
+      <Card paddingBottom={1}>
+        <Flex align="center" padding={3} gap={2}>
+          <TabList space={1} flex={1}>
+            <Tab
+              aria-controls="history-panel"
+              id="history-tab"
+              label={t('changes.tab.history')}
+              onClick={() => setPaneRouterTab('history')}
+              selected={paneRouterTab === 'history'}
+            />
+            <Tab
+              aria-controls="review-changes-panel"
+              id="changes-tab"
+              label={t('changes.tab.review-changes')}
+              onClick={() => setPaneRouterTab('review')}
+              selected={paneRouterTab === 'review'}
+            />
+          </TabList>
           <Button
             aria-label={t('changes.action.close-label')}
             icon={CloseIcon}
@@ -70,8 +70,8 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             onClick={props.onClose}
             tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
           />
-        </Box>
-      </Flex>
+        </Flex>
+      </Card>
 
       <TabPanel
         aria-labelledby="history-tab"

@@ -8,6 +8,7 @@ import {Tooltip} from '../../../../../ui-components/tooltip'
 import {UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
+import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {type ReleaseState} from '../../../store'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
@@ -63,8 +64,10 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
     </Flex>
   ),
   cell: ({cellProps, datum}) => {
-    const willBeUnpublished = isGoingToUnpublish(datum.document)
     const actionBadge = () => {
+      if (datum.isPending) return null
+
+      const willBeUnpublished = isGoingToUnpublish(datum.document)
       if (willBeUnpublished) {
         return (
           <Badge radius={2} tone={'critical'} data-testid={`unpublish-badge-${datum.document._id}`}>
@@ -127,19 +130,25 @@ export const getDocumentTableColumnDefs: (
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
     sortTransform(value) {
-      return value.previewValues.values.title?.toLowerCase() || 0
+      if (!value.previewValues) return 0
+
+      return value.previewValues.values?.title?.toLowerCase() || 0
     },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        <MemoReleaseDocumentPreview
-          item={datum}
-          releaseId={releaseId}
-          releaseState={releaseState}
-          documentRevision={datum.document._rev}
-        />
+        {datum.isPending ? (
+          <SanityDefaultPreview isPlaceholder />
+        ) : (
+          <MemoReleaseDocumentPreview
+            item={datum}
+            releaseId={releaseId}
+            releaseState={releaseState}
+            documentRevision={datum.document._rev}
+          />
+        )}
       </Box>
     ),
   },
@@ -153,7 +162,14 @@ export const getDocumentTableColumnDefs: (
       </Flex>
     ),
     cell: ({cellProps, datum: {document, history}}) => (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex
+        {...cellProps}
+        align="center"
+        paddingX={2}
+        paddingY={3}
+        style={{minWidth: 130}}
+        sizing="border"
+      >
         {document._updatedAt && (
           <Flex align="center" gap={2}>
             {history?.lastEditedBy && <UserAvatar size={0} user={history.lastEditedBy} />}

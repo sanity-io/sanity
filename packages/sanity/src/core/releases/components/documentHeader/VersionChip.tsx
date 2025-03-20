@@ -1,14 +1,11 @@
 import {LockIcon} from '@sanity/icons'
 import {
   type BadgeTone,
-  Box,
   Button, // eslint-disable-line no-restricted-imports
-  Flex,
-  Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
+  useToast,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {
   memo,
   type MouseEvent,
@@ -19,46 +16,31 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {type ReleaseDocument, type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
-import {ReleaseAvatar} from '../ReleaseAvatar'
+import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
-interface ChipStyleProps {
-  $isArchived?: boolean
-}
+const ChipButtonContainer = styled.span`
+  display: inline-flex;
+  --border-color: var(--card-border-color);
+`
 
-const ChipButton = styled(Button)<ChipStyleProps>(({$isArchived}) => {
-  return css`
-    flex: none;
-    transition: none;
-    cursor: pointer;
-
-    // target enabled state
-    &:not([data-disabled='true']) {
-      --card-border-color: var(--card-badge-default-bg-color);
-    }
-
-    &[data-disabled='true'] {
-      color: var(--card-muted-fg-color);
-      cursor: default;
-
-      // archived will be disabled but should have bg color
-      ${$isArchived &&
-      css`
-        background-color: var(--card-badge-default-bg-color);
-      `}
-    }
-  `
-})
+const ChipButton = styled(Button)`
+  flex: none;
+  transition: none;
+  cursor: pointer;
+  --card-border-color: var(--border-color);
+`
 
 /**
  * @internal
@@ -121,6 +103,8 @@ export const VersionChip = memo(function VersionChip(props: {
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -161,10 +145,20 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      try {
+        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.action.create-version.failure'),
+          description: err.message,
+        })
+      }
+
       close()
     },
-    [createVersion, docId, close],
+    [close, createVersion, docId, t, toast],
   )
 
   const referenceElement = useMemo(() => {
@@ -194,29 +188,26 @@ export const VersionChip = memo(function VersionChip(props: {
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <span style={{display: 'inline-flex'}}>
+        <ChipButtonContainer>
           <ChipButton
+            data-testid={`document-header-${text.replaceAll(' ', '-')}-chip`}
             ref={chipRef}
             disabled={disabled}
-            mode="bleed"
+            mode={disabled ? 'ghost' : 'bleed'}
             onClick={onClick}
             selected={selected}
             tone={tone}
-            iconRight={locked && LockIcon}
             onContextMenu={contextMenuHandler}
-            padding={1}
-            paddingRight={2}
+            paddingY={2}
+            paddingLeft={2}
+            paddingRight={3}
+            space={2}
             radius="full"
-            $isArchived={releaseState === 'archived'}
-          >
-            <Flex align="center" gap={0}>
-              <ReleaseAvatar padding={1} tone={tone} />
-              <Box flex="none" padding={1}>
-                <Text size={1}>{text}</Text>
-              </Box>
-            </Flex>
-          </ChipButton>
-        </span>
+            icon={<ReleaseAvatarIcon tone={tone} />}
+            iconRight={locked && <LockIcon />}
+            text={text}
+          />
+        </ChipButtonContainer>
       </Tooltip>
 
       <Popover

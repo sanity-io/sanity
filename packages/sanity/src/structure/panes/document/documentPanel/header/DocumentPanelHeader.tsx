@@ -1,5 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
   type ForwardedRef,
   forwardRef,
@@ -10,6 +12,7 @@ import {
   useState,
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
+import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
@@ -28,7 +31,6 @@ import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -36,6 +38,34 @@ import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
+
+const HorizontalScroller = styled(Card)((props) => {
+  const theme = getTheme_v2(props.theme)
+
+  return css`
+    scrollbar-width: none;
+    z-index: 1;
+    flex: 1;
+    position: relative;
+    > div {
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: ${theme.space[3]}px;
+      background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
+    }
+  `
+})
 
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
@@ -123,7 +153,6 @@ export const DocumentPanelHeader = memo(
     )
 
     const title = useMemo(() => <DocumentHeaderTitle />, [])
-    const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
     const backButton = useMemo(
       () =>
         showBackButton && (
@@ -218,27 +247,30 @@ export const DocumentPanelHeader = memo(
 
     return (
       <TooltipDelayGroupProvider>
-        <Card hidden={collapsed} style={{lineHeight: 0}}>
-          <Flex>
-            <Flex flex={1} wrap="wrap" gap={1} padding={3} paddingBottom={0}>
-              <DocumentPerspectiveList />
+        {collapsed ? (
+          <PaneHeader
+            border
+            ref={ref}
+            loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
+            title={title}
+            tabIndex={tabIndex}
+            backButton={backButton}
+          />
+        ) : (
+          <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom>
+            <Flex gap={3} paddingY={3}>
+              <HorizontalScroller>
+                <Flex flex={1} gap={1} overflow="auto" paddingX={3}>
+                  <DocumentPerspectiveList />
+                </Flex>
+              </HorizontalScroller>
+
+              <Box flex="none" paddingRight={3}>
+                {renderedActions}
+              </Box>
             </Flex>
-
-            <Box flex="none" padding={3} paddingBottom={0}>
-              {renderedActions}
-            </Box>
-          </Flex>
-        </Card>
-
-        <PaneHeader
-          border
-          ref={ref}
-          loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-          title={title}
-          tabs={tabs}
-          tabIndex={tabIndex}
-          backButton={backButton}
-        />
+          </Card>
+        )}
       </TooltipDelayGroupProvider>
     )
   }),

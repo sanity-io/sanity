@@ -44,7 +44,6 @@ export interface ReleaseOperationsStore {
   unpublishVersion: (documentId: string, opts?: operationsOptions) => Promise<void>
 }
 
-const IS_CREATE_VERSION_ACTION_SUPPORTED = false
 const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
@@ -185,19 +184,17 @@ export function createReleaseOperationsStore(options: {
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
-    await (IS_CREATE_VERSION_ACTION_SUPPORTED
-      ? requestAction(
-          client,
-          [
-            {
-              actionType: 'sanity.action.document.createVersion',
-              releaseId,
-              attributes: versionDocument,
-            },
-          ],
-          opts,
-        )
-      : client.create(versionDocument, opts))
+    await requestAction(
+      client,
+      [
+        {
+          actionType: 'sanity.action.document.version.create',
+          publishedId: getPublishedId(documentId),
+          document: versionDocument,
+        },
+      ],
+      opts,
+    )
   }
 
   const handleDiscardVersion = (releaseId: string, documentId: string, opts?: operationsOptions) =>
@@ -205,8 +202,9 @@ export function createReleaseOperationsStore(options: {
       client,
       [
         {
-          actionType: 'sanity.action.document.discard',
-          draftId: getVersionId(documentId, releaseId),
+          actionType: 'sanity.action.document.version.discard',
+          versionId: getVersionId(documentId, releaseId),
+          purge: false, // keep document history
         },
       ],
       opts,
@@ -216,7 +214,7 @@ export function createReleaseOperationsStore(options: {
     requestAction(client, [
       {
         actionType: 'sanity.action.document.version.unpublish',
-        draftId: documentId,
+        versionId: documentId,
         publishedId: getPublishedId(documentId),
       },
     ])
@@ -301,15 +299,21 @@ interface CreateReleaseApiAction {
 }
 
 interface CreateVersionReleaseApiAction {
-  actionType: 'sanity.action.document.createVersion'
-  releaseId: string
-  attributes: IdentifiedSanityDocumentStub
+  actionType: 'sanity.action.document.version.create'
+  publishedId: string
+  document: IdentifiedSanityDocumentStub
 }
 
 interface UnpublishVersionReleaseApiAction {
   actionType: 'sanity.action.document.version.unpublish'
-  draftId: string
+  versionId: string
   publishedId: string
+}
+
+interface DiscardVersionReleaseApiAction {
+  actionType: 'sanity.action.document.version.discard'
+  versionId: string
+  purge?: boolean
 }
 
 interface EditReleaseApiAction {
@@ -335,6 +339,7 @@ type ReleaseAction =
   | DeleteApiAction
   | CreateVersionReleaseApiAction
   | UnpublishVersionReleaseApiAction
+  | DiscardVersionReleaseApiAction
 
 export function createRequestAction(
   onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached'],
@@ -355,9 +360,11 @@ export function createRequestAction(
         },
       })
     } catch (e) {
-      if (isReleaseLimitError(e)) {
+      // if dryRunning then essentially this is a silent request
+      // so don't want to create disruptive upsell because of limit
+      if (!options?.dryRun && isReleaseLimitError(e)) {
         // free accounts do not return limit, 0 is implied
-        onReleaseLimitReached(e.details.limit || 0, !!options?.dryRun)
+        onReleaseLimitReached(e.details.limit || 0)
       }
 
       throw e

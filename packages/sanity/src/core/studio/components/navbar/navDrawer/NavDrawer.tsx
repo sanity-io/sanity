@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
+import {CapabilityGate} from '../../../../components/CapabilityGate'
 import {type NavbarAction, type Tool} from '../../../../config'
 import {useTranslation} from '../../../../i18n'
 import {useColorSchemeSetValue} from '../../../colorScheme'
@@ -162,18 +163,20 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   <Flex align="center">
                     {/* Current user */}
                     <Flex flex={1} align="center" paddingRight={2}>
-                      <Flex flex={1} align="center">
-                        <UserAvatar size={1} user="me" />
-                        <Box
-                          flex={1}
-                          marginLeft={3}
-                          title={currentUser?.name || currentUser?.email}
-                        >
-                          <Text size={1} textOverflow="ellipsis" weight="medium">
-                            {currentUser?.name || currentUser?.email}
-                          </Text>
-                        </Box>
-                      </Flex>
+                      <CapabilityGate capability="globalUserMenu">
+                        <Flex flex={1} align="center">
+                          <UserAvatar size={1} user="me" />
+                          <Box
+                            flex={1}
+                            marginLeft={3}
+                            title={currentUser?.name || currentUser?.email}
+                          >
+                            <Text size={1} textOverflow="ellipsis" weight="medium">
+                              {currentUser?.name || currentUser?.email}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      </CapabilityGate>
                     </Flex>
 
                     <Button

@@ -1,7 +1,7 @@
 import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
-import {type ReactNode, type RefObject, useCallback, useMemo} from 'react'
+import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Button, Tooltip} from '../../ui-components'
@@ -222,9 +222,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   )
 }
 
-function PreviewHeader(
+/** @internal */
+export function PreviewHeader(
   props: Omit<PreviewHeaderProps, 'renderDefault'> & {options?: HeaderOptions},
-) {
+): React.JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const renderDefault = useCallback((props: Omit<PreviewHeaderProps, 'renderDefault'>) => {
     return <PreviewHeaderDefault {...props} />
@@ -244,15 +245,4 @@ function PreviewHeader(
       </Flex>
     </Card>
   )
-}
-
-/** @internal */
-export function usePresentationPreviewHeader(
-  props: Omit<PreviewHeaderProps, 'renderDefault'> & {options?: HeaderOptions},
-): () => ReactNode {
-  const Component = useCallback(() => {
-    return <PreviewHeader {...props} />
-  }, [props])
-
-  return Component
 }

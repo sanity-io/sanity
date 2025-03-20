@@ -113,7 +113,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   } = useDocumentList({
     apiVersion,
     filter,
-    perspective: perspectiveStack.length === 0 ? 'raw' : perspectiveStack,
+    perspective: perspectiveStack,
     params,
     searchQuery: searchQuery?.trim(),
     sortOrder,

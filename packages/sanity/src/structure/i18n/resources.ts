@@ -49,6 +49,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.disabled.not-ready': 'Operation not ready',
   /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
+  /** Label for the "Publish" document action */
+  'action.publish.label': 'Publish',
   /** Label for the "Publish" document action when the document has live edit enabled.*/
   'action.publish.live-edit.label': 'Publish',
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
@@ -90,7 +92,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document has live edit enabled and cannot be unpublished',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
-    "You are viewing a read-only document that was archived as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
+    'This document version belongs to the archived <VersionBadge>{{title}}</VersionBadge> release',
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
@@ -136,9 +138,35 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This reference has been removed since you opened it.',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.add-to-release': 'Add to release',
+  /** The text that appears for the action button to add the current document to the global release */
+  'banners.release.action.open-to-edit': 'Open release to edit',
+  /** Toast description in case an error occurs when adding a document to a release  */
+  'banners.release.error.description':
+    'An error occurred when adding document to the release: {{message}}',
+  /** Toast title in case an error occurs when adding a document to a release  */
+  'banners.release.error.title': 'Error adding document to release',
+  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
+  'banners.release.navigate-to-edit-description': 'The document only exists in the',
+  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
+  'banners.release.navigate-to-edit-description-end_one': 'release',
+  /** The text for the banner that appears when a document only has versions but is in a draft or published pinned release */
+  'banners.release.navigate-to-edit-description-end_other': 'releases',
+  /** The text for the banner that appears when there are multiple versions but no drafts or published, only one extra releases */
+  'banners.release.navigate-to-edit-description-multiple_one':
+    'This document is part of the <VersionBadge/> release and {{count}} more release.',
+  /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
+  'banners.release.navigate-to-edit-description-multiple_other':
+    'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
+  'banners.release.navigate-to-edit-description-single':
+    'This document is part of the <VersionBadge/> release',
   /** The text for the banner that appears when a document is not in the current global release */
   'banners.release.not-in-release': 'Not in the <VersionBadge>{{title}}</VersionBadge> release.',
-
+  /** Description of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
+  'banners.release.waiting.description':
+    'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
+  /** Title of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
+  'banners.release.waiting.title': 'Adding document to release…',
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
@@ -161,6 +189,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
+
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/
@@ -169,6 +198,26 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'changes.tab.review-changes': 'Review changes',
   /** The label used in the changes inspector for the to selector */
   'changes.to.label': 'To',
+
+  /** The error message shown when the specified document comparison mode is not supported */
+  'compare-version.error.invalidModeParam':
+    '"{{input}}" is not a supported document comparison mode.',
+  /** The error message shown when the next document for comparison could not be extracted from the URL */
+  'compare-version.error.invalidNextDocumentParam': 'The next document parameter is invalid.',
+  /** The error message shown when the document comparison URL could not be parsed */
+  'compare-version.error.invalidParams.title': 'Unable to compare documents',
+  /** The error message shown when the previous document for comparison could not be extracted from the URL */
+  'compare-version.error.invalidPreviousDocumentParam':
+    'The previous document parameter is invalid.',
+  /** The text for the "Compare versions" action for a document */
+  'compare-versions.menu-item.title': 'Compare versions',
+  /** The string used to label draft documents */
+  'compare-versions.status.draft': 'Draft',
+  /** The string used to label published documents */
+  'compare-versions.status.published': 'Published',
+  /** The title used when comparing versions of a document */
+  'compare-versions.title': 'Compare versions',
+
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
   'confirm-delete-dialog.cancel-button.text': 'Cancel',
   /** Used in `confirm-delete-dialog.cdr-summary.title` */
@@ -193,8 +242,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.cdr-table.dataset.label': 'Dataset',
   /** The header for the document ID column in the list of cross-dataset references found */
   'confirm-delete-dialog.cdr-table.document-id.label': 'Document ID',
-  /** The toast title when the copy button has been clicked */
-  'confirm-delete-dialog.cdr-table.id-copied-toast.title': 'Copied document ID to clipboard!',
   /** The toast title when the copy button has been clicked but copying failed */
   'confirm-delete-dialog.cdr-table.id-copied-toast.title-failed': 'Failed to copy document ID',
   /** The header for the project ID column in the list of cross-dataset references found */
@@ -413,8 +460,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
-  /** The title of the reconnecting toast */
-  'panes.document-pane-provider.reconnecting.title': 'Connection lost. Reconnecting…',
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
   /** The text of the document not found pane if the schema is known */

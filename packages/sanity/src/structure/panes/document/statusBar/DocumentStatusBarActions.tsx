@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   Hotkeys,
   usePerspective,
+  useSource,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -27,7 +28,8 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {__internal_tasks} = useSource()
+  const {editState} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -57,11 +59,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
   }, [selectedReleaseId, firstActionState, menuActionStates])
 
+  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
+
   /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && !selectedReleaseId && (
+      {canShowAction && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
@@ -72,7 +76,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
-                size="large"
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />

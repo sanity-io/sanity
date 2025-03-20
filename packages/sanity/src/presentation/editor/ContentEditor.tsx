@@ -6,7 +6,6 @@ import {
   type Path,
   PreviewCard,
   SanityDefaultPreview,
-  type SanityDocument,
   Translate,
   useSchema,
   useTranslation,
@@ -77,9 +76,8 @@ export function ContentEditor(props: {
     return (
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({
-          value: mainDocumentState!.document! as SanityDocument,
-          published: previewState.published,
-          draft: previewState.draft,
+          snapshot: previewState.snapshot,
+          fallback: mainDocumentState!.document,
         })}
         schemaType={schemaType}
         status={

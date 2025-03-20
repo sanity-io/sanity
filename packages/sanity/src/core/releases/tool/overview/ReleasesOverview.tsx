@@ -1,24 +1,12 @@
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {
-  Box,
-  // eslint-disable-next-line no-restricted-imports
-  Button,
-  type ButtonMode,
-  Card,
-  Container,
-  Flex,
-  Inline,
-  Stack,
-  Text,
-  useMediaIndex,
-} from '@sanity/ui'
+import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type SearchParam, useRouter} from 'sanity/router'
 
-import {Button as StudioButton, Tooltip} from '../../../../ui-components'
-import {Button as UIButton} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -33,11 +21,11 @@ import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
-import {DEFAULT_RELEASE} from '../../util/const'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
+import {getReleaseDefaults} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
+import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
 import {
   DATE_SEARCH_PARAM_KEY,
@@ -47,11 +35,11 @@ import {
   type Mode,
 } from './queryParamUtils'
 import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
+import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
-const MotionStudioButton = motion.create(StudioButton)
-const MotionUiButton = motion.create(Button)
+const MotionButton = motion.create(Button)
 
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
 
@@ -65,6 +53,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'publishedAt',
   direction: 'desc',
 }
+// eslint-disable-next-line max-statements
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -90,6 +79,7 @@ export function ReleasesOverview() {
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
 
   const mediaIndex = useMediaIndex()
 
@@ -110,10 +100,10 @@ export function ReleasesOverview() {
 
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   const loadingOrHasReleases = loading || hasReleases
+  const hasNoReleases = !loading && !hasReleases
 
   const tableReleases = useMemo<TableRelease[]>(() => {
     if (!hasReleases || !releasesMetadata) return []
-
     return [
       ...releases.map((release) => ({
         ...release,
@@ -126,7 +116,7 @@ export function ReleasesOverview() {
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermissions) => {
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
@@ -204,7 +194,7 @@ export function ReleasesOverview() {
     }
     return (
       <AnimatePresence>
-        <MotionStudioButton
+        <MotionButton
           {...groupModeButtonBaseProps}
           key="open-group"
           onClick={handleReleaseGroupModeChange}
@@ -218,7 +208,7 @@ export function ReleasesOverview() {
           placement="bottom"
         >
           <div>
-            <MotionUiButton
+            <MotionButton
               {...groupModeButtonBaseProps}
               key="archived-group"
               disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
@@ -241,25 +231,40 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
-  const handleOnClickCreateRelease = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [guardWithReleaseLimitUpsell],
-  )
+  const handleOnClickCreateRelease = useCallback(async () => {
+    setIsPendingGuardResponse(true)
+    await guardWithReleaseLimitUpsell(() => {
+      setIsCreateReleaseDialogOpen(true)
+    })
+    setIsPendingGuardResponse(false)
+  }, [guardWithReleaseLimitUpsell])
 
   const createReleaseButton = useMemo(
     () => (
-      <UIButton
+      <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={
+          isPendingGuardResponse ||
+          !hasCreatePermission ||
+          isCreateReleaseDialogOpen ||
+          mode === 'disabled'
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
-        paddingY={3}
         tooltipProps={{
-          content: !hasCreatePermission && tCore('release.action.permission.error'),
+          disabled: hasCreatePermission === true,
+          content: tCore('release.action.permission.error'),
         }}
       />
     ),
-    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
+    [
+      isPendingGuardResponse,
+      hasCreatePermission,
+      isCreateReleaseDialogOpen,
+      mode,
+      handleOnClickCreateRelease,
+      tCore,
+    ],
   )
 
   const handleOnCreateRelease = useCallback(
@@ -293,7 +298,7 @@ export function ReleasesOverview() {
           ? release.documentsMetadata?.documentCount
           : release.finalDocumentStates?.length) ?? 0
 
-      return <ReleaseMenuButton release={release} documentsCount={documentsCount} />
+      return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
     [releaseGroupMode],
   )
@@ -338,79 +343,112 @@ export function ReleasesOverview() {
     [releaseGroupMode, t],
   )
 
+  const NoRelease = () => {
+    return (
+      <Flex
+        direction="column"
+        flex={1}
+        justify={hasNoReleases ? 'center' : 'flex-start'}
+        align={hasNoReleases ? 'center' : 'flex-start'}
+        style={{position: 'relative'}}
+      >
+        <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
+          <ReleaseIllustration />
+          <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
+            {t('overview.title')}
+          </Text>
+          <Text size={1} muted>
+            {t('overview.description')}
+          </Text>
+          <Inline space={2}>
+            {createReleaseButton}
+            <Button
+              as="a"
+              href="https://www.sanity.io/docs/content-releases"
+              target="_blank"
+              mode="ghost"
+              onClick={handleOnClickCreateRelease}
+              text={t('overview.action.documentation')}
+            />
+          </Inline>
+        </Flex>
+      </Flex>
+    )
+  }
+
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
         {showCalendar && renderCalendarFilter}
-        <Flex direction="column" flex={1} style={{position: 'relative'}}>
-          <Card flex="none" padding={3}>
-            <Flex align="flex-start" flex={1} gap={3}>
-              <Inline>
-                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
-                <Stack padding={2} space={4}>
-                  <Text as="h1" size={1} weight="semibold">
-                    {t('overview.title')}
-                  </Text>
-                </Stack>
-              </Inline>
 
-              <Flex flex={1} gap={1}>
-                {loadingOrHasReleases &&
-                  (releaseFilterDate ? (
-                    <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-                  ) : (
-                    currentArchivedPicker
-                  ))}
-              </Flex>
-              <Flex flex="none" gap={2}>
-                <Button
-                  icon={EarthGlobeIcon}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  padding={2}
-                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
-                  onClick={dialogTimeZoneShow}
-                />
-                {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
-                {loadingOrHasReleases && createReleaseButton}
-              </Flex>
+        {hasNoReleases ? (
+          <NoRelease />
+        ) : (
+          <>
+            <Flex direction="column" flex={1} style={{position: 'relative'}}>
+              <Card flex="none" padding={3}>
+                <Flex align="center" flex={1} gap={3}>
+                  <Inline>
+                    {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
+                    <Stack padding={2} space={4}>
+                      <Text as="h1" size={1} weight="semibold">
+                        {t('overview.title')}
+                      </Text>
+                    </Stack>
+                  </Inline>
+
+                  <Flex flex={1} gap={1}>
+                    {loadingOrHasReleases &&
+                      (releaseFilterDate ? (
+                        <DateFilterButton
+                          filterDate={releaseFilterDate}
+                          onClear={clearFilterDate}
+                        />
+                      ) : (
+                        currentArchivedPicker
+                      ))}
+                  </Flex>
+                  <Flex flex="none" gap={2}>
+                    <Button
+                      icon={EarthGlobeIcon}
+                      iconRight={ChevronDownIcon}
+                      mode="bleed"
+                      text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                      onClick={dialogTimeZoneShow}
+                    />
+                    {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+                    {loadingOrHasReleases && createReleaseButton}
+                  </Flex>
+                </Flex>
+              </Card>
+              <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+                {(loading || hasReleases) && (
+                  <Table<TableRelease>
+                    // for resetting filter and sort on table when filer changed
+                    key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                    defaultSort={
+                      releaseGroupMode === 'archived'
+                        ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+                        : DEFAULT_RELEASES_OVERVIEW_SORT
+                    }
+                    loading={loadingTableData}
+                    data={filteredReleases}
+                    columnDefs={tableColumns}
+                    emptyState={t('no-releases')}
+                    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                    rowId="_id"
+                    rowActions={renderRowActions}
+                    rowProps={getRowProps}
+                    scrollContainerRef={scrollContainerRef}
+                    hideTableInlinePadding
+                  />
+                )}
+              </Box>
             </Flex>
-          </Card>
-          <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
-            {!loading && !hasReleases ? (
-              <Container style={{margin: 0}} width={0}>
-                <Stack space={5} padding={4}>
-                  <Text data-testid="no-releases-info-text" muted size={2}>
-                    {t('overview.description')}
-                  </Text>
-                  <Box>{createReleaseButton}</Box>
-                </Stack>
-              </Container>
-            ) : (
-              <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={
-                  releaseGroupMode === 'archived'
-                    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
-                    : DEFAULT_RELEASES_OVERVIEW_SORT
-                }
-                loading={loadingTableData}
-                data={filteredReleases}
-                columnDefs={tableColumns}
-                emptyState={t('no-releases')}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="_id"
-                rowActions={renderRowActions}
-                rowProps={getRowProps}
-                scrollContainerRef={scrollContainerRef}
-                hideTableInlinePadding
-              />
-            )}
-          </Box>
-          {renderCreateReleaseDialog()}
-        </Flex>
+          </>
+        )}
       </Flex>
+      {renderCreateReleaseDialog()}
     </Flex>
   )
 }

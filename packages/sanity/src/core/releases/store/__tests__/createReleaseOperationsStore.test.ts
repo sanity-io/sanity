@@ -205,20 +205,38 @@ describe('createReleaseOperationsStore', () => {
         },
       })
 
-      expect(mockClient.create).toHaveBeenNthCalledWith(
-        1,
-        {
-          _id: `versions.${revertReleaseId}.doc1`,
+      expect(mockClient.request).toHaveBeenNthCalledWith(1, {
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.release.create',
+              metadata: {
+                description: 'A reverted release',
+                releaseType: 'asap',
+                title: 'Revert Release',
+              },
+              releaseId: 'revert-release-id',
+            },
+          ],
         },
-        undefined,
-      )
-      expect(mockClient.create).toHaveBeenNthCalledWith(
-        2,
-        {
-          _id: `versions.${revertReleaseId}.doc2`,
+        method: 'POST',
+        uri: '/data/actions/test-dataset',
+      })
+      expect(mockClient.request).toHaveBeenNthCalledWith(2, {
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.document.version.create',
+              document: {
+                _id: 'versions.revert-release-id.doc1',
+              },
+              publishedId: 'doc1',
+            },
+          ],
         },
-        undefined,
-      )
+        method: 'POST',
+        uri: '/data/actions/test-dataset',
+      })
 
       expect(mockClient.request).toHaveBeenCalledWith({
         uri: '/data/actions/test-dataset',
@@ -256,8 +274,7 @@ describe('createReleaseOperationsStore', () => {
         },
       })
 
-      expect(mockClient.create).toHaveBeenCalledTimes(2)
-      expect(mockClient.request).toHaveBeenCalledTimes(1)
+      expect(mockClient.request).toHaveBeenCalledTimes(3)
     })
 
     it('should fail if a document does not exist and no initial value is provided', async () => {
@@ -284,21 +301,55 @@ describe('createReleaseOperationsStore', () => {
       )
 
       expect(result).toBeUndefined()
-      expect(mockClient.create).toHaveBeenCalledTimes(2)
-      expect(mockClient.create).toHaveBeenNthCalledWith(
-        1,
-        {
-          _id: `versions.${revertReleaseId}.doc1`,
+      expect(mockClient.request).toHaveBeenCalledTimes(3)
+      expect(mockClient.request).toHaveBeenNthCalledWith(1, {
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.release.create',
+              metadata: {
+                description: 'A reverted release',
+                releaseType: 'asap',
+                title: 'Revert Release',
+              },
+              releaseId: 'revert-release-id',
+            },
+          ],
         },
-        undefined,
-      )
-      expect(mockClient.create).toHaveBeenNthCalledWith(
-        2,
-        {
-          _id: `versions.${revertReleaseId}.doc2`,
+        method: 'POST',
+        uri: '/data/actions/test-dataset',
+      })
+
+      expect(mockClient.request).toHaveBeenNthCalledWith(2, {
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.document.version.create',
+              document: {
+                _id: 'versions.revert-release-id.doc1',
+              },
+              publishedId: 'doc1',
+            },
+          ],
         },
-        undefined,
-      )
+        method: 'POST',
+        uri: '/data/actions/test-dataset',
+      })
+      expect(mockClient.request).toHaveBeenNthCalledWith(3, {
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.document.version.create',
+              document: {
+                _id: 'versions.revert-release-id.doc2',
+              },
+              publishedId: 'doc2',
+            },
+          ],
+        },
+        method: 'POST',
+        uri: '/data/actions/test-dataset',
+      })
     })
 
     it('should throw an error if creating the release fails', async () => {
@@ -314,14 +365,23 @@ describe('createReleaseOperationsStore', () => {
     const store = createStore()
     mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
     await store.createVersion('release-id', 'doc-id', {newData: 'value'})
-    expect(mockClient.create).toHaveBeenCalledWith(
-      {
-        _id: `versions.release-id.doc-id`,
-        data: 'example',
-        newData: 'value',
+    expect(mockClient.request).toHaveBeenCalledWith({
+      body: {
+        actions: [
+          {
+            actionType: 'sanity.action.document.version.create',
+            document: {
+              _id: `versions.release-id.doc-id`,
+              data: 'example',
+              newData: 'value',
+            },
+            publishedId: 'doc-id',
+          },
+        ],
       },
-      undefined,
-    )
+      method: 'POST',
+      uri: '/data/actions/test-dataset',
+    })
   })
 
   it('should omit _weak from reference fields if _strengthenOnPublish is present when it creates a version of a document', async () => {
@@ -411,85 +471,94 @@ describe('createReleaseOperationsStore', () => {
 
     await store.createVersion('release-id', 'doc-id')
 
-    expect(mockClient.create).toHaveBeenCalledWith(
-      {
-        _id: `versions.release-id.doc-id`,
-        artist: {
-          _ref: 'some-artist-id',
-          _strengthenOnPublish: {
-            template: {
-              id: 'artist',
-            },
-            type: 'artist',
-          },
-          _type: 'reference',
-        },
-        expectedWeakReference: {
-          _ref: 'expected-weak-reference',
-          _type: 'reference',
-          _weak: true,
-          _strengthenOnPublish: {
-            template: {
-              id: 'some-document',
-            },
-            type: 'some-document',
-            weak: true,
-          },
-        },
-        plants: [
+    expect(mockClient.request).toHaveBeenCalledWith({
+      body: {
+        actions: [
           {
-            _ref: 'some-plant-id',
-            _strengthenOnPublish: {
-              template: {
-                id: 'plant',
+            actionType: 'sanity.action.document.version.create',
+            document: {
+              _id: `versions.release-id.doc-id`,
+              artist: {
+                _ref: 'some-artist-id',
+                _strengthenOnPublish: {
+                  template: {
+                    id: 'artist',
+                  },
+                  type: 'artist',
+                },
+                _type: 'reference',
               },
-              type: 'plant',
-            },
-            _type: 'reference',
-          },
-          {
-            _ref: 'some-plant-id',
-            _strengthenOnPublish: {
-              template: {
-                id: 'plant',
+              expectedWeakReference: {
+                _ref: 'expected-weak-reference',
+                _type: 'reference',
+                _weak: true,
+                _strengthenOnPublish: {
+                  template: {
+                    id: 'some-document',
+                  },
+                  type: 'some-document',
+                  weak: true,
+                },
               },
-              type: 'plant',
-            },
-            _type: 'reference',
-          },
-        ],
-        stores: [
-          {
-            name: 'some-store',
-            inventory: {
-              products: [
+              plants: [
                 {
-                  _ref: 'some-product-id',
+                  _ref: 'some-plant-id',
                   _strengthenOnPublish: {
                     template: {
-                      id: 'product',
+                      id: 'plant',
                     },
-                    type: 'product',
+                    type: 'plant',
                   },
                   _type: 'reference',
                 },
                 {
-                  _ref: 'some-product-id',
+                  _ref: 'some-plant-id',
                   _strengthenOnPublish: {
                     template: {
-                      id: 'product',
+                      id: 'plant',
                     },
-                    type: 'product',
+                    type: 'plant',
                   },
                   _type: 'reference',
                 },
               ],
+              stores: [
+                {
+                  name: 'some-store',
+                  inventory: {
+                    products: [
+                      {
+                        _ref: 'some-product-id',
+                        _strengthenOnPublish: {
+                          template: {
+                            id: 'product',
+                          },
+                          type: 'product',
+                        },
+                        _type: 'reference',
+                      },
+                      {
+                        _ref: 'some-product-id',
+                        _strengthenOnPublish: {
+                          template: {
+                            id: 'product',
+                          },
+                          type: 'product',
+                        },
+                        _type: 'reference',
+                      },
+                    ],
+                  },
+                },
+              ],
             },
+            publishedId: 'doc-id',
           },
         ],
       },
-      undefined,
-    )
+      method: 'POST',
+      uri: '/data/actions/test-dataset',
+    })
   })
 
   it('should discard a version of a document', async () => {
@@ -501,8 +570,9 @@ describe('createReleaseOperationsStore', () => {
       body: {
         actions: [
           {
-            actionType: 'sanity.action.document.discard',
-            draftId: 'versions.release-id.doc-id',
+            actionType: 'sanity.action.document.version.discard',
+            versionId: 'versions.release-id.doc-id',
+            purge: false,
           },
         ],
       },
@@ -511,7 +581,7 @@ describe('createReleaseOperationsStore', () => {
 
   it('should unpublish a version of a document', async () => {
     const store = createStore()
-    await store.unpublishVersion('doc-id')
+    await store.unpublishVersion('versions.release-id.doc-id')
     expect(mockClient.request).toHaveBeenCalledWith({
       uri: '/data/actions/test-dataset',
       method: 'POST',
@@ -519,7 +589,7 @@ describe('createReleaseOperationsStore', () => {
         actions: [
           {
             actionType: 'sanity.action.document.version.unpublish',
-            draftId: 'doc-id',
+            versionId: 'versions.release-id.doc-id',
             publishedId: `doc-id`,
           },
         ],

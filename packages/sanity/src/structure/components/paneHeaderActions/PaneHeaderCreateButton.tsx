@@ -1,9 +1,10 @@
-import {type ReleaseId} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
+  isPublishedPerspective,
+  type ReleaseId,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
@@ -56,7 +57,7 @@ interface PaneHeaderCreateButtonProps {
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const templates = useTemplates()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, selectedPerspective} = usePerspective()
   const isReleaseActive = useIsReleaseActive()
 
   const {t} = useTranslation(structureLocaleNamespace)
@@ -105,6 +106,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     )
   }
 
+  const disabledByPerspectiveTooltipProps = {
+    content: tCore(
+      isPublishedPerspective(selectedPerspective)
+        ? 'new-document.disabled-published.tooltip'
+        : 'new-document.disabled-release.tooltip',
+    ),
+  }
+
   if (templateItems.length === 1) {
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
@@ -127,7 +136,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           data-testid="action-intent-button"
           tooltipProps={
             disabled
-              ? {content: tCore('new-document.disabled-release.tooltip')}
+              ? disabledByPerspectiveTooltipProps
               : {content: t('pane-header.create-new-button.tooltip')}
           }
         />
@@ -146,7 +155,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           tooltipProps={
             isReleaseActive
               ? {content: t('pane-header.create-new-button.tooltip')}
-              : {content: tCore('new-document.disabled-release.tooltip')}
+              : disabledByPerspectiveTooltipProps
           }
         />
       }

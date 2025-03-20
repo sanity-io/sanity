@@ -106,9 +106,38 @@ export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
+/** @internal */
+export const systemBundles = ['drafts', 'published'] as const
+
+/** @internal */
+export type SystemBundle = (typeof systemBundles)[number]
+
+/** @internal */
+export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is SystemBundle {
+  return systemBundles.includes(maybeSystemBundle as SystemBundle)
+}
+
+/** @internal */
+const systemBundleNames = ['draft', 'published'] as const
+
+/** @internal */
+type SystemBundleName = (typeof systemBundleNames)[number]
+
+/**
+ * `isSystemBundle` should be preferred, but some parts of the codebase currently use the singular
+ * "draft" name instead of the plural "drafts".
+ *
+ * @internal
+ */
+export function isSystemBundleName(
+  maybeSystemBundleName: unknown,
+): maybeSystemBundleName is SystemBundleName {
+  return systemBundleNames.includes(maybeSystemBundleName as SystemBundleName)
+}
+
 /**  @internal */
 export function getVersionId(id: string, version: string): string {
-  if (version === 'drafts' || version === 'published') {
+  if (isSystemBundle(version)) {
     throw new Error('Version can not be "published" or "drafts"')
   }
 
@@ -181,6 +210,7 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   type: string
   draft?: T
   published?: T
+  versions: T[]
 }
 
 /** @internal */
@@ -189,11 +219,28 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
     const publishedId = getPublishedId(doc._id)
     let entry = res.get(publishedId)
     if (!entry) {
-      entry = {id: publishedId, type: doc._type, published: undefined, draft: undefined}
+      entry = {
+        id: publishedId,
+        type: doc._type,
+        published: undefined,
+        draft: undefined,
+        versions: [],
+      }
       res.set(publishedId, entry)
     }
 
-    entry[publishedId === doc._id ? 'published' : 'draft'] = doc
+    if (isPublishedId(doc._id)) {
+      entry.published = doc
+    }
+
+    if (isDraftId(doc._id)) {
+      entry.draft = doc
+    }
+
+    if (isVersionId(doc._id)) {
+      entry.versions.push(doc)
+    }
+
     return res
   }, new Map())
 
@@ -204,6 +251,6 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
 // Removes published documents that also has a draft
 export function removeDupes(documents: SanityDocumentLike[]): SanityDocumentLike[] {
   return collate(documents)
-    .map((entry) => entry.draft || entry.published)
+    .map((entry) => entry.draft || entry.published || entry.versions[0])
     .filter(isNonNullable)
 }

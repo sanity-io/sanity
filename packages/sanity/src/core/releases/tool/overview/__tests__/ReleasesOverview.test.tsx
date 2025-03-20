@@ -317,7 +317,7 @@ describe('ReleasesOverview', () => {
 
     it('shows lock next to scheduled releases', () => {
       const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
-      within(scheduledReleaseRow).getByTestId('release-avatar-primary')
+      within(scheduledReleaseRow).getByTestId('release-avatar-suggest')
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
     })
 

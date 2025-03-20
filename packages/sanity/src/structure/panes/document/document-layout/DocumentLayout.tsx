@@ -1,12 +1,6 @@
-import {
-  DialogProvider,
-  type DialogProviderProps,
-  Flex,
-  PortalProvider,
-  useElementRect,
-} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {
   ChangeConnectorRoot,
@@ -15,18 +9,14 @@ import {
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
-  getSanityCreateLinkMetadata,
-  isSanityCreateLinked,
   type Path,
   useGlobalCopyPasteElementHandler,
-  useSanityCreateConfig,
   useZIndex,
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {Pane, PaneFooter, usePane, usePaneLayout, usePaneRouter} from '../../../components'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
 import {
@@ -37,14 +27,12 @@ import {
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel'
-import {Banner} from '../documentPanel/banners/Banner'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {getMenuItems} from '../menuItems'
-import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
-import {usePreviewUrl} from '../usePreviewUrl'
 import {DocumentLayoutError} from './DocumentLayoutError'
+import {DocumentLayoutFooter} from './DocumentLayoutFooter'
 
 const EMPTY_ARRAY: [] = []
 
@@ -67,8 +55,10 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 export function DocumentLayout() {
   const {
     changesOpen,
+    displayed,
     documentId,
     documentType,
+    editState,
     fieldActions,
     focusPath,
     inspectOpen,
@@ -83,6 +73,7 @@ export function DocumentLayout() {
     value,
     isInitialValueLoading,
     ready,
+    previewUrl,
   } = useDocumentPane()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
@@ -90,13 +81,6 @@ export function DocumentLayout() {
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const zOffsets = useZIndex()
-  const previewUrl = usePreviewUrl(value)
-
-  const createLinkMetadata = getSanityCreateLinkMetadata(value)
-  const {
-    documentLinkedBannerContent: CreateLinkedBannerContent,
-    startInCreateBanner: StartInCreateBanner,
-  } = useSanityCreateConfig().components ?? {}
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -129,6 +113,8 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
+  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+
   const hasValue = Boolean(value)
 
   const menuItems = useMemo(
@@ -140,9 +126,19 @@ export function DocumentLayout() {
         inspectorMenuItems,
         inspectors,
         previewUrl,
+        documentIdStack,
         t,
       }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl, t],
+    [
+      currentInspector,
+      documentIdStack,
+      features,
+      hasValue,
+      inspectorMenuItems,
+      inspectors,
+      previewUrl,
+      t,
+    ],
   )
 
   const handleKeyUp = useCallback(
@@ -167,11 +163,6 @@ export function DocumentLayout() {
       onFocus(path)
     },
     [onPathOpen, onFocus],
-  )
-
-  const portalElements = useMemo(
-    () => ({[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}),
-    [documentPanelPortalElement],
   )
 
   if (!schemaType) {
@@ -221,19 +212,6 @@ export function DocumentLayout() {
           rootRef={setRootElement}
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
-
-          {createLinkMetadata &&
-            isSanityCreateLinked(createLinkMetadata) &&
-            CreateLinkedBannerContent && (
-              <ShowWhenPaneOpen>
-                <Banner
-                  tone="transparent"
-                  data-test-id="sanity-create-read-only-banner"
-                  content={<CreateLinkedBannerContent metadata={createLinkMetadata} />}
-                />
-              </ShowWhenPaneOpen>
-            )}
-
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
@@ -248,49 +226,20 @@ export function DocumentLayout() {
                   isInspectOpen={inspectOpen}
                   rootElement={rootElement}
                   setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                  footer={
+                    <DocumentLayoutFooter
+                      documentPanelPortalElement={documentPanelPortalElement}
+                      setFooterElement={setFooterElement}
+                      setActionsBoxElement={setActionsBoxElement}
+                    />
+                  }
                 />
               </StyledChangeConnectorRoot>
             </Flex>
           </DialogProvider>
-
-          {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-          {/* The portal element comes from `DocumentPanel`. */}
-          <PortalProvider __unstable_elements={portalElements}>
-            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-              {StartInCreateBanner && (
-                <ShowWhenPaneOpen>
-                  <StartInCreateBanner
-                    document={value}
-                    documentId={documentId}
-                    documentType={schemaType}
-                    documentReady={ready}
-                    isInitialValueLoading={!!isInitialValueLoading}
-                    panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
-                  />
-                </ShowWhenPaneOpen>
-              )}
-              <PaneFooter ref={setFooterElement}>
-                <TooltipDelayGroupProvider>
-                  <DocumentStatusBar
-                    actionsBoxRef={setActionsBoxElement}
-                    createLinkMetadata={createLinkMetadata}
-                  />
-                </TooltipDelayGroupProvider>
-              </PaneFooter>
-            </DialogProvider>
-          </PortalProvider>
           <DocumentOperationResults />
         </DocumentActionShortcuts>
       </FieldActionsProvider>
     </GetFormValueProvider>
   )
-}
-
-/**
- * Prevents whatever is inside of it from rendering when the pane is collapsed.
- * Needed locally as DocumentLayout does lives outside PaneContext, but is provided _somewhere_ within it.
- */
-function ShowWhenPaneOpen(props: {children: ReactNode}) {
-  const {collapsed} = usePane()
-  return collapsed ? null : props.children
 }

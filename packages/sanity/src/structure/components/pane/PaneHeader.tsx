@@ -2,8 +2,10 @@ import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
-import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
+
+export type TabsType = 'default' | 'dropdown'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
@@ -64,10 +66,9 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              gap={1}
+              gap={3}
               onClick={handleLayoutClick}
               padding={3}
-              paddingBottom={collapsed || !showTabsOrSubActions ? 3 : 2}
               sizing="border"
               style={layoutStyle}
             >
@@ -82,7 +83,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 tabIndex={tabIndex}
               >
                 {loading && (
-                  <Box padding={2}>
+                  <Box>
                     <TitleTextSkeleton animated radius={1} size={1} />
                   </Box>
                 )}
@@ -98,23 +99,16 @@ export const PaneHeader = forwardRef(function PaneHeader(
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}
+              {showTabsOrSubActions && (
+                <Flex align="center" hidden={collapsed} overflow="auto">
+                  <Box flex={1} marginRight={subActions ? 3 : 0}>
+                    {tabs}
+                  </Box>
+
+                  {subActions && subActions}
+                </Flex>
+              )}
             </Layout>
-
-            {showTabsOrSubActions && (
-              <Flex
-                align="center"
-                hidden={collapsed}
-                overflow="auto"
-                paddingBottom={3}
-                paddingX={3}
-              >
-                <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                  {tabs}
-                </TabsBox>
-
-                {subActions && subActions}
-              </Flex>
-            )}
 
             {!collapsed && contentAfter && contentAfter}
           </Card>

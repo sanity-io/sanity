@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {Text, useToast} from '@sanity/ui'
 import {type ReactNode, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
@@ -12,6 +11,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFr
 import {isPublishedPerspective} from '../releases/util/util'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
+import {type ReleaseId} from './types'
 import {usePerspective} from './usePerspective'
 import {useSetPerspective} from './useSetPerspective'
 

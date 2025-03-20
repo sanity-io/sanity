@@ -6,6 +6,7 @@ import {defer, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases'
 import {getVersionFromId} from '../../../util'
 import {debug} from './debug'
 import {
@@ -30,8 +31,17 @@ export interface InitialSnapshotEvent {
   document: SanityDocument | null
 }
 
+/**
+ * @internal
+ */
+export interface LatencyReportEvent {
+  shard?: string
+  latencyMs: number
+  transactionId: string
+}
+
 /** @internal */
-export interface PairListenerOptions {
+export interface DocumentStoreExtraOptions {
   tag?: string
 
   /**
@@ -40,6 +50,7 @@ export interface PairListenerOptions {
    * @param error - the {@link OutOfSyncError} recovered from
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
+  onReportLatency?: (event: LatencyReportEvent) => void
 }
 
 /** @internal */
@@ -72,11 +83,12 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 
 /** @internal */
 export function getPairListener(
-  client: SanityClient,
+  _client: SanityClient,
   idPair: IdPair,
-  options: PairListenerOptions = {},
+  options: DocumentStoreExtraOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
+  const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client
   if (
     (idPair.versionId && getVersionFromId(idPair.versionId) === 'published') ||
     (idPair.versionId && getVersionFromId(idPair.versionId) === 'drafts')

@@ -1,7 +1,16 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
-import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {range} from 'lodash'
+import {
+  addDays,
+  addMonths,
+  format,
+  parse,
+  setDate,
+  setHours,
+  setMinutes,
+  setMonth,
+  setYear,
+} from 'date-fns'
 import {
   type ComponentProps,
   type FormEvent,
@@ -19,8 +28,9 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import useDialogTimeZone from '../../../../scheduledPublishing/hooks/useDialogTimeZone'
 import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
+import {TimeInput} from '../TimeInput'
 import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
+import {ARROW_KEYS, DEFAULT_TIME_PRESETS} from './constants'
 import {features} from './features'
 import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
@@ -119,27 +129,19 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, selectedDate],
   )
 
-  const handleMinutesChange = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      const m = Number(event.currentTarget.value)
-      onSelect(setMinutes(selectedDate, m))
-    },
-    [onSelect, selectedDate],
-  )
-
-  const handleHoursChange = useCallback(
-    (event: FormEvent<HTMLSelectElement>) => {
-      const m = Number(event.currentTarget.value)
-      onSelect(setHours(selectedDate, m))
-    },
-    [onSelect, selectedDate],
-  )
-
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
       onSelect(setHours(setMinutes(selectedDate, mins), hours))
     },
     [onSelect, selectedDate],
+  )
+
+  const handleTimeChangeInputChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
+      handleTimeChange(date.getHours(), date.getMinutes())
+    },
+    [handleTimeChange],
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
@@ -328,46 +330,11 @@ export const Calendar = forwardRef(function Calendar(
           {selectTime && (
             <>
               <Flex align="center">
-                <Flex align="center" flex={1}>
-                  <Box>
-                    <Select
-                      aria-label={labels.selectHour}
-                      fontSize={1}
-                      padding={2}
-                      radius={2}
-                      value={selectedDate?.getHours()}
-                      onChange={handleHoursChange}
-                    >
-                      {HOURS_24.map((h) => (
-                        <option key={h} value={h}>
-                          {`${h}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
-
-                  <Box paddingX={1}>
-                    <Text size={1}>:</Text>
-                  </Box>
-
-                  <Box>
-                    <Select
-                      aria-label={labels.selectMinute}
-                      fontSize={1}
-                      padding={2}
-                      radius={2}
-                      value={selectedDate?.getMinutes()}
-                      onChange={handleMinutesChange}
-                    >
-                      {range(0, 60, timeStep).map((m) => (
-                        <option key={m} value={m}>
-                          {`${m}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
-                </Flex>
-
+                <TimeInput
+                  aria-label={labels.selectTime}
+                  value={format(selectedDate, 'HH:mm')}
+                  onChange={handleTimeChangeInputChange}
+                />
                 <Box marginLeft={2}>
                   <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
                 </Box>

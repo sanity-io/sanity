@@ -21,8 +21,9 @@ import {type ReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {isNotArchivedRelease} from '../../util/util'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
-import {isNotArchivedRelease, ReleaseTypePicker} from './ReleaseTypePicker'
+import {ReleaseTypePicker} from './ReleaseTypePicker'
 
 export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
   const {state} = release
@@ -99,6 +100,12 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
               onClick={handlePinRelease}
               radius="full"
               selected={isSelected}
+              aria-label={
+                isSelected
+                  ? `${tRelease('dashboard.details.unpin-release')}: "${release.metadata.title}"`
+                  : `${tRelease('dashboard.details.pin-release')}: "${release.metadata.title}"`
+              }
+              aria-live="assertive"
             />
           )}
           {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}

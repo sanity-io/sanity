@@ -1,4 +1,4 @@
-import {type ClientPerspective} from '@sanity/client'
+import {type ClientPerspective, type StackablePerspective} from '@sanity/client'
 import {type ChannelInstance} from '@sanity/comlink'
 import {
   type LoaderControllerMsg,
@@ -56,7 +56,12 @@ export type DocumentLocationsStatus = 'empty' | 'resolving' | 'resolved'
  * @public
  */
 export type DocumentLocationResolver = (
-  params: {id: string; type: string},
+  params: {
+    id: string
+    type: string
+    version: string | undefined
+    perspectiveStack: StackablePerspective[]
+  },
   context: {documentStore: DocumentStore},
 ) =>
   | DocumentLocationsState
@@ -163,7 +168,7 @@ export interface PresentationPluginOptions {
     mainDocuments?: DocumentResolver[]
     locations?: DocumentLocationResolvers | DocumentLocationResolver
   }
-  previewUrl?: PreviewUrlOption
+  previewUrl: PreviewUrlOption
   components?: {
     unstable_header?: HeaderOptions
     unstable_navigator?: NavigatorOptions

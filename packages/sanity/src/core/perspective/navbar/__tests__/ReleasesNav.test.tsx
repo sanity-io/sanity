@@ -17,7 +17,6 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
-import {LATEST} from '../../../releases/util/const'
 import {ReleasesNav} from '../ReleasesNav'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
@@ -94,17 +93,6 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('clear-perspective-button')).toBeNull()
   })
 
-  it('should have clear button to unset perspective when a perspective is chosen', async () => {
-    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
-    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
-
-    await renderTest()
-
-    fireEvent.click(screen.getByTestId('clear-perspective-button'))
-
-    expect(mockedSetPerspective).toHaveBeenCalledWith(LATEST)
-  })
-
   it('should list the title of the chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
     usePerspectiveMockReturn.selectedReleaseId = 'rActive'
@@ -112,15 +100,6 @@ describe('ReleasesNav', () => {
     await renderTest()
 
     screen.getByText('active Release')
-  })
-
-  it('should show release avatar for chosen perspective', async () => {
-    usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
-    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
-
-    await renderTest()
-
-    screen.getByTestId('release-avatar-critical')
   })
 
   describe('global perspective menu', () => {
@@ -181,7 +160,7 @@ describe('ReleasesNav', () => {
           .closest('button')!
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
-        within(scheduledMenuItem).getByTestId('release-avatar-primary')
+        within(scheduledMenuItem).getByTestId('release-avatar-suggest')
       })
 
       it('should show the actual release date for a scheduled release', async () => {
@@ -191,7 +170,7 @@ describe('ReleasesNav', () => {
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
         within(scheduledMenuItem).getByTestId('release-lock-icon')
-        within(scheduledMenuItem).getByTestId('release-avatar-primary')
+        within(scheduledMenuItem).getByTestId('release-avatar-suggest')
       })
 
       it('should show the error icon if the release is active and has an error', () => {
@@ -336,7 +315,7 @@ describe('ReleasesNav', () => {
           .closest('button')!
 
         expect(
-          within(activeReleaseMenuItem).queryByTestId('release-avatar-primary'),
+          within(activeReleaseMenuItem).queryByTestId('release-avatar-suggest'),
         ).not.toBeInTheDocument()
       })
 

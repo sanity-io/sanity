@@ -147,10 +147,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.go-to-yesterday': 'Yesterday',
   /** Label for switch that controls whether or not to include time in given timestamp */
   'calendar.action.include-time-label': 'Include time',
-  /** Action message for selecting the hour */
-  'calendar.action.select-hour': 'Select hour',
-  /** Action message for selecting the minute */
-  'calendar.action.select-minute': 'Select minute',
+  /** Action message for selecting the time */
+  'calendar.action.select-time': 'Select time',
   /** Action message for setting to the current time */
   'calendar.action.set-to-current-time': 'Set to current time',
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
@@ -379,6 +377,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
+  /** Label to indicate that a document type was not found */
+  'document.type.not-found': 'Document type "{{type}}" not found',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
@@ -442,6 +443,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
+  /** The title of the reconnecting toast */
+  'form.reconnecting.toast.title': 'Connection lost. Reconnecting…',
   /** Accessibility label for the icon that indicates the field has a validation error */
   'form.validation.has-error-aria-label': 'Has error',
   /** Accessibility label for the icon that indicates the field has validation information */
@@ -945,7 +948,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Search returned a type that\'s not valid for this reference: "{{returnedType}}"',
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-description':
-    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes />.',
+    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes/>.',
   /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-title': 'Document of invalid type',
   /** Error description for when the user does not have permissions to read the referenced document */
@@ -962,6 +965,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.error.nonexistent-document.clear-button-label': 'Clear',
   /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
   'inputs.reference.error.search-failed-title': 'Reference search failed',
+  /** Label for when the GDR points to an invalid type  */
+  'inputs.reference.global.invalid-type':
+    'The referenced document is of invalid type ({{typeName}})',
   /** Alternative text for the image shown in cross-dataset reference input */
   'inputs.reference.image-preview-alt-text': 'Image preview of referenced document',
   /** Description for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
@@ -1178,9 +1184,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
-  /** Description for toast when version deletion is successfully discarded */
-  'release.action.discard-version.success':
-    '<strong>{{title}}</strong> version was successfully discarded',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New Release',
   /** Tooltip message for not having permissions for creating new releases */
@@ -1193,13 +1196,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
   /** Label for banner when release is scheduled */
-  'release.banner.scheduled-for-publishing-on': 'Scheduled for publishing on {{date}}',
+  'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
   /** Label for Draft chip in global header */
   'release.chip.global.drafts': 'Drafts',
   /** Label for Published chip in document header */
   'release.chip.published': 'Published',
+  /** Label for tooltip in chip when document is in an archived release */
+  'release.chip.tooltip.archived': 'This release is archived and cannot be edited.',
   /** Label for tooltip in chip with the created date */
   'release.chip.tooltip.created-date': 'Created {{date}}',
   /** Label for tooltip in draft chip when it's a live edit document */
@@ -1223,6 +1228,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.deleted-tooltip': 'This release has been deleted',
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
+  /** Title for action create a release */
+  'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
   /** Label for description in tooltip to explain release types */

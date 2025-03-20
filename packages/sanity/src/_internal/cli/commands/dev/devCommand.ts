@@ -5,6 +5,10 @@ import {
 } from '@sanity/cli'
 
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
+import {determineIsApp} from '../../util/determineIsApp'
+
+// TODO: Add this once we are ready to release it.
+// --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
 
 const helpText = `
 Notes
@@ -27,30 +31,39 @@ const devCommand: CliCommandDefinition = {
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,
   ) => {
-    const devAction = await getDevAction()
+    const devAction = await getDevAction(context)
 
     return devAction(args, context)
   },
   helpText,
 }
 
-export async function getDevAction(): Promise<
+export async function getDevAction(
+  context: CliCommandContext,
+): Promise<
   (
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,
   ) => Promise<void>
 > {
-  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
-  // NOTE: this `if` statement is not included in the output bundle
-  if (__DEV__) {
-    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
-    const mod: typeof import('../../actions/dev/devAction') = require('../../actions/dev/devAction.ts')
+  const isApp = determineIsApp(context.cliConfig)
 
+  // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
+  if (__DEV__) {
+    if (isApp) {
+      // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+      const mod = require('../../actions/app/devAction.ts')
+      return mod.default
+    }
+    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+    const mod = require('../../actions/dev/devAction.ts')
     return mod.default
   }
-
+  if (isApp) {
+    const mod = await import('../../actions/app/devAction')
+    return mod.default
+  }
   const mod = await import('../../actions/dev/devAction')
-
   return mod.default
 }
 

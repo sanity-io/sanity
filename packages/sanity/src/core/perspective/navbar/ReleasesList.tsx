@@ -11,8 +11,10 @@ import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {DEFAULT_RELEASE, LATEST} from '../../releases/util/const'
+import {LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDefaults} from '../../releases/util/util'
+import {usePerspective} from '../usePerspective'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -67,6 +69,7 @@ export function ReleasesList({
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {selectedPerspectiveName} = usePerspective()
 
   const {t} = useTranslation()
 
@@ -74,7 +77,7 @@ export function ReleasesList({
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, createReleaseMetadata(DEFAULT_RELEASE)).then(
+    checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults())).then(
       (hasPermission) => {
         if (isMounted.current) setHasCreatePermission(hasPermission)
       },
@@ -103,7 +106,8 @@ export function ReleasesList({
   )
 
   const range: LayerRange = useMemo(() => {
-    let lastIndex = 0
+    const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
+    let lastIndex = isDraftsPerspective ? 1 : 0
 
     const {asap, scheduled} = sortedReleaseTypeReleases
     const countAsapReleases = asap.length
@@ -134,7 +138,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [selectedReleaseId, sortedReleaseTypeReleases])
+  }, [selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
@@ -184,7 +188,8 @@ export function ReleasesList({
             text={t('release.action.create-new')}
             data-testid="create-new-release-button"
             tooltipProps={{
-              content: !hasCreatePermission && t('release.action.permission.error'),
+              disabled: hasCreatePermission === true,
+              content: t('release.action.permission.error'),
             }}
           />
         </>

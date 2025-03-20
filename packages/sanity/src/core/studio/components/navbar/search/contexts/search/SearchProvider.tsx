@@ -1,13 +1,11 @@
-import {type ClientPerspective} from '@sanity/client'
 import {isEqual} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
-import {usePerspective} from '../../../../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
-import {isPerspectiveRaw, type SearchTerms} from '../../../../../../search'
+import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
@@ -29,7 +27,7 @@ interface SearchProviderProps {
    * list of perspective ids
    * if provided, then it means that the search is being done using a specific list of perspectives
    */
-  perspective?: ClientPerspective
+
   /**
    * list of document ids that should be be disabled in the search
    * if they are found to exist in the search results
@@ -48,13 +46,11 @@ interface SearchProviderProps {
 export function SearchProvider({
   children,
   fullscreen,
-  perspective,
   disabledDocumentIds,
   canDisableAction,
 }: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-  const {perspectiveStack} = usePerspective()
   const {data: releases} = useActiveReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
@@ -99,7 +95,7 @@ export function SearchProvider({
   const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
-    initialState: {...result, terms, perspective},
+    initialState: {...result, terms},
     onComplete: (searchResult) => dispatch({...searchResult, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
@@ -142,8 +138,6 @@ export function SearchProvider({
           ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
       }
 
-      const isRaw = isPerspectiveRaw(perspective)
-
       handleSearch({
         options: {
           // Comments prepended to each query for future measurement
@@ -161,7 +155,7 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
-          perspective: isRaw ? ['raw'] : state.perspective,
+          perspective: 'raw',
         },
         terms: {
           ...terms,
@@ -190,10 +184,7 @@ export function SearchProvider({
     terms,
     cursor,
     strategy,
-    perspectiveStack,
     releases,
-    state.perspective,
-    perspective,
   ])
 
   /**
@@ -219,20 +210,11 @@ export function SearchProvider({
       state: {
         ...state,
         fullscreen,
-        perspective,
         disabledDocumentIds,
         canDisableAction,
       },
     }),
-    [
-      fullscreen,
-      disabledDocumentIds,
-      canDisableAction,
-      onClose,
-      perspective,
-      searchCommandList,
-      state,
-    ],
+    [fullscreen, disabledDocumentIds, canDisableAction, onClose, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>

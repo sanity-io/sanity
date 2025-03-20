@@ -6,5 +6,4 @@ export const strings = {
   'copy-error-details.title': 'Copy error details',
   'copy-error-details.toast.get-failed': 'Failed to get error details',
   'copy-error-details.toast.copy-failed': 'Failed to copy error details',
-  'copy-error-details.toast.succeeded': 'Copied error details to clipboard',
 } as const

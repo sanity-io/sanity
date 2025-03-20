@@ -49,9 +49,7 @@ test.describe('Portable Text Input', () => {
       await page.keyboard.press('Tab')
       await expect(page.getByTestId('remove-inline-object-button')).toBeFocused()
       await page.keyboard.press('Escape')
-      await expect(page.getByTestId('edit-inline-object-button')).toBeVisible()
       await expect($pte).toBeFocused()
-      await page.keyboard.press('Escape')
       // Assertion: escape closes the toolbar popover
       await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
     })

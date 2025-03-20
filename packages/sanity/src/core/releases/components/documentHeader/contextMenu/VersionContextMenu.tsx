@@ -13,8 +13,7 @@ import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {DEFAULT_RELEASE} from '../../../util/const'
-import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {getReleaseDefaults, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
@@ -52,9 +51,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   const {t} = useTranslation()
   const {mode} = useReleasesUpsell()
   const isPublished = isPublishedId(documentId) && !isVersion
-  const optionsReleaseList = releases.map((release) => ({
-    value: release,
-  }))
+  const optionsReleaseList = releases.filter((release) => !isReleaseScheduledOrScheduling(release))
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
@@ -75,7 +72,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, DEFAULT_RELEASE).then((hasPermission) => {
+    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 
@@ -105,22 +102,20 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           text={t('release.action.copy-to')}
           disabled={disabled || !hasCreatePermission}
           tooltipProps={{
-            disabled: !hasCreatePermission,
+            disabled: hasCreatePermission === true,
             content: t('release.action.permission.error'),
           }}
         >
           <ReleasesList key={fromRelease} space={1}>
-            {optionsReleaseList.map((option) => {
-              const isReleaseScheduled = isReleaseScheduledOrScheduling(option.value)
+            {optionsReleaseList.map((release) => {
               return (
                 <MenuItem
                   as="a"
-                  key={option.value._id}
-                  onClick={() => onCreateVersion(option.value._id)}
-                  renderMenuItem={() => <VersionContextMenuItem release={option.value} />}
-                  disabled={disabled || isReleaseScheduled}
+                  key={release._id}
+                  onClick={() => onCreateVersion(release._id)}
+                  renderMenuItem={() => <VersionContextMenuItem release={release} />}
+                  disabled={disabled}
                   tooltipProps={{
-                    disabled: isReleaseScheduled,
                     content: t('release.tooltip.locked'),
                   }}
                 />
@@ -144,7 +139,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
               text={t('release.action.discard-version')}
               disabled={disabled || locked || !hasDiscardPermission}
               tooltipProps={{
-                content: !hasDiscardPermission && t('release.action.permission.error'),
+                disabled: hasDiscardPermission === true,
+                content: t('release.action.permission.error'),
               }}
             />
           </>

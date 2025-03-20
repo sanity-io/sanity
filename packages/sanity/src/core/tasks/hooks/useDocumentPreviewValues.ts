@@ -26,17 +26,17 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
 
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
   }, [documentId, documentPreviewStore, schemaType])
   const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true
 
-  const {published, draft} = previewState || {}
-  const documentTitle = (draft?.title || published?.title) as string | undefined
-  const subtitle = (draft?.subtitle || published?.subtitle) as string | undefined
-  const description = (draft?.description || published?.description) as string | undefined
-  const media = (draft?.media || published?.media) as ReactNode | ElementType | undefined
+  const {snapshot} = previewState || {}
+  const documentTitle = snapshot?.title as string | undefined
+  const subtitle = snapshot?.subtitle as string | undefined
+  const description = snapshot?.description as string | undefined
+  const media = snapshot?.media as ReactNode | ElementType | undefined
 
   return {
     isLoading,

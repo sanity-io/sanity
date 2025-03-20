@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
@@ -29,9 +30,15 @@ interface SearchResultsProps {
   disableIntentLink?: boolean
   inputElement: HTMLInputElement | null
   onItemSelect?: ItemSelectHandler
+  previewPerspective?: StackablePerspective[]
 }
 
-export function SearchResults({disableIntentLink, inputElement, onItemSelect}: SearchResultsProps) {
+export function SearchResults({
+  disableIntentLink,
+  inputElement,
+  onItemSelect,
+  previewPerspective,
+}: SearchResultsProps) {
   const {
     dispatch,
     onClose,
@@ -75,13 +82,14 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
             onItemSelect={onItemSelect}
+            previewPerspective={previewPerspective}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, disableIntentLink, handleSearchResultClick, onItemSelect],
+    [debug, disableIntentLink, handleSearchResultClick, onItemSelect, previewPerspective],
   )
 
   return (

@@ -35,7 +35,7 @@ export interface StaticBuildOptions {
   vite?: UserViteConfig
   reactCompiler: ReactCompilerConfig | undefined
   appLocation?: string
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 export async function buildStaticFiles(
@@ -51,7 +51,7 @@ export async function buildStaticFiles(
     importMap,
     reactCompiler,
     appLocation,
-    isCoreApp,
+    isApp,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -61,7 +61,7 @@ export async function buildStaticFiles(
     watch: false,
     basePath,
     appLocation,
-    isCoreApp,
+    isApp,
   })
 
   debug('Resolving vite config')
@@ -75,7 +75,7 @@ export async function buildStaticFiles(
     mode,
     importMap,
     reactCompiler,
-    isCoreApp,
+    isApp,
   })
 
   // Extend Vite configuration with user-provided config

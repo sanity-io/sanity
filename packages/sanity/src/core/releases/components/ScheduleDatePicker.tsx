@@ -1,5 +1,5 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
@@ -48,20 +48,21 @@ export const ScheduleDatePicker = ({
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   return (
-    <Flex flex={1} justify="space-between">
-      <DateTimeInput
-        selectTime
-        monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-        onChange={handlePublishAtCalendarChange}
-        onInputChange={handlePublishAtInputChange}
-        calendarLabels={calendarLabels}
-        value={timezoneAdjustedValue}
-        inputValue={format(timezoneAdjustedValue, inputDateFormat)}
-        constrainSize={false}
-        padding={0}
-        isPastDisabled
-      />
-
+    <Flex gap={3}>
+      <Box flex={1}>
+        <DateTimeInput
+          selectTime
+          monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+          onChange={handlePublishAtCalendarChange}
+          onInputChange={handlePublishAtInputChange}
+          calendarLabels={calendarLabels}
+          value={timezoneAdjustedValue}
+          inputValue={format(timezoneAdjustedValue, inputDateFormat)}
+          constrainSize={false}
+          padding={0}
+          isPastDisabled
+        />
+      </Box>
       <Button
         icon={EarthGlobeIcon}
         mode="bleed"

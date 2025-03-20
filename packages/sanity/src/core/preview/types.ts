@@ -1,5 +1,7 @@
+import {type StackablePerspective} from '@sanity/client'
 import {
   type CrossDatasetType,
+  type GlobalDocumentReferenceType,
   type PreviewValue,
   type Reference,
   type SanityDocumentLike,
@@ -37,7 +39,7 @@ export type Previewable = (
 export type PreviewPath = FieldName[]
 
 /** @internal */
-export type Selection = [Id, FieldName[]]
+export type Selection = [id: Id, fields: FieldName[]]
 
 /**
  * @hidden
@@ -55,7 +57,7 @@ export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 /**
  * @hidden
  * @beta */
-export type PreviewableType = SchemaType | CrossDatasetType
+export type PreviewableType = SchemaType | CrossDatasetType | GlobalDocumentReferenceType
 
 /**
  * @hidden
@@ -141,6 +143,7 @@ export interface PreparedSnapshot {
 export type ObserveDocumentTypeFromIdFn = (
   id: string,
   apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
 ) => Observable<string | undefined>
 
 /**
@@ -151,6 +154,7 @@ export interface ObservePathsFn {
     value: Previewable,
     paths: (string | PreviewPath)[],
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
 }
 

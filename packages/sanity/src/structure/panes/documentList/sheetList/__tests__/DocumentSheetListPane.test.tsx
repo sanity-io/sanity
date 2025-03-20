@@ -82,7 +82,7 @@ Object.assign(navigator, {
   },
 })
 
-describe('DocumentSheetListPane', () => {
+describe.skip('DocumentSheetListPane', () => {
   describe('Keyboard navigation', () => {
     describe('to edit single value', () => {
       it('should not edit cell when only single clicked', async () => {

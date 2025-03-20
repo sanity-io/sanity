@@ -25,6 +25,7 @@ import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {useTranslation} from '../../../i18n'
 import {FieldPresence} from '../../../presence'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
@@ -147,7 +148,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const hasRef = value._ref
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
-  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
+  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.isPublished
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
     onChange([
@@ -210,6 +211,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     referenceElement: contextMenuButtonElement,
   })
 
+  const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
+
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -230,12 +233,14 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               <Menu ref={menuRef}>
                 {!readOnly && (
                   <>
-                    <MenuItem
-                      text={t('inputs.reference.action.remove')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={onRemove}
-                    />
+                    {!disableActions.includes('remove') && (
+                      <MenuItem
+                        text={t('inputs.reference.action.remove')}
+                        tone="critical"
+                        icon={TrashIcon}
+                        onClick={onRemove}
+                      />
+                    )}
                     <MenuItem
                       text={t(
                         hasRef && isEditing
@@ -245,18 +250,25 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                       icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
                       onClick={handleReplace}
                     />
-                    <MenuItem
-                      text={t('inputs.reference.action.copy')}
-                      icon={CopyIcon}
-                      onClick={handleCopy}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.duplicate')}
-                      icon={AddDocumentIcon}
-                      onClick={handleDuplicate}
-                    />
-                    {insertBefore.menuItem}
-                    {insertAfter.menuItem}
+                    {!disableActions.includes('copy') && (
+                      <MenuItem
+                        text={t('inputs.reference.action.copy')}
+                        icon={CopyIcon}
+                        onClick={handleCopy}
+                      />
+                    )}
+                    {!disableActions.includes('duplicate') && (
+                      <MenuItem
+                        text={t('inputs.reference.action.duplicate')}
+                        icon={AddDocumentIcon}
+                        onClick={handleDuplicate}
+                      />
+                    )}
+                    {!(disableActions.includes('add') || disableActions.includes('addBefore')) &&
+                      insertBefore.menuItem}
+                    {!disableActions.includes('add') &&
+                      !disableActions.includes('addAfter') &&
+                      insertAfter.menuItem}
                   </>
                 )}
 
@@ -279,6 +291,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       ),
     [
       OpenLink,
+      disableActions,
       handleCopy,
       handleDuplicate,
       handleReplace,

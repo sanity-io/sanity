@@ -1,9 +1,7 @@
 import {SanityLogo} from '@sanity/logos'
-import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-
-import {useTranslation} from '../../../../../i18n'
 
 const LINKS = [
   {
@@ -42,7 +40,7 @@ interface LayoutProps {
 
 export function Layout(props: LayoutProps) {
   const {children, footer, header} = props
-  const {t} = useTranslation()
+  const prefersDark = usePrefersDark()
 
   return (
     <Stack space={6}>
@@ -69,7 +67,7 @@ export function Layout(props: LayoutProps) {
 
       <Flex direction="column" gap={4} justify="center" align="center" paddingBottom={4}>
         <Text size={3}>
-          <SanityLogo />
+          <SanityLogo dark={prefersDark} />
         </Text>
 
         <Flex align="center" gap={2}>

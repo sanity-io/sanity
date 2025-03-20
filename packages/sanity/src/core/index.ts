@@ -15,6 +15,7 @@ export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,
+  type ReleaseId,
   type SelectedPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
@@ -34,16 +35,21 @@ export {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   LATEST,
+  ReleaseAvatar,
   type ReleaseDocument,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   useActiveReleases,
   useArchivedReleases,
+  useDocumentVersionInfo,
   useDocumentVersions,
+  useDocumentVersionTypeSortedList,
   useIsReleaseActive,
+  useOnlyHasVersions,
   useReleasesIds,
   useVersionOperations,
   VersionChip,
+  type VersionInfoDocumentStub,
   VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'

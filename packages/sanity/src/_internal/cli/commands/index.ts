@@ -1,10 +1,5 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
-import appGroup from './app/appGroup'
-import appBuildCommand from './app/buildCommand'
-import appDeployCommand from './app/deployCommand'
-import appDevCommand from './app/devCommand'
-import appStartCommand from './app/startCommand'
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -60,11 +55,6 @@ import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
-  appGroup,
-  appDeployCommand,
-  appDevCommand,
-  appBuildCommand,
-  appStartCommand,
   buildCommand,
   datasetGroup,
   deployCommand,

@@ -1,15 +1,39 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {assignWith} from 'lodash'
 
-import {isPerspectiveRaw} from '../../search/common/isPerspectiveRaw'
-import {isPublishedId, isVersionId} from '../../util'
+function getMissingDocumentFallback(document: Partial<SanityDocument> | PreviewValue) {
+  return {
+    title: <em>{document.title ? String(document.title) : 'Missing document'}</em>,
+    subtitle: (
+      <em>
+        {document.title ? `Missing document ID: ${document._id}` : `Document ID: ${document._id}`}
+      </em>
+    ),
+    media: () => <WarningOutlineIcon />,
+  }
+}
 
-const getMissingDocumentFallback = (item: SanityDocument) => ({
-  title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
-  subtitle: <em>{item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}</em>,
-  media: () => <WarningOutlineIcon />,
-})
+/**
+ * @internal
+ */
+export type Sources = {
+  /**
+   * Preview snapshot with current perspective applied
+   * This takes priority of original and fallback
+   */
+  snapshot?: Partial<SanityDocument> | PreviewValue | null | undefined
+  /**
+   * Preview of the original document (e.g. without current perspective applied)
+   */
+  original?: Partial<SanityDocument> | PreviewValue | null | undefined
+  /**
+   * last resort fallback in case we don't have anything to preview
+   * this can be a hard-coded preview value, or a document stub
+   */
+  fallback?: Partial<SanityDocument> | PreviewValue
+}
+
+const EMPTY: {[key: string]: never} = {}
 
 /**
  * Obtain document preview values used in <SanityPreview> and <SanityDefaultPreview> components.
@@ -17,52 +41,6 @@ const getMissingDocumentFallback = (item: SanityDocument) => ({
  *
  * @internal
  */
-export const getPreviewValueWithFallback = ({
-  value,
-  draft,
-  published,
-  version,
-  perspective,
-}: {
-  value: SanityDocument
-  draft?: Partial<SanityDocument> | PreviewValue | null
-  published?: Partial<SanityDocument> | PreviewValue | null
-  version?: Partial<SanityDocument> | PreviewValue | null
-  perspective?: string
-}) => {
-  let snapshot: Partial<SanityDocument> | PreviewValue | null | undefined
-
-  // check if it's searching globally
-  // if it is then use the value directly
-  if (isPerspectiveRaw(perspective)) {
-    switch (true) {
-      case isVersionId(value._id):
-        snapshot = version
-        break
-      case isPublishedId(value._id):
-        snapshot = published
-        break
-      default:
-        snapshot = draft
-    }
-  } else {
-    switch (true) {
-      case perspective === 'published':
-        snapshot = published || draft
-        break
-      case typeof perspective !== 'undefined' || isVersionId(value._id):
-        snapshot = version || draft || published
-        break
-      default:
-        snapshot = draft || published
-    }
-  }
-
-  if (!snapshot) {
-    return getMissingDocumentFallback(value)
-  }
-
-  return assignWith({}, snapshot, value, (objValue, srcValue) => {
-    return typeof srcValue === 'undefined' ? objValue : srcValue
-  }) as PreviewValue
+export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) {
+  return snapshot || original || getMissingDocumentFallback(fallback || EMPTY)
 }

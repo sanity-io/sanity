@@ -12,7 +12,7 @@ import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secre
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
-import {presentationTool} from 'sanity/presentation'
+import {defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
@@ -77,9 +77,6 @@ const sharedSettings = definePlugin({
     treeArrayEditing: {
       enabled: true,
     },
-  },
-  search: {
-    strategy: 'groq2024',
   },
   document: {
     actions: documentActions,
@@ -181,9 +178,6 @@ const defaultWorkspace = defineConfig({
   tasks: {
     enabled: true,
   },
-  releases: {
-    enabled: true,
-  },
 })
 
 export default defineConfig([
@@ -213,9 +207,6 @@ export default defineConfig([
     unstable_tasks: {
       enabled: false,
     },
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'tsdoc',
@@ -224,9 +215,6 @@ export default defineConfig([
     dataset: 'tsdoc-2',
     plugins: [sharedSettings()],
     basePath: '/tsdoc',
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'playground',
@@ -241,8 +229,8 @@ export default defineConfig([
         releases: true,
       },
     },
-    releases: {
-      enabled: true,
+    search: {
+      strategy: 'groq2024',
     },
   },
   {
@@ -253,9 +241,6 @@ export default defineConfig([
     dataset: 'data-loss',
     plugins: [sharedSettings()],
     basePath: '/listener-events',
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'playground-partial-indexing',
@@ -265,9 +250,6 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings()],
     basePath: '/playground-partial-indexing',
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'staging',
@@ -284,8 +266,17 @@ export default defineConfig([
     unstable_tasks: {
       enabled: true,
     },
-    releases: {
-      enabled: true,
+  },
+  {
+    name: 'playground-staging',
+    title: 'playground (Staging)',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/playground-staging',
+    apiHost: 'https://api.sanity.work',
+    auth: {
+      loginMethod: 'token',
     },
   },
   {
@@ -321,9 +312,6 @@ export default defineConfig([
         toolMenu: CustomToolMenu,
       },
     },
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'google-theme',
@@ -334,9 +322,6 @@ export default defineConfig([
     basePath: '/google',
     theme: googleTheme,
     icon: GoogleLogo,
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'vercel-theme',
@@ -347,9 +332,6 @@ export default defineConfig([
     basePath: '/vercel',
     theme: vercelTheme,
     icon: VercelLogo,
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'tailwind-theme',
@@ -360,9 +342,6 @@ export default defineConfig([
     basePath: '/tailwind',
     theme: tailwindTheme,
     icon: TailwindLogo,
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'ai-assist',
@@ -371,9 +350,6 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings(), assist()],
     basePath: '/ai-assist',
-    releases: {
-      enabled: true,
-    },
   },
   {
     name: 'stega',
@@ -386,9 +362,6 @@ export default defineConfig([
       components: {
         input: StegaDebugger,
       },
-    },
-    releases: {
-      enabled: true,
     },
   },
   {
@@ -404,13 +377,17 @@ export default defineConfig([
         previewUrl: {
           preview: '/preview/index.html',
         },
+        resolve: {
+          locations: {
+            simpleBlock: defineLocations({
+              locations: [{title: 'Home', href: '/'}],
+            }),
+          },
+        },
       }),
       assist(),
       sharedSettings(),
     ],
     basePath: '/presentation',
-    releases: {
-      enabled: true,
-    },
   },
 ]) as WorkspaceOptions[]
