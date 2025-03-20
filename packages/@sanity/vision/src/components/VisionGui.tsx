@@ -6,7 +6,14 @@ import {
   type MutationEvent,
   type SanityClient,
 } from '@sanity/client'
-import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
+import {
+  ArchiveIcon,
+  CopyIcon,
+  ErrorOutlineIcon,
+  PlayIcon,
+  StopIcon,
+  UnarchiveIcon,
+} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -123,6 +130,11 @@ interface VisionGuiProps extends VisionProps {
   toast: ToastContextValue
   datasets: string[]
   t: TFunction<'vision', undefined>
+  queryDoc: {
+    document: Document | undefined
+    error: Error | undefined
+    saveQuery: (query: Record<string, unknown>) => void
+  }
 }
 
 interface VisionGuiState {
@@ -1056,25 +1068,46 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                     </Box>
                   </TimingsTextContainer>
                 </TimingsCard>
+                <Flex>
+                  {hasResult && (
+                    <DownloadsCard paddingX={4} paddingY={3} sizing="border">
+                      <SaveResultLabel muted>
+                        <Translate
+                          components={{
+                            SaveResultButtons: () => (
+                              <>
+                                <SaveJsonButton blobUrl={jsonUrl} />
+                                <SaveCsvButton blobUrl={csvUrl} />
+                              </>
+                            ),
+                          }}
+                          i18nKey="result.save-result-as-format"
+                          t={t}
+                        />
+                      </SaveResultLabel>
+                    </DownloadsCard>
+                  )}
 
-                {hasResult && (
-                  <DownloadsCard paddingX={4} paddingY={3} sizing="border">
-                    <SaveResultLabel muted>
-                      <Translate
-                        components={{
-                          SaveResultButtons: () => (
-                            <>
-                              <SaveJsonButton blobUrl={jsonUrl} />
-                              <SaveCsvButton blobUrl={csvUrl} />
-                            </>
-                          ),
-                        }}
-                        i18nKey="result.save-result-as-format"
-                        t={t}
-                      />
-                    </SaveResultLabel>
-                  </DownloadsCard>
-                )}
+                  <Flex justify="center" align="center" gap={2} padding={2}>
+                    <Button text={t('action.load-query')} icon={UnarchiveIcon} mode="ghost" />
+                    <Button
+                      text={t('action.save-query')}
+                      icon={ArchiveIcon}
+                      mode="ghost"
+                      onClick={() =>
+                        this.props.queryDoc.saveQuery({
+                          params: this.state.params,
+                          query: this.state.query,
+                          perspective: getActivePerspective({
+                            visionPerspective: perspective,
+                            pinnedPerspective: this.props.pinnedPerspective,
+                          }),
+                          savedAt: new Date().toISOString(),
+                        })
+                      }
+                    />
+                  </Flex>
+                </Flex>
               </ResultFooter>
             </ResultOuterContainer>
           </SplitPane>

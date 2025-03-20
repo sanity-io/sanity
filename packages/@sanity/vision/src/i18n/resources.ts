@@ -13,10 +13,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
   'action.listen-execute': 'Listen',
+  /** Label for loading a query */
+  'action.load-query': 'Load query',
   /** Label for cancelling an ongoing query */
   'action.query-cancel': 'Cancel',
   /** Label for executing the query, eg doing a fetch */
   'action.query-execute': 'Fetch',
+  /** Label for saving a query */
+  'action.save-query': 'Save query',
 
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.

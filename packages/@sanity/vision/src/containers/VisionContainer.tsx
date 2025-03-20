@@ -4,6 +4,7 @@ import {useTranslation} from 'sanity'
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
+import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
 import {type VisionProps} from '../types'
 
@@ -11,6 +12,7 @@ export function VisionContainer(props: VisionProps) {
   const toast = useToast()
   const loadedDatasets = useDatasets(props.client)
   const {t} = useTranslation(visionLocaleNamespace)
+  const queryDoc = useQueryDocument()
 
   if (!loadedDatasets) {
     return (
@@ -27,5 +29,5 @@ export function VisionContainer(props: VisionProps) {
       : // Otherwise use the loaded list, obviously
         loadedDatasets
 
-  return <VisionGui {...props} datasets={datasets} toast={toast} t={t} />
+  return <VisionGui {...props} datasets={datasets} toast={toast} t={t} queryDoc={queryDoc} />
 }
