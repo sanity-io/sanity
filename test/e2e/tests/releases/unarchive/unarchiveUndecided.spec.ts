@@ -12,7 +12,7 @@ import {
   unarchiveRelease,
 } from '../utils/methods'
 import {
-  scheduleAndConfirmRelease,
+  scheduleAndConfirmReleaseMenu,
   unscheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
 
@@ -82,6 +82,7 @@ test.describe('Unarchive Undecided', () => {
     browserName,
   }) => {
     skipIfBrowser(browserName)
+
     test.slow()
     const dataset = sanityClient.config().dataset
     const versionDocumentId = _testContext.getUniqueDocumentId()
@@ -92,7 +93,10 @@ test.describe('Unarchive Undecided', () => {
     })
 
     await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
-    await scheduleAndConfirmRelease({page})
+    await scheduleAndConfirmReleaseMenu({
+      page,
+      date: new Date(new Date().setMinutes(new Date().getMinutes() + 20)),
+    })
 
     await unscheduleAndConfirmRelease({page})
 

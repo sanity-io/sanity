@@ -12,7 +12,7 @@ import {
   unarchiveRelease,
 } from '../utils/methods'
 import {
-  scheduleAndConfirmRelease,
+  scheduleAndConfirmReleaseMenu,
   unscheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
 
@@ -91,7 +91,10 @@ test.describe('Unarchive ASAP', () => {
     })
 
     await page.goto(`test/releases/${asapReleaseIdTestOne}`)
-    await scheduleAndConfirmRelease({page})
+    await scheduleAndConfirmReleaseMenu({
+      page,
+      date: new Date(new Date().setMinutes(new Date().getMinutes() + 20)),
+    })
 
     await unscheduleAndConfirmRelease({page})
 
