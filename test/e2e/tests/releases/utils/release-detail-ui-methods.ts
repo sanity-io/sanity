@@ -53,6 +53,37 @@ export const scheduleAndConfirmReleaseMenu = async ({page, date}: {page: Page; d
   await expect(page.getByTestId('release-type-picker')).toBeDisabled()
 }
 
+/** This method follows the scheduling and confirming from the release detail page
+ *  date should be a date example:new Date(new Date().setMinutes(new Date().getMinutes() + 20)) - current date + 20 minutes
+ */
+export const scheduleAndConfirmRelease = async ({page, date}: {page: Page; date: Date}) => {
+  await expect(page.getByTestId('schedule-button')).not.toBeDisabled()
+  await page.getByTestId('schedule-button').click()
+
+  await expect(page.getByTestId('confirm-schedule-dialog')).toBeVisible()
+
+  await page.getByTestId('select-date-button').click()
+  await expect(page.getByTestId('date-input-dialog')).toBeVisible()
+  await page.getByRole('textbox', {name: 'Select time'}).click()
+
+  // sets release to happen in 20 minutes
+  const timeString = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+  await page.getByRole('textbox', {name: 'Select time'}).fill(timeString)
+  await page.getByTestId('date-input-dialog').click()
+  await page.getByTestId('select-date-button').click()
+  await expect(page.getByTestId('date-input-dialog')).not.toBeVisible()
+
+  await expect(page.getByTestId('confirm-button')).not.toBeDisabled()
+
+  await page.getByTestId('confirm-button').click()
+  await expect(page.getByTestId('confirm-schedule-dialog')).not.toBeVisible()
+  await expect(page.getByTestId('release-type-picker')).toBeDisabled()
+}
+
 /** This method follows the unscheduling and confirming from the release detail page */
 export const unscheduleAndConfirmRelease = async ({page}: {page: Page}) => {
   await page.getByTestId('schedule-button').click()
