@@ -208,6 +208,7 @@ import {
   defineLocale,
   defineLocaleResourceBundle,
   defineLocalesResources,
+  removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
 import {useGetI18nText} from '../core/i18n/hooks/useGetI18nText'
 import {useI18nText} from '../core/i18n/hooks/useI18nText'
@@ -217,11 +218,7 @@ import {type LocaleResourceBundle, type LocaleSource, type TFunction} from '../c
 import {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 import {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
 import {type PerspectiveNotWriteableReason} from '../core/perspective/isPerspectiveWriteable'
-import {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
-import {
-  type ReleasesNavMenuItemPropsGetter,
-  type TargetPerspective,
-} from '../core/perspective/types'
+import {type TargetPerspective} from '../core/perspective/types'
 import {useLiveDocumentIdSet} from '../core/preview/useLiveDocumentIdSet'
 import {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
 import {ReleaseAvatar} from '../core/releases/components/ReleaseAvatar'
@@ -316,6 +313,7 @@ import {useSearchMaxFieldDepth} from '../core/studio/components/navbar/search/ho
 import {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 import {renderStudio} from '../core/studio/renderStudio'
 import {SourceProvider, useSource} from '../core/studio/source'
+import {StudioProvider} from '../core/studio/StudioProvider'
 import {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
 import {type InitialValueTemplateItem, type Template} from '../core/templates/types'
 import {catchWithCount} from '../core/util/catchWithCount'
@@ -578,8 +576,7 @@ export {
   ReleaseAvatar,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
-  ReleasesNav,
-  type ReleasesNavMenuItemPropsGetter,
+  removeUndefinedLocaleResources,
   renderStudio,
   Resizable,
   resizeObserver,
@@ -601,6 +598,7 @@ export {
   type StringInputProps,
   stringToPath,
   type StudioLocaleResourceKeys,
+  StudioProvider,
   TagsArrayInput,
   type TargetPerspective,
   TelephoneInput,
