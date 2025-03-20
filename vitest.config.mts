@@ -23,5 +23,10 @@ export default defineConfig({
       reportOnFailure: true,
       clean: true,
     },
+    typecheck: {
+      enabled: true,
+      // @TODO we have a lot of TS errors to fix in test files before we can remove this line
+      ignoreSourceErrors: true,
+    },
   },
 })
