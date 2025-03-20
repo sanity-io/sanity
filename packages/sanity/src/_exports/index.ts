@@ -191,6 +191,7 @@ import {
   defineLocale,
   defineLocaleResourceBundle,
   defineLocalesResources,
+  removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
 import {useGetI18nText} from '../core/i18n/hooks/useGetI18nText'
 import {useI18nText} from '../core/i18n/hooks/useI18nText'
@@ -289,6 +290,7 @@ import {useSearchMaxFieldDepth} from '../core/studio/components/navbar/search/ho
 import {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 import {renderStudio} from '../core/studio/renderStudio'
 import {SourceProvider, useSource} from '../core/studio/source'
+import {StudioProvider} from '../core/studio/StudioProvider'
 import {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
 import {type InitialValueTemplateItem, type Template} from '../core/templates/types'
 import {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
@@ -541,6 +543,7 @@ export {
   type ReleaseDocument,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
+  removeUndefinedLocaleResources,
   renderStudio,
   Resizable,
   resizeObserver,
@@ -561,6 +564,7 @@ export {
   type StringInputProps,
   stringToPath,
   type StudioLocaleResourceKeys,
+  StudioProvider,
   TagsArrayInput,
   TelephoneInput,
   type Template,
