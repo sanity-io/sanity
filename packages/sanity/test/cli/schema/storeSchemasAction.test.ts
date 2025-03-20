@@ -354,7 +354,7 @@ describe('storeSchemasAction', () => {
           print:
             '↳ Error when storing schemas:\n' +
             '  Manifest does not exist at /path/to/workdir/dist/static/create-manifest.json. ' +
-            'To create the manifest file, re-run with --extract-manifest or run "sanity manifest extract"',
+            'To create the manifest file, omit --no-extract-manifest or run "sanity manifest extract" first.',
         },
         {print: '↳ List stored schemas with: sanity schema list'},
       ])

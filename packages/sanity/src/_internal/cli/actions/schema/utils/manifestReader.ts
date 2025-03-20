@@ -53,7 +53,7 @@ export const createManifestReader: CreateManifestReaderFactory = ({
     const result = await jsonReader<CreateManifest>(manifestFile)
     if (!result) {
       throw new Error(
-        `Manifest does not exist at ${manifestFile}. To create the manifest file, re-run with --${'extract-manifest' satisfies keyof StoreSchemasFlags} or run "sanity manifest extract"`,
+        `Manifest does not exist at ${manifestFile}. To create the manifest file, omit --no-${'extract-manifest' satisfies keyof StoreSchemasFlags} or run "sanity manifest extract" first.`,
       )
     }
 
