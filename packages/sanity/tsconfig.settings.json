@@ -15,8 +15,13 @@
       "sanity/structure": ["./src/_exports/structure.ts"],
       "sanity": ["./src/_exports/index.ts"]
     },
-    // vite/client: For import.meta.env/import.meta.hot definition and similar
-    // @testing-library/jest-dom: @testing-library DOM matchers for vitest (toBeInTheDocument etc)
-    "types": ["vite/client", "@testing-library/jest-dom"]
+    "types": [
+      // vite/client: For import.meta.env/import.meta.hot definition and similar
+      "vite/client",
+      // @testing-library/jest-dom: @testing-library DOM matchers for vitest (toBeInTheDocument etc)
+      "@testing-library/jest-dom",
+      // For `Scheduler` API (can be removed if we adopt scheduler-polyfill, which comes with its own types)
+      "@types/wicg-task-scheduling"
+    ]
   }
 }

@@ -1812,6 +1812,9 @@ importers:
       '@types/tar-fs':
         specifier: ^2.0.1
         version: 2.0.4
+      '@types/wicg-task-scheduling':
+        specifier: ^2024.1.0
+        version: 2024.1.0
       '@vitest/expect':
         specifier: 3.0.9
         version: 3.0.9
@@ -5270,6 +5273,9 @@ packages:
 
   '@types/which@2.0.2':
     resolution: {integrity: sha512-113D3mDkZDjo+EeUEHCFy0qniNc1ZpecGiAU7WSo7YDoSzolZIQKpYFHrPpjkB2nuyahcKfrmLXeQlh7gqJYdw==}
+
+  '@types/wicg-task-scheduling@2024.1.0':
+    resolution: {integrity: sha512-9g5QVDU8Na3P6rPMbyYx5pS8UpGDfzys8T7Xq5HMTbI7elSq/YioGbBVAh2u67JGNTThZ3o9PK0/qBvaVOYPYQ==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -16108,6 +16114,8 @@ snapshots:
   '@types/validate-npm-package-name@3.0.3': {}
 
   '@types/which@2.0.2': {}
+
+  '@types/wicg-task-scheduling@2024.1.0': {}
 
   '@types/yargs-parser@21.0.3': {}
 
