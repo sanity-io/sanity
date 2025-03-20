@@ -27,9 +27,9 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   // 3. Select all text in the editor.
   await page.waitForSelector('[data-testid="pt-editor"]', WAIT_OPTIONS)
   const editor = page.locator('[data-testid="pt-editor"]')
-  await page.waitForSelector('div[role="textbox"]', WAIT_OPTIONS)
-  const textBox = editor.locator('div[role="textbox"]')
-  textBox.selectText()
+  await page.waitForSelector('div[role="textbox"][contenteditable=true]', WAIT_OPTIONS)
+  const textBox = editor.locator('div[role="textbox"][contenteditable=true]')
+  await textBox.selectText()
 
   // 4. Click on the floating comment button to start authoring a comment.
   await page.waitForSelector('[data-testid="inline-comment-button"]', {
