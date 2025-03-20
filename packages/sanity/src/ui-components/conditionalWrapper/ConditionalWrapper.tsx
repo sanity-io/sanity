@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export type ConditionalWrapperRenderWrapperCallback = (children: React.ReactNode) => React.ReactNode
 
 /**

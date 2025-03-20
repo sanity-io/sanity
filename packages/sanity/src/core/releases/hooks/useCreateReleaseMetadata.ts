@@ -1,7 +1,7 @@
 import {useCallback} from 'react'
 
 import useTimeZone from '../../scheduledPublishing/hooks/useTimeZone'
-import {type EditableReleaseDocument} from '../store'
+import {type EditableReleaseDocument} from '../store/types'
 
 export const useCreateReleaseMetadata = () => {
   const {zoneDateToUtc} = useTimeZone()

@@ -33,7 +33,7 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
-    "./ui_components": {
+    "./ui-components": {
       "source": "./src/_exports/ui-components.ts",
       "require": "./lib/ui-components.js",
       "default": "./lib/ui-components.js"

@@ -43,6 +43,9 @@ export interface DateTimeInputProps {
   isPastDisabled?: boolean
 }
 
+/**
+ * @public
+ */
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>,

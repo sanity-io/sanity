@@ -67,6 +67,9 @@ export interface ReferenceSearchHit {
   published?: {_id: string; _type: string}
 }
 
+/**
+ * @beta
+ */
 export interface ReferenceInputProps<Value = Reference>
   extends ObjectInputProps<Value, ReferenceSchemaType> {
   suffix?: ReactNode

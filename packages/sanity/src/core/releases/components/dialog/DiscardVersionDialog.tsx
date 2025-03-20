@@ -11,7 +11,7 @@ import {Preview} from '../../../preview/components/Preview'
 import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store'
+import {type ReleaseDocument} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 /**
  * @internal

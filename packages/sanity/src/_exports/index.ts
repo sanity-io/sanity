@@ -196,7 +196,7 @@ import {useGetI18nText} from '../core/i18n/hooks/useGetI18nText'
 import {useI18nText} from '../core/i18n/hooks/useI18nText'
 import {useTranslation} from '../core/i18n/hooks/useTranslation'
 import {Translate} from '../core/i18n/Translate'
-import {type LocaleSource, type TFunction} from '../core/i18n/types'
+import {type LocaleResourceBundle, type LocaleSource, type TFunction} from '../core/i18n/types'
 import {useLiveDocumentIdSet} from '../core/preview/useLiveDocumentIdSet'
 import {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
 import {ReleaseAvatar} from '../core/releases/components/ReleaseAvatar'
@@ -511,6 +511,7 @@ export {
   LegacyLayerProvider,
   LinearProgress,
   LoadingBlock,
+  type LocaleResourceBundle,
   type LocaleSource,
   MemberField,
   NoChanges,
