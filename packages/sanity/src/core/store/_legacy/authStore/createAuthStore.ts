@@ -71,7 +71,6 @@ const getCurrentUser = async (
   try {
     const user = await client.request({
       uri: '/users/me',
-      withCredentials: true,
       tag: 'users.get-current',
     })
 
@@ -159,8 +158,7 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...(token && {token}),
-        withCredentials: true,
+        ...(token ? {token} : {withCredentials: true}),
         perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
@@ -238,12 +236,12 @@ export function _createAuthStore({
   }
 
   async function logout() {
+    const token = getToken(projectId)
     const requestClient = clientFactory({
       projectId,
       dataset,
       useCdn: true,
-      withCredentials: true,
-      token: getToken(projectId) ?? undefined,
+      ...(token ? {token} : {withCredentials: true}),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       ...hostOptions,
