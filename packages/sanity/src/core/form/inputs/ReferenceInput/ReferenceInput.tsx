@@ -45,6 +45,10 @@ interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
 }
+
+/**
+ * @beta
+ */
 export function ReferenceInput(props: ReferenceInputProps) {
   const {
     createOptions,
