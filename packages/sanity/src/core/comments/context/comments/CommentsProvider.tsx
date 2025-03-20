@@ -3,17 +3,20 @@ import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsContext} from 'sanity/_singletons'
 
-import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
+import {useEditState} from '../../../hooks/useEditState'
+import {useSchema} from '../../../hooks/useSchema'
+import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
 import {type ReleaseId} from '../../../perspective/types'
-import {useCurrentUser} from '../../../store'
-import {useAddonDataset, useWorkspace} from '../../../studio'
-import {getPublishedId} from '../../../util'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useAddonDataset} from '../../../studio/addonDataset'
+import {useWorkspace} from '../../../studio/workspace'
+import {getPublishedId} from '../../../util/draftUtils'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
   useCommentsEnabled,
 } from '../../hooks'
-import {useCommentsStore} from '../../store'
+import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
   type CommentStatus,

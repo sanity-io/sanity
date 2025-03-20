@@ -5,11 +5,13 @@ import {get} from 'lodash'
 import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 
-import {useTranslation} from '../../../../i18n'
-import {FormInput} from '../../../components'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {FormInput} from '../../../components/FormInput'
+import {MemberField} from '../../../members/object/MemberField'
+import {MemberFieldError} from '../../../members/object/MemberFieldError'
+import {MemberFieldSet} from '../../../members/object/MemberFieldset'
 import {setIfMissing, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {type FieldMember} from '../../../store/types/members'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
@@ -517,7 +519,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         //@ts-expect-error all possible cases should be covered
         return <>{t('inputs.image.error.unknown-member-kind', {kind: member.kind})}</>
       })}
-
       {hotspotField && focusPath[0] === 'hotspot' && (
         <FormInput
           {...props}

@@ -8,10 +8,11 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
-import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
+import {useDocumentPairPermissions} from '../../../../store/_legacy/grants'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
-import {EditScheduleForm} from '../../../components/editScheduleForm'
+import {EditScheduleForm} from '../../../components/editScheduleForm/EditScheduleForm'
 import ErrorCallout from '../../../components/errorCallout/ErrorCallout'
 import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps'
 import usePollSchedules from '../../../hooks/usePollSchedules'

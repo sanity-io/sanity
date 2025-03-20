@@ -3,8 +3,10 @@ import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {type ComponentProps, memo} from 'react'
 
-import {MenuGroup, MenuItem, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuGroup} from '../../../../../ui-components/menuGroup'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {type PopoverProps} from '../../../../../ui-components/popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 interface Props {
   types?: SchemaType[]

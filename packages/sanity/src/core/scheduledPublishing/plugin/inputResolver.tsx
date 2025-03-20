@@ -1,6 +1,6 @@
 import {type ComponentType} from 'react'
 
-import {type InputProps} from '../../form'
+import {type InputProps} from '../../form/types'
 import {ScheduledDocumentInput} from '../components/documentWrapper/ScheduledDocumentInput'
 
 export const DocumentBannerInput: ComponentType<InputProps> = (props) => {

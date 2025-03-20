@@ -4,18 +4,18 @@ import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@san
 import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
-import {Tooltip} from '../../../../../../../../ui-components'
-import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
+import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
+import {PreviewCard} from '../../../../../../../components/previewCard'
+import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {unstable_useValuePreview as useValuePreview} from '../../../../../../../preview/useValuePreview'
-import {
-  type PermissionCheckResult,
-  useDocumentPresence,
-  useGrantsStore,
-} from '../../../../../../../store'
+import {useGrantsStore} from '../../../../../../../store/_legacy/datastores'
+import {type PermissionCheckResult} from '../../../../../../../store/_legacy/grants'
+import {useDocumentPresence} from '../../../../../../../store/_legacy/presence/useDocumentPresence'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+//--ok above
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => void

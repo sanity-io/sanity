@@ -15,9 +15,9 @@ import {
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../ui-components'
-import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
-import {useTranslation} from '../../../../../i18n'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'

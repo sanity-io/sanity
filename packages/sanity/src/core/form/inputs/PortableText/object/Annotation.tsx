@@ -3,10 +3,10 @@ import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity
 import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, useCallback, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
+import {pathToString} from '../../../../validation/util/pathToString'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {

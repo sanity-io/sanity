@@ -1,8 +1,8 @@
 import {type InsertMenuOptions} from '@sanity/insert-menu'
+import {type InitialValueProperty, type SchemaValidationValue} from '@sanity/types'
 
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
 import {
   type IntrinsicDefinitions,
   type IntrinsicTypeName,

@@ -2,7 +2,7 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 
 export function SearchError() {
   const {t} = useTranslation()

@@ -1,9 +1,10 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {Dialog} from '../../../ui-components'
-import {PatchEvent, unset} from '../../form'
-import {Translate, useTranslation} from '../../i18n'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {PatchEvent, unset} from '../../form/patch'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
 import {createLocaleNamespace} from '../i18n'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 

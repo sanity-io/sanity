@@ -2,8 +2,9 @@ import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {NewDocumentButton, useNewDocumentOptions} from '../new-document'
+import {NewDocumentButton} from '../new-document'
 import {type ModalType} from '../new-document/types'
+import {useNewDocumentOptions} from '../new-document/useNewDocumentOptions'
 
 const MODAL_OPTIONS: Record<string, ModalType> = {
   popover: 'popover',

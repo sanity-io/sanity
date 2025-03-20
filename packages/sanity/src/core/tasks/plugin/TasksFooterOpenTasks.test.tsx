@@ -4,8 +4,10 @@ import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider} from '../context'
-import {useTasksStore} from '../store'
+import {TasksEnabledProvider} from '../context/enabled'
+import {TasksNavigationProvider} from '../context/navigation'
+import {TasksProvider} from '../context/tasks'
+import {useTasksStore} from '../store/useTasksStore'
 import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
@@ -16,7 +18,7 @@ vi.mock('../../hooks/useFeatureEnabled', () => ({
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
-vi.mock('../store', () => ({useTasksStore: vi.fn()}))
+vi.mock('../store/useTasksStore', () => ({useTasksStore: vi.fn()}))
 vi.mock('../context/isLastPane/useIsLastPane', () => ({
   useIsLastPane: vi.fn().mockReturnValue(true),
 }))

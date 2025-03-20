@@ -2,12 +2,13 @@ import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
-import {useCopyPaste} from '../../../../studio'
+import {useCopyPaste} from '../../../../studio/copyPaste'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
-import {insert, type PatchArg, PatchEvent, set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesItemMember} from '../../../store'
+import {insert, PatchEvent, set, unset} from '../../../patch'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfPrimitivesItemMember} from '../../../store/types/members'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
   type ArrayInputCopyEvent,

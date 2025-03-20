@@ -1,7 +1,7 @@
 import {type ComponentType} from 'react'
 
-import {type PreviewProps} from '../../components'
-import {useMiddlewareComponents} from '../../config/components'
+import {type PreviewProps} from '../../components/previews'
+import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
 import {
   type BlockAnnotationProps,
   type BlockProps,
@@ -18,6 +18,7 @@ import {
   DefaultItem,
   DefaultPreview,
 } from './components'
+// ok above
 import {
   pickAnnotationComponent,
   pickBlockComponent,
@@ -27,7 +28,6 @@ import {
   pickItemComponent,
   pickPreviewComponent,
 } from './picks'
-
 /**
  * @internal
  */

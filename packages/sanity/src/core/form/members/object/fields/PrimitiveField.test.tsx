@@ -10,14 +10,10 @@ import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {type FormBuilderContextValue} from '../../../FormBuilderContext'
 import {PatchEvent, set} from '../../../patch'
-import {type FieldMember} from '../../../store'
-import {
-  defaultRenderField,
-  defaultRenderInput,
-  FormCallbacksProvider,
-  type FormCallbacksValue,
-} from '../../../studio'
+import {type FieldMember} from '../../../store/types/members'
+import {FormCallbacksProvider, type FormCallbacksValue} from '../../../studio/contexts'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
+import {defaultRenderField, defaultRenderInput} from '../../../studio/defaults'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []

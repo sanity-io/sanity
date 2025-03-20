@@ -1,8 +1,9 @@
 import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {RelativeTime} from '../../../components/RelativeTime'
+import {AvatarSkeleton, UserAvatar} from '../../../components/userAvatar'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'

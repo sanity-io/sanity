@@ -3,7 +3,7 @@
 //   > Cannot use before defined.
 // export * from './collapseMenu'
 // export * from './scroll'
-
+/*
 export * from './BasicDocument'
 export * from './BetaBadge'
 export * from './commandList'
@@ -33,3 +33,4 @@ export * from './transitional'
 export * from './userAvatar'
 export * from './WithReferringDocuments'
 export * from './zOffsets'
+*/

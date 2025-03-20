@@ -1,10 +1,9 @@
 import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
 import {vi} from 'vitest'
 
+import {type FieldMember} from '../../src/core/form/store/types/members'
+import {type ArrayOfObjectsFormNode} from '../../src/core/form/store/types/nodes'
 import {
-  type ArrayOfObjectsFormNode,
-  type ArrayOfObjectsInputProps,
-  type ComplexElementProps,
   defaultRenderAnnotation,
   defaultRenderBlock,
   defaultRenderField,
@@ -12,8 +11,8 @@ import {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-  type FieldMember,
-} from '../../src/core'
+} from '../../src/core/form/studio/defaults'
+import {type ArrayOfObjectsInputProps, type ComplexElementProps} from '../../src/core/form/types'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 

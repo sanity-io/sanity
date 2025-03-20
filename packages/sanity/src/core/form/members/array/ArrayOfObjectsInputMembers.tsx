@@ -1,4 +1,4 @@
-import {type ArrayOfObjectsMember} from '../../store'
+import {type ArrayOfObjectsMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

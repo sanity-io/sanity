@@ -21,8 +21,8 @@ import {omit} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type PortableTextInputProps} from '../../types/inputProps'
 import {useFormBuilder} from '../../useFormBuilder'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
@@ -31,7 +31,7 @@ import {useSpellCheck} from './hooks/useSpellCheck'
 import {Decorator} from './text'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
-import {Toolbar} from './toolbar'
+import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 

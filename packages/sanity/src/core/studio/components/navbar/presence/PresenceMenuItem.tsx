@@ -3,10 +3,10 @@ import {orderBy} from 'lodash'
 import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {MenuItem} from '../../../../../ui-components'
-import {UserAvatar} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {type GlobalPresence} from '../../../../store'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {UserAvatar} from '../../../../components/userAvatar'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type GlobalPresence} from '../../../../store/_legacy/presence/types'
 
 interface PresenceListRowProps {
   focused: boolean

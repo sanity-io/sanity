@@ -8,7 +8,8 @@ import {
   type RenderBlockActionsCallback,
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
-import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
+import {createInsertCallback, createSetCallback} from './callbacks'
+import {createUnsetCallback} from './callbacks/unsetCallback'
 
 interface BlockActionsProps {
   block: PortableTextBlock

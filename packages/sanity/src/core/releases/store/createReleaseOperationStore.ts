@@ -5,13 +5,13 @@ import {
   type SanityClient,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionId} from '../../util'
+import {getPublishedId, getVersionId} from '../../util/draftUtils'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
-import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
-import {type EditableReleaseDocument} from './types'
+import {type EditableReleaseDocument, type ReleaseDocument} from './types'
 
 interface operationsOptions {
   dryRun?: boolean

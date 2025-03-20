@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 import {createReleaseOperationsStore} from './createReleaseOperationStore'

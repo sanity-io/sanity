@@ -1,4 +1,5 @@
-import {type DocumentActionComponent, type DocumentActionsContext} from '../../../../config'
+import {type DocumentActionComponent} from '../../../../config/document/actions'
+import {type DocumentActionsContext} from '../../../../config/types'
 import {ScheduleAction} from './ScheduleAction'
 
 type Action = DocumentActionComponent

@@ -28,7 +28,7 @@ import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied} from './__telemetry__'
+import {DocumentURLCopied} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {

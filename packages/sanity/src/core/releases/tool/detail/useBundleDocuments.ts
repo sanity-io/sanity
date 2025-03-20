@@ -23,13 +23,17 @@ import {
 } from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
+import {prepareForPreview} from '../../../preview/utils/prepareForPreview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {getPublishedId} from '../../../util/draftUtils'
-import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
+import {
+  validateDocumentWithReferences,
+  type ValidationStatus,
+} from '../../../validation/validateDocumentWithReferences'
 import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'

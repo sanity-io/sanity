@@ -2,10 +2,13 @@ import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
 
-import {pathToString} from '../../field'
-import {Translate, useTranslation} from '../../i18n'
-import {ArrayOfObjectsItem, MemberField, MemberItemError} from '../members'
-import {type FieldMember} from '../store'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
+import {pathToString} from '../../validation/util/pathToString'
+import {ArrayOfObjectsItem} from '../members/array/items/ArrayOfObjectsItem'
+import {MemberItemError} from '../members/array/MemberItemError'
+import {MemberField} from '../members/object/MemberField'
+import {type FieldMember} from '../store/types/members'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectInputProps,

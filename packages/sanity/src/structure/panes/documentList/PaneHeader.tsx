@@ -1,8 +1,9 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
+import {Button} from 'sanity/ui-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {
   BackLink,
   PaneHeader as StructurePaneHeader,

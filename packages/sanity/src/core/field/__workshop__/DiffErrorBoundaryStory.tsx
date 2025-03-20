@@ -1,8 +1,8 @@
 import {Box} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Button} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DiffErrorBoundary} from '../diff/components/DiffErrorBoundary'
 
 export default function DiffErrorBoundaryStory() {

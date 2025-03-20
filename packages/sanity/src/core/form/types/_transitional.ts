@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type PreviewProps} from '../../components'
+import {type PreviewProps} from '../../components/previews'
 import {type PatchEvent} from '../patch'
 import {type FieldProps} from './fieldProps'
 import {type InputProps} from './inputProps'

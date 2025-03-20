@@ -3,15 +3,11 @@ import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {type DocumentInspectorProps} from '../../../config'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {
-  CommentDeleteDialog,
-  CommentsList,
-  CommentsOnboardingPopover,
-  CommentsUpsellPanel,
-} from '../../components'
+import {type DocumentInspectorProps} from '../../../config/document/inspector'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {CommentDeleteDialog, CommentsList, CommentsOnboardingPopover} from '../../components'
+import {CommentsUpsellPanel} from '../../components/upsell/CommentsUpsellPanel'
 import {type CommentsSelectedPath} from '../../context'
 import {isTextSelectionComment} from '../../helpers'
 import {

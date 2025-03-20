@@ -5,8 +5,9 @@ import {Badge, Card, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Popover} from '../../../ui-components'
-import {useSanityCreateConfig} from '../context'
+import {Button} from '../../../ui-components/button'
+import {Popover} from '../../../ui-components/popover'
+import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type CompatibleStudioAppId, type StudioApp} from '../studio-app/fetchCreateCompatibleAppId'
 
 const WrapperCard = styled(Card)`

@@ -19,9 +19,9 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
+import {Button, Popover} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {Button, Popover} from '../../../../../ui-components'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'

@@ -2,9 +2,10 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useDateTimeFormat} from '../../../../hooks'
-import {type EditableReleaseDocument, type ReleaseDocument, useActiveReleases} from '../../../store'
+import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
+import {type EditableReleaseDocument, type ReleaseDocument} from '../../../store/types'
+import {useActiveReleases} from '../../../store/useActiveReleases'
 import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'
 

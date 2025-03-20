@@ -5,7 +5,7 @@ import {catchError, map, mergeMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../../preview'
 import {type UploadOptions} from '../../uploads/types'
-import {withMaxConcurrency} from '../../utils'
+import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

@@ -1,7 +1,7 @@
 import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
@@ -12,7 +12,7 @@ import {
   type DiffComponent,
   type ItemDiff,
 } from '../../../types'
-import {Checkbox} from '../../boolean/preview'
+import {Checkbox} from '../../boolean/preview/BooleanPreview'
 import {isEqual} from '../util/arrayUtils'
 
 interface NamedListOption {

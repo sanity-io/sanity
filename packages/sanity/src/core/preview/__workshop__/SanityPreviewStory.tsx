@@ -4,7 +4,7 @@ import {useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
 import {type PreviewLayoutKey} from '../../components'
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {Preview} from '../components/Preview'
 import {type Previewable} from '../types'
 

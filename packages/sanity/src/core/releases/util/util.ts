@@ -1,5 +1,6 @@
 import {type SelectedPerspective} from '../../perspective/types'
-import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
+import {getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {formatRelativeLocale} from '../../util/formatRelativeLocale'
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '../store/types'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'

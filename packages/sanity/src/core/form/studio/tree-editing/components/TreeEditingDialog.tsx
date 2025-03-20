@@ -13,7 +13,7 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {FormInput} from '../../../components/FormInput'
 import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
@@ -24,7 +24,7 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
-import {TreeEditingLayout} from './layout'
+import {TreeEditingLayout} from './layout/TreeEditingLayout'
 
 const EMPTY_ARRAY: [] = []
 

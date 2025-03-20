@@ -9,7 +9,8 @@ import {
 } from 'date-fns'
 import {useCallback, useEffect, useReducer} from 'react'
 
-import {useCurrentLocale, useTranslation} from '../i18n'
+import {useCurrentLocale} from '../i18n/hooks/useLocale'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {intlCache} from '../i18n/intlCache'
 
 interface TimeSpec {

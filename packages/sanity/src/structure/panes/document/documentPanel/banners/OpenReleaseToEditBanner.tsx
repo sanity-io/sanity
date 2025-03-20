@@ -14,8 +14,8 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
+import {Button} from 'sanity/ui-components'
 
-import {Button} from '../../../../../ui-components'
 import {Banner} from './Banner'
 
 export function OpenReleaseToEditBanner({

@@ -21,8 +21,8 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
+import {MenuButton} from 'sanity/ui-components'
 
-import {MenuButton} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 

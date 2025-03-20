@@ -1,10 +1,10 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useMemo, useRef} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
+import {type DocumentFieldAction} from '../../config/document/fieldActions'
+import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview'
-import {EMPTY_ARRAY} from '../../util'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {
@@ -15,10 +15,11 @@ import {
   useInputComponent,
   useItemComponent,
   usePreviewComponent,
-} from '../form-components-hooks'
-import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
-import {type StateTree} from '../store'
+} from '../form-components-hooks/componentHooks'
+import {type PatchChannel, PatchEvent} from '../patch'
+import {type FormPatch} from '../patch/types'
 import {type ObjectFormNode} from '../store/types/nodes'
+import {type StateTree} from '../store/types/state'
 import {
   type BlockAnnotationProps,
   type BlockProps,

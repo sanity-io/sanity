@@ -9,7 +9,7 @@ import pick from 'lodash/pick'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core'
+import {createSchema} from '../../src/core/schema'
 
 describe('Extract studio manifest', () => {
   test('extracted schema types should be mappable to a createSchema compatible version', () => {

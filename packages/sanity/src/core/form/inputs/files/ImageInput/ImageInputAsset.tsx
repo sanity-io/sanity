@@ -2,7 +2,7 @@ import {type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
 import {type FocusEvent, memo, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {type InputProps} from '../../../types'
 import {FileTarget} from '../common/styles'
 import {UploadWarning} from '../common/UploadWarning'

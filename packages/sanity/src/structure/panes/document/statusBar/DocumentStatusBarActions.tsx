@@ -10,7 +10,8 @@ import {
   useSource,
 } from 'sanity'
 
-import {Button, Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button'
+import {Tooltip} from '../../../../ui-components/tooltip'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'

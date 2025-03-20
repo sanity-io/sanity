@@ -1,7 +1,8 @@
 import {type AssetFromSource, type FileSchemaType} from '@sanity/types'
 
 import {type FIXME} from '../../../../FIXME'
-import {type FormPatch, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {type PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {type FormPatch} from '../../../patch/types'
 import {
   type Uploader,
   type UploaderResolver,

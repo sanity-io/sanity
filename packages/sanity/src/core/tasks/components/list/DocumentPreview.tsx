@@ -6,8 +6,8 @@ import {forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {useSchema} from '../../../hooks'
-import {useDocumentPreviewValues} from '../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
+import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
   const theme = getTheme_v2(props.theme)

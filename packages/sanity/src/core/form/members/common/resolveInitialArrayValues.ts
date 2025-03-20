@@ -3,8 +3,9 @@ import {resolveTypeName} from '@sanity/util/content'
 import {concat, defer, EMPTY, from, type Observable, of} from 'rxjs'
 import {catchError, filter, map, mergeMap} from 'rxjs/operators'
 
-import {isNonNullable} from '../../../util'
-import {type FormPatch, set, unset} from '../../patch'
+import {isNonNullable} from '../../../util/isNonNullable'
+import {set, unset} from '../../patch'
+import {type FormPatch} from '../../patch/types'
 import {isEmptyItem} from '../../store/utils/isEmptyItem'
 import {type ObjectItem} from '../../types'
 

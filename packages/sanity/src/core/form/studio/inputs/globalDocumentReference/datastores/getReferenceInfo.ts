@@ -3,14 +3,11 @@ import {keyBy} from 'lodash'
 import {combineLatest, EMPTY, type Observable, of, share} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {
-  type DocumentAvailability,
-  type FieldName,
-  getPreviewPaths,
-  prepareForPreview,
-} from '../../../../../preview'
+import {type DocumentAvailability, type FieldName} from '../../../../../preview'
 import {createPathObserver} from '../../../../../preview/createPathObserver'
-import {isRecord} from '../../../../../util'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
+import {isRecord} from '../../../../../util/isRecord'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
 import {type ReferenceClient} from './getReferenceClient'
 

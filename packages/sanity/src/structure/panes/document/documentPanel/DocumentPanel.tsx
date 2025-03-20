@@ -18,23 +18,23 @@ import {css, styled} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
+import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanners,
   DeprecatedDocumentTypeBanner,
   InsufficientPermissionBanner,
-  ReferenceChangedBanner,
 } from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
+import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
-import {FormView} from './documentViews'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {

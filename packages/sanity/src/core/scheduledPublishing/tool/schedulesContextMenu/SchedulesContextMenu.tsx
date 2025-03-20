@@ -1,9 +1,9 @@
 import {CheckmarkIcon, SortIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 
-import {MenuItem} from '../../../../ui-components'
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import {useSchedules} from '../contexts/schedules'
 
 const SchedulesContextMenu = () => {

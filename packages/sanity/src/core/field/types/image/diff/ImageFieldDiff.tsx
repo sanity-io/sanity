@@ -1,7 +1,8 @@
 import {type Image} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
+import {type TFunction} from 'i18next'
 
-import {type TFunction, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
   ChangeList,
   DiffCard,

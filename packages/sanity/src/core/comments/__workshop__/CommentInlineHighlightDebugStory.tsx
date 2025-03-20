@@ -14,7 +14,7 @@ import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {useCurrentUser} from '../../store'
+import {useCurrentUser} from '../../store/user'
 import {type CommentDocument} from '../types'
 import {
   buildCommentRangeDecorations,

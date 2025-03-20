@@ -21,7 +21,8 @@ import {
 import {flushSync} from 'react-dom'
 import {useTranslation} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../ui-components'
+import {Button} from '../../ui-components/button'
+import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
 import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'

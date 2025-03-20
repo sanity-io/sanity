@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {type ObjectMember} from '../../store'
+import {type ObjectMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

@@ -1,7 +1,8 @@
 import {Container, Flex, Stack, Text} from '@sanity/ui'
+import {type TFunction} from 'i18next'
 
-import {LoadingBlock} from '../../../components'
-import {type TFunction, useTranslation} from '../../../i18n'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus} from '../../types'
 

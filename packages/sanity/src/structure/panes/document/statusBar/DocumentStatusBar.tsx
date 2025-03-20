@@ -10,7 +10,7 @@ import {
   useSanityCreateConfig,
 } from 'sanity'
 
-import {SpacerButton} from '../../../components/spacerButton'
+import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'

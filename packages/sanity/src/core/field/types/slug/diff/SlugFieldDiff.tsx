@@ -1,6 +1,6 @@
 import {DiffFromTo} from '../../../diff'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
-import {SlugPreview} from '../preview'
+import {SlugPreview} from '../preview/SlugPreview'
 
 interface Slug {
   current?: string

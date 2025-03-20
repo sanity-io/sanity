@@ -3,7 +3,7 @@ import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileLike} from '../../../studio/uploads/types'
 
 interface Props {

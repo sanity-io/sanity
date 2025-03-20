@@ -1,13 +1,10 @@
-import {ConditionalWrapper} from '../../../ui-components'
-import {type LayoutProps} from '../../config'
-import {AddonDatasetProvider} from '../../studio'
-import {
-  TasksEnabledProvider,
-  TasksNavigationProvider,
-  TasksProvider,
-  TasksUpsellProvider,
-  useTasksEnabled,
-} from '../context'
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
+import {type LayoutProps} from '../../config/studio'
+import {AddonDatasetProvider} from '../../studio/addonDataset'
+import {TasksEnabledProvider, useTasksEnabled} from '../context/enabled'
+import {TasksNavigationProvider} from '../context/navigation'
+import {TasksProvider} from '../context/tasks'
+import {TasksUpsellProvider} from '../context/upsell'
 
 const TasksStudioLayoutInner = (props: LayoutProps) => {
   const {enabled, mode} = useTasksEnabled()

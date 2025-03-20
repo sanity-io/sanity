@@ -1,6 +1,5 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
@@ -21,8 +20,8 @@ import {
   useRef,
 } from 'react'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {TableHeader} from './TableHeader'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'

@@ -8,11 +8,11 @@ import {type FIXME} from '../../../../../FIXME'
 import {
   type DocumentAvailability,
   type DocumentPreviewStore,
-  getPreviewPaths,
-  prepareForPreview,
   type Previewable,
 } from '../../../../../preview'
-import {isRecord} from '../../../../../util'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
+import {isRecord} from '../../../../../util/isRecord'
 import {type CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'

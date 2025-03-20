@@ -2,7 +2,7 @@
 import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../../../../ui-components'
+import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
 import {type WeightedHit} from '../../../../../../../search'
 
 interface DebugScoreProps {

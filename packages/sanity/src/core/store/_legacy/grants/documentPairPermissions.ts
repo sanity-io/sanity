@@ -4,16 +4,13 @@ import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {useClient, useSchema} from '../../../hooks'
-import {useWorkspace} from '../../../studio'
+import {useClient} from '../../../hooks/useClient'
+import {useSchema} from '../../../hooks/useSchema'
+import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getIdPair,
-  getPublishedId,
-  type PartialExcept,
-} from '../../../util'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
+import {getDraftId, getIdPair, getPublishedId} from '../../../util/draftUtils'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'

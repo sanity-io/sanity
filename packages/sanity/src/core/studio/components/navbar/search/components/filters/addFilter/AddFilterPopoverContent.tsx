@@ -5,9 +5,9 @@ import {
   CommandList,
   type CommandListGetItemDisabledCallback,
   type CommandListRenderItemCallback,
-} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../i18n'
+} from '../../../../../../../components/commandList'
+import {useSchema} from '../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'

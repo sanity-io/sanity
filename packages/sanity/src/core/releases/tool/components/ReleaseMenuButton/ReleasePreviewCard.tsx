@@ -1,7 +1,7 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {ReleaseAvatar} from '../../../components'
+import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {ReleaseTime} from '../ReleaseTime'

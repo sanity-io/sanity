@@ -4,13 +4,15 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {firstValueFrom} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
-import {useClient, useFeatureEnabled, useProjectId} from '../../../hooks'
+import {useProjectId} from '../../../form/inputs/CrossDatasetReferenceInput/utils/useProjectId'
+import {useClient} from '../../../hooks/useClient'
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
-} from '../../../studio'
+} from '../../../studio/upsell'
 import {TEMPLATE_OPTIONS} from '../../../studio/upsell/constants'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'

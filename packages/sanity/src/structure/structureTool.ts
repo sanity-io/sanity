@@ -8,9 +8,9 @@ import {
   DuplicateAction,
   HistoryRestoreAction,
   PublishAction,
-  UnpublishAction,
 } from './documentActions'
-import {LiveEditBadge} from './documentBadges'
+import {UnpublishAction} from './documentActions/UnpublishAction'
+import {LiveEditBadge} from './documentBadges/LiveEditBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'

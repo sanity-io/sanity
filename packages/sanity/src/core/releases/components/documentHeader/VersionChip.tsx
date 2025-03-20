@@ -18,7 +18,8 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {Popover, Tooltip} from '../../../../ui-components'
+import {Popover} from '../../../../ui-components/popover'
+import {Tooltip} from '../../../../ui-components/tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'

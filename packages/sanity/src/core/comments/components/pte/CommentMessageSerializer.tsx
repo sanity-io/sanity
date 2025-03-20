@@ -5,7 +5,8 @@ import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
 import {transformChildren} from '../../utils'
-import {MentionInlineBlock, NormalBlock} from './blocks'
+import {MentionInlineBlock} from './blocks'
+import {NormalBlock} from './blocks/NormalBlock'
 
 const PortableTextWrap = styled(Stack)(() => {
   return css`

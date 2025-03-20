@@ -1,7 +1,7 @@
 import {Box, rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'

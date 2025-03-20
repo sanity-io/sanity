@@ -10,7 +10,8 @@ import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../../environment'
-import {getDraftId, getIdPair, getPublishedId, getVersionFromId, isRecord} from '../../../util'
+import {getDraftId, getIdPair, getPublishedId, getVersionFromId} from '../../../util/draftUtils'
+import {isRecord} from '../../../util/isRecord'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
 import {Timeline, TimelineController} from './history'
 

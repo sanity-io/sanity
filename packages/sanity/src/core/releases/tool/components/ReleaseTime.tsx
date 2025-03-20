@@ -1,4 +1,4 @@
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {type TableRelease} from '../overview/ReleasesOverview'
 

@@ -3,7 +3,8 @@ import {Card, Flex, Inline, Stack, useClickOutsideEvent, useGlobalKeyDown} from 
 import {useSelect} from '@sanity/ui-workshop'
 import {useCallback, useRef, useState} from 'react'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button'
+import {Popover} from '../../../../ui-components/popover'
 import {CommandList} from '../CommandList'
 import {type CommandListRenderItemCallback} from '../types'
 

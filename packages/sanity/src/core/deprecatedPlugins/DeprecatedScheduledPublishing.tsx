@@ -1,13 +1,14 @@
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {definePlugin, type LayoutProps} from '../config'
+import {definePlugin} from '../config/definePlugin'
+import {type LayoutProps} from '../config/studio/types'
 
 function SchedulePublishingStudioLayout(props: LayoutProps) {
   const toast = useToast()
   useEffect(() => {
     console.error(
-      `Scheduled publishing plugin is added by default, please remove this plugin from your config. 
+      `Scheduled publishing plugin is added by default, please remove this plugin from your config.
         \nIf you have a custom date config, you can use the scheduledPublishing API to customize the date input.
         \nSee: https://www.sanity.io/docs/scheduled-publishing.
         `,

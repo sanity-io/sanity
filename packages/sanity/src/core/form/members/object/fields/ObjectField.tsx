@@ -3,9 +3,11 @@ import {isShallowEmptyObject} from '@sanity/util/content'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type FieldMember, type ObjectFormNode} from '../../../store'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ObjectFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {

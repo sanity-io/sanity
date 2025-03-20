@@ -1,7 +1,7 @@
 import {Container, Flex} from '@sanity/ui'
 
 import {useUserListWithPermissions} from '../../hooks'
-import {MentionsMenu} from '../components/mentions'
+import {MentionsMenu} from '../components/mentions/MentionsMenu'
 
 const DOC = {
   documentValue: {

@@ -11,8 +11,8 @@ import {
   useVersionOperations,
 } from 'sanity'
 import {structureLocaleNamespace} from 'sanity/structure'
+import {Button} from 'sanity/ui-components'
 
-import {Button} from '../../../../../ui-components'
 import {useConditionalToast} from '../documentViews/useConditionalToast'
 import {Banner} from './Banner'
 

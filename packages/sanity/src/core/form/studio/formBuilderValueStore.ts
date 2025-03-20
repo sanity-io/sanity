@@ -8,8 +8,8 @@ import {
   type DocumentVersion,
   type DocumentVersionEvent,
   type IdPair,
-} from '../../store'
-import {type FormPatch} from '../patch'
+} from '../../store/_legacy/document'
+import {type FormPatch} from '../patch/types'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
 
 interface LocalMutationEvent extends DocumentMutationEvent {

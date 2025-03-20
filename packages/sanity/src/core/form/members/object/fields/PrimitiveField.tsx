@@ -1,8 +1,9 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {PatchEvent, set, unset} from '../../../patch'
+import {type FormPatch} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {

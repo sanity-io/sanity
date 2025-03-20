@@ -6,10 +6,11 @@ import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../ui-components'
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
+import {Button} from '../../../ui-components/button'
+import {Dialog} from '../../../ui-components/dialog'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks/useDateTimeFormat'
 import {SANITY_VERSION} from '../../version'
-import {UpsellDescriptionSerializer} from '../upsell'
+import {UpsellDescriptionSerializer} from '../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {
   ProductAnnouncementLinkClicked,
   ProductAnnouncementViewed,

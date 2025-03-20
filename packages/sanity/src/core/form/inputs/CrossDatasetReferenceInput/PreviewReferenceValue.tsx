@@ -1,7 +1,8 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {type CrossDatasetReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'

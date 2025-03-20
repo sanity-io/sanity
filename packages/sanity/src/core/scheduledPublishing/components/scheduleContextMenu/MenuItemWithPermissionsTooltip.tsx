@@ -2,7 +2,8 @@ import {type CurrentUser} from '@sanity/types'
 import {Box, type SelectableTone} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {MenuItem, Tooltip} from '../../../../ui-components'
+import {MenuItem} from '../../../../ui-components/menuItem'
+import {Tooltip} from '../../../../ui-components/tooltip'
 import {
   InsufficientPermissionsMessage,
   type InsufficientPermissionsMessageProps,

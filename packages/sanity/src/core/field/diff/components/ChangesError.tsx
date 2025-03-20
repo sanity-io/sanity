@@ -1,6 +1,6 @@
 import {Card, Stack, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 /**
  * @internal

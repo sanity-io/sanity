@@ -21,7 +21,7 @@ import {
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
-import {listenQuery} from '../../store/_legacy'
+import {listenQuery} from '../../store/_legacy/document/listenQuery'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'

@@ -1,13 +1,8 @@
 import {type ComponentType} from 'react'
 
-import {type PreviewProps} from '../../components'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type InputProps,
-  type ItemProps,
-} from '../../form'
+import {type PreviewProps} from '../../components/previews'
+import {type FieldProps, type InputProps, type ItemProps} from '../../form/types'
+import {type BlockAnnotationProps, type BlockProps} from '../../form/types/blockProps'
 
 /**
  * @hidden

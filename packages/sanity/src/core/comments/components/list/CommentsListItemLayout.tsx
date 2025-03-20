@@ -17,15 +17,13 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
-import {useDidUpdate} from '../../../form'
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  useRelativeTime,
-  type UserListWithPermissionsHookValue,
-} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useUser} from '../../../store/user/hooks'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
@@ -37,10 +35,11 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
 import {FLEX_GAP} from '../constants'
-import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
+import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
 import {CommentReactionsBar} from '../reactions'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'

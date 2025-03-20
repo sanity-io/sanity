@@ -3,7 +3,7 @@ import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
 import {set, unset} from '../../../patch'
 import {type ArrayOfObjectsInputProps} from '../../../types'

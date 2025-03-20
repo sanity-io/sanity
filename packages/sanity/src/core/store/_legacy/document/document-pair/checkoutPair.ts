@@ -11,13 +11,12 @@ import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
+import {type CommitRequest} from '../buffered-doc'
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
-  type MutationPayload,
-  type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/createBufferedDocument'
+import {type MutationPayload, type RemoteSnapshotEvent} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,

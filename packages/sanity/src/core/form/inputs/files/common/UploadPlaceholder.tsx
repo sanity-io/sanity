@@ -2,7 +2,7 @@ import {UploadIcon} from '@sanity/icons'
 import {Flex, useElementSize} from '@sanity/ui'
 import {memo, type ReactNode, useState} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'

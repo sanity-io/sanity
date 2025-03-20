@@ -6,7 +6,7 @@ import {describe, expect, it} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createSchema} from '../../../../schema'
-import {defaultTemplatesForSchema, prepareTemplates} from '../../../../templates'
+import {defaultTemplatesForSchema, prepareTemplates} from '../../../../templates/prepare'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'

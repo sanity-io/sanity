@@ -1,8 +1,9 @@
 import {TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {MenuButton} from '../../../../ui-components/menuButton'
+import {MenuItem} from '../../../../ui-components/menuItem'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
 

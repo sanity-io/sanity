@@ -3,7 +3,7 @@ import {TextArea, type Theme} from '@sanity/ui'
 import {type ComponentType, forwardRef, useImperativeHandle, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type SanityFormConfig} from '../../../../../config'
+import {type SanityFormConfig} from '../../../../../config/types'
 import {defaultResolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
 import {type InputProps} from '../../../../types'
 import {PortableTextInput} from '../../PortableTextInput'

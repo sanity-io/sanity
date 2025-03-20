@@ -1,4 +1,4 @@
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 
 /**
  * React hook that returns the current project id

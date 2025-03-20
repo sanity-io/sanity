@@ -30,6 +30,8 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
   // NOTE: this will not happen, but we do this to avoid updating too many places
   // TODO: We need to clean up the preview machinery + types to remove this
   if (!componentProps.schemaType) {
+    console.log(componentProps)
+    debugger
     throw new Error('the `schemaType` property must be defined')
   }
 

@@ -1,4 +1,4 @@
-import {type DocumentLayoutProps} from '../../../config'
+import {type DocumentLayoutProps} from '../../../config/types'
 import {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,

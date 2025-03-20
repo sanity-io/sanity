@@ -14,7 +14,7 @@ import {
 import deepCompare from 'react-fast-compare'
 import {ConnectorContext} from 'sanity/_singletons'
 
-import {EMPTY_ARRAY} from '../util'
+import {EMPTY_ARRAY} from '../util/empty'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'
 

@@ -5,10 +5,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '../../ui-components'
-import {UserAvatar} from '../components'
-import {type DocumentPresence} from '../store'
-import {isNonNullable} from '../util'
+import {Tooltip, type TooltipProps} from '../../ui-components/tooltip'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
+import {type DocumentPresence} from '../store/_legacy/presence/types'
+import {isNonNullable} from '../util/isNonNullable'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {

@@ -6,17 +6,15 @@ import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'rea
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
-import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {useDocumentPresence} from '../../../../store'
-import {
-  SearchPopover,
-  SearchProvider,
-  SearchResultItemPreview,
-  useWorkspace,
-} from '../../../../studio'
+import {Button} from '../../../../../ui-components/button/Button'
+import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'
+import {set, unset} from '../../../../form/patch'
+import {type ObjectFieldProps} from '../../../../form/types'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useDocumentPresence} from '../../../../store/_legacy/presence/useDocumentPresence'
+import {SearchPopover, SearchProvider, SearchResultItemPreview} from '../../../../studio/components'
+import {useWorkspace} from '../../../../studio/workspace'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type FormMode, type TaskTarget} from '../../../types'

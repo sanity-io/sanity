@@ -3,11 +3,12 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useMemo, useState} from 'react'
 
-import {type FormNodePresence} from '../../presence'
-import {useCurrentUser} from '../../store'
+import {type FormNodePresence} from '../../presence/types'
+import {useCurrentUser} from '../../store/user/hooks'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
-import {type ObjectFormNode, type StateTree} from './types'
+import {type ObjectFormNode} from './types/nodes'
+import {type StateTree} from './types/state'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */

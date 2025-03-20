@@ -6,7 +6,8 @@ import {
   type ReactNode,
 } from 'react'
 
-import {Button, type ButtonProps, type TooltipProps} from '../../../ui-components'
+import {Button, type ButtonProps} from '../../../ui-components/button'
+import {type TooltipProps} from '../../../ui-components/tooltip'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {

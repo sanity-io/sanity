@@ -1,7 +1,8 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
-import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
+import {type EditableReleaseDocument, type ReleaseDocument} from '../../store/types'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {

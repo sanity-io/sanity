@@ -7,9 +7,9 @@ import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type FieldProps} from '../../../form'
-import {getSchemaTypeTitle} from '../../../schema'
-import {useCurrentUser} from '../../../store'
+import {type FieldProps} from '../../../form/types'
+import {getSchemaTypeTitle} from '../../../schema/helpers'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment} from '../../helpers'
 import {

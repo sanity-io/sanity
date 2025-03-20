@@ -1,9 +1,9 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
+import {Tooltip} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 
 export const ChevronWrapper = styled(Box)`

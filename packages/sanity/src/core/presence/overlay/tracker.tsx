@@ -2,12 +2,11 @@ import {memo, useContext} from 'react'
 import {PresenceTrackerContextGetSnapshot, PresenceTrackerContextStore} from 'sanity/_singletons'
 
 import {
-  type Reported,
-  type ReporterHook,
   type TrackerContextGetSnapshot,
   useTrackerStore,
   useTrackerStoreReporter,
 } from '../../components/react-track-elements'
+import {type Reported, type ReporterHook} from '../../components/react-track-elements/types'
 import {type FieldPresenceData} from '../types'
 
 export type ReportedPresenceData = Reported<FieldPresenceData>

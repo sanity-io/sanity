@@ -1,7 +1,7 @@
 import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components/previews'
-import {type PluginOptions} from '../../config'
+import {type PluginOptions} from '../../config/types'
 import {
   type BlockAnnotationProps,
   type BlockProps,

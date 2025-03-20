@@ -5,10 +5,11 @@ import {
   type PortableTextTextBlock,
   type SpanSchemaType,
 } from '@sanity/types'
+import {type TFunction} from 'i18next'
 import {uniq, xor} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {type TFunction, useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {DiffCard} from '../../../../diff'
 import {
   type ArrayDiff,

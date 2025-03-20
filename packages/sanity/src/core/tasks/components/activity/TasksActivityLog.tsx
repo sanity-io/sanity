@@ -5,21 +5,20 @@ import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
+import {CommentDeleteDialog, type CommentInputProps} from '../../../comments/components'
+import {useComments} from '../../../comments/hooks'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
-  type CommentInputProps,
   type CommentReactionOption,
   type CommentThreadItem,
   type CommentUpdatePayload,
-  useComments,
-} from '../../../comments'
-import {CommentDeleteDialog} from '../../../comments/components'
-import {LoadingBlock} from '../../../components'
-import {type FormPatch, type PatchEvent, set} from '../../../form'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {useWorkspace} from '../../../studio'
+} from '../../../comments/types'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useWorkspace} from '../../../studio/workspace'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'

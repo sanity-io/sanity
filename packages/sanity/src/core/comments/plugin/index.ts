@@ -1,4 +1,4 @@
-import {definePlugin} from '../../config'
+import {definePlugin} from '../../config/definePlugin'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {CommentsDocumentLayout} from './document-layout'
 import {CommentsField} from './field'

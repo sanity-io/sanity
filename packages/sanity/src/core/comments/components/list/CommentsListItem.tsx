@@ -13,9 +13,9 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type CommentsSelectedPath} from '../../context'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
 import {applyCommentIdAttr} from '../../hooks'
@@ -29,7 +29,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {SpacerAvatar} from '../avatars'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
 import {CommentInput, type CommentInputHandle} from '../pte'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'

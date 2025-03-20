@@ -4,7 +4,7 @@ import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash'
 import {useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch'
 import {type ArrayOfPrimitivesInputProps} from '../../../types'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'

@@ -59,8 +59,9 @@ import type {
 } from 'sanity'
 import {describe, it} from 'vitest'
 
-import {type PreviewProps} from '../../components'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import {type PreviewProps} from '../../components/previews/types'
+import {type CrossDatasetReferenceInputProps} from '../inputs/CrossDatasetReferenceInput'
+import {type ReferenceInputProps} from '../inputs/ReferenceInput/types'
 import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,

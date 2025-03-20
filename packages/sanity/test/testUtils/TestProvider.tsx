@@ -4,19 +4,17 @@ import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 
-import {
-  CopyPasteProvider,
-  type LocaleResourceBundle,
-  ResourceCacheProvider,
-  type SingleWorkspace,
-  SourceProvider,
-  WorkspaceProvider,
-} from '../../src/core'
+import {type SingleWorkspace} from '../../src/core/config/types'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
+import {type LocaleResourceBundle} from '../../src/core/i18n/types'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
+import {ResourceCacheProvider} from '../../src/core/store/_legacy/ResourceCacheProvider'
+import {CopyPasteProvider} from '../../src/core/studio/copyPaste'
+import {SourceProvider} from '../../src/core/studio/source'
+import {WorkspaceProvider} from '../../src/core/studio/workspace'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 

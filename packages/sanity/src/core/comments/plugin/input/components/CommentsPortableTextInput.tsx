@@ -14,8 +14,8 @@ import {AnimatePresence} from 'framer-motion'
 import {debounce} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps} from '../../../../form'
-import {useCurrentUser} from '../../../../store'
+import {type PortableTextInputProps} from '../../../../form/types'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {CommentInlineHighlightSpan} from '../../../components'
 import {isTextSelectionComment} from '../../../helpers'
 import {

@@ -10,8 +10,8 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {operationArgs} from './operationArgs'
 import {operationEvents} from './operationEvents'
-import {type OperationsAPI} from './operations'
 import {createOperationsAPI, GUARDED} from './operations/helpers'
+import {type OperationsAPI} from './operations/types'
 
 export const editOperations = memoize(
   (

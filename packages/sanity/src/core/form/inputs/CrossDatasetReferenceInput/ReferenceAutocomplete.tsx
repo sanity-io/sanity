@@ -9,8 +9,9 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 
 const StyledPopover = styled(Popover)`
   & > div {

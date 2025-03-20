@@ -5,9 +5,9 @@ import {
   type ArrayOfPrimitivesInputProps,
   isArrayOfPrimitivesInputProps,
 } from '../../types'
-import {ArrayOfObjectsInput} from './ArrayOfObjectsInput'
-import {ArrayOfOptionsInput} from './ArrayOfOptionsInput'
-import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput'
+import {ArrayOfObjectsInput} from './ArrayOfObjectsInput/ArrayOfObjectsInput'
+import {ArrayOfOptionsInput} from './ArrayOfOptionsInput/ArrayOfOptionsInput'
+import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 
 /**
  * Universal array input that will introspect its schemaType and delegate to the right implementation

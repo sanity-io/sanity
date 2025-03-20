@@ -3,7 +3,8 @@ import {type InitialValueResolverContext} from '@sanity/types'
 import {omit} from 'lodash'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {type resolveInitialValue as resolveInitialValueType, type Template} from '../'
+import {type resolveInitialValue as resolveInitialValueType} from '../resolve'
+import {type Template} from '../types'
 import {schema} from './schema'
 
 let resolveInitialValue: typeof resolveInitialValueType
@@ -12,7 +13,7 @@ beforeEach(async () => {
   vi.resetModules()
   vi.clearAllMocks()
 
-  resolveInitialValue = (await import('../')).resolveInitialValue
+  resolveInitialValue = (await import('../resolve')).resolveInitialValue
 })
 
 const example: Template = {

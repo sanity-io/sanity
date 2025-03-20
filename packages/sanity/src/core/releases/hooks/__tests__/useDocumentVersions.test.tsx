@@ -4,13 +4,15 @@ import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
-import {useDocumentPreviewStore} from '../../../store'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {type ReleaseDocument} from '../../store'
+import {type ReleaseDocument} from '../../store/types'
 import {useDocumentVersions} from '../useDocumentVersions'
 
-vi.mock('../../store', () => ({
+vi.mock('../../store/useReleasesMetadata', () => ({
   useReleasesMetadata: vi.fn(),
+}))
+vi.mock('../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(),
 }))
 
@@ -18,7 +20,7 @@ vi.mock('../../store/useReleasesIds', () => ({
   useReleasesIds: vi.fn(),
 }))
 
-vi.mock('../../../store', () => ({
+vi.mock('../../../store/_legacy/datastores', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 

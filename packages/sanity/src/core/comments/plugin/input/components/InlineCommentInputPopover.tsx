@@ -4,7 +4,7 @@ import {motion, type Variants} from 'framer-motion'
 import {useCallback, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover, type PopoverProps} from '../../../../../ui-components'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover'
 import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../../../components'
 import {hasCommentMessageValue} from '../../../helpers'
 

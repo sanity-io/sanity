@@ -12,8 +12,9 @@ import {
 } from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../../preview'
-import {resolveInitialValue, type Template} from '../../../../templates'
-import {getDraftId, getPublishedId} from '../../../../util'
+import {resolveInitialValue} from '../../../../templates/resolve'
+import {type Template} from '../../../../templates/types'
+import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
 import {
   type InitialValueErrorMsg,
   type InitialValueLoadingMsg,

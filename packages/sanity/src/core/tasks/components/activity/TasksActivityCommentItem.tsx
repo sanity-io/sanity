@@ -3,7 +3,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
-import {useTasksEnabled} from '../../context'
+import {useTasksEnabled} from '../../context/enabled'
 import {ActivityItem} from './TasksActivityItem'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {

@@ -3,7 +3,7 @@ import {Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 
 import {DocumentPreviewPresence} from '../../../presence'
-import {TextWithTone} from '../../textWithTone'
+import {TextWithTone} from '../../textWithTone/TextWithTone'
 import {PreviewCard} from '../PreviewCard'
 
 export default function PreviewCardStory() {
@@ -20,6 +20,7 @@ export default function PreviewCardStory() {
                   ({
                     status: 'online',
                     lastActiveAt: '',
+
                     user: {
                       imageUrl: 'https://source.unsplash.com/96x96/?face',
                       id: num,

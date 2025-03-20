@@ -1,9 +1,9 @@
 import {useMemo} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
 
-import {AddonDatasetProvider} from '../../studio'
-import {TasksFormBuilder} from '../components'
-import {TasksProvider} from '../context'
+import {AddonDatasetProvider} from '../../studio/addonDataset'
+import {TasksFormBuilder} from '../components/form'
+import {TasksProvider} from '../context/tasks'
 
 export default function TasksCreateStory() {
   const value = useMemo(

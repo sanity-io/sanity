@@ -1,9 +1,9 @@
 import {ChevronLeftIcon} from '@sanity/icons'
 import {type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
+import {Button} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {TIMELINE_LIST_WRAPPER_ID} from './timeline'
 

@@ -3,8 +3,8 @@ import {lazy, memo, Suspense} from 'react'
 
 import {PaneRouterProvider} from '../components/paneRouter'
 import {type PaneNode} from '../types'
-import {LoadingPane} from './loading'
-import {UnknownPane} from './unknown'
+import {LoadingPane} from './loading/LoadingPane'
+import {UnknownPane} from './unknown/UnknownPaneType'
 
 interface StructureToolPaneProps {
   active: boolean

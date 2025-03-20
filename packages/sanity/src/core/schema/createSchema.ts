@@ -2,7 +2,7 @@ import {Schema as SchemaBuilder, type SchemaValidationResult} from '@sanity/sche
 import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 
-import {inferFromSchema as inferValidation} from '../validation'
+import {inferFromSchema as inferValidation} from '../validation/inferFromSchema'
 import assetSourceData from './types/assetSourceData'
 import fileAsset from './types/fileAsset'
 import geopoint from './types/geopoint'

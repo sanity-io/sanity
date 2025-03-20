@@ -1,7 +1,7 @@
 import {type ImageSchemaType} from '@sanity/types'
 import {memo, useMemo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UploaderResolver} from '../../../studio/uploads/types'
 import {type ImageUrlBuilder} from '../types'
 import {ImagePreview} from './ImagePreview'

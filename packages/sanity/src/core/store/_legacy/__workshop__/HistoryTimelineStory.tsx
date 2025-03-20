@@ -6,12 +6,16 @@ import {omit} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
-import {Button} from '../../../../ui-components'
-import {ChangeFieldWrapper} from '../../../changeIndicators'
-import {ChangeList, type Chunk, type DocumentChangeContextInstance} from '../../../field'
-import {useConnectionState, useEditState, useSchema} from '../../../hooks'
+import {Button} from '../../../../ui-components/button/Button'
+import {ChangeFieldWrapper} from '../../../changeIndicators/ChangeFieldWrapper'
+import {ChangeList, type DocumentChangeContextInstance} from '../../../field/diff'
+import {type Chunk} from '../../../field/types'
+import {useConnectionState} from '../../../hooks/useConnectionState'
+import {useEditState} from '../../../hooks/useEditState'
+import {useSchema} from '../../../hooks/useSchema'
 import {useInitialValue} from '../document'
-import {useTimelineSelector, useTimelineStore} from '../history'
+import {useTimelineSelector} from '../history'
+import {useTimelineStore} from '../history/useTimelineStore'
 
 export default function HistoryTimelineStory() {
   const schema = useSchema()

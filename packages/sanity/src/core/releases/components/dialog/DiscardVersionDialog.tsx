@@ -1,18 +1,18 @@
 import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Dialog} from '../../../../ui-components'
-import {LoadingBlock} from '../../../components'
-import {useDocumentOperation, useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {Preview} from '../../../preview'
+import {Preview} from '../../../preview/components/Preview'
 import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
-import {useVersionOperations} from '../../hooks'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-
 /**
  * @internal
  */

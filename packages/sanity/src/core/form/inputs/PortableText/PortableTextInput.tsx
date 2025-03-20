@@ -31,14 +31,15 @@ import {
   useState,
 } from 'react'
 
-import {useTranslation} from '../../../i18n'
-import {EMPTY_ARRAY} from '../../../util'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
 import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {type ArrayOfObjectsItemMember} from '../../store/types/members'
+import {type ObjectFormNode} from '../../store/types/nodes'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
@@ -51,7 +52,7 @@ import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
-} from './presence-cursors'
+} from './presence-cursors/usePresenceCursorDecorations'
 import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
 

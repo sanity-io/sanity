@@ -1,8 +1,9 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage, type CommentsUIMode} from '../../types'

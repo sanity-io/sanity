@@ -1,6 +1,4 @@
-'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
 import {Card, Stack, Text, useTheme} from '@sanity/ui'
@@ -14,8 +12,8 @@ import {
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
-import {useTranslation} from '../../../../../i18n'
-import {ArrayOfObjectsItem} from '../../../../members'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
 import {Item, List} from '../../common/list'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
@@ -24,6 +22,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
 import {useMemoCompare} from './useMemoCompare'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
+;('use no memo')
 
 const EMPTY: [] = []
 

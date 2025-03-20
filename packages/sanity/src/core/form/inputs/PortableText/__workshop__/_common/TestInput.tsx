@@ -7,8 +7,8 @@ import {
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {useSource} from '../../../../../studio'
+import {applyAll} from '../../../../patch/applyPatch'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
-import {applyAll} from '../../../../patch/simplePatch'
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../../types'
 import {type RenderBlockActionsCallback} from '../../../../types/_transitional'
 

@@ -6,7 +6,7 @@ import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {type StructureContext} from '../../structureBuilder'
-import {type Panes} from '../../structureResolvers'
+import {type Panes} from '../../structureResolvers/useResolvedPanes'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
 

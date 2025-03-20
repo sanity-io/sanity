@@ -6,7 +6,7 @@ import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {refCountDelay} from 'rxjs-etc/operators'
 import shallowEquals from 'shallow-equals'
 
-import {debugGrants$} from './debug'
+import {debugGrants$} from './debug/roleGrants'
 import {
   type DocumentValuePermission,
   type EvaluationParams,

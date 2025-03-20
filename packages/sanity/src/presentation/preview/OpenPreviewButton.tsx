@@ -3,7 +3,8 @@ import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Button, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button'
+import {Tooltip} from '../../ui-components/tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PreviewProps} from './Preview'
 

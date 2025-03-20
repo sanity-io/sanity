@@ -1,5 +1,5 @@
-import {LoadingBlock} from '../../../components'
-import {WorkspaceLoader} from '../../../studio'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {WorkspaceLoader} from '../../../studio/workspaceLoader'
 
 function ConfigErrorsScreen() {
   // eslint-disable-next-line i18next/no-literal-string

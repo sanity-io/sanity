@@ -7,7 +7,7 @@ import {
   useId,
 } from 'react'
 
-import {type ButtonProps} from '../../../../../../ui-components'
+import {type ButtonProps} from '../../../../../../ui-components/button'
 import {FileButton} from './styles'
 
 export type FileInputButtonProps = ButtonProps & {

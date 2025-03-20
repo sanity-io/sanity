@@ -1,7 +1,7 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
-import {type RouterHistory} from '../router'
+import {type RouterHistory} from '../router/types'
 import {useWorkspaces} from '../workspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'

@@ -2,8 +2,8 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {useTranslation} from '../../../../../i18n'
-import {ArrayOfObjectsItem} from '../../../../members'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectItem,

@@ -13,14 +13,15 @@ import {
 import {styled} from 'styled-components'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {ErrorBoundary} from '../../ui-components'
+import {ErrorBoundary} from '../../ui-components/errorBoundary'
 import {ErrorActions} from '../components/errorActions/ErrorActions'
-import {SchemaError} from '../config'
+import {SchemaError} from '../config/SchemaError'
 import {isDev, isProd} from '../environment'
 import {errorReporter} from '../error/errorReporter'
-import {CorsOriginError} from '../store'
-import {isRecord} from '../util'
-import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
+import {CorsOriginError} from '../store/_legacy/cors'
+import {isRecord} from '../templates/util/isRecord'
+import {CorsOriginErrorScreen} from './screens'
+import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
 
 /**
  * The DevServerStoppedErrorScreen will always have been lazy loaded to client

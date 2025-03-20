@@ -3,7 +3,7 @@ import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
-import {useDocumentPreviewStore} from '../../store'
+import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'

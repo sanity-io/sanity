@@ -1,8 +1,9 @@
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
-import {type FormPatch, PatchEvent} from '../patch'
-import {useFormCallbacks} from '../studio'
+import {PatchEvent} from '../patch'
+import {type FormPatch} from '../patch/types'
+import {useFormCallbacks} from '../studio/contexts'
 
 type PatchTransformer = (patches: FormPatch[]) => FormPatch[]
 

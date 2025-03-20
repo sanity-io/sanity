@@ -13,8 +13,8 @@ import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sa
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {ChangeIndicator} from '../../../changeIndicators'
-import {EMPTY_ARRAY} from '../../../util'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {

@@ -2,8 +2,8 @@ import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Menu, TabList, useElementSize} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {type ComponentType, type ReactNode, useCallback, useState} from 'react'
+import {Button, MenuButton, MenuItem, Tab} from 'sanity/ui-components'
 
-import {Button, MenuButton, MenuItem, Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
 

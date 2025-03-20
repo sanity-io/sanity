@@ -4,7 +4,7 @@ import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Popover, type PopoverProps} from '../../../../../../ui-components'
+import {Popover, type PopoverProps} from '../../../../../../ui-components/popover'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useSearchableList} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'

@@ -5,7 +5,7 @@ import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
 import {usePerspective} from '../perspective/usePerspective'
-import {useDocumentPreviewStore} from '../store'
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
 import {type Previewable} from './types'
 
 export {useDocumentPreview as unstable_useValuePreview}

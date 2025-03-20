@@ -12,9 +12,10 @@ import {
   useState,
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
+import {Button} from 'sanity/ui-components'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {
   PaneContextMenuButton,
   PaneHeader,

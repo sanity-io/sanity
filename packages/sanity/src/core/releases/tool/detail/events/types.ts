@@ -1,4 +1,4 @@
-import {type ReleaseType} from '../../../store'
+import {type ReleaseType} from '../../../store/types'
 
 export type ReleaseEvent =
   | CreateReleaseEvent

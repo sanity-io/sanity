@@ -18,10 +18,10 @@ import useTimeZone from '../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../types'
 import {useScheduledPublishingEnabled} from './contexts/ScheduledPublishingEnabledProvider'
 import {SchedulesProvider} from './contexts/schedules'
-import {ScheduleFilters} from './scheduleFilters'
-import {Schedules} from './schedules'
+import {ScheduleFilters} from './scheduleFilters/ScheduleFilters'
+import {Schedules} from './schedules/Schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
-import {ToolCalendar} from './toolCalendar'
+import {ToolCalendar} from './toolCalendar/ToolCalendar'
 
 const Column = styled(Box)`
   flex-direction: column;

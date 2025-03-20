@@ -1,9 +1,9 @@
 import {type Schema, type SchemaType} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
+import {type TFunction} from 'i18next'
 import {difference, startCase} from 'lodash'
 
-import {type TFunction} from '../../../../../../../i18n'
-import {isNonNullable} from '../../../../../../../util'
+import {isNonNullable} from '../../../../../../../util/isNonNullable'
 import {
   type SearchFieldDefinition,
   type SearchFieldDefinitionDictionary,

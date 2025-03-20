@@ -8,10 +8,10 @@ import {
 import {isEqual} from '@sanity/util/paths'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field/paths'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {pathToString} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   type BlockProps,

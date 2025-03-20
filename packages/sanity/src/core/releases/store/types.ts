@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/types'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type PartialExcept} from '../../util'
+import {type PartialExcept} from '../../util/PartialExcept'
 import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'

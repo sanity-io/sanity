@@ -3,14 +3,13 @@ import {useMemo} from 'react'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
 
-import {useSchema, useTemplates} from '../../../hooks'
-import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getPublishedId,
-  type PartialExcept,
-} from '../../../util'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTemplates} from '../../../hooks/useTemplates'
+import {resolveInitialValue} from '../../../templates/resolve'
+import {type InitialValueTemplateItem, type Template} from '../../../templates/types'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document'
 import {getDocumentValuePermissions} from './documentValuePermissions'

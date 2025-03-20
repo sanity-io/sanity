@@ -3,7 +3,7 @@ import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
 import {Avatar, Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
 
-import {MenuItem} from '../menuItem'
+import {MenuItem} from '../menuItem/MenuItem'
 
 const HOTKEYS = ['Ctrl', 'Alt', 'P']
 const AVATAR_INITIALS = 'AW'

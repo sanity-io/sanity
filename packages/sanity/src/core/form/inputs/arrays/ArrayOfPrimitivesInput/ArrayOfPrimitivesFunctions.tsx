@@ -4,8 +4,11 @@ import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem'
+import {Tooltip} from '../../../../../ui-components/tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type ArrayInputFunctionsProps} from '../../../types'
 
 /**

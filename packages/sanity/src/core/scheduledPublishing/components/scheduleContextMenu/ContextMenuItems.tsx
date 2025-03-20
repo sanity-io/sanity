@@ -1,7 +1,8 @@
 import {CalendarIcon, CheckmarkCircleIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 
-import {useCurrentUser, useDocumentPairPermissions} from '../../../store'
+import {useDocumentPairPermissions} from '../../../store/_legacy/grants'
+import {useCurrentUser} from '../../../store/user/hooks'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'

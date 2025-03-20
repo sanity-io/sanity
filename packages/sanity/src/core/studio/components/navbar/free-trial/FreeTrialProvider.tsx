@@ -3,7 +3,7 @@ import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {SANITY_VERSION} from '../../../../version'
 import {getTrialStage, TrialDialogViewed} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialResponse} from './types'

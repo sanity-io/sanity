@@ -1,7 +1,9 @@
 import {useEffect} from 'react'
 
-import {getPublishedId, isVersionId} from '../../../util'
-import {type ActiveDocument, useIsLastPane, useTasks, useTasksEnabled} from '../../context'
+import {getPublishedId, isVersionId} from '../../../util/draftUtils'
+import {useTasksEnabled} from '../../context/enabled'
+import {useIsLastPane} from '../../context/isLastPane'
+import {type ActiveDocument, useTasks} from '../../context/tasks'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document

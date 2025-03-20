@@ -1,7 +1,7 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import {isDev, Translate, useTranslation} from 'sanity'
 
-import {ErrorPane} from '../../error'
+import {ErrorPane} from '../../error/ErrorPane'
 
 interface DocumentLayoutErrorProps {
   currentMinWidth?: number
@@ -49,7 +49,6 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
           /* eslint-disable i18next/no-literal-string */
           <>
             <Text as="p">Here is the JSON representation of the document:</Text>
-
             <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
               <Code language="json" size={[1, 1, 2]}>
                 {JSON.stringify(value, null, 2)}

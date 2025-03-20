@@ -1,7 +1,7 @@
 import {useMemo, useState} from 'react'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
-import {type RouterHistory} from '../router'
+import {type RouterHistory} from '../router/types'
 import {type WorkspacesContextValue} from '../workspaces'
 import {createCommonBasePathRegex} from './createCommonBasePathRegex'
 import {matchWorkspace, type MatchWorkspaceResult} from './matchWorkspace'

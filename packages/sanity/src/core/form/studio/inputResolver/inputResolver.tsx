@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type PreviewProps} from '../../../components'
+import {type PreviewProps} from '../../../components/previews'
 import {type FIXME} from '../../../FIXME'
 import {SanityDefaultPreview} from '../../../preview'
 import {type InputProps} from '../../types'

@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../changeIndicators'
-import {TagInput} from '../components/tagInput'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {TagInput} from '../components/tagInput/tagInput'
 import {set, unset} from '../patch'
 import {type ArrayOfPrimitivesInputProps} from '../types'
 

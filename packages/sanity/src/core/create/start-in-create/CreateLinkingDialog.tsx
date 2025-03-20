@@ -10,8 +10,8 @@ import {
 } from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {Dialog} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createLocaleNamespace} from '../i18n'
 
 export function CreateLinkingDialog() {

@@ -3,7 +3,7 @@ import {Box, Flex} from '@sanity/ui'
 import {forwardRef, type KeyboardEvent} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
 

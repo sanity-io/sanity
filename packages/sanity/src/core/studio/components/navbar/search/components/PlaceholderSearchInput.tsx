@@ -4,7 +4,7 @@ import {Flex, KBD, TextInput} from '@sanity/ui'
 import {forwardRef, type KeyboardEvent as ReactKeyboardEvent, type Ref, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 

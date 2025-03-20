@@ -5,13 +5,14 @@ import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 
-import {Button, Popover} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button'
+import {Popover} from '../../../../../ui-components/popover'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../../components/inputs/DateInputs/DatePicker'
-import {type FormPatch, type PatchEvent, set, unset} from '../../../../form'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
-import {useDateTimeFormat} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {type FormPatch, type PatchEvent, set, unset} from '../../../../form/patch'
+import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)

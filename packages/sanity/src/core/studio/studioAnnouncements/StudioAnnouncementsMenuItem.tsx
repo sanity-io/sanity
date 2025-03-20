@@ -2,7 +2,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback} from 'react'
 
-import {MenuItem} from '../../../ui-components'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {SANITY_VERSION} from '../../version'
 import {WhatsNewHelpMenuItemClicked} from './__telemetry__/studioAnnouncements.telemetry'
 import {useStudioAnnouncements} from './useStudioAnnouncements'

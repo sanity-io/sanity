@@ -3,7 +3,7 @@ import {Box, Card, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback, useContext} from 'react'
 import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {type PortableTextDiff} from '../types'

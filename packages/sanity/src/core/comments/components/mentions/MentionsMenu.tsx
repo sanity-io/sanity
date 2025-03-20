@@ -11,9 +11,10 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {CommandList, type CommandListHandle, LoadingBlock} from '../../../components'
-import {type UserWithPermission} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {CommandList, type CommandListHandle} from '../../../components/commandList'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'
 

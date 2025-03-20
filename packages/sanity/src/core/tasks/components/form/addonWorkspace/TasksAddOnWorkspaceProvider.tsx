@@ -1,16 +1,14 @@
 import {useEffect, useMemo} from 'react'
 
-import {LoadingBlock} from '../../../../components'
-import {type Config, prepareConfig} from '../../../../config'
-import {useClient} from '../../../../hooks'
-import {ResourceCacheProvider} from '../../../../store'
-import {
-  SourceProvider,
-  useAddonDataset,
-  useSource,
-  useWorkspaceLoader,
-  WorkspaceProvider,
-} from '../../../../studio'
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {prepareConfig} from '../../../../config/prepareConfig'
+import {type Config} from '../../../../config/types'
+import {useClient} from '../../../../hooks/useClient'
+import {ResourceCacheProvider} from '../../../../store/_legacy/ResourceCacheProvider'
+import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
+import {SourceProvider, useSource} from '../../../../studio/source'
+import {WorkspaceProvider} from '../../../../studio/workspace'
+import {useWorkspaceLoader} from '../../../../studio/workspaceLoader'
 import {API_VERSION} from '../../../constants'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'

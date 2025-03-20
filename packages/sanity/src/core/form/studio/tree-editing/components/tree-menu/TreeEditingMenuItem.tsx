@@ -20,7 +20,7 @@ import {css, styled} from 'styled-components'
 
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {useValuePreviewWithFallback} from '../../hooks'
+import {useValuePreviewWithFallback} from '../../hooks/useValuePreviewWithFallback'
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
 import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
 import {getSiblingHasChildren} from './utils'

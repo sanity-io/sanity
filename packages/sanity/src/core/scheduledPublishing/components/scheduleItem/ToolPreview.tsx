@@ -4,12 +4,12 @@ import {IntentLink} from 'sanity/router'
 
 import {Preview} from '../../../preview/components/Preview'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {getPublishedId} from '../../../util'
+import {getPublishedId} from '../../../util/draftUtils'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
-import {ScheduleContextMenu} from '../scheduleContextMenu'
+import {ScheduleContextMenu} from '../scheduleContextMenu/ScheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 
 interface Props {

@@ -1,4 +1,5 @@
-import {type FormPatch, set, unset} from '../../patch'
+import {set, unset} from '../../patch'
+import {type FormPatch} from '../../patch/types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {type UploadProgressEvent} from './types'
 

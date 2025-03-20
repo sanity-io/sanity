@@ -19,7 +19,7 @@ import {
   useState,
 } from 'react'
 
-import {type UserListWithPermissionsHookValue} from '../../../../hooks'
+import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
 import {editorSchemaType} from '../config'
 import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'

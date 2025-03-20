@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useContext, useEffect, useRef} from 'react'
 import {GetFormValueContext} from 'sanity/_singletons'
 
-import {getValueAtPath} from '../../field'
+import {getValueAtPath} from '../../field/paths'
 import {type FormDocumentValue} from '../types'
 
 /**

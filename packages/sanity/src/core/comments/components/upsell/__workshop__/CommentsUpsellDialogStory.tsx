@@ -1,7 +1,7 @@
 import {CommentIcon} from '@sanity/icons'
 import {useCallback, useEffect} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {CommentsUpsellProvider} from '../../../context'
 import {useCommentsUpsell} from '../../../hooks'
 

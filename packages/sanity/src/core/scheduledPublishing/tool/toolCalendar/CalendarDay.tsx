@@ -3,7 +3,7 @@ import {Badge, Box, Card, type CardTone, Flex, Inline, Label, Stack, Text} from 
 import {format, isWeekend} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {SCHEDULE_ACTION_DICTIONARY, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../../types'

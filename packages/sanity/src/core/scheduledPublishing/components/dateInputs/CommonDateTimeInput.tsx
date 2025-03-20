@@ -13,7 +13,7 @@ import {
   useState,
 } from 'react'
 
-import {FormField} from '../../../form/components/formField'
+import {FormField} from '../../../form/components/formField/FormField'
 import useTimeZone from '../../hooks/useTimeZone'
 import {DateTimeInput} from './base/DateTimeInput'
 import {type CommonProps, type ParseResult} from './types'

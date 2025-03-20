@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type SourceClientOptions} from './config'
+import {type SourceClientOptions} from './config/types'
 
 /**
  * Unless otherwise specified, this is the API version we use for controlled

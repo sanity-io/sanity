@@ -2,7 +2,7 @@ import {Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns'
 import {useCallback, useState} from 'react'
 
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

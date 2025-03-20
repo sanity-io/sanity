@@ -14,13 +14,9 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {useClient} from '../../../../../hooks'
-import {
-  createSearch,
-  type SearchHit,
-  type SearchOptions,
-  type SearchTerms,
-} from '../../../../../search'
+import {useClient} from '../../../../../hooks/useClient'
+import {type SearchHit, type SearchOptions, type SearchTerms} from '../../../../../search'
+import {createSearch} from '../../../../../search/search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'

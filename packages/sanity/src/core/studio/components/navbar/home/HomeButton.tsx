@@ -3,10 +3,10 @@ import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useWorkspaces} from '../../../workspaces'
 import {SanityLogo} from '../SanityLogo'
-import {WorkspacePreviewIcon} from '../workspace'
+import {WorkspacePreviewIcon} from '../workspace/WorkspacePreview'
 
 const LOGO_MARK_SIZE = 25 // width and height, px
 const RADIUS = 2

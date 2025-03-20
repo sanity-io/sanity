@@ -4,8 +4,9 @@ import {motion, type Variants} from 'framer-motion'
 import {useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {CommentDisabledIcon} from '../../../components'
 import {commentsLocaleNamespace} from '../../../i18n'
 

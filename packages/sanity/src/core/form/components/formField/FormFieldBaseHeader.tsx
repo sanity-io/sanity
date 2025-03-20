@@ -2,11 +2,12 @@ import {Box, Card, Flex} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {type DocumentFieldActionNode} from '../../../config'
-import {FieldPresence, type FormNodePresence} from '../../../presence'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions'
+import {FieldPresence} from '../../../presence'
+import {type FormNodePresence} from '../../../presence/types'
 import {calcAvatarStackWidth} from '../../../presence/utils'
-import {FieldActionMenu} from '../../field'
+import {FieldActionMenu} from '../../field/actions'
 import {type FieldCommentsProps} from '../../types'
 
 const Root = styled(Flex)<{

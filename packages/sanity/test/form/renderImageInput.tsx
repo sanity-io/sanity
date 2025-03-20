@@ -1,3 +1,4 @@
+import {type ImageUrlBuilder} from '@sanity/image-url/lib/types/builder'
 import {
   type AssetSource,
   type FieldDefinition,
@@ -6,8 +7,8 @@ import {
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type ImageUrlBuilder, type ObjectInputProps} from '../../src/core'
 import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'
+import {type ObjectInputProps} from '../../src/core/form/types'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'

@@ -4,7 +4,7 @@ import {I18nextProvider} from 'react-i18next'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
 
 import {LoadingBlock} from '../../components/loadingBlock'
-import {useSource} from '../../studio'
+import {useSource} from '../../studio/source'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'
 import {type Locale} from '../types'

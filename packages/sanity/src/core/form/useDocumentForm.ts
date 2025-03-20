@@ -40,25 +40,21 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
-import {
-  type DocumentPresence,
-  type EditStateFor,
-  type PermissionCheckResult,
-  useDocumentValuePermissions,
-  usePresenceStore,
-} from '../store'
-import {EMPTY_ARRAY, getDraftId, getPublishedId, getVersionFromId, useUnique} from '../util'
-import {
-  type FormState,
-  getExpandOperations,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
+import {usePresenceStore} from '../store/_legacy/datastores'
+import {type EditStateFor} from '../store/_legacy/document'
+import {type PermissionCheckResult, useDocumentValuePermissions} from '../store/_legacy/grants'
+import {type DocumentPresence} from '../store/_legacy/presence/types'
+import {getDraftId, getPublishedId, getVersionFromId} from '../util/draftUtils'
+import {EMPTY_ARRAY} from '../util/empty'
+import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {type PatchEvent} from './patch'
+import {setAtPath} from './store/stateTreeHelper'
+import {type StateTree} from './store/types/state'
+import {type FormState, useFormState} from './store/useFormState'
+import {getExpandOperations} from './store/utils/getExpandOperations'
+import {type OnPathFocusPayload} from './types'
+import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
   documentType: string

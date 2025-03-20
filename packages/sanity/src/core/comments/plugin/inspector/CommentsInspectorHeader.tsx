@@ -3,8 +3,10 @@ import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button'
+import {MenuButton} from '../../../../ui-components/menuButton'
+import {MenuItem} from '../../../../ui-components/menuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
 

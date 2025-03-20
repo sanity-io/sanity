@@ -14,8 +14,10 @@ import {
 } from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
   focused: boolean
