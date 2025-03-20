@@ -499,7 +499,7 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container height="fill">
+              <Container data-testid="presentation-root" height="fill">
                 <Panels>
                   <PresentationNavigator />
                   <Panel

@@ -16,12 +16,16 @@ import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
+import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
 import {type ReleaseAction} from './releaseActions'
 import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 
 export type ReleaseMenuProps = Omit<ReleaseMenuButtonProps, 'documentsCount'> & {
   disabled: boolean
   setSelectedAction: Dispatch<SetStateAction<ReleaseAction | undefined>>
+  documents: DocumentInRelease[]
 }
 
 export const ReleaseMenu = ({
@@ -29,15 +33,18 @@ export const ReleaseMenu = ({
   disabled,
   release,
   setSelectedAction,
+  documents,
 }: ReleaseMenuProps) => {
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const {mode} = useReleasesUpsell()
-  const {archive, unarchive, deleteRelease} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease, publishRelease, schedule} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasArchivePermission, setHasArchivePermission] = useState<boolean | null>(null)
   const [hasUnarchivePermission, setHasUnarchivePermission] = useState<boolean | null>(null)
   const [hasDeletePermission, setHasDeletePermission] = useState<boolean | null>(null)
+  const [hasPublishPermission, setHasPublishPermission] = useState<boolean | null>(null)
+  const [hasSchedulePermission, setHasSchedulePermission] = useState<boolean | null>(null)
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -52,6 +59,13 @@ export const ReleaseMenu = ({
         } else {
           checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
             if (isMounted.current) setHasArchivePermission(hasPermission)
+          })
+
+          checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+            if (isMounted.current) setHasPublishPermission(hasPermission)
+          })
+          checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+            if (isMounted.current) setHasSchedulePermission(hasPermission)
           })
         }
       }
@@ -75,6 +89,9 @@ export const ReleaseMenu = ({
     unarchive,
     archive,
     deleteRelease,
+    release.metadata.releaseType,
+    publishRelease,
+    schedule,
   ])
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -165,9 +182,61 @@ export const ReleaseMenu = ({
     )
   }, [handleOnInitiateAction, ignoreCTA, release.state, releaseMenuDisabled, t])
 
+  const scheduleMenuItem = useMemo(() => {
+    // will not return the action for scheduled releases since the main action is already schedule
+    if (release.state !== 'active' || (ignoreCTA && release.metadata.releaseType === 'scheduled'))
+      return null
+
+    return (
+      <ReleaseScheduleButton
+        disabled={releaseMenuDisabled || !hasSchedulePermission}
+        release={release}
+        documents={documents}
+        isMenuItem
+        onConfirmDialogClose={() => setSelectedAction(undefined)}
+        onConfirmDialogOpen={() => setSelectedAction('schedule')}
+      />
+    )
+  }, [documents, hasSchedulePermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
+
+  const publishMenuItem = useMemo(() => {
+    if (release.state !== 'active' || (ignoreCTA && release.metadata.releaseType !== 'scheduled'))
+      return null
+
+    return (
+      <ReleasePublishAllButton
+        release={release}
+        documents={documents}
+        disabled={releaseMenuDisabled || !hasPublishPermission}
+        isMenuItem
+        onConfirmDialogClose={() => setSelectedAction(undefined)}
+        onConfirmDialogOpen={() => setSelectedAction('publish')}
+      />
+    )
+  }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
+
+  const ActionsOrder = useMemo(() => {
+    if (release.metadata.releaseType === 'scheduled') {
+      return (
+        <>
+          {scheduleMenuItem}
+          {publishMenuItem}
+        </>
+      )
+    }
+
+    return (
+      <>
+        {publishMenuItem}
+        {scheduleMenuItem}
+      </>
+    )
+  }, [release.metadata.releaseType, publishMenuItem, scheduleMenuItem])
+
   return (
     <>
       {unscheduleMenuItem}
+      {ActionsOrder}
       {archiveUnarchiveMenuItem}
       {deleteMenuItem}
     </>

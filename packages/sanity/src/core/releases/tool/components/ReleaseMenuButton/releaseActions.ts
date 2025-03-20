@@ -8,7 +8,13 @@ import {
   UnscheduledRelease,
 } from '../../../__telemetry__/releases.telemetry'
 
-export type ReleaseAction = 'archive' | 'unarchive' | 'delete' | 'unschedule'
+export type ReleaseAction =
+  | 'archive'
+  | 'unarchive'
+  | 'delete'
+  | 'unschedule'
+  | 'publish'
+  | 'schedule'
 
 interface BaseReleaseActionsMap {
   toastSuccessI18nKey?: string
@@ -27,7 +33,7 @@ interface DialogActionsMap extends BaseReleaseActionsMap {
 }
 
 export const RELEASE_ACTION_MAP: Record<
-  ReleaseAction,
+  Exclude<ReleaseAction, 'schedule' | 'publish'>,
   DialogActionsMap | (BaseReleaseActionsMap & {confirmDialog: false})
 > = {
   delete: {

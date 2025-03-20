@@ -23,7 +23,6 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {getReleaseDefaults} from '../../util/util'
-import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
@@ -36,6 +35,7 @@ import {
   type Mode,
 } from './queryParamUtils'
 import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
+import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
@@ -53,6 +53,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'publishedAt',
   direction: 'desc',
 }
+// eslint-disable-next-line max-statements
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -103,7 +104,6 @@ export function ReleasesOverview() {
 
   const tableReleases = useMemo<TableRelease[]>(() => {
     if (!hasReleases || !releasesMetadata) return []
-
     return [
       ...releases.map((release) => ({
         ...release,
@@ -298,7 +298,7 @@ export function ReleasesOverview() {
           ? release.documentsMetadata?.documentCount
           : release.finalDocumentStates?.length) ?? 0
 
-      return <ReleaseMenuButton release={release} documentsCount={documentsCount} />
+      return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
     [releaseGroupMode],
   )
@@ -445,10 +445,10 @@ export function ReleasesOverview() {
                 )}
               </Box>
             </Flex>
-            {renderCreateReleaseDialog()}
           </>
         )}
       </Flex>
+      {renderCreateReleaseDialog()}
     </Flex>
   )
 }

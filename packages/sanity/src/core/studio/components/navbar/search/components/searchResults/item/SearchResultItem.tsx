@@ -43,7 +43,11 @@ export function SearchResultItem({
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-  const params = useMemo(() => ({id: documentId, type: type?.name}), [documentId, type?.name])
+  const params = useMemo(
+    () => ({id: getPublishedId(documentId), type: type?.name}),
+    [documentId, type?.name],
+  )
+
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
     params,

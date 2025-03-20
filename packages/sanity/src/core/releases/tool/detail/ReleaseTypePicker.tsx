@@ -15,20 +15,18 @@ import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument, type ReleaseState, type ReleaseType} from '../../store'
+import {type ReleaseType} from '../../store'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {
+  getPublishDateFromRelease,
+  isReleaseScheduledOrScheduling,
+  type NotArchivedRelease,
+} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 
 const dateInputFormat = 'PP HH:mm'
-
-type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
-
-export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
-  return release.state !== 'archived'
-}
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
@@ -74,7 +72,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         metadata: {
           ...release.metadata,
           releaseType,
-          ...(typeof updatedDate === 'undefined'
+          ...(typeof updatedDate === 'undefined' || releaseType !== 'scheduled'
             ? {}
             : {
                 intendedPublishAt: updatedDate,
@@ -238,10 +236,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     )
   }
 
-  const tone =
-    release.state === 'published'
-      ? 'positive'
-      : getReleaseTone({...release, metadata: {...release.metadata, releaseType}})
+  const tone = release.state === 'published' ? 'positive' : getReleaseTone(release)
 
   const releaseTypeIcon = useMemo(() => {
     if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />

@@ -10,8 +10,8 @@ import {getCoreAppURL, getDevServerConfig, type StartDevServerCommandFlags} from
 function parseCliFlags(args: {argv?: string[]}) {
   // Using slice(1) to remove the first argument, which is the command `dev` path to the CLI
   return yargs(hideBin(args.argv || process.argv).slice(1))
-    .options('host', {type: 'string', default: 'localhost'})
-    .options('port', {type: 'number', default: 3333})
+    .options('host', {type: 'string'})
+    .options('port', {type: 'number'})
     .options('load-in-dashboard', {type: 'boolean', default: true}).argv
 }
 

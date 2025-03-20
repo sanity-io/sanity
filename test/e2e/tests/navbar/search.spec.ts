@@ -12,7 +12,6 @@ test('searching creates unique saved searches', async ({
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SEARCH_KEY}.${dataset}`,
-    withCredentials: true,
   })
 
   // If the value is not null there are existingKeys, delete them in that case
@@ -20,7 +19,6 @@ test('searching creates unique saved searches', async ({
     // Clear the sort order
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${SEARCH_KEY}.${dataset}`,
-      withCredentials: true,
       method: 'DELETE',
     })
   }

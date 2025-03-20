@@ -26,7 +26,6 @@ function createFeatureToggle(client: SanityClient) {
       client.observable
         .request({
           uri: `/data/actions/${dataset}`,
-          withCredentials: true,
         })
         .pipe(
           mapResponse(),
