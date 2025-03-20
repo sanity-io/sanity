@@ -108,7 +108,6 @@ test.describe('Revert ASAP', () => {
   }) => {
     skipIfBrowser(browserName)
     test.slow()
-    const dataset = sanityClient.config().dataset
     const versionDocumentId = _testContext.getUniqueDocumentId()
 
     await createDocument(sanityClient, {
