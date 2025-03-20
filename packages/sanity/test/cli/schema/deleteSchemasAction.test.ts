@@ -86,6 +86,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -101,6 +102,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -116,6 +118,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -158,6 +161,7 @@ describe('deleteSchemasAction', () => {
     }
     const status = await deleteSchemaAction(flags, defaultContext)
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -184,6 +188,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -212,6 +217,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -238,6 +244,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -272,6 +279,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -324,6 +332,7 @@ describe('deleteSchemasAction', () => {
     const status = await deleteSchemaAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -353,12 +362,12 @@ describe('deleteSchemasAction', () => {
     expect(status).toEqual('failure')
   })
 
-  it('should regenerate manifest when --extract-manifest provided ', async () => {
-    const flags: DeleteSchemaFlags = {'ids': validStoredSchema2._id, 'extract-manifest': true}
+  it('should not generate manifest when --no-extract-manifest is provided', async () => {
+    // we just have to trust that --no-extract-manifest actually is passed as false :D
+    const flags: DeleteSchemaFlags = {'ids': validStoredSchema2._id, 'extract-manifest': false}
     const status = await deleteSchemaAction(flags, defaultContext)
 
     expect(log).toEqual([
-      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },

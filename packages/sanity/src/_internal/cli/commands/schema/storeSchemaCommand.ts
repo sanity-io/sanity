@@ -5,13 +5,14 @@ const description = 'Store schema documents into workspace datasets.'
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
-This operation requires a manifest file to exist: use --extract-manifest or run "sanity manifest extract" first.
+This operation (re-)generates a manifest file describing the sanity config workspace by default.
+To re-use an existing manifest file, use --no-extract-manifest.
 
 Options:
   --workspace <workspace_name> store schema for a specific workspace
   --id-prefix <prefix> add a prefix to the schema id
   --manifest-dir <directory> directory containing manifest file (default: ./dist/static)
-  --extract-manifest regenerates manifest file based on sanity.config; equivalent of running "sanity manifest extract" first
+  --no-extract-manifest disables manifest generation – the command will fail if no manifest exists
   --verbose print detailed information during store
 
 Examples
@@ -21,8 +22,9 @@ Examples
   # Store the schema for only the workspace 'default'
   sanity schema store --workspace default
 
-  # Ensure manifest file is up-to-date
-  sanity schema store --extract-manifest
+  # Runs using a pre-existing manifest file
+  # Config changes in sanity.config will not be picked up in this case
+  sanity schema store --no-extract-manifest
 `
 
 const storeSchemaCommand = {

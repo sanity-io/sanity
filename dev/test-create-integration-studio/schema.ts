@@ -390,4 +390,3 @@ export const schemaTypes = [
     ],
   }),
 ]
-throw new Error('forced error')

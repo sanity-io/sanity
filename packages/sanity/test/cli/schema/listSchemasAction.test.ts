@@ -91,6 +91,7 @@ describe('deleteSchemasAction', () => {
 
     const printLines = linesWithPrint(log)
     expect(printLines).toEqual([
+      'Logging mock: generate manifest to "/path/to/workdir/dist/static"',
       `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       'Id                                       Workspace        Dataset         ProjectId       CreatedAt               ',
       `sanity.workspace.schema.testWorkspace3   testWorkspace3   reusedDataset   testProjectId   ${staticDate}`,
@@ -112,6 +113,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -125,6 +127,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(linesWithPrint(log)).toEqual([
+      'Logging mock: generate manifest to "/path/to/workdir/dist/static"',
       `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       'Id                                      Workspace       Dataset       ProjectId       CreatedAt               ',
       `sanity.workspace.schema.testWorkspace   testWorkspace   testDataset   testProjectId   ${staticDate}`,
@@ -144,6 +147,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -163,6 +167,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -178,6 +183,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -207,6 +213,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -235,6 +242,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -276,6 +284,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -309,6 +318,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -348,6 +358,7 @@ describe('deleteSchemasAction', () => {
     const status = await listSchemasAction(flags, context)
 
     expect(log).toEqual([
+      {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
       {
         print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       },
@@ -365,12 +376,12 @@ describe('deleteSchemasAction', () => {
     expect(status).toEqual('success')
   })
 
-  it('should regenerate manifest when --extract-manifest is provided', async () => {
-    const flags: SchemaListFlags = {'id': validStoredSchema1._id, 'extract-manifest': true}
+  it('should not generate manifest when --no-extract-manifest is provided', async () => {
+    // we just have to trust that --no-extract-manifest actually is passed as false :D
+    const flags: SchemaListFlags = {'id': validStoredSchema1._id, 'extract-manifest': false}
     const status = await listSchemasAction(flags, defaultContext)
 
     expect(linesWithPrint(log)).toEqual([
-      'Logging mock: generate manifest to "/path/to/workdir/dist/static"',
       `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
       'Id                                      Workspace       Dataset       ProjectId       CreatedAt               ',
       `sanity.workspace.schema.testWorkspace   testWorkspace   testDataset   testProjectId   ${staticDate}`,

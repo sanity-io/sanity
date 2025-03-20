@@ -48,7 +48,9 @@ export default function storeSchemasActionForCommand(
  * Stores schemas for configured workspaces into workspace datasets.
  *
  * Workspaces are determined by on-disk manifest file – not directly from sanity.config.
- * All schema store actions require a manifest file to exist, and can optionally regenerate the file with --extract-manifest.
+ * All schema store actions require a manifest to exist, so we regenerate it by default.
+ * Manifest generation can be optionally disabled with --no-manifest-extract.
+ * In this case the command uses and existing file or throws when missing.
  */
 export async function storeSchemasAction(
   flags: StoreSchemasFlags,

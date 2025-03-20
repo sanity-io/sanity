@@ -39,6 +39,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, defaultContext)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -63,6 +64,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, context)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -92,6 +94,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, context)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -161,6 +164,7 @@ describe('storeSchemasAction', () => {
     it('should handle verbose output mode', async () => {
       const status = await storeSchemasAction({verbose: true}, defaultContext)
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -187,7 +191,10 @@ describe('storeSchemasAction', () => {
       await expect(() => storeSchemasAction(flags, context)).rejects.toThrow('no json for you')
 
       //we dont expect the error to be part of the intercepted logs, since the error is thrown
-      expect(log).toEqual([{print: '↳ List stored schemas with: sanity schema list'}])
+      expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
+        {print: '↳ List stored schemas with: sanity schema list'},
+      ])
     })
 
     it('should throw on failing store (any reason) when schema required', async () => {
@@ -207,6 +214,7 @@ describe('storeSchemasAction', () => {
       )
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -221,6 +229,7 @@ describe('storeSchemasAction', () => {
       ).rejects.toThrow('Found no workspaces named "invalidWorkspace"')
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -238,6 +247,7 @@ describe('storeSchemasAction', () => {
       }
       const status = await storeSchemasAction(flags, context)
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {print: '↳ Error when storing schemas:\n  no json for you'},
         {print: '↳ List stored schemas with: sanity schema list'},
       ])
@@ -255,7 +265,10 @@ describe('storeSchemasAction', () => {
       await expect(() => storeSchemasAction(flags, context)).rejects.toThrow('no json for you')
 
       //we dont expect the error to be part of the intercepted logs, since the error is thrown
-      expect(log).toEqual([{print: '↳ List stored schemas with: sanity schema list'}])
+      expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
+        {print: '↳ List stored schemas with: sanity schema list'},
+      ])
     })
 
     it('should handle empty workspaces array', async () => {
@@ -276,6 +289,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, context)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -304,6 +318,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, context)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
@@ -334,6 +349,7 @@ describe('storeSchemasAction', () => {
       const status = await storeSchemasAction(flags, context)
 
       expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print:
             '↳ Error when storing schemas:\n' +
@@ -345,13 +361,13 @@ describe('storeSchemasAction', () => {
       expect(status).toEqual('failure')
     })
 
-    it('should regenerate manifest when --extract-manifest is provided', async () => {
-      const flags: StoreSchemasFlags = {'extract-manifest': true}
+    it('should not generate manifest when --no-extract-manifest is provided', async () => {
+      // we just have to trust that --no-extract-manifest actually is passed as false :D
+      const flags: StoreSchemasFlags = {'extract-manifest': false}
 
       const status = await storeSchemasAction(flags, defaultContext)
 
       expect(log).toEqual([
-        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },

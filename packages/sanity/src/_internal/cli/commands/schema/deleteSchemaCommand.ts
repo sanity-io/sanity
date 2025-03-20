@@ -5,13 +5,14 @@ const description = 'Delete schema documents by id.'
 const helpText = `
 **Note**: This command is experimental and subject to change.
 
-This operation requires a manifest file to exist: use --extract-manifest or run "sanity manifest extract" first.
+This operation (re-)generates a manifest file describing the sanity config workspace by default.
+To re-use an existing manifest file, use --no-extract-manifest.
 
 Options
   --ids <schema_id_1,schema_id_2,...> comma-separated list of schema ids to delete
   --dataset <dataset_name> delete schemas from a specific dataset
   --manifest-dir <directory> directory containing manifest file (default: ./dist/static)
-  --extract-manifest regenerates manifest file based on sanity.config; equivalent of running "sanity manifest extract" first
+  --no-extract-manifest disables manifest generation – the command will fail if no manifest exists
 
 Examples
   # Delete single schema
@@ -20,8 +21,9 @@ Examples
   # Delete multiple schemas
   sanity schema delete --ids sanity.workspace.schema.workspaceName,prefix.sanity.workspace.schema.otherWorkspace
 
-  # Ensure manifest file is up-to-date
-  sanity schema delete --extract-manifest --ids sanity.workspace.schema.workspaceName
+  # Runs using a pre-existing manifest file
+  # Config changes in sanity.config will not be picked up in this case
+  sanity schema delete --no-extract-manifest --ids sanity.workspace.schema.workspaceName
 
 `
 
