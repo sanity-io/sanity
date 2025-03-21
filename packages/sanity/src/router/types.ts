@@ -338,10 +338,6 @@ export type SearchParam = [key: string, value: string]
  */
 export type RouterState = Record<string, unknown> & {_searchParams?: SearchParam[]}
 
-/**
- * Guard to check if an argument is NavigateOptions with optional state
- * @internal
- */
 export const isNavigateOptions = (
   maybeNavigateOptions: unknown,
 ): maybeNavigateOptions is NavigateOptions & {state?: RouterState | null} =>
