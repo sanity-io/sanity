@@ -1,7 +1,8 @@
-import {PlayIcon, StopIcon} from '@sanity/icons'
+import {ArchiveIcon, PlayIcon, StopIcon, UnarchiveIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 
+import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
 import {ControlsContainer} from './VisionGui.styled'
 
@@ -11,6 +12,9 @@ export interface VisionGuiControlsProps {
   listenInProgress: boolean
   onQueryExecution: () => void
   onListenExecution: () => void
+  query: string
+  params: string
+  perspective: string
 }
 
 /**
@@ -23,7 +27,11 @@ export function VisionGuiControls({
   queryInProgress,
   onQueryExecution,
   onListenExecution,
+  query,
+  params,
+  perspective,
 }: VisionGuiControlsProps) {
+  const queryDoc = useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
 
   return (
@@ -77,6 +85,27 @@ export function VisionGuiControls({
             </Box>
           </Flex>
         </Tooltip>
+        <Flex justify="space-evenly" marginTop={3}>
+          <Box flex={1}>
+            <Button width="fill" text={t('action.load-query')} icon={UnarchiveIcon} mode="ghost" />
+          </Box>
+          <Box flex={1} marginLeft={3}>
+            <Button
+              text={t('action.save-query')}
+              icon={ArchiveIcon}
+              mode="ghost"
+              width="fill"
+              onClick={() =>
+                queryDoc.saveQuery({
+                  params,
+                  query,
+                  perspective,
+                  savedAt: new Date().toISOString(),
+                })
+              }
+            />
+          </Box>
+        </Flex>
       </Card>
     </ControlsContainer>
   )
