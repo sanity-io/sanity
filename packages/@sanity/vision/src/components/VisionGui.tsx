@@ -5,7 +5,8 @@ import {
   type MutationEvent,
   type StackablePerspective,
 } from '@sanity/client'
-import {Box, Flex, useToast} from '@sanity/ui'
+import {ArchiveIcon, UnarchiveIcon} from '@sanity/icons'
+import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, usePerspective, useTranslation} from 'sanity'
@@ -13,6 +14,7 @@ import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
+import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
@@ -83,7 +85,7 @@ export function VisionGui(props: VisionGuiProps) {
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
-
+  const queryDoc = useQueryDocument()
   const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
@@ -638,6 +640,7 @@ export function VisionGui(props: VisionGuiProps) {
               </InputContainer>
             </SplitPane>
           </Box>
+
           <VisionGuiResult
             error={error}
             queryInProgress={queryInProgress}
@@ -650,6 +653,22 @@ export function VisionGui(props: VisionGuiProps) {
           />
         </SplitPane>
       </SplitpaneContainer>
+      <Flex justify="center" align="center" gap={2} padding={2}>
+        <Button text={t('action.load-query')} icon={UnarchiveIcon} mode="ghost" />
+        <Button
+          text={t('action.save-query')}
+          icon={ArchiveIcon}
+          mode="ghost"
+          onClick={() =>
+            queryDoc.saveQuery({
+              params: params.raw,
+              query,
+              perspective,
+              savedAt: new Date().toISOString(),
+            })
+          }
+        />
+      </Flex>
     </Root>
   )
 }
