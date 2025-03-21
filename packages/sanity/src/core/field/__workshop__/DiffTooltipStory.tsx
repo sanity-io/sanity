@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 
-import {DiffTooltip} from '../diff'
+import {DiffTooltip} from '../diff/components/DiffTooltip'
 
 /**
  * TODO

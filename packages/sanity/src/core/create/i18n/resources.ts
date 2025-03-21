@@ -1,4 +1,4 @@
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the Create integration feature, in US English.

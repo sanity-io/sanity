@@ -2,7 +2,7 @@ import createImageUrlBuilder from '@sanity/image-url'
 import {type ImageUrlFitMode} from '@sanity/types'
 import {type ForwardedRef, forwardRef, type HTMLAttributes, useMemo} from 'react'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 
 export interface ImageCrop {

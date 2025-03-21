@@ -18,7 +18,7 @@ import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
-
+import {Event} from 'sanity'
 import {imageAssetSource} from './assetSources'
 import {
   Annotation,

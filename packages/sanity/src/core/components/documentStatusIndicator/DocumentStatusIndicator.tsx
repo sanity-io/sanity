@@ -2,7 +2,7 @@ import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {type VersionInfoDocumentStub} from '../../releases'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 

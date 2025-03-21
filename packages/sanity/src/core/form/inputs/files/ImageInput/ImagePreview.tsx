@@ -2,8 +2,8 @@ import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui'
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
 interface Props {

@@ -2,7 +2,7 @@ import {debounce} from 'lodash'
 import {useMemo, useState} from 'react'
 import {TasksContext} from 'sanity/_singletons'
 
-import {useTasksStore} from '../../store'
+import {useTasksStore} from '../../store/useTasksStore'
 import {type ActiveDocument, type TasksContextValue} from './types'
 
 interface TasksProviderProps {

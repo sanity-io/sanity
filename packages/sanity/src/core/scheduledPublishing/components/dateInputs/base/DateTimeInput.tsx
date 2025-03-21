@@ -19,7 +19,7 @@ import {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
-import {Popover} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
 import {DatePicker} from './DatePicker'
 

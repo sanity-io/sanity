@@ -3,7 +3,7 @@ import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import {type CSSProperties} from 'react'
 
-import {WorkspacePreview} from '../workspace'
+import {WorkspacePreview} from '../workspace/WorkspacePreview'
 
 const CARD_INLINE_STYLE: CSSProperties = {
   width: 250,

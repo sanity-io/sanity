@@ -14,14 +14,14 @@ import {
   type Path,
 } from '@sanity/types'
 
-import {isRecord} from '../../../util'
+import {isRecord} from '../../../util/isRecord'
 import {
   findIndex,
   getItemKeySegment,
   getValueAtPath,
   isEmptyObject,
   pathToString,
-} from '../../paths'
+} from '../../paths/helpers'
 import {
   type ArrayDiff,
   type ChangeNode,
@@ -200,7 +200,12 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
 
   const inserts = patches
     .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
+    .map(
+      ({after, items}) =>
+        ({
+          insert: {after: pathToString(after), items},
+        }) as any,
+    )
 
   const unsets = patches
     .filter((patch): patch is UnsetPatch => patch.op === 'unset')

@@ -1,7 +1,7 @@
 import {Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateDirectionValue} from '../../../../../definitions/operators/dateOperators'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

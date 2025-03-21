@@ -3,7 +3,7 @@ import {type InsertMenuOptions} from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 

@@ -3,8 +3,11 @@ import {type Path} from '@sanity/types'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 
-import {TreeEditingBreadcrumbs} from '../components'
-import {buildTreeEditingState, type TreeEditingState} from '../utils'
+import {TreeEditingBreadcrumbs} from '../components/breadcrumbs/TreeEditingBreadcrumbs'
+import {
+  buildTreeEditingState,
+  type TreeEditingState,
+} from '../utils/build-tree-editing-state/buildTreeEditingState'
 
 const schema = Schema.compile({
   name: 'default',

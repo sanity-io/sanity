@@ -3,14 +3,15 @@ import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {CommentsUpsellContext} from 'sanity/_singletons'
 
-import {useClient, useProjectId} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
+import {useProjectId} from '../../../hooks/useProjectId'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-} from '../../../studio'
+} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'

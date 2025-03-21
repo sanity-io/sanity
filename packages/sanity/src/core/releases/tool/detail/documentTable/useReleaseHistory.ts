@@ -1,9 +1,9 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
-import {getVersionId} from '../../../../util'
+import {getVersionId} from '../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 
 export type DocumentHistory = {

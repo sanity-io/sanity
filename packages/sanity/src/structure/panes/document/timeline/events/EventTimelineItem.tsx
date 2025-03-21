@@ -10,8 +10,7 @@ import {
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from 'sanity/ui-components'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent

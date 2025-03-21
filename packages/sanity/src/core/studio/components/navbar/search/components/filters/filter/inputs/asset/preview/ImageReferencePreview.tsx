@@ -3,10 +3,10 @@ import {Card} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
+import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock/LoadingBlock'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
-import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../../../../store/_legacy/datastores'
 
 interface ImageReferencePreviewProps {
   reference: ReferenceValue

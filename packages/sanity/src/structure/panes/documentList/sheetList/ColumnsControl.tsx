@@ -5,8 +5,8 @@ import {Box, Checkbox, Flex, Menu, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {type SanityDocument, useTranslation} from 'sanity'
+import {Button, MenuButton} from 'sanity/ui-components'
 
-import {Button, MenuButton} from '../../../../ui-components'
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {

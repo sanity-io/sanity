@@ -2,8 +2,8 @@
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 
-import {Button} from '../button'
-import {Popover} from '../popover'
+import {Button} from '../button/Button'
+import {Popover} from '../popover/Popover'
 
 export default function PopoverStory() {
   const [popoverOpen, setPopoverOpen] = useState(false)

@@ -1,7 +1,7 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {compact, intersection, keyBy, partition, toLower, union, uniq, words} from 'lodash'
 
-import {type SearchSpec, type WeightedHit} from '../common'
+import {type SearchSpec, type WeightedHit} from '../common/types'
 
 type SearchScore = [number, string]
 

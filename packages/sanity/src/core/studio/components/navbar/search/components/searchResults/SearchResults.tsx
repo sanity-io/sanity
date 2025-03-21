@@ -3,15 +3,17 @@ import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
-import {useTranslation} from '../../../../../../i18n'
-import {type WeightedHit} from '../../../../../../search'
+import {CommandList} from '../../../../../../components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../../components/commandList/types'
+import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
+import {type WeightedHit} from '../../../../../../search/common/types'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
+//--ok above
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px

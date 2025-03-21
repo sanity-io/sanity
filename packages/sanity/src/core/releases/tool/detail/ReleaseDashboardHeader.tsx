@@ -10,9 +10,9 @@ import {
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 

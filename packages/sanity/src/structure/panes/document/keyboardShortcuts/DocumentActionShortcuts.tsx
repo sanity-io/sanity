@@ -10,8 +10,8 @@ import {
 } from 'react'
 import {type DocumentActionDescription, type DocumentActionProps, LegacyLayerProvider} from 'sanity'
 
-import {RenderActionCollectionState} from '../../../components'
-import {ActionStateDialog} from '../statusBar'
+import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
+import {ActionStateDialog} from '../statusBar/ActionStateDialog'
 import {useDocumentPane} from '../useDocumentPane'
 
 export interface KeyboardShortcutResponderProps {

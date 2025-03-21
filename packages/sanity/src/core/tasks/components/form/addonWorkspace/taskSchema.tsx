@@ -1,15 +1,13 @@
 import {defineField, defineType} from '@sanity/types'
 
-import {type ArrayFieldProps, type ObjectFieldProps} from '../../../../form'
+import {FieldWrapper} from '../../../../changeIndicators/ElementWithChangeBar.styled'
+import {type ArrayFieldProps, type ObjectFieldProps} from '../../../../form/types/fieldProps'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {type FormMode} from '../../../types'
-import {
-  AssigneeCreateFormField,
-  DescriptionInput,
-  FieldWrapper,
-  TargetField,
-  TitleField,
-} from '../fields'
+import {AssigneeCreateFormField} from '../fields/assignee/AssigneeCreateFormField'
+import {DescriptionInput} from '../fields/descriptionInput/DescriptionInput'
+import {TargetField} from '../fields/TargetField'
+import {TitleField} from '../fields/TitleField'
 import {FormCreate} from '../tasksFormBuilder/FormCreate'
 import {FormEdit} from '../tasksFormBuilder/FormEdit'
 import {TasksNotificationTarget} from '../tasksFormBuilder/TasksNotificationTarget'

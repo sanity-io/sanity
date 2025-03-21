@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-import {CommentReactionsMenu} from '../components'
+import {CommentReactionsMenu} from '../components/reactions/CommentReactionsMenu'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
 import {type CommentReactionOption, type CommentReactionShortNames} from '../types'
 

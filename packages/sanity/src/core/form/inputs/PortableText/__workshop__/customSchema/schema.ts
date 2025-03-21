@@ -1,6 +1,6 @@
 import {type Rule} from '@sanity/types'
 
-import {createSchema} from '../../../../../schema'
+import {createSchema} from '../../../../../schema/createSchema'
 
 interface PTBlockValue {
   _type: 'block'

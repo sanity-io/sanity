@@ -12,7 +12,6 @@ import {
   scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {type ReleaseDocument, type ReleaseState} from '../../../../index'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,

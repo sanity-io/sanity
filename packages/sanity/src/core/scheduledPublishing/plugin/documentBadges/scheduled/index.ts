@@ -1,4 +1,4 @@
-import {type DocumentBadgeComponent} from '../../../../config'
+import {type DocumentBadgeComponent} from '../../../../config/document/badges'
 import {ScheduledBadge} from './ScheduledBadge'
 
 export default function resolveDocumentBadges(

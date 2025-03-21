@@ -7,7 +7,7 @@ import {capitalize} from 'lodash'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',

@@ -150,10 +150,10 @@ import {
   usePaneRouter as _usePaneRouter,
   type UserComponent as _UserComponent,
   type UserViewComponent as _UserViewComponent,
-  useStructureTool as _useStructureTool,
   type View as _View,
   type ViewBuilder as _ViewBuilder,
 } from '../structure'
+import {useStructureTool as _useStructureTool} from '../structure/useStructureTool'
 
 /**
  * @deprecated Import from `sanity/structure` instead

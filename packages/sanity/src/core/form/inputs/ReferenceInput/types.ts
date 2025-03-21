@@ -9,9 +9,9 @@ import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type ReleaseId} from '../../../perspective/types'
-import {type DocumentAvailability} from '../../../preview'
+import {type DocumentAvailability} from '../../../preview/types'
 import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
-import {type ObjectInputProps} from '../../types'
+import {type ObjectInputProps} from '../../types/inputProps'
 
 export type PreviewDocumentValue = PreviewValue & {
   _id: string
@@ -67,6 +67,9 @@ export interface ReferenceSearchHit {
   published?: {_id: string; _type: string}
 }
 
+/**
+ * @beta
+ */
 export interface ReferenceInputProps<Value = Reference>
   extends ObjectInputProps<Value, ReferenceSchemaType> {
   suffix?: ReactNode

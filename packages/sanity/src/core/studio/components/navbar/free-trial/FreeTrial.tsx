@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useState} from 'react'
 
-import {Popover} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {
   getTrialStage,

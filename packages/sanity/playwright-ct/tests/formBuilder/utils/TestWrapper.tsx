@@ -21,7 +21,7 @@ import {Pane, PaneContent, PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {PerspectiveProvider} from '../../../../src/core/perspective/PerspectiveProvider'
-import {route} from '../../../../src/router'
+import {route} from '../../../../src/router/route'
 import {RouterProvider} from '../../../../src/router/RouterProvider'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'

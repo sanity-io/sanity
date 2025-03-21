@@ -1,7 +1,7 @@
 import {type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../../ui-components'
+import {Button} from '../../../../../../ui-components/button/Button'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
 export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(

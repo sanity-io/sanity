@@ -1,8 +1,8 @@
 import {Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Tooltip} from '../../ui-components'
-import {UserAvatar} from '../components/userAvatar'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {type FormNodePresence} from './types'
 
 interface PresenceTooltipProps {

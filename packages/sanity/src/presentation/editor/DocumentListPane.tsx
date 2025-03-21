@@ -7,9 +7,9 @@ import {
   type PaneNode,
   StructureToolProvider,
 } from 'sanity/structure'
+import {ErrorBoundary} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {

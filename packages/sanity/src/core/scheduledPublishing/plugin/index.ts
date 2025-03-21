@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 
-import {definePlugin} from '../../config'
+import {definePlugin} from '../../config/definePlugin'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
 import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'

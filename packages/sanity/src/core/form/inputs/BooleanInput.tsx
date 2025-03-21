@@ -1,11 +1,11 @@
 import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
-import {type BooleanInputProps} from '../types'
+import {type BooleanInputProps} from '../types/inputProps'
 
 const Root = styled(Card)`
   line-height: 1;

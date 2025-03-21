@@ -3,9 +3,9 @@ import {Menu} from '@sanity/ui'
 import {type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
+import {Button, MenuButton} from 'sanity/ui-components'
 
-import {Button, MenuButton} from '../../../ui-components'
-import {type Intent} from '../../structureBuilder'
+import {type Intent} from '../../structureBuilder/Intent'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {type _PaneMenuGroup, type _PaneMenuItem} from './types'
 

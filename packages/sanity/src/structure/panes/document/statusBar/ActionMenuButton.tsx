@@ -6,8 +6,8 @@ import {
   LegacyLayerProvider,
   useTranslation,
 } from 'sanity'
+import {MenuButton, MenuItem, type PopoverProps} from 'sanity/ui-components'
 
-import {MenuButton, MenuItem, type PopoverProps} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
 

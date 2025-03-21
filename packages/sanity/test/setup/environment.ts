@@ -22,8 +22,8 @@ export {}
 // get rid of context warning
 const warn = console.warn
 const error = console.error
-window.console = {
-  ...window.console,
+;(globalThis as any).console = {
+  ...(globalThis as any).console,
   warn: (...args: any[]) => {
     if (!/No context provided/.test(args[0])) {
       warn(...args)
@@ -43,7 +43,7 @@ const mockIntersectionObserver = vi.fn().mockReturnValue({
   disconnect: () => null,
 })
 
-window.IntersectionObserver = mockIntersectionObserver as any
+;(globalThis as any).IntersectionObserver = mockIntersectionObserver as any
 
 // ResizeObserver isn't available in the test browser environment
 const mockResizeObserver = vi.fn()
@@ -52,9 +52,8 @@ mockResizeObserver.mockReturnValue({
   unobserve: () => null,
   disconnect: () => null,
 })
-window.ResizeObserver = mockResizeObserver as any
-
-window.matchMedia = vi.fn().mockImplementation((query) => ({
+;(globalThis as any).ResizeObserver = mockResizeObserver as any
+;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
   matches: false,
   media: query,
   onchange: null,
@@ -64,8 +63,7 @@ window.matchMedia = vi.fn().mockImplementation((query) => ({
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 }))
-
-window.Promise.withResolvers = <T>() => {
+;(globalThis as any).Promise.withResolvers = <T>() => {
   let resolve: (value: T | PromiseLike<T>) => void = () => {}
   let reject: (reason?: any) => void = () => {}
 
@@ -79,7 +77,7 @@ window.Promise.withResolvers = <T>() => {
 
 // Resets the matchMedia mock
 beforeEach(() => {
-  window.matchMedia = vi.fn().mockImplementation((query) => ({
+  ;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,

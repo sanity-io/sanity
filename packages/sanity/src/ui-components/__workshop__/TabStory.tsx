@@ -1,6 +1,6 @@
 import {Box, Card, Container, Stack, TabList, Text} from '@sanity/ui'
 
-import {Tab} from '../tab'
+import {Tab} from '../tab/Tab'
 
 export default function TabStory() {
   return (

@@ -1,4 +1,4 @@
-import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper/ConditionalWrapper'
 import {type LayoutProps} from '../../config/studio/types'
 import {
   ScheduledPublishingEnabledProvider,

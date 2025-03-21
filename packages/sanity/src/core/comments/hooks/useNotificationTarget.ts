@@ -2,10 +2,10 @@ import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useSchema} from '../../hooks'
-import {getPreviewStateObservable} from '../../preview'
-import {useDocumentPreviewStore} from '../../store'
-import {useWorkspace} from '../../studio'
+import {useSchema} from '../../hooks/useSchema'
+import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
+import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
+import {useWorkspace} from '../../studio/workspace'
 import {type CommentContext} from '../types'
 
 interface NotificationTargetHookOptions {

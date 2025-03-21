@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs/operators'
 
-import {useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/_legacy/datastores'
 
 interface ReferringDocumentsState<Doc> {
   isLoading: boolean

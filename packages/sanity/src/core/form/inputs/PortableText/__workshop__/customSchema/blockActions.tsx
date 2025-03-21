@@ -3,7 +3,7 @@ import {CopyIcon} from '@sanity/icons'
 import {type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {memo, useCallback} from 'react'
 
-import {Button} from '../../../../../../ui-components'
+import {Button} from '../../../../../../ui-components/button/Button'
 import {type RenderBlockActionsCallback} from '../../../../types/_transitional'
 
 const BlockActions = memo(function BlockActions(props: {

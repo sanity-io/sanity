@@ -1,7 +1,7 @@
 import {Box, Container} from '@sanity/ui'
 
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
-import {useTasksUpsell} from '../../context'
+import {useTasksUpsell} from '../../context/upsell/useTasksUpsell'
 
 export function TasksUpsellPanel() {
   const {

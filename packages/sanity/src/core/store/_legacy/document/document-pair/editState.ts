@@ -3,7 +3,7 @@ import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
-import {getVersionFromId} from '../../../../util'
+import {getVersionFromId} from '../../../../util/draftUtils'
 import {createSWR} from '../../../../util/rxSwr'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent} from '../types'

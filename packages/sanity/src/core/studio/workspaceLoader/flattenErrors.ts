@@ -1,5 +1,6 @@
-import {ConfigPropertyError, ConfigResolutionError} from '../../config'
-import {isRecord} from '../../util'
+import {ConfigPropertyError} from '../../config/ConfigPropertyError'
+import {ConfigResolutionError} from '../../config/ConfigResolutionError'
+import {isRecord} from '../../util/isRecord'
 import {type ErrorMessageProps} from './ErrorMessage'
 
 export function flattenErrors(

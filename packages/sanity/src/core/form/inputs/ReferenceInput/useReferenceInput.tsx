@@ -11,12 +11,12 @@ import {
 } from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewStore} from '../../../store'
-import {isNonNullable} from '../../../util'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {useFormValue} from '../../contexts/FormValue'
-import {useReferenceInputOptions} from '../../studio'
+import {useReferenceInputOptions} from '../../studio/contexts/ReferenceInputOptions'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {type EditReferenceEvent} from './types'
 

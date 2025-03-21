@@ -2,9 +2,9 @@ import {Box, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 import semver from 'semver'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {checkForLatestVersions} from './checkForLatestVersions'
 

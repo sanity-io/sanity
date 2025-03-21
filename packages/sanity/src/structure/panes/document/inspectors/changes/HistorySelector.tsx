@@ -9,7 +9,7 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Timeline} from '../../timeline'
+import {Timeline} from '../../timeline/timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
 

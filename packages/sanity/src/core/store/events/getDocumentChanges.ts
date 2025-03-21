@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {type Annotation, type ObjectDiff} from '../../field'
+import {type Annotation, type ObjectDiff} from '../../field/types'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {

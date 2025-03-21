@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string  -- title is literal for now */
 import {Favicons} from './Favicons'
-import {GlobalErrorHandler} from './globalErrorHandler'
+import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
 
 /**

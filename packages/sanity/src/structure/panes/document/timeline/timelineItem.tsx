@@ -12,9 +12,9 @@ import {
   useTranslation,
   useUser,
 } from 'sanity'
+import {Tooltip} from 'sanity/ui-components'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'

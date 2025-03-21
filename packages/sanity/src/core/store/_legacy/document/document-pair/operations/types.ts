@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
 
-import {type HistoryStore} from '../../../history'
+import {type HistoryStore} from '../../../history/createHistoryStore'
 import {type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
 

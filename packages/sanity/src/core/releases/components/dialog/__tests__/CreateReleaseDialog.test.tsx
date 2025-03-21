@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
-import {type ReleaseDocument} from '../../../index'
+import {type ReleaseDocument} from '../../../store'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CreateReleaseDialog} from '../CreateReleaseDialog'
 

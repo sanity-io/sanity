@@ -3,7 +3,7 @@ import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {supportsTouch} from '../../../../util'
+import {supportsTouch} from '../../../../util/supportsTouch'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'

@@ -9,9 +9,9 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
+import {Button, Popover} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {Button, Popover} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'

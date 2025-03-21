@@ -3,7 +3,7 @@ import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import useTimeZone, {allTimeZones, getLocalTimeZone} from '../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../types'
 

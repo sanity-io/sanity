@@ -3,7 +3,7 @@ import {useState} from 'react'
 
 import useTimeZone from '../../hooks/useTimeZone'
 import {type ScheduleFormData} from '../../types'
-import {DateTimeInput} from '../dateInputs'
+import {DateTimeInput} from '../dateInputs/DateTimeInput'
 
 interface Props {
   onChange?: (formData: ScheduleFormData) => void

@@ -2,7 +2,7 @@ import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileLike, type UploaderResolver} from '../../../studio/uploads/types'
 
 interface Props {

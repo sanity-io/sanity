@@ -14,7 +14,7 @@ vi.mock('../router/RouterHistoryContext', () => ({
   }),
 }))
 
-vi.mock('../router', () => ({
+vi.mock('../router/router', () => ({
   createRouter: () => ({
     getBasePath: vi.fn(),
     decode: vi.fn(),

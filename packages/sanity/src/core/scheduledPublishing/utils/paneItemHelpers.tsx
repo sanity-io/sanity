@@ -6,7 +6,7 @@ import {type ComponentType, type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {type Schedule} from '../types'
 

@@ -4,7 +4,7 @@ import {type FIXME} from '../FIXME'
 import {UniversalArrayInput} from './inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from './inputs/BooleanInput'
 import {NumberInput} from './inputs/NumberInput'
-import {ObjectInput} from './inputs/ObjectInput'
+import {ObjectInput} from './inputs/ObjectInput/ObjectInput'
 import {TextInput} from './inputs/TextInput'
 
 export const fallbackInputs = {

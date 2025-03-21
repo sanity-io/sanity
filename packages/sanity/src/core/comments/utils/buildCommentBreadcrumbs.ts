@@ -14,9 +14,9 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {findIndex} from 'lodash'
 
-import {getValueAtPath} from '../../field'
-import {resolveConditionalProperty} from '../../form'
-import {getSchemaTypeTitle} from '../../schema'
+import {getValueAtPath} from '../../field/paths/helpers'
+import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
+import {getSchemaTypeTitle} from '../../schema/helpers'
 import {type CommentListBreadcrumbs} from '../types'
 
 function getSchemaField(

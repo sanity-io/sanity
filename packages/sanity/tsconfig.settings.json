@@ -11,6 +11,7 @@
       "sanity/desk": ["./src/_exports/desk.ts"],
       "sanity/migrate": ["./src/_exports/migrate.ts"],
       "sanity/presentation": ["./src/_exports/presentation.ts"],
+      "sanity/ui-components": ["./src/_exports/ui-components.ts"],
       "sanity/router": ["./src/_exports/router.ts"],
       "sanity/structure": ["./src/_exports/structure.ts"],
       "sanity": ["./src/_exports/index.ts"]

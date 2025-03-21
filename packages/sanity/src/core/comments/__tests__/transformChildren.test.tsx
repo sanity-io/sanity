@@ -1,6 +1,6 @@
 import {describe, expect, test} from 'vitest'
 
-import {transformChildren} from '../utils'
+import {transformChildren} from '../utils/transform-children'
 import {onClick} from '../utils/transform-children/linkMiddleware'
 
 describe('comments: transformChildren', () => {

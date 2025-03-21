@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
 export function useRefValue<T extends Record<string, any> = Record<string, any>>(

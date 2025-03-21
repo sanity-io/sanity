@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons'
 import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
 import {type DocumentInspectorProps, useSource, useTranslation} from 'sanity'
+import {Button, Tab} from 'sanity/ui-components'
 import {styled} from 'styled-components'
 
-import {Button, Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'

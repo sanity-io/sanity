@@ -3,11 +3,11 @@ import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components/tooltip'
-import {DocumentStatus} from '../../../components/documentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
+import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {useDocumentVersionInfo} from '../../../releases'
+import {useDocumentVersionInfo} from '../../../releases/store/useDocumentVersionInfo'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,

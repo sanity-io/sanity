@@ -2,7 +2,8 @@
 import {Card, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
+import {type ReleaseDocument} from '../../store/types'
+import {isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'

@@ -1,6 +1,6 @@
 import {styled} from 'styled-components'
 
-import {MenuItem} from '../../../../../../ui-components'
+import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 
 export const FileMenuItem = styled(MenuItem)`
   position: relative;

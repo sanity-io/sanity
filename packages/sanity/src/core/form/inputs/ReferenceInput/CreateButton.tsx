@@ -2,16 +2,14 @@ import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type HTMLProps, type RefObject} from 'react'
 
-import {
-  Button,
-  MenuButton,
-  type MenuButtonProps,
-  MenuItem,
-  Tooltip,
-} from '../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../components'
-import {useGetI18nText, useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
+import {useGetI18nText} from '../../../i18n/hooks/useGetI18nText'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {type CreateReferenceOption} from './types'
 
 interface Props

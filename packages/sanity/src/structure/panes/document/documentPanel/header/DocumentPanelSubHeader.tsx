@@ -1,9 +1,11 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {memo, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
+import {Button} from 'sanity/ui-components'
 
-import {Button} from '../../../../../ui-components'
-import {PaneHeader, usePane, usePaneRouter} from '../../../../components'
+import {PaneHeader} from '../../../../components/pane/PaneHeader'
+import {usePane} from '../../../../components/pane/usePane'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
 import {useDocumentPane} from '../../useDocumentPane'

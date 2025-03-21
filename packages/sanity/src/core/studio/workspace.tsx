@@ -1,12 +1,12 @@
-import {useContext} from 'react'
+import {type ReactNode, useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
-import {type Workspace} from '../config'
+import {type Workspace} from '../config/types'
 
 /** @internal */
 export interface WorkspaceProviderProps {
   workspace: Workspace
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /** @internal */

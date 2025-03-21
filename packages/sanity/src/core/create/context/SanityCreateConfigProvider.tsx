@@ -1,7 +1,7 @@
 import {type ReactNode, useMemo, useState} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
-import {useSource} from '../../studio'
+import {useSource} from '../../studio/source'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
 import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
 import {StartInCreateBanner} from '../components/StartInCreateBanner'

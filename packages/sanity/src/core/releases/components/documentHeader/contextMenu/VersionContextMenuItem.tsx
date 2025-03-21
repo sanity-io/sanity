@@ -2,7 +2,7 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'

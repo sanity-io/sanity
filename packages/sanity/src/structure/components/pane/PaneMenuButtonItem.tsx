@@ -3,9 +3,9 @@ import {MenuDivider, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
+import {MenuGroup, MenuItem, type PopoverProps} from 'sanity/ui-components'
 
-import {MenuGroup, MenuItem, type PopoverProps} from '../../../ui-components'
-import {type Intent} from '../../structureBuilder'
+import {type Intent} from '../../structureBuilder/Intent'
 import {toLowerCaseNoSpaces} from '../../util/toLowerCaseNoSpaces'
 import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 

@@ -33,6 +33,11 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
+    "./ui-components": {
+      "source": "./src/_exports/ui-components.ts",
+      "require": "./lib/ui-components.js",
+      "default": "./lib/ui-components.js"
+    },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
       "import": "./lib/_singletons.mjs",
@@ -317,7 +322,8 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.16",
     "swr": "2.2.5",
-    "vitest": "^3.0.8"
+    "vitest": "^3.0.8",
+    "vitest-package-exports": "^0.1.1"
   },
   "peerDependencies": {
     "react": "^18 || ^19",

@@ -136,7 +136,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type ObjectDiff} from '../../field'
+import {type ObjectDiff} from '../../field/types'
 
 /**
  * Events relevant for the whole document group.

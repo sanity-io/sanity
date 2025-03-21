@@ -1,4 +1,4 @@
-import {LoadingBlock} from '../../../../../components/loadingBlock'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {ImageLoader} from './ImageLoader'
 import {Resize} from './Resize'
 import {ToolCanvas} from './ToolCanvas'
