@@ -1,20 +1,33 @@
 import {LaunchIcon} from '@sanity/icons'
+import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
 import {Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Button, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
+import {type PresentationPerspective} from '../types'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type PreviewProps} from './Preview'
 
 /** @internal */
 export function OpenPreviewButton(
   props: Pick<PreviewProps, 'openPopup'> & {
-    previewLocationOrigin: string
+    previewLocationOrigin?: string
     previewLocationRoute: string
+    perspective: PresentationPerspective
+    targetOrigin: string
   },
 ): React.ReactNode {
-  const {openPopup, previewLocationOrigin, previewLocationRoute} = props
+  const {openPopup, previewLocationOrigin, previewLocationRoute, perspective, targetOrigin} = props
+
+  const openPreviewLink = useMemo(() => {
+    const url = new URL(previewLocationRoute, previewLocationOrigin || targetOrigin)
+    url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
+    const {pathname, search} = url
+
+    return `${previewLocationOrigin}${pathname}${search}`
+  }, [perspective, previewLocationOrigin, previewLocationRoute, targetOrigin])
 
   const {t} = useTranslation(presentationLocaleNamespace)
 
@@ -39,7 +52,7 @@ export function OpenPreviewButton(
         aria-label={t('share-url.menu-item.open.text')}
         icon={LaunchIcon}
         mode="bleed"
-        href={`${previewLocationOrigin}${previewLocationRoute}`}
+        href={openPreviewLink}
         rel="opener"
         target="_blank"
         tooltipProps={null}
