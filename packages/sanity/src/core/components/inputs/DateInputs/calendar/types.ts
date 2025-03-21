@@ -7,7 +7,8 @@ export interface CalendarLabels {
   goToNextYear: string
   goToPreviousMonth: string
   goToNextMonth: string
-  selectTime: string
+  selectHour: string
+  selectMinute: string
   setToCurrentTime: string
   tooltipText: string
   monthNames: MonthNames

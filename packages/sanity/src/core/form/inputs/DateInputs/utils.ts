@@ -20,7 +20,8 @@ export function getCalendarLabels(
     goToNextYear: t('calendar.action.go-to-next-year'),
     goToPreviousYear: t('calendar.action.go-to-previous-year'),
     setToCurrentTime: t('calendar.action.set-to-current-time'),
-    selectTime: t('calendar.action.select-time'),
+    selectHour: t('calendar.action.select-hour'),
+    selectMinute: t('calendar.action.select-minute'),
     tooltipText: t('calendar.button.tooltip-text'),
     monthNames: [
       t('calendar.month-names.january'),

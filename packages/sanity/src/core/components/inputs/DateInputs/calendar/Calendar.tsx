@@ -1,6 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
-import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {format as formatTZ, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {range} from 'lodash'
 import {
@@ -21,7 +21,7 @@ import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDel
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import useDialogTimeZone from '../../../../scheduledPublishing/hooks/useDialogTimeZone'
 import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, DEFAULT_TIME_PRESETS} from './constants'
+import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
 import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
@@ -217,14 +217,6 @@ export const Calendar = forwardRef(function Calendar(
       onSelect(utcDate)
     },
     [onSelect, selectedDate, timeZone],
-  )
-
-  const handleTimeChangeInputChange = useCallback(
-    (event: FormEvent<HTMLInputElement>) => {
-      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
-      handleTimeChange(date.getHours(), date.getMinutes())
-    },
-    [handleTimeChange],
   )
 
   const ref = useRef<HTMLDivElement | null>(null)
