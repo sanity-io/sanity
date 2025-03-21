@@ -1,11 +1,12 @@
 import {
   type ClientConfig as SanityClientConfig,
+  ClientError,
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
 import {isEqual, memoize} from 'lodash'
 import {defer} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
 import {CorsOriginError} from '../cors'
@@ -175,7 +176,18 @@ export function _createAuthStore({
           client,
           authenticated: !!currentUser,
         }
-      }),
+      }).pipe(
+        tap(() => {
+          if (localStorage.fakeRateLimit) {
+            throw new ClientError({
+              headers: {},
+              statusCode: 429,
+              statusText: 'Rate limit (FAKE)',
+              body: {error: 'Rate limit (FAKE)'},
+            })
+          }
+        }),
+      ),
     ),
     distinctUntilChanged((prev, next) =>
       // Only notify subscribers if the the currentUser object has changed.
