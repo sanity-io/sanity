@@ -1,7 +1,7 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {match, type Path} from 'path-to-regexp'
 import {useEffect, useRef, useState} from 'react'
-import {useClient} from 'sanity'
+import {useClient, usePerspective} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -102,6 +102,7 @@ export function useMainDocument(props: {
 }): MainDocumentState | undefined {
   const {navigate, navigationHistory, path, previewUrl, resolvers = []} = props
   const {state: routerState} = useRouter()
+  const {perspectiveStack} = usePerspective()
   const client = useClient({apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
@@ -151,7 +152,6 @@ export function useMainDocument(props: {
             resolver: DocumentResolver
           }
         | undefined
-
       for (const resolver of resolvers) {
         const context = getRouteContext(resolver.route, url)
         if (context) {
@@ -163,12 +163,12 @@ export function useMainDocument(props: {
       if (result) {
         const query = getQueryFromResult(result.resolver, result.context)
         const params = getParamsFromResult(result.resolver, result.context)
-
         if (query) {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
-            perspective: 'drafts',
+            perspective: perspectiveStack,
             signal: controller.signal,
+            tag: 'use-main-document',
           }
 
           client
@@ -188,7 +188,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, previewUrl, relativeUrl, resolvers])
+  }, [client, previewUrl, relativeUrl, resolvers, perspectiveStack])
 
   return mainDocumentState
 }
