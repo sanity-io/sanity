@@ -23,8 +23,8 @@ export function useQueryDocument(): {
   deleteQuery: (key: string) => void
 } {
   const client = useClient()
-  const {id} = useCurrentUser()
-
+  const currentUser = useCurrentUser()
+  const id = currentUser?.id
   const [document, setDocument] = useState<UserQueryDocument | undefined>()
   const [error, setError] = useState<Error | undefined>()
   const documentId = `vision.userQueries.${id}`
@@ -33,7 +33,7 @@ export function useQueryDocument(): {
     const query$ = client.observable.getDocument(documentId).subscribe({
       next: (doc) => {
         if (doc) {
-          setDocument(doc)
+          setDocument(doc as UserQueryDocument)
         } else {
           client
             .createIfNotExists({
@@ -57,7 +57,7 @@ export function useQueryDocument(): {
       .setIfMissing({queries: []})
       .insert('before', 'queries[0]', [query])
       .commit({autoGenerateArrayKeys: true})
-      .then((updatedDoc) => setDocument(updatedDoc))
+      .then((updatedDoc) => setDocument(updatedDoc as UserQueryDocument))
       .catch((err) => setError(err))
   }
 
@@ -66,7 +66,7 @@ export function useQueryDocument(): {
       .patch(documentId)
       .unset([`queries[_key == "${key}"]`])
       .commit()
-      .then((updatedDoc) => setDocument(updatedDoc))
+      .then((updatedDoc) => setDocument(updatedDoc as UserQueryDocument))
       .catch((err) => setError(err))
   }
 
