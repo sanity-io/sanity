@@ -6,6 +6,7 @@ import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
   InsufficientPermissionsMessage,
+  isPublishedId,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -13,6 +14,7 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NO_CHANGES: 'action.discard-changes.disabled.no-change',
@@ -38,8 +40,10 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
+  const {displayed} = useDocumentPane()
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const isPublished = displayed?._id && isPublishedId(displayed?._id)
 
   const handleConfirm = useCallback(() => {
     discardChanges.execute()
@@ -63,7 +67,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   )
 
   return useMemo(() => {
-    if (!published || liveEdit) {
+    if (!published || liveEdit || isPublished) {
       return null
     }
 
@@ -94,6 +98,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     discardChanges.disabled,
     handle,
     isPermissionsLoading,
+    isPublished,
     liveEdit,
     permissions?.granted,
     published,
