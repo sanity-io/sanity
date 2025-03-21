@@ -1,11 +1,13 @@
 import {ArchiveIcon, UnarchiveIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex, Text} from '@sanity/ui'
-import {useState} from 'react'
+import {type Dispatch, type RefObject, type SetStateAction, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
+import {type SupportedPerspective} from '../perspectives'
 import {parseParams} from './ParamsEditor'
 import {type Params} from './VisionGui'
 
@@ -23,9 +25,14 @@ export function QueryRecall({
   editorQueryRef,
   editorParamsRef,
 }: {
-  params: Params
   query: string
+  setQuery: Dispatch<SetStateAction<string>>
+  params: Params
+  setParams: Dispatch<SetStateAction<Params>>
   perspective: string
+  setPerspective: Dispatch<SetStateAction<SupportedPerspective>>
+  editorQueryRef: RefObject<VisionCodeMirrorHandle>
+  editorParamsRef: RefObject<VisionCodeMirrorHandle>
 }) {
   const [open, setOpen] = useState(false)
   const {saveQuery, document, deleteQuery} = useQueryDocument()

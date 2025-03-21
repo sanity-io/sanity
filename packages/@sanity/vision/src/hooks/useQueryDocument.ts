@@ -2,10 +2,12 @@ import {type SanityDocument} from '@sanity/client'
 import {useEffect, useState} from 'react'
 import {useClient, useCurrentUser} from 'sanity'
 
+import {type SupportedPerspective} from '../perspectives'
+
 interface QueryConfig {
   query: string
   params: string
-  perspective: string
+  perspective: SupportedPerspective
   savedAt: string
   _key: string
 }

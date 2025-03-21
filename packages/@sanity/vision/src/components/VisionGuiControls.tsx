@@ -1,9 +1,11 @@
 import {PlayIcon, StopIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
-import {type Dispatch, type SetStateAction} from 'react'
+import {type Dispatch, type RefObject, type SetStateAction} from 'react'
 import {useTranslation} from 'sanity'
 
+import {type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
+import {type SupportedPerspective} from '../perspectives'
 import {QueryRecall} from './QueryRecall'
 import {type Params} from './VisionGui'
 import {ControlsContainer} from './VisionGui.styled'
@@ -19,7 +21,9 @@ export interface VisionGuiControlsProps {
   params: Params
   setParams: Dispatch<SetStateAction<Params>>
   perspective: string
-  setPerspective: Dispatch<SetStateAction<string>>
+  setPerspective: Dispatch<SetStateAction<SupportedPerspective>>
+  editorQueryRef: RefObject<VisionCodeMirrorHandle>
+  editorParamsRef: RefObject<VisionCodeMirrorHandle>
 }
 
 /**
