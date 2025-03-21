@@ -103,6 +103,7 @@ const ConfirmReleaseDialog = ({
                         marginBottom: '0.5rem',
                         display: 'flex',
                       }}
+                      data-testid="revert-stage-success-link"
                     >
                       {t('toast.revert-stage.success-link')}
                     </Text>
@@ -281,6 +282,7 @@ export const ReleaseRevertButton = ({
          * @todo Permissions to create each schema type within the release (not implemented)
          */
         disabled={isPendingGuardResponse || !hasCreatePermission || disabled || mode === 'disabled'}
+        data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (
         <ConfirmReleaseDialog
