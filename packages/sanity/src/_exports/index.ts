@@ -102,6 +102,7 @@ import {
 import {GlobalErrorHandler} from '../core/components/globalErrorHandler'
 import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 import {Hotkeys} from '../core/components/Hotkeys'
+import {DateTimeInput} from '../core/components/inputs/DateInputs/DateTimeInput'
 import {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 import {IntentButton} from '../core/components/IntentButton'
 import {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
@@ -416,7 +417,6 @@ import {
   isReleaseScheduledOrScheduling,
 } from '../core/releases/util/util'
 import {EditScheduleForm, ScheduleAction, ScheduledBadge} from '../core/scheduledPublishing'
-import {DateTimeInput} from '../core/scheduledPublishing/components/dateInputs/base/DateTimeInput'
 import {createSchema} from '../core/schema/createSchema'
 import {getSchemaTypeTitle} from '../core/schema/helpers'
 import {getSearchableTypes} from '../core/search/common/getSearchableTypes'
