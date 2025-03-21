@@ -36,6 +36,13 @@ export type TableRowProps = Omit<
 > &
   RefAttributes<HTMLDivElement>
 
+type VirtualDatum = {
+  virtualRow: VirtualItem
+  index: number
+  isFirst: boolean
+  isLast: boolean
+}
+
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
@@ -175,12 +182,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
   const renderRow = useMemo(
     () =>
       function TableRow(
-        datum: (TableData | (TableData & AdditionalRowTableData)) & {
-          virtualRow: VirtualItem
-          index: number
-          isFirst: boolean
-          isLast: boolean
-        },
+        datum: VirtualDatum &
+          (TableData | (TableData & AdditionalRowTableData) | {_id: string; isLoading: boolean}),
       ) {
         const cardRowProps = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
@@ -257,15 +260,21 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
 
-  const renderLoadingRows = (rowRenderer: (datum: any) => React.ReactNode) => {
+  const renderLoadingRows = (
+    rowRenderer: (
+      datum: VirtualDatum &
+        ({_id: string; isLoading: boolean} | TableData | (TableData & AdditionalRowTableData)),
+    ) => React.ReactNode,
+  ) => {
     return Array.from({length: LOADING_ROW_COUNT}).map((el, index) => {
       const cardKey = `skeleton-${index}`
-      const virtualRow = {
+      const virtualRow: VirtualItem = {
         index,
         start: index * ITEM_HEIGHT,
         size: ITEM_HEIGHT,
         lane: 0,
         key: cardKey,
+        end: index * ITEM_HEIGHT + ITEM_HEIGHT,
       }
 
       return rowRenderer({
@@ -281,7 +290,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const tableContent = () => {
     if (loading) {
-      return renderLoadingRows(renderRow as (datum: any) => React.ReactNode)
+      return renderLoadingRows(renderRow)
     }
 
     if (filteredData.length === 0) {
