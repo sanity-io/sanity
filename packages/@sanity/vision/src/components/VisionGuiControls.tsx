@@ -5,7 +5,6 @@ import {useTranslation} from 'sanity'
 
 import {type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
-import {type SupportedPerspective} from '../perspectives'
 import {QueryRecall} from './QueryRecall'
 import {type Params} from './VisionGui'
 import {ControlsContainer} from './VisionGui.styled'
@@ -21,9 +20,9 @@ export interface VisionGuiControlsProps {
   params: Params
   setParams: Dispatch<SetStateAction<Params>>
   perspective: string
-  setPerspective: Dispatch<SetStateAction<SupportedPerspective>>
-  editorQueryRef: RefObject<VisionCodeMirrorHandle>
-  editorParamsRef: RefObject<VisionCodeMirrorHandle>
+  setPerspective: (newPerspective: string) => void
+  editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
+  editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 }
 
 /**
