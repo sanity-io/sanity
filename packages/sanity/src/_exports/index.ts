@@ -102,7 +102,6 @@ import {
 import {GlobalErrorHandler} from '../core/components/globalErrorHandler'
 import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 import {Hotkeys} from '../core/components/Hotkeys'
-import {DateTimeInput} from '../core/components/inputs/DateInputs/DateTimeInput'
 import {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 import {IntentButton} from '../core/components/IntentButton'
 import {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
@@ -253,6 +252,7 @@ import {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInpu
 import {BooleanInput} from '../core/form/inputs/BooleanInput'
 import {CrossDatasetReferenceInput} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
 import {DateInput} from '../core/form/inputs/DateInputs/DateInput'
+import {DateTimeInput} from '../core/form/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
 import {EmailInput} from '../core/form/inputs/EmailInput'
 import {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
@@ -675,8 +675,6 @@ export {
   BasicDocument,
   BetaBadge,
   BlockEditor,
-}
-export {
   BlockImagePreview,
   BlockPreview,
   BooleanInput,
