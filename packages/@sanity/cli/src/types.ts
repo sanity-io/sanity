@@ -351,8 +351,8 @@ export interface CliConfig {
    * Signals to `sanity` commands that this is not a studio.
    * @internal
    */
-  __experimental_coreAppConfiguration?: {
-    organizationId?: string
+  __experimental_appConfiguration?: {
+    organizationId: string
     appLocation?: string
     appId?: string
   }

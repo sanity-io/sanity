@@ -28,7 +28,9 @@ export function SimpleBlockPortableText(): React.JSX.Element {
       body: PortableTextBlock[]
       notes: {_key: string; title?: string; minutes?: number; notes?: PortableTextBlock[]}[]
     }[]
-  >(/* groq */ `*[_type == "simpleBlock"]{_id,title,"bodyString":pt::text(body),body,notes}`)
+  >(
+    /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,title,"bodyString":pt::text(body),body,notes}`,
+  )
 
   if (error) {
     throw error

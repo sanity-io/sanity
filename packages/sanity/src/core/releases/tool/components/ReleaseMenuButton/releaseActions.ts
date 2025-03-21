@@ -8,11 +8,17 @@ import {
   UnscheduledRelease,
 } from '../../../__telemetry__/releases.telemetry'
 
-export type ReleaseAction = 'archive' | 'unarchive' | 'delete' | 'unschedule'
+export type ReleaseAction =
+  | 'archive'
+  | 'unarchive'
+  | 'delete'
+  | 'unschedule'
+  | 'publish'
+  | 'schedule'
 
 interface BaseReleaseActionsMap {
-  toastSuccessI18nKey: string
-  toastFailureI18nKey: string
+  toastSuccessI18nKey?: string
+  toastFailureI18nKey?: string
   telemetry: DefinedTelemetryLog<void>
 }
 
@@ -27,7 +33,7 @@ interface DialogActionsMap extends BaseReleaseActionsMap {
 }
 
 export const RELEASE_ACTION_MAP: Record<
-  ReleaseAction,
+  Exclude<ReleaseAction, 'schedule' | 'publish'>,
   DialogActionsMap | (BaseReleaseActionsMap & {confirmDialog: false})
 > = {
   delete: {
@@ -50,19 +56,16 @@ export const RELEASE_ACTION_MAP: Record<
       dialogConfirmButtonI18nKey: 'archive-dialog.confirm-archive-button',
       confirmButtonTone: 'critical',
     },
-    toastSuccessI18nKey: 'toast.archive.success',
     toastFailureI18nKey: 'toast.archive.error',
     telemetry: ArchivedRelease,
   },
   unarchive: {
     confirmDialog: false,
-    toastSuccessI18nKey: 'toast.unarchive.success',
     toastFailureI18nKey: 'toast.unarchive.error',
     telemetry: UnarchivedRelease,
   },
   unschedule: {
     confirmDialog: false,
-    toastSuccessI18nKey: 'toast.unschedule.success',
     toastFailureI18nKey: 'toast.unschedule.error',
     telemetry: UnscheduledRelease,
   },

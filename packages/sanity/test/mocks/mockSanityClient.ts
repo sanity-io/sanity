@@ -103,7 +103,7 @@ export function createMockSanityClient(
 
     withConfig: () => mockClient,
 
-    request: (opts: {uri: string; tag?: string; withCredentials: boolean}) => {
+    request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
       $log.request.push(opts)
 
       if (opts.uri.startsWith(requestUriPrefix)) {
@@ -147,7 +147,7 @@ export function createMockSanityClient(
         return of({type: 'welcome'})
       },
 
-      request: (opts: {uri: string; tag?: string; withCredentials: boolean}) => {
+      request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
         // console.log('mockSanityClient.observable.request', opts)
 
         $log.observable.request.push(opts)

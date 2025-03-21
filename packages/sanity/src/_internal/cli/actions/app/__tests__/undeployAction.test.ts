@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type UserApplication} from '../../deploy/helpers'
 import * as _helpers from '../../deploy/helpers'
-import undeployCoreAppAction from '../undeployAction'
+import undeployAppAction from '../undeployAction'
 
 // Mock dependencies
 vi.mock('../../deploy/helpers')
@@ -15,7 +15,7 @@ type SpinnerInstance = {
   fail: Mock<() => SpinnerInstance>
 }
 
-describe('undeployCoreAppAction', () => {
+describe('undeployAppAction', () => {
   let mockContext: CliCommandContext
 
   const mockApplication: UserApplication = {
@@ -53,7 +53,7 @@ describe('undeployCoreAppAction', () => {
       prompt: {single: vi.fn()},
       cliConfig: {
         // eslint-disable-next-line camelcase
-        __experimental_coreAppConfiguration: {
+        __experimental_appConfiguration: {
           appId: 'app-id',
         },
       },
@@ -61,14 +61,14 @@ describe('undeployCoreAppAction', () => {
   })
 
   it('prints an error if there is no appId', async () => {
-    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, {
+    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, {
       ...mockContext,
       cliConfig: {},
     })
 
-    expect(mockContext.output.print).toHaveBeenCalledWith('No Core application ID provided.')
+    expect(mockContext.output.print).toHaveBeenCalledWith('No application ID provided.')
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'Please set appId in `__experimental_coreAppConfiguration` in sanity.cli.js or sanity.cli.ts.',
+      'Please set appId in `__experimental_appConfiguration` in sanity.cli.js or sanity.cli.ts.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
@@ -76,7 +76,7 @@ describe('undeployCoreAppAction', () => {
   it('does nothing if there is no user application', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(null)
 
-    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
       'Application with the given ID does not exist.',
@@ -91,7 +91,7 @@ describe('undeployCoreAppAction', () => {
       true,
     ) // User confirms
 
-    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -114,7 +114,7 @@ describe('undeployCoreAppAction', () => {
       false,
     ) // User cancels
 
-    await undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -133,7 +133,7 @@ describe('undeployCoreAppAction', () => {
     ) // User confirms
 
     await expect(
-      undeployCoreAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
+      undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
     ).rejects.toThrow(errorMessage)
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()

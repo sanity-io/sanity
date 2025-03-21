@@ -59,10 +59,14 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
           </Text>
         </Flex>
       }
-      action={{
-        text: 'Go back to published version',
-        onClick: handleGoBack,
-      }}
+      action={
+        params?.archivedRelease
+          ? undefined
+          : {
+              text: 'Go back to published version',
+              onClick: handleGoBack,
+            }
+      }
     />
   )
 }

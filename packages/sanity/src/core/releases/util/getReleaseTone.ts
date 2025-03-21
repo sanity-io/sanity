@@ -15,15 +15,15 @@ export function getReleaseTone(release: SelectedPerspective): BadgeTone {
     }
 
     if (release?.metadata?.releaseType === 'asap') {
-      return 'critical'
+      return 'caution'
     }
 
     if (release?.metadata?.releaseType === 'undecided') {
-      return 'suggest'
+      return 'neutral'
     }
 
     if (release?.metadata?.releaseType === 'scheduled') {
-      return 'primary'
+      return 'suggest'
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "sanity-page-building-studio",
-  "version": "3.79.0",
+  "version": "3.80.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
+    "babel-plugin-react-compiler": "19.0.0-beta-3229e95-20250315",
     "react": "^18.2.0",
-    "react-compiler-runtime": "19.0.0-beta-e1e972c-20250221",
+    "react-compiler-runtime": "19.0.0-beta-3229e95-20250315",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.15"
   }
 }

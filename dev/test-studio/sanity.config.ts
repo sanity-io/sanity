@@ -12,7 +12,7 @@ import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secre
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
-import {presentationTool} from 'sanity/presentation'
+import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
@@ -107,6 +107,19 @@ const sharedSettings = definePlugin({
       icon: BookIcon,
       structure,
       defaultDocumentNode,
+    }),
+    debugSecrets(),
+    presentationTool({
+      previewUrl: {preview: '/preview/index.html'},
+      resolve: {
+        mainDocuments: defineDocuments([
+          {
+            route: '/preview/index.html',
+            filter: `_type == "simpleBlock" && isMain`,
+          },
+        ]),
+        locations: {simpleBlock: defineLocations({locations: [{title: 'Home', href: '/'}]})},
+      },
     }),
     languageFilter({
       defaultLanguages: ['nb'],
@@ -268,6 +281,18 @@ export default defineConfig([
     },
   },
   {
+    name: 'playground-staging',
+    title: 'playground (Staging)',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings()],
+    basePath: '/playground-staging',
+    apiHost: 'https://api.sanity.work',
+    auth: {
+      loginMethod: 'token',
+    },
+  },
+  {
     name: 'custom-components',
     title: 'Test Studio',
     subtitle: 'Components API playground',
@@ -351,24 +376,5 @@ export default defineConfig([
         input: StegaDebugger,
       },
     },
-  },
-  {
-    name: 'presentation',
-    title: 'Presentation Studio',
-    projectId: 'ppsg7ml5',
-    dataset: 'playground',
-    plugins: [
-      debugSecrets(),
-      presentationTool({
-        name: 'presentation',
-        title: 'Presentation',
-        previewUrl: {
-          preview: '/preview/index.html',
-        },
-      }),
-      assist(),
-      sharedSettings(),
-    ],
-    basePath: '/presentation',
   },
 ]) as WorkspaceOptions[]

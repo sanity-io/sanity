@@ -5,7 +5,11 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {type BooleanDefinition, type ReferenceDefinition} from '../src/schema/definition'
+import {
+  type BooleanDefinition,
+  type GlobalDocumentReferenceDefinition,
+  type ReferenceDefinition,
+} from '../src/schema/definition'
 import {defineType} from '../src/schema/types'
 
 describe('reference types', () => {
@@ -86,6 +90,37 @@ describe('reference types', () => {
         },
       })
     })
+  })
+})
+
+describe('global document reference types', () => {
+  it('should define reference schema', () => {
+    const referenceDef = defineType({
+      type: 'globalDocumentReference',
+      name: 'custom-reference',
+      title: 'My Custom Global Document Reference',
+      resourceType: 'dataset',
+      resourceId: 'myProject.myDataset',
+      icon: () => null,
+      description: 'Description',
+      hidden: () => false,
+      readOnly: () => false,
+      weak: true,
+      to: [{type: 'crewMember'}],
+      options: {
+        disableNew: false,
+        filter: ({document, parent, parentPath}) =>
+          Promise.resolve({
+            filter: '*[field==$param]',
+            params: {
+              param: document._type,
+            },
+          }),
+      },
+    }) satisfies GlobalDocumentReferenceDefinition
+
+    // @ts-expect-error reference is not assignable to boolean
+    const notAssignableToBoolean = referenceDef satisfies BooleanDefinition
   })
 })
 
