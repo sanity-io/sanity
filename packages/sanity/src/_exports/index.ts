@@ -100,7 +100,6 @@ import {ErrorActions, serializeError, useCopyErrorDetails} from '../core/compone
 import {GlobalErrorHandler} from '../core/components/globalErrorHandler'
 import {GetHookCollectionState} from '../core/components/hookCollection'
 import {Hotkeys} from '../core/components/Hotkeys'
-import {DateTimeInput} from '../core/components/inputs/DateInputs/DateTimeInput'
 import {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 import {IntentButton} from '../core/components/IntentButton'
 import {LoadingBlock} from '../core/components/loadingBlock'
@@ -247,6 +246,7 @@ import {
   BlockEditor,
   BooleanInput,
   DateInput,
+  DateTimeInput,
   EmailInput,
   getCalendarLabels,
   NumberInput,
@@ -676,8 +676,6 @@ export {
   BasicDocument,
   BetaBadge,
   BlockEditor,
-}
-export {
   BlockImagePreview,
   BlockPreview,
   BooleanInput,
