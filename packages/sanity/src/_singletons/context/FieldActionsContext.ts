@@ -1,9 +1,8 @@
 import type {ReactNode} from 'react'
-// eslint-disable-next-line no-restricted-imports
-import type {FieldCommentsProps} from 'sanity'
 import {createContext} from 'sanity/_createContext'
 
 import type {DocumentFieldActionNode} from '../../core/config/document/fieldActions/types'
+import type {FieldCommentsProps} from '../../core/form/types'
 
 /** @internal */
 export interface FieldActionsContextValue {
