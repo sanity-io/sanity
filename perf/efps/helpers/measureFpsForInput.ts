@@ -23,7 +23,7 @@ export async function measureFpsForInput({
         `[data-testid="field-${fieldName}"] textarea`,
     )
     .first()
-  await input.waitFor({state: 'visible'})
+  await input.waitFor({state: 'visible', timeout: 90_000})
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()

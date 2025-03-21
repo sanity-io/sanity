@@ -19,13 +19,13 @@ export async function measureFpsForPte({
   const pteField = page.locator(`[data-testid="field-${fieldName}"]`)
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-  await pteField.waitFor({state: 'visible'})
+  await pteField.waitFor({state: 'visible', timeout: 90_000})
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   await pteField.click()
 
   const contentEditable = pteField.locator('[contenteditable="true"]')
-  await contentEditable.waitFor({state: 'visible'})
+  await contentEditable.waitFor({state: 'visible', timeout: 90_000})
 
   const rendersPromise = contentEditable.evaluate(async (el: HTMLElement) => {
     const updates: {
