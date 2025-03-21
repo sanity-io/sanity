@@ -1,9 +1,11 @@
-import {ArchiveIcon, PlayIcon, StopIcon, UnarchiveIcon} from '@sanity/icons'
+import {PlayIcon, StopIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
+import {type Dispatch, type SetStateAction} from 'react'
 import {useTranslation} from 'sanity'
 
-import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
+import {QueryRecall} from './QueryRecall'
+import {type Params} from './VisionGui'
 import {ControlsContainer} from './VisionGui.styled'
 
 export interface VisionGuiControlsProps {
@@ -13,8 +15,11 @@ export interface VisionGuiControlsProps {
   onQueryExecution: () => void
   onListenExecution: () => void
   query: string
-  params: string
+  setQuery: Dispatch<SetStateAction<string>>
+  params: Params
+  setParams: Dispatch<SetStateAction<Params>>
   perspective: string
+  setPerspective: Dispatch<SetStateAction<string>>
 }
 
 /**
@@ -28,10 +33,14 @@ export function VisionGuiControls({
   onQueryExecution,
   onListenExecution,
   query,
+  setQuery,
   params,
+  setParams,
   perspective,
+  setPerspective,
+  editorQueryRef,
+  editorParamsRef,
 }: VisionGuiControlsProps) {
-  const queryDoc = useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
 
   return (
@@ -85,27 +94,16 @@ export function VisionGuiControls({
             </Box>
           </Flex>
         </Tooltip>
-        <Flex justify="space-evenly" marginTop={3}>
-          <Box flex={1}>
-            <Button width="fill" text={t('action.load-query')} icon={UnarchiveIcon} mode="ghost" />
-          </Box>
-          <Box flex={1} marginLeft={3}>
-            <Button
-              text={t('action.save-query')}
-              icon={ArchiveIcon}
-              mode="ghost"
-              width="fill"
-              onClick={() =>
-                queryDoc.saveQuery({
-                  params,
-                  query,
-                  perspective,
-                  savedAt: new Date().toISOString(),
-                })
-              }
-            />
-          </Box>
-        </Flex>
+        <QueryRecall
+          params={params}
+          perspective={perspective}
+          query={query}
+          setQuery={setQuery}
+          setParams={setParams}
+          setPerspective={setPerspective}
+          editorQueryRef={editorQueryRef}
+          editorParamsRef={editorParamsRef}
+        />
       </Card>
     </ControlsContainer>
   )

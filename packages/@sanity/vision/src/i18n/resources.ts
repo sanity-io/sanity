@@ -9,6 +9,8 @@ import {defineLocalesResources} from 'sanity'
 const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
+  /** Label for deleting a query */
+  'action.delete': 'Delete',
   /** Label for stopping an ongoing listen operation */
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
@@ -27,6 +29,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    * This defines what the text of that label is. Keep it short and sweet.
    */
   'label.new': 'New',
+  /** Label for savedAt date */
+  'label.saved-at': 'Saved at',
 
   /** Error message for when the "Params" input are not a valid json */
   'params.error.params-invalid-json': 'Parameters are not valid JSON',
