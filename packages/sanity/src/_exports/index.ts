@@ -515,6 +515,7 @@ import {
 import {useEventsStore} from '../core/store/events/useEventsStore'
 import {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 import {useCurrentUser, useUser} from '../core/store/user/hooks'
+import {ActiveWorkspaceMatcher} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {matchWorkspace} from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
 import {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
@@ -655,6 +656,7 @@ export {
   _createAuthStore,
   _isCustomDocumentTypeDefinition,
   _isSanityDocumentTypeDefinition,
+  ActiveWorkspaceMatcher,
   AddonDatasetProvider,
   ArrayOfObjectOptionsInput,
   ArrayOfObjectsFunctions,
