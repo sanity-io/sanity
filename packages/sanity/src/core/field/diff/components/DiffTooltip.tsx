@@ -11,7 +11,7 @@ import {useUser} from '../../../store/user/hooks'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath} from '../annotations/helpers'
 import {useAnnotationColor} from '../annotations/hooks'
-import {Event} from '../components/Event'
+import {TimelineEvent} from './TimelineEvent'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -83,7 +83,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
-          <Event event={annotation.event} showChangesBy="inline" />
+          <TimelineEvent event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
         <Inline space={2}>
