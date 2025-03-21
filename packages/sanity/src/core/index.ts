@@ -70,3 +70,6 @@ export {
   type ValidateDocumentOptions,
 } from './validation'
 export * from './version'
+
+// eslint-disable-next-line
+console.log('Tagged release:', 'initial-values-deopt')
