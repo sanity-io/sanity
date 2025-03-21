@@ -48,7 +48,7 @@ describe('browserCompatibleSanityPackageSpecifiers', () => {
       'sanity/presentation',
       'sanity/router',
       'sanity/structure',
-      'sanity/ui_components',
+      'sanity/ui-components',
     ])
 
     expect(browserCompatibleSanityPackageSpecifiers).toHaveLength(8)
