@@ -2,7 +2,7 @@ import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
-import {useWorkspace} from '../../studio'
+import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
@@ -32,17 +32,16 @@ const ReleasesNavContainer = styled(Card)`
   }
 `
 export function ReleasesNav(): React.JSX.Element {
-  const areReleasesEnabled = !!useWorkspace().releases?.enabled
-
+  const releasesToolAvailable = useReleasesToolAvailable()
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   return (
     <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
-      {areReleasesEnabled && <ReleasesToolLink />}
+      {releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
         selectedReleaseId={selectedReleaseId}
-        areReleasesEnabled={areReleasesEnabled}
+        areReleasesEnabled={releasesToolAvailable}
       />
     </ReleasesNavContainer>
   )
