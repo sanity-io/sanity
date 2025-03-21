@@ -1,90 +1,43 @@
-/* eslint-disable complexity */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
   type ListenEvent,
   type MutationEvent,
-  type SanityClient,
+  type StackablePerspective,
 } from '@sanity/client'
-import {
-  ArchiveIcon,
-  CopyIcon,
-  ErrorOutlineIcon,
-  PlayIcon,
-  StopIcon,
-  UnarchiveIcon,
-} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Hotkeys,
-  Inline,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-  type ToastContextValue,
-  Tooltip,
-} from '@sanity/ui'
+import {Box, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ChangeEvent,
-  type ComponentType,
-  createRef,
-  Fragment,
-  PureComponent,
-  type RefObject,
-  useMemo,
-} from 'react'
-import isEqual from 'react-fast-compare'
-import {type PerspectiveContextValue, type TFunction, Translate} from 'sanity'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useClient, usePerspective, useTranslation} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
+import {visionLocaleNamespace} from '../i18n'
 import {
+  getActivePerspective,
   isSupportedPerspective,
   isVirtualPerspective,
-  SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
 } from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
-import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
-import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
+import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
-import {ResizeObserver} from '../util/resizeObserver'
-import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
-import {DelayedSpinner} from './DelayedSpinner'
-import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
-import {PerspectivePopover} from './PerspectivePopover'
-import {QueryErrorDialog} from './QueryErrorDialog'
-import {ResultView} from './ResultView'
-import {SaveCsvButton, SaveJsonButton} from './SaveResultButtons'
+import {ParamsEditor, parseParams} from './ParamsEditor'
+import {usePaneSize} from './usePaneSize'
 import {
-  ControlsContainer,
-  DownloadsCard,
-  Header,
-  InputBackgroundContainer,
   InputBackgroundContainerLeft,
   InputContainer,
-  QueryCopyLink,
-  Result,
-  ResultContainer,
-  ResultFooter,
-  ResultInnerContainer,
-  ResultOuterContainer,
   Root,
-  SaveResultLabel,
   SplitpaneContainer,
   StyledLabel,
-  TimingsCard,
-  TimingsTextContainer,
 } from './VisionGui.styled'
+import {VisionGuiControls} from './VisionGuiControls'
+import {VisionGuiHeader} from './VisionGuiHeader'
+import {VisionGuiResult} from './VisionGuiResult'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
@@ -97,1084 +50,606 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
 const sanityUrl =
   /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
-
-interface PaneSizeOptions {
-  defaultSize: number
-  size?: number
-  allowResize: boolean
-  minSize: number
-  maxSize: number
-}
-
-function narrowBreakpoint(): boolean {
-  return typeof window !== 'undefined' && window.innerWidth > 600
-}
-
-function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
-  return {
-    defaultSize: rootHeight / (narrowBreakpoint() ? 2 : 1),
-    size: rootHeight > 550 ? undefined : rootHeight * 0.4,
-    allowResize: rootHeight > 550,
-    minSize: Math.min(170, Math.max(170, rootHeight / 2)),
-    maxSize: rootHeight > 650 ? rootHeight * 0.7 : rootHeight * 0.6,
-  }
-}
 
 interface Subscription {
   unsubscribe: () => void
 }
+export interface Params {
+  raw: string
+  parsed: Record<string, unknown> | undefined
+  valid: boolean
+  error: string | undefined
+}
+
+interface QueryExecutionOptions {
+  apiVersion?: string
+  dataset?: string
+  perspective?: SupportedPerspective
+  query?: string
+  params?: Record<string, unknown>
+}
 
 interface VisionGuiProps extends VisionProps {
-  toast: ToastContextValue
   datasets: string[]
-  t: TFunction<'vision', undefined>
-  queryDoc: {
-    document: Document | undefined
-    error: Error | undefined
-    saveQuery: (query: Record<string, unknown>) => void
-  }
+  projectId: string | undefined
+  defaultDataset: string
 }
 
-interface VisionGuiState {
-  // Selected options
-  dataset: string
-  apiVersion: string
-  customApiVersion: string | false
-  perspective: SupportedPerspective | undefined
+export function VisionGui(props: VisionGuiProps) {
+  const {datasets, config, projectId, defaultDataset} = props
+  const toast = useToast()
+  const {t} = useTranslation(visionLocaleNamespace)
+  const {perspectiveStack} = usePerspective()
 
-  // Selected options validation state
-  isValidApiVersion: boolean
+  const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
+  const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
+  const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
+  const visionRootRef = useRef<HTMLDivElement | null>(null)
+  const customApiVersionElementRef = useRef<HTMLInputElement | null>(null)
+  const querySubscriptionRef = useRef<Subscription | undefined>(undefined)
+  const listenSubscriptionRef = useRef<Subscription | undefined>(undefined)
 
-  // URL used to execute query/listener
-  url?: string | undefined
+  const [localStorage] = useState(() => getLocalStorage(projectId || 'default'))
 
-  // Inputs
-  query: string
-  rawParams: string
+  const {storedDataset, storedApiVersion, storedQuery, storedParams, storedPerspective} =
+    useMemo(() => {
+      return {
+        storedDataset: localStorage.get('dataset', defaultDataset),
+        storedApiVersion: localStorage.get('apiVersion', defaultApiVersion),
+        storedQuery: localStorage.get('query', ''),
+        storedParams: localStorage.get('params', '{\n  \n}'),
+        storedPerspective: localStorage.get<SupportedPerspective | undefined>(
+          'perspective',
+          undefined,
+        ),
+      }
+    }, [defaultDataset, defaultApiVersion, localStorage])
 
-  // Parsed input
-  params: Record<string, unknown> | Error | undefined
-  paramsError?: string | undefined
-  hasValidParams: boolean
-
-  // Query/listen result
-  queryResult?: unknown | undefined
-  listenMutations: MutationEvent[]
-  error?: Error | undefined
-
-  // Operation timings
-  queryTime?: number | undefined
-  e2eTime?: number | undefined
-
-  // Operation state, used to trigger re-renders (spinners etc)
-  queryInProgress: boolean
-  listenInProgress: boolean
-
-  // UI drawing state
-  paneSizeOptions: PaneSizeOptions
-}
-
-export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
-  _visionRoot: RefObject<HTMLDivElement | null>
-  _queryEditorContainer: RefObject<HTMLDivElement | null>
-  _paramsEditorContainer: RefObject<HTMLDivElement | null>
-  _operationUrlElement: RefObject<HTMLInputElement | null>
-  _customApiVersionElement: RefObject<HTMLInputElement | null>
-  _resizeListener: ResizeObserver | undefined
-  _querySubscription: Subscription | undefined
-  _listenSubscription: Subscription | undefined
-  _client: SanityClient
-  _localStorage: LocalStorageish
-  _editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
-  _editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
-
-  constructor(props: VisionGuiProps) {
-    super(props)
-
-    const {client, datasets, config} = props
-    this._localStorage = getLocalStorage(client.config().projectId || 'default')
-
-    const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
-    const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
-
-    let dataset = this._localStorage.get('dataset', defaultDataset)
-    let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
-    let lastQuery = this._localStorage.get('query', '')
-    let lastParams = this._localStorage.get('params', '{\n  \n}')
-    const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
-    const perspective = this._localStorage.get<SupportedPerspective | undefined>(
-      'perspective',
-      undefined,
-    )
-
-    if (!datasets.includes(dataset)) {
-      dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
+  const [dataset, setDataset] = useState<string>(() => {
+    if (datasets.includes(storedDataset)) {
+      return storedDataset
     }
-
-    if (!API_VERSIONS.includes(apiVersion)) {
-      apiVersion = DEFAULT_API_VERSION
+    if (datasets.includes(defaultDataset)) {
+      return defaultDataset
     }
+    return datasets[0]
+  })
+  const [apiVersion, setApiVersion] = useState<string>(() =>
+    API_VERSIONS.includes(storedApiVersion) ? storedApiVersion : DEFAULT_API_VERSION,
+  )
+  const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
+    API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
+  )
+  const [perspective, setPerspectiveState] = useState<SupportedPerspective>(
+    storedPerspective || 'raw',
+  )
+  const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
 
-    if (typeof lastQuery !== 'string') {
-      lastQuery = ''
-    }
+  const [url, setUrl] = useState<string | undefined>(undefined)
+  const [query, setQuery] = useState<string>(() =>
+    typeof storedQuery === 'string' ? storedQuery : '',
+  )
+  const [params, setParams] = useState<Params>(() => parseParams(storedParams, t))
+  const [queryResult, setQueryResult] = useState<unknown | undefined>(undefined)
+  const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
+  const [error, setError] = useState<Error | undefined>(undefined)
+  const [queryTime, setQueryTime] = useState<number | undefined>(undefined)
+  const [e2eTime, setE2eTime] = useState<number | undefined>(undefined)
+  const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
+  const [listenInProgress, setListenInProgress] = useState<boolean>(false)
 
-    if (typeof lastParams !== 'string') {
-      lastParams = '{\n  \n}'
-    }
+  const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
-    this._visionRoot = createRef()
-    this._operationUrlElement = createRef()
-    this._queryEditorContainer = createRef()
-    this._paramsEditorContainer = createRef()
-    this._customApiVersionElement = createRef()
-    this._editorQueryRef = createRef()
-    this._editorParamsRef = createRef()
-
-    this._client = props.client.withConfig({
-      apiVersion: customApiVersion || apiVersion,
+  // Client  with memoized initial value
+  const _client = useClient({
+    apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+  })
+  const client = useMemo(() => {
+    return _client.withConfig({
+      apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+      perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}),
       dataset,
-      perspective: getActivePerspective({
-        visionPerspective: perspective,
-        pinnedPerspective: this.props.pinnedPerspective,
-      }),
       allowReconfigure: true,
     })
+  }, [
+    perspectiveStack,
+    perspective,
+    customApiVersion,
+    apiVersion,
+    dataset,
+    _client,
+    isValidApiVersion,
+  ])
 
-    // Initial root height without header
-    const bodyHeight =
-      typeof window !== 'undefined' && typeof document !== 'undefined'
-        ? document.body.getBoundingClientRect().height - 60
-        : 0
-
-    const params = lastParams ? tryParseParams(lastParams, this.props.t) : undefined
-
-    this.state = {
-      // Selected options
-      dataset,
-      apiVersion,
-      customApiVersion,
-      perspective,
-
-      // Selected options validation state
-      isValidApiVersion: customApiVersion ? validateApiVersion(customApiVersion) : false,
-
-      // Inputs
-      query: lastQuery,
-      rawParams: lastParams,
-
-      // Parsed input
-      params,
-      hasValidParams: !(params instanceof Error),
-
-      // Query/listen results
-      listenMutations: [],
-
-      // Operation state
-      queryInProgress: false,
-      listenInProgress: false,
-
-      // UI drawing state
-      paneSizeOptions: calculatePaneSizeOptions(bodyHeight),
+  const cancelQuerySubscription = useCallback(() => {
+    if (!querySubscriptionRef.current) {
+      return
     }
+    querySubscriptionRef.current.unsubscribe()
+    querySubscriptionRef.current = undefined
+  }, [])
 
-    this.handleChangeDataset = this.handleChangeDataset.bind(this)
-    this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
-    this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
-    this.handleChangePerspective = this.handleChangePerspective.bind(this)
-    this.handleListenExecution = this.handleListenExecution.bind(this)
-    this.handleListenerEvent = this.handleListenerEvent.bind(this)
-    this.handleQueryExecution = this.handleQueryExecution.bind(this)
-    this.handleQueryChange = this.handleQueryChange.bind(this)
-    this.handleParamsChange = this.handleParamsChange.bind(this)
-    this.handleCopyUrl = this.handleCopyUrl.bind(this)
-    this.handlePaste = this.handlePaste.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleResize = this.handleResize.bind(this)
-    this.setPerspective = this.setPerspective.bind(this)
-  }
+  const cancelListenerSubscription = useCallback(() => {
+    if (!listenSubscriptionRef.current) {
+      return
+    }
+    listenSubscriptionRef.current.unsubscribe()
+    listenSubscriptionRef.current = undefined
+  }, [])
 
-  componentDidMount() {
-    window.document.addEventListener('paste', this.handlePaste)
-    window.document.addEventListener('keydown', this.handleKeyDown)
-
-    this.handleResizeListen()
-  }
-
-  componentWillUnmount() {
-    this.cancelQuery()
-    this.cancelListener()
-    this.cancelEventListener()
-    this.cancelResizeListener()
-  }
-
-  componentDidUpdate(prevProps: Readonly<VisionGuiProps>): void {
-    if (hasPinnedPerspectiveChanged(prevProps.pinnedPerspective, this.props.pinnedPerspective)) {
-      if (hasPinnedPerspective(this.props.pinnedPerspective)) {
-        this.setPerspective('pinnedRelease')
-      } else {
-        this.setPerspective(undefined)
+  const handleQueryExecution = useCallback(
+    (options?: QueryExecutionOptions) => {
+      if (queryInProgress) {
+        cancelQuerySubscription()
+        cancelListenerSubscription()
+        setQueryInProgress(false)
+        return
       }
-    }
-  }
 
-  handleResizeListen() {
-    if (!this._visionRoot.current) {
-      return
-    }
-
-    this._resizeListener = new ResizeObserver(this.handleResize)
-    this._resizeListener.observe(this._visionRoot.current)
-  }
-
-  handleResize(entries: ResizeObserverEntry[]) {
-    const entry = entries?.[0]
-
-    this.setState((prevState) => ({
-      ...prevState,
-      paneSizeOptions: calculatePaneSizeOptions(entry.contentRect.height),
-    }))
-  }
-
-  cancelResizeListener() {
-    if (this._resizeListener) {
-      this._resizeListener.disconnect()
-    }
-  }
-
-  handlePaste(evt: ClipboardEvent) {
-    if (!evt.clipboardData) {
-      return
-    }
-
-    const data = evt.clipboardData.getData('text/plain')
-    const match = data.match(sanityUrl)
-    if (!match) {
-      return
-    }
-
-    const [, usedApiVersion, usedDataset, urlQuery] = match
-    let parts: ParsedApiQueryString
-
-    try {
-      const qs = new URLSearchParams(urlQuery)
-      parts = parseApiQueryString(qs)
-    } catch (err) {
-      console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
-      return // Give up on error
-    }
-
-    let apiVersion: string | undefined
-    let customApiVersion: string | false | undefined
-
-    if (validateApiVersion(usedApiVersion)) {
-      if (API_VERSIONS.includes(usedApiVersion)) {
-        apiVersion = usedApiVersion
-        customApiVersion = false
-      } else {
-        customApiVersion = usedApiVersion
-      }
-    }
-
-    const perspective =
-      isSupportedPerspective(parts.options.perspective) &&
-      !isVirtualPerspective(parts.options.perspective)
-        ? parts.options.perspective
-        : undefined
-
-    if (
-      perspective &&
-      (!isSupportedPerspective(parts.options.perspective) ||
-        isVirtualPerspective(parts.options.perspective))
-    ) {
-      this.props.toast.push({
-        closable: true,
-        id: 'vision-paste-unsupported-perspective',
-        status: 'warning',
-        title: 'Perspective in pasted url is currently not supported. Falling back to "raw"',
-      })
-    }
-
-    evt.preventDefault()
-
-    const query = parts.query
-    const rawParams = JSON.stringify(parts.params, null, 2)
-    this._editorQueryRef.current?.resetEditorContent(query)
-    this._editorParamsRef.current?.resetEditorContent(rawParams)
-    this.setState(
-      (prevState) => ({
-        dataset: this.props.datasets.includes(usedDataset) ? usedDataset : prevState.dataset,
-        query,
-        params: parts.params,
-        rawParams,
-        apiVersion: typeof apiVersion === 'undefined' ? prevState.apiVersion : apiVersion,
-        customApiVersion:
-          typeof customApiVersion === 'undefined' ? prevState.customApiVersion : customApiVersion,
-        perspective: typeof perspective === 'undefined' ? prevState.perspective : perspective,
-      }),
-      () => {
-        this._localStorage.merge({
-          query: this.state.query,
-          params: this.state.rawParams,
-          dataset: this.state.dataset,
-          apiVersion: customApiVersion || apiVersion,
-          perspective: this.state.perspective,
-        })
-        this._client.config({
-          dataset: this.state.dataset,
-          apiVersion: customApiVersion || apiVersion,
-          perspective: getActivePerspective({
-            visionPerspective: this.state.perspective,
-            pinnedPerspective: this.props.pinnedPerspective,
-          }),
-        })
-        this.handleQueryExecution()
-        this.props.toast.push({
-          closable: true,
-          id: 'vision-paste',
-          status: 'info',
-          title: 'Parsed URL to query',
-        })
-      },
-    )
-  }
-
-  cancelQuery() {
-    if (!this._querySubscription) {
-      return
-    }
-    this._querySubscription.unsubscribe()
-    this._querySubscription = undefined
-  }
-
-  cancelListener() {
-    if (!this._listenSubscription) {
-      return
-    }
-
-    this._listenSubscription.unsubscribe()
-    this._listenSubscription = undefined
-  }
-
-  cancelEventListener() {
-    window.removeEventListener('keydown', this.handleKeyDown)
-  }
-
-  handleChangeDataset(evt: ChangeEvent<HTMLSelectElement>) {
-    const dataset = evt.target.value
-    this._localStorage.set('dataset', dataset)
-    this.setState({dataset})
-    this._client.config({dataset})
-    this.handleQueryExecution()
-  }
-
-  handleChangeApiVersion(evt: ChangeEvent<HTMLSelectElement>) {
-    const apiVersion = evt.target.value
-    if (apiVersion?.toLowerCase() === 'other') {
-      this.setState({customApiVersion: 'v'}, () => {
-        this._customApiVersionElement.current?.focus()
-      })
-      return
-    }
-
-    this.setState({apiVersion, customApiVersion: false}, () => {
-      this._localStorage.set('apiVersion', this.state.apiVersion)
-      this._client.config({
-        apiVersion: this.state.apiVersion,
-      })
-      this.handleQueryExecution()
-    })
-  }
-
-  handleCustomApiVersionChange(evt: ChangeEvent<HTMLInputElement>) {
-    const customApiVersion = evt.target.value || ''
-    const isValidApiVersion = validateApiVersion(customApiVersion)
-
-    this.setState(
-      (prevState) => ({
-        apiVersion: isValidApiVersion ? customApiVersion : prevState.apiVersion,
-        customApiVersion: customApiVersion || 'v',
-        isValidApiVersion,
-      }),
-      () => {
-        if (!this.state.isValidApiVersion || typeof this.state.customApiVersion !== 'string') {
-          return
-        }
-
-        this._localStorage.set('apiVersion', this.state.customApiVersion)
-        this._client.config({apiVersion: this.state.customApiVersion})
-      },
-    )
-  }
-
-  handleChangePerspective(evt: ChangeEvent<HTMLSelectElement>) {
-    const perspective = evt.target.value
-    this.setPerspective(perspective === 'default' ? undefined : perspective)
-  }
-
-  setPerspective(perspective: string | undefined): void {
-    if (perspective !== undefined && !isSupportedPerspective(perspective)) {
-      return
-    }
-
-    this.setState({perspective}, () => {
-      this._localStorage.set('perspective', this.state.perspective)
-      this._client.config({
+      const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective'>> & {
+        params: Params
+        perspective: ClientPerspective | undefined
+      } = {
+        query: options?.query || query,
+        dataset: options?.dataset || dataset,
+        params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective: this.state.perspective,
-          pinnedPerspective: this.props.pinnedPerspective,
+          visionPerspective: options?.perspective || perspective,
+          perspectiveStack,
         }),
-      })
-      this.handleQueryExecution()
-    })
-  }
+        apiVersion:
+          options?.apiVersion ||
+          (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion),
+      }
 
-  handleListenerEvent(evt: ListenEvent<any>) {
+      localStorage.set('query', context.query)
+      localStorage.set('params', context.params.raw)
+
+      cancelListenerSubscription()
+
+      setQueryInProgress(!context.params.error && Boolean(context.query))
+      setListenInProgress(false)
+      setListenMutations([])
+      setError(context.params.error ? new Error(context.params.error) : undefined)
+      setQueryResult(undefined)
+      setQueryTime(undefined)
+      setE2eTime(undefined)
+
+      if (context.params.error) {
+        return
+      }
+
+      const urlQueryOpts: Record<string, string | string[]> = {
+        perspective: context.perspective ?? [],
+      }
+
+      const ctxClient = client.withConfig({
+        apiVersion: context.apiVersion,
+        dataset: context.dataset,
+        perspective: context.perspective,
+      })
+
+      const newUrl = ctxClient.getUrl(
+        ctxClient.getDataUrl(
+          'query',
+          encodeQueryString(context.query, context.params.parsed, urlQueryOpts),
+        ),
+      )
+      setUrl(newUrl)
+
+      const queryStart = Date.now()
+
+      querySubscriptionRef.current = ctxClient.observable
+        .fetch(context.query, context.params.parsed, {filterResponse: false, tag: 'vision'})
+        .subscribe({
+          next: (res) => {
+            setQueryTime(res.ms)
+            setE2eTime(Date.now() - queryStart)
+            setQueryResult(res.result)
+            setQueryInProgress(false)
+            setError(undefined)
+          },
+          error: (err) => {
+            setError(err)
+            setQueryInProgress(false)
+          },
+        })
+    },
+    [
+      queryInProgress,
+      query,
+      dataset,
+      params.parsed,
+      t,
+      perspective,
+      perspectiveStack,
+      customApiVersion,
+      isValidApiVersion,
+      apiVersion,
+      localStorage,
+      cancelListenerSubscription,
+      client,
+      cancelQuerySubscription,
+    ],
+  )
+
+  const setPerspective = useCallback(
+    (newPerspective: string | undefined): void => {
+      if (newPerspective !== undefined && !isSupportedPerspective(newPerspective)) {
+        return
+      }
+
+      setPerspectiveState(newPerspective as SupportedPerspective)
+      localStorage.set('perspective', newPerspective)
+
+      handleQueryExecution({perspective: newPerspective})
+    },
+    [localStorage, handleQueryExecution],
+  )
+
+  const handleChangeDataset = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      const newDataset = evt.target.value
+      localStorage.set('dataset', newDataset)
+      setDataset(newDataset)
+      handleQueryExecution({dataset: newDataset})
+    },
+    [localStorage, handleQueryExecution],
+  )
+
+  const handleChangeApiVersion = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      const newApiVersion = evt.target.value
+      if (newApiVersion?.toLowerCase() === 'other') {
+        setCustomApiVersion('v')
+        customApiVersionElementRef.current?.focus()
+        return
+      }
+
+      setApiVersion(newApiVersion)
+      setCustomApiVersion(false)
+      localStorage.set('apiVersion', newApiVersion)
+      handleQueryExecution({apiVersion: newApiVersion})
+    },
+    [localStorage, handleQueryExecution],
+  )
+
+  // Handle custom API version change
+  const handleCustomApiVersionChange = useCallback(
+    (evt: ChangeEvent<HTMLInputElement>) => {
+      const newCustomApiVersion = evt.target.value || ''
+      setCustomApiVersion(newCustomApiVersion || 'v')
+
+      if (validateApiVersion(newCustomApiVersion)) {
+        setApiVersion(newCustomApiVersion)
+        localStorage.set('apiVersion', newCustomApiVersion)
+        handleQueryExecution({apiVersion: newCustomApiVersion})
+      }
+    },
+    [localStorage, handleQueryExecution],
+  )
+
+  // Handle perspective change
+  const handleChangePerspective = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      const newPerspective = evt.target.value
+      setPerspective(newPerspective === 'default' ? undefined : newPerspective)
+    },
+    [setPerspective],
+  )
+
+  const handleListenerEvent = useCallback((evt: ListenEvent<any>) => {
     if (evt.type !== 'mutation') {
       return
     }
 
-    this.setState(({listenMutations}) => ({
-      listenMutations:
-        listenMutations.length === 50
-          ? [evt, ...listenMutations.slice(0, 49)]
-          : [evt, ...listenMutations],
-    }))
-  }
-
-  handleKeyDown(event: KeyboardEvent) {
-    const {hasValidParams} = this.state
-    const isWithinRoot =
-      this._visionRoot.current && nodeContains(this._visionRoot.current, event.target)
-    if (isRunHotkey(event) && isWithinRoot && hasValidParams) {
-      this.handleQueryExecution()
-      event.preventDefault()
-      event.stopPropagation()
-    }
-  }
-
-  ensureSelectedApiVersion() {
-    const {apiVersion, customApiVersion} = this.state
-    const wantedApiVersion = customApiVersion || apiVersion
-    if (this._client.config().apiVersion !== wantedApiVersion) {
-      this._client.config({apiVersion: wantedApiVersion})
-    }
-  }
-
-  handleListenExecution() {
-    const {query, params, rawParams, listenInProgress} = this.state
+    setListenMutations((prevMutations) =>
+      prevMutations.length === 50 ? [evt, ...prevMutations.slice(0, 49)] : [evt, ...prevMutations],
+    )
+  }, [])
+  const handleListenExecution = useCallback(() => {
     if (listenInProgress) {
-      this.cancelListener()
-      this.setState({listenInProgress: false})
+      cancelListenerSubscription()
+      setListenInProgress(false)
       return
     }
 
-    this.ensureSelectedApiVersion()
+    const newUrl = client.getDataUrl('listen', encodeQueryString(query, params.parsed, {}))
 
-    const paramsError = params instanceof Error ? params : undefined
-    const encodeParams = params instanceof Error ? {} : params || {}
-    const url = this._client.getDataUrl('listen', encodeQueryString(query, encodeParams, {}))
+    const shouldExecute = !params.error && query.trim().length > 0
 
-    const shouldExecute = !paramsError && query.trim().length > 0
+    localStorage.set('query', query)
+    localStorage.set('params', params.raw)
 
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
+    cancelQuerySubscription()
 
-    this.cancelQuery()
-
-    this.setState({
-      url,
-      listenMutations: [],
-      queryInProgress: false,
-      queryResult: undefined,
-      listenInProgress: shouldExecute,
-      error: paramsError,
-      queryTime: undefined,
-      e2eTime: undefined,
-    })
+    setUrl(newUrl)
+    setListenMutations([])
+    setQueryInProgress(false)
+    setQueryResult(undefined)
+    setListenInProgress(shouldExecute)
+    setError(params.error ? new Error(params.error) : undefined)
+    setQueryTime(undefined)
+    setE2eTime(undefined)
 
     if (!shouldExecute) {
       return
     }
 
-    this._listenSubscription = this._client
-      .listen(query, params, {events: ['mutation', 'welcome'], includeAllVersions: true})
+    listenSubscriptionRef.current = client
+      .listen(query, params.parsed, {events: ['mutation', 'welcome'], includeAllVersions: true})
       .subscribe({
-        next: this.handleListenerEvent,
-        error: (error) =>
-          this.setState({
-            error,
-            query,
-            listenInProgress: false,
-          }),
-      })
-  }
-
-  handleQueryExecution() {
-    const {query, params, rawParams, queryInProgress} = this.state
-
-    if (queryInProgress) {
-      this.cancelQuery()
-      this.cancelListener()
-      this.setState({queryInProgress: false})
-      return true
-    }
-
-    const paramsError = params instanceof Error && params
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
-
-    this.cancelListener()
-
-    this.setState({
-      queryInProgress: !paramsError && Boolean(query),
-      listenInProgress: false,
-      listenMutations: [],
-      error: paramsError || undefined,
-      queryResult: undefined,
-      queryTime: undefined,
-      e2eTime: undefined,
-    })
-
-    if (!query || paramsError) {
-      return true
-    }
-
-    this.ensureSelectedApiVersion()
-
-    const urlQueryOpts: Record<string, string | string[]> = {}
-    if (this.state.perspective) {
-      urlQueryOpts.perspective =
-        getActivePerspective({
-          visionPerspective: this.state.perspective,
-          pinnedPerspective: this.props.pinnedPerspective,
-        }) ?? []
-    }
-
-    const url = this._client.getUrl(
-      this._client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts)),
-    )
-    this.setState({url})
-
-    const queryStart = Date.now()
-
-    this._querySubscription = this._client.observable
-      .fetch(query, params, {filterResponse: false, tag: 'vision'})
-      .subscribe({
-        next: (res) => {
-          this.setState({
-            queryTime: res.ms,
-            e2eTime: Date.now() - queryStart,
-            queryResult: res.result,
-            queryInProgress: false,
-            error: undefined,
-          })
-        },
-        error: (error) => {
-          this.setState({
-            error,
-            query,
-            queryInProgress: false,
-          })
+        next: handleListenerEvent,
+        error: (err) => {
+          setError(err)
+          setListenInProgress(false)
         },
       })
+  }, [
+    listenInProgress,
+    params,
+    query,
+    localStorage,
+    cancelQuerySubscription,
+    handleListenerEvent,
+    cancelListenerSubscription,
+    client,
+  ])
 
-    return true
-  }
-
-  handleQueryChange(query: string) {
-    this.setState({query})
-  }
-
-  handleParamsChange({raw, parsed, valid, error}: ParamsEditorChangeEvent) {
-    this.setState(
-      {
-        rawParams: raw,
-        params: parsed,
-        hasValidParams: valid,
-        paramsError: error,
-      },
-      () => this._localStorage.set('params', raw),
-    )
-  }
-
-  handleCopyUrl() {
-    const el = this._operationUrlElement.current
-    if (!el) {
-      return
-    }
-
-    try {
-      el.select()
-      document.execCommand('copy')
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Unable to copy to clipboard :(')
-    }
-  }
-
-  render() {
-    const {datasets, t, pinnedPerspective} = this.props
-    const {
-      apiVersion,
-      customApiVersion,
-      dataset,
-      e2eTime,
-      error,
-      hasValidParams,
-      isValidApiVersion,
-      listenInProgress,
-      listenMutations,
-      paneSizeOptions,
-      paramsError,
-      perspective,
-      query,
-      queryInProgress,
-      queryResult,
-      queryTime,
-      rawParams,
-      url,
-    } = this.state
-    const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
-    const jsonUrl = hasResult ? getJsonBlobUrl(queryResult) : ''
-    const csvUrl = hasResult ? getCsvBlobUrl(queryResult) : ''
-
-    return (
-      <Root
-        direction="column"
-        height="fill"
-        ref={this._visionRoot}
-        sizing="border"
-        overflow="hidden"
-        data-testid="vision-root"
-      >
-        <Header paddingX={3} paddingY={2}>
-          <Grid columns={[1, 4, 8, 12]}>
-            {/* Dataset selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
-                </Card>
-                <Select value={dataset} onChange={this.handleChangeDataset}>
-                  {datasets.map((ds) => (
-                    <option key={ds}>{ds}</option>
-                  ))}
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* API version selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
-                </Card>
-                <Select
-                  value={customApiVersion === false ? apiVersion : 'other'}
-                  onChange={this.handleChangeApiVersion}
-                >
-                  {API_VERSIONS.map((version) => (
-                    <option key={version}>{version}</option>
-                  ))}
-                  <option key="other" value="other">
-                    {t('settings.other-api-version-label')}
-                  </option>
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* Custom API version input */}
-            {customApiVersion !== false && (
-              <Box padding={1} column={2}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel textOverflow="ellipsis">
-                      {t('settings.custom-api-version-label')}
-                    </StyledLabel>
-                  </Card>
-
-                  <TextInput
-                    ref={this._customApiVersionElement}
-                    value={customApiVersion}
-                    onChange={this.handleCustomApiVersionChange}
-                    customValidity={
-                      isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
-                    }
-                    maxLength={11}
-                  />
-                </Stack>
-              </Box>
-            )}
-
-            {/* Perspective selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingBottom={1}>
-                  <Inline space={1}>
-                    <Box>
-                      <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
-                    </Box>
-
-                    <Box>
-                      <PerspectivePopover />
-                    </Box>
-                  </Inline>
-                </Card>
-                <Select value={perspective || 'default'} onChange={this.handleChangePerspective}>
-                  {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
-                    if (perspectiveName === 'pinnedRelease') {
-                      return (
-                        <Fragment key="pinnedRelease">
-                          <PinnedReleasePerspectiveOption
-                            pinnedPerspective={pinnedPerspective}
-                            t={t}
-                          />
-                          <option key="default" value="default">
-                            {t('settings.perspectives.default')}
-                          </option>
-                          <hr />
-                        </Fragment>
-                      )
-                    }
-                    return <option key={perspectiveName}>{perspectiveName}</option>
-                  })}
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* Query URL (for copying) */}
-            {typeof url === 'string' ? (
-              <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel>
-                      {t('query.url')}&nbsp;
-                      <QueryCopyLink onClick={this.handleCopyUrl}>
-                        [{t('action.copy-url-to-clipboard')}]
-                      </QueryCopyLink>
-                    </StyledLabel>
-                  </Card>
-                  <Flex flex={1} gap={1}>
-                    <Box flex={1}>
-                      <TextInput readOnly type="url" ref={this._operationUrlElement} value={url} />
-                    </Box>
-                    <Tooltip content={t('action.copy-url-to-clipboard')}>
-                      <Button
-                        aria-label={t('action.copy-url-to-clipboard')}
-                        type="button"
-                        mode="ghost"
-                        icon={CopyIcon}
-                        onClick={this.handleCopyUrl}
-                      />
-                    </Tooltip>
-                  </Flex>
-                </Stack>
-              </Box>
-            ) : (
-              <Box flex={1} />
-            )}
-          </Grid>
-        </Header>
-        <SplitpaneContainer flex="auto">
-          <SplitPane
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
-            minSize={280}
-            defaultSize={400}
-            maxSize={-400}
-          >
-            <Box height="stretch" flex={1}>
-              {/*
-                  The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
-                  - It sets the initial size of the panes to 1/2 of the total available height of the container
-                  - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
-                  - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
-                  - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
-                  - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
-                  - Disables resize if the container height is less then 500px
-                  This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
-                */}
-              <SplitPane
-                className="sidebarPanes"
-                split="horizontal"
-                defaultSize={
-                  narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-                }
-                size={paneSizeOptions.size}
-                allowResize={paneSizeOptions.allowResize}
-                minSize={narrowBreakpoint() ? paneSizeOptions.minSize : 100}
-                maxSize={paneSizeOptions.maxSize}
-                primary="first"
-              >
-                <InputContainer
-                  display="flex"
-                  ref={this._queryEditorContainer}
-                  data-testid="vision-query-editor"
-                >
-                  <Box flex={1}>
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('query.label')}</StyledLabel>
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <VisionCodeMirror
-                      initialValue={query}
-                      onChange={this.handleQueryChange}
-                      ref={this._editorQueryRef}
-                    />
-                  </Box>
-                </InputContainer>
-                <InputContainer display="flex" ref={this._paramsEditorContainer}>
-                  <Card
-                    flex={1}
-                    tone={hasValidParams ? 'default' : 'critical'}
-                    data-testid="params-editor"
-                  >
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('params.label')}</StyledLabel>
-                        {paramsError && (
-                          <Tooltip placement="top-end" portal content={paramsError}>
-                            <Box padding={1} marginX={2}>
-                              <Text>
-                                <ErrorOutlineIcon />
-                              </Text>
-                            </Box>
-                          </Tooltip>
-                        )}
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <ParamsEditor
-                      value={rawParams}
-                      onChange={this.handleParamsChange}
-                      editorRef={this._editorParamsRef}
-                    />
-                  </Card>
-                  {/* Controls (listen/run) */}
-                  <ControlsContainer>
-                    <Card padding={3} paddingX={3}>
-                      <Tooltip
-                        content={
-                          <Card radius={4}>
-                            <Text size={1} muted>
-                              {t('params.error.params-invalid-json')}
-                            </Text>
-                          </Card>
-                        }
-                        placement="top"
-                        disabled={hasValidParams}
-                        portal
-                      >
-                        <Flex justify="space-evenly">
-                          <Box flex={1}>
-                            <Tooltip
-                              content={
-                                <Card radius={4}>
-                                  <Hotkeys keys={['Ctrl', 'Enter']} />
-                                </Card>
-                              }
-                              placement="top"
-                              portal
-                            >
-                              <Button
-                                width="fill"
-                                onClick={this.handleQueryExecution}
-                                type="button"
-                                icon={queryInProgress ? StopIcon : PlayIcon}
-                                disabled={listenInProgress || !hasValidParams}
-                                tone={queryInProgress ? 'positive' : 'primary'}
-                                text={
-                                  queryInProgress
-                                    ? t('action.query-cancel')
-                                    : t('action.query-execute')
-                                }
-                              />
-                            </Tooltip>
-                          </Box>
-                          <Box flex={1} marginLeft={3}>
-                            <Button
-                              width="fill"
-                              onClick={this.handleListenExecution}
-                              type="button"
-                              icon={listenInProgress ? StopIcon : PlayIcon}
-                              text={
-                                listenInProgress
-                                  ? t('action.listen-cancel')
-                                  : t('action.listen-execute')
-                              }
-                              mode="ghost"
-                              disabled={!hasValidParams}
-                              tone={listenInProgress ? 'positive' : 'default'}
-                            />
-                          </Box>
-                        </Flex>
-                      </Tooltip>
-                    </Card>
-                  </ControlsContainer>
-                </InputContainer>
-              </SplitPane>
-            </Box>
-            <ResultOuterContainer direction="column" data-testid="vision-result">
-              <ResultInnerContainer flex={1}>
-                <ResultContainer
-                  flex={1}
-                  overflow="hidden"
-                  tone={error ? 'critical' : 'default'}
-                  $isInvalid={Boolean(error)}
-                >
-                  <Result overflow="auto">
-                    <InputBackgroundContainer>
-                      <Box marginLeft={3}>
-                        <StyledLabel muted>{t('result.label')}</StyledLabel>
-                      </Box>
-                    </InputBackgroundContainer>
-                    <Box padding={3} paddingTop={5}>
-                      {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
-                        <Box marginTop={3}>
-                          <DelayedSpinner />
-                        </Box>
-                      )}
-                      {error && <QueryErrorDialog error={error} />}
-                      {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
-                      {listenInProgress && listenMutations.length > 0 && (
-                        <ResultView data={listenMutations} datasetName={dataset} />
-                      )}
-                    </Box>
-                  </Result>
-                </ResultContainer>
-              </ResultInnerContainer>
-              {/* Execution time */}
-              <ResultFooter justify="space-between" direction={['column', 'column', 'row']}>
-                <TimingsCard paddingX={4} paddingY={3} sizing="border">
-                  <TimingsTextContainer align="center">
-                    <Box>
-                      <Text muted>
-                        {t('result.execution-time-label')}:{' '}
-                        {typeof queryTime === 'number'
-                          ? `${queryTime}ms`
-                          : t('result.timing-not-applicable')}
-                      </Text>
-                    </Box>
-                    <Box marginLeft={4}>
-                      <Text muted>
-                        {t('result.end-to-end-time-label')}:{' '}
-                        {typeof e2eTime === 'number'
-                          ? `${e2eTime}ms`
-                          : t('result.timing-not-applicable')}
-                      </Text>
-                    </Box>
-                  </TimingsTextContainer>
-                </TimingsCard>
-                <Flex>
-                  {hasResult && (
-                    <DownloadsCard paddingX={4} paddingY={3} sizing="border">
-                      <SaveResultLabel muted>
-                        <Translate
-                          components={{
-                            SaveResultButtons: () => (
-                              <>
-                                <SaveJsonButton blobUrl={jsonUrl} />
-                                <SaveCsvButton blobUrl={csvUrl} />
-                              </>
-                            ),
-                          }}
-                          i18nKey="result.save-result-as-format"
-                          t={t}
-                        />
-                      </SaveResultLabel>
-                    </DownloadsCard>
-                  )}
-
-                  <Flex justify="center" align="center" gap={2} padding={2}>
-                    <Button text={t('action.load-query')} icon={UnarchiveIcon} mode="ghost" />
-                    <Button
-                      text={t('action.save-query')}
-                      icon={ArchiveIcon}
-                      mode="ghost"
-                      onClick={() =>
-                        this.props.queryDoc.saveQuery({
-                          params: this.state.params,
-                          query: this.state.query,
-                          perspective: getActivePerspective({
-                            visionPerspective: perspective,
-                            pinnedPerspective: this.props.pinnedPerspective,
-                          }),
-                          savedAt: new Date().toISOString(),
-                        })
-                      }
-                    />
-                  </Flex>
-                </Flex>
-              </ResultFooter>
-            </ResultOuterContainer>
-          </SplitPane>
-        </SplitpaneContainer>
-      </Root>
-    )
-  }
-}
-
-function getActivePerspective({
-  visionPerspective,
-  pinnedPerspective,
-}: {
-  visionPerspective: ClientPerspective | SupportedPerspective | undefined
-  pinnedPerspective: PerspectiveContextValue
-}): ClientPerspective | undefined {
-  if (visionPerspective !== 'pinnedRelease') {
-    return visionPerspective
-  }
-
-  if (pinnedPerspective.perspectiveStack.length !== 0) {
-    return pinnedPerspective.perspectiveStack
-  }
-
-  if (typeof pinnedPerspective.selectedPerspectiveName !== 'undefined') {
-    return [pinnedPerspective.selectedPerspectiveName]
-  }
-
-  return undefined
-}
-
-const PinnedReleasePerspectiveOption: ComponentType<{
-  pinnedPerspective: PerspectiveContextValue
-  t: TFunction
-}> = ({pinnedPerspective, t}) => {
-  const name =
-    typeof pinnedPerspective.selectedPerspective === 'object'
-      ? pinnedPerspective.selectedPerspective.metadata.title
-      : pinnedPerspective.selectedPerspectiveName
-
-  const label = hasPinnedPerspective(pinnedPerspective)
-    ? `(${t('settings.perspectives.pinned-release-label')})`
-    : t('settings.perspectives.pinned-release-label')
-
-  const text = useMemo(
-    () => [name, label].filter((value) => typeof value !== 'undefined').join(' '),
-    [label, name],
+  const handleParamsChange = useCallback(
+    (value: Params) => {
+      setParams(value)
+      localStorage.set('params', value.raw)
+    },
+    [localStorage],
   )
 
-  return (
-    <option value="pinnedRelease" disabled={!hasPinnedPerspective(pinnedPerspective)}>
-      {text}
-    </option>
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const isWithinRoot =
+        visionRootRef.current && nodeContains(visionRootRef.current, event.target)
+      if (isRunHotkey(event) && isWithinRoot && params.valid) {
+        handleQueryExecution()
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    },
+    [params.valid, handleQueryExecution],
   )
-}
 
-function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
-  return typeof selectedPerspectiveName !== 'undefined'
-}
+  const handlePaste = useCallback(
+    (evt: ClipboardEvent) => {
+      if (!evt.clipboardData) {
+        return
+      }
 
-function hasPinnedPerspectiveChanged(
-  previous: PerspectiveContextValue,
-  next: PerspectiveContextValue,
-): boolean {
-  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
+      const data = evt.clipboardData.getData('text/plain')
+      const match = data.match(sanityUrl)
+      if (!match) {
+        return
+      }
+
+      const [, usedApiVersion, usedDataset, urlQuery] = match
+      let parts: ParsedApiQueryString
+
+      try {
+        const qs = new URLSearchParams(urlQuery)
+        parts = parseApiQueryString(qs)
+      } catch (err) {
+        console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
+        return // Give up on error
+      }
+
+      let newApiVersion: string | undefined
+      let newCustomApiVersion: string | false | undefined
+
+      if (validateApiVersion(usedApiVersion)) {
+        if (API_VERSIONS.includes(usedApiVersion)) {
+          newApiVersion = usedApiVersion
+          newCustomApiVersion = false
+        } else {
+          newCustomApiVersion = usedApiVersion
+        }
+      }
+
+      const newPerspective =
+        isSupportedPerspective(parts.options.perspective) &&
+        !isVirtualPerspective(parts.options.perspective)
+          ? parts.options.perspective
+          : undefined
+
+      if (
+        newPerspective &&
+        (!isSupportedPerspective(parts.options.perspective) ||
+          isVirtualPerspective(parts.options.perspective))
+      ) {
+        toast.push({
+          closable: true,
+          id: 'vision-paste-unsupported-perspective',
+          status: 'warning',
+          title: 'Perspective in pasted url is currently not supported. Falling back to "raw"',
+        })
+      }
+
+      const finalState = {
+        query: parts.query,
+        params: parts.params,
+        rawParams: JSON.stringify(parts.params, null, 2),
+        dataset: datasets.includes(usedDataset) ? usedDataset : dataset,
+        apiVersion: newApiVersion || apiVersion,
+        customApiVersion: newCustomApiVersion,
+        perspective: newPerspective || perspective,
+      }
+
+      evt.preventDefault()
+
+      // Update state with pasted values
+
+      setDataset(finalState.dataset)
+      setQuery(finalState.query)
+      setParams({
+        parsed: finalState.params,
+        raw: finalState.rawParams,
+        valid: true,
+        error: undefined,
+      })
+      setApiVersion(finalState.apiVersion)
+      if (finalState.customApiVersion) {
+        setCustomApiVersion(finalState.customApiVersion)
+      }
+      setPerspectiveState(finalState.perspective)
+
+      // Update the codemirror editor content
+      editorQueryRef.current?.resetEditorContent(finalState.query)
+      editorParamsRef.current?.resetEditorContent(finalState.rawParams)
+
+      // Update localStorage and client config
+      localStorage.merge({
+        query: finalState.query,
+        params: finalState.rawParams,
+        dataset: finalState.dataset,
+        apiVersion: finalState.customApiVersion || finalState.apiVersion,
+        perspective: finalState.perspective,
+      })
+
+      // Execute query with new values
+      handleQueryExecution(finalState)
+
+      toast.push({
+        closable: true,
+        id: 'vision-paste',
+        status: 'info',
+        title: 'Parsed URL to query',
+      })
+    },
+    [datasets, dataset, apiVersion, perspective, localStorage, toast, handleQueryExecution],
+  )
+
+  useEffect(() => {
+    window.document.addEventListener('paste', handlePaste)
+    window.document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.document.removeEventListener('paste', handlePaste)
+      window.document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleKeyDown, handlePaste])
+
+  useEffect(() => {
+    return () => {
+      cancelQuerySubscription()
+      cancelListenerSubscription()
+    }
+  }, [cancelQuerySubscription, cancelListenerSubscription])
+
+  const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
+    if (stack.length > 0) {
+      setPerspective('pinnedRelease')
+    }
+  })
+  // // Handle pinned perspective changes
+  useEffect(() => {
+    handleStudioPerspectiveChange(perspectiveStack)
+  }, [perspectiveStack])
 
   return (
-    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
+    <Root
+      direction="column"
+      height="fill"
+      ref={visionRootRef}
+      sizing="border"
+      overflow="hidden"
+      data-testid="vision-root"
+    >
+      <VisionGuiHeader
+        apiVersion={apiVersion}
+        customApiVersion={customApiVersion}
+        dataset={dataset}
+        datasets={datasets}
+        onChangeDataset={handleChangeDataset}
+        onChangeApiVersion={handleChangeApiVersion}
+        customApiVersionElementRef={customApiVersionElementRef}
+        onCustomApiVersionChange={handleCustomApiVersionChange}
+        isValidApiVersion={isValidApiVersion}
+        onChangePerspective={handleChangePerspective}
+        url={url}
+        perspective={perspective}
+      />
+      <SplitpaneContainer flex="auto">
+        <SplitPane
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
+          minSize={280}
+          defaultSize={400}
+          maxSize={-400}
+        >
+          <Box height="stretch" flex={1}>
+            {/*
+                    The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
+                    - It sets the initial size of the panes to 1/2 of the total available height of the container
+                    - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
+                    - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
+                    - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
+                    - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
+                    - Disables resize if the container height is less then 500px
+                    This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
+                  */}
+            <SplitPane
+              className="sidebarPanes"
+              split="horizontal"
+              defaultSize={
+                isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+              }
+              size={paneSizeOptions.size}
+              allowResize={paneSizeOptions.allowResize}
+              minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
+              maxSize={paneSizeOptions.maxSize}
+              primary="first"
+            >
+              <InputContainer display="flex" data-testid="vision-query-editor">
+                <Box flex={1}>
+                  <InputBackgroundContainerLeft>
+                    <Flex>
+                      <StyledLabel muted>{t('query.label')}</StyledLabel>
+                    </Flex>
+                  </InputBackgroundContainerLeft>
+                  <VisionCodeMirror initialValue={query} onChange={setQuery} ref={editorQueryRef} />
+                </Box>
+              </InputContainer>
+              <InputContainer display="flex">
+                <ParamsEditor
+                  value={params.raw}
+                  onChange={handleParamsChange}
+                  paramsError={params.error}
+                  hasValidParams={params.valid}
+                  editorRef={editorParamsRef}
+                />
+
+                <VisionGuiControls
+                  hasValidParams={params.valid}
+                  queryInProgress={queryInProgress}
+                  listenInProgress={listenInProgress}
+                  onQueryExecution={handleQueryExecution}
+                  onListenExecution={handleListenExecution}
+                />
+              </InputContainer>
+            </SplitPane>
+          </Box>
+          <VisionGuiResult
+            error={error}
+            queryInProgress={queryInProgress}
+            queryResult={queryResult}
+            listenInProgress={listenInProgress}
+            listenMutations={listenMutations}
+            dataset={dataset}
+            queryTime={queryTime}
+            e2eTime={e2eTime}
+          />
+        </SplitPane>
+      </SplitpaneContainer>
+    </Root>
   )
 }

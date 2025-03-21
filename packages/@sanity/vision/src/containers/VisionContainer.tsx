@@ -1,18 +1,12 @@
-import {Flex, useToast} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {Flex} from '@sanity/ui'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
-import {useQueryDocument} from '../hooks/useQueryDocument'
-import {visionLocaleNamespace} from '../i18n'
 import {type VisionProps} from '../types'
 
 export function VisionContainer(props: VisionProps) {
-  const toast = useToast()
   const loadedDatasets = useDatasets(props.client)
-  const {t} = useTranslation(visionLocaleNamespace)
-  const queryDoc = useQueryDocument()
 
   if (!loadedDatasets) {
     return (
@@ -29,5 +23,16 @@ export function VisionContainer(props: VisionProps) {
       : // Otherwise use the loaded list, obviously
         loadedDatasets
 
-  return <VisionGui {...props} datasets={datasets} toast={toast} t={t} queryDoc={queryDoc} />
+  const projectId = props.client.config().projectId
+  const defaultDataset = props.config.defaultDataset || props.client.config().dataset || datasets[0]
+
+  return (
+    <VisionGui
+      {...props}
+      key={projectId}
+      datasets={datasets}
+      projectId={projectId}
+      defaultDataset={defaultDataset}
+    />
+  )
 }
