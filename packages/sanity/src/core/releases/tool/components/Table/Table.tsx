@@ -22,20 +22,26 @@ import {
 } from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components'
 import {TableHeader} from './TableHeader'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'
 
-type RowDatum<TableData, AdditionalRowTableData> = AdditionalRowTableData extends undefined
+type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData extends undefined
   ? TableData
-  : TableData & AdditionalRowTableData
+  : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
 export type TableRowProps = Omit<
   CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
   'ref'
 > &
   RefAttributes<HTMLDivElement>
+
+type VirtualDatum = {
+  virtualRow: VirtualItem
+  index: number
+  isFirst: boolean
+  isLast: boolean
+}
 
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
@@ -58,6 +64,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 }
 
 const ITEM_HEIGHT = 59
+const LOADING_ROW_COUNT = 3
 
 /**
  * This function modifies the rangeExtractor to account for the offset of the virtualizer
@@ -160,7 +167,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       ),
       cell: ({datum, cellProps: {id}}) => (
         <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
-          {rowActions?.({datum}) || <Box style={{width: '25px'}} />}
+          {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
     }),
@@ -175,18 +182,15 @@ const TableInner = <TableData, AdditionalRowTableData>({
   const renderRow = useMemo(
     () =>
       function TableRow(
-        datum: (TableData | (TableData & AdditionalRowTableData)) & {
-          virtualRow: VirtualItem
-          index: number
-          isFirst: boolean
-          isLast: boolean
-        },
+        datum: VirtualDatum &
+          (TableData | (TableData & AdditionalRowTableData) | {_id: string; isLoading: boolean}),
       ) {
         const cardRowProps = rowProps(datum as TableData)
+        const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
         return (
           <Card
-            key={String(get(datum, rowId))}
+            key={cardKey}
             data-testid="table-row"
             as="tr"
             borderBottom
@@ -204,7 +208,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
             {amalgamatedColumnDefs.map(({cell: Cell, style, width, id, sorting = false}) => (
               <Fragment key={String(id)}>
                 <Cell
-                  datum={datum as RowDatum<TableData, AdditionalRowTableData>}
+                  datum={
+                    {...datum, isLoading: loading} as RowDatum<TableData, AdditionalRowTableData>
+                  }
                   cellProps={{
                     as: 'td',
                     id: String(id),
@@ -217,7 +223,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           </Card>
         )
       },
-    [amalgamatedColumnDefs, rowId, rowProps],
+    [amalgamatedColumnDefs, loading, rowId, rowProps],
   )
 
   const emptyContent = useMemo(() => {
@@ -252,11 +258,56 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const theme = useTheme()
 
-  if (loading) {
-    return <LoadingBlock fill data-testid="table-loading" />
+  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+
+  const renderLoadingRows = (
+    rowRenderer: (
+      datum: VirtualDatum &
+        ({_id: string; isLoading: boolean} | TableData | (TableData & AdditionalRowTableData)),
+    ) => React.ReactNode,
+  ) => {
+    return Array.from({length: LOADING_ROW_COUNT}).map((el, index) => {
+      const cardKey = `skeleton-${index}`
+      const virtualRow: VirtualItem = {
+        index,
+        start: index * ITEM_HEIGHT,
+        size: ITEM_HEIGHT,
+        lane: 0,
+        key: cardKey,
+        end: index * ITEM_HEIGHT + ITEM_HEIGHT,
+      }
+
+      return rowRenderer({
+        _id: cardKey,
+        isLoading: true,
+        virtualRow,
+        index,
+        isFirst: index === 0,
+        isLast: index === LOADING_ROW_COUNT - 1,
+      })
+    })
   }
 
-  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  const tableContent = () => {
+    if (loading) {
+      return renderLoadingRows(renderRow)
+    }
+
+    if (filteredData.length === 0) {
+      return emptyContent
+    }
+
+    return rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+      const datum = filteredData[virtualRow.index]
+      return renderRow({
+        ...datum,
+        virtualRow,
+        index,
+        isFirst: virtualRow.index === 0,
+        isLast: virtualRow.index === filteredData.length - 1,
+      })
+    })
+  }
 
   return (
     <div ref={virtualizerContainerRef}>
@@ -271,21 +322,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
         }
       >
         <Stack as="table">
-          <TableHeader headers={headers} searchDisabled={!searchTerm && !data.length} />
-          <Stack as="tbody">
-            {filteredData.length === 0
-              ? emptyContent
-              : rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
-                  const datum = filteredData[virtualRow.index]
-                  return renderRow({
-                    ...datum,
-                    virtualRow,
-                    index,
-                    isFirst: virtualRow.index === 0,
-                    isLast: virtualRow.index === filteredData.length - 1,
-                  })
-                })}
-          </Stack>
+          <TableHeader
+            headers={headers}
+            searchDisabled={loading || (!searchTerm && !data.length)}
+          />
+          <Stack as="tbody">{tableContent()}</Stack>
         </Stack>
       </div>
     </div>

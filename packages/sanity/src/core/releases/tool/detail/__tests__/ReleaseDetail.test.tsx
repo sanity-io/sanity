@@ -161,10 +161,6 @@ describe('ReleaseDetail', () => {
       await renderTest()
     })
 
-    it('should show loading spinner', () => {
-      screen.getByTestId('loading-block')
-    })
-
     it('should show the header', () => {
       screen.getByText(activeASAPRelease.metadata.title)
       screen.getByTestId('release-menu-button')
