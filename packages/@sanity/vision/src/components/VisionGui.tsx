@@ -38,10 +38,12 @@ import {
 import {VisionGuiControls} from './VisionGuiControls'
 import {VisionGuiHeader} from './VisionGuiHeader'
 import {VisionGuiResult} from './VisionGuiResult'
+
 // TODO
-// -Fix types
-// -Make table look ok
-// -Loading state
+// -Error handling
+// -Confirm dialog for delete
+// -title/description for saved queries
+
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
     return false

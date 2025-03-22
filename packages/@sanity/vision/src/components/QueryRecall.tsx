@@ -1,5 +1,5 @@
-import {ArchiveIcon, UnarchiveIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex, Text} from '@sanity/ui'
+import {ArchiveIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {Box, Button, Code, Dialog, Flex, Spinner, Text} from '@sanity/ui'
 import {type Dispatch, type RefObject, type SetStateAction, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
@@ -12,7 +12,23 @@ import {type Params} from './VisionGui'
 
 const Table = styled.table`
   width: 100%;
-  border: 1px solid black;
+  margin: 0 auto;
+  & thead > tr {
+    text-align: left;
+  }
+  & tbody > tr:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+  & tbody > tr > td {
+    padding: 0.5em;
+    &.load-query,
+    &.delete-query {
+      text-align: center;
+    }
+  }
+`
+const DialogContentWrapper = styled.div`
+  min-height: 66vh;
 `
 export function QueryRecall({
   params,
@@ -34,7 +50,7 @@ export function QueryRecall({
   editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 }) {
   const [open, setOpen] = useState(false)
-  const {saveQuery, document, deleteQuery} = useQueryDocument()
+  const {saveQuery, document, deleteQuery, saving, deleting} = useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
 
   const queries = document?.queries
@@ -54,7 +70,16 @@ export function QueryRecall({
         <Box flex={1} marginLeft={3}>
           <Button
             text={t('action.save-query')}
-            icon={ArchiveIcon}
+            icon={
+              saving ? (
+                <Flex justify="center" align={'center'}>
+                  <Spinner />
+                </Flex>
+              ) : (
+                ArchiveIcon
+              )
+            }
+            disabled={saving}
             mode="ghost"
             width="fill"
             onClick={() =>
@@ -70,62 +95,96 @@ export function QueryRecall({
       </Flex>
       {open && (
         <Dialog
-          header={t('action.load-query')}
+          header={
+            <Flex paddingTop={3}>
+              <Text size={3} weight="semibold">
+                {t('action.load-queries')}
+              </Text>
+            </Flex>
+          }
           id="query-save-dialog"
           onClose={() => setOpen(false)}
           zOffset={100}
-          width="auto"
-          height="auto"
+          width={3}
         >
-          {/*  TODO make look nice and add delete button */}
-          <Box padding={4}>
-            <Table>
-              <thead>
-                <tr style={{textAlign: 'left'}}>
-                  <th style={{border: '1px solid lime'}}>
-                    <Text>{t('label.saved-at')}</Text>
-                  </th>
-                  <th>
-                    <Text>{t('action.load-query')}</Text>
-                  </th>
-                  <th>
-                    <Text>{t('action.delete')}</Text>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {queries?.map((q, i) => (
-                  <tr key={i}>
-                    <td>
-                      <Text>{q.savedAt}</Text>
-                    </td>
-                    <td>
-                      <Button
-                        key={i}
-                        text={t('action.load-query')}
-                        onClick={() => {
-                          setQuery(q.query)
-                          setPerspective(q.perspective)
-                          setParams(parseParams(q.params, t))
-                          editorQueryRef.current?.resetEditorContent(q.query)
-                          editorParamsRef.current?.resetEditorContent(q.params)
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <Button
-                        key={i}
-                        text={t('action.delete')}
-                        onClick={() => {
-                          deleteQuery(q._key)
-                        }}
-                      />
-                    </td>
+          {/*  TODO make look nice */}
+          <DialogContentWrapper>
+            <Box padding={4}>
+              <Table>
+                {/* <thead>
+                  <tr>
+                    <th>
+                      <Text muted weight="semibold">
+                        {t('query.label')}
+                      </Text>
+                    </th>
+                    <th>
+                      <Text muted weight="semibold">
+                        {t('params.label')}
+                      </Text>
+                    </th>
+                    <th>
+                      <Text muted weight="semibold">
+                        {t('label.saved-at')}
+                      </Text>
+                    </th>
+                    <th>
+                      <Text muted weight="semibold">
+                        {t('action.load-query')}
+                      </Text>
+                    </th>
+                    <th>
+                      <Text muted weight="semibold">
+                        {t('action.delete')}
+                      </Text>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Box>
+                </thead> */}
+                <tbody>
+                  {queries?.map((q) => (
+                    <tr key={q._key}>
+                      {/* TODO: overflow for long queries */}
+                      <td className="query">
+                        <Code>{q.query}</Code>
+                      </td>
+                      <td className="params">
+                        <Code>{q.params}</Code>
+                      </td>
+                      <td className="saved-at">
+                        <Text>{new Date(q.savedAt).toLocaleString()}</Text>
+                      </td>
+                      <td className="load-query">
+                        <Button
+                          text={t('action.load-query')}
+                          disabled={deleting?.includes(q._key)}
+                          width="fill"
+                          onClick={() => {
+                            setQuery(q.query)
+                            setPerspective(q.perspective)
+                            setParams(parseParams(q.params, t))
+                            editorQueryRef.current?.resetEditorContent(q.query)
+                            editorParamsRef.current?.resetEditorContent(q.params)
+                          }}
+                        />
+                      </td>
+                      <td className="delete-query">
+                        <Button
+                          tone="critical"
+                          width="fill"
+                          disabled={deleting?.includes(q._key)}
+                          icon={TrashIcon}
+                          label={t('action.delete')}
+                          onClick={() => {
+                            deleteQuery(q._key)
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Box>
+          </DialogContentWrapper>
         </Dialog>
       )}
     </>

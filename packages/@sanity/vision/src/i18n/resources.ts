@@ -15,6 +15,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
   'action.listen-execute': 'Listen',
+  /** Label for query loading table */
+  'action.load-queries': 'Load queries',
   /** Label for loading a query */
   'action.load-query': 'Load query',
   /** Label for cancelling an ongoing query */
