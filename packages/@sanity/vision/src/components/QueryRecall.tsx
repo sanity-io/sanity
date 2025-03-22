@@ -1,5 +1,5 @@
 import {ArchiveIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {Box, Button, Code, Dialog, Flex, Text} from '@sanity/ui'
+import {Box, Button, Code, Dialog, Flex, Text, useToast} from '@sanity/ui'
 import {type Dispatch, type RefObject, type SetStateAction, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
@@ -21,9 +21,11 @@ const Table = styled.table`
   }
   & tbody > tr > td {
     padding: 0.5em;
-    &.load-query,
-    &.delete-query {
+    &.action-buttons {
       text-align: center;
+    }
+    &.query {
+      padding: 1em 0.75em;
     }
   }
 `
@@ -50,7 +52,8 @@ export function QueryRecall({
   editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 }) {
   const [open, setOpen] = useState(false)
-  const {saveQuery, document, deleteQuery, saving, deleting} = useQueryDocument()
+  const toast = useToast()
+  const {saveQuery, document, deleteQuery, saving, deleting, saveQueryError} = useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
 
   const queries = document?.queries
@@ -74,14 +77,29 @@ export function QueryRecall({
             disabled={saving}
             mode="ghost"
             width="fill"
-            onClick={() =>
-              saveQuery({
+            onClick={async () => {
+              await saveQuery({
                 params: params.raw,
                 query,
                 perspective,
                 savedAt: new Date().toISOString(),
               })
-            }
+
+              if (saveQueryError) {
+                toast.push({
+                  closable: true,
+                  status: 'error',
+                  title: t('save-query.error'),
+                  description: saveQueryError.message,
+                })
+              } else {
+                toast.push({
+                  closable: true,
+                  status: 'success',
+                  title: t('save-query.success'),
+                })
+              }
+            }}
           />
         </Box>
       </Flex>
@@ -137,39 +155,40 @@ export function QueryRecall({
                     <tr key={q._key}>
                       {/* TODO: overflow for long queries */}
                       <td className="query">
-                        <Code>{q.query}</Code>
+                        <Code size={1}>{q.query}</Code>
                       </td>
                       <td className="params">
-                        <Code>{q.params}</Code>
+                        <Code size={1}>{q.params}</Code>
                       </td>
                       <td className="saved-at">
                         <Text>{new Date(q.savedAt).toLocaleString()}</Text>
                       </td>
-                      <td className="load-query">
-                        <Button
-                          text={t('action.load-query')}
-                          disabled={deleting?.includes(q._key)}
-                          width="fill"
-                          onClick={() => {
-                            setQuery(q.query)
-                            setPerspective(q.perspective)
-                            setParams(parseParams(q.params, t))
-                            editorQueryRef.current?.resetEditorContent(q.query)
-                            editorParamsRef.current?.resetEditorContent(q.params)
-                          }}
-                        />
-                      </td>
-                      <td className="delete-query">
-                        <Button
-                          tone="critical"
-                          width="fill"
-                          disabled={deleting?.includes(q._key)}
-                          icon={TrashIcon}
-                          label={t('action.delete')}
-                          onClick={() => {
-                            deleteQuery(q._key)
-                          }}
-                        />
+                      <td className="action-buttons">
+                        <Flex direction={'column'} gap={2}>
+                          <Button
+                            text={t('action.load-query')}
+                            disabled={deleting?.includes(q._key)}
+                            width="fill"
+                            onClick={() => {
+                              setQuery(q.query)
+                              setPerspective(q.perspective)
+                              setParams(parseParams(q.params, t))
+                              editorQueryRef.current?.resetEditorContent(q.query)
+                              editorParamsRef.current?.resetEditorContent(q.params)
+                            }}
+                          />
+
+                          <Button
+                            tone="critical"
+                            width="fill"
+                            disabled={deleting?.includes(q._key)}
+                            icon={TrashIcon}
+                            label={t('action.delete')}
+                            onClick={() => {
+                              deleteQuery(q._key)
+                            }}
+                          />
+                        </Flex>
                       </td>
                     </tr>
                   ))}

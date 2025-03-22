@@ -59,10 +59,10 @@ export function useQueryDocument(): {
     return () => query$.unsubscribe()
   }, [client, documentId])
 
-  const saveQuery = (query: Record<string, unknown>) => {
+  const saveQuery = async (query: Record<string, unknown>) => {
     setSaving(true)
     setSaveQueryError(undefined)
-    client
+    await client
       .patch(documentId)
       .setIfMissing({queries: []})
       .insert('before', 'queries[0]', [query])
@@ -72,10 +72,10 @@ export function useQueryDocument(): {
       .finally(() => setSaving(false))
   }
 
-  const deleteQuery = (key: string) => {
+  const deleteQuery = async (key: string) => {
     setDeleting([...deleting, key])
     setDeleteQueryError(undefined)
-    client
+    await client
       .patch(documentId)
       .unset([`queries[_key == "${key}"]`])
       .commit()

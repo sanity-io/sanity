@@ -64,6 +64,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   'result.timing-not-applicable': 'n/a',
 
+  /** Save error label */
+  'save-query.error': 'Error saving query',
+  /** Save success label */
+  'save-query.success': 'Query saved',
+
   /** Label for the "API version" dropdown in settings */
   'settings.api-version-label': 'API version',
   /** Label for the "Custom API version" input in settings, shown when "other" is chosen as API version */
