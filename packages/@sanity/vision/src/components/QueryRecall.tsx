@@ -13,30 +13,85 @@ import {type Params} from './VisionGui'
 const Table = styled.table`
   width: 100%;
   margin: 0 auto;
+  border-collapse: collapse;
+
   & thead > tr {
     text-align: left;
+    border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
   }
-  & tbody > tr:nth-child(odd) {
-    background-color: #f9f9f9;
+
+  & th {
+    padding: 0.75em;
+    position: sticky;
+    top: 0;
+    background: ${({theme}) => theme.sanity.color.base.bg};
+    z-index: 1;
   }
-  & tbody > tr > td {
-    padding: 0.5em;
-    &.action-buttons {
-      text-align: center;
+
+  & tbody > tr {
+    border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: ${({theme}) => theme.sanity.color.base.hover};
     }
-    &.query {
-      padding: 1em 0.75em;
+  }
+
+  & tbody > tr > td {
+    padding: 1em 0.75em;
+    vertical-align: top;
+
+    &.action-buttons {
+      width: 120px;
+    }
+
+    &.query,
+    &.params {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      /* Add expand on hover */
+      &:hover {
+        overflow: visible;
+        white-space: pre-wrap;
+        word-break: break-all;
+        background: ${({theme}) => theme.sanity.color.base.bg};
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &.saved-at {
+      width: 180px;
+      white-space: nowrap;
     }
   }
 `
+
+// Update DialogContentWrapper to handle overflow better
 const DialogContentWrapper = styled.div`
   min-height: 66vh;
+  max-height: 80vh;
+  overflow: auto;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `
 
 // TODO
 // -Error handling for delete
 // -Confirm dialog for delete
 // -title/description for saved queries
+// -can/should this be a sidebar so you can tab between queries?
 
 export function QueryRecall({
   params,
@@ -125,41 +180,31 @@ export function QueryRecall({
           id="query-save-dialog"
           onClose={() => setOpen(false)}
           zOffset={100}
-          width={3}
+          width={2}
         >
           {/*  TODO make look nice */}
           <DialogContentWrapper>
             <Box padding={4}>
               <Table>
-                {/* <thead>
+                <thead>
                   <tr>
                     <th>
-                      <Text muted weight="semibold">
-                        {t('query.label')}
-                      </Text>
+                      <Text muted>{t('query.label')}</Text>
                     </th>
                     <th>
-                      <Text muted weight="semibold">
-                        {t('params.label')}
-                      </Text>
+                      <Text muted>{t('params.label')}</Text>
+                    </th>
+                    {/* <th>
+                      <Text muted>{t('settings.perspective-label')}</Text>
+                    </th> */}
+                    <th>
+                      <Text muted>{t('label.saved-at')}</Text>
                     </th>
                     <th>
-                      <Text muted weight="semibold">
-                        {t('label.saved-at')}
-                      </Text>
-                    </th>
-                    <th>
-                      <Text muted weight="semibold">
-                        {t('action.load-query')}
-                      </Text>
-                    </th>
-                    <th>
-                      <Text muted weight="semibold">
-                        {t('action.delete')}
-                      </Text>
+                      <Text muted>{t('label.actions')}</Text>
                     </th>
                   </tr>
-                </thead> */}
+                </thead>
                 <tbody>
                   {queries?.map((q) => (
                     <tr key={q._key}>
@@ -170,6 +215,9 @@ export function QueryRecall({
                       <td className="params">
                         <Code size={1}>{q.params}</Code>
                       </td>
+                      {/* <td className="perspective">
+                        <Text size={1}>{q.perspective}</Text>
+                      </td> */}
                       <td className="saved-at">
                         <Text>{new Date(q.savedAt).toLocaleString()}</Text>
                       </td>
