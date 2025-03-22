@@ -73,7 +73,7 @@ export function useQueryDocument(): {
   }
 
   const deleteQuery = async (key: string) => {
-    setDeleting([...deleting, key])
+    setDeleting((prev) => [...prev, key])
     setDeleteQueryError(undefined)
     await client
       .patch(documentId)
@@ -81,7 +81,7 @@ export function useQueryDocument(): {
       .commit()
       .then((updatedDoc) => setDocument(updatedDoc as UserQueryDocument))
       .catch((err) => setDeleteQueryError(err))
-      .finally(() => setDeleting(deleting.filter((k) => k !== key)))
+      .finally(() => setDeleting((prev) => prev.filter((k) => k !== key)))
   }
 
   return {

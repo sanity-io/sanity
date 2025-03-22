@@ -1,6 +1,6 @@
 import {ArchiveIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
 import {Box, Button, Code, Dialog, Flex, Text, useToast} from '@sanity/ui'
-import {type Dispatch, type RefObject, type SetStateAction, useState} from 'react'
+import {type Dispatch, type RefObject, type SetStateAction, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
@@ -32,6 +32,12 @@ const Table = styled.table`
 const DialogContentWrapper = styled.div`
   min-height: 66vh;
 `
+
+// TODO
+// -Error handling for delete
+// -Confirm dialog for delete
+// -title/description for saved queries
+
 export function QueryRecall({
   params,
   setParams,
@@ -58,6 +64,30 @@ export function QueryRecall({
 
   const queries = document?.queries
 
+  const handleSave = useCallback(async () => {
+    await saveQuery({
+      params: params.raw,
+      query,
+      perspective,
+      savedAt: new Date().toISOString(),
+    })
+
+    if (saveQueryError) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('save-query.error'),
+        description: saveQueryError.message,
+      })
+    } else {
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: t('save-query.success'),
+      })
+    }
+  }, [params.raw, query, perspective, saveQuery, saveQueryError, t, toast])
+
   return (
     <>
       <Flex justify="space-evenly" marginTop={3}>
@@ -68,6 +98,7 @@ export function QueryRecall({
             onClick={() => setOpen(true)}
             icon={UnarchiveIcon}
             mode="ghost"
+            // tone="primary"
           />
         </Box>
         <Box flex={1} marginLeft={3}>
@@ -76,30 +107,9 @@ export function QueryRecall({
             icon={ArchiveIcon}
             disabled={saving}
             mode="ghost"
+            tone="positive"
             width="fill"
-            onClick={async () => {
-              await saveQuery({
-                params: params.raw,
-                query,
-                perspective,
-                savedAt: new Date().toISOString(),
-              })
-
-              if (saveQueryError) {
-                toast.push({
-                  closable: true,
-                  status: 'error',
-                  title: t('save-query.error'),
-                  description: saveQueryError.message,
-                })
-              } else {
-                toast.push({
-                  closable: true,
-                  status: 'success',
-                  title: t('save-query.success'),
-                })
-              }
-            }}
+            onClick={handleSave}
           />
         </Box>
       </Flex>

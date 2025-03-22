@@ -39,12 +39,6 @@ import {VisionGuiControls} from './VisionGuiControls'
 import {VisionGuiHeader} from './VisionGuiHeader'
 import {VisionGuiResult} from './VisionGuiResult'
 
-// TODO
-// -Error handling
-// -useOptimistic in table when deleting several entries
-// -Confirm dialog for delete
-// -title/description for saved queries
-
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
     return false
