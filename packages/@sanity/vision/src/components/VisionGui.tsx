@@ -41,6 +41,7 @@ import {VisionGuiResult} from './VisionGuiResult'
 
 // TODO
 // -Error handling
+// -useOptimistic in table when deleting several entries
 // -Confirm dialog for delete
 // -title/description for saved queries
 

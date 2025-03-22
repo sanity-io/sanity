@@ -1,5 +1,5 @@
 import {ArchiveIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {Box, Button, Code, Dialog, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Code, Dialog, Flex, Text} from '@sanity/ui'
 import {type Dispatch, type RefObject, type SetStateAction, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
@@ -70,15 +70,7 @@ export function QueryRecall({
         <Box flex={1} marginLeft={3}>
           <Button
             text={t('action.save-query')}
-            icon={
-              saving ? (
-                <Flex justify="center" align={'center'}>
-                  <Spinner />
-                </Flex>
-              ) : (
-                ArchiveIcon
-              )
-            }
+            icon={ArchiveIcon}
             disabled={saving}
             mode="ghost"
             width="fill"
