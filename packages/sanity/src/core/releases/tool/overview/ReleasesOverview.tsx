@@ -270,7 +270,16 @@ export function ReleasesOverview() {
   const handleOnCreateRelease = useCallback(
     (createdReleaseId: string) => {
       setIsCreateReleaseDialogOpen(false)
-      router.navigate({releaseId: createdReleaseId})
+
+      router.navigate(
+        {releaseId: createdReleaseId},
+        {
+          stickyParams: {
+            excludedPerspectives: null,
+            perspective: createdReleaseId,
+          },
+        },
+      )
     },
     [router],
   )
@@ -291,7 +300,7 @@ export function ReleasesOverview() {
     ({datum}: {datum: TableRelease | unknown}) => {
       const release = datum as TableRelease
 
-      if (release.isDeleted) return null
+      if (release.isDeleted || release.isLoading) return null
 
       const documentsCount =
         (releaseGroupMode === 'active'

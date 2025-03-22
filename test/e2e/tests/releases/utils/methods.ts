@@ -1,7 +1,15 @@
+import test from '@playwright/test'
 import {type SanityClient, type SanityDocument} from '@sanity/client'
 
 export const CLIENT_OPTIONS = {
   apiVersion: 'v2025-02-19',
+}
+
+// skip firefox due to flakyness
+const SKIP_BROWSERS = ['firefox']
+
+export const skipIfBrowser = (browserName: string) => {
+  test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
 }
 
 export const createRelease = async ({
@@ -47,6 +55,34 @@ export const archiveRelease = async ({
         actions: [
           {
             actionType: 'sanity.action.release.archive',
+            releaseId: releaseId,
+          },
+        ],
+      },
+    })
+  } catch (error) {
+    console.error('Error archiving release:', error)
+    throw error
+  }
+}
+
+export const unarchiveRelease = async ({
+  sanityClient,
+  dataset,
+  releaseId,
+}: {
+  sanityClient: SanityClient
+  dataset: string | undefined
+  releaseId: string
+}) => {
+  try {
+    sanityClient.withConfig(CLIENT_OPTIONS).request({
+      uri: `/data/actions/${dataset}`,
+      method: 'POST',
+      body: {
+        actions: [
+          {
+            actionType: 'sanity.action.release.unarchive',
             releaseId: releaseId,
           },
         ],

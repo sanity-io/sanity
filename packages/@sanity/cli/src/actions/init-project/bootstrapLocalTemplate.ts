@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import chalk from 'chalk'
+import {deburr} from 'lodash'
 
 import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'
@@ -113,10 +114,21 @@ export async function bootstrapLocalTemplate(
     {} as Record<string, string>,
   )
 
+  let packageJsonName: string = packageName
+
+  /**
+   * Currently app init doesn't ask for a name, so we use the last part of the path
+   */
+  if (isAppTemplate) {
+    packageJsonName = deburr(path.basename(outputPath).toLowerCase())
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+  }
+
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
   const packageManifest = await createPackageManifest({
-    name: packageName,
+    name: packageJsonName,
     dependencies,
     devDependencies,
     scripts: template.scripts,

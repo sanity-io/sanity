@@ -26,7 +26,7 @@ export const scheduledPublishing = definePlugin({
   name: SCHEDULED_PUBLISHING_NAME,
 
   document: {
-    actions: (prev) => resolveDocumentActions(prev),
+    actions: (prev, context) => resolveDocumentActions(prev, context),
     badges: (prev) => resolveDocumentBadges(prev),
   },
 

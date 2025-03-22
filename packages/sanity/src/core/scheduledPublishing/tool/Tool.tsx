@@ -5,6 +5,7 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
 import {useWorkspace} from '../../studio/workspace'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import InfoCallout from '../components/infoCallout/InfoCallout'
@@ -35,7 +36,7 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 export default function Tool() {
   const router = useRouter()
   const {scheduledPublishing, releases} = useWorkspace()
-  const isReleasesEnabled = Boolean(releases?.enabled)
+  const releasesToolAvailable = useReleasesToolAvailable()
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
@@ -107,7 +108,7 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
-      {isReleasesEnabled && scheduledPublishing.showReleasesBanner && <WarningBanner />}
+      {releasesToolAvailable && scheduledPublishing.showReleasesBanner && <WarningBanner />}
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
         <Flex flex={1} height="fill">
           {/* LHS Column */}

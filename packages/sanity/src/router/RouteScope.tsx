@@ -2,7 +2,13 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
-import {type NavigateOptions, type RouterContextValue, type RouterState} from './types'
+import {
+  isNavigateOptions,
+  type NavigateOptions,
+  type NextStateOrOptions,
+  type RouterContextValue,
+  type RouterState,
+} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -75,8 +81,10 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   }, [parentRouter.state])
 
   const resolveNextParentState = useCallback(
-    (_nextState: RouterState) => {
-      const {_searchParams, ...nextState} = _nextState
+    (_nextState: RouterState | null) => {
+      if (_nextState === null) return null
+
+      const {_searchParams, ...nextState} = _nextState || {}
       const nextParentState = addScope(parentStateRef.current, scope, nextState)
       if (__unsafe_disableScopedSearchParams) {
         // Move search params to parent scope
@@ -90,13 +98,36 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   )
 
   const resolvePathFromState = useCallback(
-    (nextState: RouterState) => parent_resolvePathFromState(resolveNextParentState(nextState)),
+    (nextState: RouterState | null) =>
+      parent_resolvePathFromState(resolveNextParentState(nextState)),
     [parent_resolvePathFromState, resolveNextParentState],
   )
 
-  const navigate = useCallback(
-    (nextState: RouterState, options?: NavigateOptions) =>
-      parent_navigate(resolveNextParentState(nextState), options),
+  const navigate: RouterContextValue['navigate'] = useCallback(
+    (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
+      // Check if it's the options-only pattern
+      if (isNavigateOptions(nextStateOrOptions) && !maybeOptions) {
+        const options = nextStateOrOptions
+        const {state} = options
+
+        //keep the current state but apply other options
+        if (state) {
+          const nextState = resolveNextParentState(state)
+          const resolvedState = nextState === null ? {} : nextState
+
+          return parent_navigate(resolvedState, options)
+        }
+
+        //keep the current state
+        return parent_navigate(options)
+      }
+
+      const nextState = isNavigateOptions(nextStateOrOptions)
+        ? resolveNextParentState(null)
+        : resolveNextParentState(nextStateOrOptions)
+
+      return parent_navigate(nextState === null ? {} : nextState, maybeOptions || {})
+    },
     [parent_navigate, resolveNextParentState],
   )
 
