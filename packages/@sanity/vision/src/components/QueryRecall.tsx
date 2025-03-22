@@ -71,7 +71,6 @@ const Table = styled.table`
   }
 `
 
-// Update DialogContentWrapper to handle overflow better
 const DialogContentWrapper = styled.div`
   min-height: 66vh;
   max-height: 80vh;
@@ -91,7 +90,7 @@ const DialogContentWrapper = styled.div`
 // -Error handling for delete
 // -Confirm dialog for delete
 // -title/description for saved queries
-// -can/should this be a sidebar so you can tab between queries?
+// -can/should saved queries be in a sidebar so you can tab between queries?
 
 export function QueryRecall({
   params,
@@ -120,6 +119,7 @@ export function QueryRecall({
   const queries = document?.queries
 
   const handleSave = useCallback(async () => {
+    // TS says "await has no effect on the type of this expression", but it blocks the toast until the action is complete?
     await saveQuery({
       params: params.raw,
       query,
@@ -182,7 +182,6 @@ export function QueryRecall({
           zOffset={100}
           width={2}
         >
-          {/*  TODO make look nice */}
           <DialogContentWrapper>
             <Box padding={4}>
               <Table>
@@ -208,7 +207,6 @@ export function QueryRecall({
                 <tbody>
                   {queries?.map((q) => (
                     <tr key={q._key}>
-                      {/* TODO: overflow for long queries */}
                       <td className="query">
                         <Code size={1}>{q.query}</Code>
                       </td>
@@ -227,6 +225,7 @@ export function QueryRecall({
                             text={t('action.load-query')}
                             disabled={deleting?.includes(q._key)}
                             width="fill"
+                            icon={UnarchiveIcon}
                             onClick={() => {
                               setQuery(q.query)
                               setPerspective(q.perspective)
