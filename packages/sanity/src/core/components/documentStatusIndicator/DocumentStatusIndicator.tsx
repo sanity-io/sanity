@@ -19,25 +19,24 @@ const Dot = styled.div<{$index: number}>`
   border-radius: 999px;
   box-shadow: 0 0 0 1px var(--card-bg-color);
   z-index: ${({$index}) => $index};
-  &[data-status='not-published'] {
-    --card-icon-color: var(--card-badge-default-dot-color);
-    opacity: 0.5 !important;
+  &[data-status='published'] {
+    --card-icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='asap'] {
-    --card-icon-color: var(--card-badge-critical-dot-color);
+    --card-icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='undecided'] {
-    --card-icon-color: var(--card-badge-suggest-dot-color);
+    --card-icon-color: var(--card-badge-neutral-dot-color);
   }
   &[data-status='scheduled'] {
-    --card-icon-color: var(--card-badge-primary-dot-color);
+    --card-icon-color: var(--card-badge-suggest-dot-color);
   }
 `
 
-type Status = 'not-published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
+type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 
 /**
  * Renders a dot indicating the current document status.
@@ -67,7 +66,11 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
     show: boolean
   }[] = [
     {
-      status: draft && !published ? 'not-published' : 'draft',
+      status: 'published',
+      show: Boolean(published),
+    },
+    {
+      status: 'draft',
       show: Boolean(draft),
     },
     {
