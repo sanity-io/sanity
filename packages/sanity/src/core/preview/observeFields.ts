@@ -75,11 +75,6 @@ export function createObserveFields(options: {
   invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
   const {client: currentDatasetClient, invalidationChannel} = options
-  function listen(id: Id) {
-    return invalidationChannel.pipe(
-      filter((event) => event.type === 'connected' || getPublishedId(event.documentId) === id),
-    )
-  }
 
   function fetchAllDocumentPathsWith(client: SanityClient, perspective?: StackablePerspective[]) {
     return function fetchAllDocumentPath(selections: Selection[]) {
@@ -126,28 +121,35 @@ export function createObserveFields(options: {
      * `*[_id == "drafts.foo"]` and if we then pass a perspective, we will not get any hits for drafts, since, if using perspectives, the `_id` will always be the published id
      * Therefore, if perspective is provided, we need to subscribe to the published id instead.
      */
-    const id = perspective?.length ? getPublishedId(originalId) : originalId
+    const isPerspective = Boolean(perspective && perspective.length > 0)
+    const fetchId = isPerspective ? getPublishedId(originalId) : originalId
 
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
       getBatchFetchersForPerspective(perspective)
-
-    return listen(originalId).pipe(
+    return invalidationChannel.pipe(
+      filter(
+        (event) =>
+          event.type === 'connected' ||
+          (isPerspective
+            ? getPublishedId(event.documentId) === originalId
+            : event.documentId === fetchId),
+      ),
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
-          return fetchDocumentPathsFast(id, fields).pipe(
+          return fetchDocumentPathsFast(fetchId, fields).pipe(
             mergeMap((result) => {
               return concat(
                 of(result),
                 result === null // hack: if we get undefined as result here it can be because the document has
                   ? // just been created and is not yet indexed. We therefore need to wait a bit
                     // and then re-fetch.
-                    fetchDocumentPathsSlow(id, fields)
+                    fetchDocumentPathsSlow(fetchId, fields)
                   : [],
               )
             }),
           )
         }
-        return fetchDocumentPathsSlow(id, fields)
+        return fetchDocumentPathsSlow(fetchId, fields)
       }),
     )
   }
