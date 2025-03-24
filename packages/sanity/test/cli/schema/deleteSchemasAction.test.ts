@@ -142,7 +142,7 @@ describe('deleteSchemasAction', () => {
       ids: 'not_valid%&/',
     }
     await expect(() => deleteSchemaAction(flags, defaultContext)).rejects.toThrowError(
-      'Invalid arguments:\n  - id can only contain characters in [a-zA-Z0-9._-] but found: not_valid%&/',
+      'Invalid arguments:\n  - id can only contain characters in [a-zA-Z0-9._-] but found: "not_valid%&/"',
     )
   })
 
@@ -151,7 +151,7 @@ describe('deleteSchemasAction', () => {
       ids: 'invalid-id',
     }
     await expect(() => deleteSchemaAction(flags, defaultContext)).rejects.toThrowError(
-      'Invalid arguments:\n  - id must end with sanity.workspace.schema.<workspaceName> but found: invalid-id',
+      'Invalid arguments:\n  - id must end with sanity.workspace.schema.<workspaceName> but found: "invalid-id"',
     )
   })
 

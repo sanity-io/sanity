@@ -6,8 +6,7 @@ import {SANITY_WORKSPACE_SCHEMA_TYPE} from '../../../../manifest/manifestTypes'
 import {type DeleteSchemaFlags} from '../deleteSchemaAction'
 import {type SchemaListFlags} from '../listSchemasAction'
 import {type StoreSchemasFlags} from '../storeSchemasAction'
-import {getManifestDirPath} from './manifestReader'
-import {getStringArrayOutString} from './storeSchemaOutStrings'
+import {resolveManifestDirectory} from './manifestReader'
 
 export const validForIdChars = 'a-zA-Z0-9._-'
 export const validForIdPattern = new RegExp(`^[${validForIdChars}]+$`, 'g')
@@ -45,7 +44,7 @@ function parseCommonFlags(
   // extract manifest by default: our CLI layer handles both --extract-manifest (true) and --no-extract-manifest (false)
   const extractManifest = flags['extract-manifest'] ?? true
 
-  const fullManifestDir = getManifestDirPath(context.workDir, manifestDir)
+  const fullManifestDir = resolveManifestDirectory(context.workDir, manifestDir)
   return {
     manifestDir: fullManifestDir,
     verbose,
@@ -95,23 +94,12 @@ function assertNoErrors(errors: string[]) {
   }
 }
 
-export function assertIdsMatchesWorkspaces(ids: string[], workspaces: {name: string}[]) {
-  const invalidIds = ids
-    .map((id) => ({
-      id,
-      parsedId: parseWorkspaceSchemaId(id, []),
-    }))
-    .filter(({parsedId}) => !parsedId || !workspaces.some((w) => w.name === parsedId.workspace))
-
-  if (invalidIds.length)
-    throw new FlagValidationError(
-      'Ids must match workspaces in scope, but got:\n' +
-        `  ${getStringArrayOutString(invalidIds.map((id) => id.id))}`,
-    )
-}
-
-function parseIds(flags: {ids?: unknown}, errors: string[]): WorkspaceSchemaId[] {
+export function parseIds(flags: {ids?: unknown}, errors: string[]): WorkspaceSchemaId[] {
   const parsedIds = parseNonEmptyString(flags, 'ids', errors)
+  if (errors.length) {
+    return []
+  }
+
   const ids = parsedIds
     .split(',')
     .map((id) => id.trim())
@@ -123,10 +111,13 @@ function parseIds(flags: {ids?: unknown}, errors: string[]): WorkspaceSchemaId[]
   if (uniqueIds.length < ids.length) {
     errors.push(`ids contains duplicates`)
   }
+  if (!errors.length && !uniqueIds.length) {
+    errors.push(`ids contains no valid id strings`)
+  }
   return uniqueIds
 }
 
-function parseId(flags: {id?: unknown}, errors: string[]) {
+export function parseId(flags: {id?: unknown}, errors: string[]) {
   const id = flags.id === undefined ? undefined : parseNonEmptyString(flags, 'id', errors)
   if (id) {
     return parseWorkspaceSchemaId(id, errors)?.schemaId
@@ -138,7 +129,17 @@ export function parseWorkspaceSchemaId(id: string, errors: string[]) {
   const trimmedId = id.trim()
 
   if (!trimmedId.match(validForIdPattern)) {
-    errors.push(`id can only contain characters in [${validForIdChars}] but found: ${trimmedId}`)
+    errors.push(`id can only contain characters in [${validForIdChars}] but found: "${trimmedId}"`)
+    return undefined
+  }
+
+  if (trimmedId.startsWith('-')) {
+    errors.push(`id cannot start with - (dash) but found: "${trimmedId}"`)
+    return undefined
+  }
+
+  if (trimmedId.match(/\.\./g)) {
+    errors.push(`id cannot have consecutive . (period) characters, but found: "${trimmedId}"`)
     return undefined
   }
 
@@ -146,7 +147,7 @@ export function parseWorkspaceSchemaId(id: string, errors: string[]) {
   const workspace = match?.[1] ?? ''
   if (!workspace) {
     errors.push(
-      `id must end with ${SANITY_WORKSPACE_SCHEMA_TYPE}.<workspaceName> but found: ${trimmedId}`,
+      `id must end with ${SANITY_WORKSPACE_SCHEMA_TYPE}.<workspaceName> but found: "${trimmedId}"`,
     )
     return undefined
   }
@@ -170,20 +171,36 @@ function parseManifestDir(flags: {'manifest-dir'?: unknown}, errors: string[]) {
     : parseNonEmptyString(flags, 'manifest-dir', errors)
 }
 
-function parseIdPrefix(flags: {'id-prefix'?: unknown}, errors: string[]) {
+export function parseIdPrefix(flags: {'id-prefix'?: unknown}, errors: string[]) {
   if (flags['id-prefix'] === undefined) {
     return undefined
   }
 
   const idPrefix = parseNonEmptyString(flags, 'id-prefix', errors)
+  if (errors.length) {
+    return undefined
+  }
+
   if (idPrefix.endsWith('.')) {
-    errors.push(`idx-prefix argument cannot end with . (period), but was ${idPrefix}`)
+    errors.push(`id-prefix argument cannot end with . (period), but was: "${idPrefix}"`)
+    return undefined
   }
 
   if (!idPrefix.match(validForIdPattern)) {
     errors.push(
-      `idx-prefix can only contain _id compatible characters [${validForIdChars}], but was ${idPrefix}`,
+      `id-prefix can only contain _id compatible characters [${validForIdChars}], but was: "${idPrefix}"`,
     )
+    return undefined
+  }
+
+  if (idPrefix.startsWith('-')) {
+    errors.push(`id-prefix cannot start with - (dash) but was: "${idPrefix}"`)
+    return undefined
+  }
+
+  if (idPrefix.match(/\.\./g)) {
+    errors.push(`id-prefix cannot have consecutive . (period) characters, but was: "${idPrefix}"`)
+    return undefined
   }
 
   return idPrefix

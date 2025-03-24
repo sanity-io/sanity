@@ -129,7 +129,7 @@ describe('storeSchemasAction', () => {
       await expect(() =>
         storeSchemasAction({'id-prefix': 'invalid.'}, defaultContext),
       ).rejects.toThrowError(
-        'Invalid arguments:\n  - idx-prefix argument cannot end with . (period), but was invalid.',
+        'Invalid arguments:\n  - id-prefix argument cannot end with . (period), but was: "invalid."',
       )
     })
 
@@ -137,7 +137,7 @@ describe('storeSchemasAction', () => {
       await expect(() =>
         storeSchemasAction({'id-prefix': '%/()#'}, defaultContext),
       ).rejects.toThrowError(
-        'Invalid arguments:\n  - idx-prefix can only contain _id compatible characters [a-zA-Z0-9._-], but was %/()#',
+        'Invalid arguments:\n  - id-prefix can only contain _id compatible characters [a-zA-Z0-9._-], but was: "%/()#"',
       )
     })
 

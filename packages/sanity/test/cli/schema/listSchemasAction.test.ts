@@ -138,7 +138,7 @@ describe('deleteSchemasAction', () => {
   it('should throw on invalid --id ', async () => {
     const flags: SchemaListFlags = {id: 'invalid-id'}
     await expect(() => listSchemasAction(flags, defaultContext)).rejects.toThrowError(
-      'Invalid arguments:\n  - id must end with sanity.workspace.schema.<workspaceName> but found: invalid-id',
+      'Invalid arguments:\n  - id must end with sanity.workspace.schema.<workspaceName> but found: "invalid-id"',
     )
   })
 

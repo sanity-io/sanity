@@ -4,7 +4,7 @@ import uniq from 'lodash/uniq'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type SchemaStoreContext} from './schemaStoreTypes'
-import {createManifestExtractor, isManifestExtractSatisfied} from './utils/mainfestExtractor'
+import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
@@ -65,7 +65,7 @@ export async function deleteSchemaAction(
   const {output, apiClient, jsonReader, manifestExtractor} = context
 
   // prettier-ignore
-  if (!(await isManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
+  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
     return 'failure'
   }
 

@@ -6,7 +6,7 @@ import {FlagValidationError} from './schemaStoreValidation'
 
 export type ManifestExtractor = (manifestDir: string) => Promise<void>
 
-export async function isManifestExtractSatisfied(args: {
+export async function ensureManifestExtractSatisfied(args: {
   schemaRequired: boolean
   extractManifest: boolean
   manifestDir: string

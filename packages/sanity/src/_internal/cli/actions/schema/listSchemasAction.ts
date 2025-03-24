@@ -9,7 +9,7 @@ import {
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
 import {type SchemaStoreContext} from './schemaStoreTypes'
-import {createManifestExtractor, isManifestExtractSatisfied} from './utils/mainfestExtractor'
+import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
@@ -59,7 +59,7 @@ export async function listSchemasAction(
   const {output, apiClient, jsonReader, manifestExtractor} = context
 
   // prettier-ignore
-  if (!(await isManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
+  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
     return 'failure'
   }
   const {client, projectId} = createSchemaApiClient(apiClient)

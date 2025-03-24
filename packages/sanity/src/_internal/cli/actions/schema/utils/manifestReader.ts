@@ -96,7 +96,7 @@ export const createManifestReader: CreateManifestReaderFactory = ({
   }
 }
 
-export const getManifestDirPath = (workDir: string, customPath?: string) => {
+export function resolveManifestDirectory(workDir: string, customPath?: string): string {
   const defaultOutputDir = resolve(join(workDir, 'dist'))
 
   const outputDir = resolve(defaultOutputDir)

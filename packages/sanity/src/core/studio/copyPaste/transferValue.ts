@@ -253,7 +253,7 @@ export async function transferValue({
   if (targetRootSchemaTypeReadOnly || targetSchemaTypeAtPathReadOnly || isAncestorReadOnly) {
     return {
       targetValue: undefined,
-      errors: [
+      expectedErrors: [
         {
           level: 'error',
           sourceValue,
@@ -273,7 +273,7 @@ export async function transferValue({
   if (isIncompatibleAssetSchemaType) {
     return {
       targetValue: undefined,
-      errors: [
+      expectedErrors: [
         {
           level: 'error',
           sourceValue,
@@ -323,7 +323,7 @@ export async function transferValue({
   if (!isCompatibleSchemaTypes) {
     return {
       targetValue: undefined,
-      errors: [
+      expectedErrors: [
         {
           level: 'error',
           sourceValue,
@@ -349,7 +349,7 @@ export async function transferValue({
       targetRootValue,
       targetRootPath,
       targetPath: [],
-      errors,
+      errors: expectedErrors,
       keyGenerator,
       options,
     })
@@ -371,7 +371,7 @@ export async function transferValue({
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
-      errors,
+      errors: expectedErrors,
       options,
       keyGenerator,
     })
@@ -415,7 +415,7 @@ export async function transferValue({
       targetSchemaType: targetSchemaTypeAtPath as ArraySchemaType,
       targetRootValue,
       targetRootPath,
-      errors,
+      errors: expectedErrors,
       options,
       keyGenerator,
     })
@@ -430,7 +430,7 @@ export async function transferValue({
   return collatePrimitiveValue({
     sourceValue: sourceValueAtPath as unknown,
     targetSchemaType: primitiveSchemaType,
-    errors,
+    errors: expectedErrors,
   })
 }
 
@@ -721,7 +721,7 @@ async function collateObjectValue({
       const collated = collatePrimitiveValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType,
-        errors,
+        errors: expectedErrors,
       })
 
       if (!isEmptyValue(collated.targetValue)) {
@@ -739,7 +739,7 @@ async function collateObjectValue({
         targetSchemaType: memberSchemaType,
         targetRootValue,
         targetRootPath,
-        errors,
+        errors: expectedErrors,
         options,
         keyGenerator,
       })
@@ -758,7 +758,7 @@ async function collateObjectValue({
         targetSchemaType: memberSchemaType as ArraySchemaType,
         targetRootValue,
         targetRootPath,
-        errors,
+        errors: expectedErrors,
         options,
         keyGenerator,
       })
@@ -846,7 +846,7 @@ async function collateArrayValue({
   if (!genericValue || !Array.isArray(genericValue)) {
     return {
       targetValue: undefined,
-      errors: [
+      expectedErrors: [
         {
           level: 'error',
           sourceValue,
@@ -924,7 +924,7 @@ async function collateArrayValue({
             targetPath: [],
             targetRootValue,
             targetRootPath,
-            errors,
+            errors: expectedErrors,
             options,
             keyGenerator,
           }),
@@ -954,7 +954,7 @@ async function collateArrayValue({
 
   return {
     targetValue,
-    errors,
+    errors: expectedErrors,
   }
 }
 
@@ -976,7 +976,7 @@ function collatePrimitiveValue({
   if (typeof primitiveValue === 'undefined') {
     return {
       targetValue: undefined,
-      errors,
+      errors: expectedErrors,
     }
   }
 
@@ -1033,7 +1033,7 @@ function collatePrimitiveValue({
 
   return {
     targetValue,
-    errors,
+    errors: expectedErrors,
   }
 }
 
