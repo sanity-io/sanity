@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-unassigned-import
+import 'scheduler-polyfill'
+
 export * from './changeIndicators'
 export * from './comments'
 export * from './components'
