@@ -307,3 +307,20 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
 
   return merged
 }
+
+/**
+ * Schedule the provided callback using `scheduler.postTask`, if it's available.
+ * Otherwise, call it immediately.
+ *
+ * This is necessary because `scheduler-polyfill` does not work correctly in node, which is where
+ * Studio unit tests run currently.
+ */
+function postTask<Result>(
+  callback: () => Result,
+  options?: Parameters<typeof scheduler.postTask>[1],
+): Result | Promise<Result> {
+  if (!('scheduler' in globalThis)) {
+    return callback()
+  }
+  return scheduler.postTask(callback, options)
+}
