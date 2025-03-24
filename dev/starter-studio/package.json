@@ -12,7 +12,7 @@
     "start": "../.bin/sanity start --port 3337"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "19.0.0-beta-3229e95-20250315",
+    "babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
     "react": "^18.3.1",
     "react-compiler-runtime": "19.0.0-beta-3229e95-20250315",
     "react-dom": "^18.3.1",
