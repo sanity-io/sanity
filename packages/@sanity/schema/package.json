@@ -22,6 +22,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -38,7 +39,7 @@
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.esm.js",
+  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -48,12 +49,11 @@
     }
   },
   "files": [
-    "_internal.js",
     "lib",
     "src"
   ],
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
+    "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint --cache .",
