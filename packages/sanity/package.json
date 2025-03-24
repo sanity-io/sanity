@@ -277,8 +277,8 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@playwright/experimental-ct-react": "1.51.0",
-    "@playwright/test": "1.51.0",
+    "@playwright/experimental-ct-react": "1.51.1",
+    "@playwright/test": "1.51.1",
     "@repo/dev-aliases": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
