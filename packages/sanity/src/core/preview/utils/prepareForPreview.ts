@@ -210,12 +210,12 @@ export function invokePrepare(
       returnValue: prepare
         ? (prepare(value, viewOptions) as Record<string, unknown>)
         : defaultPrepare(value),
-      expectedErrors: EMPTY,
+      errors: EMPTY,
     }
   } catch (error) {
     return {
       returnValue: null,
-      expectedErrors: [assignType('prepareError', error)],
+      errors: [assignType('prepareError', error)],
     }
   }
 }

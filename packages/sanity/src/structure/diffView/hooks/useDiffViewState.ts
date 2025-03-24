@@ -131,7 +131,7 @@ function parseParams({
   if (errors.length !== 0) {
     return {
       result: 'error',
-      errors: expectedErrors,
+      errors,
     }
   }
 
