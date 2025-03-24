@@ -5,7 +5,28 @@ export * from './RouterProvider'
 export * from './RouteScope'
 export * from './StateLink'
 export * from './stickyParams'
-export * from './types'
+export type {
+  BaseIntentParams,
+  IntentJsonParams,
+  IntentParameters,
+  InternalSearchParam,
+  MatchError,
+  MatchOk,
+  MatchResult,
+  NavigateBaseOptions,
+  NavigateOptions,
+  NavigateOptionsWithState,
+  NextStateOrOptions,
+  Route,
+  RouteChildren,
+  Router,
+  RouterContextValue,
+  RouterNode,
+  RouterState,
+  RouteSegment,
+  RouteTransform,
+  SearchParam,
+} from './types'
 export * from './useIntentLink'
 export * from './useLink'
 export * from './useRouter'

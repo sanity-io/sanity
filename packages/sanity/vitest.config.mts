@@ -9,6 +9,9 @@ export default defineConfig({
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
     exclude: ['./playwright-ct', './src/_internal/cli'],
+    server: {
+      deps: {inline: ['vitest-package-exports']},
+    },
     /**
      * Portabletext package depends on monorepo packages that are not necessarily the same version
      * as the latest sanity packages. pnpm dedupes this packages so the aliases do not work in this case.

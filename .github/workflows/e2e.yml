@@ -1,6 +1,7 @@
 name: End-to-End Tests
 permissions:
   contents: read # for checkout
+  pull-requests: write # for comment
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
@@ -179,7 +180,9 @@ jobs:
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
-          path: blob-report
+          path: |
+            blob-report
+            test-results
           retention-days: 30
 
   merge-reports:
@@ -202,14 +205,34 @@ jobs:
         with:
           pattern: playwright-report-*
           merge-multiple: true
-          path: playwright-report
+          path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./playwright-report
+        run: npx playwright merge-reports --reporter html all-blob-reports/blob-report
 
       - name: Upload HTML report
+        id: upload-playwright-report
         uses: actions/upload-artifact@v4
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
+
+      - name: Extract artifact URL
+        id: artifact-url
+        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        run: |
+          URL=$(echo "${{ steps.upload-playwright-report.outputs.artifact-url }}")
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Add PR Comment with Report Link
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "playwright-e2e-report"
+          message: |
+            ### 📊 Playwright Test Report
+
+            **[Download Full E2E Report](${{ steps.artifact-url.outputs.url }})**
+
+            This report contains test results, including videos of failing tests.
