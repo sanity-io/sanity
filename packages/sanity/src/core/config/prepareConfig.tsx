@@ -716,10 +716,6 @@ function resolveSource({
         startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
         fallbackStudioOrigin: createFallbackOriginReducer(config),
       },
-      mediaLibrary: {
-        enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
-        libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
-      },
     },
     // eslint-disable-next-line camelcase
     __internal_serverDocumentActions: {
@@ -728,6 +724,11 @@ function resolveSource({
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
+    },
+
+    mediaLibrary: {
+      enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
+      libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
     },
   }
 

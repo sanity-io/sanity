@@ -376,6 +376,12 @@ export interface PluginOptions {
     components?: StudioComponentsPluginOptions
   }
 
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: MediaLibraryConfig
+
   /** @beta @hidden */
   i18n?: LocalePluginOptions
   search?: {
@@ -845,6 +851,11 @@ export interface Source {
   announcements?: {
     enabled: boolean
   }
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: MediaLibraryConfig
 }
 
 /** @internal */
@@ -959,6 +970,22 @@ export type DefaultPluginsWorkspaceOptions = {
 }
 
 /**
+ * Config for the Sanity Media Library asset source integration.
+ * @beta
+ */
+export interface MediaLibraryConfig {
+  /**
+   * Weather the Media Library is enabled or not.
+   */
+  enabled: boolean
+  /**
+   * The ID of the Media Library that is connected to the Studio.
+   * If not provided, the Media Library will be automatically detected.
+   */
+  libraryId?: string
+}
+
+/**
  * @internal
  * Configuration for studio beta features.
  * */
@@ -1021,19 +1048,5 @@ export interface BetaFeatures {
   eventsAPI?: {
     documents?: boolean
     releases?: boolean
-  }
-  /**
-   * Config for the media library.
-   */
-  mediaLibrary?: {
-    /**
-     * Whether the media library is enabled.
-     */
-    enabled: boolean
-    /**
-     * The ID of the media library.
-     * If not provided, the emdia library will be automatically detected.
-     */
-    libraryId?: string
   }
 }
