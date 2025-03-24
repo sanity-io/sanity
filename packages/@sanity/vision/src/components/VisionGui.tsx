@@ -83,6 +83,7 @@ export function VisionGui(props: VisionGuiProps) {
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
+
   const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
@@ -644,7 +645,6 @@ export function VisionGui(props: VisionGuiProps) {
               </InputContainer>
             </SplitPane>
           </Box>
-
           <VisionGuiResult
             error={error}
             queryInProgress={queryInProgress}

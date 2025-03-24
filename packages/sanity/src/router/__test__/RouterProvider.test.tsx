@@ -391,5 +391,44 @@ describe('RouterProvider', () => {
         replace: true,
       })
     })
+
+    it('should not preserve non-sticky params when navigating to a new state', () => {
+      const {result} = renderHook(() => useRouter(), {
+        wrapper: ({children}) => (
+          <RouterProvider
+            onNavigate={mockOnNavigate}
+            router={mockRouter}
+            state={{
+              existingKey: 'existingValue',
+              _searchParams: [
+                ['stickyFirstParam', 'stickyFirstParamValue'],
+                ['nonStickyParam', 'nonStickyValue'],
+              ],
+            }}
+          >
+            {children}
+          </RouterProvider>
+        ),
+      })
+
+      act(() => {
+        result.current.navigate({
+          state: {
+            newKey: 'newValue',
+            _searchParams: [['anotherNonSticky', 'anotherValue']],
+          },
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          newKey: 'newValue',
+          _searchParams: [
+            ['anotherNonSticky', 'anotherValue'],
+            ['stickyFirstParam', 'stickyFirstParamValue'],
+          ],
+        },
+      })
+    })
   })
 })
