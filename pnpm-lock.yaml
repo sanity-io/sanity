@@ -29,8 +29,8 @@ importers:
         specifier: ^7.11.0
         version: 7.15.1(encoding@0.1.13)
       '@playwright/test':
-        specifier: 1.51.0
-        version: 1.51.0
+        specifier: 1.51.1
+        version: 1.51.1
       '@repo/dev-aliases':
         specifier: workspace:*
         version: link:packages/@repo/dev-aliases
@@ -1726,11 +1726,11 @@ importers:
         version: 17.3.0
     devDependencies:
       '@playwright/experimental-ct-react':
-        specifier: 1.51.0
-        version: 1.51.0(@types/node@22.13.1)(terser@5.38.2)(vite@6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))(yaml@2.7.0)
+        specifier: 1.51.1
+        version: 1.51.1(@types/node@22.13.1)(terser@5.38.2)(vite@6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))(yaml@2.7.0)
       '@playwright/test':
-        specifier: 1.51.0
-        version: 1.51.0
+        specifier: 1.51.1
+        version: 1.51.1
       '@repo/dev-aliases':
         specifier: workspace:*
         version: link:../@repo/dev-aliases
@@ -1927,8 +1927,8 @@ importers:
         specifier: ^8.0.1
         version: 8.2.0
       playwright:
-        specifier: ^1.51.0
-        version: 1.51.0
+        specifier: ^1.51.1
+        version: 1.51.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1975,8 +1975,8 @@ importers:
   perf/tests:
     dependencies:
       '@playwright/test':
-        specifier: 1.51.0
-        version: 1.51.0
+        specifier: 1.51.1
+        version: 1.51.1
       '@sanity/client':
         specifier: ^6.28.3
         version: 6.28.3(debug@4.4.0)
@@ -4190,17 +4190,17 @@ packages:
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@playwright/experimental-ct-core@1.51.0':
-    resolution: {integrity: sha512-rrZkaUEFq5DSAGbkAfQ04kT62HV1oke+AEy1He39BsePAhEfzBMHChZYLgoJcWkjO6Mm1py/Sgn9kcpp6derSg==}
+  '@playwright/experimental-ct-core@1.51.1':
+    resolution: {integrity: sha512-kpRZWBT3SMukL1fx8BwEj385Pkgtp86bBKzmrmJU30lWlQiIDFNaIHosgxQC68c8y2mg3Una/lBSHNc2Fotgkw==}
     engines: {node: '>=18'}
 
-  '@playwright/experimental-ct-react@1.51.0':
-    resolution: {integrity: sha512-aVaRkCtTo4X3Wu/7h7RzqUTnhkIIH6+IINjTYN4Hl0rMN1Ct8DrxNS7H5NLjTpxUlR1qnVdIQT32Bc5SnaxOCA==}
+  '@playwright/experimental-ct-react@1.51.1':
+    resolution: {integrity: sha512-Lu14QiemO2TWfiL6TQPWBH2n+4IvPYH/W6cfblzYpLu/TZdJ7e608l3GwqAGRN5FJym3YOonC7x1Q5EAwcBarg==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@playwright/test@1.51.0':
-    resolution: {integrity: sha512-dJ0dMbZeHhI+wb77+ljx/FeC8VBP6j/rj9OAojO08JI80wTZy6vRk9KvHKiDCUh4iMpEiseMgqRBIeW+eKX6RA==}
+  '@playwright/test@1.51.1':
+    resolution: {integrity: sha512-nM+kEaTSAoVlXmMPH10017vn3FSiFqr/bh4fKg9vmAdMfd9SDqRZNvPSiAHADc/itWak+qPvMPZQOPwCBW7k7Q==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -9803,13 +9803,13 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  playwright-core@1.51.0:
-    resolution: {integrity: sha512-x47yPE3Zwhlil7wlNU/iktF7t2r/URR3VLbH6EknJd/04Qc/PSJ0EY3CMXipmglLG+zyRxW6HNo2EGbKLHPWMg==}
+  playwright-core@1.51.1:
+    resolution: {integrity: sha512-/crRMj8+j/Nq5s8QcvegseuyeZPxpQCZb6HNk3Sos3BlZyAknRjoyJPFWkpNn8v0+P3WiwqFF8P+zQo4eqiNuw==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.51.0:
-    resolution: {integrity: sha512-442pTfGM0xxfCYxuBa/Pu6B2OqxqqaYq39JS8QDMGThUvIOCd6s0ANDog3uwA0cHavVlnTQzGCN7Id2YekDSXA==}
+  playwright@1.51.1:
+    resolution: {integrity: sha512-kkx+MB2KQRkyxjYPc3a0wLZZoDczmppyGJIvQ43l+aZihkaVvmu/21kiyaHeHjiFxjxNNFnUncKmcGIyOojsaw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -14477,10 +14477,10 @@ snapshots:
 
   '@pkgr/core@0.1.1': {}
 
-  '@playwright/experimental-ct-core@1.51.0(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)':
+  '@playwright/experimental-ct-core@1.51.1(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)':
     dependencies:
-      playwright: 1.51.0
-      playwright-core: 1.51.0
+      playwright: 1.51.1
+      playwright-core: 1.51.1
       vite: 6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)
     transitivePeerDependencies:
       - '@types/node'
@@ -14495,9 +14495,9 @@ snapshots:
       - tsx
       - yaml
 
-  '@playwright/experimental-ct-react@1.51.0(@types/node@22.13.1)(terser@5.38.2)(vite@6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))(yaml@2.7.0)':
+  '@playwright/experimental-ct-react@1.51.1(@types/node@22.13.1)(terser@5.38.2)(vite@6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))(yaml@2.7.0)':
     dependencies:
-      '@playwright/experimental-ct-core': 1.51.0(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)
+      '@playwright/experimental-ct-core': 1.51.1(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)
       '@vitejs/plugin-react': 4.3.4(vite@6.2.2(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))
     transitivePeerDependencies:
       - '@types/node'
@@ -14514,9 +14514,9 @@ snapshots:
       - vite
       - yaml
 
-  '@playwright/test@1.51.0':
+  '@playwright/test@1.51.1':
     dependencies:
-      playwright: 1.51.0
+      playwright: 1.51.1
 
   '@pnpm/config.env-replace@1.1.0': {}
 
@@ -15328,7 +15328,7 @@ snapshots:
 
   '@sanity/test@0.0.1-alpha.1':
     dependencies:
-      '@playwright/test': 1.51.0
+      '@playwright/test': 1.51.1
       '@sanity/client': 6.28.3(debug@4.4.0)
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
@@ -21401,11 +21401,11 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  playwright-core@1.51.0: {}
+  playwright-core@1.51.1: {}
 
-  playwright@1.51.0:
+  playwright@1.51.1:
     dependencies:
-      playwright-core: 1.51.0
+      playwright-core: 1.51.1
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -21782,7 +21782,7 @@ snapshots:
       '@clack/prompts': 0.8.2
       kleur: 4.1.5
       mri: 1.2.0
-      playwright: 1.51.0
+      playwright: 1.51.1
 
   react-select@5.10.1(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
