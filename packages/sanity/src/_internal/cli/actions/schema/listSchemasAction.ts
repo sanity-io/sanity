@@ -8,7 +8,7 @@ import {
   SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
-import {type SchemaStoreContext} from './schemaStoreTypes'
+import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
@@ -36,7 +36,7 @@ class DatasetError extends Error {
 export default function listSchemasActionForCommand(
   flags: SchemaListFlags,
   context: CliCommandContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   return listSchemasAction(flags, {
     ...context,
     manifestExtractor: createManifestExtractor(context),
@@ -54,7 +54,7 @@ export default function listSchemasActionForCommand(
 export async function listSchemasAction(
   flags: SchemaListFlags,
   context: SchemaStoreContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   const {json, id, manifestDir, extractManifest} = parseListSchemasConfig(flags, context)
   const {output, apiClient, jsonReader, manifestExtractor} = context
 

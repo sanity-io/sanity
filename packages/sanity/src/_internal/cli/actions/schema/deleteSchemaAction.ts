@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import uniq from 'lodash/uniq'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
-import {type SchemaStoreContext} from './schemaStoreTypes'
+import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
@@ -39,7 +39,7 @@ class DeleteIdError extends Error {
 export default function deleteSchemasActionForCommand(
   flags: DeleteSchemaFlags,
   context: CliCommandContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   return deleteSchemaAction(flags, {
     ...context,
     manifestExtractor: createManifestExtractor(context),
@@ -57,7 +57,7 @@ export default function deleteSchemasActionForCommand(
 export async function deleteSchemaAction(
   flags: DeleteSchemaFlags,
   context: SchemaStoreContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   const {ids, dataset, extractManifest, manifestDir, verbose} = parseDeleteSchemasConfig(
     flags,
     context,

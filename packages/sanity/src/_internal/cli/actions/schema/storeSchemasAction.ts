@@ -8,7 +8,7 @@ import {
   SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
-import {type SchemaStoreContext} from './schemaStoreTypes'
+import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {type CreateManifestReader, createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
@@ -29,7 +29,7 @@ export interface StoreSchemasFlags extends StoreSchemaCommonFlags {
 export default function storeSchemasActionForCommand(
   flags: StoreSchemasFlags,
   context: CliCommandContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   return storeSchemasAction(
     {
       ...flags,
@@ -55,7 +55,7 @@ export default function storeSchemasActionForCommand(
 export async function storeSchemasAction(
   flags: StoreSchemasFlags,
   context: SchemaStoreContext,
-): Promise<'success' | 'failure'> {
+): Promise<SchemaStoreActionResult> {
   const {workspaceName, verbose, idPrefix, manifestDir, extractManifest, schemaRequired} =
     parseStoreSchemasConfig(flags, context)
 
