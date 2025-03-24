@@ -1660,6 +1660,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -1684,6 +1688,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -1697,6 +1706,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -2193,6 +2206,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -2227,6 +2244,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -2248,6 +2270,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
