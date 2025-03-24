@@ -1,4 +1,6 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {createSanityInstance} from '@sanity/sdk'
+import {SanityProvider} from '@sanity/sdk-react'
+import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
@@ -82,6 +84,16 @@ function WorkspaceLoader({
 }: Omit<WorkspaceLoaderProps, 'ConfigErrorsComponent'>) {
   const {activeWorkspace} = useActiveWorkspace()
   const workspace = useWorkspaceLoader(activeWorkspace)
+
+  const sanityInstance = useMemo(
+    () =>
+      createSanityInstance({
+        projectId: activeWorkspace.projectId,
+        dataset: activeWorkspace.dataset,
+      }),
+    [activeWorkspace.dataset, activeWorkspace.projectId],
+  )
+
   if (!workspace) return <LoadingComponent />
 
   // TODO: may need a screen if one of the sources is not logged in. e.g. it
@@ -96,7 +108,7 @@ function WorkspaceLoader({
         source={workspace.unstable_sources[0]}
       >
         <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-          {children}
+          <SanityProvider sanityInstances={[sanityInstance]}>{children}</SanityProvider>
         </WorkspaceRouterProvider>
       </SourceProvider>
     </WorkspaceProvider>

@@ -180,6 +180,8 @@
     "@sanity/presentation-comlink": "^1.0.13",
     "@sanity/preview-url-secret": "^2.1.6",
     "@sanity/schema": "3.80.1",
+    "@sanity/sdk": "0.0.0-alpha.19",
+    "@sanity/sdk-react": "0.0.0-alpha.20",
     "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.80.1",
     "@sanity/ui": "^2.15.8",
