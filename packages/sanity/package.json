@@ -175,6 +175,7 @@
     "@sanity/presentation-comlink": "^1.0.15",
     "@sanity/preview-url-secret": "^2.1.7",
     "@sanity/schema": "3.84.0",
+    "@sanity/sdk-react": "0.0.0-chore-react-18-compat.2",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "3.84.0",
     "@sanity/ui": "^2.15.13",

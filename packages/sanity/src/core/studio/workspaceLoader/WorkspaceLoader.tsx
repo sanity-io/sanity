@@ -1,8 +1,10 @@
+import {ResourceProvider} from '@sanity/sdk-react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
 import {ErrorBoundary} from '../../../ui-components'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {
   ConfigResolutionError,
   type Source,
@@ -82,6 +84,7 @@ function WorkspaceLoader({
 }: Omit<WorkspaceLoaderProps, 'ConfigErrorsComponent'>) {
   const {activeWorkspace} = useActiveWorkspace()
   const workspace = useWorkspaceLoader(activeWorkspace)
+
   if (!workspace) return <LoadingComponent />
 
   // TODO: may need a screen if one of the sources is not logged in. e.g. it
@@ -96,7 +99,13 @@ function WorkspaceLoader({
         source={workspace.unstable_sources[0]}
       >
         <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
-          {children}
+          <ResourceProvider
+            projectId={activeWorkspace.projectId}
+            dataset={activeWorkspace.dataset}
+            fallback={<LoadingBlock />}
+          >
+            {children}
+          </ResourceProvider>
         </WorkspaceRouterProvider>
       </SourceProvider>
     </WorkspaceProvider>
