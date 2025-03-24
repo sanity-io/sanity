@@ -77,10 +77,12 @@ const sharedSettings = definePlugin({
     treeArrayEditing: {
       enabled: true,
     },
-    mediaLibrary: {
-      enabled: true,
-    },
   },
+
+  mediaLibrary: {
+    enabled: true,
+  },
+
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {

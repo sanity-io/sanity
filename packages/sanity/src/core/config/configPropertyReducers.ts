@@ -403,13 +403,13 @@ export const mediaLibraryEnabledReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.mediaLibrary?.enabled
+    const resolver = innerConfig.mediaLibrary?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'boolean') return resolver
 
     throw new Error(
-      `Expected \`beta.mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
         resolver,
       )}`,
     )
@@ -426,13 +426,13 @@ export const mediaLibraryLibraryIdReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.mediaLibrary?.libraryId
+    const resolver = innerConfig.mediaLibrary?.libraryId
 
     if (!resolver && typeof resolver !== 'string') return acc
     if (typeof resolver === 'string') return resolver
 
     throw new Error(
-      `Expected \`beta.mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
+      `Expected \`mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
         resolver,
       )}`,
     )
