@@ -23,8 +23,8 @@ import {
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {getLocalStorage} from '../util/localStorage'
-import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
+import {readClipboardData} from '../util/readClipboardData'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
 import {usePaneSize} from './usePaneSize'
@@ -47,9 +47,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   // eslint-disable-next-line no-bitwise
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
-
-const sanityUrl =
-  /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -422,49 +419,20 @@ export function VisionGui(props: VisionGuiProps) {
 
   const handlePaste = useCallback(
     (evt: ClipboardEvent) => {
-      if (!evt.clipboardData) {
+      const clipboardData = readClipboardData(evt)
+      if (!clipboardData) {
         return
       }
-
-      const data = evt.clipboardData.getData('text/plain')
-      const match = data.match(sanityUrl)
-      if (!match) {
-        return
-      }
-
-      const [, usedApiVersion, usedDataset, urlQuery] = match
-      let parts: ParsedApiQueryString
-
-      try {
-        const qs = new URLSearchParams(urlQuery)
-        parts = parseApiQueryString(qs)
-      } catch (err) {
-        console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
-        return // Give up on error
-      }
-
-      let newApiVersion: string | undefined
-      let newCustomApiVersion: string | false | undefined
-
-      if (validateApiVersion(usedApiVersion)) {
-        if (API_VERSIONS.includes(usedApiVersion)) {
-          newApiVersion = usedApiVersion
-          newCustomApiVersion = false
-        } else {
-          newCustomApiVersion = usedApiVersion
-        }
-      }
-
       const newPerspective =
-        isSupportedPerspective(parts.options.perspective) &&
-        !isVirtualPerspective(parts.options.perspective)
-          ? parts.options.perspective
+        isSupportedPerspective(clipboardData.perspective) &&
+        !isVirtualPerspective(clipboardData.perspective)
+          ? clipboardData.perspective
           : undefined
 
       if (
         newPerspective &&
-        (!isSupportedPerspective(parts.options.perspective) ||
-          isVirtualPerspective(parts.options.perspective))
+        (!isSupportedPerspective(clipboardData.perspective) ||
+          isVirtualPerspective(clipboardData.perspective))
       ) {
         toast.push({
           closable: true,
@@ -475,12 +443,12 @@ export function VisionGui(props: VisionGuiProps) {
       }
 
       const finalState = {
-        query: parts.query,
-        params: parts.params,
-        rawParams: JSON.stringify(parts.params, null, 2),
-        dataset: datasets.includes(usedDataset) ? usedDataset : dataset,
-        apiVersion: newApiVersion || apiVersion,
-        customApiVersion: newCustomApiVersion,
+        query: clipboardData.query,
+        params: clipboardData.params,
+        rawParams: JSON.stringify(clipboardData.params, null, 2),
+        dataset: datasets.includes(clipboardData.dataset) ? clipboardData.dataset : dataset,
+        apiVersion: clipboardData.apiVersion || apiVersion,
+        customApiVersion: clipboardData.customApiVersion,
         perspective: newPerspective || perspective,
       }
 
