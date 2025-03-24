@@ -139,7 +139,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
       validateStickyParams(nextStickyParams)
 
       const nextParams = baseState._searchParams || []
-      const mergedParams = mergeStickyParams([...currentParams, ...nextParams], nextStickyParams)
+      const mergedParams = mergeStickyParams(nextParams, nextStickyParams)
 
       onNavigate({
         path: resolvePathFromState({...baseState, _searchParams: mergedParams}),
