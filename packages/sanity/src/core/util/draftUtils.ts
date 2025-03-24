@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
 import {isNonNullable} from './isNonNullable'
@@ -142,6 +143,32 @@ export function getVersionId(id: string, version: string): string {
   }
 
   return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${getPublishedId(id)}`
+}
+
+/**
+ *  @internal
+ *  Given a perspective stack and a document id, returns true if the document id matches any of the provided perspectives
+ *  e.g. `idMatchesPerspective('['summer'], 'versions.summer.foo') === true`
+ *  e.g. `idMatchesPerspective('['drafts', 'summer'], 'versions.summer.foo') === true`
+ *  e.g. `idMatchesPerspective('['drafts'], 'versions.summer.foo') === false`
+ *  e.g. `idMatchesPerspective('['drafts', 'summer'], 'versions.winter.foo') === false`
+ *
+ * Note: a published id will match any perspective
+ *   e.g. `idMatchesPerspective('['drafts', 'summer'], 'foo') === true`
+ */
+export function idMatchesPerspective(
+  perspectiveStack: StackablePerspective[],
+  documentId: string,
+): boolean {
+  if (isPublishedId(documentId)) {
+    return true
+  }
+  return perspectiveStack.some((perspective) => {
+    if (perspective === 'drafts') {
+      return isDraftId(documentId)
+    }
+    return getVersionFromId(documentId) === perspective
+  })
 }
 
 /**
