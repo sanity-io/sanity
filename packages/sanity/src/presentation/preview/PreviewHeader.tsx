@@ -200,6 +200,8 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           portal
         >
           <Button
+            data-testid="preview-viewport-toggle"
+            data-viewport={viewport}
             aria-label={t('preview-frame.viewport-button.aria-label')}
             icon={viewport === 'desktop' ? MobileDeviceIcon : DesktopIcon}
             mode="bleed"
