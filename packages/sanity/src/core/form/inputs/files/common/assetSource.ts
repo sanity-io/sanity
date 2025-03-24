@@ -45,7 +45,9 @@ export function handleSelectAssetFromSource({
   const description = assetProps?.description
   const creditLine = assetProps?.creditLine
   const source = assetProps?.source
-  const imagePatches: FormPatch[] = isImage ? [unset(['hotspot']), unset(['crop'])] : []
+  const assetPatches: FormPatch[] = isImage
+    ? [unset(['hotspot']), unset(['crop']), unset(['media'])]
+    : [unset(['media'])]
 
   // If the asset is from an media library, we need to set the media reference,
   // so that the Media Library can backtrack the usage of that asset.
@@ -55,7 +57,7 @@ export function handleSelectAssetFromSource({
       _ref: `media-library:${mediaLibraryProps.mediaLibraryId}:${mediaLibraryProps.assetId}`,
       _weak: true,
     }
-    imagePatches.push(set(assetContainerRef, ['media']))
+    assetPatches.push(set(assetContainerRef, ['media']))
   }
 
   switch (firstAsset.kind) {
@@ -64,7 +66,7 @@ export function handleSelectAssetFromSource({
         setIfMissing({
           _type: type.name,
         }),
-        ...imagePatches,
+        ...assetPatches,
         set(
           {
             _type: 'reference',

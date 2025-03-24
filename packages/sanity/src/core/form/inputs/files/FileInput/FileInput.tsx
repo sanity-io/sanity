@@ -113,11 +113,11 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
     // value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset'].includes(key),
+      (key) => !['_type', '_key', '_upload', 'asset', 'media'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
-    const removeKeys = ['asset']
+    const removeKeys = ['asset', 'media']
       .concat(allKeys.filter((key) => ['_upload'].includes(key)))
       .map((key) => unset([key]))
 
@@ -152,7 +152,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   handleClearField = () => {
-    this.props.onChange(unset(['asset']))
+    this.props.onChange([unset(['asset']), unset(['media'])])
   }
 
   handleSelectFiles = (files: globalThis.File[]) => {
