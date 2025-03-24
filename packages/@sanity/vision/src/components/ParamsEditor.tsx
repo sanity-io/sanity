@@ -1,24 +1,23 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
 import {debounce} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from '../util/tryParseParams'
+import {type Params} from './VisionGui'
+import {InputBackgroundContainerLeft, StyledLabel} from './VisionGui.styled'
 
 const defaultValue = `{\n  \n}`
 
-export interface ParamsEditorChangeEvent {
-  parsed: Record<string, unknown>
-  raw: string
-  valid: boolean
-  error: string | undefined
-}
-
 export interface ParamsEditorProps {
   value: string
-  onChange: (changeEvt: ParamsEditorChangeEvent) => void
-  editorRef: React.RefObject<VisionCodeMirrorHandle | null>
+  onChange: (changeEvt: Params) => void
+  paramsError: string | undefined
+  hasValidParams: boolean
+  editorRef: RefObject<VisionCodeMirrorHandle | null>
 }
 
 export interface ParamsEditorChange {
@@ -26,9 +25,9 @@ export interface ParamsEditorChange {
 }
 
 export function ParamsEditor(props: ParamsEditorProps) {
-  const {onChange} = props
+  const {onChange, paramsError, hasValidParams, editorRef} = props
   const {t} = useTranslation(visionLocaleNamespace)
-  const {raw: value, error, parsed, valid} = eventFromValue(props.value, t)
+  const {raw: value, error, parsed, valid} = parseParams(props.value, t)
   const [isValid, setValid] = useState(valid)
   const [init, setInit] = useState(false)
 
@@ -42,7 +41,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
 
   const handleChangeRaw = useCallback(
     (newValue: string) => {
-      const event = eventFromValue(newValue, t)
+      const event = parseParams(newValue, t)
       setValid(event.valid)
       onChange(event)
     },
@@ -51,18 +50,34 @@ export function ParamsEditor(props: ParamsEditorProps) {
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
   return (
-    <VisionCodeMirror
-      initialValue={props.value || defaultValue}
-      onChange={handleChange}
-      ref={props.editorRef}
-    />
+    <Card flex={1} tone={hasValidParams ? 'default' : 'critical'} data-testid="params-editor">
+      <InputBackgroundContainerLeft>
+        <Flex>
+          <StyledLabel muted>{t('params.label')}</StyledLabel>
+          {paramsError && (
+            <Tooltip animate placement="top" portal content={<Text size={1}>{paramsError}</Text>}>
+              <Box padding={1} marginX={2}>
+                <Text>
+                  <ErrorOutlineIcon />
+                </Text>
+              </Box>
+            </Tooltip>
+          )}
+        </Flex>
+      </InputBackgroundContainerLeft>
+      <VisionCodeMirror
+        ref={editorRef}
+        initialValue={props.value || defaultValue}
+        onChange={handleChange}
+      />
+    </Card>
   )
 }
 
-function eventFromValue(
+export function parseParams(
   value: string,
   t: TFunction<typeof visionLocaleNamespace, undefined>,
-): ParamsEditorChangeEvent {
+): Params {
   const parsedParams = tryParseParams(value, t)
   const params = parsedParams instanceof Error ? {} : parsedParams
   const validationError = parsedParams instanceof Error ? parsedParams.message : undefined
