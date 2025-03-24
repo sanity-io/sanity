@@ -240,7 +240,7 @@ export function QueryRecall({
                             width="fill"
                             disabled={deleting?.includes(q._key)}
                             icon={TrashIcon}
-                            label={t('action.delete')}
+                            text={t('action.delete')}
                             onClick={() => {
                               deleteQuery(q._key)
                             }}
