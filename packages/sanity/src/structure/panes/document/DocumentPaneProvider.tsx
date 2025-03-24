@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import {useManageFavorite, useRecordDocumentHistoryEvent} from '@sanity/sdk-react'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -293,6 +294,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     () => getDisplayed(value),
     [getDisplayed, value],
   )
+
+  const {favorite, isFavorited} = useManageFavorite({
+    _id: documentId,
+    _type: documentType,
+  })
+
+  useEffect(() => {
+    // favorite()
+    console.log('[IS FAV]', isFavorited)
+  }, [favorite, isFavorited])
+
+  const {recordEvent, isConnected} = useRecordDocumentHistoryEvent({
+    _id: documentId,
+    _type: documentType,
+    // resourceId: '',
+    resourceType: 'studio',
+  })
+
+  useEffect(() => {
+    recordEvent('viewed')
+  }, [recordEvent])
+
+  useEffect(() => {
+    console.log('[IS CONNECTED]', isConnected)
+  }, [isConnected])
 
   const {previousId} = useDocumentIdStack({displayed, documentId, editState})
 
