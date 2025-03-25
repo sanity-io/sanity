@@ -1,9 +1,11 @@
 import {type ComponentType, type PropsWithChildren, useCallback, useContext, useState} from 'react'
 import {TableContext} from 'sanity/_singletons'
 
+import {type SortDirection} from './types'
+
 export interface TableSort {
   column: string
-  direction: 'asc' | 'desc'
+  direction: SortDirection
 }
 
 /**

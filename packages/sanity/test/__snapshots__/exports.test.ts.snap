@@ -330,6 +330,7 @@ exports[`exports snapshot 1`] = `
     "globalScope": "object",
     "grantsPermissionOn": "function",
     "hasCommentMessageValue": "function",
+    "idMatchesPerspective": "function",
     "inc": "function",
     "initialDocumentFieldActions": "object",
     "insert": "function",
