@@ -4,6 +4,7 @@ import {dirname, join, resolve} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import chalk from 'chalk'
 import {minutesToMilliseconds} from 'date-fns'
 import readPkgUp from 'read-pkg-up'
 
@@ -14,8 +15,9 @@ import {
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {getTimer} from '../../util/timing'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
 
-const MANIFEST_FILENAME = 'create-manifest.json'
+export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
 
@@ -29,10 +31,10 @@ const CREATE_TIMER = 'create-manifest'
 const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
 const EXTRACT_FAILURE_MESSAGE =
-  "Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
-  `Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
+  "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
+  `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
 
-interface ExtractFlags {
+export interface ExtractManifestFlags {
   path?: string
 }
 
@@ -41,7 +43,7 @@ interface ExtractFlags {
  * @returns `undefined` if extract succeeded - caught error if it failed
  */
 export async function extractManifestSafe(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
   if (!EXTRACT_MANIFEST_ENABLED) {
@@ -52,6 +54,15 @@ export async function extractManifestSafe(
     await extractManifest(args, context)
     return undefined
   } catch (err) {
+    if (!SCHEMA_STORE_FEATURE_ENABLED) {
+      // preserves current behavior while schema store is disabled
+      context.output.print(
+        chalk.gray(
+          "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
+            `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`,
+        ),
+      )
+    }
     if (EXTRACT_MANIFEST_LOG_ERRORS) {
       context.output.error(err)
     }
@@ -60,7 +71,7 @@ export async function extractManifestSafe(
 }
 
 async function extractManifest(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
   const {output, workDir} = context
@@ -106,7 +117,7 @@ async function extractManifest(
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.info(EXTRACT_FAILURE_MESSAGE)
+    spinner.fail(err.message)
     throw err
   }
 }

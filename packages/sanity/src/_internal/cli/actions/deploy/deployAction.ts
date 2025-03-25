@@ -7,7 +7,9 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
-import {extractManifestSafe} from '../manifest/extractManifestAction'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
+import storeManifestSchemas from '../schema/storeSchemasAction'
+import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {
   checkDir,
   createDeployment,
@@ -20,9 +22,12 @@ import {
 } from './helpers'
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
-  build?: boolean
+  'build'?: boolean
+  'schema-required'?: boolean
+  'verbose'?: boolean
 }
 
+// eslint-disable-next-line complexity
 export default async function deployStudioAction(
   args: CliCommandArguments<DeployStudioActionFlags>,
   context: CliCommandContext,
@@ -108,15 +113,23 @@ export default async function deployStudioAction(
     if (!didCompile) {
       return
     }
+  }
 
-    await extractManifestSafe(
+  if (SCHEMA_STORE_FEATURE_ENABLED) {
+    await storeManifestSchemas(
       {
-        ...buildArgs,
-        extOptions: {},
-        extraArguments: [],
+        'extract-manifest': shouldBuild,
+        'manifest-dir': `${sourceDir}/static`,
+        'schema-required': flags['schema-required'],
+        'verbose': flags.verbose,
       },
       context,
     )
+  } else if (shouldBuild) {
+    await createManifestExtractor({
+      ...context,
+      safe: true,
+    })(`${sourceDir}/static`)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
