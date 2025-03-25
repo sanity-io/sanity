@@ -10,6 +10,7 @@ export const test = sanityFixtures.extend({
 
     const context = await browser.newContext({
       recordHar: {path: harPath},
+      recordVideo: {dir: testInfo.outputDir},
     })
 
     await use(context)
@@ -24,8 +25,10 @@ export const test = sanityFixtures.extend({
         console.error(`Failed to delete HAR file: ${harPath}`)
       }
     } else {
-      // eslint-disable-next-line no-console
-      console.info(`HAR recorded for failed test: ${harPath}`)
+      await testInfo.attach('Network traffic', {
+        path: harPath,
+        contentType: 'application/json',
+      })
     }
   },
 })
