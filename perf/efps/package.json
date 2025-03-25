@@ -38,10 +38,5 @@
     "source-map": "^0.7.4",
     "vite": "^6.2.0",
     "yargs": "17.3.0"
-  },
-  "dependenciesMeta": {
-    "sanity": {
-      "injected": true
-    }
   }
 }

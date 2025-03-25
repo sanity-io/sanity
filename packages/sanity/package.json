@@ -21,64 +21,59 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
-      "require": "./lib/_internal.js",
+      "import": "./lib/_internal.js",
+      "require": "./lib/_internal.cjs",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
-      "import": "./lib/_singletons.mjs",
-      "require": "./lib/_singletons.js",
+      "import": "./lib/_singletons.js",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
-      "import": "./lib/_createContext.mjs",
-      "require": "./lib/_createContext.js",
+      "import": "./lib/_createContext.js",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
-      "require": "./lib/cli.js",
-      "default": "./lib/cli.js"
+      "import": "./lib/cli.js",
+      "require": "./lib/cli.cjs",
+      "default": "./lib/cli.cjs"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
-      "import": "./lib/desk.mjs",
-      "require": "./lib/desk.js",
+      "import": "./lib/desk.js",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
-      "import": "./lib/presentation.mjs",
-      "require": "./lib/presentation.js",
+      "import": "./lib/presentation.js",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
-      "import": "./lib/router.mjs",
-      "require": "./lib/router.js",
+      "import": "./lib/router.js",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
-      "import": "./lib/structure.mjs",
-      "require": "./lib/structure.js",
+      "import": "./lib/structure.js",
       "default": "./lib/structure.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
-      "require": "./lib/migrate.js",
-      "default": "./lib/migrate.js"
+      "import": "./lib/migrate.js",
+      "require": "./lib/migrate.cjs",
+      "default": "./lib/migrate.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -279,8 +274,8 @@
     "@repo/test-config": "workspace:*",
     "@sanity/codegen": "3.80.1",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.13.4",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/pkg-utils": "7.2.0",
+    "@sanity/tsdoc": "2.0.20",
     "@sanity/ui-workshop": "^1.2.11",
     "@sanity/visual-editing-csm": "^2.0.10",
     "@sentry/types": "^8.12.0",
