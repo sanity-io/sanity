@@ -50,7 +50,7 @@ export interface TableRelease extends ReleaseDocument {
 
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
-  column: 'publishedAt',
+  column: 'lastActivity',
   direction: 'desc',
 }
 // eslint-disable-next-line max-statements
