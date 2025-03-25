@@ -1,16 +1,20 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuButton} from '../../../../../ui-components'
+import {Button, Dialog, Popover} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
+import {usePerspective} from '../../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
@@ -23,15 +27,27 @@ export type ReleaseMenuButtonProps = {
   ignoreCTA?: boolean
   release: ReleaseDocument
   documentsCount: number
+  documents?: DocumentInRelease[]
 }
 
-export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseMenuButtonProps) => {
+export const ReleaseMenuButton = ({
+  ignoreCTA,
+  release,
+  documentsCount,
+  documents,
+}: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
   const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
+
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const releaseMenuRef = useRef<HTMLDivElement | null>(null)
+  const [openPopover, setOpenPopover] = useState(false)
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -39,6 +55,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
   const telemetry = useTelemetry()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
 
   const handleDelete = useCallback(async () => {
     await deleteRelease(release._id)
@@ -53,6 +70,7 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
 
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
+      if (action === 'publish' || action === 'schedule') return
       if (releaseMenuDisabled) return
 
       const actionLookup = {
@@ -64,38 +82,51 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       const actionValues = RELEASE_ACTION_MAP[action]
 
       try {
+        if (
+          (action === 'archive' || action === 'delete') &&
+          selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)
+        ) {
+          // Reset the perspective to drafts when the release is archived or deleted
+          // To avoid showing the release archived / deleted toast.
+          setPerspective('drafts')
+        }
         setIsPerformingOperation(true)
         await actionLookup[action](release._id)
 
         telemetry.log(actionValues.telemetry)
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastSuccessI18nKey}
-                values={{title: releaseTitle}}
-              />
-            </Text>
-          ),
-        })
+
+        if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
+          toast.push({
+            closable: true,
+            status: 'success',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastSuccessI18nKey}
+                  values={{title: releaseTitle}}
+                />
+              </Text>
+            ),
+          })
+        }
       } catch (actionError) {
         if (isReleaseLimitError(actionError)) return
 
-        toast.push({
-          status: 'error',
-          title: (
-            <Text muted size={1}>
-              <Translate
-                t={t}
-                i18nKey={actionValues.toastFailureI18nKey}
-                values={{title: releaseTitle, error: actionError.toString()}}
-              />
-            </Text>
-          ),
-        })
+        if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
+          toast.push({
+            status: 'error',
+            title: (
+              <Text muted size={1}>
+                <Translate
+                  t={t}
+                  i18nKey={actionValues.toastFailureI18nKey}
+                  values={{title: releaseTitle, error: actionError.toString()}}
+                />
+              </Text>
+            ),
+          })
+        }
         console.error(actionError)
       } finally {
         setIsPerformingOperation(false)
@@ -108,23 +139,25 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
       archive,
       handleUnarchive,
       unschedule,
-      release._id,
       telemetry,
       toast,
       t,
       releaseTitle,
+      selectedReleaseId,
+      setPerspective,
+      release._id,
     ],
   )
 
   /** in some instanced, immediately execute the action without requiring confirmation */
   useEffect(() => {
-    if (!selectedAction) return
+    if (!selectedAction || isActionPublishOrSchedule) return
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
-  }, [documentsCount, handleAction, selectedAction])
+  }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
-    if (!selectedAction) return null
+    if (!selectedAction || isActionPublishOrSchedule) return null
 
     const {confirmDialog} = RELEASE_ACTION_MAP[selectedAction]
 
@@ -166,40 +199,74 @@ export const ReleaseMenuButton = ({ignoreCTA, release, documentsCount}: ReleaseM
         </Stack>
       </Dialog>
     )
-  }, [selectedAction, t, isPerformingOperation, release, documentsCount, handleAction])
+  }, [
+    selectedAction,
+    isActionPublishOrSchedule,
+    t,
+    isPerformingOperation,
+    release,
+    documentsCount,
+    handleAction,
+  ])
+
+  const handleOnButtonClick = () => {
+    if (openPopover) closePopover()
+    else setOpenPopover(true)
+  }
+
+  const closePopover = () => {
+    setOpenPopover(false)
+  }
+
+  useClickOutsideEvent(
+    () => {
+      if (!isActionPublishOrSchedule) {
+        closePopover()
+      }
+    },
+    () => [popoverRef.current, releaseMenuRef.current],
+  )
+
+  const handleSetSelectedAction = useCallback(
+    (action: SetStateAction<ReleaseAction | undefined>) => {
+      if (!action) closePopover()
+      setSelectedAction(action)
+    },
+    [],
+  )
 
   return (
     <>
-      <MenuButton
-        button={
-          <Button
-            disabled={releaseMenuDisabled || isPerformingOperation}
-            icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
-            mode="bleed"
-            tooltipProps={{content: t('menu.tooltip')}}
-            aria-label={t('menu.label')}
-            data-testid="release-menu-button"
-          />
-        }
-        id="release-menu"
-        menu={
-          <Menu>
+      <Popover
+        content={
+          <Menu ref={releaseMenuRef}>
             <ReleaseMenu
               ignoreCTA={ignoreCTA}
               release={release}
-              setSelectedAction={setSelectedAction}
+              setSelectedAction={handleSetSelectedAction}
               disabled={isPerformingOperation}
+              documents={documents ?? []}
             />
           </Menu>
         }
-        popover={{
-          constrainSize: false,
-          fallbackPlacements: ['top-end'],
-          placement: 'bottom',
-          portal: true,
-          tone: 'default',
-        }}
-      />
+        open={openPopover}
+        ref={popoverRef}
+        constrainSize={false}
+        fallbackPlacements={['top-end']}
+        portal
+        tone="default"
+        placement="bottom"
+      >
+        <Button
+          disabled={releaseMenuDisabled || isPerformingOperation}
+          icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
+          mode="bleed"
+          tooltipProps={{content: t('menu.tooltip')}}
+          aria-label={t('menu.label')}
+          data-testid="release-menu-button"
+          onClick={handleOnButtonClick}
+        />
+      </Popover>
       {confirmActionDialog}
     </>
   )

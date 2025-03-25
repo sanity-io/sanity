@@ -4,6 +4,7 @@ import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
   InsufficientPermissionsMessage,
+  isDraftId,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -12,6 +13,7 @@ import {
 
 import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
@@ -36,7 +38,10 @@ export const UnpublishAction: DocumentActionComponent = ({
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()
+  const {displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
+
+  const isDraft = displayed?._id && isDraftId(displayed?._id)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -71,8 +76,9 @@ export const UnpublishAction: DocumentActionComponent = ({
   }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
 
   return useMemo(() => {
-    if (release) {
+    if (release || isDraft) {
       // Version documents cannot be unpublished by this action, they should be unpublished as part of a release
+      // Draft documents can't either
       return null
     }
     if (liveEdit) {
@@ -102,13 +108,14 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
   }, [
     release,
-    currentUser,
-    dialog,
-    isPermissionsLoading,
+    isDraft,
     liveEdit,
+    isPermissionsLoading,
     permissions?.granted,
-    t,
     unpublish.disabled,
+    t,
+    dialog,
+    currentUser,
   ])
 }
 

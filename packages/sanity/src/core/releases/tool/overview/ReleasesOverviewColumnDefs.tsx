@@ -71,26 +71,51 @@ export const releasesOverviewColumnDefs: (
             <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
           </Flex>
         ),
-        cell: ({cellProps, datum: release}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-            <Text muted size={1}>
-              <ReleaseTime release={release} />
-            </Text>
-            {isReleaseScheduledOrScheduling(release) && (
-              <Text size={1} data-testid="release-lock-icon">
-                <LockIcon />
+        cell: ({cellProps, datum: release}) => {
+          if (release.isLoading) return null
+
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
+              <Text muted size={1}>
+                <ReleaseTime release={release} />
               </Text>
-            )}
-          </Flex>
-        ),
+              {isReleaseScheduledOrScheduling(release) && (
+                <Text size={1} data-testid="release-lock-icon">
+                  <LockIcon />
+                </Text>
+              )}
+            </Flex>
+          )
+        },
       },
       'active',
+    ),
+    // This is a hidden column only used for sorting when
+    // no other sort column is selected (the default state)
+    checkColumnMode(
+      {
+        id: 'lastActivity',
+        hidden: true,
+        sorting: true,
+        width: 100,
+        sortTransform: ({publishedAt, _updatedAt}) => {
+          // the default sort is always descending, so -Infinity pushes missing values to end
+          const lastActivity = publishedAt ?? _updatedAt
+
+          return lastActivity ? new Date(lastActivity).getTime() : -Infinity
+        },
+      },
+      'archived',
     ),
     checkColumnMode(
       {
         id: 'publishedAt',
         sorting: true,
-        sortTransform: (release) => {
+        sortTransform: (release, direction) => {
+          if (release.state !== 'published') {
+            if (direction === 'asc') return Infinity
+            return -Infinity
+          }
           if (!release.publishedAt) return release._updatedAt
           return new Date(release.publishedAt).getTime()
         },
@@ -121,8 +146,12 @@ export const releasesOverviewColumnDefs: (
       {
         id: '_updatedAt',
         sorting: true,
-        sortTransform: (release) => {
-          if (release.state !== 'archived') return Infinity
+        sortTransform: (release, direction) => {
+          if (release.state !== 'archived') {
+            if (direction === 'asc') return Infinity
+            return -Infinity
+          }
+
           return new Date(release._updatedAt).getTime()
         },
         width: 250,

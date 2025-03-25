@@ -32,6 +32,10 @@ export type GetReferenceInfoFn = (doc: {
   _type?: string
 }) => Observable<CrossDatasetReferenceInfo>
 
+// NOTE: If you refactor or fix bugs in this hook, also consider if the changes also relevant for the `useReferenceInfo` hook in
+// `packages/sanity/src/core/form/inputs/GlobalDocumentReferenceInput/useReferenceInfo.ts` and
+// `packages/sanity/src/core/form/inputs/ReferenceInput/useReferenceInfo.ts` which are similar but have some differences
+
 export function useReferenceInfo(
   doc: {_id: string; _type?: string},
   getReferenceInfo: GetReferenceInfoFn,

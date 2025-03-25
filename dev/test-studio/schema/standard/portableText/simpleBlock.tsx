@@ -41,6 +41,10 @@ export default defineType({
       type: 'string',
     },
     {
+      name: 'isMain',
+      type: 'boolean',
+    },
+    {
       name: 'body',
       title: 'Body',
       type: 'array',

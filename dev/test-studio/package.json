@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.79.0",
+  "version": "3.80.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -16,8 +16,8 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.13",
-    "@portabletext/editor": "^1.37.0",
+    "@portabletext/block-tools": "^1.1.14",
+    "@portabletext/editor": "^1.42.0",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.1.0",
     "@sanity/client": "^6.28.3",
@@ -37,12 +37,12 @@
     "@sanity/react-loader": "^1.10.35",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.15.6",
+    "@sanity/ui": "^2.15.8",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.13.9",
+    "@sanity/visual-editing": "2.13.14",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
@@ -59,14 +59,14 @@
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-markdown": "^5.0.0",
-    "sanity-plugin-media": "^2.3.1",
+    "sanity-plugin-media": "^3.0.0",
     "sanity-plugin-mux-input": "^2.5.0",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@million/lint": "1.0.14",
-    "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
+    "babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
     "chokidar": "^3.6.0",
-    "vite": "^6.2.1"
+    "vite": "^6.2.3"
   }
 }

@@ -161,10 +161,6 @@ describe('ReleaseDetail', () => {
       await renderTest()
     })
 
-    it('should show loading spinner', () => {
-      screen.getByTestId('loading-block')
-    })
-
     it('should show the header', () => {
       screen.getByText(activeASAPRelease.metadata.title)
       screen.getByTestId('release-menu-button')
@@ -200,6 +196,7 @@ describe('after releases have loaded', () => {
               validation: {...documentsInRelease.validation, isValidating: true},
             },
           ],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
@@ -221,6 +218,7 @@ describe('after releases have loaded', () => {
         mockUseBundleDocuments.mockReturnValue({
           loading: false,
           results: [documentsInRelease],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
@@ -284,6 +282,7 @@ describe('after releases have loaded', () => {
               },
             },
           ],
+          error: null,
         })
         mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 

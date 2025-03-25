@@ -96,6 +96,9 @@ import date from './standard/date'
 import datetime from './standard/datetime'
 import emails from './standard/emails'
 import files from './standard/files'
+import globalDocumentReference, {
+  globalDocumentReferenceSubtype,
+} from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
@@ -289,6 +292,8 @@ export const schemaTypes = [
   conditionalFieldset,
   crossDatasetReference,
   crossDatasetSubtype,
+  globalDocumentReference,
+  globalDocumentReferenceSubtype,
   fieldGroupsWithFieldsets,
   ptReference,
   validationTest,

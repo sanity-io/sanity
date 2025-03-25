@@ -58,6 +58,7 @@
         "@sanity/template-validator",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
+        "framer-motion",
         "get-it",
         "groq-js",
         "react-rx"

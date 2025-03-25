@@ -9,6 +9,7 @@ import {ButtonTimeZone} from '../../components/timeZone/timeZoneButton/TimeZoneB
 import ButtonTimeZoneElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
 import {useWorkspace} from '../../studio/workspace'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import InfoCallout from '../components/infoCallout/InfoCallout'
@@ -35,8 +36,8 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 export default function Tool() {
   const router = useRouter()
-  const {scheduledPublishing, releases} = useWorkspace()
-  const isReleasesEnabled = Boolean(releases?.enabled)
+  const {scheduledPublishing} = useWorkspace()
+  const releasesToolAvailable = useReleasesToolAvailable()
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
@@ -109,7 +110,7 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
-      {isReleasesEnabled && scheduledPublishing.showReleasesBanner && <WarningBanner />}
+      {releasesToolAvailable && scheduledPublishing.showReleasesBanner && <WarningBanner />}
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
         <Flex flex={1} height="fill">
           {/* LHS Column */}

@@ -1,8 +1,11 @@
 import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type EditableReleaseDocument, type ReleaseDocument} from '../store/types'
+import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '../store/types'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
+
+/** @internal */
+export type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
 
 /**
  * @beta
@@ -84,3 +87,11 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
     releaseType: DEFAULT_RELEASE_TYPE,
   },
 })
+
+/**
+ * Check if the release is archived
+ *
+ * @internal */
+export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
+  return release.state !== 'archived'
+}

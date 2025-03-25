@@ -48,19 +48,29 @@ export function UnpublishVersionDialog(props: {
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 
-    await unpublishVersion(documentVersionId)
+    try {
+      await unpublishVersion(documentVersionId)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={coreT}
+            i18nKey={'release.action.unpublish-version.success'}
+            values={{title: preview?.value?.title || documentVersionId}}
+          />
+        ),
+      })
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: coreT('release.action.unpublish-version.failure'),
+        description: err.message,
+      })
+    }
+
     setIsUnpublishing(false)
-    toast.push({
-      closable: true,
-      status: 'success',
-      description: (
-        <Translate
-          t={coreT}
-          i18nKey={'release.action.unpublish-version.success'}
-          values={{title: preview?.value?.title || documentVersionId}}
-        />
-      ),
-    })
 
     onClose()
   }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])

@@ -22,7 +22,7 @@ export interface RuntimeOptions {
   watch: boolean
   basePath?: string
   appLocation?: string
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 /**
@@ -38,7 +38,7 @@ export async function writeSanityRuntime({
   watch,
   basePath,
   appLocation,
-  isCoreApp,
+  isApp,
 }: RuntimeOptions): Promise<void> {
   debug('Resolving Sanity monorepo information')
   const monorepo = await loadSanityMonorepo(cwd)
@@ -58,7 +58,7 @@ export async function writeSanityRuntime({
             entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
             basePath: basePath || '/',
           },
-          isCoreApp,
+          isApp,
         }),
       ),
     )
@@ -77,7 +77,7 @@ export async function writeSanityRuntime({
 
   debug('Writing app.js to runtime directory')
   let relativeConfigLocation: string | null = null
-  if (!isCoreApp) {
+  if (!isApp) {
     const studioConfigPath = await getSanityStudioConfigPath(cwd)
     relativeConfigLocation = studioConfigPath ? path.relative(runtimeDir, studioConfigPath) : null
   }
@@ -88,7 +88,7 @@ export async function writeSanityRuntime({
     relativeConfigLocation,
     basePath,
     appLocation: relativeAppLocation,
-    isCoreApp,
+    isApp,
   })
   await fs.writeFile(path.join(runtimeDir, 'app.js'), appJsContent)
 }

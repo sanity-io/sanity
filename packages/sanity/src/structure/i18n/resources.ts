@@ -92,7 +92,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'This document has live edit enabled and cannot be unpublished',
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
-    "You are viewing a read-only document that was archived as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
+    'This document version belongs to the archived <VersionBadge>{{title}}</VersionBadge> release',
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */

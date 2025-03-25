@@ -48,19 +48,14 @@ interface RenderDocumentOptions {
   importMap?: {
     imports?: Record<string, string>
   }
-  isCoreApp?: boolean
+  isApp?: boolean
 }
 
 export function renderDocument(options: RenderDocumentOptions): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!useThreads) {
       resolve(
-        getDocumentHtml(
-          options.studioRootPath,
-          options.props,
-          options.importMap,
-          options.isCoreApp,
-        ),
+        getDocumentHtml(options.studioRootPath, options.props, options.importMap, options.isApp),
       )
       return
     }
@@ -177,12 +172,12 @@ if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
 
-function renderDocumentFromWorkerData() {
+async function renderDocumentFromWorkerData() {
   if (!parentPort || !workerData) {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap, isCoreApp}: RenderDocumentOptions =
+  const {monorepo, studioRootPath, props, importMap, isApp}: RenderDocumentOptions =
     workerData || {}
 
   if (workerData?.dev) {
@@ -233,7 +228,7 @@ function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = getDocumentHtml(studioRootPath, props, importMap, isCoreApp)
+  const html = await getDocumentHtml(studioRootPath, props, importMap, isApp)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -242,13 +237,13 @@ function renderDocumentFromWorkerData() {
   unregisterJs()
 }
 
-function getDocumentHtml(
+async function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
-  isCoreApp?: boolean,
-): string {
-  const Document = getDocumentComponent(studioRootPath, isCoreApp)
+  isApp?: boolean,
+): Promise<string> {
+  const Document = await getDocumentComponent(studioRootPath, isApp)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -304,18 +299,19 @@ export function addTimestampedImportMapScriptToHtml(
   return root.outerHTML
 }
 
-function getDocumentComponent(studioRootPath: string, isCoreApp?: boolean) {
+async function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
   debug('Loading default document component from `sanity` module')
 
+  // When running in dev mode, we use require because it doesn't need extension
   const {BasicDocument} = __DEV__
     ? require('../../../core/components/BasicDocument')
-    : require('sanity')
+    : await import('sanity')
 
   const {DefaultDocument} = __DEV__
     ? require('../../../core/components/DefaultDocument')
-    : require('sanity')
+    : await import('sanity')
 
-  const Document = isCoreApp ? BasicDocument : DefaultDocument
+  const Document = isApp ? BasicDocument : DefaultDocument
 
   debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)

@@ -9,6 +9,9 @@ export default defineConfig({
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
     exclude: ['./playwright-ct', './src/_internal/cli'],
+    server: {
+      deps: {inline: ['vitest-package-exports']},
+    },
     /**
      * Portabletext package depends on monorepo packages that are not necessarily the same version
      * as the latest sanity packages. pnpm dedupes this packages so the aliases do not work in this case.
@@ -21,9 +24,11 @@ export default defineConfig({
       ),
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
     },
+    typecheck: {
+      enabled: true,
+      // @TODO we have a lot of TS errors to fix in test files before we can remove this line
+      ignoreSourceErrors: true,
+    },
   },
-  plugins: [
-    // @ts-expect-error vite typings error
-    react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}}),
-  ],
+  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}})],
 })

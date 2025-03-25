@@ -65,7 +65,7 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
   ),
   cell: ({cellProps, datum}) => {
     const actionBadge = () => {
-      if (datum.isPending) return null
+      if (datum.isPending || datum.isLoading) return null
 
       const willBeUnpublished = isGoingToUnpublish(datum.document)
       if (willBeUnpublished) {
@@ -120,7 +120,7 @@ export const getDocumentTableColumnDefs: (
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          <MemoDocumentType type={datum.document._type} />
+          {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
       </Flex>
     ),
@@ -139,7 +139,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {datum.isPending ? (
+        {datum.isPending || datum.isLoading ? (
           <SanityDefaultPreview isPlaceholder />
         ) : (
           <MemoReleaseDocumentPreview
@@ -161,7 +161,7 @@ export const getDocumentTableColumnDefs: (
         <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum: {document, history}}) => (
+    cell: ({cellProps, datum: {document, history, isLoading}}) => (
       <Flex
         {...cellProps}
         align="center"
@@ -170,7 +170,7 @@ export const getDocumentTableColumnDefs: (
         style={{minWidth: 130}}
         sizing="border"
       >
-        {document._updatedAt && (
+        {!isLoading && document._updatedAt && (
           <Flex align="center" gap={2}>
             {history?.lastEditedBy && <UserAvatar size={0} user={history.lastEditedBy} />}
             <Text muted size={1}>
@@ -191,6 +191,8 @@ export const getDocumentTableColumnDefs: (
       </Flex>
     ),
     cell: ({cellProps, datum}) => {
+      if (datum.isLoading) return null
+
       const validationErrorCount = datum.validation.validation.filter(
         (validation) => validation.level === 'error',
       ).length

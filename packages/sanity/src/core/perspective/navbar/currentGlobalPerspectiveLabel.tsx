@@ -5,23 +5,31 @@ import {
   type ForwardedRef,
   forwardRef,
   type ReactNode,
+  useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
 import {IntentLink} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument, type ReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {oversizedButtonStyle} from '../styles'
 import {type SelectedPerspective} from '../types'
+
+const OversizedButton = styled(IntentLink)`
+  ${oversizedButtonStyle}
+`
 
 function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}) {
   const textRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState<null | number>(null) // in pixels
+  const [isAnimating, setIsAnimating] = useState(false)
 
   useLayoutEffect(() => {
     if (!textRef.current) return
@@ -29,15 +37,24 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
     setContainerWidth(newWidth)
   }, [text])
 
+  const onAnimationStart = useCallback(() => {
+    setIsAnimating(true)
+  }, [])
+  const onAnimationComplete = useCallback(() => {
+    setIsAnimating(false)
+  }, [])
+
   return (
     <motion.div
       style={{
         display: 'inline-block',
-        overflow: 'hidden',
         width: containerWidth === null ? 'auto' : containerWidth, // use auto on first render
+        overflow: isAnimating ? 'hidden' : 'visible',
       }}
       animate={{width: containerWidth || 'auto'}}
       transition={{type: 'spring', bounce: 0, duration: 0.3}}
+      onAnimationStart={onAnimationStart}
+      onAnimationComplete={onAnimationComplete}
     >
       <div ref={textRef} style={{display: 'inline-block', whiteSpace: 'nowrap'}}>
         {children}
@@ -57,14 +74,14 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
         linkRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
-          <IntentLink
+          <OversizedButton
             {...intentProps}
             ref={linkRef}
             intent={RELEASES_INTENT}
             params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
           >
             {children}
-          </IntentLink>
+          </OversizedButton>
         )
       }),
     [selectedPerspective],
@@ -76,10 +93,9 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
       data-as="a"
       rel="noopener noreferrer"
       mode="bleed"
-      padding={3}
-      className="p-menu-btn small"
+      padding={2}
       radius="full"
-      style={{maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis'}}
+      style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
       text={selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')}
     />
   )
@@ -97,12 +113,7 @@ export function CurrentGlobalPerspectiveLabel({
       text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
-        <Card
-          tone="inherit"
-          padding={3}
-          className="p-menu-btn"
-          style={{userSelect: 'none', overflow: 'hidden'}}
-        >
+        <Card tone="inherit" padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             {isPublishedPerspective(selectedPerspective)
               ? t('release.chip.published')

@@ -32,6 +32,7 @@ export interface ReleaseSummaryProps {
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
+  isLoading?: boolean
 }
 
 const isBundleDocumentRow = (
@@ -46,7 +47,7 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, release, scrollContainerRef} = props
+  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -55,7 +56,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
 
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
@@ -74,14 +74,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!isBundleDocumentRow(rowProps.datum)) return null
       if (rowProps.datum.isPending) return null
 
-      return (
-        <DocumentActions
-          document={rowProps.datum}
-          releaseTitle={release.metadata.title || tCore('release.placeholder-untitled-release')}
-        />
-      )
+      return <DocumentActions document={rowProps.datum} />
     },
-    [release.metadata.title, release.state, tCore],
+    [release.state],
   )
 
   const documentTableColumnDefs = useMemo(
@@ -162,12 +157,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (
         documents.find(({document}) => `${document._id}-pending` === pendingDocument.document._id)
       ) {
-        toast.push({
-          id: `add-version-to-release-${pendingDocument.document._id}`,
-          closable: true,
-          status: 'success',
-          title: t('toast.create-version.success', {documentTitle: pendingDocument.document.title}),
-        })
         documentsNoLongerPending.push(pendingDocument.document._id)
       }
     })
@@ -188,6 +177,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   return (
     <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
       <Table<DocumentWithHistory>
+        loading={isLoading}
         data={tableData}
         emptyState={t('summary.no-documents')}
         // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
@@ -203,6 +193,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           <Card padding={3}>
             <Button
               icon={AddIcon}
+              disabled={isLoading}
               mode="bleed"
               onClick={() => setAddDocumentDialog(true)}
               text={t('action.add-document')}
