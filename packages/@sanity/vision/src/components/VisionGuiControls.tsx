@@ -1,8 +1,12 @@
 import {PlayIcon, StopIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
+import {type Dispatch, type RefObject, type SetStateAction} from 'react'
 import {useTranslation} from 'sanity'
 
+import {type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
+import {QueryRecall} from './QueryRecall'
+import {type Params} from './VisionGui'
 import {ControlsContainer} from './VisionGui.styled'
 
 export interface VisionGuiControlsProps {
@@ -11,6 +15,14 @@ export interface VisionGuiControlsProps {
   listenInProgress: boolean
   onQueryExecution: () => void
   onListenExecution: () => void
+  query: string
+  setQuery: Dispatch<SetStateAction<string>>
+  params: Params
+  setParams: Dispatch<SetStateAction<Params>>
+  perspective: string
+  setPerspective: (newPerspective: string) => void
+  editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
+  editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 }
 
 /**
@@ -23,6 +35,14 @@ export function VisionGuiControls({
   queryInProgress,
   onQueryExecution,
   onListenExecution,
+  query,
+  setQuery,
+  params,
+  setParams,
+  perspective,
+  setPerspective,
+  editorQueryRef,
+  editorParamsRef,
 }: VisionGuiControlsProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
@@ -77,6 +97,16 @@ export function VisionGuiControls({
             </Box>
           </Flex>
         </Tooltip>
+        <QueryRecall
+          params={params}
+          perspective={perspective}
+          query={query}
+          setQuery={setQuery}
+          setParams={setParams}
+          setPerspective={setPerspective}
+          editorQueryRef={editorQueryRef}
+          editorParamsRef={editorParamsRef}
+        />
       </Card>
     </ControlsContainer>
   )

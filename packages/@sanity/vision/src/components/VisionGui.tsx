@@ -554,7 +554,6 @@ export function VisionGui(props: VisionGuiProps) {
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
-
   return (
     <Root
       direction="column"
@@ -634,6 +633,14 @@ export function VisionGui(props: VisionGuiProps) {
                   listenInProgress={listenInProgress}
                   onQueryExecution={handleQueryExecution}
                   onListenExecution={handleListenExecution}
+                  query={query}
+                  setQuery={setQuery}
+                  params={params}
+                  setParams={setParams}
+                  perspective={perspective}
+                  setPerspective={setPerspective}
+                  editorQueryRef={editorQueryRef}
+                  editorParamsRef={editorParamsRef}
                 />
               </InputContainer>
             </SplitPane>
