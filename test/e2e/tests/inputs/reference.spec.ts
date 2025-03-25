@@ -63,8 +63,7 @@ withDefaultClient((context) => {
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('THIS_IS_BROKEN')
-    // await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
