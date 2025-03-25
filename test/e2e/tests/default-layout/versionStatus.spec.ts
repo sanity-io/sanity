@@ -8,7 +8,8 @@ test('should not show package version toast if not in auto-updating studio', asy
 }) => {
   await page.goto(baseURL ?? '')
 
-  await expect(page.getByText('Sanity Studio was updated')).not.toBeVisible()
+  const getStudioUpdatedText = () => page.getByText('Sanity Studio was updated')
+  await expect(getStudioUpdatedText()).not.toBeVisible()
 })
 
 test.describe('auto-updating studio behavior', () => {
@@ -41,7 +42,9 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-    await expect(page.getByText('Sanity Studio is ready to update')).toBeVisible()
+
+    const getStudioReadyUpdateText = () => page.getByText('Sanity Studio is ready to update')
+    await expect(getStudioReadyUpdateText()).toBeVisible()
   })
 
   test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {
@@ -56,6 +59,7 @@ test.describe('auto-updating studio behavior', () => {
       })
     })
 
-    await expect(page.getByText('Sanity Studio is ready to update')).not.toBeVisible()
+    const getStudioReadyUpdateText = () => page.getByText('Sanity Studio is ready to update')
+    await expect(getStudioReadyUpdateText()).not.toBeVisible()
   })
 })

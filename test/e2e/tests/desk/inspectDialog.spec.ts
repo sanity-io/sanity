@@ -14,6 +14,14 @@ test('clicking inspect mode sets value in storage', async ({
   await createDraftDocument('/test/content/book')
   await page.waitForLoadState('load', WAIT_OPTIONS)
 
+  const getDocumentPane = () => page.getByTestId('document-pane')
+  const getPaneContextMenuButton = () => getDocumentPane().getByTestId('pane-context-menu-button')
+  const getInspectMenuItem = () => page.getByRole('menuitem', {name: /Inspect/i})
+  const getRawJsonTab = () => page.getByRole('tab', {name: 'Raw JSON'})
+
+  await getPaneContextMenuButton().click()
+  await getInspectMenuItem().click()
+
   // Open inspect dialog
   const contextMenuButton = page
     .getByTestId('document-pane')
@@ -35,7 +43,7 @@ test('clicking inspect mode sets value in storage', async ({
   })
 
   // Click Raw JSON tab
-  await rawJsonTab.click()
+  await getRawJsonTab().click()
 
   // Wait for and verify the response
   const keyValueResponse = await keyValueRequest

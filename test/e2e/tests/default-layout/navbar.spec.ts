@@ -6,17 +6,22 @@ test.describe('@sanity/default-layout: Navbar', () => {
   })
 
   test('should show Help & Resource Menu', async ({page}) => {
-    await expect(page.getByTestId('studio-navbar')).toBeVisible()
+    const getStudioNavbar = () => page.getByTestId('studio-navbar')
+    const getTasksToolbar = () => page.getByTestId('tasks-toolbar')
+    const getHelpResources = () => page.getByLabel('Help and resources')
+    const getMenuButtonResources = () => page.getByTestId('menu-button-resources')
+
+    await expect(getStudioNavbar()).toBeVisible()
 
     // Wait for tasks toolbar to be visible, when this is rendered it re renders the navbar. Causing flakiness in the next assertion
-    await expect(page.getByTestId('tasks-toolbar')).toBeVisible()
+    await expect(getTasksToolbar()).toBeVisible()
 
-    await expect(page.getByLabel('Help and resources')).toBeVisible()
+    await expect(getHelpResources()).toBeVisible()
 
-    expect(page.getByLabel('Help and resources')).toBeVisible()
+    expect(getHelpResources()).toBeVisible()
 
-    await page.getByLabel('Help and resources').click()
+    await getHelpResources().click()
 
-    await expect(page.getByTestId('menu-button-resources')).toBeVisible()
+    await expect(getMenuButtonResources()).toBeVisible()
   })
 })

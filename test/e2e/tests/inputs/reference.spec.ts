@@ -154,7 +154,7 @@ withDefaultClient((context) => {
 
     test.slow()
     const originalTitle = 'Initial Doc'
-    const documentStatus = page.getByTestId('pane-footer-document-status')
+    const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/test/content/input-debug;simpleReferences')
     page.getByTestId('string-input').fill(originalTitle)
@@ -174,14 +174,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expect(getDocumentStatus().nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expect(getDocumentStatus().first()).toContainText('Published just now')
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
@@ -202,7 +202,7 @@ withDefaultClient((context) => {
 
     test.slow()
     const originalTitle = 'Initial Doc'
-    const documentStatus = page.getByTestId('pane-footer-document-status')
+    const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/test/content/input-debug;simpleReferences')
     await expect(page.getByTestId('string-input')).toBeVisible()
@@ -223,14 +223,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expect(getDocumentStatus().nth(1)).toContainText('Published just now')
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expect(getDocumentStatus().first()).toContainText('Published just now')
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
