@@ -1591,11 +1591,11 @@ importers:
         specifier: 3.81.0
         version: link:../@sanity/schema
       '@sanity/sdk':
-        specifier: 0.0.0-alpha.19
-        version: 0.0.0-alpha.19(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
+        specifier: 0.0.0-chore-react-18-compat.0
+        version: 0.0.0-chore-react-18-compat.0(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
       '@sanity/sdk-react':
-        specifier: 0.0.0-alpha.20
-        version: 0.0.0-alpha.20(@sanity/color@3.0.6)(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
+        specifier: 0.0.0-chore-react-18-compat.0
+        version: 0.0.0-chore-react-18-compat.0(@sanity/color@3.0.6)(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
       '@sanity/telemetry':
         specifier: ^0.7.7
         version: 0.7.9(react@18.3.1)
@@ -4805,8 +4805,8 @@ packages:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/message-protocol@0.1.0':
-    resolution: {integrity: sha512-/5Vqu+MU6g2gsrQIsJ20ULPTj2b/1vZsDeVrBGV4n6hCnVQExTVKbcItyCzP4F5cfrXtimU45X8XUmQOIIpS9g==}
+  '@sanity/message-protocol@0.6.0':
+    resolution: {integrity: sha512-Mogc+S1AwLAmb3LGyovjQ7dfp5ZXqQCVbi/IliHWKQy3gVO2xWo4sNTtk8+yxCMAJykUbXOAehNoVG77zC2nlw==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/mutate@0.11.0-canary.4':
@@ -4861,15 +4861,15 @@ packages:
     engines: {node: '>=20.11.0'}
     hasBin: true
 
-  '@sanity/sdk-react@0.0.0-alpha.20':
-    resolution: {integrity: sha512-842Wb3wf2G2AH/Wxg1mDI+EzLSBW4eg3sccr+xMyxuoYBcDmwKuKYtVSvca9aVm48HEh8UNw7qbJBnJ1IFkZyw==}
+  '@sanity/sdk-react@0.0.0-chore-react-18-compat.0':
+    resolution: {integrity: sha512-a6WPk2aW/a3c6IXQVZllgUF4UG+OymX6a6WIz4jJNgA6Kz9OiblztFbe8fHiuykCh53DVzISkDejLaM+NjLhqg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  '@sanity/sdk@0.0.0-alpha.19':
-    resolution: {integrity: sha512-YmyKfPanFP1OS2wsVGJc7fz0u+7QUL6szsV6nWiHv1MPMwaSK9aPpnzsEgF8twYYQ8yTgx1P1XpZuLsFpG0wFw==}
+  '@sanity/sdk@0.0.0-chore-react-18-compat.0':
+    resolution: {integrity: sha512-KfFYTEkGy5Cc8XelQ2QyMvqpMbjWI3rmYQXQePxBGBD0bo3+fMNPn5WPTdrHCIL6Zpz56PEsEMovR42VSvbD9g==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/telemetry@0.7.9':
@@ -15364,7 +15364,7 @@ snapshots:
       '@sanity/color': 3.0.6
       react: 19.0.0
 
-  '@sanity/message-protocol@0.1.0':
+  '@sanity/message-protocol@0.6.0':
     dependencies:
       '@sanity/comlink': 2.0.5
 
@@ -15590,13 +15590,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/sdk-react@0.0.0-alpha.20(@sanity/color@3.0.6)(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))':
+  '@sanity/sdk-react@0.0.0-chore-react-18-compat.0(@sanity/color@3.0.6)(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))':
     dependencies:
       '@sanity/logos': 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
-      '@sanity/message-protocol': 0.1.0
-      '@sanity/sdk': 0.0.0-alpha.19(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
+      '@sanity/message-protocol': 0.6.0
+      '@sanity/sdk': 0.0.0-chore-react-18-compat.0(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
       '@sanity/types': link:packages/@sanity/types
       react: 18.3.1
+      react-compiler-runtime: 19.0.0-beta-aeaed83-20250323(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
       react-error-boundary: 5.0.0(react@18.3.1)
       rxjs: 7.8.2
@@ -15607,7 +15608,7 @@ snapshots:
       - immer
       - use-sync-external-store
 
-  '@sanity/sdk@0.0.0-alpha.19(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))':
+  '@sanity/sdk@0.0.0-chore-react-18-compat.0(@types/react@19.0.12)(debug@4.4.0)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))':
     dependencies:
       '@sanity/client': 6.28.3(debug@4.4.0)
       '@sanity/comlink': 3.0.1
