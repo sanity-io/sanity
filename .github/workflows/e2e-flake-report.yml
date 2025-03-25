@@ -1,0 +1,101 @@
+name: Weekly Flaky Test Report
+
+on:
+  schedule:
+    - cron: "0 8 * * 1" # Every Monday at 8AM UTC
+  workflow_dispatch:
+
+jobs:
+  generate-flake-report:
+    name: Generate Flaky Test Report
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "pnpm"
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Get Playwright Artifacts From Last 7 Days
+        id: get-artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ONE_WEEK_AGO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            let artifacts = [];
+            let page = 1;
+
+            while (true) {
+              const { data } = await github.rest.actions.listArtifactsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+                page
+              });
+
+              const fresh = data.artifacts.filter(a =>
+                a.name.startsWith("playwright-report-") &&
+                new Date(a.created_at) > ONE_WEEK_AGO
+              );
+
+              artifacts.push(...fresh);
+              if (data.artifacts.length < 100) break;
+              page++;
+            }
+
+            if (artifacts.length === 0) {
+              core.warning('No recent playwright artifacts found in the last 7 days');
+            } else {
+              core.notice(`Found ${artifacts.length} recent artifacts`);
+            }
+
+            core.setOutput('ids', JSON.stringify(artifacts.map(a => a.id)));
+
+      - name: Download and extract artifacts
+        run: |
+          mkdir -p artifacts
+          echo '${{ steps.get-artifacts.outputs.ids }}' | jq -c '.[]' | while read id; do
+            echo "Downloading artifact $id..."
+            gh api \
+              -H "Accept: application/vnd.github+json" \
+              /repos/${{ github.repository }}/actions/artifacts/$id/zip \
+              --output tmp.zip
+            unzip -o tmp.zip -d artifacts/
+            rm tmp.zip
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Parse flaky tests
+        id: parse-flakes
+        run: |
+          node ./scripts/parse-flakes.js > report.md
+          echo "SLACK_MESSAGE<<EOF" >> $GITHUB_ENV
+          head -n 25 report.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Output Slack message preview
+        run: |
+          echo "====== Slack message preview ======"
+          echo "${SLACK_MESSAGE}"
+          echo "==================================="
+
+    #   - name: Post to Slack
+    #     if: github.event_name != 'workflow_dispatch' # Skip Slack post during manual runs
+    #     uses: rtCamp/action-slack-notify@v2
+    #     env:
+    #       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #       SLACK_USERNAME: FlakeBot
+    #       SLACK_TITLE: "🧪 Weekly Playwright Flaky Test Report"
+    #       SLACK_COLOR: "#f5a623"
+    #       SLACK_MESSAGE: ${{ env.SLACK_MESSAGE }}
