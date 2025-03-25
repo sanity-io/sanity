@@ -7,6 +7,12 @@ import {Tooltip} from '../../../../ui-components'
 import {useListFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 
+const StatusIconWrapper = styled.div`
+  left: 8px;
+  position: relative;
+  width: 25px;
+`
+
 /** @internal */
 export interface FormFieldValidationStatusProps {
   /**
@@ -84,11 +90,11 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <div>
+      <StatusIconWrapper>
         <StatusText $status={status} size={fontSize} weight="medium">
           {StatusIcon && <StatusIcon />}
         </StatusText>
-      </div>
+      </StatusIconWrapper>
     </Tooltip>
   )
 }
