@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test(`liveEdited document can be created, edited, and deleted`, async ({
   page,

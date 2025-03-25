@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'
 const CUSTOM_SORT_KEY = 'studio.structure-tool.sort-order.book'

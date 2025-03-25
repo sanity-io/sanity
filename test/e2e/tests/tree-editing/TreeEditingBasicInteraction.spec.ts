@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test.skip('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {

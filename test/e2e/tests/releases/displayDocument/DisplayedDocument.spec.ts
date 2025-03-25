@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
-import {test} from '@sanity/test'
 
+import {test} from '../fixtures/harFixture'
 import {
   speciesDocumentNameASAP,
   speciesDocumentNameDraft,

@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test('create new document from menu button', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/test/content')

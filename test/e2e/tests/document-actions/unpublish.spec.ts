@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test(`should be able to unpublish a published document`, async ({page, createDraftDocument}) => {
   /** publish initial action */

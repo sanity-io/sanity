@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test('fields groups can use/not use i18n titles', async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/input-debug;field-groups;fieldGroupsWithI18n')

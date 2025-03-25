@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 const SEARCH_KEY = 'studio.search.recent'
 test('searching creates unique saved searches', async ({
@@ -35,7 +36,7 @@ test('searching creates unique saved searches', async ({
   await page.getByTestId('studio-search').click()
 
   await page.getByPlaceholder('Search', {exact: true}).fill('A se')
-  await page.getByTestId('search-results').isVisible()
+  await page.getByTestId('search-results-BROKEN').isVisible()
 
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'

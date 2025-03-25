@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {withDefaultClient} from '../../helpers'
+import {test} from '../fixtures/harFixture'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({

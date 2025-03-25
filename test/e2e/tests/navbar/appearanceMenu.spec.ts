@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 const COLOR_SCHEME_KEY = 'sanityStudio:ui:colorScheme'
 

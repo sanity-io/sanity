@@ -1,5 +1,6 @@
 import {expect, type Request} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 function getListenEventType(request: Request): string | null | undefined {
   if (request.url().includes('data/listen')) {
