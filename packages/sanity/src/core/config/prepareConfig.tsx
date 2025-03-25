@@ -132,7 +132,7 @@ export function prepareConfig(
            * @FIXME: with the introduction of global references, @sanity/assist broke
            * As a quickfix the plugins was released with a know property on the plugin definition.
            * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
-           * This ensurs auto updating studios can start, albeit without assist, it it is old.
+           * This ensures auto updating studios can start, albeit without assist, it it is old.
            */
           .filter((plugin) => {
             const validPlugin =
