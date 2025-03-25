@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {useManageFavorite, useRecordDocumentHistoryEvent} from '@sanity/sdk-react'
+import {type DocumentHandle, useWindowConnection} from '@sanity/sdk-react'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -295,30 +295,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
-  const {favorite, isFavorited} = useManageFavorite({
+  const {recordEvent} = useRecordDocumentHistoryEvent2({
     _id: documentId,
     _type: documentType,
-  })
-
-  useEffect(() => {
-    // favorite()
-    console.log('[IS FAV]', isFavorited)
-  }, [favorite, isFavorited])
-
-  const {recordEvent, isConnected} = useRecordDocumentHistoryEvent({
-    _id: documentId,
-    _type: documentType,
-    // resourceId: '',
-    resourceType: 'studio',
   })
 
   useEffect(() => {
     recordEvent('viewed')
   }, [recordEvent])
-
-  useEffect(() => {
-    console.log('[IS CONNECTED]', isConnected)
-  }, [isConnected])
 
   const {previousId} = useDocumentIdStack({displayed, documentId, editState})
 
@@ -556,3 +540,47 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 })
 
 DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+
+const SDK_CHANNEL_NAME = 'dashboard/channels/sdk'
+const SDK_NODE_NAME = 'dashboard/nodes/sdk'
+
+function useRecordDocumentHistoryEvent2({_id, _type}: DocumentHandle): {
+  recordEvent: (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => void
+  isConnected: boolean
+} {
+  const [status, setStatus] = useState<string>('idle')
+
+  const {sendMessage} = useWindowConnection({
+    name: SDK_NODE_NAME,
+    connectTo: SDK_CHANNEL_NAME,
+    onStatus: setStatus,
+  })
+
+  const recordEvent = useCallback(
+    (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => {
+      try {
+        const message = {
+          type: 'dashboard/v1/events/history',
+          data: {
+            eventType,
+            documentId: _id,
+            documentType: _type,
+            resourceType: 'studio',
+          },
+        }
+
+        sendMessage(message.type, message.data)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to record history event:', error)
+        throw error
+      }
+    },
+    [_id, _type, sendMessage],
+  )
+
+  return {
+    recordEvent,
+    isConnected: status === 'connected',
+  }
+}
