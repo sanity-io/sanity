@@ -4,6 +4,7 @@ import {motion} from 'framer-motion'
 import {useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
 
@@ -52,6 +53,7 @@ const TableHeaderSearch = ({
   searchDisabled,
   placeholder,
 }: HeaderProps & {placeholder?: string}) => {
+  const {t} = useTranslation()
   const {setSearchTerm, searchTerm} = useTableContext()
 
   return (
@@ -60,7 +62,7 @@ const TableHeaderSearch = ({
         border={false}
         fontSize={1}
         icon={SearchIcon}
-        placeholder={placeholder || 'Search'}
+        placeholder={placeholder || t('search.placeholder')}
         radius={3}
         value={searchTerm || ''}
         disabled={searchDisabled}
@@ -88,18 +90,21 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
         )`,
         }}
       >
-        {headers.map(({header: Header, style, width, id, sorting}) => (
-          <Header
-            key={String(id)}
-            headerProps={{
-              as: 'th',
-              id: String(id),
-              style: {...style, width: width || undefined},
-            }}
-            header={{id, sorting}}
-            searchDisabled={searchDisabled}
-          />
-        ))}
+        {headers.map(
+          ({header: Header, style, width, id, sorting}) =>
+            !!Header && (
+              <Header
+                key={String(id)}
+                headerProps={{
+                  as: 'th',
+                  id: String(id),
+                  style: {...style, width: width || undefined},
+                }}
+                header={{id, sorting}}
+                searchDisabled={searchDisabled}
+              />
+            ),
+        )}
       </Flex>
     </Card>
   )

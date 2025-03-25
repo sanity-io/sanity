@@ -172,7 +172,7 @@ if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
 
-function renderDocumentFromWorkerData() {
+async function renderDocumentFromWorkerData() {
   if (!parentPort || !workerData) {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
@@ -228,7 +228,7 @@ function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = getDocumentHtml(studioRootPath, props, importMap, isApp)
+  const html = await getDocumentHtml(studioRootPath, props, importMap, isApp)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -237,13 +237,13 @@ function renderDocumentFromWorkerData() {
   unregisterJs()
 }
 
-function getDocumentHtml(
+async function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
   isApp?: boolean,
-): string {
-  const Document = getDocumentComponent(studioRootPath, isApp)
+): Promise<string> {
+  const Document = await getDocumentComponent(studioRootPath, isApp)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -299,16 +299,17 @@ export function addTimestampedImportMapScriptToHtml(
   return root.outerHTML
 }
 
-function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
+async function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
   debug('Loading default document component from `sanity` module')
 
+  // When running in dev mode, we use require because it doesn't need extension
   const {BasicDocument} = __DEV__
     ? require('../../../core/components/BasicDocument')
-    : require('sanity')
+    : await import('sanity')
 
   const {DefaultDocument} = __DEV__
     ? require('../../../core/components/DefaultDocument')
-    : require('sanity')
+    : await import('sanity')
 
   const Document = isApp ? BasicDocument : DefaultDocument
 

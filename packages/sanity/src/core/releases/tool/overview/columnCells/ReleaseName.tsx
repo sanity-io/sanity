@@ -15,10 +15,13 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
-import {type Column} from '../../components/Table/types'
+import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
-export const ReleaseNameCell: Column<TableRelease>['cell'] = ({cellProps, datum: release}) => {
+export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
+  cellProps,
+  datum: release,
+}) => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
