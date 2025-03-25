@@ -437,8 +437,8 @@ importers:
         specifier: ^3.0.0
         version: 3.2.1(react@19.0.0)
       '@sanity/assist':
-        specifier: ^3.1.0
-        version: 3.2.1(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.16(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        specifier: ^3.2.2
+        version: 3.2.2(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.16(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@sanity/client':
         specifier: ^6.28.3
         version: 6.28.3(debug@4.4.0)
@@ -4499,8 +4499,8 @@ packages:
     resolution: {integrity: sha512-dBsZWH5X6ANcvclFRnQT9Y+NNvoWTJZIMKR5HT6hzoRpRb48p7+vWn+wi1V1wPvqgZg2ScsOQQcGXWXskbPbQQ==}
     engines: {node: '>=18'}
 
-  '@sanity/assist@3.2.1':
-    resolution: {integrity: sha512-IvAyxueKRFgSg3nVLr4lW0w0pdVwsst8xX/yj2vNb5GCIoEpsHmHBbwuMSA4k54OamRU7Y+0o5E8agNzoj6kIQ==}
+  '@sanity/assist@3.2.2':
+    resolution: {integrity: sha512-6RCVtI73Z/2if770p9yoD3tOfPvKiCZdxguyyuvmvS+f5NVklTUHsPYTZkObqZANxdqVeo0ouaRqQUowjFKu7w==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sanity/mutator': ^3.36.4
@@ -14816,7 +14816,7 @@ snapshots:
 
   '@sanity/asset-utils@2.2.1': {}
 
-  '@sanity/assist@3.2.1(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.16(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
+  '@sanity/assist@3.2.2(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.0.0(react@19.0.0))(react-is@18.3.1)(react@19.0.0)(sanity@packages+sanity)(styled-components@6.1.16(react-dom@19.0.0(react@19.0.0))(react@19.0.0))':
     dependencies:
       '@sanity/icons': 3.7.0(react@19.0.0)
       '@sanity/incompatible-plugin': 1.0.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
