@@ -13,3 +13,27 @@ export const CROP_FIELD = {
   name: 'crop',
   type: 'sanity.imageCrop',
 }
+
+export const MEDIA_LIBRARY_ASSET_FIELD = {
+  name: 'media',
+  type: 'globalDocumentReference',
+  hidden: true,
+  to: [
+    {
+      type: 'sanity.asset',
+    },
+  ],
+  // resourceType: 'asset-library',
+  // resourceId: 'al32RNT8lVAT',
+  // weak: true,
+  // to: [
+  //   {
+  //     type: 'sanity.asset',
+  //     preview: {
+  //       select: {
+  //         title: 'title',
+  //       },
+  //     },
+  //   },
+  // ],
+}

@@ -535,6 +535,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract a simple schema
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -713,6 +717,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract a simple schema
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
         },
       ],
       "kind": "Type",
@@ -1949,6 +1957,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -2047,6 +2059,10 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
         },
       ],
       "kind": "Type",

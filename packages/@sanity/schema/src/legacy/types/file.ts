@@ -11,6 +11,13 @@ export const ASSET_FIELD = {
   to: {type: 'sanity.fileAsset'},
 }
 
+export const MEDIA_LIBRARY_ASSET_FIELD = {
+  name: 'media',
+  type: 'globalDocumentReference',
+  hidden: true,
+  to: [], // Just have to be *something* to be valid
+}
+
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const FILE_CORE = {
@@ -31,7 +38,7 @@ export const FileType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = [ASSET_FIELD, ...(rawSubTypeDef.fields || [])]
+    const fields = [ASSET_FIELD, MEDIA_LIBRARY_ASSET_FIELD, ...(rawSubTypeDef.fields || [])]
 
     const subTypeDef = {...rawSubTypeDef, fields}
 
