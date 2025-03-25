@@ -7,28 +7,37 @@ import {test as sanityFixtures} from '@sanity/test'
 export const test = sanityFixtures.extend({
   context: async ({browser}, use, testInfo) => {
     const harPath = path.join(testInfo.outputDir, 'network.har')
+    const videoPath = path.join(testInfo.outputDir, 'video.webm')
 
     const context = await browser.newContext({
       recordHar: {path: harPath},
       recordVideo: {dir: testInfo.outputDir},
     })
 
-    await use(context)
+    await use(context) // give the context to the test
 
     await context.close()
 
-    // Clean up or keep HAR file depending on result
     if (testInfo.status === testInfo.expectedStatus) {
       try {
         fs.unlinkSync(harPath)
+        fs.unlinkSync(videoPath)
       } catch {
-        console.error(`Failed to delete HAR file: ${harPath}`)
+        // ignore
       }
     } else {
       await testInfo.attach('Network traffic', {
         path: harPath,
         contentType: 'application/json',
       })
+
+      // ✅ Manually attach the video
+      if (fs.existsSync(videoPath)) {
+        await testInfo.attach('Video recording', {
+          path: videoPath,
+          contentType: 'video/webm',
+        })
+      }
     }
   },
 })
