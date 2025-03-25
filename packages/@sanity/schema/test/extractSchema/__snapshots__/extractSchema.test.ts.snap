@@ -1358,6 +1358,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                               "type": "inline",
                             },
                           },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
                         },
                         "type": "object",
                       },
@@ -1562,6 +1569,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                                                   "type": "inline",
                                                 },
                                               },
+                                              "media": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "type": "unknown",
+                                                },
+                                              },
                                             },
                                             "type": "object",
                                           },
@@ -1604,6 +1618,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                                   "value": {
                                     "name": "sanity.imageHotspot",
                                     "type": "inline",
+                                  },
+                                },
+                                "media": {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": {
+                                    "type": "unknown",
                                   },
                                 },
                               },
@@ -1840,6 +1861,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                               "type": "inline",
                             },
                           },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
                         },
                         "rest": {
                           "attributes": {
@@ -1940,6 +1968,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                                   "value": {
                                     "name": "sanity.imageHotspot",
                                     "type": "inline",
+                                  },
+                                },
+                                "media": {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": {
+                                    "type": "unknown",
                                   },
                                 },
                               },
@@ -2199,6 +2234,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                       "value": {
                         "name": "sanity.imageHotspot",
                         "type": "inline",
+                      },
+                    },
+                    "media": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "unknown",
                       },
                     },
                   },
@@ -2465,6 +2507,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                             "value": {
                               "name": "sanity.imageHotspot",
                               "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
                             },
                           },
                         },
@@ -2925,6 +2974,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                         "type": "inline",
                       },
                     },
+                    "media": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "unknown",
+                      },
+                    },
                   },
                   "rest": {
                     "attributes": {
@@ -3099,6 +3155,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                             "value": {
                               "name": "sanity.imageHotspot",
                               "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
                             },
                           },
                         },
@@ -3790,6 +3853,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                         "type": "inline",
                       },
                     },
+                    "media": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "unknown",
+                      },
+                    },
                   },
                   "rest": {
                     "attributes": {
@@ -4174,6 +4244,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
               "value": {
                 "name": "sanity.imageHotspot",
                 "type": "inline",
+              },
+            },
+            "media": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "unknown",
               },
             },
           },
@@ -4841,6 +4918,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                 "type": "string",
               },
             },
+            "media": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "unknown",
+              },
+            },
           },
           "type": "object",
         },
@@ -5060,6 +5144,13 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
           "type": "objectAttribute",
           "value": {
             "type": "string",
+          },
+        },
+        "media": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "unknown",
           },
         },
       },
