@@ -11,7 +11,7 @@ import {createReleaseOperationsStore} from './createReleaseOperationStore'
 export function useReleaseOperations() {
   const studioClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const {onReleaseLimitReached} = useReleasesUpsell()
-  return useMemo(
+  const {createVersion, discardVersion, unpublishVersion, ...releaseOperations} = useMemo(
     () =>
       createReleaseOperationsStore({
         client: studioClient,
@@ -19,4 +19,6 @@ export function useReleaseOperations() {
       }),
     [onReleaseLimitReached, studioClient],
   )
+
+  return releaseOperations
 }

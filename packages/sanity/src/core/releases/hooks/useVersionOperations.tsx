@@ -1,10 +1,14 @@
 import {useTelemetry} from '@sanity/telemetry/react'
+import {useMemo} from 'react'
 
+import {useClient} from '../../hooks/useClient'
 import {type ReleaseId} from '../../perspective/types'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
-import {useReleaseOperations} from '../store/useReleaseOperations'
+import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
+import {createReleaseOperationsStore} from '../store/createReleaseOperationStore'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 export interface VersionOperationsValue {
   createVersion: (
@@ -19,8 +23,16 @@ export interface VersionOperationsValue {
 /** @internal */
 export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
-  const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
-
+  const studioClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+  const {onReleaseLimitReached} = useReleasesUpsell()
+  const {createVersion, discardVersion, unpublishVersion} = useMemo(
+    () =>
+      createReleaseOperationsStore({
+        client: studioClient,
+        onReleaseLimitReached,
+      }),
+    [onReleaseLimitReached, studioClient],
+  )
   const setPerspective = useSetPerspective()
 
   const handleCreateVersion = async (

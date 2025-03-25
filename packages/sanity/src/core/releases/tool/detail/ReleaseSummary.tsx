@@ -9,9 +9,9 @@ import {useTranslation} from '../../../i18n'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store/types'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
@@ -49,7 +49,7 @@ const isBundleDocumentRow = (
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
   const toast = useToast()
-  const {createVersion} = useReleaseOperations()
+  const {createVersion} = useVersionOperations()
   const telemetry = useTelemetry()
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
