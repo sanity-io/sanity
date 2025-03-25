@@ -1762,10 +1762,10 @@ importers:
         specifier: ^8.12.0
         version: 8.54.0
       '@testing-library/jest-dom':
-        specifier: ^6.4.8
+        specifier: ^6.6.3
         version: 6.6.3
       '@testing-library/react':
-        specifier: ^16.1.0
+        specifier: ^16.2.0
         version: 16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/user-event':
         specifier: ^13.5.0
