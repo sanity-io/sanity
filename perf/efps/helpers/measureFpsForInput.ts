@@ -20,7 +20,10 @@ export async function measureFpsForInput({
   const input = page
     .locator(
       `[data-testid="field-${fieldName}"] input[type="text"], ` +
-        `[data-testid="field-${fieldName}"] textarea`,
+        `[data-testid="field-${fieldName}"] textarea, ` +
+        // Add additional selectors to find inputs in CommonDateTimeInput
+        `[data-testid*="${fieldName}"] input[type="text"], ` +
+        `[data-testid*="${fieldName}"] textarea`,
     )
     .first()
   await input.waitFor({state: 'visible'})

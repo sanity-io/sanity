@@ -1,12 +1,14 @@
 import {format} from 'date-fns'
 import {useCallback} from 'react'
 
-import useTimeZone, {getLocalTimeZone} from '../../scheduledPublishing/hooks/useTimeZone'
+import {useTimeZone} from '../../hooks/useTimeZone'
 import {type TableRelease} from '../tool/overview/ReleasesOverview'
 import {getPublishDateFromRelease} from '../util/util'
 
 export const useReleaseTime = (): ((release: TableRelease) => string | null) => {
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone()
+  const {timeZone, utcToCurrentZoneDate, getLocalTimeZone} = useTimeZone({
+    type: 'contentReleases',
+  } as const)
   const {abbreviation: localeTimeZoneAbbreviation} = getLocalTimeZone()
 
   const getTimezoneAbbreviation = useCallback(
