@@ -53,8 +53,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.1)(typescript@5.7.3)
       '@sanity/mutate':
-        specifier: ^0.12.3
-        version: 0.12.3(debug@4.4.0)
+        specifier: ^0.12.4
+        version: 0.12.4(debug@4.4.0)
       '@sanity/pkg-utils':
         specifier: 6.13.4
         version: 6.13.4(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.0.0-beta-aeaed83-20250323)(typescript@5.7.3)
@@ -1020,8 +1020,8 @@ importers:
         specifier: ^6.28.3
         version: 6.28.3(debug@4.4.0)
       '@sanity/mutate':
-        specifier: ^0.12.3
-        version: 0.12.3(debug@4.4.0)
+        specifier: ^0.12.4
+        version: 0.12.4(debug@4.4.0)
       '@sanity/types':
         specifier: 3.81.0
         version: link:../types
@@ -4653,8 +4653,8 @@ packages:
       xstate:
         optional: true
 
-  '@sanity/mutate@0.12.3':
-    resolution: {integrity: sha512-+nUOlaD6k+XDXyhe76wMuIQ89y2in7roKIE+TSqcl7BfD2aM5pHeEo70Jy2ungkskj0k5cQxRe5YsHyQqY484w==}
+  '@sanity/mutate@0.12.4':
+    resolution: {integrity: sha512-CBPOOTCTyHFyhBL+seWpkGKJIE6lpaFd9yIeTIDt6miluBz6W8OKTNbaU6gPzOztqrr8KbrTaROiQAaMQDndQA==}
     engines: {node: '>=18'}
 
   '@sanity/pkg-utils@6.13.4':
@@ -9135,8 +9135,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.9:
-    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+  nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -13951,7 +13951,7 @@ snapshots:
       cli-high: 0.4.3
       diff: 5.2.0
       effect: 3.14.1
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       recast: 0.23.11
       xycolors: 0.1.2
 
@@ -13970,7 +13970,7 @@ snapshots:
       faster-babel-types: 0.1.0(@babel/types@7.26.0)
       hono: 4.7.2
       isomorphic-fetch: 3.0.0(encoding@0.1.13)
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       ohash: 1.1.4
       pako: 2.1.0
       pathe: 1.1.2
@@ -15142,7 +15142,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.12.3(debug@4.4.0)':
+  '@sanity/mutate@0.12.4(debug@4.4.0)':
     dependencies:
       '@sanity/client': 6.28.3(debug@4.4.0)
       '@sanity/diff-match-patch': 3.2.0
@@ -15150,7 +15150,7 @@ snapshots:
       hotscript: 1.0.13
       lodash: 4.17.21
       mendoza: 3.0.8
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -20696,7 +20696,7 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  nanoid@5.0.9: {}
+  nanoid@5.1.5: {}
 
   nanomatch@1.2.13:
     dependencies:

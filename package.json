@@ -112,7 +112,7 @@
     "@sanity/client": "^6.28.3",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
-    "@sanity/mutate": "^0.12.3",
+    "@sanity/mutate": "^0.12.4",
     "@sanity/pkg-utils": "6.13.4",
     "@sanity/prettier-config": "^1.0.3",
     "@sanity/test": "0.0.1-alpha.1",
