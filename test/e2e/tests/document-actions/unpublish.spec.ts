@@ -5,32 +5,32 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   /** publish initial action */
   const titleA = 'Title A'
 
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-publish')
-  const contextFooterMenu = page.getByTestId('action-menu-button')
-  const unpublishButton = page.getByTestId('action-Unpublish')
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-
-  const unpublishModal = page
-    .getByTestId('document-panel-portal')
-    .locator('div')
-    .filter({hasText: 'Unpublish document?Are you'})
-    .nth(1)
+  const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
+  const getPublishButton = () => page.getByTestId('action-publish')
+  const getContextFooterMenu = () => page.getByTestId('action-menu-button')
+  const getUnpublishButton = () => page.getByTestId('action-Unpublish')
+  const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
+  const getUnpublishModal = () =>
+    page
+      .getByTestId('document-panel-portal')
+      .locator('div')
+      .filter({hasText: 'Unpublish document?Are you'})
+      .nth(1)
 
   await createDraftDocument('/test/content/book')
-  await titleInput.fill(titleA)
+  await getTitleInput().fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expect(getDocumentStatus()).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
   // Wait for the document to be published.
-  await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishButton().click()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
-  await contextFooterMenu.click()
-  await expect(unpublishButton).toBeVisible()
-  await unpublishButton.click()
+  await getContextFooterMenu().click()
+  await expect(getUnpublishButton()).toBeVisible()
+  await getUnpublishButton().click()
 
-  await expect(unpublishModal).toBeVisible({timeout: 4_000})
+  await expect(getUnpublishModal()).toBeVisible({timeout: 4_000})
   await page.getByTestId('confirm-button').click()
 
   const documentPerspectiveList = page.getByTestId('document-perspective-list')
@@ -38,5 +38,5 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   // Check the published button is disabled that is the reference to determine the published document doesn't exist.
   await expect(button).toBeDisabled()
-  await expect(documentStatus).toContainText('Unpublished just now')
+  await expect(getDocumentStatus()).toContainText('Unpublished just now')
 })
