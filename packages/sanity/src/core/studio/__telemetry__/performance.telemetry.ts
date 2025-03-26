@@ -2,6 +2,10 @@ import {defineEvent} from '@sanity/telemetry'
 
 export interface PerformanceINPMeasuredData {
   target: string | null
+  attrs?: {
+    ui?: string
+    testId?: string
+  }
   duration: number
   interaction: string
 }

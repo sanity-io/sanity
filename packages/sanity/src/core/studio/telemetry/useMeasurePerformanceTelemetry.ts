@@ -3,6 +3,15 @@ import {useCallback, useEffect} from 'react'
 
 import {PerformanceINPMeasured} from '../__telemetry__/performance.telemetry'
 
+function getInterestingAttrs(node: Node | null): undefined | {ui?: string; testId?: string} {
+  if (!node || !(node instanceof Element)) {
+    return undefined
+  }
+  const ui = node.getAttribute('data-ui') || undefined
+  const testId = node.getAttribute('data-testid') || undefined
+  return ui || testId ? {ui, testId} : undefined
+}
+
 function getElementIdentifier(node: Node | null) {
   if (!node) {
     return null
@@ -45,6 +54,7 @@ export function useMeasurePerformanceTelemetry() {
       }
       telemetry.log(PerformanceINPMeasured, {
         target: getElementIdentifier(maxEntry.target),
+        attrs: getInterestingAttrs(maxEntry.target),
         interaction: maxEntry.name,
         duration: maxEntry.duration,
       })
