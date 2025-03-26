@@ -55,10 +55,8 @@ test(`navigating document creates only one listener connection`, async ({page, b
   const getAuthorItem = () => page.getByTestId('pane-item-Author')
   const getBookItem = () => page.getByTestId('pane-item-Book')
   const getDocumentListPane = () => page.getByTestId('document-list-pane')
-  const getPaneContextMenuButton = () => page.getByTestId('pane-context-menu-button')
   const getAuthorList = () => page.locator('#author-author-0')
   const getBookList = () => page.locator('#book-book-0')
-  const getSortByNameMenuItem = () => page.getByRole('menuitem', {name: 'Sort by Name'})
 
   const authorRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
@@ -76,8 +74,8 @@ test(`navigating document creates only one listener connection`, async ({page, b
   expect(authorListenersCount).toBe(1)
 
   // We change the sort order to not be default, to ensure that the listener is not re-created
-  await getPaneContextMenuButton().click()
-  await getSortByNameMenuItem().click()
+  await page.getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   await keyValueRequest
 
   await getBookItem().click({force: true})

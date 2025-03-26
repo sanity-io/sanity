@@ -41,9 +41,7 @@ test('clicking inspect mode sets value in storage', async ({
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-
-  // Click Raw JSON tab
-  await getRawJsonTab().click()
+  await page.getByRole('tab', {name: 'Raw JSON'}).click()
 
   // Wait for and verify the response
   const keyValueResponse = await keyValueRequest

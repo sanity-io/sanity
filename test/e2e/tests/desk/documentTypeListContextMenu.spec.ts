@@ -29,17 +29,14 @@ test('clicking default sort order and direction sets value in storage', async ({
     })
   }
 
-  const getPane = () => page.getByTestId('pane')
-  const getPaneContextMenuButton = () => getPane().getByTestId('pane-context-menu-button')
-  const getSortByNameMenuItem = () => page.getByRole('menuitem', {name: 'Sort by Name'})
-  const getSortByLastEditedMenuItem = () =>
-    page.getByRole('menuitem', {name: 'Sort by Last Edited'})
+  const getPaneContextMenuButton = () =>
+    page.getByTestId('pane').getByTestId('pane-context-menu-button')
 
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
   await getPaneContextMenuButton().click()
-  await getSortByNameMenuItem().click()
+  await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   const responseBody = await (await keyValueRequest).json()
 
   expect(responseBody[0]).toMatchObject({
@@ -54,7 +51,7 @@ test('clicking default sort order and direction sets value in storage', async ({
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
   await getPaneContextMenuButton().click()
-  await getSortByLastEditedMenuItem().click()
+  await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
   const responseBody2 = await (await keyValueRequest2).json()
 
   expect(responseBody2[0]).toMatchObject({
@@ -89,15 +86,11 @@ test('clicking custom sort order and direction sets value in storage', async ({
     })
   }
 
-  const getPane = () => page.getByTestId('pane')
-  const getPaneContextMenuButton = () => getPane().getByTestId('pane-context-menu-button')
-  const getSortByTitleMenuItem = () => page.getByRole('menuitem', {name: 'Sort by Title'})
-
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await getPaneContextMenuButton().click()
-  await getSortByTitleMenuItem().click()
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Title'}).click()
   const responseBody = await (await keyValueRequest).json()
 
   expect(responseBody[0]).toMatchObject({
@@ -129,16 +122,14 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
     })
   }
 
-  const getPane = () => page.getByTestId('pane')
-  const getPaneContextMenuButton = () => getPane().getByTestId('pane-context-menu-button')
-  const getDetailedViewMenuItem = () => page.getByRole('menuitem', {name: 'Detailed view'})
-  const getCompactViewMenuItem = () => page.getByRole('menuitem', {name: 'Compact view'})
+  const getPaneContextMenuButton = () =>
+    page.getByTestId('pane').getByTestId('pane-context-menu-button')
 
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
   await getPaneContextMenuButton().click()
-  await getDetailedViewMenuItem().click()
+  await page.getByRole('menuitem', {name: 'Detailed view'}).click()
   const responseBody = await (await keyValueRequest).json()
 
   expect(responseBody[0]).toMatchObject({
@@ -150,7 +141,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
   await getPaneContextMenuButton().click()
-  await getCompactViewMenuItem().click()
+  await page.getByRole('menuitem', {name: 'Compact view'}).click()
   const responseBody2 = await (await keyValueRequest2).json()
 
   expect(responseBody2[0]).toMatchObject({

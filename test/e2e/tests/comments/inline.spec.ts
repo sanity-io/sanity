@@ -26,10 +26,11 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
 
   // 3. Select all text in the editor.
   await page.waitForSelector('[data-testid="pt-editor"]', WAIT_OPTIONS)
-  const getEditor = () => page.locator('[data-testid="pt-editor"]')
   await page.waitForSelector('div[role="textbox"][contenteditable=true]', WAIT_OPTIONS)
-  const getTextBox = () => getEditor().locator('div[role="textbox"][contenteditable=true]')
-  getTextBox().selectText()
+  await page
+    .locator('[data-testid="pt-editor"]')
+    .locator('div[role="textbox"][contenteditable=true]')
+    .selectText()
 
   // 4. Click on the floating comment button to start authoring a comment.
   await page.waitForSelector('[data-testid="inline-comment-button"]', {
@@ -51,36 +52,33 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   const getCommentInput = () => page.locator('[data-testid="comment-input"]')
   await expect(getCommentInput()).toBeVisible()
 
-  await page.waitForSelector('[data-inline-comment-state="authoring"]', WAIT_OPTIONS)
-  const getAuthoringDecorator = () => page.locator('[data-inline-comment-state="authoring"]')
-  await expect(getAuthoringDecorator()).toHaveText(PTE_CONTENT_TEXT)
+  const authoringDecorator = '[data-inline-comment-state="authoring"]'
+  await page.waitForSelector(authoringDecorator, WAIT_OPTIONS)
+  await expect(page.locator(authoringDecorator)).toHaveText(PTE_CONTENT_TEXT)
 
   // 6. Author the comment and submit it by clicking the send button.
-  const getCommentInputTextBox = () => getCommentInput().locator('div[role="textbox"]')
-  await getCommentInputTextBox().fill('This is a comment')
-  const getSendButton = () => getCommentInput().locator('[data-testid="comment-input-send-button"]')
-  await getSendButton().click({
+  await getCommentInput().locator('div[role="textbox"]').fill('This is a comment')
+  await getCommentInput().locator('[data-testid="comment-input-send-button"]').click({
     delay: 1000,
   })
 
   // 7. Verify the comment has been successfully added by checking for the presence of the
   //    comment decorator with the correct content.
-  await page.waitForSelector('[data-inline-comment-state="added"]', WAIT_OPTIONS)
-  const getAddedDecorator = () => page.locator('[data-inline-comment-state="added"]')
-  await expect(getAddedDecorator()).toHaveText(PTE_CONTENT_TEXT)
+  const addedDecorator = '[data-inline-comment-state="added"]'
+  await page.waitForSelector(addedDecorator, WAIT_OPTIONS)
+  await expect(page.locator(addedDecorator)).toHaveText(PTE_CONTENT_TEXT)
 
   // 8. Verify that the comments list is visible after the comment has been added.
   await page.waitForSelector('[data-testid="comments-list"]', WAIT_OPTIONS)
-  const getCommentsList = () => page.locator('[data-testid="comments-list"]')
-  await expect(getCommentsList()).toBeVisible()
+  await expect(page.locator('[data-testid="comments-list"]')).toBeVisible()
 
   // 9. Verify that the comment appears within the list and correctly references the intended content.
-  await page.waitForSelector('[data-testid="comments-list-item"]', WAIT_OPTIONS)
-  const getCommentsListItem = () => page.locator('[data-testid="comments-list-item"]')
-  await expect(getCommentsListItem()).toBeVisible()
-  const getCommentsListItemReferencedValue = () =>
-    page.locator('[data-testid="comments-list-item-referenced-value"]')
-  await expect(getCommentsListItemReferencedValue()).toHaveText(PTE_CONTENT_TEXT)
+  const commentsListItem = '[data-testid="comments-list-item"]'
+  await page.waitForSelector(commentsListItem, WAIT_OPTIONS)
+  await expect(page.locator(commentsListItem)).toBeVisible()
+  await expect(page.locator('[data-testid="comments-list-item-referenced-value"]')).toHaveText(
+    PTE_CONTENT_TEXT,
+  )
 }
 
 test.describe('Inline comments:', () => {
@@ -100,11 +98,9 @@ test.describe('Inline comments:', () => {
 
     // 2. Resolve the comment by clicking the status button in the comments list item.
     await page.waitForSelector('[data-testid="comments-list-item-status-button"]', WAIT_OPTIONS)
-    const getStatusButton = () => page.locator('[data-testid="comments-list-item-status-button"]')
-    await getStatusButton().click()
+    await page.locator('[data-testid="comments-list-item-status-button"]').click()
 
     // 3. Verify that the text is no longer highlighted in the editor.
-    const getAddedDecorator = () => page.locator('[data-inline-comment-state="added"]')
-    await expect(getAddedDecorator()).not.toBeVisible()
+    await expect(page.locator('[data-inline-comment-state="added"]')).not.toBeVisible()
   })
 })

@@ -19,17 +19,15 @@ withDefaultClient((context) => {
 
       await page.goto(`/test/content/playlist;${id}`)
 
-      const getDocumentPanelScroller = () => page.getByTestId('document-panel-scroller')
       const getStringInput = () => page.getByTestId('string-input')
-      const getLiveEditTypeBanner = () => page.getByTestId('live-edit-type-banner')
 
-      await expect(getDocumentPanelScroller()).toBeAttached()
+      await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
       await expect(getStringInput()).toBeAttached()
 
       // checks that inputs are set to read only
       await expect(getStringInput()).toHaveAttribute('readonly', '')
       // checks that the banner is visible
-      await expect(getLiveEditTypeBanner()).toBeVisible()
+      await expect(page.getByTestId('live-edit-type-banner')).toBeVisible()
     })
   })
 })

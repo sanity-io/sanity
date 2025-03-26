@@ -28,42 +28,40 @@ withDefaultClient((context) => {
 
     await createDraftDocument('/test/content/book')
 
-    // Reference fields don't seem to be given a test id, so this selection can't be more specific
-    // at the moment e.g. `page.getByTestId('field-author')`.
-    const referenceInput = page.getByTestId('reference-input')
-    const paneFooter = page.getByTestId('pane-footer')
-    const publishButton = page.getByTestId('action-publish')
-    const authorListbox = page.locator('#author-listbox')
-    const popover = page.locator("[data-ui='Popover']")
+    const getReferenceInput = () => page.getByTestId('reference-input')
+    const getPaneFooter = () => page.getByTestId('pane-footer')
+    const getPublishButton = () => page.getByTestId('action-publish')
+    const getAuthorListbox = () => page.locator('#author-listbox')
+    const getPopover = () => page.locator("[data-ui='Popover']")
 
     // Open the Author reference input.
-    await referenceInput.getByLabel('Open').click()
-    await expect(popover).toBeVisible()
-    await expect(authorListbox).toBeVisible()
+    await getReferenceInput().getByLabel('Open').click()
+    await expect(getPopover()).toBeVisible()
+    await expect(getAuthorListbox()).toBeVisible()
 
     // Select the first document in the list.
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
     // Wait for the document to be published.
-    publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    getPublishButton().click()
+    await expect(getPaneFooter()).toContainText('Published just now')
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
-    await referenceInput.getByLabel('Open').click()
-    await expect(popover).toBeVisible()
-    await expect(authorListbox).toBeVisible()
+    await getReferenceInput().getByLabel('Open').click()
+    await expect(getPopover()).toBeVisible()
+    await expect(getAuthorListbox()).toBeVisible()
 
     // Select the next document in the list.
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
+    await expect(getPaneFooter()).toContainText('Saved')
 
     // Wait for the document to be published.
-    publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    getPublishButton().click()
+    await expect(getPaneFooter()).toContainText('Published just now')
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
@@ -78,11 +76,11 @@ withDefaultClient((context) => {
     await createDraftDocument('/test/content/input-standard;referenceTest')
     page.getByTestId('string-input').fill(originalTitle)
 
-    await expect(
-      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
-    ).toBeVisible()
-    /** create reference */
-    await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
+    const getCreateReferenceButton = () =>
+      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton')
+
+    await expect(getCreateReferenceButton()).toBeVisible()
+    await getCreateReferenceButton().click()
 
     // Wait for the new document referenced to be created & loaded
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
@@ -118,11 +116,11 @@ withDefaultClient((context) => {
 
     page.getByTestId('string-input').fill(originalTitle)
 
-    await expect(
-      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
-    ).toBeVisible()
-    /** create reference */
-    await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
+    const getCreateReferenceButton = () =>
+      page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton')
+
+    await expect(getCreateReferenceButton()).toBeVisible()
+    await getCreateReferenceButton().click()
 
     // Wait for the new document referenced to be created & loaded
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
@@ -159,11 +157,11 @@ withDefaultClient((context) => {
     await createDraftDocument('/test/content/input-debug;simpleReferences')
     page.getByTestId('string-input').fill(originalTitle)
 
-    /** create reference */
-    await expect(
-      page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton'),
-    ).toBeVisible()
-    page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
+    const getCreateReferenceButton = () =>
+      page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton')
+
+    await expect(getCreateReferenceButton()).toBeVisible()
+    getCreateReferenceButton().click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
@@ -208,11 +206,11 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('string-input')).toBeVisible()
     await page.getByTestId('string-input').fill(originalTitle)
 
-    /** create reference */
-    await expect(
-      page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton'),
-    ).toBeVisible()
-    page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton').click()
+    const getCreateWeakReferenceButton = () =>
+      page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton')
+
+    await expect(getCreateWeakReferenceButton()).toBeVisible()
+    getCreateWeakReferenceButton().click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')

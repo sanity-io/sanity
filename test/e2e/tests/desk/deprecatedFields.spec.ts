@@ -27,10 +27,9 @@ for (const type of allTypes) {
     await createDraftDocument('/test/content/input-debug;deprecatedFields')
 
     const getDeprecatedBadge = () => page.getByTestId(`deprecated-badge-${type}`)
-    const getDeprecatedMessage = () => page.getByTestId(`deprecated-message-${type}`)
 
     await expect(getDeprecatedBadge()).toBeVisible()
-    await expect(getDeprecatedMessage()).toBeVisible()
+    await expect(page.getByTestId(`deprecated-message-${type}`)).toBeVisible()
     await expect(getDeprecatedBadge()).toHaveText('deprecated')
   })
 }
