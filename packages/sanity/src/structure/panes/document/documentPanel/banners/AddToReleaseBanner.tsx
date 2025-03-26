@@ -10,9 +10,9 @@ import {
   useTranslation,
   useVersionOperations,
 } from 'sanity'
-import {structureLocaleNamespace} from 'sanity/structure'
 
 import {Button} from '../../../../../ui-components'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {useConditionalToast} from '../documentViews/useConditionalToast'
 import {Banner} from './Banner'
 

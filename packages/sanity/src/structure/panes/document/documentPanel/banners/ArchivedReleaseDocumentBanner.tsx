@@ -7,8 +7,9 @@ import {
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
-import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
