@@ -723,8 +723,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       '@sanity/telemetry':
-        specifier: ^0.7.7
-        version: 0.7.9(react@19.0.0)
+        specifier: ^0.8.0
+        version: 0.8.1(react@19.0.0)
       '@sanity/template-validator':
         specifier: ^2.4.3
         version: 2.4.3
@@ -1440,8 +1440,8 @@ importers:
         specifier: 3.81.0
         version: link:../@sanity/schema
       '@sanity/telemetry':
-        specifier: ^0.7.7
-        version: 0.7.9(react@18.3.1)
+        specifier: ^0.8.0
+        version: 0.8.1(react@18.3.1)
       '@sanity/types':
         specifier: 3.81.0
         version: link:../@sanity/types
@@ -4702,11 +4702,11 @@ packages:
     engines: {node: '>=20.11.0'}
     hasBin: true
 
-  '@sanity/telemetry@0.7.9':
-    resolution: {integrity: sha512-TBBRK2SUwiNND+ZJPwdWSu8tbEjdIz7UjagmCCBBWcfXtDKXXlWawC/DOEWuI4Q+WcA5OWLDjboxZT4ApWjVbw==}
+  '@sanity/telemetry@0.8.1':
+    resolution: {integrity: sha512-YybPb6s3IO2HmHZ4dLC3JCX+IAwAnVk5/qmhH4CWbC3iL/VsikRbz4FfOIIIt0cj2UOKrahL/wpSPBR/3quQzg==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
-      react: ^18.2 || >=19.0.0-rc
+      react: ^18.2 || ^19.0.0
 
   '@sanity/template-validator@2.4.3':
     resolution: {integrity: sha512-pce+x6opIjiL5jg4bJba6x0+mCT7pFDCwOjYcu5ZOmaQ/mWxypjjPtzWp3+QU6mfCP/bb9z4zKj+PSGIT3q/zw==}
@@ -15311,14 +15311,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/telemetry@0.7.9(react@18.3.1)':
+  '@sanity/telemetry@0.8.1(react@18.3.1)':
     dependencies:
       lodash: 4.17.21
       react: 18.3.1
       rxjs: 7.8.2
       typeid-js: 0.3.0
 
-  '@sanity/telemetry@0.7.9(react@19.0.0)':
+  '@sanity/telemetry@0.8.1(react@19.0.0)':
     dependencies:
       lodash: 4.17.21
       react: 19.0.0
