@@ -15,7 +15,7 @@ export const MEDIA_LIBRARY_ASSET_FIELD = {
   name: 'media',
   type: 'globalDocumentReference',
   hidden: true,
-  to: [], // Just have to be *something* to be valid
+  to: [{type: 'sanity.asset'}],
 }
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
