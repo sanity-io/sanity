@@ -68,6 +68,9 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--disable-gpu', '--disable-software-rasterizer'],
+        },
         permissions: ['clipboard-read', 'clipboard-write'],
         contextOptions: {
           reducedMotion: 'reduce',
