@@ -121,11 +121,11 @@ const releasesLocaleStrings = {
   'diff.list-empty': 'Changes list is empty, see document',
   /** Description for discarding a version of a document dialog */
   'discard-version-dialog.description':
-    'This will also permanently remove the changes made to this document within this release.',
+    'This will permanently remove all changes made to this document within the {{releaseTitle}} release. This action cannot be undone.',
   /** Header for discarding a version of a document dialog */
   'discard-version-dialog.header': 'Remove document from the {{releaseTitle}} release?',
   /** Title for dialog for discarding a version of a document */
-  'discard-version-dialog.title': 'Yes, discard version',
+  'discard-version-dialog.title': 'Remove from release',
 
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',

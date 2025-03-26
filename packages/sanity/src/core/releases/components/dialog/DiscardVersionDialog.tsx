@@ -91,7 +91,7 @@ export function DiscardVersionDialog(props: {
         )}
         <Box paddingX={2}>
           <Text size={1} muted>
-            {t('discard-version-dialog.description')}
+            {t('discard-version-dialog.description', {releaseTitle: releaseName})}
           </Text>
         </Box>
       </Stack>
