@@ -7,6 +7,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
@@ -20,6 +21,11 @@ export const DiscardVersionAction = (
   const {id, type, release, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
+  const {selectedPerspective} = usePerspective()
+  const selectedName =
+    typeof selectedPerspective === 'string'
+      ? selectedPerspective
+      : selectedPerspective.metadata.title
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -56,6 +62,7 @@ export const DiscardVersionAction = (
           documentId={version._id}
           documentType={type}
           onClose={() => setDialogOpen(false)}
+          releaseName={selectedName}
         />
       ),
     },

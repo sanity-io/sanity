@@ -20,8 +20,9 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
+  releaseName?: string
 }): React.JSX.Element {
-  const {onClose, documentId, documentType} = props
+  const {onClose, documentId, documentType, releaseName} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
@@ -64,7 +65,9 @@ export function DiscardVersionDialog(props: {
   return (
     <Dialog
       id={'discard-version-dialog'}
-      header={t('discard-version-dialog.header')}
+      header={t('discard-version-dialog.header', {
+        releaseTitle: releaseName,
+      })}
       onClose={onClose}
       width={0}
       padding={false}

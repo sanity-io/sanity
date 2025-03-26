@@ -123,8 +123,7 @@ const releasesLocaleStrings = {
   'discard-version-dialog.description':
     'This will also permanently remove the changes made to this document within this release.',
   /** Header for discarding a version of a document dialog */
-  'discard-version-dialog.header':
-    'Are you sure you want to remove this document from the release?',
+  'discard-version-dialog.header': 'Remove document from the {{releaseTitle}} release?',
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title': 'Yes, discard version',
 
