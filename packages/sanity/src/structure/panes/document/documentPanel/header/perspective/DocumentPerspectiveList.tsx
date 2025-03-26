@@ -22,9 +22,9 @@ import {
   useTranslation,
   VersionChip,
 } from 'sanity'
-import {usePaneRouter} from 'sanity/structure'
 
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
+import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useFilteredReleases} from '../../../../../hooks/useFilteredReleases'
 import {useDocumentPane} from '../../../useDocumentPane'
 
