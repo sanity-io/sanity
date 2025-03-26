@@ -62,7 +62,17 @@ const TasksFormBuilderInner = ({
     collapsedPaths,
     schemaType,
     value,
-  } = useDocumentForm({documentId, documentType: 'tasks.task', initialValue})
+  } = useDocumentForm({
+    documentId,
+    documentType: 'tasks.task',
+    initialValue: initialValue
+      ? {
+          loading: false,
+          value: initialValue,
+          error: null,
+        }
+      : undefined,
+  })
 
   const isLoading = formState === null || !ready
 

@@ -1,6 +1,10 @@
 import {type ClientPerspective} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type CrossDatasetType, type SchemaType} from '@sanity/types'
+import {
+  type CrossDatasetType,
+  type GlobalDocumentReferenceType,
+  type SchemaType,
+} from '@sanity/types'
 import {groupBy} from 'lodash'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
@@ -54,7 +58,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  * @internal
  */
 export function createSearchQuery(
-  searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
+  searchTerms: SearchTerms<SchemaType | CrossDatasetType | GlobalDocumentReferenceType>,
   searchParams: string | SearchTerms<SchemaType>,
   {includeDrafts = true, perspective, ...options}: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {

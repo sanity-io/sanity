@@ -587,6 +587,36 @@ exports[`GraphQL - Schema extraction > Should be able to extract a simple schema
         },
         {
           "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
           "fieldName": "_type",
           "type": "String",
         },
@@ -1958,6 +1988,36 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
       "kind": "Type",
       "name": "Geopoint",
       "originalName": "geopoint",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
       "type": "Object",
       Symbol(internal): {},
     },

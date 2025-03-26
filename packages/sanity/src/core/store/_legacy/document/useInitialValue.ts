@@ -39,12 +39,6 @@ export function useInitialValue(props: {
 
   useEffect(() => {
     const initialValueOptions = {documentId, documentType, templateName, templateParams}
-
-    if (!templateName) {
-      setState({loading: true, error: null, value: defaultValue})
-      return undefined
-    }
-
     const initialValueMsg$ = documentStore.initialValue(initialValueOptions, context)
 
     const sub = initialValueMsg$.subscribe((msg) => {

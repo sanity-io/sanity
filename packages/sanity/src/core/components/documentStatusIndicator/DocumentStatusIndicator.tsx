@@ -1,8 +1,8 @@
 import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
-import {type VersionInfoDocumentStub} from '../../releases'
+import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
@@ -12,32 +12,40 @@ interface DocumentStatusProps {
   versions?: Record<string, VersionInfoDocumentStub | undefined>
 }
 
-const Dot = styled.div<{$index: number}>`
-  width: 5px;
-  height: 5px;
-  background-color: var(--card-icon-color);
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px var(--card-bg-color);
-  z-index: ${({$index}) => $index};
-  &[data-status='not-published'] {
-    --card-icon-color: var(--card-badge-default-dot-color);
-    opacity: 0.5 !important;
+const Dot = styled.div<{$index: number}>((props) => {
+  const {$index} = props
+  const tone = {
+    asap: RELEASE_TYPES_TONES.asap.tone,
+    scheduled: RELEASE_TYPES_TONES.scheduled.tone,
+    undecided: RELEASE_TYPES_TONES.undecided.tone,
   }
-  &[data-status='draft'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
-  }
-  &[data-status='asap'] {
-    --card-icon-color: var(--card-badge-critical-dot-color);
-  }
-  &[data-status='undecided'] {
-    --card-icon-color: var(--card-badge-suggest-dot-color);
-  }
-  &[data-status='scheduled'] {
-    --card-icon-color: var(--card-badge-primary-dot-color);
-  }
-`
 
-type Status = 'not-published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
+  return css`
+    width: 5px;
+    height: 5px;
+    background-color: var(--card-icon-color);
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px var(--card-bg-color);
+    z-index: ${$index};
+    &[data-status='published'] {
+      --card-icon-color: var(--card-badge-positive-dot-color);
+    }
+    &[data-status='draft'] {
+      --card-icon-color: var(--card-badge-caution-dot-color);
+    }
+    &[data-status='asap'] {
+      --card-icon-color: var(--card-badge-${tone.asap}-dot-color);
+    }
+    &[data-status='undecided'] {
+      --card-icon-color: var(--card-badge-${tone.undecided}-dot-color);
+    }
+    &[data-status='scheduled'] {
+      --card-icon-color: var(--card-badge-${tone.scheduled}-dot-color);
+    }
+  `
+})
+
+type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 
 /**
  * Renders a dot indicating the current document status.
@@ -67,7 +75,11 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
     show: boolean
   }[] = [
     {
-      status: draft && !published ? 'not-published' : 'draft',
+      status: 'published',
+      show: Boolean(published),
+    },
+    {
+      status: 'draft',
       show: Boolean(draft),
     },
     {

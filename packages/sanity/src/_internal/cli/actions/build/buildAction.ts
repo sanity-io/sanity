@@ -16,7 +16,7 @@ import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-import {determineIsCoreApp} from '../../util/determineIsCoreApp'
+import {determineIsApp} from '../../util/determineIsApp'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -47,7 +47,7 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const isCoreApp = determineIsCoreApp(cliConfig)
+  const isApp = determineIsApp(cliConfig)
 
   await checkStudioDependencyVersions(workDir)
 
@@ -148,7 +148,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner(`Build Sanity ${isCoreApp ? 'application' : 'Studio'}`).start()
+  spin = output.spinner(`Build Sanity ${isApp ? 'application' : 'Studio'}`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -178,10 +178,10 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       appLocation:
-        cliConfig && '__experimental_coreAppConfiguration' in cliConfig
-          ? cliConfig.__experimental_coreAppConfiguration?.appLocation
+        cliConfig && '__experimental_appConfiguration' in cliConfig
+          ? cliConfig.__experimental_appConfiguration?.appLocation
           : undefined,
-      isCoreApp,
+      isApp,
     })
 
     trace.log({
@@ -191,7 +191,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity ${isCoreApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity ${isApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()

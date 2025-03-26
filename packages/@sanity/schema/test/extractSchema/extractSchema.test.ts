@@ -649,6 +649,74 @@ describe('Extract schema test', () => {
 
     expect(extracted).toMatchSnapshot()
   })
+
+  test('will ignore global document reference types at the moment', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Valid document',
+            name: 'validDocument',
+            type: 'document',
+            fields: [
+              {
+                type: 'globalDocumentSubtype',
+                name: 'author',
+              },
+              {
+                type: 'book',
+                name: 'book',
+              },
+            ],
+          }),
+          {
+            type: 'globalDocumentReference',
+            name: 'globalDocumentSubtype',
+            title: 'Subtype of global document references',
+            resourceType: 'dataset',
+            resourceId: 'exx11uqh.blog',
+            to: [
+              {
+                type: 'book',
+                preview: {
+                  select: {
+                    title: 'title',
+                    media: 'coverImage',
+                  },
+                  prepare(val: any) {
+                    return {
+                      title: val.title,
+                      media: val.coverImage,
+                    }
+                  },
+                },
+              },
+            ],
+          },
+          {
+            type: 'object',
+            title: 'Book',
+            name: 'book',
+            fields: [
+              {
+                type: 'string',
+                name: 'title',
+              },
+            ],
+          },
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument', 'book'])
+    const validDocument = extracted.find((type) => type.name === 'validDocument')
+    expect(validDocument).toBeDefined()
+    assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(extracted).toMatchSnapshot()
+  })
 })
 
 const builtinAttrs = ['_id', '_createdAt', '_updatedAt', '_rev']

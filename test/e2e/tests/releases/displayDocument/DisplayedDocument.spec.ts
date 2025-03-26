@@ -19,10 +19,8 @@ import {
   createRelease,
   discardVersion,
   getRandomReleaseId,
+  skipIfBrowser,
 } from '../utils/methods'
-
-// skip firefox due to flakyness
-const SKIP_BROWSERS = ['firefox']
 
 // for before all to work with single worker and run only once per tests and describe
 // this is to avoid issues with multiple releases being created per test
@@ -43,10 +41,6 @@ test.describe('displayedDocument', () => {
   /** releases */
   let asapReleaseId: string
   let undecidedReleaseId: string
-
-  const skipIfBrowser = (browserName: string) => {
-    test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
-  }
 
   test.beforeAll(async ({sanityClient, _testContext, browserName}) => {
     skipIfBrowser(browserName)

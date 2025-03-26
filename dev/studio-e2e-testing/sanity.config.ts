@@ -3,6 +3,7 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
+import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
@@ -68,6 +69,14 @@ export default defineConfig({
       title: 'Content',
       structure,
       defaultDocumentNode,
+    }),
+    presentationTool({
+      name: 'presentation',
+      title: 'Presentation',
+      previewUrl: {
+        origin: 'https://test-studio.sanity.dev',
+        preview: '/preview/index.html',
+      },
     }),
     languageFilter({
       defaultLanguages: ['nb'],

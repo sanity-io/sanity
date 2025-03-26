@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.79.0",
+  "version": "3.81.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -63,15 +63,16 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^3.7.0",
-    "@sanity/ui": "^2.15.6",
-    "@uiw/react-codemirror": "^4.11.4",
+    "@sanity/ui": "^2.15.8",
+    "@uiw/react-codemirror": "^4.23.8",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-e1e972c-20250221",
-    "react-fast-compare": "^3.2.2"
+    "react-compiler-runtime": "19.0.0-beta-aeaed83-20250323",
+    "react-fast-compare": "^3.2.2",
+    "use-effect-event": "^1.0.2"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
@@ -85,10 +86,10 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
+    "babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.16"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

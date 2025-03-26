@@ -32,6 +32,7 @@ export interface ReleaseSummaryProps {
   documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
+  isLoading?: boolean
 }
 
 const isBundleDocumentRow = (
@@ -46,7 +47,7 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, release, scrollContainerRef} = props
+  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -176,6 +177,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   return (
     <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
       <Table<DocumentWithHistory>
+        loading={isLoading}
         data={tableData}
         emptyState={t('summary.no-documents')}
         // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
@@ -191,6 +193,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           <Card padding={3}>
             <Button
               icon={AddIcon}
+              disabled={isLoading}
               mode="bleed"
               onClick={() => setAddDocumentDialog(true)}
               text={t('action.add-document')}

@@ -74,13 +74,11 @@ export const ReleaseDetail = () => {
         </Box>
       )
     }
-    if (documentsLoading) {
-      return <LoadingBlock title={t('loading-release-documents')} showText />
-    }
     if (!releaseInDetail) return null
 
     return (
       <ReleaseSummary
+        isLoading={documentsLoading}
         documents={results}
         release={releaseInDetail}
         documentsHistory={history.documentsHistory}

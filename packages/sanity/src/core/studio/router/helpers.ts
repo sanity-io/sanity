@@ -1,4 +1,4 @@
-import {type Router, type RouterState} from 'sanity/router'
+import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
 
 import {type Tool} from '../../config'
 import {isRecord} from '../../util/isRecord'
@@ -130,7 +130,11 @@ export function resolveIntentState(
       [matchingTool.name]: toolState,
     }
     if (matchingTool.router?.__unsafe_disableScopedSearchParams) {
-      nextUrlState._searchParams = _searchParams
+      const stickyParams = nextState._searchParams?.filter(([key]) => STICKY_PARAMS.includes(key))
+      nextUrlState._searchParams = [
+        ...(stickyParams || []),
+        ...(Array.isArray(_searchParams) ? _searchParams : []),
+      ]
     } else {
       toolState._searchParams = _searchParams
     }

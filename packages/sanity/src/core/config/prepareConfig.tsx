@@ -127,7 +127,26 @@ export function prepareConfig(
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
       return {
         ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
+          /*
+           * @FIXME: with the introduction of global references, @sanity/assist broke
+           * As a quickfix the plugins was released with a know property on the plugin definition.
+           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
+           * This ensures auto updating studios can start, albeit without assist, it it is old.
+           */
+          .filter((plugin) => {
+            const validPlugin =
+              plugin.name !== '@sanity/assist' ||
+              (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
+            if (!validPlugin) {
+              console.warn(
+                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
+                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+              )
+            }
+
+            return validPlugin
+          }),
       }
     })
 

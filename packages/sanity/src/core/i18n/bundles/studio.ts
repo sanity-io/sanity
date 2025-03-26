@@ -147,10 +147,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.go-to-yesterday': 'Yesterday',
   /** Label for switch that controls whether or not to include time in given timestamp */
   'calendar.action.include-time-label': 'Include time',
-  /** Action message for selecting the hour */
-  'calendar.action.select-hour': 'Select hour',
-  /** Action message for selecting the minute */
-  'calendar.action.select-minute': 'Select minute',
+  /** Action message for selecting the time */
+  'calendar.action.select-time': 'Select time',
   /** Action message for setting to the current time */
   'calendar.action.set-to-current-time': 'Set to current time',
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
@@ -967,6 +965,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.error.nonexistent-document.clear-button-label': 'Clear',
   /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
   'inputs.reference.error.search-failed-title': 'Reference search failed',
+  /** Label for when the GDR points to an invalid type  */
+  'inputs.reference.global.invalid-type':
+    'The referenced document is of invalid type ({{typeName}})',
   /** Alternative text for the image shown in cross-dataset reference input */
   'inputs.reference.image-preview-alt-text': 'Image preview of referenced document',
   /** Description for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
@@ -1202,6 +1203,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.global.drafts': 'Drafts',
   /** Label for Published chip in document header */
   'release.chip.published': 'Published',
+  /** Label for tooltip in chip when document is in an archived release */
+  'release.chip.tooltip.archived': 'This release is archived and cannot be edited.',
   /** Label for tooltip in chip with the created date */
   'release.chip.tooltip.created-date': 'Created {{date}}',
   /** Label for tooltip in draft chip when it's a live edit document */

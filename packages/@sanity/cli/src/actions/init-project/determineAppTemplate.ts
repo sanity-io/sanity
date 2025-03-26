@@ -1,4 +1,4 @@
-const coreAppTemplates = ['core-app']
+const appTemplates = ['app-quickstart']
 
 /**
  * Determine if a given template is a studio template.
@@ -8,6 +8,6 @@ const coreAppTemplates = ['core-app']
  * @param templateName - Name of the template
  * @returns boolean indicating if the template is a studio template
  */
-export function determineCoreAppTemplate(templateName: string): boolean {
-  return coreAppTemplates.includes(templateName)
+export function determineAppTemplate(templateName: string): boolean {
+  return appTemplates.includes(templateName)
 }
