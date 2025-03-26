@@ -19,7 +19,6 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   await createDraftDocument('/test/content/book')
   await titleInput.fill(titleA)
-
   // Wait for the document to finish saving
   await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
@@ -37,7 +36,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   const documentPerspectiveList = page.getByTestId('document-perspective-list')
   const button = documentPerspectiveList.getByRole('button', {name: 'Published', exact: true})
 
-  // Check the published button is disabled
+  // Check the published button is disabled that is the reference to determine the published document doesn't exist.
   await expect(button).toBeDisabled()
   await expect(documentStatus).toContainText('Unpublished just now')
 })
