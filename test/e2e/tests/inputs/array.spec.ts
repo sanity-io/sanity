@@ -102,134 +102,45 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   await expect(bookItem).toBeVisible()
 })
 
-test(`Scenario: Adding new array item before using the context menu`, async ({
-  page,
-  createDraftDocument,
-}) => {
-  const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
-    createArrayFieldLocators(page)
+interface ArrayFieldLocators {
+  getItems: () => ReturnType<Page['locator']>
+  getAddItemButton: () => ReturnType<Page['getByRole']>
+  getPopoverMenu: () => ReturnType<Page['getByRole']>
+  getPopoverMenuItem: (name: string) => ReturnType<Page['getByRole']>
+  getInsertDialog: () => ReturnType<Page['getByRole']>
+  getInput: (label: string) => ReturnType<Page['getByLabel']>
+  getCloseDialogButton: () => ReturnType<Page['getByLabel']>
+}
 
-  // Given an array field allowing multiple types
-  await createDraftDocument('/test/content/input-standard;arraysTest')
-
-  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
-    timeout: 40000,
-  })
-
-  // And an already-inserted item in the array
-  const book = await addInitialArrayItem(page, {
-    menuItemLabel: 'Book',
-    inputLabel: 'Title',
-    content: 'Book title',
-  })
-
-  // When the "context menu" button is clicked
-  const contextMenuButton = book.getByRole('button').nth(2)
-  await contextMenuButton.click()
-
-  // Then the "context menu" appears
-  await expect(popoverMenu).toBeVisible()
-
-  // And when the "Add item before.." menuitem is clicked
-  const insertBeforeButton = popoverMenuItem('Add item before...')
-  await insertBeforeButton.click()
-
-  // Then an "insert menu" appears
-  await expect(popoverMenu).toBeVisible()
-
-  // And when the "Species" menuitem is clicked
-  const speciesOption = popoverMenuItem('Species')
-  await speciesOption.click()
-
-  // Then the "insert dialog" appears
-  await expect(insertDialog).toBeVisible()
-
-  // And when the "Common name" input is filled with "Dog"
-  input('Common name').fill('Dog')
-
-  // And the "insert dialog" is closed
-  await closeDialogButton.click()
-  await insertDialog.isHidden()
-
-  // Then a new "(Dog)Dog" is inserted before "Book titleBy <unknown>"
-  await expect(items.first()).toHaveText('(Dog)Dog')
-  await expect(items.nth(1)).toHaveText('Book titleBy <unknown>')
-})
-
-test(`Scenario: Adding new array item after using the context menu`, async ({
-  page,
-  createDraftDocument,
-}) => {
-  const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
-    createArrayFieldLocators(page)
-
-  // Given an array field allowing multiple types
-  await createDraftDocument('/test/content/input-standard;arraysTest')
-
-  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
-    timeout: 40000,
-  })
-
-  // And an already-inserted item in the array
-  const book = await addInitialArrayItem(page, {
-    menuItemLabel: 'Book',
-    inputLabel: 'Title',
-    content: 'Book title',
-  })
-
-  // When the "context menu" button is clicked
-  const contextMenuButton = book.getByRole('button').nth(2)
-  await contextMenuButton.click()
-
-  // Then the "context menu" appears
-  await expect(popoverMenu).toBeVisible()
-
-  // And when the "Add item before.." menuitem is clicked
-  const insertBeforeButton = popoverMenuItem('Add item after...')
-  await insertBeforeButton.click()
-
-  // Then an "insert menu" appears
-  await expect(popoverMenu).toBeVisible()
-
-  // And when the "Species" menuitem is clicked
-  const speciesOption = popoverMenuItem('Species')
-  await speciesOption.click()
-
-  // Then the "insert dialog" appears
-  await expect(insertDialog).toBeVisible()
-
-  // And when the "Common name" input is filled with "Dog"
-  input('Common name').fill('Cat')
-
-  // And the "insert dialog" is closed
-  await closeDialogButton.click()
-  await insertDialog.isHidden()
-
-  // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
-  await expect(items.first()).toHaveText('Book titleBy <unknown>')
-  await expect(items.nth(1)).toHaveText('(Cat)Cat')
-})
-
-function createArrayFieldLocators(page: Page) {
-  const field = page.getByTestId('field-arrayOfSoManyDifferentTypes')
-  const content = field.locator('#arrayOfSoManyDifferentTypes')
-  const items = content.locator('[data-ui="Grid"] > div')
-  const addItemButton = field.getByRole('button', {name: 'Add item...'})
-  const popover = page.getByTestId('document-panel-portal')
-  const popoverMenu = popover.getByRole('menu')
-  const popoverMenuItem = (name: string) => popoverMenu.getByRole('menuitem', {name})
-  const insertDialog = page.getByRole('dialog')
-  const input = (label: string) => insertDialog.getByLabel(label)
-  const closeDialogButton = insertDialog.getByLabel('Close dialog')
-
+function createArrayFieldLocators(page: Page): ArrayFieldLocators {
   return {
-    items,
-    addItemButton,
-    popoverMenu,
-    popoverMenuItem,
-    insertDialog,
-    input,
-    closeDialogButton,
+    getItems: () => {
+      const field = page.getByTestId('field-arrayOfSoManyDifferentTypes')
+      const content = field.locator('#arrayOfSoManyDifferentTypes')
+      return content.locator('[data-ui="Grid"] > div')
+    },
+    getAddItemButton: () => {
+      const field = page.getByTestId('field-arrayOfSoManyDifferentTypes')
+      return field.getByRole('button', {name: 'Add item...'})
+    },
+    getPopoverMenu: () => {
+      const popover = page.getByTestId('document-panel-portal')
+      return popover.getByRole('menu')
+    },
+    getPopoverMenuItem: (name: string) => {
+      const popover = page.getByTestId('document-panel-portal')
+      const popoverMenu = popover.getByRole('menu')
+      return popoverMenu.getByRole('menuitem', {name})
+    },
+    getInsertDialog: () => page.getByRole('dialog'),
+    getInput: (label: string) => {
+      const insertDialog = page.getByRole('dialog')
+      return insertDialog.getByLabel(label)
+    },
+    getCloseDialogButton: () => {
+      const insertDialog = page.getByRole('dialog')
+      return insertDialog.getByLabel('Close dialog')
+    },
   }
 }
 
@@ -237,25 +148,123 @@ async function addInitialArrayItem(
   page: Page,
   item: {menuItemLabel: string; inputLabel: string; content: string},
 ) {
-  const {
-    addItemButton,
-    popoverMenu,
-    popoverMenuItem,
-    insertDialog,
-    input,
-    closeDialogButton,
-    items,
-  } = createArrayFieldLocators(page)
+  const locators = createArrayFieldLocators(page)
 
-  await addItemButton.click()
-  await popoverMenu.isVisible()
-  await popoverMenuItem(item.menuItemLabel).click()
-  await insertDialog.isVisible()
-  await input(item.inputLabel).fill(item.content)
-  await closeDialogButton.click()
-  await insertDialog.isHidden()
-  const insertedItem = items.first()
+  await locators.getAddItemButton().click()
+  await locators.getPopoverMenu().isVisible()
+  await locators.getPopoverMenuItem(item.menuItemLabel).click()
+  await locators.getInsertDialog().isVisible()
+  await locators.getInput(item.inputLabel).fill(item.content)
+  await locators.getCloseDialogButton().click()
+  await locators.getInsertDialog().isHidden()
+  const insertedItem = locators.getItems().first()
   await insertedItem.isVisible()
 
   return insertedItem
 }
+
+test(`Scenario: Adding new array item before using the context menu`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  const locators = createArrayFieldLocators(page)
+
+  // Given an array field allowing multiple types
+  await createDraftDocument('/test/content/input-standard;arraysTest')
+
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
+
+  // And an already-inserted item in the array
+  const book = await addInitialArrayItem(page, {
+    menuItemLabel: 'Book',
+    inputLabel: 'Title',
+    content: 'Book title',
+  })
+
+  // When the "context menu" button is clicked
+  const contextMenuButton = book.getByRole('button').nth(2)
+  await contextMenuButton.click()
+
+  // Then the "context menu" appears
+  await expect(locators.getPopoverMenu()).toBeVisible()
+
+  // And when the "Add item before.." menuitem is clicked
+  const insertBeforeButton = locators.getPopoverMenuItem('Add item before...')
+  await insertBeforeButton.click()
+
+  // Then an "insert menu" appears
+  await expect(locators.getPopoverMenu()).toBeVisible()
+
+  // And when the "Species" menuitem is clicked
+  const speciesOption = locators.getPopoverMenuItem('Species')
+  await speciesOption.click()
+
+  // Then the "insert dialog" appears
+  await expect(locators.getInsertDialog()).toBeVisible()
+
+  // And when the "Common name" input is filled with "Dog"
+  locators.getInput('Common name').fill('Dog')
+
+  // And the "insert dialog" is closed
+  await locators.getCloseDialogButton().click()
+  await locators.getInsertDialog().isHidden()
+
+  // Then a new "(Dog)Dog" is inserted before "Book titleBy <unknown>"
+  await expect(locators.getItems().first()).toHaveText('(Dog)Dog')
+  await expect(locators.getItems().nth(1)).toHaveText('Book titleBy <unknown>')
+})
+
+test(`Scenario: Adding new array item after using the context menu`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  const locators = createArrayFieldLocators(page)
+
+  // Given an array field allowing multiple types
+  await createDraftDocument('/test/content/input-standard;arraysTest')
+
+  await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
+    timeout: 40000,
+  })
+
+  // And an already-inserted item in the array
+  const book = await addInitialArrayItem(page, {
+    menuItemLabel: 'Book',
+    inputLabel: 'Title',
+    content: 'Book title',
+  })
+
+  // When the "context menu" button is clicked
+  const contextMenuButton = book.getByRole('button').nth(2)
+  await contextMenuButton.click()
+
+  // Then the "context menu" appears
+  await expect(locators.getPopoverMenu()).toBeVisible()
+
+  // And when the "Add item before.." menuitem is clicked
+  const insertBeforeButton = locators.getPopoverMenuItem('Add item after...')
+  await insertBeforeButton.click()
+
+  // Then an "insert menu" appears
+  await expect(locators.getPopoverMenu()).toBeVisible()
+
+  // And when the "Species" menuitem is clicked
+  const speciesOption = locators.getPopoverMenuItem('Species')
+  await speciesOption.click()
+
+  // Then the "insert dialog" appears
+  await expect(locators.getInsertDialog()).toBeVisible()
+
+  // And when the "Common name" input is filled with "Dog"
+  locators.getInput('Common name').fill('Cat')
+
+  // And the "insert dialog" is closed
+  await locators.getCloseDialogButton().click()
+  await locators.getInsertDialog().isHidden()
+
+  // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
+  await expect(locators.getItems().first()).toHaveText('Book titleBy <unknown>')
+  await expect(locators.getItems().nth(1)).toHaveText('(Cat)Cat')
+})
