@@ -25,50 +25,51 @@ test.describe('inputs: text', () => {
     }
 
     await expect(page.getByTestId('field-simple')).toBeVisible({timeout: 30_000})
-    const field = page.getByTestId('field-simple').getByRole('textbox')
-    const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
+    const getField = () => page.getByTestId('field-simple').getByRole('textbox')
+    const getPaneFooterDocumentStatusPulse = () =>
+      page.getByTestId('pane-footer-document-status-pulse')
 
     // Enter initial text and wait for the mutate call to be sent
-    await field.fill(kanji)
+    await getField().fill(kanji)
     await expect.poll(getRemoteValue, {timeout: 30_000}).toBe(kanji)
 
     // Expect the document to now have the base value
     let currentExpectedValue = kanji
-    await expect(field).toHaveValue(currentExpectedValue)
+    await expect(getField()).toHaveValue(currentExpectedValue)
     await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
     let nextExpectedValue = `${p1Prefix}${kanji}`
-    await field.fill(nextExpectedValue)
+    await getField().fill(nextExpectedValue)
     // Wait for the document to finish saving
-    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
+    await expect(getPaneFooterDocumentStatusPulse()).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = `${p1Prefix}${kanji}`
-    await expect(field).toHaveValue(currentExpectedValue)
+    await expect(getField()).toHaveValue(currentExpectedValue)
     await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Now move to the end of the paragraph and add a suffix
     const p1Suffix = ' (end of paragraph 1)'
     nextExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
-    await field.fill(nextExpectedValue)
-    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
+    await getField().fill(nextExpectedValue)
+    await expect(getPaneFooterDocumentStatusPulse()).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    await expect(field).toHaveValue(currentExpectedValue)
+    await expect(getField()).toHaveValue(currentExpectedValue)
     await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
     nextExpectedValue = `${currentExpectedValue}${p2Suffix}`
-    await field.fill(nextExpectedValue)
-    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
+    await getField().fill(nextExpectedValue)
+    await expect(getPaneFooterDocumentStatusPulse()).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    await expect(field).toHaveValue(currentExpectedValue)
+    await expect(getField()).toHaveValue(currentExpectedValue)
     await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
   })
 
@@ -78,30 +79,30 @@ test.describe('inputs: text', () => {
   }) => {
     await createDraftDocument('/test/content/book')
 
-    const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-    const paneFooter = page.getByTestId('pane-footer-document-status')
-    const publishButton = page.getByTestId('action-publish')
+    const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
+    const getPaneFooter = () => page.getByTestId('pane-footer-document-status')
+    const getPublishButton = () => page.getByTestId('action-publish')
 
     // wait for form to be attached
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
-    await titleInput.fill('Title A')
+    await getTitleInput().fill('Title A')
     // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
-    await expect(paneFooter).toHaveText(/Created just now/i)
-    await titleInput.fill('Title A updated')
+    await expect(getPaneFooter()).toHaveText(/Created just now/i)
+    await getTitleInput().fill('Title A updated')
     // A subsequent edit will show that the document was edited just now.
-    await expect(paneFooter).toHaveText(/Edited just now/i)
+    await expect(getPaneFooter()).toHaveText(/Edited just now/i)
 
     // Wait for the document to be published.
-    publishButton.click()
-    await expect(paneFooter).toHaveText(/published/i)
+    await getPublishButton().click()
+    await expect(getPaneFooter()).toHaveText(/published/i)
 
     // Change the title.
-    await titleInput.fill('Title B')
-    await expect(paneFooter).toHaveText(/Created just now/i)
+    await getTitleInput().fill('Title B')
+    await expect(getPaneFooter()).toHaveText(/Created just now/i)
 
     // Wait for the document to be published.
-    publishButton.click()
-    await expect(paneFooter).toHaveText(/published/i)
+    await getPublishButton().click()
+    await expect(getPaneFooter()).toHaveText(/published/i)
   })
 })
