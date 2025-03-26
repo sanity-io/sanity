@@ -180,7 +180,7 @@
     "@sanity/presentation-comlink": "^1.0.13",
     "@sanity/preview-url-secret": "^2.1.6",
     "@sanity/schema": "3.81.0",
-    "@sanity/telemetry": "^0.7.7",
+    "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "3.81.0",
     "@sanity/ui": "^2.15.8",
     "@sanity/util": "3.81.0",
