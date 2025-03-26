@@ -7,9 +7,10 @@ import {TelemetryProvider} from '@sanity/telemetry/react'
 import arrify from 'arrify'
 import {type ReactNode, useEffect, useMemo} from 'react'
 
-import {type Config} from '../config'
-import {useClient} from '../hooks'
-import {SANITY_VERSION} from '../version'
+import {type Config} from '../../config'
+import {useClient} from '../../hooks'
+import {SANITY_VERSION} from '../../version'
+import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 
 const sessionId = createSessionId()
 
@@ -18,7 +19,7 @@ const DEBUG_TELEMETRY = !!(
 )
 
 /* eslint-disable no-console */
-export const debugLoggingStore: CreateBatchedStoreOptions = {
+const debugLoggingStore: CreateBatchedStoreOptions = {
   // submit any pending events every <n> ms
   flushInterval: 1000,
 
@@ -105,5 +106,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
     })
   }, [props.config, store.logger])
 
-  return <TelemetryProvider store={store}>{props.children}</TelemetryProvider>
+  return (
+    <TelemetryProvider store={store}>
+      <PerformanceTelemetryTracker>{props.children}</PerformanceTelemetryTracker>
+    </TelemetryProvider>
+  )
 }
