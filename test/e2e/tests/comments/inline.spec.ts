@@ -20,13 +20,12 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   // 1. Create a new draft document
   await createDraftDocument('/test/content/input-ci;commentsCI')
 
-  // 2. Click the overlay to active the editor.
-  await page.waitForSelector('[data-testid="activate-overlay"]', WAIT_OPTIONS)
-  await page.click('[data-testid="activate-overlay"]')
-
-  // 3. Select all text in the editor.
+  // 2. Click the editor.
   await page.waitForSelector('[data-testid="pt-editor"]', WAIT_OPTIONS)
   const editor = page.locator('[data-testid="pt-editor"]')
+  await editor.click()
+
+  // 3. Select all text in the editor.
   await page.waitForSelector('div[role="textbox"]', WAIT_OPTIONS)
   const textBox = editor.locator('div[role="textbox"]')
   textBox.selectText()
