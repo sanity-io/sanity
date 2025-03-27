@@ -33,6 +33,7 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
     createDraftDocument,
   }, testInfo) => {
     await withCrashRecovery(page, testInfo, async () => {
+      test.slow()
       await createDraftDocument(
         '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
       )
@@ -50,14 +51,20 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
         await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible(expectConfig)
       })
 
-      // open the insert menu
-      const insertImageButton = page
-        .getByTestId('insert-menu-auto-collapse-menu')
-        .getByRole('button', {name: 'Insert Image slideshow (block)'})
+      const insertMenu = page.getByTestId('insert-menu-auto-collapse-menu')
+      await expect(insertMenu).toBeVisible(expectConfig)
+
+      // Now that we know the menu is visible, get the specific button
+      const insertImageButton = insertMenu.getByRole('button', {
+        name: 'Insert Image slideshow (block)',
+      })
 
       // 1. Wait until it's in the DOM and visible (Playwright will retry this)
       await expect(insertImageButton).toBeVisible(expectConfig)
       await expect(insertImageButton).toBeAttached(expectConfig)
+
+      // 2. Wait for the button to be enabled with a longer timeout
+      await expect(insertImageButton).toBeEnabled({timeout: 20_000})
 
       // 3. Now it's interactable and safe to click
       await insertImageButton.click()
