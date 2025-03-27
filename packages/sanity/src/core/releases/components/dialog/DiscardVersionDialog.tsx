@@ -20,7 +20,7 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  releaseName?: string
+  releaseName: string
 }): React.JSX.Element {
   const {onClose, documentId, documentType, releaseName} = props
   const {t} = useTranslation(releasesLocaleNamespace)
