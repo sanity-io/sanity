@@ -3,7 +3,7 @@ import {
   isValidationWarningMarker,
   type ValidationMarker,
 } from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 
 import {type ValidationStatus} from '../types'
@@ -15,7 +15,7 @@ export const EMPTY_VALIDATION_STATUS: ValidationStatus = {
 
 interface ValidationState {
   markers: ValidationMarker[]
-  validationTone: ButtonTone
+  validationTone: ElementTone
   hasError: boolean
   hasWarning: boolean
 }
@@ -26,7 +26,7 @@ export function getValidationState(
   const hasError = validationMarkers.filter(isValidationErrorMarker).length > 0
   const hasWarning = validationMarkers.filter(isValidationWarningMarker).length > 0
 
-  let validationTone: ButtonTone = 'default'
+  let validationTone: ElementTone = 'default'
   if (hasWarning) {
     validationTone = 'default' //not using 'caution' for now
   }

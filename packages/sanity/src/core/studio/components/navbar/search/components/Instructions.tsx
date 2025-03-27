@@ -8,7 +8,7 @@ export function Instructions() {
 
   return (
     <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
-      <Inline space={3}>
+      <Inline gap={3}>
         <Text muted>
           <Translate
             t={t}

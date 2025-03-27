@@ -1,7 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -11,11 +10,9 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return `
   text-decoration: underline;
-  text-decoration-color: ${theme.color.input.default.enabled.border};
+  text-decoration-color: ${vars.color.tinted.default.border[1]};
   text-underline-offset: 2px;
 `
 })
@@ -37,7 +34,10 @@ export function DocumentPreview({
 
   const Link = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: React.ComponentProps<'a'>,
+        ref: React.ForwardedRef<HTMLAnchorElement>,
+      ) {
         return (
           <StyledIntentLink
             {...linkProps}
@@ -60,7 +60,11 @@ export function DocumentPreview({
         <DocumentIcon />
       </Text>
       {isLoading ? (
-        <TextSkeleton size={1} muted />
+        <TextSkeleton
+          size={1}
+          // @ts-expect-error - TODO: fix this in `@sanity/ui`
+          muted
+        />
       ) : (
         <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
           {value?.title || 'Untitled'}

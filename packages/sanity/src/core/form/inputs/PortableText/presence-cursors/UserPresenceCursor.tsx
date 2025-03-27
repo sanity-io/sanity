@@ -1,10 +1,7 @@
 import {type ColorTints} from '@sanity/color'
 import {type User} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
-import {
-  // eslint-disable-next-line camelcase
-  getTheme_v2,
-} from '@sanity/ui/theme'
+import {Box, Text, useCard} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -37,10 +34,9 @@ const CONTENT_TEXT_TRANSITION: Transition = {
   delay: 0.15,
 }
 
-const CursorLine = styled.span<{$tints: ColorTints}>(({theme, $tints}) => {
-  const isDark = getTheme_v2(theme)?.color._dark
-  const bg = $tints[isDark ? 400 : 500].hex
-  const fg = $tints[isDark ? 900 : 50].hex
+const CursorLine = styled.span<{$isDark: boolean; $tints: ColorTints}>(({$isDark, $tints}) => {
+  const bg = $tints[$isDark ? 400 : 500].hex
+  const fg = $tints[$isDark ? 900 : 50].hex
 
   return css`
     --presence-cursor-bg: ${bg};
@@ -83,9 +79,7 @@ const CursorDot = styled.div`
   }
 `
 
-const UserBox = styled(motion.create(Box))(({theme}) => {
-  const radius = getTheme_v2(theme)?.radius[4]
-
+const UserBox = styled(motion.create(Box))(() => {
   return css`
     position: absolute;
     top: -${DOT_SIZE * 1.5}px;
@@ -94,7 +88,7 @@ const UserBox = styled(motion.create(Box))(({theme}) => {
     white-space: nowrap;
     padding: 3px 6px;
     box-sizing: border-box;
-    border-radius: ${radius}px;
+    border-radius: ${vars.radius[4]};
     background-color: var(--presence-cursor-bg);
     z-index: 1;
     mix-blend-mode: unset;
@@ -114,6 +108,7 @@ interface UserPresenceCursorProps {
 
 export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.Element {
   const {children, user} = props
+  const card = useCard()
   const {tints} = useUserColor(user.id)
   const [hovered, setHovered] = useState<boolean>(false)
 
@@ -128,6 +123,7 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.El
   return (
     <>
       <CursorLine
+        $isDark={card.scheme === 'dark'}
         $tints={tints}
         contentEditable={false}
         data-testid={testId}

@@ -1,6 +1,8 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Box, Card, Menu} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type CardTone} from '@sanity/ui/theme'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -40,7 +42,7 @@ const PreviewCard = styled(Card)`
   }
 
   &:focus:focus-visible {
-    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+    box-shadow: 0 0 0 2px ${vars.color.focusRing};
   }
 `
 
@@ -54,7 +56,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'

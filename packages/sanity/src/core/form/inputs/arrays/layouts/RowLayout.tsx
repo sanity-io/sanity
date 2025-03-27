@@ -1,4 +1,6 @@
-import {Box, Card, type CardTone, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type CardTone} from '@sanity/ui/theme'
 import {type ReactNode, useRef} from 'react'
 import {styled} from 'styled-components'
 
@@ -25,20 +27,20 @@ const Root = styled(Card)`
   transition: border-color 250ms;
 
   .${MOVING_ITEM_CLASS_NAME} & {
-    border-color: var(--card-shadow-umbra-color);
+    border-color: ${vars.color.shadow.outline};
     box-shadow:
       0 0 0 0,
-      0 8px 17px 2px var(--card-shadow-umbra-color),
-      0 3px 14px 2px var(--card-shadow-penumbra-color),
-      0 5px 5px -3px var(--card-shadow-ambient-color);
+      0 8px 17px 2px ${vars.color.shadow.umbra},
+      0 3px 14px 2px ${vars.color.shadow.penumbra},
+      0 5px 5px -3px ${vars.color.shadow.ambient};
   }
 
   &:hover {
-    border-color: var(--card-shadow-umbra-color);
+    border-color: ${vars.color.shadow.outline};
   }
 
   &[aria-selected='true'] {
-    border-color: var(--card-focus-ring-color);
+    border-color: ${vars.color.focusRing};
   }
 `
 
@@ -73,7 +75,7 @@ export function RowLayout(props: RowLayoutProps) {
       padding={1}
       tone={tone}
     >
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex align="center" gap={1}>
           {dragHandle && <DragHandle paddingY={3} readOnly={readOnly} />}
 

@@ -6,6 +6,7 @@ import {
   WarningOutlineIcon,
 } from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
@@ -130,7 +131,7 @@ export function ConfirmDeleteDialogBody({
       <Card radius={2} shadow={1} flex="auto" padding={2}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
+            <Stack as="ul" marginBottom={2} gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -152,7 +153,7 @@ export function ConfirmDeleteDialogBody({
                 // only add the border if needed
                 borderTop:
                   internalReferences.totalCount > 0
-                    ? '1px solid var(--card-shadow-outline-color)'
+                    ? `1px solid ${vars.color.shadow.outline}`
                     : undefined,
               }}
             >
@@ -168,7 +169,7 @@ export function ConfirmDeleteDialogBody({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
                           count: normalizedDatasetNames.length,

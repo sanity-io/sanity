@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {Root} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
+import {buildTheme, type RootTheme} from '@sanity/ui-v3/theme'
 import {noop} from 'lodash'
 import {type ReactNode, Suspense, useEffect, useState} from 'react'
 import {
@@ -80,42 +81,38 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
   return (
     <Suspense fallback={null}>
       <RouterProvider router={router} state={{}} onNavigate={noop}>
-        <ThemeProvider theme={studioThemeConfig}>
-          <ToastProvider>
-            <LayerProvider>
-              <WorkspaceProvider workspace={mockWorkspace}>
-                <ResourceCacheProvider>
-                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                    <CopyPasteProvider>
-                      <ColorSchemeProvider>
-                        <UserColorManagerProvider>
-                          <StyledChangeConnectorRoot
-                            isReviewChangesOpen={false}
-                            onOpenReviewChanges={() => {}}
-                            onSetFocus={() => {}}
-                          >
-                            <PerspectiveProvider
-                              selectedPerspectiveName={undefined}
-                              excludedPerspectives={EMPTY_ARRAY}
-                            >
-                              <PaneLayout height="fill">
-                                <Pane id="test-pane">
-                                  <PaneContent>
-                                    <Card padding={3}>{children}</Card>
-                                  </PaneContent>
-                                </Pane>
-                              </PaneLayout>
-                            </PerspectiveProvider>
-                          </StyledChangeConnectorRoot>
-                        </UserColorManagerProvider>
-                      </ColorSchemeProvider>
-                    </CopyPasteProvider>
-                  </SourceProvider>
-                </ResourceCacheProvider>
-              </WorkspaceProvider>
-            </LayerProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <Root as="div">
+          <WorkspaceProvider workspace={mockWorkspace}>
+            <ResourceCacheProvider>
+              <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                <CopyPasteProvider>
+                  <ColorSchemeProvider>
+                    <UserColorManagerProvider>
+                      <StyledChangeConnectorRoot
+                        isReviewChangesOpen={false}
+                        onOpenReviewChanges={() => {}}
+                        onSetFocus={() => {}}
+                      >
+                        <PerspectiveProvider
+                          selectedPerspectiveName={undefined}
+                          excludedPerspectives={EMPTY_ARRAY}
+                        >
+                          <PaneLayout height="fill">
+                            <Pane id="test-pane">
+                              <PaneContent>
+                                <Card padding={3}>{children}</Card>
+                              </PaneContent>
+                            </Pane>
+                          </PaneLayout>
+                        </PerspectiveProvider>
+                      </StyledChangeConnectorRoot>
+                    </UserColorManagerProvider>
+                  </ColorSchemeProvider>
+                </CopyPasteProvider>
+              </SourceProvider>
+            </ResourceCacheProvider>
+          </WorkspaceProvider>
+        </Root>
       </RouterProvider>
     </Suspense>
   )

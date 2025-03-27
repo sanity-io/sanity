@@ -1,8 +1,8 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -25,22 +25,12 @@ const ButtonDivider = styled(MenuDivider)({
   width: 1,
 })
 
-function focusRingBorderStyle(border: {color: string; width: number}): string {
-  return `inset 0 0 0 ${border.width}px ${border.color}`
-}
-
 const RootCard = styled(Card)(({theme}) => {
-  const {color, input, radius} = getTheme_v2(theme)
-  const radii = radius[2]
+  const radii = vars.radius[2]
 
   return css`
-    border-radius: ${radii}px;
+    border-radius: ${radii};
     box-shadow: var(--input-box-shadow);
-
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -51,12 +41,6 @@ const RootCard = styled(Card)(({theme}) => {
       ${EditableWrap} {
         min-height: 1em;
       }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
     }
 
     &:focus-within {
@@ -83,18 +67,13 @@ const RootCard = styled(Card)(({theme}) => {
       }
     }
     &:hover {
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: color.input.default.hovered.border,
-        width: input.border.width,
-      })};
     }
   `
 })
 
 const AvatarContainer = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
   return `
-    min-height: ${theme.avatar.sizes[1]?.size}px;
+    min-height: ${vars.avatar.scale[1].size};
     display: flex;
     align-items: center;
   `
@@ -156,7 +135,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   )
 
   return (
-    <Flex align="flex-start" gap={2}>
+    <Flex align="flex-start" gap={1}>
       {avatar}
 
       <RootCard
@@ -165,15 +144,10 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         data-focused={focused ? 'true' : 'false'}
         flex={1}
         sizing="border"
-        tone={readOnly ? 'transparent' : 'default'}
+        tone={readOnly ? 'neutral' : 'default'}
       >
         <Stack>
-          <EditableWrap
-            data-ui="CommentInputEditableWrap"
-            paddingX={1}
-            paddingY={2}
-            sizing="border"
-          >
+          <EditableWrap data-ui="CommentInputEditableWrap" padding={2} sizing="border">
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
@@ -201,16 +175,16 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
               {onSubmit && (
                 <>
-                  {!mentionOptions.disabled && <ButtonDivider />}
+                  {/* {!mentionOptions.disabled && <ButtonDivider />} */}
 
                   <Button
                     aria-label={t('compose.send-comment-aria-label')}
                     data-testid="comment-input-send-button"
                     disabled={!canSubmit || !hasChanges || readOnly}
                     icon={SendIcon}
-                    mode={hasChanges && canSubmit ? 'default' : 'bleed'}
+                    // mode={hasChanges && canSubmit ? 'default' : 'bleed'}
                     onClick={onSubmit}
-                    tone={hasChanges && canSubmit ? 'primary' : 'default'}
+                    // tone={hasChanges && canSubmit ? 'primary' : 'default'}
                     tooltipProps={{content: t('compose.send-comment-tooltip')}}
                   />
                 </>

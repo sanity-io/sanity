@@ -58,6 +58,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
           as={option.hasPermission ? 'a' : 'button'}
           data-testid={`create-new-${option.templateId}`}
           disabled={!option.hasPermission}
+          // @ts-expect-error - `as` prop is `'a' | 'button'`
           href={href}
           marginBottom={1}
           onClick={handleDocumentClick}

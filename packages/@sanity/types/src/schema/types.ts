@@ -25,6 +25,26 @@ import {type PreviewConfig} from './preview'
 export {defineArrayMember, defineField, defineType, typed} from './define'
 
 /**
+ * @public
+ */
+export type Breakpoints = 1 | 2 | 3 | 4 | 5 | 6
+
+/**
+ * @public
+ */
+export type ContainerWidth = 1 | 2 | 3 | 4 | 5 | 'auto'
+
+/**
+ * @public
+ */
+export type GridTemplateColumns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+
+/**
+ * @public
+ */
+export type ResponsiveProp<T> = T | Record<Breakpoints, T>
+
+/**
  * Enhances VSCode autocomplete by using a distinct type for strings.
  *
  * `AllowOtherStrings` is defined as `string & {}`, an intersection that behaves
@@ -440,7 +460,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
 /** @internal */
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
-    columns?: number
+    columns?: ResponsiveProp<GridTemplateColumns>
   }
 }
 
@@ -461,7 +481,7 @@ export interface MultiFieldSet {
   single?: false
   group?: string | string[]
   options?: CollapseOptions & {
-    columns?: number
+    columns?: ResponsiveProp<GridTemplateColumns>
   }
   fields: ObjectField[]
   hidden?: ConditionalProperty

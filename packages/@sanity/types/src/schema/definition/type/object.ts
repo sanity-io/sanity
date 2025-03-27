@@ -1,6 +1,6 @@
 import {type PreviewConfig} from '../../preview'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty} from '../../types'
+import {type GridTemplateColumns, type InitialValueProperty, type ResponsiveProp} from '../../types'
 import {type FieldDefinition} from '../schemaDefinition'
 import {
   type BaseSchemaDefinition,
@@ -13,7 +13,7 @@ import {
 export interface ObjectOptions extends BaseSchemaTypeOptions {
   collapsible?: boolean
   collapsed?: boolean
-  columns?: number
+  columns?: ResponsiveProp<GridTemplateColumns>
   modal?: {
     type?: 'dialog' | 'popover'
     width?: number | number[] | 'auto'

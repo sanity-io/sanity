@@ -1,4 +1,5 @@
 import {Box, Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -13,8 +14,7 @@ const Root = styled(Flex)<{
   $floatingCardWidth: number
   $slotWidth: number
   $floatingCardVisible: boolean
-}>(({theme, $floatingCardWidth, $slotWidth, $floatingCardVisible}) => {
-  const {space} = theme.sanity
+}>(({$floatingCardWidth, $slotWidth, $floatingCardVisible}) => {
   return css`
     /* Prevent buttons from taking up extra vertical space */
     line-height: 1;
@@ -25,14 +25,16 @@ const Root = styled(Flex)<{
     [data-ui='PresenceBox'] {
       position: absolute;
       bottom: 0;
-      right: ${$slotWidth + $floatingCardWidth + space[1]}px;
+      right: calc(${$slotWidth} + ${$floatingCardWidth} + ${vars.space[1]});
     }
     @media (hover: hover) {
       // If hover is supported, we hide the floating card by default, so only add space for it when it's visible.
       [data-ui='PresenceBox'] {
         position: absolute;
         bottom: 0;
-        right: ${$slotWidth + ($floatingCardVisible ? $floatingCardWidth : 0) + space[1]}px;
+        right: calc(
+          ${$slotWidth} + (${$floatingCardVisible ? $floatingCardWidth : 0}) + ${vars.space[1]}
+        );
       }
     }
   `
@@ -40,10 +42,9 @@ const Root = styled(Flex)<{
 
 const ContentBox = styled(Box)<{
   $presenceMaxWidth: number
-}>(({theme, $presenceMaxWidth}) => {
-  const {space} = theme.sanity
+}>(({$presenceMaxWidth}) => {
   return css`
-    max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
+    max-width: calc(100% - ${$presenceMaxWidth} + ${vars.space[1]});
     min-width: 75%;
   `
 })
@@ -51,9 +52,8 @@ const ContentBox = styled(Box)<{
 const SlotBox = styled(Box)<{
   $right: number
   $fieldActionsVisible: boolean
-}>(({theme, $right, $fieldActionsVisible}) => {
-  const {space} = theme.sanity
-  const right = $fieldActionsVisible ? $right + space[1] : $right
+}>(({$right, $fieldActionsVisible}) => {
+  const right = $fieldActionsVisible ? `calc(${$right} + ${vars.space[1]})` : `${$right}px`
   return css`
     position: absolute;
     bottom: 0;

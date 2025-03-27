@@ -1536,9 +1536,6 @@ importers:
       '@rexxars/react-split-pane':
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@sanity/color':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.1.1)

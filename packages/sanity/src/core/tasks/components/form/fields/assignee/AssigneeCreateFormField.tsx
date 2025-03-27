@@ -1,8 +1,7 @@
 import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {getVarName, vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {set, type StringInputProps} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
@@ -11,18 +10,15 @@ import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 
-const FocusableCard = styled(Card)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    &[data-as='button'] {
-      border: 1px solid var(--card-border-color);
-      &:focus-within {
-        border: 1px solid var(--card-focus-ring-color);
-      }
-      --card-muted-fg-color: ${theme.color.input.default.enabled.placeholder};
+const FocusableCard = styled(Card)`
+  &[data-as='button'] {
+    border: 1px solid ${vars.color.border};
+    &:focus-within {
+      border: 1px solid ${vars.color.focusRing};
     }
-  `
-})
+    ${getVarName(vars.color.muted.fg)}: ${vars.color.tinted.default.border[4]};
+  }
+`
 
 export function AssigneeCreateFormField(props: StringInputProps) {
   const {value, onChange} = props
@@ -58,9 +54,7 @@ export function AssigneeCreateFormField(props: StringInputProps) {
             </Flex>
 
             {value && mentionedUser && !mentionedUser.granted && (
-              <Badge fontSize={1} mode="outline">
-                {t('form.input.assignee.unauthorized.text')}
-              </Badge>
+              <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
             )}
           </Flex>
         </FocusableCard>

@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const CustomTextInputBox = styled(Box)<{
@@ -9,8 +10,7 @@ export const CustomTextInputBox = styled(Box)<{
     width: 100%;
 
     input + span {
-      background: ${({theme}) =>
-        $background ? theme.sanity.color.card.disabled.bg2 : 'transparent'};
+      background: ${$background ? vars.color.tinted.default.bg[1] : 'transparent'};
     }
 
     [data-qa='clear-button'] {

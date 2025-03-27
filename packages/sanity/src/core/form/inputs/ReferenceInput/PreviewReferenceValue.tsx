@@ -64,9 +64,7 @@ export function PreviewReferenceValue(props: {
           })}
         </Box>
         <Box>
-          <Inline space={4}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
-          </Inline>
+          <Inline gap={4}>{showTypeLabel && <Badge>{refType.title}</Badge>}</Inline>
         </Box>
       </Flex>
     )
@@ -78,7 +76,7 @@ export function PreviewReferenceValue(props: {
   const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'
   if (insufficientPermissions || notFound) {
     return (
-      <Inline space={2}>
+      <Inline gap={2}>
         <Box padding={1}>
           <Flex align="center">
             <Box flex={1} paddingY={2}>
@@ -195,7 +193,7 @@ function InvalidType({
         <Tooltip
           portal
           content={
-            <Stack space={3}>
+            <Stack gap={3}>
               <Text size={1}>
                 <Translate
                   t={t}

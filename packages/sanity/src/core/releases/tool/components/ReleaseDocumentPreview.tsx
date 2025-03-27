@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {Card} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -59,38 +59,6 @@ export function ReleaseDocumentPreview({
     return {}
   }, [releaseState, releaseId, documentRevision])
 
-  const LinkComponent = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{
-              id: getPublishedId(documentId),
-              type: documentTypeName,
-              ...intentParams,
-            }}
-            searchParams={
-              isArchivedRelease(releaseState)
-                ? undefined
-                : [
-                    [
-                      'perspective',
-                      releaseState === 'published'
-                        ? 'published'
-                        : getReleaseIdFromReleaseDocumentId(releaseId),
-                    ],
-                  ]
-            }
-            ref={ref}
-          />
-        )
-      }),
-    [documentId, documentTypeName, intentParams, releaseState, releaseId],
-  )
-
   const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
     [documentPresence],
@@ -103,7 +71,30 @@ export function ReleaseDocumentPreview({
   })
 
   return (
-    <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
+    <Card
+      tone="inherit"
+      as={IntentLink}
+      radius={2}
+      data-as="a"
+      intent="edit"
+      params={{
+        id: getPublishedId(documentId),
+        type: documentTypeName,
+        ...intentParams,
+      }}
+      searchParams={
+        isArchivedRelease(releaseState)
+          ? undefined
+          : [
+              [
+                'perspective',
+                releaseState === 'published'
+                  ? 'published'
+                  : getReleaseIdFromReleaseDocumentId(releaseId),
+              ],
+            ]
+      }
+    >
       <SanityDefaultPreview
         {...(resolvedPreview || {})}
         status={previewPresence}

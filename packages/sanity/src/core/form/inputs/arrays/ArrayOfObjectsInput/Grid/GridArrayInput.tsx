@@ -50,7 +50,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <UploadTargetCard
         types={schemaType.of}
         resolveUploader={resolveUploader}
@@ -58,7 +58,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         {...elementProps}
         tabIndex={0}
       >
-        <Stack data-ui="ArrayInput__content" space={2}>
+        <Stack data-ui="ArrayInput__content" gap={2}>
           {members?.length === 0 && (
             <Card padding={3} border radius={2}>
               <Text align="center" muted size={1}>

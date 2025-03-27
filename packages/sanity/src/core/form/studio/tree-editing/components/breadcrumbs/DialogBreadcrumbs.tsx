@@ -12,8 +12,7 @@ import {
   Text,
   useElementSize,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
@@ -23,7 +22,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../ui-components'
 import {pathToString} from '../../../../../field/paths/helpers'
@@ -43,21 +42,17 @@ const RootInline = styled(Inline)`
   width: 100%;
 `
 
-const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
+const StyledButton = styled(Button)`
+  max-height: 1rem;
+  overflow: hidden;
+  min-width: 2ch;
 
-  return css`
-    max-height: 1rem;
-    overflow: hidden;
-    min-width: 2ch;
-
-    &[data-active='true'] {
-      [data-ui='Text']:first-child {
-        font-weight: ${bold};
-      }
+  &[data-active='true'] {
+    [data-ui='Text']:first-child {
+      font-weight: ${vars.font.text.weight.bold};
     }
-  `
-})
+  }
+`
 
 const StyledText = styled(Text)`
   overflow: hidden;

@@ -44,11 +44,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
           <Box>{text}</Box>
         </InnerFlex>
 
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            {t('mentions.unauthorized-user')}
-          </Badge>
-        )}
+        {!user.granted && <Badge fontSize={1}>{t('mentions.unauthorized-user')}</Badge>}
       </Flex>
     </Card>
   )

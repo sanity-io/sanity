@@ -1,13 +1,16 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {Box, useGlobalKeyDown} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Dialog,
+  useGlobalKeyDown,
+} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
-import {Dialog} from '../../../../../ui-components'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -30,21 +33,17 @@ function renderDefault(props: InputProps) {
   return props.renderDefault(props)
 }
 
-const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
-  const spacing = getTheme_v2(theme)?.space[4]
+const StyledDialog = styled(Dialog)`
+  [data-ui='DialogCard'] {
+    padding: ${vars.space[4]};
+    box-sizing: border-box;
 
-  return css`
-    [data-ui='DialogCard'] {
-      padding: ${spacing}px;
-      box-sizing: border-box;
-
-      // Make the dialog full height
-      & > [data-ui='Card']:first-child {
-        flex: 1;
-      }
+    // Make the dialog full height
+    & > [data-ui='Card']:first-child {
+      flex: 1;
     }
-  `
-})
+  }
+`
 
 interface TreeEditingDialogProps {
   onPathFocus: (path: Path) => void

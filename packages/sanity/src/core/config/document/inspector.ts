@@ -1,4 +1,4 @@
-import {type ButtonTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
 
 /** @hidden @beta */
@@ -23,9 +23,9 @@ export interface DocumentInspectorMenuItem {
   hotkeys?: string[]
   icon?: ComponentType
   showAsAction?: boolean
-  status?: ButtonTone
+  status?: ElementTone
   title: string
-  tone?: ButtonTone
+  tone?: ElementTone
 }
 
 /** @hidden @beta */

@@ -99,7 +99,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   if (options.type === '*' && !isLoaded) {
     return (
       <LoadingPane
-        flex={2.5}
+        flex={2}
         minWidth={320}
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.loading')}
@@ -110,12 +110,12 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   if (!documentType) {
     return (
       <ErrorPane
-        flex={2.5}
+        flex={2}
         minWidth={320}
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text as="p">
             <Translate
               t={t}

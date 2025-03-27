@@ -106,7 +106,7 @@ function ConfirmPopoverContent({
         <Text size={1}>{message}</Text>
       </Box>
       <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
-        <Grid columns={2} gap={2}>
+        <Grid gridTemplateColumns={2} gap={2}>
           <UIButton
             data-testid="confirm-popover-cancel-button"
             icon={cancelButtonIcon}
@@ -114,7 +114,7 @@ function ConfirmPopoverContent({
             mode="ghost"
             padding={2}
             text={cancelButtonText || t('common.dialog.cancel-button.text')}
-            size={1}
+            fontSize={1}
           />
           <UIButton
             data-testid="confirm-popover-confirm-button"
@@ -123,7 +123,7 @@ function ConfirmPopoverContent({
             padding={2}
             text={confirmButtonText || t('common.dialog.confirm-button.text')}
             tone={tone}
-            size={1}
+            fontSize={1}
           />
         </Grid>
       </Box>
