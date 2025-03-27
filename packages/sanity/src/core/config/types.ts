@@ -975,7 +975,7 @@ export type DefaultPluginsWorkspaceOptions = {
  */
 export interface MediaLibraryConfig {
   /**
-   * Weather the Media Library is enabled or not.
+   * Whether the Media Library is enabled or not.
    */
   enabled: boolean
   /**
