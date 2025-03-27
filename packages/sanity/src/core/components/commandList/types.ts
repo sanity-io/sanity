@@ -1,4 +1,4 @@
-import {type ResponsivePaddingProps} from '@sanity/ui'
+import {type BoxProps} from '@sanity/ui'
 import {type ScrollToOptions} from '@tanstack/react-virtual'
 import {type ReactNode} from 'react'
 
@@ -37,7 +37,7 @@ export interface CommandListHandle {
 }
 
 /** @internal */
-export interface CommandListProps<T = any> extends ResponsivePaddingProps {
+export interface CommandListProps<T = any> extends BoxProps {
   /** The data attribute to apply to any active virtual list items */
   activeItemDataAttr?: string
   /** `aria-label` to apply to the virtual list container element */

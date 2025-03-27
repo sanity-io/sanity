@@ -1,11 +1,20 @@
 import {Box, type BoxProps} from '@sanity/ui'
-import {type HTMLProps, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type ElementType,
+  type HTMLProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {useLocalState} from '../useLocalState'
 import {Resizer} from './Resizer'
 
 export interface ResizableProps {
+  as?: ElementType
   disabled?: boolean
   minWidth: number
   maxWidth?: number

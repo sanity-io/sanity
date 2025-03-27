@@ -1,4 +1,4 @@
-import {type BadgeTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {isReleaseDocument} from '../store/types'
@@ -6,7 +6,7 @@ import {RELEASE_TYPES_TONES} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
 
 /** @internal */
-export function getReleaseTone(release: TargetPerspective): BadgeTone {
+export function getReleaseTone(release: TargetPerspective): ElementTone {
   if (isPublishedPerspective(release)) return 'positive'
   if (isDraftPerspective(release)) return 'default'
 

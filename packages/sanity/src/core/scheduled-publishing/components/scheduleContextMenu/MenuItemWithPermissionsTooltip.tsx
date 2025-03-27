@@ -1,5 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, type SelectableTone} from '@sanity/ui'
+import {Box} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -16,7 +17,7 @@ interface Props {
   onClick: () => void
   permissionsOperationLabel: InsufficientPermissionsMessageProps['context']
   title: string
-  tone?: SelectableTone
+  tone?: ElementTone
   disabled?: boolean
 }
 

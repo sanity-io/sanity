@@ -2,7 +2,7 @@ import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {type ComponentProps, memo} from 'react'
 
-import {MenuGroup, MenuItem, type PopoverProps} from '../../../../../ui-components'
+import {MenuGroup, type MenuGroupProps, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   onInsert: (pos: 'before' | 'after', type: SchemaType) => void
 }
 
-const MENU_POPOVER_PROPS: PopoverProps = {
+const MENU_POPOVER_PROPS: MenuGroupProps['popover'] = {
   portal: true,
   tone: 'default',
   placement: 'left',

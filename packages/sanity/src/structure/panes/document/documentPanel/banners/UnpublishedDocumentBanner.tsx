@@ -30,7 +30,7 @@ export function UnpublishedDocumentBanner() {
       <Banner
         tone="critical"
         content={
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1}>
               <Translate
                 t={t}

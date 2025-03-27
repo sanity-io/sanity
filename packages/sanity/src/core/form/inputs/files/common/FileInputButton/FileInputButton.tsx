@@ -1,16 +1,9 @@
-import {
-  type ChangeEvent,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  useCallback,
-  useId,
-} from 'react'
+import {type ChangeEvent, type ForwardedRef, forwardRef, useCallback, useId} from 'react'
 
 import {type ButtonProps} from '../../../../../../ui-components'
 import {FileButton} from './styles'
 
-export type FileInputButtonProps = ButtonProps & {
+export type FileInputButtonProps = Omit<ButtonProps<'button'>, 'onSelect'> & {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
@@ -19,8 +12,7 @@ export type FileInputButtonProps = ButtonProps & {
 }
 
 export const FileInputButton = forwardRef(function FileInputButton(
-  props: FileInputButtonProps &
-    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
+  props: FileInputButtonProps,
   forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
   const {icon, id: idProp, accept, capture, multiple, onSelect, text, disabled, ...rest} = props

@@ -18,7 +18,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
   return (
     <ErrorPane
       currentMinWidth={currentMinWidth}
-      flex={2.5}
+      flex={2}
       minWidth={minWidth}
       paneKey={paneKey}
       title={
@@ -30,7 +30,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         {documentType && (
           <Text as="p">
             <Translate

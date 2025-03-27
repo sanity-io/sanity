@@ -1,12 +1,13 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
 import {
-  type BadgeTone,
   Button, // eslint-disable-line no-restricted-imports
   useClickOutsideEvent,
   useGlobalKeyDown,
   useToast,
 } from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 import {
   memo,
   type MouseEvent,
@@ -36,14 +37,14 @@ import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
 const ChipButtonContainer = styled.span`
   display: inline-flex;
-  --border-color: var(--card-border-color);
+  --border-color: ${vars.color.border};
 `
 
 const ChipButton = styled(Button)`
   flex: none;
   transition: none;
   cursor: pointer;
-  --card-border-color: var(--border-color);
+  ${getVarName(vars.color.border)}: var(--border-color);
 `
 
 type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release'
@@ -73,7 +74,7 @@ export const VersionChip = memo(function VersionChip(props: {
   tooltipContent: ReactNode
   onClick: () => void
   text: string
-  tone: BadgeTone
+  tone: ElementTone
   locked?: boolean
   contextValues: {
     documentId: string
@@ -232,7 +233,7 @@ export const VersionChip = memo(function VersionChip(props: {
             paddingY={2}
             paddingLeft={2}
             paddingRight={3}
-            space={2}
+            gap={2}
             radius="full"
             icon={<ReleaseAvatarIcon tone={tone} />}
             iconRight={isLinked ? <ComposeSparklesIcon /> : locked && <LockIcon />}

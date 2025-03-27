@@ -1,5 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {cloneElement, type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
@@ -34,19 +35,17 @@ const PopoverListFlex = styled(Flex)<{
   `
 })
 
-const StyledPopover = styled(Popover)(() => {
-  return css`
-    [data-ui='Popover__wrapper'] {
-      width: 250px;
-      display: flex;
-      flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
-      position: relative;
-      overflow: hidden;
-      overflow: clip;
-    }
-  `
-})
+const StyledPopover = styled(Popover)`
+  [data-ui='Popover__wrapper'] {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    border-radius: ${vars.radius[3]};
+    position: relative;
+    overflow: hidden;
+    overflow: clip;
+  }
+`
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: React.JSX.Element

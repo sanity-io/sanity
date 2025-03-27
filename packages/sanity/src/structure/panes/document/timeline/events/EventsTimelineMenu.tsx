@@ -209,7 +209,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
             selected={open}
             width="fill"
             tooltipProps={null}
-            justify={'space-between'}
+            justify="space-between"
             style={{
               maxWidth: '100%',
             }}

@@ -1,4 +1,4 @@
-import {type ResponsivePaddingProps} from '@sanity/ui'
+import {type BoxProps} from '@sanity/ui'
 import {type ElementType} from 'react'
 
 export const TEXT_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -15,7 +15,7 @@ export const TEXT_DECORATOR_TAGS: Record<string, ElementType> = {
   'code': 'code',
 }
 
-export const TEXT_STYLE_PADDING: Record<string, ResponsivePaddingProps> = {
+export const TEXT_STYLE_PADDING: Record<string, BoxProps> = {
   h1: {
     paddingTop: 5,
     paddingBottom: 4,

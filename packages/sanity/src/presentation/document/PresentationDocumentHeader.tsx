@@ -1,6 +1,4 @@
-import {rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useContext} from 'react'
 import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
@@ -10,13 +8,12 @@ import {type PresentationPluginOptions} from '../types'
 import {LocationsBanner} from './LocationsBanner'
 
 const LocationStack = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
   return css`
     display: flex;
     flex-direction: column;
-    gap: ${rem(theme.space[2])};
-    min-height: ${rem(42)};
-    margin-bottom: ${rem(theme.space[5])};
+    gap: ${vars.space[2]};
+    min-height: ${42 / 16}rem;
+    margin-bottom: ${vars.space[5]};
 
     &:empty {
       display: none;

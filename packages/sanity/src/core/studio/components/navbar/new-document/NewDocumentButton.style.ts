@@ -1,32 +1,29 @@
 import {Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {Dialog, Popover} from '../../../../../ui-components'
 
-export const StyledPopover = styled(Popover)(() => {
-  return css`
-    [data-ui='Popover__wrapper'] {
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
-      position: relative;
-      overflow: hidden;
-      overflow: clip;
-    }
-  `
-})
+export const StyledPopover = styled(Popover)`
+  [data-ui='Popover__wrapper'] {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    border-radius: ${vars.radius[3]};
+    position: relative;
+    overflow: hidden;
+    overflow: clip;
+  }
+`
 
 // We are using `flex-start` to make sure that the dialogs doesn't jump around when
 // the content changes. This is because the dialog is centered by default, and
 // when the content changes, the dialog will jump to the center of the screen.
-export const StyledDialog = styled(Dialog)(() => {
-  return css`
-    [data-ui='DialogCard'] {
-      justify-content: flex-start;
-    }
-  `
-})
+export const StyledDialog = styled(Dialog)`
+  [data-ui='DialogCard'] {
+    justify-content: flex-start;
+  }
+`
 
 export const RootFlex = styled(Flex)``
 

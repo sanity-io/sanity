@@ -1,7 +1,7 @@
 import {
-  type ButtonTone,
   type DialogProps, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {type EditStateFor, type MapDocument} from '../../store/_legacy'
@@ -113,7 +113,7 @@ export interface DuplicateDocumentActionComponent
  * @beta */
 export interface DocumentActionConfirmDialogProps {
   type: 'confirm'
-  tone?: ButtonTone
+  tone?: ElementTone
   message: ReactNode
   onConfirm: () => void
   onCancel: () => void

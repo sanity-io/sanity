@@ -41,7 +41,7 @@ export function VisionGuiControls({
           disabled={hasValidParams}
           portal
         >
-          <Flex justify="space-evenly">
+          <Flex gap={2} justify="space-evenly">
             <Box flex={1}>
               <Tooltip
                 content={
@@ -55,6 +55,7 @@ export function VisionGuiControls({
                 <Button
                   width="fill"
                   onClick={onQueryExecution}
+                  padding={2}
                   type="button"
                   icon={queryInProgress ? StopIcon : PlayIcon}
                   disabled={listenInProgress || !hasValidParams}
@@ -63,10 +64,11 @@ export function VisionGuiControls({
                 />
               </Tooltip>
             </Box>
-            <Box flex={1} marginLeft={3}>
+            <Box flex={1}>
               <Button
                 width="fill"
                 onClick={onListenExecution}
+                padding={2}
                 type="button"
                 icon={listenInProgress ? StopIcon : PlayIcon}
                 text={listenInProgress ? t('action.listen-cancel') : t('action.listen-execute')}

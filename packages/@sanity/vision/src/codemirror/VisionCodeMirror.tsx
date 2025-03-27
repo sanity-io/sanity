@@ -1,4 +1,3 @@
-import {useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
   type ReactCodeMirrorProps,
@@ -23,8 +22,8 @@ export const VisionCodeMirror = forwardRef<
   // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
   // If you need to update the value, use the resetEditorContent function.
   const [initialValue] = useState(props.initialValue)
-  const sanityTheme = useTheme()
-  const theme = useCodemirrorTheme(sanityTheme)
+
+  const theme = useCodemirrorTheme()
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
 
   const resetEditorContent = useCallback((newContent: string) => {
@@ -40,13 +39,7 @@ export const VisionCodeMirror = forwardRef<
     }
   }, [])
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      resetEditorContent,
-    }),
-    [resetEditorContent],
-  )
+  useImperativeHandle(ref, () => ({resetEditorContent}), [resetEditorContent])
 
   return (
     <EditorRoot>

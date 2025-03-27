@@ -1,4 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const OverlayContainer = styled.div`
@@ -12,7 +13,7 @@ export const ContentContainer = styled.div`
 `
 
 export const CardContainer = styled(Card)`
-  border: 1px solid var(--card-border-color);
+  border: 1px solid ${vars.color.border};
   position: absolute;
   top: 0;
   left: 0;

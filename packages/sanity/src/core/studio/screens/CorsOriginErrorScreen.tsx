@@ -66,7 +66,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>
             To access your content, you need to <b>add the following URL as a CORS origin</b> to
             your Sanity project.

@@ -24,7 +24,7 @@ export function CalendarHeader(props: {
 
   return (
     <Flex align="center" flex={1} justify="space-between">
-      <Inline paddingLeft={2} space={1}>
+      <Inline paddingLeft={2} gap={1}>
         {/* Technically not correct to simply uppercase first here, but simplifying for now */}
         <Text size={1} weight="medium">
           {upperFirst(monthFormatter.format(focusedDate))}

@@ -4,10 +4,12 @@ import {
   Button, // Button with specific styling and children behavior.
   Flex,
   Stack,
+  useCard,
 } from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
@@ -27,16 +29,13 @@ const HeaderFlex = styled(Flex)`
   min-height: 25px;
 `
 
-const BreadcrumbsButton = styled(Button)(({theme}) => {
-  const fg = theme.sanity.color.base.fg
-  return css`
-    --card-fg-color: ${fg};
+const BreadcrumbsButton = styled(Button)`
+  ${getVarName(vars.color.fg)}: ${vars.color.fg};
 
-    // The width is needed to make the text ellipsis work
-    // in the breadcrumbs component
-    max-width: 100%;
-  `
-})
+  // The width is needed to make the text ellipsis work
+  // in the breadcrumbs component
+  max-width: 100%;
+`
 
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentListBreadcrumbs
@@ -66,6 +65,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onPathSelect,
     readOnly,
   } = props
+
+  const card = useCard()
 
   const {t} = useTranslation(commentsLocaleNamespace)
 
@@ -124,7 +125,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <HeaderFlex align="center" gap={2} paddingRight={1} sizing="border">
         <Stack flex={1}>
           <Flex align="center">
@@ -135,7 +136,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}
-              space={2}
+              gap={2}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>
@@ -144,7 +145,11 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard onClick={handleNewThreadClick} data-active={isSelected}>
+        <ThreadCard
+          $isDark={card.scheme === 'dark'}
+          onClick={handleNewThreadClick}
+          data-active={isSelected}
+        >
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldTitle={lastCrumb}
@@ -156,7 +161,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         </ThreadCard>
       )}
 
-      <Stack space={2}>{children}</Stack>
+      <Stack gap={2}>{children}</Stack>
     </Stack>
   )
 }

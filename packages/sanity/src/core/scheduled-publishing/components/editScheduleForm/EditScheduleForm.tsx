@@ -18,7 +18,7 @@ export function EditScheduleForm(props: PropsWithChildren<Props>) {
   const {onChange, value} = props
 
   return (
-    <Stack space={4}>
+    <Stack gap={4}>
       {props.children}
       <ScheduleForm onChange={onChange} value={value} />
     </Stack>

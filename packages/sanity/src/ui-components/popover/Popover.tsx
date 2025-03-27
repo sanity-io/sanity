@@ -4,6 +4,7 @@ import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /** @internal */
 export type PopoverProps = UIPopoverProps
+// NEEDED? export type PopoverProps = Omit<UIPopoverProps<'div'>, 'animate'>
 
 /**
  * Customized Sanity UI <Popover> that defaults to `animate=true`

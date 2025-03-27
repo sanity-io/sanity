@@ -9,7 +9,7 @@ interface SaveButtonProps {
   blobUrl: string | undefined
 }
 
-function preventSave(evt: MouseEvent<HTMLButtonElement>) {
+function preventSave(evt: MouseEvent<HTMLAnchorElement>) {
   return evt.preventDefault()
 }
 
@@ -26,6 +26,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
       icon={DocumentSheetIcon}
       mode="ghost"
       onClick={isDisabled ? preventSave : undefined}
+      padding={2}
       // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="CSV" // String is a File extension
       tone="default"
@@ -49,6 +50,7 @@ export function SaveJsonButton({blobUrl}: SaveButtonProps) {
       href={blobUrl}
       icon={DocumentSheetIcon}
       mode="ghost"
+      padding={2}
       // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="JSON" // String is a File extension
       tone="default"

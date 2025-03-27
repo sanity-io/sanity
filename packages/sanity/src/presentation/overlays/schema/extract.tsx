@@ -23,7 +23,6 @@ import {
   type SchemaType as SanitySchemaType,
   type StringSchemaType,
 } from '@sanity/types'
-import {type ThemeContextValue} from '@sanity/ui'
 import {renderToString} from 'react-dom/server'
 import {type Workspace} from 'sanity'
 
@@ -203,7 +202,7 @@ const typesMap = new Map<string, Omit<SchemaStringNode, 'name'> | Omit<SchemaBoo
   ['email', {type: 'string'}],
 ])
 
-export function extractSchema(workspace: Workspace, theme: ThemeContextValue): SchemaType[] {
+export function extractSchema(workspace: Workspace): SchemaType[] {
   const inlineFields = new Set<SanitySchemaType>()
   const {schema: schemaDef, basePath} = workspace
 
@@ -230,7 +229,7 @@ export function extractSchema(workspace: Workspace, theme: ThemeContextValue): S
 
   function extractIcon(schemaType: SanitySchemaType): string | undefined {
     if (!schemaType.icon) return undefined
-    return renderToString(<SchemaIcon schemaType={schemaType} theme={theme} />)
+    return renderToString(<SchemaIcon schemaType={schemaType} />)
   }
 
   function convertBaseType(schemaType: SanitySchemaType): SchemaType | null {

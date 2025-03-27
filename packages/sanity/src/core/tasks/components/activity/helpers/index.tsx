@@ -1,5 +1,6 @@
 import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
 import {TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -72,7 +73,7 @@ function DueByChange({date}: {date: string}) {
 
 const LinkWrapper = styled.span`
   > a {
-    color: var(--card-fg-muted-color);
+    color: ${vars.color.muted.fg};
     text-decoration: underline;
     text-underline-offset: 1px;
     font-weight: 600;

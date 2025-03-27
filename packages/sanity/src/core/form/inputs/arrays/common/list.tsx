@@ -19,11 +19,12 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Box, type Card, Grid} from '@sanity/ui'
+import {Box, type CardProps, Grid} from '@sanity/ui'
 import {
   type ComponentProps,
   type ForwardedRef,
   forwardRef,
+  type HTMLProps,
   memo,
   type ReactNode,
   useCallback,
@@ -191,7 +192,7 @@ export function List(props: ListProps) {
   )
 }
 
-interface ItemProps {
+interface ItemProps extends CardProps<'div'> {
   'id': string
 
   // false positive:
@@ -203,7 +204,7 @@ interface ItemProps {
 }
 
 export const Item = forwardRef(function Item(
-  props: ItemProps & ComponentProps<typeof Card>,
+  props: ItemProps & HTMLProps<HTMLDivElement>,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {sortable, ...rest} = props
