@@ -1,5 +1,6 @@
 import {hues} from '@sanity/color'
-import {Box, Card, type Theme} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const Root = styled(Card)(rootStyle)
@@ -14,14 +15,12 @@ export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
-export function rootStyle({theme}: {theme: Theme}) {
-  const {color, radius} = theme.sanity
-
+export function rootStyle() {
   return css`
     line-height: 0;
-    border-radius: ${radius[2]}px;
+    border-radius: ${vars.radius[2]};
     padding: 2px;
-    box-shadow: inset 0 0 0 1px var(--card-border-color);
+    box-shadow: inset 0 0 0 1px ${vars.color.border};
     height: calc(1em - 1px);
     margin-top: 0.0625em;
     cursor: default;
@@ -37,43 +36,43 @@ export function rootStyle({theme}: {theme: Theme}) {
     }
 
     &[data-focused] {
-      box-shadow: inset 0 0 0 1px ${color.selectable?.primary.selected.border};
-      color: ${color.selectable?.primary.pressed.fg};
+      box-shadow: inset 0 0 0 1px ${vars.color.solid.primary.border[1]};
+      color: ${vars.color.solid.primary.fg[0]};
     }
 
     &[data-selected] {
-      background-color: ${color.selectable?.primary.pressed.bg};
+      background-color: ${vars.color.solid.primary.bg[0]};
     }
 
     &:not([data-focused]):not([data-selected]) {
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${color.input.default.hovered.border};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.default.border[2]};
         }
       }
     }
 
     &[data-markers] {
-      --card-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+      ${getVarName(vars.color.bg)}: ${vars.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
     &[data-warning] {
-      --card-bg-color: ${color.muted.caution.hovered.bg};
+      ${getVarName(vars.color.bg)}: ${vars.color.tinted.caution.bg[2]};
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${color.muted.caution.hovered.border};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.caution.border[2]};
         }
       }
     }
 
     &[data-invalid] {
-      --card-bg-color: ${color.input.invalid.enabled.bg};
-      --card-border-color: ${color.input.invalid.enabled.border};
+      ${getVarName(vars.color.bg)}: ${vars.color.tinted.critical.bg[0]};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[1]};
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${color.input.invalid.hovered.border};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[2]};
         }
       }
     }

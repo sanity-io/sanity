@@ -1,4 +1,4 @@
-import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {Button, Card, Flex, Root, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {Studio, StudioLayout, StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
 
@@ -29,7 +29,7 @@ export function App() {
   }, [])
 
   return (
-    <ThemeProvider scheme={_scheme} theme={studioTheme}>
+    <Root as="div" scheme={_scheme}>
       <Flex direction="column" height="fill" overflow="hidden">
         <Card>
           <Flex gap={1} padding={2}>
@@ -64,6 +64,6 @@ export function App() {
           {variant === 'studio' && <Studio config={config} onSchemeChange={handleSchemeChange} />}
         </Flex>
       </Flex>
-    </ThemeProvider>
+    </Root>
   )
 }

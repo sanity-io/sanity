@@ -1,5 +1,6 @@
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
@@ -52,15 +53,16 @@ const Root = styled(Layer)`
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: transparent;
 `
 
-const BackdropMotion = styled(motion.create(Card))`
+const BackdropMotion = styled(motion.create(Box))`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--card-shadow-penumbra-color);
+  background: ${vars.color.backdrop};
 `
 
 const InnerCardMotion = styled(motion.create(Card))`
@@ -136,7 +138,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <TrapFocus returnFocus>
-          <Root onKeyDown={handleKeyDown}>
+          <Root data-ui="NavDrawer" onKeyDown={handleKeyDown}>
             <BackdropMotion
               animate="open"
               data-open={isOpen}
@@ -158,7 +160,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={INNER_CARD_VARIANTS}
             >
               <Card borderBottom>
-                <Stack space={3} padding={3}>
+                <Stack gap={3} padding={3}>
                   <Flex align="center">
                     {/* Current user */}
                     <Flex flex={1} align="center" paddingRight={2}>
@@ -210,7 +212,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 <Flex direction="column">
                   {actionNodes && (
                     <Card flex="none" padding={2}>
-                      <Stack space={1}>{actionNodes}</Stack>
+                      <Stack gap={1}>{actionNodes}</Stack>
                     </Card>
                   )}
 

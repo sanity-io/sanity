@@ -178,7 +178,7 @@ export function createLoginComponent({
     }
 
     return (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading align="center" size={1}>
           Choose login provider
         </Heading>
@@ -196,7 +196,7 @@ export function createLoginComponent({
             />
           )}
 
-          <Stack space={2}>
+          <Stack gap={2}>
             {providerList?.map((provider, index) => (
               <ProviderButton
                 key={`${provider.url}_${index}`}
@@ -244,7 +244,7 @@ function ProviderButton({
   autoFocus?: boolean
 }) {
   const focusRef = useCallback(
-    (node: HTMLButtonElement) => {
+    (node: HTMLAnchorElement) => {
       if (autoFocus) node?.focus()
     },
     [autoFocus],

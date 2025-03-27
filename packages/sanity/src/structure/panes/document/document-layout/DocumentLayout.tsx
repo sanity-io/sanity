@@ -1,4 +1,5 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex} from '@sanity/ui'
+import {useElementRect} from '@sanity/ui-v3'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -87,6 +88,9 @@ export function DocumentLayout() {
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
 
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
+  const [documentFormPortalElement, setDocumentFormPortalElement] = useState<HTMLElement | null>(
+    null,
+  )
   const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
     null,
   )
@@ -225,9 +229,11 @@ export function DocumentLayout() {
                   headerHeight={headerHeight || null}
                   isInspectOpen={inspectOpen}
                   rootElement={rootElement}
+                  setDocumentFormPortalElement={setDocumentFormPortalElement}
                   setDocumentPanelPortalElement={setDocumentPanelPortalElement}
                   footer={
                     <DocumentLayoutFooter
+                      documentFormPortalElement={documentFormPortalElement}
                       documentPanelPortalElement={documentPanelPortalElement}
                       setFooterElement={setFooterElement}
                       setActionsBoxElement={setActionsBoxElement}

@@ -5,7 +5,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {type CardTone, Container, Menu, Stack} from '@sanity/ui'
+import {Container, Menu, Stack} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'
@@ -27,7 +27,7 @@ const POPOVER_PROPS = {
   portal: true,
   constrainSize: true,
   preventOverflow: true,
-  tone: 'default' as CardTone,
+  tone: 'default',
   width: 0,
   placement: 'bottom-end',
 } as const
@@ -70,7 +70,7 @@ export function ValidationInfo(props: ValidationProps) {
       menu={
         <Menu padding={1}>
           <Container width={0}>
-            <Stack space={1}>
+            <Stack gap={1}>
               {menuHeader ?? null}
               <ValidationList
                 documentType={type as ObjectSchemaType}

@@ -1,6 +1,7 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Box, Card, Menu} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
@@ -35,7 +36,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'
@@ -79,9 +80,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
-  const [previewCardElement, setPreviewCardElement] = useState<HTMLDivElement | null>(null)
-  const previewCardRef = useRef<HTMLDivElement | null>(null)
-  useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(
+  const [previewCardElement, setPreviewCardElement] = useState<HTMLButtonElement | null>(null)
+  const previewCardRef = useRef<HTMLButtonElement | null>(null)
+  useImperativeHandle<HTMLButtonElement | null, HTMLButtonElement | null>(
     previewCardRef,
     () => previewCardElement,
     [previewCardElement],

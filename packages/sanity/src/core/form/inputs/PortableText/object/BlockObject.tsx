@@ -1,6 +1,6 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {Box, Flex, type FlexProps, useCard} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -163,7 +163,7 @@ export function BlockObject(props: BlockObjectProps) {
     [editor],
   )
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: FlexProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -378,6 +378,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     validation,
   } = props
 
+  const card = useCard()
+
   const {t} = useTranslation()
   const isImagePreview = isImage(value)
   const hasError = validation.filter((v) => v.level === 'error').length > 0
@@ -397,6 +399,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   return (
     <>
       <Root
+        $isDark={card.scheme === 'dark'}
         aria-label={t('inputs.portable-text.block.aria-label')}
         data-focused={focused ? '' : undefined}
         data-image-preview={isImagePreview ? '' : undefined}

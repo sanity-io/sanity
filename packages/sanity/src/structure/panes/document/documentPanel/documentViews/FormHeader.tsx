@@ -1,6 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -14,7 +15,7 @@ interface DocumentHeaderProps {
 }
 
 /**
- * Use CSS container queries to conditionally render headings at different sizes.
+ * Use CSS container queries to conditionally render headings at different scale.
  * We hide this entire container (including the document type) if container queries
  * not supported in the current browser.
  *
@@ -33,23 +34,23 @@ export const TitleContainer = styled(Stack)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
+        font-size: ${vars.font.heading.scale[4].fontSize};
+        line-height: ${vars.font.heading.scale[4].lineHeight};
         overflow-wrap: break-word;
         text-wrap: pretty;
       }
 
       @container (max-width: 560px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
+          font-size: ${vars.font.heading.scale[3].fontSize};
+          line-height: ${vars.font.heading.scale[3].lineHeight};
         }
       }
 
       @container (max-width: 420px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
+          font-size: ${vars.font.heading.scale[2].fontSize};
+          line-height: ${vars.font.heading.scale[2].lineHeight};
         }
       }
     `
@@ -70,9 +71,9 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
     return null
   }
   return (
-    <TitleContainer marginBottom={6} space={4}>
+    <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
-        <Inline space={1}>
+        <Inline gap={1}>
           <Text muted size={1}>
             {schemaType.title ?? schemaType.name}
           </Text>

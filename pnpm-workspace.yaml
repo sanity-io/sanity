@@ -15,7 +15,7 @@ catalog:
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/eslint-config-studio': ^5.0.2
   '@sanity/pkg-utils': ^8.1.13
-  '@sanity/ui': ^3.1.5
+  '@sanity/ui': 4.0.0-static.29
   '@sanity/ui-workshop': ^3.1.2
   '@types/node': ^24.3.0
   '@types/react': ^19.1.9
@@ -37,3 +37,5 @@ catalogs:
   react18:
     react: ^18.3.1
     react-dom: ^18.3.1
+  ui-v3:
+    '@sanity/ui-v3': npm:@sanity/ui@^3.1.4

@@ -10,7 +10,7 @@ import {
   TrashIcon,
   UnpublishIcon,
 } from '@sanity/icons'
-import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {type AvatarColor} from '@sanity/ui/theme'
 
 import {type StudioLocaleResourceKeys} from '../../../i18n/bundles/studio'
 import {type DocumentVersionEventType} from '../../../store/events/types'
@@ -30,20 +30,19 @@ export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComp
   unscheduleDocumentVersion: CircleIcon,
 }
 
-export const TIMELINE_ITEM_EVENT_TONE: Record<DocumentVersionEventType, ThemeColorAvatarColorKey> =
-  {
-    historyCleared: 'orange',
-    createDocumentVersion: 'green',
-    createLiveDocument: 'blue',
-    updateLiveDocument: 'green',
-    editDocumentVersion: 'yellow',
-    unpublishDocument: 'orange',
-    deleteDocumentVersion: 'orange',
-    deleteDocumentGroup: 'orange',
-    scheduleDocumentVersion: 'cyan',
-    unscheduleDocumentVersion: 'cyan',
-    publishDocumentVersion: 'green',
-  }
+export const TIMELINE_ITEM_EVENT_TONE: Record<DocumentVersionEventType, AvatarColor> = {
+  historyCleared: 'orange',
+  createDocumentVersion: 'green',
+  createLiveDocument: 'blue',
+  updateLiveDocument: 'green',
+  editDocumentVersion: 'yellow',
+  unpublishDocument: 'orange',
+  deleteDocumentVersion: 'orange',
+  deleteDocumentGroup: 'orange',
+  scheduleDocumentVersion: 'cyan',
+  unscheduleDocumentVersion: 'cyan',
+  publishDocumentVersion: 'green',
+}
 
 /**
  * @internal

@@ -1,7 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
@@ -16,12 +15,10 @@ interface TasksActiveTabNavigationProps {
 }
 
 const Divider = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return `
     height: 25px;
     width: 1px;
-    background-color: ${theme.color.input.default.enabled.border};
+    background-color: ${vars.color.tinted.default.border[1]};
   `
 })
 

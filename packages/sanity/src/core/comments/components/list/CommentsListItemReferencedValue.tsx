@@ -1,14 +1,13 @@
 import {toPlainText} from '@portabletext/react'
-import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useCard} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentDocument} from '../../types'
 
@@ -19,7 +18,6 @@ function truncate(str: string, length = 250) {
 
 interface BlockQuoteStackProps {
   $hasReferencedValue: boolean
-  theme: Theme
 }
 
 const InlineBox = styled(Box).attrs({marginLeft: 1, marginRight: 2})`
@@ -28,14 +26,10 @@ const InlineBox = styled(Box).attrs({marginLeft: 1, marginRight: 2})`
   }
 `
 
-const BlockQuoteStack = styled(Stack)<BlockQuoteStackProps>(({theme, $hasReferencedValue}) => {
-  const isDark = theme.sanity.v2?.color._dark
-
-  const hue = $hasReferencedValue ? COMMENTS_HIGHLIGHT_HUE_KEY : 'gray'
-  const borderColor = isDark ? hues[hue][700].hex : hues[hue][300].hex
-
+const BlockQuoteStack = styled(Stack)<BlockQuoteStackProps>(({$hasReferencedValue}) => {
   return css`
-    border-left: 2px solid ${borderColor};
+    border-left: 2px solid
+      ${vars.color.tinted[$hasReferencedValue ? 'caution' : 'neutral'].border[3]};
     word-break: break-word;
   `
 })
@@ -47,6 +41,7 @@ interface CommentsListItemReferencedValueProps {
 
 export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) {
   const {hasReferencedValue, value} = props
+  const card = useCard()
 
   const {t} = useTranslation(commentsLocaleNamespace)
   const tooltipText = t('list-item.missing-referenced-value-tooltip-content')
@@ -67,6 +62,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
   return (
     <BlockQuoteStack
       $hasReferencedValue={Boolean(hasReferencedValue)}
+      $isDark={card.scheme === 'dark'}
       data-testid="comments-list-item-referenced-value"
       flex={1}
       forwardedAs="blockquote"

@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
-import {useId, useMemo, useState} from 'react'
+import {type ChangeEvent, type KeyboardEvent, useId, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
@@ -143,7 +143,7 @@ export function RequestPermissionDialog({
         onClickOutside={onClose}
       >
         <DialogBody>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text>{t('request-permission-dialog.description.text')}</Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
@@ -157,16 +157,16 @@ export function RequestPermissionDialog({
                 </Text>
               </Card>
             ) : (
-              <Stack space={3} paddingBottom={0}>
+              <Stack gap={3} paddingBottom={0}>
                 <TextInput
                   placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                   disabled={isSubmitting}
-                  onKeyDown={(e) => {
+                  onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === 'Enter') onSubmit()
                   }}
                   maxLength={MAX_NOTE_LENGTH}
                   value={note}
-                  onChange={(e) => {
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setNote(e.currentTarget.value)
                   }}
                 />

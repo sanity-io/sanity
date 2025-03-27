@@ -21,7 +21,9 @@ const STATUS_ICONS = {
   info: <InfoOutlineIcon />,
 }
 
-export function AlertStrip(props: AlertProps & Omit<HTMLProps<HTMLDivElement>, 'ref'>) {
+export function AlertStrip(
+  props: AlertProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'width'>,
+) {
   const {children, status = 'warning', title, ...rest} = props
 
   return (

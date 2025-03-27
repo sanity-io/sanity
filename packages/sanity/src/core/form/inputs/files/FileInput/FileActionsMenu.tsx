@@ -105,7 +105,7 @@ export function FileActionsMenu(props: Props) {
               <BinaryDocumentIcon />
             </Text>
           </Card>
-          <Stack flex={1} space={2} marginLeft={3}>
+          <Stack flex={1} gap={2} marginLeft={3}>
             <Text
               size={1}
               textOverflow="ellipsis"

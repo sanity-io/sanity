@@ -89,7 +89,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
   const {t} = useTranslation()
   return (
     <TooltipDelayGroupProvider>
-      <MenuActionsWrapper data-buttons space={1} padding={2}>
+      <MenuActionsWrapper data-buttons gap={1} padding={2}>
         {showEdit && (
           <Button
             aria-label={t('inputs.image.actions-menu.edit-details.aria-label')}

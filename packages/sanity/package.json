@@ -184,6 +184,7 @@
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
+    "@sanity/ui-v3": "catalog:ui-v3",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "@sentry/react": "^8.55.0",
@@ -334,8 +335,8 @@
     "vitest-package-exports": "^0.1.1"
   },
   "peerDependencies": {
-    "react": "^18 || ^19",
-    "react-dom": "^18 || ^19",
+    "react": "^19",
+    "react-dom": "^19",
     "styled-components": "^6.1.15"
   },
   "engines": {

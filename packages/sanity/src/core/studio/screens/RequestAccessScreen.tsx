@@ -3,7 +3,7 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks, isAfter, isBefore} from 'date-fns'
-import {useCallback, useEffect, useState} from 'react'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useEffect, useState} from 'react'
 import {finalize} from 'rxjs'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -177,7 +177,7 @@ export function RequestAccessScreen() {
     <Card height="fill">
       <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
         <Box>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text>
               You are not authorized to access this studio (currently signed in as{' '}
               <strong>
@@ -188,7 +188,7 @@ export function RequestAccessScreen() {
             </Text>
             {hasTooManyRequests || hasPendingRequest || hasBeenDenied ? (
               <Card
-                tone={hasPendingRequest ? 'transparent' : 'caution'}
+                tone={hasPendingRequest ? 'neutral' : 'caution'}
                 padding={3}
                 radius={2}
                 shadow={1}
@@ -225,14 +225,14 @@ export function RequestAccessScreen() {
                     </>
                   )}
                 </Text>
-                <Stack space={3} paddingBottom={0}>
+                <Stack gap={3} paddingBottom={0}>
                   <TextInput
                     maxLength={MAX_NOTE_LENGTH}
                     disabled={isSubmitting}
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') handleSubmitRequest()
                     }}
-                    onChange={(e) => {
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setNote(e.currentTarget.value)
                       setNoteLength(e.currentTarget.value.length)
                     }}

@@ -119,7 +119,7 @@ export function FieldChange(
     () =>
       hidden ? null : (
         <>
-          <Stack space={1} as={FieldChangeContainer} {...restProps}>
+          <Stack gap={1} as={FieldChangeContainer} {...restProps}>
             {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
             <ParentWrapper
               path={fieldPath}
