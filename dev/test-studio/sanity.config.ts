@@ -78,6 +78,11 @@ const sharedSettings = definePlugin({
       enabled: true,
     },
   },
+
+  mediaLibrary: {
+    enabled: true,
+  },
+
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {

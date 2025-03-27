@@ -135,6 +135,11 @@ export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string | File
   assetDocumentProps?: ImageAsset
+  mediaLibraryProps?: {
+    mediaLibraryId: string
+    assetId: string
+    assetInstanceId: string
+  }
 }
 
 /** @public */
