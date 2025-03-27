@@ -17,7 +17,13 @@ import {
  * field (e.g. onBlur) and the input value at this time is different from the given `value` prop
  */
 export const LazyTextInput = forwardRef(function LazyTextInput(
-  {onChange, onBlur, onKeyPress, value, ...rest}: TextInputProps & HTMLProps<HTMLInputElement>,
+  {
+    onChange,
+    onBlur,
+    onKeyPress,
+    value,
+    ...rest
+  }: TextInputProps & Omit<HTMLProps<HTMLInputElement>, 'as'>,
   forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
   const [inputValue, setInputValue] = useState<string>()

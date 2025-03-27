@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {Box, Flex, type FlexProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -163,7 +163,7 @@ export function BlockObject(props: BlockObjectProps) {
     [editor],
   )
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: FlexProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }

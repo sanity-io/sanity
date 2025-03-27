@@ -65,8 +65,8 @@
     "example:movies-studio": "cd examples/blog-studio && pnpm start",
     "prepublishOnly": "pnpm build",
     "preinstall": "npx only-allow pnpm",
-    "install:deps": "pnpm install",
     "postinstall": "husky",
+    "install:deps": "pnpm install",
     "lint": "pnpm check:lint",
     "lint:fix": "run-s chore:lint:fix",
     "list:deps-updates": "npm-check-updates --workspaces --root -m",
@@ -190,7 +190,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/ui@2": "$@sanity/ui",
+      "@sanity/ui": "file:registry/sanity-ui-3.0.0-alpha.0.tgz",
       "@types/node": "$@types/node",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",

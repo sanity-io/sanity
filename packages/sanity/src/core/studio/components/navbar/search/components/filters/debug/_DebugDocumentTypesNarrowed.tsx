@@ -13,7 +13,7 @@ export function DebugDocumentTypesNarrowed() {
         <Code size={1} weight="medium">
           Document types (narrowed)
         </Code>
-        <Code muted size={1} style={{whiteSpace: 'normal'}}>
+        <Code size={1} style={{whiteSpace: 'normal'}}>
           {documentTypesNarrowed.length > 0 ? documentTypesNarrowed.join(', ') : '(All)'}
         </Code>
       </Stack>

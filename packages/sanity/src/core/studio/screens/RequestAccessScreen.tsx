@@ -3,7 +3,7 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks, isAfter, isBefore} from 'date-fns'
-import {useCallback, useEffect, useState} from 'react'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useEffect, useState} from 'react'
 import {finalize} from 'rxjs'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -229,10 +229,10 @@ export function RequestAccessScreen() {
                   <TextInput
                     maxLength={MAX_NOTE_LENGTH}
                     disabled={isSubmitting}
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') handleSubmitRequest()
                     }}
-                    onChange={(e) => {
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setNote(e.currentTarget.value)
                       setNoteLength(e.currentTarget.value.length)
                     }}

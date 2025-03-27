@@ -9,6 +9,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {
+  type ElementType,
   forwardRef,
   type HTMLProps,
   isValidElement,
@@ -38,8 +39,9 @@ const SubtitleText = styled(Text)`
 /** @internal */
 export type MenuItemProps = Pick<
   UIMenuItemProps,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+  'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
+  as?: ElementType
   badgeText?: string
   /**
    * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.

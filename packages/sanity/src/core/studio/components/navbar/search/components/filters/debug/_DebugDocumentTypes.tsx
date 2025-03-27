@@ -22,7 +22,7 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
         <Code size={0} weight="medium">
           Document types
         </Code>
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           {fieldDefinition?.documentTypes && fieldDefinition.documentTypes.length > 0
             ? fieldDefinition.documentTypes?.join(', ')
             : '(all)'}

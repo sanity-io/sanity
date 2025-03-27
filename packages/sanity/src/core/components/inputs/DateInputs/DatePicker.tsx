@@ -1,3 +1,4 @@
+import {type Space} from '@sanity/ui/theme'
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
 import {Calendar, type CalendarProps} from './calendar/Calendar'
@@ -11,7 +12,7 @@ export const DatePicker = forwardRef(function DatePicker(
     timeStep?: number
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
-    padding?: number
+    padding?: Space
     showTimezone?: boolean
     isPastDisabled?: boolean
   },

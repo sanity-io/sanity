@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box, type BoxProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
@@ -7,7 +7,7 @@ import {usePane} from './usePane'
 
 interface PaneFooterProps {
   children?: ReactNode
-  padding?: number | number[]
+  padding?: BoxProps['padding']
 }
 
 /**

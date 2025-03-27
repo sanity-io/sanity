@@ -61,6 +61,7 @@ export function useInsertMenuPopover(props: {
   )
   const popover = useMemo(
     () => (
+      // @ts-expect-error TODO: fix this
       <Popover
         ref={popoverRef}
         open={state.open}

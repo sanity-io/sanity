@@ -1,4 +1,6 @@
 import {type InsertMenuOptions} from '@sanity/insert-menu'
+import {type ResponsiveProp} from '@sanity/ui/css'
+import {type ContainerWidth} from '@sanity/ui/theme'
 
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
@@ -58,7 +60,10 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSche
   /** @deprecated This option does not have any effect anymore */
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
-  modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  modal?: {
+    type?: 'dialog' | 'popover'
+    width?: ResponsiveProp<ContainerWidth>
+  }
   /** @alpha This API may change */
   insertMenu?: InsertMenuOptions
   /**

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import {SearchIcon} from '@sanity/icons'
 import {Flex, KBD, TextInput} from '@sanity/ui'
-import {forwardRef, type KeyboardEvent as ReactKeyboardEvent, type Ref, useCallback} from 'react'
+import {type ChangeEvent, forwardRef, type KeyboardEvent, type Ref, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../i18n'
@@ -40,7 +40,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
   const {t} = useTranslation()
 
   const handleChange = useCallback(
-    (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       dispatch({type: 'TERMS_QUERY_SET', query: event.currentTarget.value})
       onOpen()
     },
@@ -48,7 +48,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
   )
 
   const handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         onOpen()
       }

@@ -1,4 +1,5 @@
 import {Box, type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {type Space} from '@sanity/ui/theme'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -16,7 +17,7 @@ interface BannerProps {
   content: ReactNode
   icon?: ComponentType
   tone?: CardTone
-  paddingY?: number
+  paddingY?: Space
 }
 
 export function Banner(props: BannerProps) {
