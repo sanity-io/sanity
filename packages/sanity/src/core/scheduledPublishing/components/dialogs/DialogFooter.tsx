@@ -15,7 +15,7 @@ interface Props {
 const DialogFooter = (props: Props) => {
   const {buttonText = 'Action', disabled, icon, onAction, onComplete, tone = 'positive'} = props
   return (
-    <Flex width="full" gap={3} justify="flex-end">
+    <Flex width="fill" gap={3} justify="flex-end">
       <Button mode="bleed" onClick={onComplete} text="Cancel" />
       {onAction && (
         <Button disabled={disabled} icon={icon} onClick={onAction} text={buttonText} tone={tone} />

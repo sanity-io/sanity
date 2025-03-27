@@ -67,7 +67,7 @@ export const Dialog = forwardRef(function Dialog(
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex width="full" gap={3} justify="flex-end" padding={3}>
+          <Flex width="fill" gap={3} justify="flex-end" padding={3}>
             {props.onClose && (
               <UIButton
                 mode="bleed"

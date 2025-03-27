@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
 
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
+import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
@@ -12,7 +12,6 @@ import {
 
 type BaseButtonProps = Pick<
   UIButtonProps,
-  | 'as'
   | 'icon'
   | 'iconRight'
   | 'justify'
@@ -24,6 +23,7 @@ type BaseButtonProps = Pick<
   | 'type'
   | 'width'
 > & {
+  as?: ElementType
   size?: 'default' | 'large'
   radius?: 'full'
 }
@@ -46,11 +46,11 @@ type IconButton = {
 /** @internal */
 export type ButtonProps = BaseButtonProps & (ButtonWithText | IconButton)
 
-const LARGE_BUTTON_PROPS = {
+const LARGE_BUTTON_PROPS: UIButtonProps = {
   space: 3,
   padding: 3,
 }
-const DEFAULT_BUTTON_PROPS = {
+const DEFAULT_BUTTON_PROPS: UIButtonProps = {
   space: 2,
   padding: 2,
 }
@@ -71,7 +71,7 @@ export const Button = forwardRef(function Button(
     tone = 'default',
     tooltipProps,
     ...rest
-  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
+  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title' | 'width' | 'wrap'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(

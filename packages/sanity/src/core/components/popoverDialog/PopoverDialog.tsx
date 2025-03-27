@@ -1,11 +1,13 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Layer, Stack, Text, type Theme} from '@sanity/ui'
+import {type ContainerWidth} from '@sanity/ui/theme'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
 import {PopoverContainer} from './PopoverContainer'
+import {ResponsiveProp} from '@sanity/ui/css'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
@@ -36,7 +38,7 @@ interface PopoverDialogProps {
   header?: ReactNode
   onClose: () => void
   referenceElement: PopoverProps['referenceElement']
-  width: ResponsiveWidthProps['width']
+  width: PopoverProps['width']
   containerRef?: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 

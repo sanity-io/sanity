@@ -1,5 +1,6 @@
 import {ResetIcon} from '@sanity/icons'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
+import {type FontTextSize, type Space} from '@sanity/ui/theme'
 import {
   type ChangeEvent,
   type FunctionComponent,
@@ -16,10 +17,10 @@ import {useActiveWorkspace, useTranslation} from 'sanity'
 import {presentationLocaleNamespace} from '../i18n'
 
 export const PreviewLocationInput: FunctionComponent<{
-  fontSize?: number
+  fontSize?: FontTextSize
   onChange: (value: string) => void
   origin: string
-  padding?: number
+  padding?: Space
   prefix?: ReactNode
   suffix?: ReactNode
   value: string

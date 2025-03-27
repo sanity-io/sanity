@@ -1,7 +1,8 @@
 import {LaunchIcon} from '@sanity/icons'
 import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/ui'
+import {type ResponsiveProp} from '@sanity/ui/css'
 // eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {getTheme_v2, type Space} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
@@ -39,7 +40,7 @@ interface CommentsUpsellPanelProps {
 /**
  * First 2 viewport sizes are always vertical, 3rd is horizontal
  */
-const HORIZONTAL_PADDING_Y = [3, 3, 5]
+const HORIZONTAL_PADDING_Y: ResponsiveProp<Space> = [3, 3, 5]
 
 export function UpsellPanel(props: CommentsUpsellPanelProps) {
   const {data, onPrimaryClick, onSecondaryClick, layout = 'vertical'} = props

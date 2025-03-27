@@ -12,6 +12,7 @@ import {isValid} from 'date-fns'
 import {get} from 'lodash'
 import {
   type CSSProperties,
+  type ElementType,
   Fragment,
   type HTMLProps,
   type MutableRefObject,
@@ -31,10 +32,12 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
 export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
+  CardProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
   'ref'
 > &
-  RefAttributes<HTMLDivElement>
+  RefAttributes<HTMLDivElement> & {
+    as?: ElementType
+  }
 
 type VirtualDatum = {
   virtualRow: VirtualItem

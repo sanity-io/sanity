@@ -1,5 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {type Space} from '@sanity/ui/theme'
 import {
   addDays,
   addMonths,
@@ -50,7 +51,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
-  padding?: number
+  padding?: Space
   showTimezone?: boolean
   isPastDisabled?: boolean
 }
