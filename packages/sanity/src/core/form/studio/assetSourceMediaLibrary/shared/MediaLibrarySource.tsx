@@ -11,14 +11,13 @@ import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 
+// Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
+const fetchedLibraryIdCache: Map<string, string> = new Map()
+
 const MediaLibraryAssetSource = function MediaLibraryAssetSource(
   props: AssetSourceComponentProps & {libraryId: string | null},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {t} = useTranslation()
-  const client = useClient({apiVersion: DEFAULT_API_VERSION})
-  const toast = useToast()
-
   const {
     accept,
     assetType = 'image',
@@ -28,13 +27,23 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
     onSelect,
     selectedAssets,
   } = props
-  const [fetchedLibraryId, setFetchedLibraryId] = useState<string | null>(null)
+
+  const {t} = useTranslation()
+  const toast = useToast()
+  const client = useClient({apiVersion: DEFAULT_API_VERSION})
+
+  const projectId = client.config().projectId
+
+  const cachedFetchedLibraryId = (projectId && fetchedLibraryIdCache.get(projectId)) || undefined
+  const [fetchedLibraryId, setFetchedLibraryId] = useState<string | null>(
+    cachedFetchedLibraryId || null,
+  )
 
   useEffect(() => {
-    if (libraryIdProp) {
+    if (libraryIdProp || fetchedLibraryId) {
       return
     }
-    client.request({uri: `/projects/${client.config().projectId}`}).then((project) => {
+    client.request({uri: `/projects/${projectId}`}).then((project) => {
       const {organizationId} = project
       client
         .withConfig({
@@ -44,11 +53,15 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
         .then((result) => {
           const libraryIdFromResult = result.data[0]?.id
           if (libraryIdFromResult) {
+            // Add to cache for this project (organization)
+            if (projectId) {
+              fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
+            }
             setFetchedLibraryId(libraryIdFromResult)
           }
         })
     })
-  }, [client, libraryIdProp])
+  }, [client, fetchedLibraryId, libraryIdProp, projectId])
 
   const resolvedLibraryId = libraryIdProp || fetchedLibraryId
 
