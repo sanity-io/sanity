@@ -42,12 +42,6 @@ const StyledMenuItem = styled(MenuItem)`
   }
 `
 
-const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
-  constrainSize: true,
-  placement: 'bottom-start',
-  portal: 'default',
-}
-
 const TEXT_STYLE_OPTIONS: Record<string, (title: ReactNode) => ReactNode> = {
   h1: (title) => <Heading1>{title}</Heading1>,
   h2: (title) => <Heading2>{title}</Heading2>,
@@ -165,7 +159,9 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const menu = useMemo(
     () => (
-      <Menu disabled={_disabled}>
+      <Menu
+      // disabled={_disabled}
+      >
         {items.map((item) => {
           return (
             <StyledMenuItem

@@ -24,7 +24,8 @@ const StyledPopover = styled(Popover)`
   animation: ${fadeInKeyFrame} 200ms 500ms forwards;
 `
 
-interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
+interface CommentsOnboardingPopoverProps
+  extends Omit<PopoverProps, 'content' | 'height' | 'rows' | 'wrap'> {
   //   ...
   onDismiss: () => void
 }

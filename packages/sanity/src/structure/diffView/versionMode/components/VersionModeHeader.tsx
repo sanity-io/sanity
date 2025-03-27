@@ -338,6 +338,7 @@ function getMenuButtonProps({
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
+      disabled: false,
       text: selected?.metadata.title || tCore('release.placeholder-untitled-release'),
       icon: <ReleaseAvatar padding={1} tone={tone} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
@@ -348,6 +349,7 @@ function getMenuButtonProps({
   const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
 
   return {
+    disabled: false,
     text: tStructure(['compare-versions.status', selected].join('.')),
     icon: <ReleaseAvatar padding={1} tone={tone} />,
     tone,

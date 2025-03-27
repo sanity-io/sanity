@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {type BoxProps, Flex} from '@sanity/ui'
 import {difference} from 'lodash'
 import {
   Children,
@@ -26,7 +26,7 @@ export interface CollapseMenuProps {
   collapsed?: boolean
   collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -335,7 +335,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
 
 const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   intersectionOptions: IntersectionObserverInit
   onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
 }) {

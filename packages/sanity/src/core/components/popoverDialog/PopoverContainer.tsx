@@ -35,5 +35,13 @@ export const PopoverContainer = forwardRef(function PopoverContainer(
   const {width, ...restProps} = props
   const widthArr = useArrayProp(width)
 
-  return <StyledContainer {...restProps} data-ui="PopoverContainer" $width={widthArr} ref={ref} />
+  return (
+    <StyledContainer
+      {...restProps}
+      data-ui="PopoverContainer"
+      // @ts-expect-error TODO: fix this
+      $width={widthArr}
+      ref={ref}
+    />
+  )
 })

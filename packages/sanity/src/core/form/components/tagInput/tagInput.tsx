@@ -1,5 +1,9 @@
+/* eslint-disable camelcase */
+
 import {CloseIcon} from '@sanity/icons'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {_input, _inputPresentation} from '@sanity/ui/css'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -21,19 +25,19 @@ import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const {focusRing, input, radius} = theme.sanity
-  const color = theme.sanity.color.input
-  const space = rem(theme.sanity.space[1])
+  const theme = getTheme_v2(props.theme)
+  const {input, radius} = theme
+  const color = theme.color.input
+  const space = rem(theme.space[1])
 
   return {
-    'position': 'relative',
-    'borderRadius': `${radius[1]}px`,
-    'color': color.default.enabled.fg,
-    'boxShadow': focusRingBorderStyle({
-      color: color.default.enabled.border,
-      width: input.border.width,
-    }),
+    // 'position': 'relative',
+    // 'borderRadius': `${radius[1]}px`,
+    // 'color': color.default.enabled.fg,
+    // 'boxShadow': focusRingBorderStyle({
+    //   color: color.default.enabled.border,
+    //   width: input.border.width,
+    // }),
 
     '& > .content': {
       position: 'relative',
@@ -64,7 +68,7 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
           color: color.default.enabled.border,
           width: input.border.width,
         },
-        focusRing,
+        focusRing: input.text.focusRing,
       }),
     },
 
@@ -241,6 +245,7 @@ export const TagInput = forwardRef(
 
     return (
       <Root
+        className={_input({border: true})}
         data-disabled={disabled ? '' : undefined}
         data-focused={focused ? '' : undefined}
         data-read-only={readOnly ? '' : undefined}
@@ -291,6 +296,7 @@ export const TagInput = forwardRef(
               type="text"
               value={inputValue}
             />
+            <span className={_inputPresentation()} />
           </div>
         </div>
       </Root>
@@ -314,15 +320,16 @@ function Tag(props: {
   }, [index, onRemove])
 
   return (
-    <Card data-ui="Tag" radius={2} tone="transparent">
+    <Card data-ui="Tag" radius={2} tone="neutral">
       <Flex align="center" gap={1}>
         <Box flex={1} paddingY={2} paddingLeft={2}>
-          <Text muted={muted} textOverflow="ellipsis">
+          <Text muted={muted} size={2} textOverflow="ellipsis">
             {tag.value}
           </Text>
         </Box>
         {enabled && (
           <Button
+            fontSize={2}
             icon={CloseIcon}
             mode="bleed"
             onClick={handleRemoveClick}

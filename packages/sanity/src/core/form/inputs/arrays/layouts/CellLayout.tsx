@@ -12,6 +12,7 @@ interface RowLayoutProps {
   validation?: ReactNode
   menu?: ReactNode
   footer?: ReactNode
+  readOnly?: boolean
   selected?: boolean
   children?: ReactNode
 }

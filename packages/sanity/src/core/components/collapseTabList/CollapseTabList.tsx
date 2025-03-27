@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {type BoxProps, Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
@@ -36,7 +36,7 @@ const HiddenRow = styled(Flex)`
 
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element

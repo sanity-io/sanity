@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
-import {Card, Flex} from '@sanity/ui'
+import {_raf2, Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
@@ -8,6 +8,7 @@ import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
+import {useColorSchemeValue} from './colorScheme'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
@@ -81,6 +82,7 @@ export function StudioLayout() {
  * The default Studio Layout component
  * */
 export function StudioLayoutComponent() {
+  const scheme = useColorSchemeValue()
   const {name, title, tools} = useWorkspace()
 
   // In the background, check if the network protocol used to communicate with the
@@ -121,6 +123,33 @@ export function StudioLayoutComponent() {
     }
     document.title = documentTitle
   }, [documentTitle, toolControlsDocumentTitle])
+
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll('.button, .card, .font'))
+
+    // temporarily disable all transitions when the theme changes
+    for (const el of els) {
+      if (el instanceof HTMLElement) {
+        el.style.transition = 'none'
+      }
+    }
+
+    _raf2(() => {
+      document.documentElement.classList.add('card', scheme, 'surface')
+
+      _raf2(() => {
+        for (const el of els) {
+          if (el instanceof HTMLElement) {
+            el.style.transition = ''
+          }
+        }
+      })
+    })
+
+    return () => {
+      document.documentElement.classList.remove('card', scheme, 'surface')
+    }
+  }, [scheme])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)

@@ -24,7 +24,7 @@ export interface PaneLayoutProps {
  */
 export function PaneLayout(
   props: PaneLayoutProps &
-    CardProps &
+    Omit<CardProps, 'minWidth'> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
 ) {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
