@@ -213,6 +213,10 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /**
+   * The name of the workspace.
+   */
+  workspaceName: string
 }
 
 /** @public */
@@ -226,10 +230,7 @@ export interface SchemaPluginOptions {
   name?: string
   types?:
     | SchemaTypeDefinition[]
-    | ComposableOption<
-        SchemaTypeDefinition[],
-        Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient' | 'client' | 'i18n'>
-      >
+    | ComposableOption<SchemaTypeDefinition[], {projectId: string; dataset: string}>
   templates?: Template[] | TemplateResolver
 }
 
@@ -552,10 +553,6 @@ export interface ResolveProductionUrlContext extends ConfigContext {
 
 export type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version'
 
-/**
- * @hidden
- * @beta
- */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
