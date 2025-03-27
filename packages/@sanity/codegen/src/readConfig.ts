@@ -8,7 +8,7 @@ export const configDefintion = z.object({
     .string()
     .or(z.array(z.string()))
     .default([
-      './src/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro}',
       './app/**/*.{ts,tsx,js,jsx,mjs,cjs}',
       './sanity/**/*.{ts,tsx,js,jsx,mjs,cjs}',
     ]),
