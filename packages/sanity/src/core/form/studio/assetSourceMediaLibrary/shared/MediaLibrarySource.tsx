@@ -65,11 +65,6 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
 
   const resolvedLibraryId = libraryIdProp || fetchedLibraryId
 
-  const handleClose = useCallback(() => {
-    if (onClose) {
-      onClose()
-    }
-  }, [onClose])
   const handleSelect: SelectAssetsDialogProps['onSelect'] = useCallback(
     async (selection) => {
       if (!resolvedLibraryId) {
@@ -101,7 +96,7 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
           },
         ]
         onSelect(assetsFromSource)
-        handleClose()
+        onClose()
       } catch (error) {
         toast.push({
           closable: true,
@@ -112,7 +107,7 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
         throw error
       }
     },
-    [client, handleClose, onSelect, resolvedLibraryId, t, toast],
+    [client, onClose, onSelect, resolvedLibraryId, t, toast],
   )
 
   if (!resolvedLibraryId) {
@@ -128,7 +123,7 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
         })
       }
       ref={ref}
-      onClose={handleClose}
+      onClose={onClose}
       onSelect={handleSelect}
       selection={[]}
       libraryId={resolvedLibraryId}
