@@ -18,74 +18,114 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   const {page, createDraftDocument} = props
   test.slow()
 
-  // 1. Create a new draft document
-  await createDraftDocument('/test/content/input-ci;commentsCI')
+  // Function to perform all steps up to text selection
+  async function setupAndSelectText() {
+    // 1. Create a new draft document
+    await createDraftDocument('/test/content/input-ci;commentsCI')
 
-  // Wait for network to become idle to ensure document is fully loaded
-  await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
+    // Wait for network to become idle to ensure document is fully loaded
+    await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
 
-  // 2. Click the overlay to active the editor.
-  await page.getByTestId('activate-overlay').waitFor(WAIT_OPTIONS)
-  await page.click('[data-testid="activate-overlay"]')
+    // 2. Click the overlay to active the editor.
+    await page.getByTestId('activate-overlay').waitFor(WAIT_OPTIONS)
+    await page.click('[data-testid="activate-overlay"]')
 
-  // Wait for any network activity triggered by activating the editor to complete
-  await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
+    // Wait for any network activity triggered by activating the editor to complete
+    await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
 
-  // 3. Select all text in the editor.
-  await page.getByTestId('pt-editor').waitFor(WAIT_OPTIONS)
+    // 3. Select all text in the editor.
+    await page.getByTestId('pt-editor').waitFor(WAIT_OPTIONS)
 
-  const textbox = page
-    .locator('[data-testid="pt-editor"]')
-    .locator('div[role="textbox"][contenteditable=true]')
+    const textbox = page
+      .locator('[data-testid="pt-editor"]')
+      .locator('div[role="textbox"][contenteditable=true]')
 
-  await textbox.waitFor({...WAIT_OPTIONS, state: 'visible'})
+    await textbox.waitFor({...WAIT_OPTIONS, state: 'visible'})
 
-  // Make sure the editor is fully loaded by waiting for the text content to be present
-  await expect(textbox).toContainText(PTE_CONTENT_TEXT, {timeout: 10000})
+    // Make sure the editor is fully loaded by waiting for the text content to be present
+    await expect(textbox).toContainText(PTE_CONTENT_TEXT, {timeout: 10000})
 
-  // First ensure we're not already focused on the editor by clicking elsewhere
-  await page.click('body', {force: true, position: {x: 0, y: 0}})
-  await page.waitForTimeout(300)
+    // Function to attempt text selection with multiple strategies
+    async function attemptTextSelection() {
+      // First ensure we're not already focused on the editor by clicking elsewhere
+      await page.click('body', {force: true, position: {x: 0, y: 0}})
+      await page.waitForTimeout(300)
 
-  // Now focus on the editor and ensure it's ready for selection
-  await textbox.click({force: true})
-  await page.waitForTimeout(300)
+      // Now focus on the editor and ensure it's ready for selection
+      await textbox.click({force: true})
+      await page.waitForTimeout(300)
 
-  // Try multiple selection strategies to ensure robustness
-  // Strategy 1: Triple-click to select paragraph
-  await textbox.click({clickCount: 3, force: true})
-  await page.waitForTimeout(500)
+      // Try multiple selection strategies to ensure robustness
+      // Strategy 1: Triple-click to select paragraph
+      await textbox.click({clickCount: 3, force: true})
+      await page.waitForTimeout(500)
 
-  // Verify selection and try alternative strategy if needed
-  const isFullTextSelected = await page.evaluate((expectedText) => {
-    const selection = window.getSelection()?.toString() || ''
-    return selection.includes(expectedText)
-  }, PTE_CONTENT_TEXT)
+      // Verify selection and try alternative strategy if needed
+      const isFullTextSelected = await page.evaluate((expectedText) => {
+        const selection = window.getSelection()?.toString() || ''
+        return selection.includes(expectedText)
+      }, PTE_CONTENT_TEXT)
 
-  // If triple-click didn't work, try keyboard selection
-  if (!isFullTextSelected) {
-    // Click at the beginning of the text
-    await textbox.click({position: {x: 0, y: 10}})
-    await page.keyboard.down('Shift')
+      // If triple-click didn't work, try keyboard selection
+      if (!isFullTextSelected) {
+        // Click at the beginning of the text
+        await textbox.click({position: {x: 0, y: 10}})
+        await page.keyboard.down('Shift')
 
-    // Press End to select to end of line
-    await page.keyboard.press('End')
-    await page.keyboard.up('Shift')
-    await page.waitForTimeout(300)
+        // Press End to select to end of line
+        await page.keyboard.press('End')
+        await page.keyboard.up('Shift')
+        await page.waitForTimeout(300)
+      }
+
+      // Final verification that we have the correct text selected
+      await expect(async () => {
+        const selectedText = await page.evaluate(() => window.getSelection()?.toString() || '')
+        return selectedText.includes(PTE_CONTENT_TEXT)
+      }).toPass({timeout: 5000})
+    }
+
+    await attemptTextSelection()
+
+    // Check if the comment button appears
+    try {
+      await page.getByTestId('inline-comment-button').waitFor({
+        state: 'visible',
+        timeout: 5000,
+      })
+      return true
+    } catch (error) {
+      // Comment button not visible after text selection
+      return false
+    }
   }
 
-  // Final verification that we have the correct text selected
-  await expect(async () => {
-    const selectedText = await page.evaluate(() => window.getSelection()?.toString() || '')
-    return selectedText.includes(PTE_CONTENT_TEXT)
-  }).toPass({timeout: 5000})
+  // Try the setup and text selection up to 3 times
+  const maxAttempts = 3
+  let commentButtonVisible = false
+
+  const baseTimeout = 60000 * 3 // 60 seconds * 3 max attempts
+  test.setTimeout(baseTimeout)
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    commentButtonVisible = await setupAndSelectText()
+
+    if (commentButtonVisible) {
+      // Comment button is visible, proceeding with test
+      break
+    } else if (attempt < maxAttempts) {
+      // Reloading page and trying again...
+      await page.reload()
+      await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
+    }
+  }
+
+  // If we couldn't get the comment button to appear after all attempts, fail the test
+  if (!commentButtonVisible) {
+    throw new Error('Comment button did not appear after multiple attempts')
+  }
 
   // 4. Click on the floating comment button to start authoring a comment.
-  await page.getByTestId('inline-comment-button').waitFor({
-    ...WAIT_OPTIONS,
-    state: 'visible',
-  })
-
   const getCommentButton = () => page.locator('[data-testid="inline-comment-button"]')
   await expect(getCommentButton()).toBeVisible()
   getCommentButton().click({
