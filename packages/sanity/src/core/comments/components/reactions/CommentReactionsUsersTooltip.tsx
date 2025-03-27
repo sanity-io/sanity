@@ -1,5 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {type ResponsiveProp} from '@sanity/ui/css'
+import {type FontTextSize} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
@@ -12,7 +14,7 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'
 import {EmojiText} from './EmojiText.styled'
 
-const TEXT_SIZE: number | number[] = 1
+const TEXT_SIZE: ResponsiveProp<FontTextSize> = 1
 
 const ContentStack = styled(Stack)`
   max-width: 180px;

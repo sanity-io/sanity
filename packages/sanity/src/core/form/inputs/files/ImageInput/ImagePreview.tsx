@@ -39,7 +39,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
   const showLoading = !isLoaded && !showAccessWarning
 
   return (
-    <RatioBox {...rest} tone="transparent">
+    <RatioBox {...rest} tone="neutral">
       {showAccessWarning && <AccessWarningOverlay />}
       {showLoading && <LoadingOverlay />}
 

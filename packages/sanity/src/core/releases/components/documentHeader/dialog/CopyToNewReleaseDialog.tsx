@@ -132,11 +132,7 @@ export function CopyToNewReleaseDialog(props: {
       padding={false}
       width={1}
     >
-      <Box
-        paddingX={2}
-        marginBottom={2}
-        style={{borderBottom: '1px solid var(--card-border-color)'}}
-      >
+      <Box borderBottom paddingX={2} marginBottom={2}>
         <Flex align="center" padding={4} paddingTop={1} justify="space-between">
           {schemaType ? (
             <Preview value={{_id: documentId}} schemaType={schemaType} />
@@ -146,14 +142,14 @@ export function CopyToNewReleaseDialog(props: {
 
           <Flex
             align="center"
+            border
             gap={2}
             padding={1}
             paddingRight={2}
+            overflow="hidden"
+            radius="full"
             style={{
-              borderRadius: 999,
-              border: '1px solid var(--card-border-color)',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}
           >
@@ -173,7 +169,7 @@ export function CopyToNewReleaseDialog(props: {
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex width="fill" gap={3} justify="flex-end" paddingTop={3} align="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

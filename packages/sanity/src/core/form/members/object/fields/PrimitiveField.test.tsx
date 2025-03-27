@@ -1,5 +1,6 @@
+import {Root} from '@sanity/ui'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -253,15 +254,17 @@ async function setupTest(type: string, value: string | number | boolean | undefi
   const BaseTestWrapper = await createTestProvider()
 
   const TestWrapper: ComponentType<PropsWithChildren> = ({children}) => (
-    <BaseTestWrapper>
-      <FormCallbacksProvider {...formCallbacks}>
-        <DocumentIdProvider id="test">
-          <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
-            {children}
-          </DocumentFieldActionsProvider>
-        </DocumentIdProvider>
-      </FormCallbacksProvider>
-    </BaseTestWrapper>
+    <Root as="div">
+      <BaseTestWrapper>
+        <FormCallbacksProvider {...formCallbacks}>
+          <DocumentIdProvider id="test">
+            <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+              {children}
+            </DocumentFieldActionsProvider>
+          </DocumentIdProvider>
+        </FormCallbacksProvider>
+      </BaseTestWrapper>
+    </Root>
   )
 
   return {member, formCallbacks, TestWrapper}

@@ -81,8 +81,7 @@ export function ColumnsControl({table}: ColumnsControlProps) {
           </Flex>
         </Menu>
       }
-      placement="bottom"
-      popover={{portal: true}}
+      popover={{placement: 'bottom', portal: true}}
     />
   )
 }

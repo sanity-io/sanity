@@ -60,13 +60,13 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
 
   return (
     <Alert status="error" title={<>{t('form.error.unhandled-runtime-error.title')}</>}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text as="p" muted size={1}>
           <>{t('form.error.unhandled-runtime-error.error-message', {message})}</>
         </Text>
         {callStack && (
           <Box key="call-stack">
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text as="p" size={1}>
                 <>{t('form.error.unhandled-runtime-error.call-stack.title')}</>
               </Text>
@@ -82,7 +82,7 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
         )}
         {isDev && componentStack && (
           <Box key="component-stack">
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text as="p" size={1}>
                 <>{t('form.error.unhandled-runtime-error.component-stack.title')}</>
               </Text>

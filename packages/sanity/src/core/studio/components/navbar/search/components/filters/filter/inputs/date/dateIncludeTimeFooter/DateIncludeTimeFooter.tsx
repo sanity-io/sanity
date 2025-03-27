@@ -21,7 +21,7 @@ export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterPr
           {t('calendar.action.include-time-label')}
         </TimeLabelText>
       </Stack>
-      <Switch checked={value} label={t('calendar.action.include-time-label')} onChange={onChange} />
+      <Switch checked={value} onChange={onChange} />
     </Flex>
   )
 }

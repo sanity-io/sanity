@@ -1,4 +1,4 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, type ReactNode, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {Button, type ButtonProps} from '../../ui-components'
@@ -7,19 +7,18 @@ import {type PaneMenuItem} from '../types'
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
 export const IntentButton = forwardRef(function IntentButton(
-  props: {
-    intent: RouterIntent
-  } & ButtonProps &
-    Omit<ComponentProps<typeof Button>, 'as' | 'href' | 'type'>,
+  props: {disabled?: boolean; intent: RouterIntent} & ButtonProps<'a'>,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   const {intent, ...restProps} = props
+
+  // restProps.disabled
 
   const Link = useMemo(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function Link(
-        linkProps: {children: ReactNode},
+        linkProps: React.ComponentProps<'a'>,
         linkRef: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
@@ -38,6 +37,6 @@ export const IntentButton = forwardRef(function IntentButton(
   return props.disabled ? (
     <Button {...restProps} as="a" role="link" aria-disabled="true" />
   ) : (
-    <Button {...restProps} as={Link} data-as="a" ref={ref as ForwardedRef<HTMLButtonElement>} />
+    <Button {...restProps} as={Link} data-as="a" ref={ref} />
   )
 })

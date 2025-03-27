@@ -1,5 +1,6 @@
 import {ResetIcon} from '@sanity/icons'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
+import {type FontTextSize, type Space} from '@sanity/ui/theme'
 import {
   type ChangeEvent,
   type KeyboardEvent,
@@ -18,10 +19,10 @@ import {useAllowPatterns} from '../useAllowPatterns'
 import {useTargetOrigin} from '../useTargetOrigin'
 
 export function PreviewLocationInput(props: {
-  fontSize?: number
+  fontSize?: FontTextSize
   onChange: (value: string) => void
   previewUrlRef: PreviewUrlRef
-  padding?: number
+  padding?: Space
   prefix?: ReactNode
   suffix?: ReactNode
   value: string
@@ -133,7 +134,7 @@ export function PreviewLocationInput(props: {
         style={{zIndex: 1}}
         radius={2}
         ref={inputRef}
-        space={padding}
+        gap={padding}
         suffix={suffix}
         value={sessionValue === undefined ? new URL(value, targetOrigin).toString() : sessionValue}
       />

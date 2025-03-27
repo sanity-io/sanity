@@ -20,6 +20,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
@@ -215,8 +216,8 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  columns={2}
-                  rows={2}
+                  gridTemplateColumns={2}
+                  gridTemplateRows={2}
                   gapX={3}
                   gapY={1}
                   style={{
@@ -264,7 +265,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{
@@ -290,7 +291,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                               title={t('share-preview-menu.qr-code.title', {url: url.toString()})}
                               value={url.toString()}
                               size={QrSize}
-                              color="var(--card-fg-color)"
+                              color={vars.color.fg}
                               logoSize={QrCodeLogoSize + QrCodeLogoPadding}
                             />
                             <MotionMonogram

@@ -66,7 +66,7 @@ const CanvasPopoverContent = ({
             <Text size={1}>{popoverDescription}</Text>
           </Box>
         </Flex>
-        <Flex width="full" gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
+        <Flex width="fill" gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
           <Button
             mode="bleed"
             text={t('canvas.banner.popover-button-text')}

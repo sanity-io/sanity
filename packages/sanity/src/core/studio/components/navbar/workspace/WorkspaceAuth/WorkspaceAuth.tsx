@@ -32,7 +32,7 @@ export function WorkspaceAuth() {
 
   if (LoginComponent && selectedWorkspace) {
     return (
-      <Stack space={2}>
+      <Stack gap={2}>
         {workspaces.length > 1 && (
           <Flex>
             <Button
@@ -91,7 +91,7 @@ export function WorkspaceAuth() {
         </Stack>
       }
     >
-      <Stack space={1} paddingX={1} paddingY={2}>
+      <Stack gap={1} paddingX={1} paddingY={2}>
         {workspaces.map((workspace) => {
           const authState = authStates[workspace.name]
           const state = authState.authenticated

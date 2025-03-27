@@ -1,5 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, Text} from '@sanity/ui'
+import {_input, _inputPresentation, getVarName, vars} from '@sanity/ui/css'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -13,125 +14,98 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, type CSSObject, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {focusRingBorderStyle, focusRingStyle} from './styles'
 
-const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const {focusRing, input, radius} = theme.sanity
-  const color = theme.sanity.color.input
-  const space = rem(theme.sanity.space[1])
+const Root = styled(Card)({
+  '& > .content': {
+    position: 'relative',
+    lineHeight: 0,
+    margin: `calc(0 - ${vars.space[1]}) 0 0 calc(0 - ${vars.space[1]})`,
+  },
 
-  return {
-    'position': 'relative',
-    'borderRadius': `${radius[1]}px`,
-    'color': color.default.enabled.fg,
-    'boxShadow': focusRingBorderStyle({
-      color: color.default.enabled.border,
-      width: input.border.width,
-    }),
+  '& > .content > div': {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    padding: `${vars.space[1]} 0 0 ${vars.space[1]}`,
+  },
 
-    '& > .content': {
-      position: 'relative',
-      lineHeight: '0',
-      margin: `-${space} 0 0 -${space}`,
-    },
+  // enabled
+  '&:not([data-read-only])': {
+    cursor: 'text',
+  },
 
-    '& > .content > div': {
-      display: 'inline-block',
-      verticalAlign: 'top',
-      padding: `${space} 0 0 ${space}`,
-    },
+  // hovered
+  '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
+    borderColor: vars.color.tinted.default.border[3],
+  },
 
-    // enabled
-    '&:not([data-read-only])': {
-      cursor: 'text',
-    },
+  // focused
+  '&:not([data-disabled]):not([data-read-only])[data-focused]': {
+    // TODO
+    // boxShadow: focusRingStyle({
+    //   border: {
+    //     color: vars.color.default.enabled.border,
+    //     width: input.border.width,
+    //   },
+    //   focusRing: input.text.focusRing,
+    // }),
+  },
 
-    // hovered
-    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
-      borderColor: color.default.hovered.border,
-    },
-
-    // focused
-    '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-      boxShadow: focusRingStyle({
-        border: {
-          color: color.default.enabled.border,
-          width: input.border.width,
-        },
-        focusRing,
-      }),
-    },
-
-    // disabled
-    '*:disabled + &': {
-      color: color.default.disabled.fg,
-      backgroundColor: color.default.disabled.bg,
-      boxShadow: focusRingBorderStyle({
-        color: color.default.disabled.border,
-        width: input.border.width,
-      }),
-    },
-  }
+  // disabled
+  '*:disabled + &': {
+    color: vars.color.tinted.default.border[3],
+    backgroundColor: vars.color.tinted.default.bg[1],
+    // TODO
+    // boxShadow: focusRingBorderStyle({
+    //   color: vars.color.default.disabled.border,
+    //   width: vars.input.border.width,
+    // }),
+  },
 })
 
-const Input = styled.input((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const font = theme.sanity.fonts.text
-  const color = theme.sanity.color.input
-  const p = theme.sanity.space[2]
-  const size = theme.sanity.fonts.text.sizes[2]
+const Input = styled.input({
+  'appearance': 'none',
+  'background': 'none',
+  'border': 0,
+  'borderRadius': 0,
+  'outline': 'none',
+  'fontSize': vars.font.text.scale[2].fontSize,
+  'lineHeight': vars.font.text.scale[2].lineHeight,
+  'fontFamily': vars.font.text.family,
+  'fontWeight': vars.font.weight.regular,
+  'margin': 0,
+  'display': 'block',
+  'minWidth': '1px',
+  'maxWidth': '100%',
+  'boxSizing': 'border-box',
+  'paddingTop': `calc(${vars.space[2]} - ${vars.font.text.scale[2].ascenderHeight})`, // rem(p - size.ascenderHeight),
+  'paddingRight': vars.space[2], // rem(p),
+  'paddingBottom': `calc(${vars.space[2]} - ${vars.font.text.scale[2].descenderHeight})`, // rem(p - size.descenderHeight),
+  'paddingLeft': vars.space[2], // rem(p),
 
-  return {
-    'appearance': 'none',
-    'background': 'none',
-    'border': 0,
-    'borderRadius': 0,
-    'outline': 'none',
-    'fontSize': rem(size.fontSize),
-    'lineHeight': `${size.lineHeight / size.fontSize}`,
-    'fontFamily': font.family,
-    'fontWeight': `${font.weights.regular}`,
-    'margin': 0,
-    'display': 'block',
-    'minWidth': '1px',
-    'maxWidth': '100%',
-    'boxSizing': 'border-box',
-    'paddingTop': rem(p - size.ascenderHeight),
-    'paddingRight': rem(p),
-    'paddingBottom': rem(p - size.descenderHeight),
-    'paddingLeft': rem(p),
+  // enabled
+  '&:not(:invalid):not(:disabled)': {
+    color: vars.color.tinted.default.fg[0], // vars.color.default.enabled.fg,
+  },
 
-    // enabled
-    '&:not(:invalid):not(:disabled)': {
-      color: color.default.enabled.fg,
-    },
-
-    // disabled
-    '&:not(:invalid):disabled': {
-      color: color.default.disabled.fg,
-    },
-  }
+  // disabled
+  '&:not(:invalid):disabled': {
+    color: vars.color.tinted.default.border[3],
+  },
 })
 
-const Placeholder = styled(Box)((props: {theme: Theme}) => {
-  const {theme} = props
-  const color = theme.sanity.color.input
-
-  return css`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
-  `
-})
+const Placeholder = styled(Box)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  ${getVarName(vars.color.fg)}: ${vars.color.input.text.placeholder};
+`
 
 const TagBox = styled(Box)`
   // This is needed to make textOverflow="ellipsis" work properly for the Text primitive
@@ -241,6 +215,7 @@ export const TagInput = forwardRef(
 
     return (
       <Root
+        className={_input({border: true})}
         data-disabled={disabled ? '' : undefined}
         data-focused={focused ? '' : undefined}
         data-read-only={readOnly ? '' : undefined}
@@ -290,6 +265,7 @@ export const TagInput = forwardRef(
               type="text"
               value={inputValue}
             />
+            <span className={_inputPresentation()} />
           </div>
         </div>
       </Root>
@@ -313,15 +289,16 @@ function Tag(props: {
   }, [index, onRemove])
 
   return (
-    <Card data-ui="Tag" radius={2} tone="transparent">
+    <Card data-ui="Tag" radius={2} tone="neutral">
       <Flex align="center" gap={1}>
         <Box flex={1} paddingY={2} paddingLeft={2}>
-          <Text muted={muted} textOverflow="ellipsis">
+          <Text muted={muted} size={2} textOverflow="ellipsis">
             {tag.value}
           </Text>
         </Box>
         {enabled && (
           <Button
+            fontSize={2}
             icon={CloseIcon}
             mode="bleed"
             onClick={handleRemoveClick}

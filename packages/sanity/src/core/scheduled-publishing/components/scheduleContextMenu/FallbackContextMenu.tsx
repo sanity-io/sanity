@@ -38,8 +38,7 @@ export const FallbackContextMenu = (props: Props) => {
           />
         </Menu>
       }
-      placement="left"
-      popover={{portal: true, tone: 'default'}}
+      popover={{placement: 'left', portal: true, tone: 'default'}}
     />
   )
 }

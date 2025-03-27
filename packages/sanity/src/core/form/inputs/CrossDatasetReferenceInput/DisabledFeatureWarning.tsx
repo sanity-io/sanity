@@ -47,12 +47,12 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
-            <Stack space={3}>
+            <Stack gap={3}>
               <Text as="p" size={1}>
                 {description}
               </Text>

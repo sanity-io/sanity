@@ -1,4 +1,5 @@
-import {type ButtonTone, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {TextWithTone, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -9,7 +10,7 @@ interface ReviewChangesButtonProps {
   status?: StatusType
 }
 
-const STATUS_DICTIONARY: Record<StatusType, {i18nKey: string; tone: ButtonTone}> = {
+const STATUS_DICTIONARY: Record<StatusType, {i18nKey: string; tone: ElementTone}> = {
   saved: {
     i18nKey: 'status-bar.document-status-pulse.status.saved.text',
     tone: 'positive',

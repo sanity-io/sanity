@@ -12,7 +12,7 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
     <Card border padding={1} radius={2}>
       <Flex gap={3} padding={3}>
         <ReleaseAvatar release={release} padding={0} />
-        <Stack space={2}>
+        <Stack gap={2}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={t('release.placeholder-untitled-release')}

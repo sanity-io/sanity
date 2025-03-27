@@ -98,7 +98,7 @@ export const ReleaseMenu = ({
     createRelease,
   ])
 
-  const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
 

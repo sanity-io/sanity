@@ -1,16 +1,9 @@
-import {
-  type ElementType,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  type ReactNode,
-} from 'react'
+import {type HTMLProps, type ReactNode} from 'react'
 
 import {Button, type ButtonProps, type TooltipProps} from '../../../ui-components'
 
 /** @internal */
-export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
-  as?: ElementType | keyof React.JSX.IntrinsicElements
+export interface CommonProps extends Omit<ButtonProps<'button'>, 'text' | 'iconRight'> {
   dividerBefore?: boolean
   focused?: boolean
   tooltipProps?: TooltipProps
@@ -25,9 +18,8 @@ export interface CollapseMenuButtonProps extends CommonProps {
 }
 
 /** @internal */
-export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
+export function CollapseMenuButton(
   props: CollapseMenuButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
-  ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
     // oxlint-disable-next-line no-unused-vars
@@ -43,5 +35,5 @@ export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
     ...rest
   } = props
 
-  return <Button data-ui="CollapseMenuButton" {...rest} ref={ref} />
-})
+  return <Button data-ui="CollapseMenuButton" {...rest} />
+}

@@ -1,4 +1,5 @@
 import {type Path} from '@sanity/types'
+import {type GridTemplateColumns, type ResponsiveProp} from '@sanity/ui/css'
 
 import {type FieldError} from './memberErrors'
 import {type DecorationMember, type FieldMember} from './members'
@@ -20,6 +21,6 @@ export interface FieldsetState {
   hidden?: boolean
   collapsible?: boolean
   collapsed?: boolean
-  columns?: number | number[]
+  columns?: ResponsiveProp<GridTemplateColumns>
   members: FieldsetMembers[]
 }

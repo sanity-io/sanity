@@ -28,7 +28,7 @@ function popoverReducer(state: PopoverState, event: PopoverEvent): PopoverState 
  */
 export function useInsertMenuPopover(props: {
   insertMenuProps: InsertMenuProps
-  popoverProps: Omit<PopoverProps, 'content' | 'open'>
+  popoverProps: Omit<PopoverProps, 'content' | 'open' | 'height'>
 }) {
   const [state, send] = useReducer(popoverReducer, {open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)

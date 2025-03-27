@@ -28,7 +28,7 @@ export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProp
         <Text size={1} muted style={{textAlign: 'center'}}>
           {t('overview.description')}
         </Text>
-        <Inline space={2}>
+        <Inline gap={2}>
           {createReleaseButton}
           <Button
             as="a"

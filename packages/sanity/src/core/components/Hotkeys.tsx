@@ -13,8 +13,8 @@ export type HotkeysProps = UIHotkeysProps & {
    * @defaultValue true
    */
   makePlatformAware?: boolean
-} & Omit<HTMLProps<HTMLElement>, 'ref' | 'size' | 'as'> &
-  RefAttributes<HTMLElement>
+} & Omit<HTMLProps<HTMLDivElement>, 'ref' | 'size' | 'as'> &
+  RefAttributes<HTMLDivElement>
 
 /**
  * Renders given `keys` as "keycaps" visually.

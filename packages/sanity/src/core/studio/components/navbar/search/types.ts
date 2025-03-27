@@ -1,6 +1,6 @@
 import {type ClientPerspective} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
-import {type ButtonTone, type CardTone} from '@sanity/ui'
+import {type CardTone, type ElementTone} from '@sanity/ui/theme'
 
 import {
   type SearchHit,
@@ -37,7 +37,7 @@ export interface FilterMenuItemFilter {
   filterDefinition: SearchFilterDefinition
   filter: SearchFilter
   group?: string
-  tone?: ButtonTone
+  tone?: ElementTone
   type: 'filter'
 }
 

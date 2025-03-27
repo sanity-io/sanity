@@ -1,6 +1,5 @@
-import {type AvatarSize} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 /**
@@ -8,9 +7,8 @@ import {css, styled} from 'styled-components'
  * components without avatars with components that have avatars.
  */
 export const SpacerAvatar = styled.div<{$size?: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
   const {$size = 1} = props
   return css`
-    min-width: ${theme.avatar.sizes[$size]?.size}px;
+    min-width: ${vars.avatar.scale[$size].size};
   `
 })

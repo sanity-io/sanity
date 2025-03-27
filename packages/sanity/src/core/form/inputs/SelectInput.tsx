@@ -152,7 +152,7 @@ const RadioSelect = forwardRef(function RadioSelect(
   return (
     <Card border paddingY={2} paddingX={3} radius={2}>
       <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
-        <Layout space={3} role="group" paddingY={1}>
+        <Layout gap={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key

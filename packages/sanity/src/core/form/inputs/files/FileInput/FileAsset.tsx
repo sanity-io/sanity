@@ -20,7 +20,6 @@ export function FileAsset(props: FileAssetProps) {
     assetSources,
     changed,
     clearField,
-    menuButtonRef,
     directUploads,
     elementProps,
     isStale,
@@ -95,7 +94,9 @@ export function FileAsset(props: FileAssetProps) {
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
             onOpenSourceForUpload={onOpenSourceForUpload}
-            onSelectFile={({assetSource, file}) => handleSelectFiles(assetSource, [file])}
+            onSelectFile={({assetSource, file}: {assetSource: AssetSource; file: File}) =>
+              handleSelectFiles(assetSource, [file])
+            }
             radius={2}
             sizing="border"
             style={{padding: 1}}

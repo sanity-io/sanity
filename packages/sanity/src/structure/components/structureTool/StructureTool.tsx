@@ -1,4 +1,5 @@
-import {PortalProvider, useTheme, useToast} from '@sanity/ui'
+import {PortalProvider, useToast} from '@sanity/ui'
+import {BREAKPOINTS} from '@sanity/ui/css'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
@@ -42,9 +43,6 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const isResolvingIntent = useRouterState(
     useCallback((state) => typeof state.intent === 'string', []),
   )
-  const {
-    sanity: {media},
-  } = useTheme()
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -212,7 +210,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
         <StyledPaneLayout
           flex={1}
           height={layoutCollapsed ? undefined : 'fill'}
-          minWidth={media[1]}
+          minWidth={BREAKPOINTS[2]}
           onCollapse={handleRootCollapse}
           onExpand={handleRootExpand}
         >

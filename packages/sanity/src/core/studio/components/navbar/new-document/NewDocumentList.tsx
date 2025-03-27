@@ -67,7 +67,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         flex={1}
         height="fill"
         justify="center"
-        padding={4}
+        // padding={4}
         sizing="border"
       >
         <Text align="center" muted size={1}>
@@ -85,7 +85,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         flex={1}
         height="fill"
         justify="center"
-        padding={4}
+        // padding={4}
         sizing="border"
       >
         <Text align="center" muted size={1}>

@@ -77,7 +77,7 @@ export interface CommentsListHandle {
 
 const CommentsListInner = forwardRef(function CommentsListInner(
   props: CommentsListProps,
-  ref: React.Ref<HTMLDivElement>,
+  ref: React.Ref<HTMLUListElement>,
 ) {
   const {
     beforeListNode,
@@ -134,7 +134,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
           paddingTop={1}
           paddingBottom={6}
           sizing="border"
-          space={1}
+          gap={1}
           ref={ref}
         >
           {beforeListNode}

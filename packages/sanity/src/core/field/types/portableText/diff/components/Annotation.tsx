@@ -1,6 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
 import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -38,10 +39,10 @@ const AnnotationWrapper = styled.div`
   border: 0;
   padding: 0;
   border-bottom: 2px dotted currentColor;
-  box-shadow: inset 0 0 0 1px var(--card-border-color);
+  box-shadow: inset 0 0 0 1px ${vars.color.border};
   white-space: nowrap;
   align-items: center;
-  background-color: color(var(--card-fg-color) a(10%));
+  background-color: color-mix(in srgb, transparent, ${vars.color.fg} 10%);
 
   &[data-changed] {
     cursor: pointer;

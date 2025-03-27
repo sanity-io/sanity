@@ -92,7 +92,7 @@ export const InvalidValueInput = forwardRef(
         </Text>
 
         <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
-          <Stack space={3}>
+          <Stack gap={3}>
             {validTypes.length === 1 && (
               <Text as="p" muted size={1}>
                 <Translate
@@ -118,7 +118,7 @@ export const InvalidValueInput = forwardRef(
             )}
 
             {validTypes.length !== 1 && (
-              <Stack as="ul" space={2}>
+              <Stack as="ul" gap={2}>
                 {validTypes.map((validType) => (
                   <Text key={validType} as="li">
                     <code>{validType}</code>
@@ -127,7 +127,7 @@ export const InvalidValueInput = forwardRef(
               </Stack>
             )}
 
-            <Stack marginTop={2} space={2}>
+            <Stack marginTop={2} gap={2}>
               <Text size={1} weight="medium">
                 <Translate
                   t={t}
@@ -146,7 +146,7 @@ export const InvalidValueInput = forwardRef(
             </Stack>
 
             {converters.length > 0 && (
-              <Stack space={1}>
+              <Stack gap={1}>
                 {converters.map((converter) => (
                   <ConvertButton
                     key={`${converter.from}-${converter.to}`}

@@ -5,7 +5,7 @@ import {type HTMLProps} from 'react'
 export type BetaBadgeProps = Omit<BadgeProps, 'mode' | 'tone'>
 
 /** @internal */
-export function BetaBadge(props: BetaBadgeProps & Omit<HTMLProps<HTMLDivElement>, 'ref'>) {
+export function BetaBadge(props: BetaBadgeProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>) {
   const {fontSize = 1, children = 'Beta', ...rest} = props
 
   return (

@@ -1,5 +1,6 @@
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
@@ -27,7 +28,7 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number
+  fontSize?: FontTextSize
   placement?: Placement
 }
 
@@ -49,13 +50,12 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack space={3}>
+        <StyledStack gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // oxlint-disable-next-line no-array-index-key
                 <FormFieldValidationStatusItem key={itemIndex} validation={item} />
               ))}
             </>

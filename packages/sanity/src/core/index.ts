@@ -79,14 +79,7 @@ export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
 export {IsLastPaneProvider, useDocumentPreviewValues} from './tasks'
 export * from './templates'
-export {
-  buildLegacyTheme,
-  defaultTheme,
-  type LegacyThemeProps,
-  type LegacyThemeTints,
-  type StudioTheme,
-  type StudioThemeColorSchemeKey,
-} from './theme'
+export {type StudioThemeColorSchemeKey} from './theme'
 export * from './user-color'
 export * from './util'
 export {

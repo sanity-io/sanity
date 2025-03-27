@@ -1,5 +1,7 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {Card, useTheme} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {type Padding, type ResponsiveProp} from '@sanity/ui/css'
+import {type Radius, type Space} from '@sanity/ui/theme'
 import {
   defaultRangeExtractor,
   elementScroll,
@@ -33,9 +35,9 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
   renderInput: ArrayOfObjectsInputProps<Item>['renderInput']
   renderItem: ArrayOfObjectsInputProps<Item>['renderItem']
   renderPreview: ArrayOfObjectsInputProps<Item>['renderPreview']
-  listGridGap: number
-  paddingY: number
-  radius: number
+  listGridGap: ResponsiveProp<Space>
+  paddingY: ResponsiveProp<Padding>
+  radius: ResponsiveProp<Radius>
 }
 
 /**
@@ -68,7 +70,6 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     radius,
   } = props
 
-  const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -176,7 +177,8 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
         // Account for grid gap
         boxSizing: 'border-box',
         height: `${
-          virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
+          virtualizer.getTotalSize()
+          // + items.length *vars.space[listGridGap]+ vars.space[paddingY]
         }px`,
         width: '100%',
         position: 'relative',

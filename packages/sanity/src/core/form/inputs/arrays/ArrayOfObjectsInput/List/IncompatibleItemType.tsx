@@ -1,5 +1,6 @@
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -8,7 +9,7 @@ import {Popover} from '../../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../../i18n'
 
 const PopoverCard = styled(Card)`
-  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
+  max-width: ${vars.container[1]};
 `
 
 interface Props {
@@ -50,7 +51,7 @@ export function IncompatibleItemType(props: Props) {
       tone="default"
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
-          <Stack space={4}>
+          <Stack gap={4}>
             <Box>
               <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
@@ -66,7 +67,7 @@ export function IncompatibleItemType(props: Props) {
                 <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>

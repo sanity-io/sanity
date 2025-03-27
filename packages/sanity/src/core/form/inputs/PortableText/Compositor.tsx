@@ -543,6 +543,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             path={path}
           >
             <Root
+              data-ui="Compositor"
               data-focused={editorFocused ? '' : undefined}
               data-read-only={readOnly ? '' : undefined}
             >

@@ -7,7 +7,8 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Menu, MenuDivider} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
@@ -58,7 +59,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'
@@ -67,6 +68,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
+// eslint-disable-next-line complexity
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
 ) {
@@ -303,7 +305,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               <MenuItem
                 as={IntentLink}
                 icon={OpenInNewTabIcon}
-                // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
                 intent="edit"
                 params={{id: value?._ref, type: refType?.name}}
                 rel="noopener noreferrer"

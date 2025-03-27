@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
@@ -48,7 +49,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
         <DocumentHeaderBreadcrumb paneDataItems={paneDataItems} currentPaneIndex={index} />
       ) : (
         documentTitle || (
-          <span style={{color: 'var(--card-muted-fg-color)'}}>
+          <span style={{color: vars.color.muted.fg}}>
             {t('panes.document-header-title.untitled.text')}
           </span>
         )

@@ -1,4 +1,4 @@
-import {type BadgeTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 
 import {type TimeZoneScope} from '../hooks/useTimeZone'
 import {type ScheduleAction, type ScheduleState} from './types'
@@ -8,7 +8,7 @@ export const SCHEDULE_ACTION_DICTIONARY: Record<
   {
     actionName: string
     badgeColor?: 'primary' | 'success' | 'warning' | 'danger' // Document badge specific
-    badgeTone: BadgeTone
+    badgeTone: ElementTone
   }
 > = {
   publish: {

@@ -116,7 +116,7 @@ export function ReleasesList({
   return (
     <Card radius={3} overflow="hidden">
       <Card borderBottom padding={1}>
-        <Stack space={1}>
+        <Stack gap={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
@@ -147,7 +147,7 @@ export function ReleasesList({
       )}
       {areReleasesEnabled && (
         <Card borderTop paddingY={1} paddingX={2}>
-          <Stack space={1}>
+          <Stack gap={1}>
             <ScheduledDraftsMenuItem />
             <ViewContentReleasesMenuItem />
             <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />

@@ -11,7 +11,9 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type CardTone} from '@sanity/ui/theme'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
 
@@ -75,7 +77,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               </Box>
             )}
             {validation.length > 0 && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 {validation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
@@ -130,7 +132,7 @@ function ValidationCard(props: {
               </Text>
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}
@@ -171,7 +173,7 @@ function DocumentNodePathBreadcrumbs(props: {
       {pathTitles.map((t, i) => (
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>
-          {i > 0 && <span style={{color: 'var(--card-muted-fg-color)', opacity: 0.5}}> / </span>}
+          {i > 0 && <span style={{color: vars.color.muted.fg, opacity: 0.5}}> / </span>}
           <span style={{fontWeight: 500}}>{t.title || t.name}</span>
         </Fragment>
       ))}

@@ -171,7 +171,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
     return (
       <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-        <Stack space={2} data-testid="array-primitives-input">
+        <Stack gap={2} data-testid="array-primitives-input">
           <UploadTargetCard
             types={schemaType.of}
             resolveUploader={resolveUploader}
@@ -179,7 +179,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             {...elementProps}
             tabIndex={0}
           >
-            <Stack space={1}>
+            <Stack gap={1}>
               {membersWithSortIds.length === 0 ? (
                 <NoItemsPlaceholder schemaType={schemaType} />
               ) : (

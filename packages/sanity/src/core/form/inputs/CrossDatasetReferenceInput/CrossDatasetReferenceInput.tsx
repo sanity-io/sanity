@@ -284,9 +284,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <Stack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <Stack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete
@@ -326,7 +326,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 radius={2}
                 tone={
                   readOnly
-                    ? 'transparent'
+                    ? 'neutral'
                     : loadableReferenceInfo.error || errors.length > 0
                       ? 'critical'
                       : 'default'
@@ -405,8 +405,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                           )}
                         </Menu>
                       }
-                      placement="right"
-                      popover={{portal: true, tone: 'default'}}
+                      popover={{placement: 'right', portal: true, tone: 'default'}}
                     />
                   </Inline>
                 </Flex>

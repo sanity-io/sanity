@@ -1,17 +1,19 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
+import {type ResponsiveProp} from '@sanity/ui/css'
+import {type Space} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 interface DetailsProps {
   children?: ReactNode
-  margin?: number | number[]
-  marginX?: number | number[]
-  marginY?: number | number[]
-  marginTop?: number | number[]
-  marginRight?: number | number[]
-  marginBottom?: number | number[]
-  marginLeft?: number | number[]
+  margin?: ResponsiveProp<Space>
+  marginX?: ResponsiveProp<Space>
+  marginY?: ResponsiveProp<Space>
+  marginTop?: ResponsiveProp<Space>
+  marginRight?: ResponsiveProp<Space>
+  marginBottom?: ResponsiveProp<Space>
+  marginLeft?: ResponsiveProp<Space>
   open?: boolean
   icon?: ReactNode
   title?: ReactNode

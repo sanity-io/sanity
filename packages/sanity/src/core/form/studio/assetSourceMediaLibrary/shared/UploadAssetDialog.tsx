@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useCard, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
@@ -16,10 +16,6 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
 import {Iframe} from './Iframe'
 
-interface UploadAssetsDialogHandle {
-  upload: (files: File[]) => Promise<void>
-}
-
 export interface UploadAssetsDialogProps {
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource[]) => void
@@ -30,6 +26,7 @@ export interface UploadAssetsDialogProps {
 
 export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
   const mediaLibraryIds = useMediaLibraryIds()
+  const card = useCard()
   const {schemaType} = props
 
   const {onLinkAssets} = useLinkAssets({schemaType})

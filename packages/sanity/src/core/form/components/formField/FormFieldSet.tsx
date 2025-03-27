@@ -1,5 +1,6 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, type BoxProps, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -24,7 +25,7 @@ import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {AlignedBottomGrid, focusRingStyle} from './styles'
+import {AlignedBottomGrid} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -45,7 +46,7 @@ export interface FormFieldSetProps {
   children: ReactNode | (() => ReactNode)
   collapsed?: boolean
   collapsible?: boolean
-  columns?: number | number[]
+  columns?: BoxProps['columns']
   description?: ReactNode
   /**
    * The nesting level of the form field set
@@ -85,15 +86,14 @@ const Content = styled(Box)<{
    */
   $borderLeft: boolean
   $focused?: boolean
-  theme: Theme
 }>((props) => {
-  const {$borderLeft, $focused, theme} = props
-  const {focusRing} = theme.sanity
-  const {base} = theme.sanity.color
+  const {$borderLeft, $focused} = props
+  // const {focusRing} = theme.sanity
+  // const {base} = theme.sanity.color
 
   return css`
     outline: none;
-    border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
+    border-left: ${$borderLeft ? `1px solid ${vars.color.border}` : undefined};
     transition:
       border-color 0.2s ease-in-out,
       box-shadow 0.2s ease-in-out;
@@ -101,8 +101,8 @@ const Content = styled(Box)<{
     ${
       $borderLeft &&
       $focused &&
-      `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
+      `border-left: 1px solid ${vars.color.focusRing};
+    box-shadow: inset 1px 0 0 ${vars.color.focusRing};`
     }
 
     ${
@@ -114,7 +114,7 @@ const Content = styled(Box)<{
     }
 
     &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
+      /* TODO */
     }
 
     &:focus:not(:focus-visible) {
@@ -127,7 +127,8 @@ const EMPTY_ARRAY: never[] = []
 
 /** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldSetProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'rows' | 'width' | 'wrap'>,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -194,7 +195,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         {...restProps}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        space={2}
+        gap={2}
       >
         <FormFieldBaseHeader
           __internal_comments={comments}
@@ -205,7 +206,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           presence={presence}
           inputId={inputId}
           content={
-            <Stack space={3}>
+            <Stack gap={3}>
               <Flex align="center">
                 {title && (
                   <FormFieldSetLegend

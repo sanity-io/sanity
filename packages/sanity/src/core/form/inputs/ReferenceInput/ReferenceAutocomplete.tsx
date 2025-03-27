@@ -1,15 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Autocomplete, type AutocompleteProps, Box, Flex, type Placement, Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  type Ref,
-  type RefObject,
-  useCallback,
-  useState,
-} from 'react'
+import {type ForwardedRef, forwardRef, type Ref, type RefObject, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {useFormBuilder} from '../..'
@@ -33,7 +25,7 @@ const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
  * @internal
  */
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  props: ComponentProps<typeof Autocomplete> & {
+  props: AutocompleteProps<'input'> & {
     path: Path
     referenceElement: HTMLDivElement | null
     searchString?: string

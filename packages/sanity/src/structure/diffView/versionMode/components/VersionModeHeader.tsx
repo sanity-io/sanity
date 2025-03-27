@@ -4,7 +4,6 @@ import {
   Box,
   // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
-  type ButtonTone,
   Flex,
   Menu,
   // eslint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
@@ -12,6 +11,8 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useMemo} from 'react'
@@ -51,7 +52,7 @@ const VersionModeHeaderLayout = styled.header`
   display: grid;
   grid-area: header;
   grid-template-columns: 1fr min-content 1fr;
-  border-block-end: 1px solid var(--card-border-color);
+  border-block-end: 1px solid ${vars.color.border};
 `
 
 const VersionModeHeaderLayoutSection = styled.div`
@@ -308,7 +309,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
@@ -359,9 +360,10 @@ function getMenuButtonProps({
   }
 
   if (isReleaseDocument(selected)) {
-    const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
+    const tone: ElementTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
+      disabled: false,
       text: selected?.metadata.title || tCore('release.placeholder-untitled-release'),
       icon: <ReleaseAvatar padding={1} release={selected} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
@@ -370,7 +372,7 @@ function getMenuButtonProps({
   }
 
   if (isSystemBundleName(selected)) {
-    const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+    const tone = selected === 'published' ? 'positive' : 'caution'
     const releasePerspective = selected === 'published' ? PUBLISHED : LATEST
 
     return {

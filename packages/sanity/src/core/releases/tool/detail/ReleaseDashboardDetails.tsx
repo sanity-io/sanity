@@ -151,14 +151,14 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
+              <Stack gap={4}>
                 <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
                     : tRelease('failed-publish-title')}
                 </Text>
                 <Details title={tRelease('error-details-title')}>
-                  <Text size={1} accent>
+                  <Text size={1}>
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
@@ -173,7 +173,7 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <WarningOutlineIcon />
               </Text>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}

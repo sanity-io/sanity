@@ -1,5 +1,6 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
@@ -121,9 +122,7 @@ const VersionStatus = ({
       <ReleaseAvatar release={release} padding={0} />
       <Text size={1}>
         {title} -{' '}
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t(labels[mode], {date: relativeTime})}
-        </span>
+        <span style={{color: vars.color.muted.fg}}>{t(labels[mode], {date: relativeTime})}</span>
       </Text>
     </Flex>
   )

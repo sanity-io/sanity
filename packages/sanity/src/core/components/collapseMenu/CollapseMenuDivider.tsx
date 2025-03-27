@@ -1,7 +1,8 @@
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 const DividerDiv = styled.div`
-  border-right: 1px solid var(--card-border-color);
+  border-right: 1px solid ${vars.color.border};
   height: auto;
 
   &[data-hidden] {

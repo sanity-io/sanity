@@ -18,7 +18,7 @@ export function NoDocumentTypesScreen() {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="medium">
                   {t('no-document-types-screen.title')}
                 </Text>

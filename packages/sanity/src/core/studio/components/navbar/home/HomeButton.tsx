@@ -1,8 +1,8 @@
-import {Card, Flex, rem} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {WorkspacePreviewIcon} from '../workspace'
 
@@ -18,16 +18,12 @@ const LogoMarkContainer = styled(Card).attrs({
 `
 
 const StyledCard = styled(Card)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[RADIUS])};
+  border-radius: ${vars.radius[RADIUS]};
   display: flex;
   outline: none;
   text-decoration: none;
   &:focus-visible {
-    box-shadow: ${({theme}) =>
-      focusRingStyle({
-        base: theme.sanity.color.base,
-        focusRing: {...theme.sanity.focusRing, offset: 1},
-      })};
+    /* TODO: fix this */
   }
 `
 

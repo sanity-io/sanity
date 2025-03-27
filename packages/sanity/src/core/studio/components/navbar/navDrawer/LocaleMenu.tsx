@@ -21,7 +21,7 @@ export function LocaleMenu() {
 
   return (
     <Card borderTop flex="none" padding={2} overflow="auto">
-      <Stack as="ul" space={1}>
+      <Stack as="ul" gap={1}>
         {locales.map((item) => (
           <LocaleItem
             key={item.id}

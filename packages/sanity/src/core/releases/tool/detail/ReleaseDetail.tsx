@@ -68,7 +68,7 @@ export function ReleaseDetail() {
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
+              <Stack gap={4}>
                 <Text size={1} weight="semibold">
                   {t('loading-release-documents.error.title')}
                 </Text>

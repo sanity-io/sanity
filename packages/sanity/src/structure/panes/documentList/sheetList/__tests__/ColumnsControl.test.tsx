@@ -1,4 +1,7 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+'use no memo'
+// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
+
+import {Root} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
@@ -38,7 +41,7 @@ const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
 
 const renderTest = async () => {
   return render(
-    <ThemeProvider theme={studioTheme}>
+    <Root as="div">
       <TableHarness
         columns={[
           {header: 'First Column', enableHiding: true},
@@ -56,7 +59,7 @@ const renderTest = async () => {
           {header: 'Sixth Column', enableHiding: true},
         ]}
       />
-    </ThemeProvider>,
+    </Root>,
   )
 }
 

@@ -1,4 +1,3 @@
-import {useRootTheme} from '@sanity/ui'
 import debugit from 'debug'
 import {useEffect} from 'react'
 
@@ -17,7 +16,6 @@ const debug = debugit('sanity:manifest')
 export function LiveManifestRegisterProvider() {
   const workspaces = useWorkspaces()
   const {userApplication} = useLiveUserApplication()
-  const {theme} = useRootTheme()
 
   useEffect(() => {
     if (!userApplication || workspaces.length === 0) {
@@ -25,10 +23,10 @@ export function LiveManifestRegisterProvider() {
       return
     }
     // Upload once when workspaces are available
-    registerStudioManifest(userApplication, workspaces, theme).catch((err) => {
+    registerStudioManifest(userApplication, workspaces).catch((err) => {
       debug('Failed to upload studio manifest', err)
     })
-  }, [userApplication, workspaces, theme])
+  }, [userApplication, workspaces])
 
   return null
 }

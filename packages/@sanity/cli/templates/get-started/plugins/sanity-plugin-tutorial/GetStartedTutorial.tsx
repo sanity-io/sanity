@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {CloseIcon} from '@sanity/icons'
 import {
   Card,
   Container,
@@ -9,9 +9,9 @@ import {
   Text,
   Stack,
   useElementSize,
-  useTheme,
 } from '@sanity/ui'
-import {CloseIcon} from '@sanity/icons'
+import {BREAKPOINTS} from '@sanity/ui/css'
+import React, {useState} from 'react'
 import {css, styled} from 'styled-components'
 
 const BlueColor = css`
@@ -31,11 +31,10 @@ export const GetStartedTutorial = () => {
     window.localStorage.getItem('getstarted_closedTutorial') !== null
   )
 
-  const {sanity} = useTheme()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rect = useElementSize(rootElement)
   const width = rect?.content?.width
-  const isSmallScreen = width ? width < sanity.media[1] : false
+  const isSmallScreen = width ? width < BREAKPOINTS[2] : false
   const isProdEnv = process.env.NODE_ENV !== 'development'
 
   const onClose = () => {

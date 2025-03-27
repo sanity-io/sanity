@@ -77,7 +77,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   )
 
   const handleDelete = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
       event.stopPropagation()
       onRemove()

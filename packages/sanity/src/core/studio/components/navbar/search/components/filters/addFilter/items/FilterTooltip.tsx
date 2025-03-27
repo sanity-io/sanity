@@ -75,10 +75,10 @@ export function FilterTooltip({
     <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack space={4}>
+          <Stack gap={4}>
             {/* Field name */}
             {fieldDefinition && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-name')}
                 </Text>
@@ -95,7 +95,7 @@ export function FilterTooltip({
 
             {/* Field description */}
             {fieldDefinitionDescription && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-description')}
                 </Text>
@@ -114,7 +114,7 @@ export function FilterTooltip({
 
             {/* Field document titles */}
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Flex align="center" gap={1}>
                   <Text muted size={1} weight="medium">
                     {t('search.filter-field-tooltip-used-in-document-types')}

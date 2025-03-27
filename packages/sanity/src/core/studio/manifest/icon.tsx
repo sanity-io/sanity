@@ -1,5 +1,4 @@
-import {ThemeProvider} from '@sanity/ui'
-import {type RootTheme} from '@sanity/ui/theme'
+import {Root} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {isValidElementType} from 'react-is'
@@ -10,7 +9,10 @@ interface IconProps {
   icon?: ComponentType | ReactNode
   title: string
   subtitle?: string
-  theme: RootTheme
+  /**
+   * @deprecated This prop is no longer used.
+   */
+  theme?: any
 }
 
 /**
@@ -35,7 +37,7 @@ function normalizeIcon(
 export const resolveIcon = (props: IconProps): string | undefined => {
   try {
     const iconElement = normalizeIcon(props.icon, props.title, props.subtitle)
-    const wrappedElement = <ThemeProvider theme={props.theme}>{iconElement}</ThemeProvider>
+    const wrappedElement = <Root as="div">{iconElement}</Root>
     return renderToStaticMarkup(wrappedElement).trim() || undefined
   } catch {
     return undefined

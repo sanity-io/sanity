@@ -1,23 +1,21 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
 import {Fragment, type PropsWithChildren, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
 import {transformChildren} from '../../utils'
 import {MentionInlineBlock, NormalBlock} from './blocks'
 
-const PortableTextWrap = styled(Stack)(() => {
-  return css`
-    & > [data-ui='Text']:not(:first-child) {
-      margin-top: 1em; // todo: improve
-    }
+const PortableTextWrap = styled(Stack)`
+  & > [data-ui='Text']:not(:first-child) {
+    margin-top: 1em; // todo: improve
+  }
 
-    & > [data-ui='Text']:has(> span:empty) {
-      display: none;
-    }
-  `
-})
+  & > [data-ui='Text']:has(> span:empty) {
+    display: none;
+  }
+`
 
 const EMPTY_ARRAY: [] = []
 

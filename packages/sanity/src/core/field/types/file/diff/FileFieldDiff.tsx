@@ -1,5 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -12,10 +13,9 @@ import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
 
 const SizeDiff = styled.div`
-  ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg};
-  `}
+  --size-diff-positive: ${vars.color.solid.positive.bg[0]};
+  --size-diff-negative: ${vars.color.solid.critical.bg[0]};
+
   &:not([hidden]) {
     display: inline-block;
   }

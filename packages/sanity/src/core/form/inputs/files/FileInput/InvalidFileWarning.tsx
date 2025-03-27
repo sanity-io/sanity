@@ -18,7 +18,7 @@ export function InvalidFileWarning({onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="medium">
             {t('inputs.file.invalid-file-warning.title')}
           </Text>

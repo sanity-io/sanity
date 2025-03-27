@@ -1,4 +1,3 @@
-import {ToastProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock'
@@ -13,9 +12,7 @@ import {UserApplicationCacheProvider} from '../store/userApplications'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
-import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
-import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
@@ -30,7 +27,6 @@ import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
-import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
@@ -49,8 +45,8 @@ export function StudioProvider({
   children,
   config,
   basePath,
-  onSchemeChange,
-  scheme,
+  // onSchemeChange,
+  // scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
@@ -104,37 +100,33 @@ export function StudioProvider({
   )
 
   return (
-    <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
-      <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <StudioErrorBoundary primaryProjectId={primaryProjectId}>
-          <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
-            <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
-              <ActiveWorkspaceMatcher
-                unstable_history={history}
-                NotFoundComponent={NotFoundScreen}
-                LoadingComponent={LoadingBlock}
-              >
-                <StudioThemeProvider>
-                  <UserColorManagerProvider>
-                    {noAuthBoundary ? (
-                      _children
-                    ) : (
-                      <AuthBoundary
-                        LoadingComponent={LoadingBlock}
-                        AuthenticateComponent={AuthenticateScreen}
-                        NotAuthenticatedComponent={NotAuthenticatedScreen}
-                      >
-                        {_children}
-                      </AuthBoundary>
-                    )}
-                  </UserColorManagerProvider>
-                </StudioThemeProvider>
-              </ActiveWorkspaceMatcher>
-            </WorkspacesProvider>
-          </StudioRootErrorHandler>
-        </StudioErrorBoundary>
-      </ToastProvider>
-    </ColorSchemeProvider>
+    <StudioErrorBoundary primaryProjectId={primaryProjectId}>
+      <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
+        <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
+          <ActiveWorkspaceMatcher
+            unstable_history={history}
+            NotFoundComponent={NotFoundScreen}
+            LoadingComponent={LoadingBlock}
+          >
+            {/* <StudioThemeProvider> */}
+            <UserColorManagerProvider>
+              {noAuthBoundary ? (
+                _children
+              ) : (
+                <AuthBoundary
+                  LoadingComponent={LoadingBlock}
+                  AuthenticateComponent={AuthenticateScreen}
+                  NotAuthenticatedComponent={NotAuthenticatedScreen}
+                >
+                  {_children}
+                </AuthBoundary>
+              )}
+            </UserColorManagerProvider>
+            {/* </StudioThemeProvider> */}
+          </ActiveWorkspaceMatcher>
+        </WorkspacesProvider>
+      </StudioRootErrorHandler>
+    </StudioErrorBoundary>
   )
 }
 

@@ -2,6 +2,7 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
@@ -33,7 +34,7 @@ const DialogHeader = styled(Grid)`
   grid-template-columns: 64px 1fr 64px;
   top: 0;
   z-index: 1;
-  background: var(--card-bg-color);
+  background: ${vars.color.bg};
 `
 
 const FloatingButtonBox = styled(Box)`

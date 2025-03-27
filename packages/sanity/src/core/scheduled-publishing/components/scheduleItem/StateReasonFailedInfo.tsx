@@ -1,6 +1,13 @@
 import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
+import {
+  Container,
+  Flex,
+  Menu,
+  // eslint-disable-next-line no-restricted-imports
+  type PopoverProps,
+  Text,
+} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -10,11 +17,11 @@ interface Props {
   stateReason: string
 }
 
-const POPOVER_PROPS = {
+const POPOVER_PROPS: PopoverProps = {
   portal: true,
   constrainSize: true,
   preventOverflow: true,
-  tone: 'default' as CardTone,
+  tone: 'default',
   width: 0,
 }
 

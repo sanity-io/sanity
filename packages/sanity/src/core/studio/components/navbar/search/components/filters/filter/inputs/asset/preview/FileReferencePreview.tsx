@@ -39,7 +39,7 @@ function FilePreview({asset}: {asset: FileAsset}) {
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} space={2} marginLeft={3}>
+        <Stack flex={1} gap={2} marginLeft={3}>
           <Text muted size={1} textOverflow="ellipsis" weight="medium">
             {asset?.originalFilename || asset._id}
           </Text>
@@ -61,7 +61,7 @@ function FileSkeleton() {
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} space={2} marginLeft={3}>
+        <Stack flex={1} gap={2} marginLeft={3}>
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
         </Stack>

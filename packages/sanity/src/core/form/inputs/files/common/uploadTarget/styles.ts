@@ -1,4 +1,5 @@
 import {Layer} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const Overlay = styled(Layer)`
@@ -11,6 +12,6 @@ export const Overlay = styled(Layer)`
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background-color: var(--card-bg-color);
+  background-color: ${vars.color.bg};
   opacity: 0.8;
 `

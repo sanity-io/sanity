@@ -1,5 +1,5 @@
 import {type ReleaseType} from '@sanity/client'
-import {type BadgeTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 
 /**
  * @internal
@@ -24,7 +24,7 @@ export const ARCHIVED_RELEASE_STATES = ['archived', 'published']
 /**
  * @internal
  */
-export const RELEASE_TYPES_TONES: Record<ReleaseType, {tone: BadgeTone}> = {
+export const RELEASE_TYPES_TONES: Record<ReleaseType, {tone: ElementTone}> = {
   asap: {
     tone: 'caution',
   },

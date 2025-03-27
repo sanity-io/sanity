@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {ClampedRect} from './ClampedRect'
@@ -13,7 +14,7 @@ export const ConnectorPath = styled.path`
   fill: none;
   pointer-events: none;
   stroke-linejoin: round;
-  stroke: var(--card-badge-caution-dot-color);
+  stroke: ${vars.color.solid.caution.bg[0]};
 `
 
 export const InteractivePath = styled.path`
@@ -33,5 +34,5 @@ export const InteractivePath = styled.path`
 export const RightBarWrapper = styled(ClampedRect)`
   stroke: none;
   pointer-events: none;
-  fill: var(--card-badge-caution-dot-color);
+  fill: ${vars.color.solid.caution.bg[0]};
 `

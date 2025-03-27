@@ -1,4 +1,4 @@
-import {ThemeProvider, ToastProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {createGlobalStyle} from 'styled-components'
 
@@ -15,9 +15,9 @@ export function SanityUI({children}: {children: React.ReactNode}) {
   return (
     <>
       <GlobalStyle />
-      <ThemeProvider theme={theme}>
-        <ToastProvider>{children}</ToastProvider>
-      </ThemeProvider>
+      <Root as="div">
+        {children}
+      </Root>
     </>
   )
 }

@@ -1,7 +1,8 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
 import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
+import {type GridTemplateColumns} from '@sanity/ui/css'
 import {resolveTypeName} from '@sanity/util/content'
-import {useCallback, useMemo} from 'react'
+import {type ChangeEvent, useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
@@ -109,7 +110,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={isGrid ? (Math.min(options.length, 4) as GridTemplateColumns) : 1}
         tabIndex={0}
         {...elementProps}
       >
@@ -124,7 +125,9 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
               <Checkbox
                 disabled={disabled}
                 checked={checked}
-                onChange={(e) => handleChange(e.currentTarget.checked, option)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleChange(e.currentTarget.checked, option)
+                }
                 onFocus={() => handleItemFocus(index)}
                 readOnly={readOnly}
               />

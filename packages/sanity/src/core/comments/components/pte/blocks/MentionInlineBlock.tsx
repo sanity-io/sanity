@@ -1,28 +1,23 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {vars} from '@sanity/ui/css'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useCurrentUser, useUser} from '../../../../store'
 import {CommentsAvatar} from '../../avatars'
 
-const Span = styled.span(({theme}) => {
-  const {regular} = theme.sanity.fonts?.text.weights || {}
-  const {hovered} = theme.sanity.color?.card || {}
-  const {bg} = theme.sanity.color.selectable?.caution.pressed || {}
+const Span = styled.span`
+  font-weight: ${vars.font.text.weight.regular};
+  color: ${vars.color.link.fg};
+  border-radius: 2px;
+  background-color: ${vars.color.tinted.default.bg[1]};
+  padding: 1px;
+  box-sizing: border-box;
 
-  return css`
-    font-weight: ${regular};
-    color: var(--card-link-fg-color);
-    border-radius: 2px;
-    background-color: ${hovered.bg};
-    padding: 1px;
-    box-sizing: border-box;
-
-    &[data-active='true'] {
-      background-color: ${bg};
-    }
-  `
-})
+  &[data-active='true'] {
+    background-color: ${vars.color.tinted.default.bg[2]};
+  }
+`
 
 interface MentionInlineBlockProps {
   userId: string
@@ -40,6 +35,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
         data-testid="comment-mentions-loading-skeleton"
         style={{width: '10ch'}}
         size={0}
+        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         muted
         radius={1}
         animated

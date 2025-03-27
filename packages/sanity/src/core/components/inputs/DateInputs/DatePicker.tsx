@@ -1,3 +1,4 @@
+import {type Space} from '@sanity/ui/theme'
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
@@ -12,8 +13,8 @@ export const DatePicker = forwardRef(function DatePicker(
     timeStep?: number
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
-    padding?: number
-    showTimeZone?: boolean
+    padding?: Space
+    showTimezone?: boolean
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope
     onTimeZoneOpen?: () => void
@@ -25,6 +26,7 @@ export const DatePicker = forwardRef(function DatePicker(
     onChange,
     calendarLabels,
     padding = 2,
+    // @ts-expect-error - TODO: Fix this.
     showTimeZone = false,
     timeZoneScope,
     onTimeZoneOpen,

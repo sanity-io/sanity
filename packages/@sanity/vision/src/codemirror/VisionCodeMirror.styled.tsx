@@ -1,4 +1,4 @@
-import {rem} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const EditorRoot = styled.div`
@@ -9,6 +9,8 @@ export const EditorRoot = styled.div`
   overflow: clip;
   position: relative;
   display: flex;
+  color: ${vars.color.code.fg};
+  background-color: ${vars.color.bg};
 
   & .cm-theme {
     width: 100%;
@@ -16,17 +18,38 @@ export const EditorRoot = styled.div`
 
   & .cm-editor {
     height: 100%;
-
-    font-size: 16px;
-    line-height: 21px;
+    font-family: ${vars.font.code.family};
+    font-size: ${vars.font.code.scale[1].fontSize};
+    line-height: ${vars.font.code.scale[1].lineHeight};
   }
 
   & .cm-line {
-    padding-left: ${({theme}) => rem(theme.sanity.space[3])};
+    padding-left: ${vars.space[3]};
   }
 
   & .cm-content {
-    border-right-width: ${({theme}) => rem(theme.sanity.space[4])} !important;
-    padding-top: ${({theme}) => rem(theme.sanity.space[5])};
+    border-right-width: ${vars.space[4]} !important;
+    padding-top: ${vars.space[5]};
+    caret-color: ${vars.color.focusRing};
+  }
+
+  & .cm-cursor,
+  & .cm-dropCursor {
+    border-left-color: ${vars.color.focusRing};
+  }
+
+  & .cm-editor.cm-focused .cm-selectionBackground,
+  & .cm-selectionBackground,
+  & .cm-content ::selection {
+    background-color: ${vars.color.tinted.default.bg[2]};
+  }
+
+  & .cm-panels {
+    background-color: ${vars.color.bg};
+    color: ${vars.color.fg};
+  }
+
+  & .cm-panels.cm-panels-top {
+    border-bottom: 2px solid ${vars.color.border};
   }
 `

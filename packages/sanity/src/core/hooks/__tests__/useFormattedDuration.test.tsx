@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
 import {beforeAll, describe, expect, it} from 'vitest'
 
@@ -16,7 +16,7 @@ describe('useFormattedDuration', () => {
   })
 
   const wrapper = ({children}: {children: React.ReactNode}) => (
-    <ThemeProvider theme={studioTheme}>
+    <Root as="div">
       <LocaleProviderBase
         locales={[usEnglishLocale]}
         i18next={i18next}
@@ -25,7 +25,7 @@ describe('useFormattedDuration', () => {
       >
         {children}
       </LocaleProviderBase>
-    </ThemeProvider>
+    </Root>
   )
 
   beforeAll(() => i18next.init())

@@ -68,7 +68,7 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
       onClose={onClose}
       width={0}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text size={1}>{body}</Text>
 
         {error && <TextWithTone tone="critical">{t('delete-dialog.error')}</TextWithTone>}

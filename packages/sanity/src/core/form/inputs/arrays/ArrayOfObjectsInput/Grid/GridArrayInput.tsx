@@ -52,7 +52,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2}>
+      <Stack gap={2}>
         <UploadTargetCard
           {...elementProps}
           isReadOnly={readOnly}
@@ -61,7 +61,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <Stack data-ui="ArrayInput__content" gap={2}>
             {members?.length === 0 && (
               <Card padding={3} border radius={2}>
                 <Text align="center" muted size={1}>

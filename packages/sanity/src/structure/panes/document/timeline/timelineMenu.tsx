@@ -199,7 +199,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
             selected={open}
             width="fill"
             tooltipProps={null}
-            justify={'space-between'}
+            justify="space-between"
             style={{
               maxWidth: '100%',
             }}

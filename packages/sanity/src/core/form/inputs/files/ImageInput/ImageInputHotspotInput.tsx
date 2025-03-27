@@ -31,7 +31,7 @@ export function ImageInputHotspotInput(props: {
       width={1}
     >
       <PresenceOverlay>
-        <Stack space={5}>
+        <Stack gap={5}>
           {withImageTool && value?.asset && (
             <ImageToolInput
               {...imageInputProps}

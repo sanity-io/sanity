@@ -32,7 +32,7 @@ export function CalendarPopover({content}: {content: ReactNode}) {
           selected={isCalendarOpen}
           onClick={() => setIsCalendarOpen((prev) => !prev)}
           ref={buttonRef}
-          space={2}
+          gap={2}
         />
       </Tooltip>
     </Popover>

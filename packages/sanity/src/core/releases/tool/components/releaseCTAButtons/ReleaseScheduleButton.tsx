@@ -235,13 +235,13 @@ export const ReleaseScheduleButton = ({
           },
         }}
       >
-        <Stack space={3}>
+        <Stack gap={3}>
           {_isScheduledDateInPast && (
             <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
               <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
             </Card>
           )}
-          <Stack space={3}>
+          <Stack gap={3}>
             <Flex align="center" justify="space-between" gap={2}>
               <label>
                 <Text size={1} weight="semibold">

@@ -78,7 +78,7 @@ export function InspectDialog(props: InspectDialogProps) {
           shadow={1}
           style={{position: 'sticky', bottom: 0, zIndex: 3}}
         >
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}

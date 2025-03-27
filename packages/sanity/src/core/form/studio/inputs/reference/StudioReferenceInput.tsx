@@ -191,6 +191,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
             {..._props}
+            // @ts-expect-error - TODO: fix this
             ref={forwardedRef}
             parentRefPath={path}
             template={template}

@@ -1,4 +1,5 @@
-import {Box, rem, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
@@ -7,8 +8,8 @@ import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.div`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  padding: ${({theme}) => rem(theme.sanity.space[1])};
+  border-radius: ${vars.radius[2]};
+  padding: ${vars.space[1]};
 `
 
 const AnnotationText = styled(Text)`

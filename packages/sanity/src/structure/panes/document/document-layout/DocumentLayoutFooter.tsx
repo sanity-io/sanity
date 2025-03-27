@@ -4,7 +4,7 @@ import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneFooter} from '../../../components'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {DOCUMENT_FORM_PORTAL_ELEMENT} from '../../../constants'
 import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
 
@@ -17,10 +17,12 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
 ]
 
 export function DocumentLayoutFooter({
+  documentFormPortalElement,
   documentPanelPortalElement,
   setFooterElement,
   setActionsBoxElement,
 }: {
+  documentFormPortalElement: HTMLElement | null
   documentPanelPortalElement: HTMLElement | null
   setFooterElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setActionsBoxElement: Dispatch<SetStateAction<HTMLDivElement | null>>
@@ -29,8 +31,11 @@ export function DocumentLayoutFooter({
 
   const {value} = useDocumentPane()
   const portalElements = useMemo(
-    () => ({[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}),
-    [documentPanelPortalElement],
+    () => ({
+      default: documentPanelPortalElement,
+      [DOCUMENT_FORM_PORTAL_ELEMENT]: documentFormPortalElement,
+    }),
+    [documentFormPortalElement, documentPanelPortalElement],
   )
 
   const createLinkMetadata = getSanityCreateLinkMetadata(value)

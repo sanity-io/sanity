@@ -1,4 +1,4 @@
-import {Box, Flex, studioTheme, Tab, TabList, TabPanel, ThemeProvider} from '@sanity/ui'
+import {Box, Flex, Root, Tab, TabList, TabPanel} from '@sanity/ui'
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
@@ -17,10 +17,10 @@ function Main() {
   >('simple')
   return (
     <>
-      <ThemeProvider theme={studioTheme}>
+      <Root as="div">
         <Flex direction={'column'}>
           <Box padding={4}>
-            <TabList space={2}>
+            <TabList gap={2}>
               <Tab
                 aria-controls="simple-panel"
                 id="simple-tab"
@@ -99,7 +99,7 @@ function Main() {
             </TabPanel>
           )}
         </Flex>
-      </ThemeProvider>
+      </Root>
 
       <Suspense fallback={null}>
         <VisualEditing />

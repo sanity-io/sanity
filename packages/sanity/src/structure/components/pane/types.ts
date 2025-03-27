@@ -43,7 +43,7 @@ export interface PaneResizeData {
 export interface PaneConfigOpts {
   currentMinWidth?: number
   currentMaxWidth?: number
-  flex: number
+  flex?: number
   id: string
   minWidth?: number
   maxWidth?: number

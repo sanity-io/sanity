@@ -1,9 +1,10 @@
 import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1
-const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
+const INDICATOR_COLOR_VAR_NAME = vars.color.border
 const INDICATOR_BOTTOM_OFFSET = 4
 
 export const GlobalPerspectiveMenuItemIndicator = styled.div<{
@@ -17,7 +18,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 
     --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
     --indicator-width: ${INDICATOR_WIDTH}px;
-    --indicator-color: var(${INDICATOR_COLOR_VAR_NAME});
+    --indicator-color: ${INDICATOR_COLOR_VAR};
     --indicator-bottom: ${INDICATOR_BOTTOM_OFFSET}px;
 
     --indicator-in-range-height: 16.5px;
@@ -36,7 +37,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
         height: ${
           $isDefaultPerspective ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'
         };
-        background-color: var(--card-border-color);
+        background-color: ${vars.color.border};
       }
     `
     }
@@ -54,7 +55,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
             position: absolute;
             left: var(--indicator-left);
             width: var(--indicator-width);
-            background-color: var(--card-border-color);
+            background-color: ${vars.color.border};
           }
 
           &:before {
@@ -118,7 +119,7 @@ export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: bo
         top: -8px;
         bottom: -${INDICATOR_BOTTOM_OFFSET}px;
         width: ${INDICATOR_WIDTH}px;
-        background-color: var(${INDICATOR_COLOR_VAR_NAME});
+        background-color: ${INDICATOR_COLOR_VAR};
       }
     `
     }

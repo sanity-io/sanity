@@ -1,3 +1,5 @@
+import {vars} from '@sanity/ui/css'
+
 // todo: get these utils from @sanity/ui instead
 export function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
@@ -11,13 +13,13 @@ export function focusRingStyle(opts: {
   const {base, border, focusRing} = opts
   const focusRingOutsetWidth = focusRing.offset + focusRing.width
   const focusRingInsetWidth = 0 - focusRing.offset
-  const bgColor = base ? base.bg : 'var(--card-bg-color)'
+  const bgColor = base ? base.bg : vars.color.bg
 
   return [
-    focusRingInsetWidth > 0 && `inset 0 0 0 ${focusRingInsetWidth}px var(--card-focus-ring-color)`,
+    focusRingInsetWidth > 0 && `inset 0 0 0 ${focusRingInsetWidth}px ${vars.color.focusRing}`,
     border && focusRingBorderStyle(border),
     focusRingInsetWidth < 0 && `0 0 0 ${0 - focusRingInsetWidth}px ${bgColor}`,
-    focusRingOutsetWidth > 0 && `0 0 0 ${focusRingOutsetWidth}px var(--card-focus-ring-color)`,
+    focusRingOutsetWidth > 0 && `0 0 0 ${focusRingOutsetWidth}px ${vars.color.focusRing}`,
   ]
     .filter(Boolean)
     .join(',')

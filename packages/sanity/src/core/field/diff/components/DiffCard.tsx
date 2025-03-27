@@ -1,5 +1,6 @@
 import {type Path} from '@sanity/types'
-import {Card, rem} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -22,8 +23,8 @@ interface StyledCardProps {
 }
 
 const StyledCard = styled(Card)<StyledCardProps>`
-  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg};
+  --diff-card-radius: ${vars.radius[2]};
+  --diff-card-bg-color: ${vars.color.tinted.default.bg[0]};
 
   max-width: 100%;
   position: relative;

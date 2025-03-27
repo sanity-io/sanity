@@ -1,4 +1,4 @@
-import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
@@ -7,6 +7,8 @@ import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media, type MediaProps} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {type PreviewMediaDimensions} from '../types'
+
+const rem = (value: number) => `${value / 16}rem`
 
 /**
  * @hidden
@@ -71,7 +73,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     return (
       <Root>
         <HeaderFlex>
-          <Stack flex={1} space={2}>
+          <Stack flex={1} gap={2}>
             <TitleSkeleton />
             <SubtitleSkeleton />
           </Stack>
@@ -83,7 +85,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
   return (
     <Root>
       <HeaderFlex>
-        <Stack flex={1} space={2}>
+        <Stack flex={1} gap={2}>
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
               <Title layout="default" />

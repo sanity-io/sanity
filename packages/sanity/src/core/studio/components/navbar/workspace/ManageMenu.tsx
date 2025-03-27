@@ -24,7 +24,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
     <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
-        <Stack marginLeft={2} space={2}>
+        <Stack marginLeft={2} gap={2}>
           <Text size={0}>{project?.displayName}</Text>
           <Text size={2} weight="medium">
             {activeWorkspace.title}
@@ -40,7 +40,6 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
           target="_blank"
           icon={CogIcon}
           text={t('user-menu.action.manage-project-aria-label')}
-          // @ts-expect-error -- Custom CSS property for Button component, needs to be unset so the border works as default
           style={{'--card-border-color': 'unset'}}
         />
         {canInviteMembers && (

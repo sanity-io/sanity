@@ -5,7 +5,7 @@ import {type HTMLProps} from 'react'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 /** @internal */
-export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'>
+export type MenuGroupProps = Pick<UIMenuGroupProps<'button'>, 'icon' | 'popover' | 'text' | 'tone'>
 
 /**
  * Customized Sanity UI <MenuGroup> component with pre-defined layout options.
@@ -14,7 +14,10 @@ export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' 
  */
 export const MenuGroup = (
   props: MenuGroupProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex' | 'popover'> & {
+    Omit<
+      HTMLProps<HTMLButtonElement>,
+      'as' | 'height' | 'ref' | 'tabIndex' | 'popover' | 'type'
+    > & {
       tooltipProps?: TooltipProps | null
     },
 ) => {

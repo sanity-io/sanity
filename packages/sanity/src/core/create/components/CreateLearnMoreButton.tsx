@@ -16,6 +16,7 @@ export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
       as={'a'}
       href={createUserDocumentationUrl}
       target="_blank"
+      // @ts-expect-error TODO: fix this
       ref={ref}
       text={t('start-in-create-dialog.cta.learn-more')}
       mode="bleed"

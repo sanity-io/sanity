@@ -4,6 +4,7 @@
 import {CloseIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Flex, Menu, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -14,8 +15,8 @@ const Header = styled.th<{width: number}>`
   margin: 16px;
   z-index: 1;
   padding: 22px 0px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: var(--card-badge-default-bg-color);
+  border-top: 1px solid ${vars.color.border};
+  background-color: ${vars.color.solid.default.bg[0]};
   box-sizing: border-box;
   text-align: left;
   width: ${({width}) => width}px;
@@ -66,7 +67,7 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
       key={header.id}
       style={{
         left: header.column.getStart('left') ?? undefined,
-        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        borderRight: `${borderWidth}px solid ${vars.color.border}`,
       }}
       data-testid={`header-${header.id}`}
       width={header.getSize()}

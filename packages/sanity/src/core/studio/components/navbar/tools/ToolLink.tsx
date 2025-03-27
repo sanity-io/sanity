@@ -1,11 +1,10 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useCallback} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 import {StateLink, useRouterState} from 'sanity/router'
 
 /**
  * @hidden
  * @beta */
-export interface ToolLinkProps {
-  children: ReactNode
+export interface ToolLinkProps extends React.ComponentProps<'a'> {
   name: string
 }
 

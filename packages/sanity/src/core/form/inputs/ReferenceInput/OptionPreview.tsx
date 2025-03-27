@@ -23,7 +23,7 @@ export function OptionPreview(props: {
 
   if (!refType) {
     return (
-      <Stack space={2} padding={1}>
+      <Stack gap={2} padding={1}>
         {t('inputs.reference.error.invalid-search-result-type-title', {
           returnedType: type,
         })}

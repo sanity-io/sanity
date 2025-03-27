@@ -1,5 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {type Space} from '@sanity/ui/theme'
 import {isPast} from 'date-fns/isPast'
 import {
   type FocusEvent,
@@ -40,7 +41,7 @@ export interface DateTimeInputProps {
   calendarLabels: CalendarLabels
   constrainSize?: boolean
   monthPickerVariant?: CalendarProps['monthPickerVariant']
-  padding?: number
+  padding?: Space
   disableInput?: boolean
   isPastDisabled?: boolean
   showTimeZone?: boolean

@@ -48,7 +48,7 @@ export function ScheduleBanner(props: Props) {
         tone={hasError ? 'critical' : 'primary'}
         style={mode === 'upsell' ? {opacity: 0.7} : undefined}
       >
-        <Stack space={2}>
+        <Stack gap={2}>
           <Flex align="center" gap={3} marginBottom={1} padding={1}>
             <Text muted size={1}>
               <CalendarIcon />
@@ -58,22 +58,20 @@ export function ScheduleBanner(props: Props) {
             </Text>
           </Flex>
 
-          <Stack space={2}>
+          <Stack gap={2}>
             {schedules.map((schedule) => {
               if (!schedule.executeAt) {
                 return null
               }
               const formattedDateTime = format(new Date(schedule.executeAt), DATE_FORMAT.LARGE)
               return (
-                <Inline key={schedule.id} space={2}>
+                <Inline key={schedule.id} gap={2}>
                   <Text muted size={1}>
                     {formattedDateTime}
                   </Text>
                   {/* HACK: Hide non unpublish schedules to maintain layout */}
                   <Flex style={{opacity: schedule.action === 'unpublish' ? 1 : 0}}>
-                    <Badge fontSize={0} mode="outline">
-                      {schedule.action}
-                    </Badge>
+                    <Badge fontSize={0}>{schedule.action}</Badge>
                   </Flex>
                 </Inline>
               )

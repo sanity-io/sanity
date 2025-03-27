@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
-import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {
   memo,
   type MouseEvent,
@@ -63,7 +64,7 @@ export const VersionChip = memo(function VersionChip(props: {
   // if the VersionChip itself is contained in a portal (e.g., as in the NonReleaseVersionSelect)
   // there is no need to also make the context menu a portal (and it also breaks useClickOutside)
   contextMenuPortal?: boolean
-  tone: BadgeTone
+  tone: ElementTone
   locked?: boolean
   onCopyToDraftsNavigate: () => void
   contextValues: {

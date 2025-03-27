@@ -59,6 +59,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
       referenceElement={referenceElement}
       width={width}
       autoFocus
+      tone="default"
     />
   )
 }
@@ -128,11 +129,19 @@ function Content(props: PopoverEditDialogProps) {
       containerElement={containerElement}
     >
       <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+        <Flex
+          as={NoopContainer}
+          // @ts-expect-error - TODO: fix this
+          ref={containerElement}
+          direction="column"
+          height="fill"
+        >
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>
-                <Text weight="medium">{title}</Text>
+                <Text size={1} weight="medium">
+                  {title}
+                </Text>
               </Box>
 
               <Button

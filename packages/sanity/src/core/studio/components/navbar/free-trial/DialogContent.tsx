@@ -1,5 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Heading} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
@@ -20,9 +21,10 @@ const StyledButton = styled(Button)`
   border-radius: 9999px;
   box-shadow: none;
   color: white;
-  --card-fg-color: white;
+
+  ${getVarName(vars.color.fg)}: white;
   :hover {
-    --card-fg-color: white;
+    ${getVarName(vars.color.fg)}: white;
   }
 `
 

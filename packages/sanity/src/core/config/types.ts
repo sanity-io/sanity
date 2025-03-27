@@ -10,7 +10,7 @@ import {
   type SchemaTypeDefinition,
   type SearchStrategy,
 } from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
@@ -23,7 +23,6 @@ import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
 import {
   type DocumentActionComponent,
@@ -55,7 +54,7 @@ export interface BaseActionDescription {
   label: string
   onHandle?: () => void
   title?: ReactNode
-  tone?: ButtonTone
+  tone?: ElementTone
   shortcut?: string | null
   dialog?: unknown
 }
@@ -605,8 +604,9 @@ export interface WorkspaceOptions extends SourceOptions {
   /**
    * @hidden
    * @beta
+   * @deprecated No longer supported.
    */
-  theme?: StudioTheme
+  theme?: any
 
   /**
    * @hidden
@@ -1086,7 +1086,10 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   apiHost?: string
-  theme: StudioTheme
+  /**
+   *  @deprecated No longer supported.
+   */
+  theme: any
   schema: Schema
   i18n: LocaleSource
   /**

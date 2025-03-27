@@ -1,6 +1,6 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {Box, Card, Flex, usePrefersDark} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -26,25 +26,24 @@ export interface OpenInSourceDialogProps {
  */
 export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   const {asset, dialogHeaderTitle, onClose, onSelectNewAsset, selectNewAssetButtonLabel} = props
-  const theme = useTheme()
   const {t} = useTranslation()
-  const {dark} = theme.sanity.color
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
   const authType = useAuthType()
 
+  const prefersDark = usePrefersDark()
   // Get the asset ID from the source property
   const sourceAssetId = asset.source?.id
 
   const params = useMemo<PluginPayload>(
     () => ({
-      scheme: dark ? 'dark' : 'light',
+      scheme: prefersDark ? 'dark' : 'light',
       auth: authType,
       disableNavigation: true,
       selectAssetTypes: [],
       selectionType: 'single',
     }),
-    [dark, authType],
+    [prefersDark, authType],
   )
 
   const iframeUrl = usePluginFrameUrl(`/assets/${sourceAssetId}`, params)
@@ -80,7 +79,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
+          width="fill"
           height="fill"
           padding={3}
           shadow={1}
@@ -89,7 +88,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} align="center" justify="space-between">
+          <Flex width="fill" gap={3} align="center" justify="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}

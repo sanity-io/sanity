@@ -1,5 +1,4 @@
-import {useTheme} from '@sanity/ui'
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {uuid} from '@sanity/uuid'
 import {
   memo,
@@ -63,9 +62,8 @@ function CropDimensionsBadge(props: {
   onMouseLeave?: MouseEventHandler
 }) {
   const {x, y, width, height, visible, onMouseEnter, onMouseLeave} = props
-  const theme = useTheme()
-  const {font} = getThemeV2(theme)
-  const fontSize = font.text.sizes[1].fontSize
+  // TODO: This needs to be refactored to use css variables instead of runtime values.
+  const fontSize = vars.font.text.scale[1].fontSize
   const text = `${width} × ${height}`
   const textWidth = text.length * (fontSize * BADGE_CHAR_WIDTH_RATIO)
   const badgeWidth = textWidth + BADGE_PADDING_X * 2

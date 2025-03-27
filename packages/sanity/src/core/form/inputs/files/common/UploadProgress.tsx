@@ -38,7 +38,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
             <Text size={1}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Translate
                   t={t}
                   i18nKey="input.files.common.upload-progress"

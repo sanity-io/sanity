@@ -1,4 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const RatioBox = styled(Card)`
@@ -26,7 +27,7 @@ export const Overlay = styled(Card)`
   right: 0;
   bottom: 0;
   backdrop-filter: blur(10px);
-  background-color: color-mix(in srgb, transparent, var(--card-bg-color) 80%);
+  background-color: color-mix(in srgb, transparent, ${vars.color.bg} 80%);
 `
 
 export const FlexOverlay = styled(Flex)`

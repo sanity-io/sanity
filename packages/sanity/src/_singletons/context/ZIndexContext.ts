@@ -13,7 +13,7 @@ export const zIndexContextDefaults: ZIndexContextValue = {
   pane: 100,
   paneHeader: [110, 15000],
   paneFooter: [120, 20000],
-  paneResizer: [130, 25000],
+  paneResizer: [500, 25000],
   paneDialog: [140, 5000],
   //
   popover: 200,

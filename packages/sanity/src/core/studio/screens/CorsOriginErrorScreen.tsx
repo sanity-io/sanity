@@ -80,7 +80,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
     <Card height="fill">
       <CenteredContainer align="center" justify="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
-          <Stack space={5}>
+          <Stack gap={5}>
             <Heading as="h1" size={2}>
               Connect this studio to your project
             </Heading>
@@ -90,12 +90,12 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               to connect it.
             </Text>
 
-            <Grid columns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
+            <Grid gridTemplateColumns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
               {/* Register Studio Option */}
               {showRegisterOption && (
                 <Card border padding={4} radius={4}>
                   <Flex direction="column" gap={4} height="fill">
-                    <Stack space={4} flex={1}>
+                    <Stack gap={4} flex={1}>
                       <Text size={2} weight="medium">
                         Register studio
                       </Text>
@@ -120,7 +120,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               {/* Add Development Host Option */}
               <Card border padding={4} radius={4}>
                 <Flex direction="column" gap={4} height="fill">
-                  <Stack space={4} flex={1}>
+                  <Stack gap={4} flex={1}>
                     <Text size={2} weight="medium">
                       Add development host
                     </Text>

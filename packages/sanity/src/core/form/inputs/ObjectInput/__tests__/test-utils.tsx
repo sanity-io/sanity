@@ -1,13 +1,10 @@
 /* eslint-disable import/export */
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+
+import {Root} from '@sanity/ui'
 import {render, type RenderOptions} from '@testing-library/react'
 
 const Providers = ({children}: {children: React.ReactNode}) => {
-  return (
-    <ThemeProvider theme={studioTheme}>
-      <LayerProvider>{children}</LayerProvider>
-    </ThemeProvider>
-  )
+  return <Root as="div">{children}</Root>
 }
 
 export * from '@testing-library/react'

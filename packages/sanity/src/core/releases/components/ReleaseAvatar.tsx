@@ -1,6 +1,6 @@
 import {type ReleaseType} from '@sanity/client'
 import {BoltIcon, ClockIcon, DotIcon} from '@sanity/icons'
-import {type BadgeTone, Box, Text} from '@sanity/ui'
+import {type ElementTone, Box, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
@@ -36,7 +36,7 @@ type ReleaseAvatarIconProps =
       /**
        * @deprecated - Prefer `release` or `releaseType`.
        */
-      tone: BadgeTone
+      tone: ElementTone
       release?: never
       releaseType?: never
     }

@@ -33,12 +33,16 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
         <Text size={1}>
           <InfoOutlineIcon />
         </Text>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text size={1} weight="semibold">
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>
           {retentionDays && (
-            <Text size={1} accent>
+            <Text
+              size={1}
+              // TODO: Accent is not available in @sanity/ui@4, what do we use instead?
+              // accent
+            >
               <Translate
                 t={tRelease}
                 i18nKey="archive-info.description"

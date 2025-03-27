@@ -1,5 +1,5 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import difference from 'lodash-es/difference.js'
 import startCase from 'lodash-es/startCase.js'
 
@@ -103,7 +103,7 @@ function filterGroup({
   filters: SearchFilter[]
   id: string
   headerTitle?: string
-  tone?: ButtonTone
+  tone?: ElementTone
 }): FilterMenuItem[] {
   const header: FilterMenuItemHeader = {
     title: headerTitle || '',

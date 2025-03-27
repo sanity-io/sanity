@@ -47,11 +47,11 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack space={2} style={{minWidth: '240px'}} paddingTop={1}>
+    <Stack gap={2} style={{minWidth: '240px'}} paddingTop={1}>
       <Text muted size={1} weight="medium">
         {description || t('changes.changed-label')}
       </Text>
-      <Stack space={2}>
+      <Stack gap={2}>
         {annotations.map((annotation, idx) => (
           // oxlint-disable-next-line no-array-index-key
           <AnnotationItem key={idx} annotation={annotation} />
@@ -84,7 +84,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
           <Event event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
-        <Inline space={2}>
+        <Inline gap={2}>
           <Flex
             align="center"
             paddingRight={3}

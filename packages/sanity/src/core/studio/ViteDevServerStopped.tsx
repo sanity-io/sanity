@@ -54,11 +54,11 @@ export const DevServerStoppedErrorScreen = (): ReactNode => (
     tone="critical"
   >
     <Container width={3}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading>{ERROR_TITLE}</Heading>
 
         <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text size={2}>{ERROR_DESCRIPTION}</Text>
           </Stack>
         </Card>

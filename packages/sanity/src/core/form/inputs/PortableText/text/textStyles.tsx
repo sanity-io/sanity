@@ -1,9 +1,10 @@
 import {Heading, Text} from '@sanity/ui'
-import {type ComponentType, type HTMLProps} from 'react'
+import {vars} from '@sanity/ui/css'
+import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
 
-type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
-type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
+type TextStyleProps = React.ComponentProps<'div'>
+type BlockQuoteStyleProps = React.ComponentProps<'blockquote'>
 
 /**
  * Without this container, editing with Android breaks due to how Text is styled via `responsiveFont` in `@sanity/ui`
@@ -79,7 +80,7 @@ const BlockQuoteRoot = styled.blockquote`
   position: relative;
   display: block;
   margin: 0;
-  padding-left: ${({theme}) => theme.sanity.space[3]}px;
+  padding-left: ${vars.space[3]};
 
   &::before {
     content: '';
@@ -88,7 +89,7 @@ const BlockQuoteRoot = styled.blockquote`
     top: -4px;
     bottom: -4px;
     width: 3px;
-    background: var(--card-border-color);
+    background: ${vars.color.border};
   }
 `
 

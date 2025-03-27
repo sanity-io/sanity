@@ -62,7 +62,7 @@ export function CommonDateEqualInput({
   )
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <ParsedDateTextInput
         aria-label={t('search.filter-date-aria-label')}
         fontSize={fullscreen ? 2 : 1}

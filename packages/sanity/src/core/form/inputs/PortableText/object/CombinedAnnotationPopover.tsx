@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Box, Flex, Text, useGlobalKeyDown, usePrefersDark} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
@@ -20,10 +20,10 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
-  const {sanity} = useTheme()
   const {t} = useTranslation()
   const editor = usePortableTextEditor()
-  const popoverScheme = sanity.color.dark ? 'light' : 'dark'
+  const prefersDark = usePrefersDark()
+  const popoverScheme = prefersDark ? 'dark' : 'light'
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
   // Virtual element for Popper.js positioning

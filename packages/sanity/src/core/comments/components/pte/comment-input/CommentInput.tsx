@@ -11,7 +11,8 @@ import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {
   type FocusEvent,
   type FormEvent,

@@ -1,5 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {setHours} from 'date-fns/setHours'
@@ -175,7 +176,7 @@ export const CalendarFilter = forwardRef(function Calendar(
         align="center"
         paddingLeft={4}
         style={{
-          borderBottom: '1px solid var(--card-border-color)',
+          borderBottom: `1px solid ${vars.color.border}`,
           minHeight: `55px`,
           position: 'sticky',
           top: 0,
@@ -231,7 +232,7 @@ export const CalendarFilter = forwardRef(function Calendar(
       </Box>
 
       {/* Today button */}
-      <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
+      <Box flex={1} style={{borderBottom: `1px solid ${vars.color.border}`}}>
         <Button
           disabled={restProps.disabled}
           mode="bleed"

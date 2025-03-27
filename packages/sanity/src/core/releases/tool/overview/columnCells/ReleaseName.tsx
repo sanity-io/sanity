@@ -1,5 +1,5 @@
 import {PinFilledIcon, PinIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -14,7 +14,6 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
@@ -55,8 +54,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     )
   }
 
-  const cardProps: TableRowProps = release.isDeleted
-    ? {tone: 'transparent'}
+  const cardProps: CardProps = release.isDeleted
+    ? {tone: 'neutral'}
     : {
         as: 'a',
         // navigate to release detail
@@ -104,7 +103,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               <Box flex="none">
                 <ReleaseAvatar release={release} />
               </Box>
-              <Stack flex={1} space={2}>
+              <Stack flex={1} gap={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>
                   <ReleaseTitle
                     title={release.metadata.title}

@@ -1,4 +1,3 @@
-import {type RootTheme} from '@sanity/ui/theme'
 import {firstValueFrom} from 'rxjs'
 
 import {type Source, type WorkspaceSummary} from '../../config/types'
@@ -46,7 +45,6 @@ async function resolveSchemaDescriptorId(workspace: WorkspaceSummary): Promise<s
 export async function registerStudioManifest(
   userApplication: UserApplication,
   workspaces: WorkspaceSummary[],
-  theme: RootTheme,
 ): Promise<void> {
   const {id, projectId} = userApplication
 
@@ -64,7 +62,6 @@ export async function registerStudioManifest(
         icon: ws.icon,
         title: ws.title || ws.name,
         subtitle: ws.subtitle,
-        theme,
       }),
     bundleVersion: SANITY_VERSION,
     buildId,

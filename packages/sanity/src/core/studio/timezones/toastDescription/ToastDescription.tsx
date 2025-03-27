@@ -9,8 +9,8 @@ interface Props {
 const ToastDescription = (props: Props) => {
   const {body, title} = props
   return (
-    <Stack paddingY={1} space={3}>
-      <Inline space={2}>
+    <Stack paddingY={1} gap={3}>
+      <Inline gap={2}>
         <CalendarIcon />
         {title && (
           <Text size={2} weight="semibold">

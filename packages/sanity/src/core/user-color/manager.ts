@@ -1,5 +1,5 @@
 import {COLOR_HUES, type ColorHueKey, type ColorTintKey, hues} from '@sanity/color'
-import {type ThemeColorSchemeKey} from '@sanity/ui'
+import {type ColorScheme} from '@sanity/ui/theme'
 import {Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
 
@@ -11,7 +11,7 @@ export interface UserColorManagerOptions {
   userStore?: {me: Observable<{id: string} | null>}
   colors?: Record<UserColorHue, UserColor>
   currentUserColor?: UserColorHue
-  scheme: ThemeColorSchemeKey
+  scheme: ColorScheme
 }
 
 const DEFAULT_CURRENT_USER_HUE: ColorHueKey = 'purple'
@@ -24,7 +24,7 @@ const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
   (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue),
 )
 
-const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => {
+const getTints = (scheme: ColorScheme): Record<string, ColorTintKey> => {
   const isDarkScheme = scheme === 'dark'
 
   return {
@@ -34,7 +34,7 @@ const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => 
   }
 }
 
-const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor> => {
+const getDefaultColors = (scheme: ColorScheme): Record<string, UserColor> => {
   const {background, border, text} = getTints(scheme)
 
   return defaultHues.reduce(
@@ -52,7 +52,7 @@ const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor
   )
 }
 
-const getAnonymousColor = (scheme: ThemeColorSchemeKey): UserColor => {
+const getAnonymousColor = (scheme: ColorScheme): UserColor => {
   const {background, border, text} = getTints(scheme)
 
   return {

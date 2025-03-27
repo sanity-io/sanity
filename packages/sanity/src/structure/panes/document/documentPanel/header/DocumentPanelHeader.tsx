@@ -1,8 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {
   type ForwardedRef,
   forwardRef,
@@ -46,8 +45,6 @@ export interface DocumentPanelHeaderProps {
 }
 
 const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return css`
     scrollbar-width: none;
     z-index: 1;
@@ -71,7 +68,11 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
         right: 0;
         bottom: 0;
         width: 150px;
-        background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
+        background: linear-gradient(
+          to right,
+          color-mix(in srgb, ${vars.color.bg} 0%, transparent),
+          ${vars.color.bg}}
+        );
         transition: 'opacity 300ms ease-out';
         pointer-events: none;
       }
