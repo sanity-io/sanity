@@ -47,7 +47,8 @@ export interface FormFieldProps {
 
 /** @internal */
 export const FormField = memo(function FormField(
-  props: FormFieldProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'rows' | 'width' | 'wrap'>,
 ) {
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,

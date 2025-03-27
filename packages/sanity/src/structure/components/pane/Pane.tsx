@@ -45,7 +45,7 @@ const Root = styled(Card)`
 // eslint-disable-next-line complexity
 export const Pane = forwardRef(function Pane(
   props: PaneProps &
-    Omit<CardProps, 'as' | 'overflow'> &
+    Omit<CardProps, 'as' | 'flex' | 'maxWidth' | 'minWidth' | 'overflow'> &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {

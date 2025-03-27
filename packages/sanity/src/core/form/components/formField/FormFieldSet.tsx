@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, type BoxProps, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -45,7 +45,7 @@ export interface FormFieldSetProps {
   children: ReactNode | (() => ReactNode)
   collapsed?: boolean
   collapsible?: boolean
-  columns?: number | number[]
+  columns?: BoxProps['columns']
   description?: ReactNode
   /**
    * The nesting level of the form field set
@@ -123,7 +123,8 @@ const EMPTY_ARRAY: never[] = []
 
 /** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldSetProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'rows' | 'width' | 'wrap'>,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {

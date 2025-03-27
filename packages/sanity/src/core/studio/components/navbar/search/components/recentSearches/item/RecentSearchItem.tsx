@@ -1,13 +1,12 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
+  type BoxProps,
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Flex,
   Inline,
   rem,
-  type ResponsiveMarginProps,
-  type ResponsivePaddingProps,
   Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
@@ -18,7 +17,7 @@ import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/rec
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 
-export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+export interface RecentSearchesProps extends BoxProps {
   index: number
   maxVisibleTypePillChars?: number
   value: RecentSearch

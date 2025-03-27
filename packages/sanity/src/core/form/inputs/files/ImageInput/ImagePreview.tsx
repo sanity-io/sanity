@@ -10,7 +10,7 @@ interface Props {
   alt: string
   drag: boolean
   isRejected: boolean
-  readOnly?: boolean | null
+  readOnly?: boolean
   src: string
 }
 

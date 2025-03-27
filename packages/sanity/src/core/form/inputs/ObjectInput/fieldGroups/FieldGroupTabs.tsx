@@ -89,7 +89,7 @@ const GroupSelect = ({
       data-testid="field-group-select"
       disabled={disabled}
       fontSize={2}
-      muted
+      // muted
       onChange={handleSelect}
       value={groups.find((g) => g.selected)?.name}
     >

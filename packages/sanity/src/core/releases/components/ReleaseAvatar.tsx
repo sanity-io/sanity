@@ -1,5 +1,6 @@
 import {DotIcon} from '@sanity/icons'
 import {type BadgeTone, Box, Text} from '@sanity/ui'
+import {type FontTextSize, type Space} from '@sanity/ui/theme'
 import {type CSSProperties} from 'react'
 
 export const ReleaseAvatarIcon = ({tone}: {tone: BadgeTone}) => {
@@ -21,8 +22,8 @@ export function ReleaseAvatar({
   padding = 3,
   tone,
 }: {
-  fontSize?: number
-  padding?: number
+  fontSize?: FontTextSize
+  padding?: Space
   tone: BadgeTone
 }): React.JSX.Element {
   return (

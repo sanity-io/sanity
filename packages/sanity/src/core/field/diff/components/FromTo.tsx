@@ -9,7 +9,7 @@ export type FromToProps = {
   layout?: 'grid' | 'inline'
   from?: ReactNode
   to?: ReactNode
-} & Omit<HTMLProps<HTMLDivElement>, 'children' | 'as' | 'height' | 'wrap'>
+} & Omit<HTMLProps<HTMLDivElement>, 'children' | 'as' | 'height' | 'rows' | 'width' | 'wrap'>
 
 const INLINE_COLUMN_STYLES = {flexShrink: 0}
 const BLOCK_COLUMN_STYLES = {alignItems: 'stretch'}
