@@ -50,7 +50,7 @@ export function MissingKeysAlert(props: Props) {
           open={isDev}
           title={t('form.error.missing-keys-alert.details.title')}
         >
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="p" muted size={1}>
               <Translate t={t} i18nKey="form.error.missing-keys-alert.details.description" />
             </Text>

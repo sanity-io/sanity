@@ -51,7 +51,7 @@ export function UnknownFields(props: Props) {
           </Text>
         </Box>
 
-        <Stack as="ul" space={3}>
+        <Stack as="ul" gap={3}>
           {fieldNames.map((fieldName) => {
             return (
               <UnknownField

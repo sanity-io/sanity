@@ -6,11 +6,10 @@ import {
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutsideEvent} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -24,40 +23,33 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 const EMPTY_ARRAY: [] = []
 
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    color: ${color.input.default.enabled.placeholder};
+const PlaceholderWrapper = styled.span`
+  color: ${vars.color.tinted.default.border[4]};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  display: block;
+`
+
+export const StyledPopover = styled(Popover)`
+  &[data-placement='bottom'] {
+    transform: translateY(${vars.space[1]});
+  }
+
+  &[data-placement='top'] {
+    transform: translateY(-${vars.space[1]});
+  }
+
+  [data-ui='Popover__wrapper'] {
+    border-radius: ${vars.radius[3]};
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
     overflow: hidden;
-    text-overflow: ellipsis;
-    text-wrap: nowrap;
-    display: block;
-  `
-})
-
-export const StyledPopover = styled(Popover)(({theme}) => {
-  const {space, radius} = theme.sanity
-
-  return css`
-    &[data-placement='bottom'] {
-      transform: translateY(${space[1]}px);
-    }
-
-    &[data-placement='top'] {
-      transform: translateY(-${space[1]}px);
-    }
-
-    [data-ui='Popover__wrapper'] {
-      border-radius: ${radius[3]}px;
-      display: flex;
-      flex-direction: column;
-      overflow: clip;
-      overflow: hidden;
-      position: relative;
-      width: 300px; // todo: improve
-    }
-  `
-})
+    position: relative;
+    width: 300px; // todo: improve
+  }
+`
 
 interface EditableProps {
   focusLock?: boolean

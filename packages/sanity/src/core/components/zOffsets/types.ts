@@ -1,3 +1,5 @@
+import {type ResponsiveProp} from '@sanity/ui/css'
+
 /**
  * TODO: Rename to `ZOffsetsContextValue`
  *
@@ -5,48 +7,48 @@
  */
 export interface ZIndexContextValue {
   /** Used by: Navbar */
-  navbar: number | number[]
-  navbarPopover: number | number[]
-  navbarDialog: number | number[]
+  navbar: ResponsiveProp<number>
+  navbarPopover: ResponsiveProp<number>
+  navbarDialog: ResponsiveProp<number>
 
   /** Used by: DefaultPane, DocumentPane */
-  pane: number | number[]
-  paneHeader: number | number[]
-  paneFooter: number | number[]
-  paneResizer: number | number[]
-  paneDialog: number | number[]
+  pane: ResponsiveProp<number>
+  paneHeader: ResponsiveProp<number>
+  paneFooter: ResponsiveProp<number>
+  paneResizer: ResponsiveProp<number>
+  paneDialog: ResponsiveProp<number>
 
   /** Used by: EditItemFoldOut, Spinner, ConnectorsOverlay, tippy.css, BaseDateTimeInput */
-  portal: number | number[]
+  portal: ResponsiveProp<number>
 
   /** Used by: Tooltip */
-  popover: number | number[]
+  popover: ResponsiveProp<number>
 
   /** Used by: `@sanity/google-maps-input` */
-  modal: number | number[]
+  modal: ResponsiveProp<number>
 
   /** TODO this path does not seem to be correct - fix?  */
   /** Used by: `movingItem` in packages/sanity/src/styles/layout/helpers.css */
-  movingItem: number | number[]
+  movingItem: ResponsiveProp<number>
 
   /** Used for shadow behind the navbar search, and behind sidemenu */
-  drawershade: number | number[]
+  drawershade: ResponsiveProp<number>
 
   /** Used by: Snackbar */
-  drawer: number | number[]
+  drawer: ResponsiveProp<number>
 
   /** Used for UI that sits on top of the entire application */
-  fullscreen: number | number[]
+  fullscreen: ResponsiveProp<number>
 
   /** Used for toasts */
-  toast: number | number[]
+  toast: ResponsiveProp<number>
 
   // THESE ARE NOT IN USE:
-  dropdown: number | number[]
-  navbarFixed: number | number[]
-  fullscreenEdit: number | number[]
-  popoverBackground: number | number[]
-  tooltip: number | number[]
-  modalBackground: number | number[]
-  spinner: number | number[]
+  dropdown: ResponsiveProp<number>
+  navbarFixed: ResponsiveProp<number>
+  fullscreenEdit: ResponsiveProp<number>
+  popoverBackground: ResponsiveProp<number>
+  tooltip: ResponsiveProp<number>
+  modalBackground: ResponsiveProp<number>
+  spinner: ResponsiveProp<number>
 }

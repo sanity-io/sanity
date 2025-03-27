@@ -1,4 +1,5 @@
-import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui'
+import {Root} from '@sanity/ui'
+import {useMediaIndex} from '@sanity/ui-v3'
 import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
@@ -81,15 +82,13 @@ const createTaskMock = ({
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {
     return (
-      <ThemeProvider theme={studioTheme}>
-        <LayerProvider>
-          <TasksEnabledProvider>
-            <TasksProvider>
-              <TasksNavigationProvider>{children}</TasksNavigationProvider>
-            </TasksProvider>
-          </TasksEnabledProvider>
-        </LayerProvider>
-      </ThemeProvider>
+      <Root as="div">
+        <TasksEnabledProvider>
+          <TasksProvider>
+            <TasksNavigationProvider>{children}</TasksNavigationProvider>
+          </TasksProvider>
+        </TasksEnabledProvider>
+      </Root>
     )
   }
 

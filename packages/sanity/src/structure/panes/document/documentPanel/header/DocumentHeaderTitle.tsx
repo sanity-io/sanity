@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -36,7 +37,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
   return (
     <>
       {documentTitle || (
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
+        <span style={{color: vars.color.muted.fg}}>
           {t('panes.document-header-title.untitled.text')}
         </span>
       )}

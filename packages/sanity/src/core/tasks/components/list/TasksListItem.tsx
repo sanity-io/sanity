@@ -76,7 +76,7 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
 
   return (
     <Tooltip content={fullDate}>
-      <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
+      <Card tone={isDueByToday ? 'critical' : 'neutral'} padding={1} radius={2}>
         <Flex align="center" gap={2}>
           <Text as="time" size={1} dateTime={dueBy} muted>
             {isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay}
@@ -92,7 +92,7 @@ export function TasksListItem(props: TasksListItemProps) {
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" gap={1}>
         <Box>
           <TasksStatus documentId={documentId} status={status} />

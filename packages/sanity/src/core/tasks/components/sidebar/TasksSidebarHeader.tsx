@@ -50,7 +50,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
           </Box>
         ) : (
           <>
-            <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
+            <UIButton mode="bleed" gap={2} padding={2} onClick={handleGoBack}>
               <Text size={1}>{t('panel.title')}</Text>
             </UIButton>
             <ChevronRightIcon />

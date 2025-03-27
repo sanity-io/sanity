@@ -131,7 +131,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
 
     const content = (
-      <ContentStack padding={2} space={4}>
+      <ContentStack padding={2} gap={4}>
         <CommentInput
           currentUser={currentUser}
           focusLock
@@ -187,7 +187,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         mode="bleed"
         onClick={onClick}
         padding={2}
-        space={2}
+        gap={2}
       >
         <Flex align="center" gap={2}>
           <Text size={1}>

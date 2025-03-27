@@ -1,7 +1,8 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
-import {Box, rem, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import {throttle} from 'lodash'
 import {
@@ -21,7 +22,6 @@ import {
 import {css, styled} from 'styled-components'
 
 import {type FIXME} from '../../FIXME'
-import {focusRingStyle} from '../../form/components/formField/styles'
 import {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,
@@ -41,7 +41,7 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
   return css`
     bottom: ${-offset}px;
-    border-radius: ${rem(theme.sanity.radius[1])};
+    border-radius: ${vars.radius[1]};
     left: ${-offset}px;
     pointer-events: none;
     position: absolute;
@@ -50,10 +50,7 @@ const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
     z-index: 2;
 
     ${VirtualListBox}:focus-visible & {
-      box-shadow: ${focusRingStyle({
-        base: theme.sanity.color.base,
-        focusRing: theme.sanity.focusRing,
-      })};
+      /* TODO */
     }
   `
 })
@@ -659,7 +656,7 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
     virtualIndex: number
     virtualRowStart: number
   },
-  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+  forwardedRef: React.ForwardedRef<HTMLLIElement>,
 ) {
   const {
     children,

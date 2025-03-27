@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
 import {describe, expect, it} from 'vitest'
@@ -32,7 +32,7 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
 
   return function wrapper({children}: {children: ReactNode}) {
     return (
-      <ThemeProvider theme={studioTheme}>
+      <Root as="div">
         <LocaleProviderBase
           locales={[
             {
@@ -47,7 +47,7 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
         >
           {children}
         </LocaleProviderBase>
-      </ThemeProvider>
+      </Root>
     )
   }
 }

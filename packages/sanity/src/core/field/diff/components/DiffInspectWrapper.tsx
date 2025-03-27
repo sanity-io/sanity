@@ -65,7 +65,7 @@ const MetaLabel = ({title}: {title: string}) => (
 function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element | null {
   const {t} = useTranslation()
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Card padding={3} tone="transparent" as={CodeWrapper} radius={1}>
         <MetaLabel title={t('changes.inspector.meta-label')} />
         <Code language="json" size={1}>

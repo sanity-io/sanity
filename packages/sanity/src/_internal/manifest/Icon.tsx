@@ -1,5 +1,5 @@
-import {ThemeProvider} from '@sanity/ui'
-import {buildTheme} from '@sanity/ui/theme'
+import {Root} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui-v3/theme'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {createDefaultIcon} from 'sanity'
@@ -13,7 +13,7 @@ interface SchemaIconProps {
 }
 
 const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): React.JSX.Element => {
-  return <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
+  return <Root as="div">{normalizeIcon(icon, title, subtitle)}</Root>
 }
 
 function normalizeIcon(

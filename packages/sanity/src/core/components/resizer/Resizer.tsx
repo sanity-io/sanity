@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {type MouseEvent, useCallback, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -25,7 +26,7 @@ const Root = styled.div<PositionProps>`
   /* Border */
   & > span:nth-child(1) {
     display: block;
-    border-left: 1px solid var(--card-border-color);
+    border-left: 1px solid ${vars.color.border};
     position: absolute;
     top: 0;
     ${({position}) =>
@@ -55,7 +56,7 @@ const Root = styled.div<PositionProps>`
           `}
     width: 9px;
     bottom: 0;
-    background-color: var(--card-border-color);
+    background-color: ${vars.color.border};
     opacity: 0;
     transition: opacity 150ms;
   }

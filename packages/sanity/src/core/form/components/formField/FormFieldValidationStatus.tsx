@@ -1,6 +1,8 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
+import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
@@ -27,7 +29,7 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number | number
+  fontSize?: FontTextSize
   placement?: Placement
 }
 
@@ -45,15 +47,15 @@ const StyledStack = styled(Stack)`
 
 const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$status}) => {
   if ($status === 'error') {
-    return {'--card-icon-color': 'var(--card-badge-critical-icon-color)'}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.critical.bg[0]}
   }
 
   if ($status === 'warning') {
-    return {'--card-icon-color': 'var(--card-badge-caution-icon-color)'}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.caution.bg[0]}
   }
 
   if ($status === 'info') {
-    return {'--card-icon-color': 'var(--card-badge-primary-icon-color)'}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.primary.bg[0]}
   }
 
   return {}
@@ -72,13 +74,12 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack space={3}>
+        <StyledStack gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // oxlint-disable-next-line no-array-index-key
                 <FormFieldValidationStatusItem key={itemIndex} validation={item} />
               ))}
             </>

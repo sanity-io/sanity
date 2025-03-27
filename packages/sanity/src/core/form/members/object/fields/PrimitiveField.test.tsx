@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
@@ -259,19 +259,17 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
 
   function TestWrapper({children}: PropsWithChildren) {
     return (
-      <ThemeProvider theme={studioTheme}>
-        <LayerProvider>
-          <FormBuilderContext.Provider value={formBuilder}>
-            <FormCallbacksProvider {...formCallbacks}>
-              <DocumentIdProvider id="test">
-                <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
-                  {children}
-                </DocumentFieldActionsProvider>
-              </DocumentIdProvider>
-            </FormCallbacksProvider>
-          </FormBuilderContext.Provider>
-        </LayerProvider>
-      </ThemeProvider>
+      <Root as="div">
+        <FormBuilderContext.Provider value={formBuilder}>
+          <FormCallbacksProvider {...formCallbacks}>
+            <DocumentIdProvider id="test">
+              <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+                {children}
+              </DocumentFieldActionsProvider>
+            </DocumentIdProvider>
+          </FormCallbacksProvider>
+        </FormBuilderContext.Provider>
+      </Root>
     )
   }
 

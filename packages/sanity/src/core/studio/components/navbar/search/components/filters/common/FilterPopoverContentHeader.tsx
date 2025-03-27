@@ -1,6 +1,7 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
-import {forwardRef, type KeyboardEvent} from 'react'
+import {vars} from '@sanity/ui/css'
+import {type ChangeEvent, forwardRef} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../i18n'
@@ -9,13 +10,13 @@ import {CustomTextInput} from '../../common/CustomTextInput'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
-  onChange: (e: KeyboardEvent<HTMLInputElement>) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
   onClear: () => void
   typeFilter: string
 }
 
 const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-bottom: 1px solid ${vars.color.border};
   flex-shrink: 0;
 `
 
@@ -44,7 +45,7 @@ export const FilterPopoverContentHeader = forwardRef<
           clearButton={!!typeFilter}
           fontSize={fullscreen ? 2 : 1}
           icon={SearchIcon}
-          muted
+          // muted
           onChange={onChange}
           onClear={onClear}
           placeholder={t('search.filter-placeholder')}

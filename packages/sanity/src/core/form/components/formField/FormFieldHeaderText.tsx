@@ -1,5 +1,6 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
@@ -48,12 +49,12 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" paddingY={1}>
         <Flex align="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>
             {title || (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{color: vars.color.muted.fg}}>
                 {t('form.field.untitled-field-label')}
               </span>
             )}

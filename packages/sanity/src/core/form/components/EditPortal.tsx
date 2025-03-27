@@ -1,4 +1,6 @@
-import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {Box} from '@sanity/ui'
+import {type ResponsiveProp} from '@sanity/ui/css'
+import {type ContainerWidth} from '@sanity/ui/theme'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
@@ -11,7 +13,7 @@ const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 interface SharedProps {
   children?: ReactNode
   header: string
-  width: ResponsiveWidthProps['width']
+  width: ResponsiveProp<ContainerWidth>
 }
 interface DialogProps extends SharedProps {
   type: 'dialog'

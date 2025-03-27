@@ -1,100 +1,18 @@
 /* eslint-disable i18next/no-literal-string */
 
+import {black, white} from '@sanity/color'
+
 import {Favicons} from './Favicons'
 import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
 
 const globalStyles = `
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-Regular.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-Italic.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-Medium.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 500;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-MediumItalic.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-SemiBold.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 600;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-SemiBoldItalic.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-Bold.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-BoldItalic.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 800;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-ExtraBold.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 800;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-ExtraBoldItalic.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-Black.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    font-display: swap;
-    src: url("https://studio-static.sanity.io/Inter-BlackItalic.woff2") format("woff2");
-  }
   html {
     @media (prefers-color-scheme: dark) {
-      background-color: #13141b;
+      background-color: ${black.hex};
     }
     @media (prefers-color-scheme: light) {
-      background-color: #ffffff;
+      background-color: ${white.hex};
     }
   }
   html,
@@ -104,6 +22,7 @@ const globalStyles = `
   }
   body {
     margin: 0;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
   }
 `
@@ -146,12 +65,14 @@ export function DefaultDocument(props: DefaultDocumentProps): React.JSX.Element 
 
         <GlobalErrorHandler />
 
+        {/* eslint-disable-next-line react/no-danger */}
+        <style dangerouslySetInnerHTML={{__html: globalStyles}} />
+
         {css.map((href) => (
           <link key={href} rel="stylesheet" href={href} />
         ))}
-        {/* eslint-disable-next-line react/no-danger */}
-        <style dangerouslySetInnerHTML={{__html: globalStyles}} />
       </head>
+
       <body>
         <div id="sanity" />
         <script type="module" src={entryPath} />

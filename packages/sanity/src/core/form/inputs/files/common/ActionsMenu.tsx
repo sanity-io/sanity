@@ -8,7 +8,7 @@ import {useTranslation} from '../../../../i18n'
 interface Props {
   browse: ReactNode
   readOnly?: boolean
-  onReset: MouseEventHandler<HTMLDivElement>
+  onReset: MouseEventHandler<HTMLButtonElement>
   downloadUrl?: string
   copyUrl?: string
   upload: ReactNode

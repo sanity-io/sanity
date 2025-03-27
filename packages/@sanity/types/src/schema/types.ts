@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type GridTemplateColumns, type ResponsiveProp} from '@sanity/ui/css'
 import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents'
@@ -440,7 +441,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
 /** @internal */
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
-    columns?: number
+    columns?: ResponsiveProp<number>
   }
 }
 
@@ -461,7 +462,7 @@ export interface MultiFieldSet {
   single?: false
   group?: string | string[]
   options?: CollapseOptions & {
-    columns?: number
+    columns?: ResponsiveProp<GridTemplateColumns>
   }
   fields: ObjectField[]
   hidden?: ConditionalProperty

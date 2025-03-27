@@ -1,3 +1,5 @@
+import {type GridTemplateColumns, type ResponsiveProp} from '@sanity/ui/css'
+
 import {type PreviewConfig} from '../../preview'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
@@ -13,7 +15,7 @@ import {
 export interface ObjectOptions extends BaseSchemaTypeOptions {
   collapsible?: boolean
   collapsed?: boolean
-  columns?: number
+  columns?: ResponsiveProp<GridTemplateColumns>
   modal?: {
     type?: 'dialog' | 'popover'
     width?: number | number[] | 'auto'

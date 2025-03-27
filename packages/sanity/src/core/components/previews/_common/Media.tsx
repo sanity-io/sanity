@@ -1,4 +1,5 @@
 import {Text} from '@sanity/ui'
+import {type Radius} from '@sanity/ui/theme'
 import {isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
@@ -10,7 +11,7 @@ export interface MediaProps {
   dimensions: PreviewMediaDimensions
   layout: PreviewLayoutKey
   media: PreviewProps['media']
-  radius?: number
+  radius?: Radius
   responsive?: boolean
   styles?: {
     media?: string
