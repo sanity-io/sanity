@@ -346,7 +346,7 @@ export const isNavigateOptions = (
   !Array.isArray(maybeNavigateOptions) &&
   ('replace' in maybeNavigateOptions ||
     'stickyParams' in maybeNavigateOptions ||
-    'state' in maybeNavigateOptions)
+    ('state' in maybeNavigateOptions && typeof maybeNavigateOptions.state === 'object'))
 
 /**
  * Type representing either a new router state or navigation options with an optional state.
