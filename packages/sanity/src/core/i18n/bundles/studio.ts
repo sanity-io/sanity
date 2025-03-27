@@ -108,9 +108,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text displayed on button or menu invoking the image asset source */
   'asset-source.image.title': 'Uploaded images',
   /** Menu Items for Media Library */
-  'asset-source.media-library.image.title': 'Media Library',
-  // eslint-disable-next-line sort-keys
   'asset-source.media-library.file.title': 'Media Library',
+  'asset-source.media-library.image.title': 'Media Library',
   'asset-source.usage-list.documents-using-file_named_one':
     'One document is using file <code>{{filename}}</code>',
   'asset-source.usage-list.documents-using-file_named_other':
