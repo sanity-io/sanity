@@ -60,6 +60,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       setDidSelect(true)
       await onSelect(assetSelection)
     } catch (error) {
+      console.error('Error selecting assets:', error)
       setDidSelect(false)
     }
   }, [onSelect, assetSelection])
