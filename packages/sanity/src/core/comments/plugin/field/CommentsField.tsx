@@ -1,16 +1,15 @@
-import {hues} from '@sanity/color'
 import {type PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type FieldProps} from '../../../form'
 import {getSchemaTypeTitle} from '../../../schema'
 import {useCurrentUser} from '../../../store'
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment} from '../../helpers'
 import {
   applyCommentsFieldAttr,
@@ -54,25 +53,19 @@ export function CommentsField(props: FieldProps) {
   return <CommentFieldInner {...props} mode={mode} />
 }
 
-const HighlightDiv = styled(motion.div)(({theme}) => {
-  const {radius, space, color} = theme.sanity
-  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
-
-  return css`
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    left: -${space[2]}px;
-    bottom: -${space[2]}px;
-    right: -${space[2]}px;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1;
-    width: calc(100% + ${space[2] * 2}px);
-    height: calc(100% + ${space[2] * 2}px);
-    background-color: ${bg};
-  `
-})
+const HighlightDiv = styled(motion.div)`
+  border-radius: ${vars.radius[3]};
+  top: calc(0px - ${vars.space[2]});
+  left: calc(0px - ${vars.space[2]});
+  bottom: calc(0px - ${vars.space[2]});
+  right: calc(0px - ${vars.space[2]});
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+  width: calc(100% + (${vars.space[2]} * 2));
+  height: calc(100% + (${vars.space[2]} * 2));
+  background-color: ${vars.color.tinted.caution.bg[1]};
+`
 
 const FieldStack = styled(Stack)`
   position: relative;

@@ -35,7 +35,7 @@ const ScheduleForm = (props: Props) => {
   }
 
   return (
-    <Stack space={4}>
+    <Stack gap={4}>
       <Card>
         <DateTimeInput
           level={0}

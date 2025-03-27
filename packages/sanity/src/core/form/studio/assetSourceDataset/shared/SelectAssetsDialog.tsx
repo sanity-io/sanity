@@ -1,6 +1,7 @@
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {uniqueId} from 'lodash'
 import {
   type ForwardedRef,
@@ -93,7 +94,7 @@ const buildQuery = (
 }
 
 const CardLoadMore = styled(Card)`
-  border-top: 1px solid var(--card-border-color);
+  border-top: 1px solid ${vars.color.border};
   position: sticky;
   bottom: 0;
   z-index: 200;
@@ -234,7 +235,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       ref={ref}
       width={2}
     >
-      <Stack space={5}>
+      <Stack gap={5}>
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} align="center">

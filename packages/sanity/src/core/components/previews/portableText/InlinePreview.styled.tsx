@@ -1,4 +1,5 @@
-import {rem, Text, type Theme} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const RootSpan = styled.span`
@@ -23,7 +24,7 @@ export const MediaSpan = styled.span`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+    border-radius: ${vars.radius[1]};
   }
 
   & img + span {
@@ -32,9 +33,9 @@ export const MediaSpan = styled.span`
     top: 0;
     right: 0;
     bottom: 0;
-    box-shadow: inset 0 0 0 1px var(--card-fg-color);
+    box-shadow: inset 0 0 0 1px ${vars.color.fg};
     opacity: 0.2;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+    border-radius: ${vars.radius[1]};
   }
 
   & svg {
@@ -49,17 +50,16 @@ export const MediaSpan = styled.span`
   }
 `
 
-export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {theme: Theme}) => {
-  const textFont = theme.sanity.fonts.text
-  const textSize = textFont.sizes[1]
+export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(() => {
+  const textSize = vars.font.text.scale[1]
 
   return css`
     font-size: calc(${textSize.fontSize} / 16 * 1em);
-    font-weight: ${textFont.weights.medium};
+    font-weight: ${vars.font.text.weight.medium};
     box-sizing: border-box;
     display: inline-block;
     vertical-align: top;
-    line-height: ${textSize.lineHeight / textSize.fontSize};
+    line-height: ${textSize.lineHeight};
     padding-left: 0.5em;
     padding-right: calc(0.5em - 2px);
     min-width: 0;

@@ -1,6 +1,6 @@
 // oxlint-disable no-extend-native
 
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
@@ -40,7 +40,7 @@ function TestComponent(props: TestComponentProps) {
   }, [])
 
   return (
-    <ThemeProvider theme={studioTheme}>
+    <Root as="div">
       <div style={{height: '400px', position: 'relative'}}>
         <CommandList
           activeItemDataAttr={CUSTOM_ACTIVE_ATTR}
@@ -58,7 +58,7 @@ function TestComponent(props: TestComponentProps) {
           testId={COMMAND_LIST_TEST_ID}
         />
       </div>
-    </ThemeProvider>
+    </Root>
   )
 }
 

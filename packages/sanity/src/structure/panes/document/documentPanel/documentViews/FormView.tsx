@@ -31,7 +31,7 @@ interface FormViewProps {
 
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
-export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
+export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
   const {
@@ -124,7 +124,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     // React to changes in hasRev only
   }, [hasRev])
 
-  const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
+  const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
 
   // We only want to run it on first mount
   const [focusedFirstDescendant, setFocusedFirstDescendant] = useState(false)
@@ -138,7 +138,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [focusedFirstDescendant, formRef, formState?.focusPath.length, ready])
 
   const setRef = useCallback(
-    (node: HTMLDivElement | null) => {
+    (node: HTMLFormElement | null) => {
       setFormRef(node)
       if (typeof ref === 'function') {
         ref(node)

@@ -1,4 +1,5 @@
-import {type CardProps, useElementRect} from '@sanity/ui'
+import {type CardProps} from '@sanity/ui'
+import {useElementRect} from '@sanity/ui-v3'
 import {type HTMLProps, useEffect, useMemo, useState} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
 
@@ -24,8 +25,8 @@ export interface PaneLayoutProps {
  */
 export function PaneLayout(
   props: PaneLayoutProps &
-    CardProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
+    Omit<CardProps, 'minWidth'> &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'width' | 'wrap'>,
 ) {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const [controller] = useState(() => createPaneLayoutController())

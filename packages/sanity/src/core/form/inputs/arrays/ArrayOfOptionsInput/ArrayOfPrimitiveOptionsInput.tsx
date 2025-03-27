@@ -1,8 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
+import {type GridTemplateColumns} from '@sanity/ui/css'
 import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash'
-import {useMemo} from 'react'
+import {type ChangeEvent, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {set, unset} from '../../../patch'
@@ -77,7 +78,11 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
-      <Grid gap={2} columns={isGrid ? Math.min(options.length, 4) : 1} {...elementProps}>
+      <Grid
+        gap={2}
+        gridTemplateColumns={(isGrid ? Math.min(options.length, 4) : 1) as GridTemplateColumns}
+        {...elementProps}
+      >
         {options.map((option, index) => {
           const optionType = getMemberTypeOfItem(schemaType, option)
           const checked = value.includes(option.value)
@@ -90,7 +95,9 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               <Checkbox
                 disabled={disabled}
                 checked={checked}
-                onChange={(e) => handleChange(e.currentTarget.checked, option.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleChange(e.currentTarget.checked, option.value)
+                }
                 onFocus={() => onIndexFocus(index)}
                 readOnly={readOnly}
               />

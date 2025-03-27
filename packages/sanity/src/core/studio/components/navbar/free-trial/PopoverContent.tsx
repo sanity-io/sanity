@@ -34,7 +34,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
-        <Flex width="full" gap={3} justify="flex-end" padding={3}>
+        <Flex width="fill" gap={3} justify="flex-end" padding={3}>
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"

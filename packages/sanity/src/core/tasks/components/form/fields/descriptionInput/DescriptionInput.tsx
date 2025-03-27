@@ -1,6 +1,5 @@
 import {type PortableTextBlock} from '@sanity/types'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -14,17 +13,16 @@ import {type FormMode} from '../../../../types'
 import {renderBlock} from './render'
 
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const verticalPadding = props.$mode === 'edit' ? theme.space[1] : theme.space[3]
+  const verticalPadding = props.$mode === 'edit' ? vars.space[1] : vars.space[3]
   const minHeight = props.$mode === 'edit' ? 120 : 200
   return css`
     /* select CommentInputEditableWrap and change the padding */
     [data-ui='CommentInputEditableWrap'] {
       overflow: hidden;
       padding: ${props.$mode === 'edit'
-        ? `${verticalPadding}px 0px`
-        : `${verticalPadding}px ${theme.space[2]}px`};
-      min-height: ${Math.max(props.$minHeight + verticalPadding, minHeight)}px !important;
+        ? `${verticalPadding} 0px`
+        : `${verticalPadding} ${vars.space[2]}`};
+      min-width: max(calc(${props.$minHeight}px + ${verticalPadding}), ${minHeight}px);
     }
     #comment-input-root {
       box-shadow: ${props.$mode === 'edit' ? 'none' : ''};

@@ -1,5 +1,5 @@
 import {type DefinedTelemetryLog} from '@sanity/telemetry/react'
-import {type ButtonTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 
 import {
   ArchivedRelease,
@@ -30,7 +30,7 @@ interface DialogActionsMap extends BaseReleaseActionsMap {
     dialogHeaderI18nKey: string
     dialogDescriptionI18nKey: string
     dialogConfirmButtonI18nKey: string
-    confirmButtonTone: ButtonTone
+    confirmButtonTone: ElementTone
   }
 }
 

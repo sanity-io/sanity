@@ -48,7 +48,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
     <RootBox>
       <Stack>
         <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
-          <Stack flex={1} space={2}>
+          <Stack flex={1} gap={2}>
             {(title || fallbackTitle) && (
               <Text size={1} textOverflow="ellipsis" weight="medium">
                 {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}

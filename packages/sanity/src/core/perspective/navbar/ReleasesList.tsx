@@ -1,5 +1,6 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -34,7 +35,7 @@ const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?
   return css`
     position: sticky;
     top: 0;
-    background-color: var(--card-bg-color);
+    background-color: ${vars.color.bg};
     z-index: 10;
     padding-bottom: ${$removePadding ? '0px' : padding};
   `

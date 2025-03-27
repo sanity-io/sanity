@@ -1,8 +1,8 @@
 import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 import {motion} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
@@ -12,10 +12,9 @@ import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {canvasLocaleNamespace} from '../../i18n'
 import {DocumentDiff} from './DocumentDiff/DocumentDiff'
 
-const ChipCard = styled(Card)<{tone: BadgeTone}>((props) => {
-  const {color} = getTheme_v2(props.theme)
+const ChipCard = styled(Card)<{tone: ElementTone}>((props) => {
   return css`
-    --card-fg-color: ${color.button.ghost[props.tone].enabled.fg};
+    ${getVarName(vars.color.fg)}: ${vars.color.tinted[props.tone].fg[0]};
   `
 })
 
@@ -66,7 +65,7 @@ export function LinkToCanvasDiff({
               <WarningOutlineIcon />
             </Text>
           </Box>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Box padding={1}>
               <Text size={1} weight="semibold">
                 {t('dialog.confirm-document-changes.title')}

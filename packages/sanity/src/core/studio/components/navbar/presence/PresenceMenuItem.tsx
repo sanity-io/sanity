@@ -50,7 +50,6 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
     return (
       <MenuItem
         as={IntentLink}
-        // @ts-expect-error - `intent` is valid when using `IntentLink`
         intent="edit"
         params={{
           id: getPublishedId(lastActiveLocation.documentId),
@@ -58,7 +57,6 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
         }}
         searchParams={perspective ? [['perspective', perspective]] : []}
         // Shared props
-        data-as="a"
         onFocus={handleFocus}
         preview={<UserAvatar size={1} user={user} />}
         ref={setMenuItemElement}
@@ -69,13 +67,11 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
 
   return (
     <MenuItem
-      as="div"
       disabled={!hasLink}
       tooltipProps={
         hasLink ? undefined : {content: t('presence.not-in-a-document'), placement: 'left'}
       }
       // Shared props
-      data-as="a"
       onFocus={handleFocus}
       preview={<UserAvatar size={1} user={user} />}
       ref={setMenuItemElement}

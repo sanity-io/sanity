@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import {Skeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
 
 import {useSource} from '../../studio'
@@ -27,7 +28,18 @@ function _createMiddlewareComponent<T extends {}>(
     }
 
     return (
-      <Suspense fallback={<Skeleton padding={3} radius={1} animated />}>
+      <Suspense
+        fallback={
+          <Skeleton
+            animated
+            radius={1}
+            style={{
+              width: `calc(${vars.space[3]} * 2)`,
+              height: `calc(${vars.space[3]} * 2)`,
+            }}
+          />
+        }
+      >
         {next({
           ...outerProps,
           // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).

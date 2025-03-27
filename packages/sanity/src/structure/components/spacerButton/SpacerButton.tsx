@@ -1,7 +1,7 @@
 import {Button, type ButtonProps} from '../../../ui-components'
 
 interface SpacerButtonProps {
-  size?: ButtonProps['size']
+  size?: ButtonProps<'button'>['size']
 }
 
 /**

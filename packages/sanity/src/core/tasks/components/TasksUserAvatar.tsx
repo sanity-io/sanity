@@ -1,8 +1,8 @@
 import {UserIcon} from '@sanity/icons'
 import {type User} from '@sanity/types'
-import {type AvatarSize, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Text} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
@@ -11,16 +11,15 @@ import {useUser} from '../../store'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
   (props) => {
-    const theme = getTheme_v2(props.theme)
     return css`
-      min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-      min-width: ${theme.avatar.sizes[props.$size]?.size}px;
+      min-height: ${vars.avatar.scale[props.$size].size};
+      min-width: ${vars.avatar.scale[props.$size].size};
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      ${props.$border ? 'box-shadow: inset 0 0 0 1px var(--card-border-color);' : ''};
-      ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
+      ${props.$border ? `box-shadow: inset 0 0 0 1px ${vars.color.border};` : ''};
+      ${props.$removeBg ? `${getVarName(vars.color.avatar.gray.bg)}: transparent;` : ''}
     `
   },
 )

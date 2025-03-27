@@ -11,6 +11,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
@@ -47,8 +48,8 @@ const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+      ${getVarName(vars.color.fg)}: ${vars.color.bg};
     `}
 `
 
@@ -78,20 +79,20 @@ const RowButton = styled(Button)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+      ${getVarName(vars.color.fg)}: ${vars.color.bg};
 
       &:before {
-        background-color: var(--card-focus-ring-color);
+        background-color: ${vars.color.focusRing};
       }
 
       ${CardIconWrapper} {
-        --card-muted-fg-color: var(--card-bg-color);
+        ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
       }
 
       ${CustomFlex} {
-        --card-muted-fg-color: var(--card-bg-color);
-        --card-fg-color: var(--card-bg-color);
+        ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+        ${getVarName(vars.color.fg)}: ${vars.color.bg};
       }
     `}
 
@@ -99,15 +100,15 @@ const RowButton = styled(Button)<RowProps>`
     !props.isSelected &&
     css`
       &:hover:before {
-        background-color: var(--card-bg-color);
+        background-color: ${vars.color.bg};
       }
 
       &:focus:before {
-        background-color: var(--card-code-bg-color);
+        background-color: ${vars.color.code.bg};
       }
 
       &:focus-within:before {
-        background-color: var(--card-bg-color);
+        background-color: ${vars.color.bg};
       }
     `}
 `
@@ -247,7 +248,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
     return (
       <Card paddingBottom={2} style={STYLES_ROW_CARD}>
         <Grid
-          columns={4}
+          gridTemplateColumns={4}
           gap={1}
           style={{
             position: 'relative',
@@ -287,8 +288,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </Grid>
         {isOpen && (
           <>
-            <Grid marginTop={3} columns={3} gap={1}>
-              <Stack space={2}>
+            <Grid marginTop={3} gridTemplateColumns={3} gap={1}>
+              <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
                 </Text>
@@ -296,7 +297,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                   {formattedSize}
                 </Text>
               </Stack>
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.type')}
                 </Text>
@@ -304,7 +305,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                   {formattedMimeType}
                 </Text>
               </Stack>
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.date-added')}
                 </Text>
@@ -313,7 +314,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                 </Text>
               </Stack>
             </Grid>
-            <Stack space={2} marginTop={3}>
+            <Stack gap={2} marginTop={3}>
               <Button
                 fontSize={1}
                 tone="default"
@@ -356,7 +357,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
       aria-selected="true"
     >
       <Grid
-        columns={4}
+        gridTemplateColumns={4}
         gap={1}
         data-id={_id}
         paddingY={1}

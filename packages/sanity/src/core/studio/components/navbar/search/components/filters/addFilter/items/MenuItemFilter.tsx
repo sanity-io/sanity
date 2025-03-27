@@ -1,9 +1,8 @@
 import {
   Box,
+  type BoxProps,
   // eslint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling and children.
-  type ResponsiveMarginProps,
-  type ResponsivePaddingProps,
+  Button,
 } from '@sanity/ui'
 import {memo, useCallback} from 'react'
 
@@ -13,7 +12,7 @@ import {getFilterKey} from '../../../../utils/filterUtils'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
-interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+interface FilterMenuItemProps extends BoxProps {
   item: FilterMenuItemFilter
   onClose: () => void
 }

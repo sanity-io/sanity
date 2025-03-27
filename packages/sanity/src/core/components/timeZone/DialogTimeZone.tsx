@@ -1,7 +1,8 @@
 import {SearchIcon} from '@sanity/icons'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Autocomplete, BoundaryElementProvider, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
@@ -13,27 +14,21 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
-const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.base.fg};
-    font-weight: 500;
-    margin-left: 1em;
-  `
-})
+const TimeZoneCitySpan = styled.span`
+  color: ${vars.color.fg};
+  font-weight: 500;
+  margin-left: 1em;
+`
 
-const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
-    font-weight: 500;
-  `
-})
+const TimeZoneOffsetSpan = styled.span`
+  color: ${vars.color.tinted.default.fg[0]};
+  font-weight: 500;
+`
 
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
-    float: right;
-  `
-})
+const TimeZoneAlternativeNameSpan = styled.span`
+  color: ${vars.color.tinted.default.fg[4]};
+  float: right;
+`
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {onClose, timeZoneScope} = props
@@ -111,11 +106,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
+      <Stack padding={4} gap={5}>
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
-            <Inline space={2}>
+            <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
               </Text>
@@ -134,35 +129,39 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             )}
           </Flex>
 
-          <Autocomplete
-            fontSize={2}
-            icon={SearchIcon}
-            id="timezone"
-            onChange={handleTimeZoneChange}
-            openButton
-            options={allTimeZones}
-            padding={4}
-            filterOption={(query: string, option: NormalizedTimeZone) => {
-              if (query === '') return true
-              return `${option.city} (GMT
+          <BoundaryElementProvider
+            element={
+              timeZoneScope.type === 'input'
+                ? (document.querySelector('#document-panel-scroller') as HTMLElement)
+                : (document.querySelector('body') as HTMLElement)
+            }
+          >
+            <Autocomplete
+              fontSize={2}
+              icon={SearchIcon}
+              id="timezone"
+              onChange={handleTimeZoneChange}
+              openButton
+              options={allTimeZones}
+              padding={4}
+              filterOption={(query: string, option: NormalizedTimeZone) => {
+                if (query === '') return true
+                return `${option.city} (GMT
             ${option.offset}) ${option.alternativeName}`
-                ?.toLowerCase()
-                ?.includes(query?.toLowerCase())
-            }}
-            placeholder={t('time-zone.action.search-for-timezone-placeholder')}
-            popover={{
-              boundaryElement:
-                timeZoneScope.type === 'input'
-                  ? (document.querySelector('#document-panel-scroller') as HTMLElement)
-                  : (document.querySelector('body') as HTMLElement),
-              constrainSize: true,
-              placement: 'bottom-start',
-            }}
-            renderOption={renderOption}
-            renderValue={renderValue}
-            tabIndex={-1}
-            value={selectedTz?.value}
-          />
+                  ?.toLowerCase()
+                  ?.includes(query?.toLowerCase())
+              }}
+              placeholder={t('time-zone.action.search-for-timezone-placeholder')}
+              popover={{
+                constrainSize: true,
+                placement: 'bottom-start',
+              }}
+              renderOption={renderOption}
+              renderValue={renderValue}
+              tabIndex={-1}
+              value={selectedTz?.value}
+            />
+          </BoundaryElementProvider>
         </Stack>
       </Stack>
     </Dialog>

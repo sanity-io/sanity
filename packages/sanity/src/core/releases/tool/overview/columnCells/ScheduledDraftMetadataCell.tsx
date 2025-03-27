@@ -30,7 +30,7 @@ export const ScheduledDraftMetadataCell: VisibleColumn<TableRelease>['cell'] = (
       <Flex align="center" gap={3}>
         {creatorLoading && <AvatarSkeleton $size={1} animated />}
         {!creatorLoading && createdBy && <UserAvatar user={createdBy} size={1} />}
-        <Stack space={1}>
+        <Stack gap={1}>
           <Text size={1}>
             <ReleaseTime release={datum} />
           </Text>

@@ -1,8 +1,8 @@
 import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {
   type ForwardedRef,
   forwardRef,
-  type HTMLProps,
   type ReactNode,
   useCallback,
   useImperativeHandle,
@@ -19,7 +19,8 @@ import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './consta
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
 
-interface PaneProps {
+interface PaneProps
+  extends Omit<CardProps<'div'>, 'as' | 'flex' | 'id' | 'maxWidth' | 'minWidth' | 'overflow'> {
   children?: ReactNode
   currentMinWidth?: number
   currentMaxWidth?: number
@@ -35,7 +36,7 @@ const Root = styled(Card)`
 
   // NOTE: This will render a border to the right side of each pane
   // without taking up physical space.
-  box-shadow: 1px 0 0 var(--card-border-color);
+  box-shadow: 1px 0 0 ${vars.color.border};
 `
 
 /**
@@ -43,9 +44,7 @@ const Root = styled(Card)`
  * @internal
  */
 export const Pane = forwardRef(function Pane(
-  props: PaneProps &
-    Omit<CardProps, 'as' | 'overflow'> &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
+  props: PaneProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -59,6 +58,7 @@ export const Pane = forwardRef(function Pane(
     selected = false,
     ...restProps
   } = props
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const {
     collapse,

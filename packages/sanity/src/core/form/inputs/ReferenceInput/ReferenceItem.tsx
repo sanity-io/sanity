@@ -7,16 +7,9 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {Box, Menu, MenuDivider} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
+import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
@@ -62,7 +55,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'
@@ -71,6 +64,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
+// eslint-disable-next-line complexity
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
 ) {
@@ -168,27 +162,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const {t} = useTranslation()
 
-  const OpenLink = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...restProps}
-            intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={_ref}
-          />
-        )
-      }),
-    [refType?.name, value?._ref],
-  )
-
   const handleReplace = useCallback(() => {
     if (hasRef && isEditing) {
       onPathFocus([])
@@ -213,102 +186,86 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
-  const menu = useMemo(
-    () =>
-      readOnly ? null : (
-        <>
-          <MenuButton
-            ref={setMenuButtonRef}
-            onOpen={() => {
-              insertBefore.send({type: 'close'})
-              insertAfter.send({type: 'close'})
+  const menu = readOnly ? null : (
+    <>
+      <MenuButton
+        ref={setMenuButtonRef}
+        onOpen={() => {
+          insertBefore.send({type: 'close'})
+          insertAfter.send({type: 'close'})
+        }}
+        button={
+          <ContextMenuButton
+            selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
+            tooltipProps={{
+              fallbackPlacements: ['top', 'bottom'],
+              placement: 'right',
             }}
-            button={
-              <ContextMenuButton
-                selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
-                tooltipProps={{
-                  fallbackPlacements: ['top', 'bottom'],
-                  placement: 'right',
-                }}
-              />
-            }
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu ref={menuRef}>
-                {!readOnly && (
-                  <>
-                    {!disableActions.includes('remove') && (
-                      <MenuItem
-                        text={t('inputs.reference.action.remove')}
-                        tone="critical"
-                        icon={TrashIcon}
-                        onClick={onRemove}
-                      />
-                    )}
-                    <MenuItem
-                      text={t(
-                        hasRef && isEditing
-                          ? 'inputs.reference.action.replace-cancel'
-                          : 'inputs.reference.action.replace',
-                      )}
-                      icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                    {!disableActions.includes('copy') && (
-                      <MenuItem
-                        text={t('inputs.reference.action.copy')}
-                        icon={CopyIcon}
-                        onClick={handleCopy}
-                      />
-                    )}
-                    {!disableActions.includes('duplicate') && (
-                      <MenuItem
-                        text={t('inputs.reference.action.duplicate')}
-                        icon={AddDocumentIcon}
-                        onClick={handleDuplicate}
-                      />
-                    )}
-                    {!(disableActions.includes('add') || disableActions.includes('addBefore')) &&
-                      insertBefore.menuItem}
-                    {!disableActions.includes('add') &&
-                      !disableActions.includes('addAfter') &&
-                      insertAfter.menuItem}
-                  </>
-                )}
-
-                {!readOnly && !isEditing && hasRef && <MenuDivider />}
-                {!isEditing && hasRef && (
+          />
+        }
+        id={`${inputId}-menuButton`}
+        menu={
+          <Menu ref={menuRef}>
+            {!readOnly && (
+              <>
+                {!disableActions.includes('remove') && (
                   <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
+                    text={t('inputs.reference.action.remove')}
+                    tone="critical"
+                    icon={TrashIcon}
+                    onClick={onRemove}
                   />
                 )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-          {insertBefore.popover}
-          {insertAfter.popover}
-        </>
-      ),
-    [
-      OpenLink,
-      disableActions,
-      handleCopy,
-      handleDuplicate,
-      handleReplace,
-      hasRef,
-      inputId,
-      insertAfter,
-      insertBefore,
-      isEditing,
-      onRemove,
-      readOnly,
-      setMenuButtonRef,
-      t,
-    ],
+                <MenuItem
+                  text={t(
+                    hasRef && isEditing
+                      ? 'inputs.reference.action.replace-cancel'
+                      : 'inputs.reference.action.replace',
+                  )}
+                  icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
+                  onClick={handleReplace}
+                />
+                {!disableActions.includes('copy') && (
+                  <MenuItem
+                    text={t('inputs.reference.action.copy')}
+                    icon={CopyIcon}
+                    onClick={handleCopy}
+                  />
+                )}
+                {!disableActions.includes('duplicate') && (
+                  <MenuItem
+                    text={t('inputs.reference.action.duplicate')}
+                    icon={AddDocumentIcon}
+                    onClick={handleDuplicate}
+                  />
+                )}
+                {!(disableActions.includes('add') || disableActions.includes('addBefore')) &&
+                  insertBefore.menuItem}
+                {!disableActions.includes('add') &&
+                  !disableActions.includes('addAfter') &&
+                  insertAfter.menuItem}
+              </>
+            )}
+
+            {!readOnly && !isEditing && hasRef && <MenuDivider />}
+            {!isEditing && hasRef && (
+              <MenuItem
+                as={IntentLink}
+                icon={OpenInNewTabIcon}
+                intent="edit"
+                params={{id: value?._ref, type: refType?.name}}
+                rel="noopener noreferrer"
+                target="_blank"
+                text={t('inputs.reference.action.open-in-new-tab')}
+              />
+            )}
+          </Menu>
+        }
+        popover={MENU_POPOVER_PROPS}
+      />
+      {insertBefore.popover}
+      {insertAfter.popover}
+    </>
   )
 
   const handleFixStrengthMismatch = useCallback(() => {

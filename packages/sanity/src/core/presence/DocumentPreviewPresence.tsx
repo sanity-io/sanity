@@ -1,9 +1,7 @@
-/* eslint-disable camelcase */
-
 import {AvatarStack} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
@@ -22,13 +20,9 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
 }
 
-const AvatarStackBox = styled.div((props) => {
-  const {space} = getTheme_v2(props.theme)
-
-  return css`
-    margin: ${0 - space[1]}px;
-  `
-})
+const AvatarStackBox = styled.div`
+  margin: calc(0px 0 ${vars.space[1]});
+`
 
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {

@@ -1,13 +1,13 @@
 import {Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {forwardRef, type Ref, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 
 import {Button, type MenuButtonProps} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
 import {type Tool} from '../../../../config'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {ToolLink} from './ToolLink'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -40,25 +40,15 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        const Link = forwardRef(function Link(
-          linkProps: ToolLinkProps,
-          ref: Ref<HTMLAnchorElement>,
-        ) {
-          return (
-            <ToolLink {...linkProps} ref={ref} name={tool.name}>
-              {linkProps.children}
-            </ToolLink>
-          )
-        })
-
         return (
           <Button
             key={`${tool.name}-${index}`}
-            as={Link}
+            as={ToolLink}
             data-as="a"
             mode="bleed"
             selected={activeToolName === tool.name}
             text={title}
+            name={tool.name}
           />
         )
       }),

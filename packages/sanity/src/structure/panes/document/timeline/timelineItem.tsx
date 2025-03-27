@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
+import {type AvatarColor} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
@@ -20,25 +20,26 @@ import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
 
-export const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
+export const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    /* TODO: this no longer works in @sanity/ui@3 */
+    --card-icon-color: ${vars.color.avatar[color].fg};
+
+    background-color: ${vars.color.avatar[color].bg};
+    box-shadow: 0 0 0 1px ${vars.color.bg};
 
     position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
+    width: ${vars.avatar.scale[0].size};
+    height: ${vars.avatar.scale[0].size};
     right: -3px;
     bottom: -3px;
     border-radius: 50%;
   `
 })
 
-const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColorAvatarColorKey> = {
+const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', AvatarColor> = {
   initial: 'blue',
   create: 'blue',
   publish: 'green',
@@ -63,13 +64,10 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
+const NameSkeleton = styled(Skeleton)`
+  width: 6ch;
+  height: ${vars.font.text.scale[0].lineHeight};
+`
 
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
@@ -132,7 +130,7 @@ export function TimelineItem({
   }, [timestamp, dateFormat])
 
   const handleClick = useCallback(
-    (evt: MouseEvent<HTMLDivElement>) => {
+    (evt: MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
 
@@ -162,7 +160,7 @@ export function TimelineItem({
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>

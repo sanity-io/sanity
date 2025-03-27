@@ -1,6 +1,18 @@
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
+import {
+  BoundaryElementProvider,
+  Box,
+  LayerProvider,
+  PortalProvider,
+  ToastProvider,
+} from '@sanity/ui'
+import {root} from '@sanity/ui/css'
+import {useState} from 'react'
+
 import {type Config} from '../config'
-import {type StudioThemeColorSchemeKey} from '../theme/types'
+import {type StudioColorScheme} from '../theme'
+import {ColorSchemeProvider, useColorSchemeValue} from './colorScheme'
+import {Z_OFFSET} from './constants'
 import {GlobalStyle} from './GlobalStyle'
 import {type RouterHistory} from './router'
 import {StudioLayout} from './StudioLayout'
@@ -44,7 +56,7 @@ export interface StudioProps {
    * @hidden
    * @beta
    */
-  onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
+  onSchemeChange?: (nextScheme: StudioColorScheme) => void
   /**
    * By default the Studio handles the color scheme itself, but you can provide a color scheme to use.
    * If you only define `scheme` then the top-right "Appearance" dropdown menu will be hidden,
@@ -73,7 +85,7 @@ export interface StudioProps {
    * @hidden
    * @beta
    */
-  scheme?: StudioThemeColorSchemeKey
+  scheme?: StudioColorScheme
   /**
    * @hidden
    * @beta */
@@ -102,17 +114,42 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_noAuthBoundary,
   } = props
 
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+
   return (
-    <StudioProvider
-      basePath={basePath}
-      config={config}
-      onSchemeChange={onSchemeChange}
-      scheme={scheme}
-      unstable_history={unstable_history}
-      unstable_noAuthBoundary={unstable_noAuthBoundary}
-    >
-      {globalStyles && <GlobalStyle />}
-      <StudioLayout />
-    </StudioProvider>
+    <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
+      <StudioRoot ref={setBoundaryElement}>
+        <LayerProvider>
+          <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
+            <BoundaryElementProvider element={boundaryElement}>
+              <PortalProvider element={portalElement}>
+                <StudioProvider
+                  basePath={basePath}
+                  config={config}
+                  unstable_history={unstable_history}
+                  unstable_noAuthBoundary={unstable_noAuthBoundary}
+                >
+                  {globalStyles && <GlobalStyle />}
+                  <StudioLayout />
+                </StudioProvider>
+              </PortalProvider>
+            </BoundaryElementProvider>
+          </ToastProvider>
+        </LayerProvider>
+
+        <div ref={setPortalElement} />
+      </StudioRoot>
+    </ColorSchemeProvider>
+  )
+}
+
+function StudioRoot({children, className, ...rest}: React.ComponentProps<'div'>) {
+  const scheme = useColorSchemeValue()
+
+  return (
+    <Box {...rest} className={root({className, scheme})} height="fill">
+      {children}
+    </Box>
   )
 }

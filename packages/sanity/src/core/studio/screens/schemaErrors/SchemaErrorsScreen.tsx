@@ -61,7 +61,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
       <Container width={1}>
-        <Stack space={5}>
+        <Stack gap={5}>
           <Flex justify="space-between" align="center" gap={2}>
             <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
             <Button
