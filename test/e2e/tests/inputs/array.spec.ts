@@ -42,7 +42,7 @@ test.describe('File drop tests', () => {
     await expect(getList()).toBeEnabled(expectConfig)
 
     // Ensure the element is in view
-    await getList().scrollIntoViewIfNeeded()
+    await getList().waitFor({state: 'visible', ...expectConfig})
 
     // Add a small delay to ensure the UI is stable
     await page.waitForTimeout(500)
@@ -70,7 +70,7 @@ test.describe('File drop tests', () => {
     for (let attempt = 1; attempt <= maxDropAttempts; attempt++) {
       try {
         // Ensure the element is in view before each attempt
-        await getList().scrollIntoViewIfNeeded()
+        await getList().waitFor({state: 'visible', ...expectConfig})
 
         // Try the drop with a more explicit approach
         await page.evaluate(() => {
