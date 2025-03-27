@@ -22,10 +22,6 @@ export const DiscardVersionAction = (
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
   const {selectedPerspective} = usePerspective()
-  const selectedName =
-    typeof selectedPerspective === 'string'
-      ? selectedPerspective
-      : selectedPerspective.metadata.title
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -62,7 +58,7 @@ export const DiscardVersionAction = (
           documentId={version._id}
           documentType={type}
           onClose={() => setDialogOpen(false)}
-          releaseName={selectedName}
+          discardFromPerspective={selectedPerspective}
         />
       ),
     },

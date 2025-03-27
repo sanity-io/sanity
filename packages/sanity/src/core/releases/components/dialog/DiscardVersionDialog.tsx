@@ -5,6 +5,7 @@ import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {type SelectedPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {Preview} from '../../../preview'
 import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
@@ -20,9 +21,9 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  releaseName: string
+  discardFromPerspective: string | SelectedPerspective
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, releaseName} = props
+  const {onClose, documentId, documentType, discardFromPerspective} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
@@ -32,6 +33,10 @@ export function DiscardVersionDialog(props: {
   const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
   const discardType = isDraftId(documentId) ? 'draft' : 'release'
+  const releaseName =
+    typeof discardFromPerspective === 'string'
+      ? discardFromPerspective
+      : discardFromPerspective.metadata.title
 
   const schemaType = schema.get(documentType)
 
