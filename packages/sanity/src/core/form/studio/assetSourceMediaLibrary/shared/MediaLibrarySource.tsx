@@ -28,11 +28,10 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
     onSelect,
     selectedAssets,
   } = props
-  const [resolvedLibraryId, setResolvedLibraryId] = useState<string | null>(null)
+  const [fetchedLibraryId, setFetchedLibraryId] = useState<string | null>(null)
 
   useEffect(() => {
     if (libraryIdProp) {
-      setResolvedLibraryId(libraryIdProp)
       return
     }
     client.request({uri: `/projects/${client.config().projectId}`}).then((project) => {
@@ -45,11 +44,13 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
         .then((result) => {
           const libraryIdFromResult = result.data[0]?.id
           if (libraryIdFromResult) {
-            setResolvedLibraryId(libraryIdFromResult)
+            setFetchedLibraryId(libraryIdFromResult)
           }
         })
     })
   }, [client, libraryIdProp])
+
+  const resolvedLibraryId = libraryIdProp || fetchedLibraryId
 
   const handleClose = useCallback(() => {
     if (onClose) {
