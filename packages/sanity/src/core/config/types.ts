@@ -975,9 +975,9 @@ export type DefaultPluginsWorkspaceOptions = {
  */
 export interface MediaLibraryConfig {
   /**
-   * Whether the Media Library is enabled or not.
+   * Whether the Media Library is enabled.
    */
-  enabled: boolean
+  enabled?: boolean
   /**
    * The ID of the Media Library that is connected to the Studio.
    * If not provided, the Media Library will be automatically detected.
