@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -48,6 +48,7 @@ import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
+import {ButtonMode} from '@sanity/ui/theme'
 
 const MotionButton = motion.create(Button)
 
@@ -118,7 +119,7 @@ export function ReleasesOverview() {
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
-        ? {tone: 'transparent'}
+        ? {tone: 'neutral'}
         : {
             tone:
               isReleaseDocument(selectedPerspective) && selectedPerspective._id === datum._id
@@ -218,7 +219,7 @@ export function ReleasesOverview() {
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
       disabled: loading || !hasReleases,
-      mode: 'bleed' as ButtonMode,
+      mode: 'bleed',
       padding: 2,
       ...(hasMounted
         ? {

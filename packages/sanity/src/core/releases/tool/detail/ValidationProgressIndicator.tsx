@@ -1,5 +1,5 @@
 import {CheckmarkCircleIcon, ErrorOutlineIcon} from '@sanity/icons'
-import {Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon'
@@ -8,6 +8,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {type DocumentInRelease} from './useBundleDocuments'
+import {CardTone} from '@sanity/ui/theme'
 
 export function ValidationProgressIndicator({
   documents,

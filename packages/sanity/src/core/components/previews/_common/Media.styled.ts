@@ -1,13 +1,16 @@
-import {rem} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type Radius} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
 import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../types'
 
+const rem = (value: number) => `${value / 16}rem`
+
 export const MediaWrapper = styled.span<{
   $dimensions: PreviewMediaDimensions
   $layout: PreviewLayoutKey
-  $radius: number
+  $radius: Radius
   $responsive: boolean
 }>((props) => {
   const {$dimensions, $layout, $radius, $responsive} = props
@@ -20,7 +23,7 @@ export const MediaWrapper = styled.span<{
     width: ${$responsive ? '100%' : rem(width)};
     height: ${$responsive ? '100%' : rem(height)};
     min-width: ${$responsive ? undefined : rem(width)};
-    border-radius: ${({theme}) => rem(theme.sanity.radius[$radius])};
+    border-radius: ${vars.radius[$radius]};
     display: flex;
     overflow: hidden;
     overflow: clip;
@@ -39,7 +42,7 @@ export const MediaWrapper = styled.span<{
 
     & svg {
       // Shared styles for SVG icons
-      color: var(--card-icon-color);
+      color: ${vars.color.muted.fg};
       display: block;
       flex: 1;
 
@@ -65,7 +68,7 @@ export const MediaWrapper = styled.span<{
       top: 0;
       right: 0;
       bottom: 0;
-      box-shadow: inset 0 0 0 1px var(--card-fg-color);
+      box-shadow: inset 0 0 0 1px ${vars.color.fg};
       opacity: 0.1;
       border-radius: inherit;
       pointer-events: none;

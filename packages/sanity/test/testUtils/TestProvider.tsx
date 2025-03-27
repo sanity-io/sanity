@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {createMemoryHistory} from 'history'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
@@ -51,42 +51,38 @@ export async function createTestProvider({
   function TestProvider({children}: {children: ReactNode}) {
     return (
       <RouterProvider router={router} state={{}} onNavigate={noop}>
-        <ThemeProvider theme={studioTheme}>
+        <Root as="div">
           <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
             <ResourceCacheProvider>
-              <ToastProvider>
-                <LayerProvider>
-                  <WorkspaceProvider workspace={workspace}>
-                    <SourceProvider source={workspace.unstable_sources[0]}>
-                      <ActiveWorkspaceMatcherProvider
-                        activeWorkspace={{name: 'default'} as WorkspaceSummary}
-                        setActiveWorkspace={noop}
-                        history={createMemoryHistory()}
-                      >
-                        <CopyPasteProvider>
-                          <ResourceCacheProvider>
-                            <AddonDatasetContext.Provider
-                              value={{
-                                createAddonDataset: async () => Promise.resolve(null),
-                                isCreatingDataset: false,
-                                client: null,
-                                ready: true,
-                              }}
-                            >
-                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                {children}
-                              </PerspectiveContext.Provider>
-                            </AddonDatasetContext.Provider>
-                          </ResourceCacheProvider>
-                        </CopyPasteProvider>
-                      </ActiveWorkspaceMatcherProvider>
-                    </SourceProvider>
-                  </WorkspaceProvider>
-                </LayerProvider>
-              </ToastProvider>
+              <WorkspaceProvider workspace={workspace}>
+                <SourceProvider source={workspace.unstable_sources[0]}>
+                  <ActiveWorkspaceMatcherProvider
+                    activeWorkspace={{name: 'default'} as WorkspaceSummary}
+                    setActiveWorkspace={noop}
+                    history={createMemoryHistory()}
+                  >
+                    <CopyPasteProvider>
+                      <ResourceCacheProvider>
+                        <AddonDatasetContext.Provider
+                          value={{
+                            createAddonDataset: async () => Promise.resolve(null),
+                            isCreatingDataset: false,
+                            client: null,
+                            ready: true,
+                          }}
+                        >
+                          <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                            {children}
+                          </PerspectiveContext.Provider>
+                        </AddonDatasetContext.Provider>
+                      </ResourceCacheProvider>
+                    </CopyPasteProvider>
+                  </ActiveWorkspaceMatcherProvider>
+                </SourceProvider>
+              </WorkspaceProvider>
             </ResourceCacheProvider>
           </LocaleProviderBase>
-        </ThemeProvider>
+        </Root>
       </RouterProvider>
     )
   }

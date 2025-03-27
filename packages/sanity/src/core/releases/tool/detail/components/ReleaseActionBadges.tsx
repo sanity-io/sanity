@@ -1,5 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {Badge, Box, Container, Flex, Skeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useMemo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
@@ -77,10 +78,12 @@ export function ReleaseActionBadges({
               <Skeleton
                 key={`loading-skeleton-${key}`}
                 animated
-                style={{width: '60px', height: '10px'}}
                 radius={2}
-                paddingX={3}
-                paddingY={2}
+                style={{
+                  width: '60px',
+                  height: '10px',
+                  padding: `${vars.space[2]}, ${vars.space[3]}`,
+                }}
               />
             )
           }

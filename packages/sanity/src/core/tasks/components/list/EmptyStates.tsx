@@ -50,7 +50,7 @@ export function EmptyStatusListState({status}: {status: TaskStatus}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const {heading, text} = HEADING_BY_STATUS[status][activeTabId]
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text size={1} weight="semibold">
         {t(heading)}
       </Text>

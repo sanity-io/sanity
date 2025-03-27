@@ -1,6 +1,6 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {Box, type BoxProps, Flex, type FlexProps, Text, useCard} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
@@ -97,6 +97,7 @@ export function TextBlock(props: TextBlockProps) {
     spellCheck,
     value,
   } = props
+  const card = useCard()
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -158,7 +159,7 @@ export function TextBlock(props: TextBlockProps) {
     )
   }, [value.listItem, value.level, children])
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: FlexProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -177,7 +178,7 @@ export function TextBlock(props: TextBlockProps) {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions])
 
-  const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const outerPaddingProps: BoxProps = useMemo(() => {
     if (value.listItem) {
       return {paddingY: 2}
     }
@@ -296,6 +297,7 @@ export function TextBlock(props: TextBlockProps) {
                 portal="editor"
               >
                 <TextRoot
+                  $isDark={card.scheme === 'dark'}
                   $level={value.level || 1}
                   data-error={hasError ? '' : undefined}
                   data-list-item={value.listItem}
@@ -344,6 +346,7 @@ export function TextBlock(props: TextBlockProps) {
     ),
     [
       blockActionsEnabled,
+      card,
       changeIndicatorVisible,
       componentProps,
       focused,

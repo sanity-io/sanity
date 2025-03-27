@@ -8,8 +8,7 @@ import {
   Text,
   useElementSize,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
@@ -19,7 +18,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
@@ -31,21 +30,17 @@ const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
 
-const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
+const StyledButton = styled(Button)`
+  max-height: 1rem;
+  overflow: hidden;
+  min-width: 2ch;
 
-  return css`
-    max-height: 1rem;
-    overflow: hidden;
-    min-width: 2ch;
-
-    &[data-active='true'] {
-      [data-ui='Text']:first-child {
-        font-weight: ${bold};
-      }
+  &[data-active='true'] {
+    [data-ui='Text']:first-child {
+      font-weight: ${vars.font.text.weight.bold};
     }
-  `
-})
+  }
+`
 
 const StyledText = styled(Text)`
   overflow: hidden;
@@ -84,7 +79,7 @@ const MenuButton = forwardRef(function MenuButton(
       onClick={() => onPathSelect(item.path)}
       padding={1}
       ref={ref}
-      space={2}
+      gap={2}
       title={title}
       {...rest}
     >
@@ -125,7 +120,7 @@ export function TreeEditingBreadcrumbs(
 ): React.JSX.Element | null {
   const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath} = props
 
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLOListElement | null>(null)
   const size = useElementSize(rootElement)
 
   // Dynamically calculate the max length of the breadcrumbs

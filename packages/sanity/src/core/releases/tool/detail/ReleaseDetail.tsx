@@ -57,7 +57,7 @@ export const ReleaseDetail = () => {
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
+              <Stack gap={4}>
                 <Text size={1} weight="semibold">
                   {t('loading-release-documents.error.title')}
                 </Text>
@@ -123,7 +123,7 @@ export const ReleaseDetail = () => {
   return (
     <Card flex={1} tone="critical">
       <Container width={0}>
-        <Stack paddingX={4} paddingY={6} space={1}>
+        <Stack paddingX={4} paddingY={6} gap={1}>
           <Heading>{t('not-found', {releaseId})}</Heading>
         </Stack>
       </Container>

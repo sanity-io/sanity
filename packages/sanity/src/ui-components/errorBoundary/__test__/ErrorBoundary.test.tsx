@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {type SanityClient} from 'sanity'
 import {beforeAll, describe, expect, it, vi} from 'vitest'
@@ -57,7 +57,7 @@ describe('ErrorBoundary', () => {
       })
 
       return (
-        <ThemeProvider theme={studioTheme}>
+        <Root as="div">
           <LocaleProviderBase
             projectId={'test'}
             sourceId={'test'}
@@ -66,7 +66,7 @@ describe('ErrorBoundary', () => {
           >
             {children}
           </LocaleProviderBase>
-        </ThemeProvider>
+        </Root>
       )
     }
 

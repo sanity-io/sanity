@@ -64,6 +64,8 @@ export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
       icon={icon}
       text={text}
       renderMenuItem={renderMenuItem}
-    />
+    >
+      {undefined}
+    </FileMenuItem>
   )
 })

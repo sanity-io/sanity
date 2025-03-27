@@ -7,6 +7,9 @@
 const entryModule = `
 // This file is auto-generated on 'sanity dev'
 // Modifications to this file are automatically discarded
+
+import '@sanity/ui/css/index.css'
+
 import studioConfig from %STUDIO_CONFIG_LOCATION%
 import {renderStudio} from "sanity"
 
@@ -20,6 +23,9 @@ renderStudio(
 const noConfigEntryModule = `
 // This file is auto-generated on 'sanity dev'
 // Modifications to this file are automatically discarded
+
+import '@sanity/ui/css/index.css'
+
 import {renderStudio} from "sanity"
 
 const studioConfig = {missingConfigFile: true}
@@ -34,6 +40,7 @@ renderStudio(
 const appEntryModule = `
 // This file is auto-generated on 'sanity dev'
 // Modifications to this file are automatically discarded
+
 import {createRoot} from 'react-dom/client'
 import {createElement} from 'react'
 import App from %ENTRY%

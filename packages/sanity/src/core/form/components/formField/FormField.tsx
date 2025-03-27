@@ -47,7 +47,8 @@ export interface FormFieldProps {
 
 /** @internal */
 export const FormField = memo(function FormField(
-  props: FormFieldProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'rows' | 'width' | 'wrap'>,
 ) {
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
@@ -71,7 +72,7 @@ export const FormField = memo(function FormField(
       data-level={level}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      space={2}
+      gap={2}
     >
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.

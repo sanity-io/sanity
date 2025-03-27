@@ -1,10 +1,11 @@
 import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
+import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 
 interface FilterPopoverWrapperProps {
   anchorElement?: HTMLElement | null
@@ -55,7 +56,7 @@ export function FilterPopoverWrapper({
           overflow="hidden"
           radius={POPOVER_RADIUS}
           style={{
-            maxHeight: `min(calc(100vh - ${popoverOffset}px - ${POPOVER_VERTICAL_MARGIN}px - ${POPOVER_INPUT_PADDING}px), ${MAX_HEIGHT}px`,
+            maxHeight: `min(calc(100vh - ${popoverOffset}px - ${POPOVER_VERTICAL_MARGIN}px - ${vars.space[4]}), ${MAX_HEIGHT}px`,
             zIndex: 1,
           }}
         >

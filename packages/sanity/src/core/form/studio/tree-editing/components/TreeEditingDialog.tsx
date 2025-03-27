@@ -5,13 +5,12 @@ import {
   Dialog, // Custom dialog needed
   Flex,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -40,21 +39,17 @@ function renderDefault(props: InputProps) {
   return props.renderDefault(props)
 }
 
-const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
-  const spacing = getTheme_v2(theme)?.space[4]
+const StyledDialog = styled(Dialog)`
+  [data-ui='DialogCard'] {
+    padding: ${vars.space[4]};
+    box-sizing: border-box;
 
-  return css`
-    [data-ui='DialogCard'] {
-      padding: ${spacing}px;
-      box-sizing: border-box;
-
-      // Make the dialog full height
-      & > [data-ui='Card']:first-child {
-        flex: 1;
-      }
+    // Make the dialog full height
+    & > [data-ui='Card']:first-child {
+      flex: 1;
     }
-  `
-})
+  }
+`
 
 const MotionFlex = motion.create(Flex)
 

@@ -1,4 +1,5 @@
-import {type AvatarSize, AvatarStack} from '@sanity/ui'
+import {AvatarStack} from '@sanity/ui'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {UserAvatar} from 'sanity'
 
 interface UserAvatarStackProps {

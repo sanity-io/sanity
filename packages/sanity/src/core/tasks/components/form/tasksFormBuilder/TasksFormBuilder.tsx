@@ -1,7 +1,6 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {Box, rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {motion, type Variants} from 'framer-motion'
 import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
@@ -24,12 +23,10 @@ const VARIANTS: Variants = {
 }
 
 const FormBuilderRoot = styled(motion.div)((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return `
     // Update spacing for the form builder
     & > [data-ui='Stack'] {
-      grid-gap: ${rem(theme.space[4])};
+      grid-gap: ${vars.space[4]};
     }
 `
 })

@@ -240,7 +240,7 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack space={4} paddingX={4} paddingBottom={4}>
+        <Stack gap={4} paddingX={4} paddingBottom={4}>
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
             <Text muted size={1}>

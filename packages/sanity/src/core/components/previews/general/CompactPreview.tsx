@@ -1,4 +1,5 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -7,6 +8,8 @@ import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+
+const rem = (value: number) => `${value / 16}rem`
 
 /**
  * @hidden
@@ -56,7 +59,7 @@ export function CompactPreview(props: CompactPreviewProps) {
         <Flex align="center" flex={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
-          <Stack data-testid="compact-preview__heading" flex={1} space={2}>
+          <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
             <TitleSkeleton />
           </Stack>
 
@@ -83,11 +86,11 @@ export function CompactPreview(props: CompactPreviewProps) {
             media={media as any}
           />
         )}
-        <Stack data-testid="compact-preview__header" flex={1} space={2}>
+        <Stack data-testid="compact-preview__header" flex={1} gap={2}>
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
             {!title && (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{color: vars.color.muted.fg}}>
                 {t('preview.default.title-fallback')}
               </span>
             )}

@@ -1,7 +1,6 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
-  type BadgeTone,
   // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   Flex,
@@ -12,6 +11,7 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {addHours, startOfHour} from 'date-fns'
 import {
   type ComponentType,
@@ -79,7 +79,7 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
-  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const pickedReleaseType = event.currentTarget.dataset.value
 
@@ -121,8 +121,8 @@ export function ReleaseForm(props: {
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
 
   return (
-    <Stack space={5}>
-      <Stack space={4}>
+    <Stack gap={5}>
+      <Stack gap={4}>
         <Flex gap={2} align="center">
           <Text as="label" htmlFor={menuButtonId}>
             {t('release.dialog.tooltip.title')}
@@ -130,7 +130,7 @@ export function ReleaseForm(props: {
           <Text muted size={1}>
             <Tooltip
               content={
-                <Stack space={3} style={{maxWidth: 320 - 16}}>
+                <Stack gap={3} style={{maxWidth: 320 - 16}}>
                   <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
                     {t('release.dialog.tooltip.note')}
@@ -145,7 +145,7 @@ export function ReleaseForm(props: {
             </Tooltip>
           </Text>
         </Flex>
-        <Stack space={3}>
+        <Stack gap={3}>
           <MenuButton
             id={menuButtonId}
             ref={setMenuButton}
@@ -201,7 +201,7 @@ export function ReleaseForm(props: {
   )
 }
 
-const ReleaseTypeOption: ComponentType<{text: string; tone: BadgeTone}> = ({tone, text}) => (
+const ReleaseTypeOption: ComponentType<{text: string; tone: ElementTone}> = ({tone, text}) => (
   <Flex gap={3} align="center">
     <ReleaseAvatar padding={1} tone={tone} />
     <Text>{text}</Text>

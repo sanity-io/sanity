@@ -1,7 +1,8 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {styled} from 'styled-components'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -24,21 +25,19 @@ const getIcon = (level: 'error' | 'warning' | 'info') => {
   return <InfoOutlineIcon />
 }
 
-const IconText = styled(Text)(({theme}: {theme: Theme}) => {
-  return css`
-    &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg};
-    }
+const IconText = styled(Text)`
+  &[data-info] {
+    color: ${vars.color.tinted.primary.fg[0]};
+  }
 
-    &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg};
-    }
+  &[data-warning] {
+    color: ${vars.color.tinted.caution.fg[0]};
+  }
 
-    &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg};
-    }
-  `
-})
+  &[data-error] {
+    color: ${vars.color.tinted.critical.fg[0]};
+  }
+`
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
@@ -49,7 +48,7 @@ export function DefaultMarkers(props: MarkersProps) {
   }
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {validation.length > 0 &&
         validation.map(({message, level}, index) => (
           <Flex key={`validationItem-${index}`}>

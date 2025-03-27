@@ -1,4 +1,4 @@
-import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
+import {DialogProvider, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
@@ -40,33 +40,28 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
     [onConfirm],
   )
 
-  // The ThemeColorProvider is needed to make sure that the backdrop of the dialog not
-  // inherits the tone of parent color providers.
-  // The PortalProvider and DialogProvider is needed to make sure that the dialog is
-  // rendered fullscreen and not scoped to the form view.
   return (
-    <ThemeColorProvider tone="default">
-      <DialogProvider zOffset={Z_OFFSET}>
-        <Dialog
-          header={t('discard.header')}
-          id="discard-comment-dialog"
-          onClose={onClose}
-          width={0}
-          onClickOutside={onClose}
-          footer={{
-            cancelButton: {
-              onClick: handleCancelClick,
-            },
-            confirmButton: {
-              onClick: handleConfirmClick,
-              text: t('discard.button-confirm'),
-              tone: 'critical',
-            },
-          }}
-        >
-          <Text size={1}>{t('discard.text')}</Text>
-        </Dialog>
-      </DialogProvider>
-    </ThemeColorProvider>
+    <DialogProvider zOffset={Z_OFFSET}>
+      <Dialog
+        header={t('discard.header')}
+        id="discard-comment-dialog"
+        onClose={onClose}
+        width={0}
+        onClickOutside={onClose}
+        footer={{
+          cancelButton: {
+            onClick: handleCancelClick,
+          },
+          confirmButton: {
+            onClick: handleConfirmClick,
+            text: t('discard.button-confirm'),
+            tone: 'critical',
+          },
+        }}
+        tone="default"
+      >
+        <Text size={1}>{t('discard.text')}</Text>
+      </Dialog>
+    </DialogProvider>
   )
 }

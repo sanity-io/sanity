@@ -8,9 +8,9 @@ import {
   Flex,
   Stack,
   Text,
+  useCard,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -55,29 +55,27 @@ const Spacer = styled.div`
   max-width: 23px;
 `
 
-const ChildStack = styled(Stack)(({theme}) => {
-  const space = getTheme_v2(theme)?.space[3] || 0
-  const isDark = getTheme_v2(theme)?.color._dark
-  const borderColor = hues.gray[isDark ? 900 : 200].hex
+const ChildStack = styled(Stack)<{$isDark: boolean}>(({$isDark}) => {
+  const borderColor = hues.gray[$isDark ? 900 : 200].hex
 
   return css`
-    margin-left: ${space + 2}px;
+    margin-left: calc(${vars.space[3]} + 2px);
     box-sizing: border-box;
     border-left: 1px solid ${borderColor};
   `
 })
 
 const ItemFlex = styled(Flex)(({theme}) => {
-  const defaultHoverBg = getTheme_v2(theme)?.color.button.bleed.default.hovered.bg
-  const selectedHoverBg = getTheme_v2(theme)?.color.button.bleed.default.pressed.bg
-  const selectedBg = getTheme_v2(theme)?.color.button.bleed.default.selected.bg
+  const defaultHoverBg = vars.color.tinted.default.bg[1]
+  const selectedHoverBg = vars.color.tinted.default.bg[2]
+  const selectedBg = vars.color.solid.primary.bg[0]
 
   return css`
     padding: 2px;
     padding-right: 3px;
     box-sizing: border-box;
     transition: inherit;
-    border-radius: ${getTheme_v2(theme).radius[2]}px;
+    border-radius: ${vars.radius[2]};
 
     &[data-selected='true'] {
       background-color: ${selectedBg};
@@ -94,7 +92,7 @@ const ItemFlex = styled(Flex)(({theme}) => {
       &:hover {
         &[data-selected='false'] {
           background-color: ${defaultHoverBg};
-          border-radius: ${getTheme_v2(theme).radius[2]}px;
+          border-radius: ${vars.radius[2]};
 
           [data-ui='ExpandButton']:hover {
             background-color: ${selectedHoverBg};
@@ -118,6 +116,7 @@ interface TreeEditingMenuItemProps {
 
 export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.Element {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
+  const card = useCard()
   const {children} = item
   const hasChildren = children && children.length > 0
 
@@ -185,7 +184,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
       as="li"
       ref={setRootElement}
       role="treeitem"
-      space={1}
+      gap={1}
     >
       <Card
         data-as="button"
@@ -234,7 +233,14 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
       </Card>
 
       {open && hasChildren && (
-        <ChildStack flex={1} forwardedAs="ul" paddingLeft={1} role="group" space={1}>
+        <ChildStack
+          $isDark={card.scheme === 'dark'}
+          flex={1}
+          forwardedAs="ul"
+          paddingLeft={1}
+          role="group"
+          gap={1}
+        >
           {children.map((child) => {
             const childSiblingHasChildren = getSiblingHasChildren(children)
 

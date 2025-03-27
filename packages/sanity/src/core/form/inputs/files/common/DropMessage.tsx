@@ -23,7 +23,7 @@ export function DropMessage(props: Props) {
     <>
       {acceptedFiles.length > 0 ? (
         <>
-          <Inline space={2}>
+          <Inline gap={2}>
             <Text>
               <UploadIcon />
             </Text>
@@ -36,7 +36,7 @@ export function DropMessage(props: Props) {
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Text muted size={1}>
                   <AccessDeniedIcon />
                 </Text>
@@ -50,7 +50,7 @@ export function DropMessage(props: Props) {
           )}
         </>
       ) : (
-        <Inline space={2}>
+        <Inline gap={2}>
           <Text>
             <AccessDeniedIcon />
           </Text>

@@ -94,7 +94,7 @@ export function DocumentPane(props: {
         {devMode && (
           // show runtime error message in dev mode
           <Card overflow="auto" padding={3} radius={2} tone="critical">
-            <Stack space={3}>
+            <Stack gap={3}>
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>

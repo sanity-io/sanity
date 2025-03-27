@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -30,8 +31,8 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
+  min-width: ${vars.avatar.scale[2].size};
+  min-height: ${vars.avatar.scale[2].size};
 `
 
 export function UserMenu() {
@@ -78,7 +79,7 @@ export function UserMenu() {
                 </AvatarBox>
               </Tooltip>
 
-              <Stack space={2} flex={1}>
+              <Stack gap={2} flex={1}>
                 <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>

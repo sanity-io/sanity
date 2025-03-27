@@ -23,8 +23,8 @@ export function FallbackErrorScreen(props: {
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
       <View display="flex" height="fill">
         <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
+          <Stack gap={6}>
+            <Stack gap={4}>
               <Heading>{heading}</Heading>
               <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
               {isProd && (
@@ -35,7 +35,7 @@ export function FallbackErrorScreen(props: {
               )}
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
+                  <Stack gap={4}>
                     {message && (
                       <Code weight={'bold'} size={1}>
                         {message}

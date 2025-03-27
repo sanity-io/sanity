@@ -1,5 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type Space} from '@sanity/ui/theme'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
@@ -43,7 +45,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
-  padding?: number
+  padding?: Space
   showTimeZone?: boolean
   isPastDisabled?: boolean
   timeZoneScope: TimeZoneScope
@@ -249,7 +251,7 @@ export const Calendar = forwardRef(function Calendar(
           align="center"
           paddingLeft={4}
           style={{
-            borderBottom: '1px solid var(--card-border-color)',
+            borderBottom: `1px solid ${vars.color.border}`,
             minHeight: `55px`,
             position: 'sticky',
             top: 0,
@@ -329,7 +331,7 @@ export const Calendar = forwardRef(function Calendar(
       <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
+          <Grid gridTemplateColumns={3} data-ui="CalendaryDayPresets" gap={1}>
             <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
             <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
             <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />
@@ -359,7 +361,7 @@ export const Calendar = forwardRef(function Calendar(
         </Box>
       </Box>
 
-      <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+      <Box borderTop padding={2}>
         <Flex align="center" justify="space-between">
           {/* Select time */}
           {selectTime && (

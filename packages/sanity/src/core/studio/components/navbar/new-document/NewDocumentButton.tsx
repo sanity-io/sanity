@@ -157,7 +157,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   )
 
   // Shared open button props for the popover and dialog
-  const sharedOpenButtonProps: ButtonProps = useMemo(
+  const sharedOpenButtonProps: ButtonProps<'button'> = useMemo(
     () => ({
       'aria-label': openDialogAriaLabel,
       'data-testid': 'new-document-button',
@@ -280,6 +280,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               {...sharedOpenButtonProps}
               aria-expanded={open}
               aria-haspopup="true"
+              // @ts-expect-error - TODO: fix this
               onKeyDown={handleOpenButtonKeyDown}
             />
           </div>
