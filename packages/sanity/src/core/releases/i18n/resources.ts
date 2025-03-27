@@ -124,11 +124,12 @@ const releasesLocaleStrings = {
     'This will permanently remove all changes made to this document. This action cannot be undone.',
   /** Description for discarding a version of a document dialog */
   'discard-version-dialog.description-release':
-    'This will permanently remove all changes made to this document within the "{{releaseTitle}}" release. This action cannot be undone.',
+    "This will permanently remove all changes made to this document within the '<strong>{{releaseTitle}}</strong>' release. This action cannot be undone.",
   /** Title for dialog for discarding a draft of a document */
   'discard-version-dialog.header-draft': 'Discard draft?',
   /** Header for discarding a version from a release of a document dialog */
-  'discard-version-dialog.header-release': 'Remove document from the "{{releaseTitle}}" release?',
+  'discard-version-dialog.header-release':
+    "Remove document from the '<strong>{{releaseTitle}}</strong>' release?",
 
   /** Title for dialog for discarding a draft of a document */
   'discard-version-dialog.title-draft': 'Discard draft',

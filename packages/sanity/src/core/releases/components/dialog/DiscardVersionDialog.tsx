@@ -4,7 +4,7 @@ import {useCallback, useState} from 'react'
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {type SelectedPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {Preview} from '../../../preview'
@@ -71,9 +71,13 @@ export function DiscardVersionDialog(props: {
   return (
     <Dialog
       id={'discard-version-dialog'}
-      header={t(`discard-version-dialog.header-${discardType}`, {
-        releaseTitle: releaseName,
-      })}
+      header={
+        <Translate
+          t={t}
+          i18nKey={`discard-version-dialog.header-${discardType}`}
+          values={{releaseTitle: releaseName}}
+        />
+      }
       onClose={onClose}
       width={0}
       padding={false}
@@ -97,7 +101,11 @@ export function DiscardVersionDialog(props: {
         )}
         <Box paddingX={2}>
           <Text size={1} muted>
-            {t(`discard-version-dialog.description-${discardType}`, {releaseTitle: releaseName})}
+            <Translate
+              t={t}
+              i18nKey={`discard-version-dialog.description-${discardType}`}
+              values={{releaseTitle: releaseName}}
+            />
           </Text>
         </Box>
       </Stack>
