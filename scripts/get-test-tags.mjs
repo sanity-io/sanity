@@ -1,7 +1,5 @@
 import {execSync} from 'node:child_process'
 
-import {isGlob} from 'globby'
-
 import {pathToTagMapping} from './test-mappings.mjs'
 
 function getChangedFiles() {
@@ -32,7 +30,7 @@ function getChangedFiles() {
 // Simple pattern matcher that handles basic glob patterns with * and **
 function matchesPattern(filePath, pattern) {
   // Handle exact matches first
-  if (!isGlob(pattern)) {
+  if (!pattern.includes('*')) {
     // For directory patterns (ending with /)
     if (pattern.endsWith('/')) {
       return filePath.startsWith(pattern) || filePath === pattern.slice(0, -1)

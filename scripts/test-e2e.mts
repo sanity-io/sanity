@@ -55,7 +55,10 @@ if (
   cli
     .option('--tag <tags>', 'Run tests with specific tags (comma-separated)')
     .option('--excludeTag <tags>', 'Run tests without specific tags (comma-separated)')
-    .option('--includeTag <tags>', 'Include tests with these tags, in addition to untagged tests (comma-separated)')
+    .option(
+      '--includeTag <tags>',
+      'Include tests with these tags, in addition to untagged tests (comma-separated)',
+    )
     .help()
 
   // Allow passing any other arguments directly to Playwright
