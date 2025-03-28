@@ -174,7 +174,27 @@ jobs:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm e2e:build && pnpm test:e2e --excludeTag "@drag-drop" --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm e2e:build && pnpm test:e2e --excludeTag "@nightly" --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - name: Determine tests to run
+        id: test-tags
+        run: node scripts/get-test-tags.mjs
+
+      - name: Run E2E tests on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          # Other env vars...
+          PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+        run: |
+          TAGS="${{ steps.test-tags.outputs.test_tags }}"
+          if [ -n "$TAGS" ]; then
+            pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --grep "$TAGS" --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+          else
+            pnpm e2e:build && pnpm test:e2e --excludeTag "@nightly" --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()

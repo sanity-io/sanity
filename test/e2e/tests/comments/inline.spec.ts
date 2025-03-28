@@ -173,7 +173,7 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
 
 test.describe(
   'Inline comments:',
-  {tag: [E2E_ANNOTATION_TAGS.pte, E2E_ANNOTATION_TAGS.nightly]},
+  {tag: [E2E_ANNOTATION_TAGS.pte, E2E_ANNOTATION_TAGS.nightly, '@comments']},
   () => {
     test('should create inline comment', async ({page, createDraftDocument}) => {
       await inlineCommentCreationTest({page, createDraftDocument})
