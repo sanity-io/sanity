@@ -10,7 +10,7 @@ import {E2E_ANNOTATION_TAGS} from '../../../../scripts/test-e2e.mjs'
 test.describe(
   'Portable Text Input - ImageArrayDraft',
   {
-    tag: [E2E_ANNOTATION_TAGS.dragDrop, E2E_ANNOTATION_TAGS.pte],
+    tag: [E2E_ANNOTATION_TAGS.dragDrop, E2E_ANNOTATION_TAGS.pte, E2E_ANNOTATION_TAGS.nightly],
   },
   () => {
     let uploadedAsset: SanityImageAssetDocument

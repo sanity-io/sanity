@@ -12,7 +12,7 @@ const image = readFileSync(path.join(__dirname, '..', '..', 'resources', fileNam
 
 test(
   `file drop event should not propagate to dialog parent`,
-  {tag: E2E_ANNOTATION_TAGS.dragDrop},
+  {tag: [E2E_ANNOTATION_TAGS.dragDrop, E2E_ANNOTATION_TAGS.nightly]},
   async ({page, createDraftDocument}) => {
     await createDraftDocument('/test/content/input-standard;arraysTest')
 

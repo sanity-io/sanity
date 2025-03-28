@@ -7,6 +7,7 @@ export const E2E_ANNOTATION_TAGS = {
   flake: '@flake',
   dragDrop: '@drag-drop',
   pte: '@pte',
+  nightly: '@nightly',
 }
 export type E2E_ANNOTATION_TAG = (typeof E2E_ANNOTATION_TAGS)[keyof typeof E2E_ANNOTATION_TAGS]
 const VALID_E2E_TAGS = Object.values(E2E_ANNOTATION_TAGS)
