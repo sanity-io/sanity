@@ -5,68 +5,76 @@ import {expect} from '@playwright/test'
 import {type SanityImageAssetDocument} from '@sanity/client'
 import {test} from '@sanity/test'
 
-test.describe('Portable Text Input - ImageArrayDraft', () => {
-  let uploadedAsset: SanityImageAssetDocument
-  test.beforeAll(async ({sanityClient}) => {
-    const asset = await sanityClient.assets.upload(
-      'image',
-      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara.jpg')),
-      {
-        filename: 'image-array-drag.jpg',
-        title: 'image-array-drag',
-      },
-    )
-    uploadedAsset = asset
-  })
+import {E2E_ANNOTATION_TAGS} from '../../../../scripts/test-e2e.mjs'
 
-  test.afterAll(async ({sanityClient}) => {
-    await sanityClient.delete(uploadedAsset._id)
-  })
-
-  test('Portable Text Input - Array Input of images dragging an image will not trigger range out of bounds (toast)', async ({
-    page,
-    createDraftDocument,
-  }) => {
-    await createDraftDocument(
-      '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
-    )
-
-    // set up the portable text editor
-    await page.getByTestId('field-body').focus()
-    await page.getByTestId('field-body').click()
-
-    page.on('dialog', async () => {
-      await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible()
+test.describe(
+  'Portable Text Input - ImageArrayDraft',
+  {
+    tag: [E2E_ANNOTATION_TAGS.dragDrop, E2E_ANNOTATION_TAGS.pte],
+  },
+  () => {
+    let uploadedAsset: SanityImageAssetDocument
+    test.beforeAll(async ({sanityClient}) => {
+      const asset = await sanityClient.assets.upload(
+        'image',
+        createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara.jpg')),
+        {
+          filename: 'image-array-drag.jpg',
+          title: 'image-array-drag',
+        },
+      )
+      uploadedAsset = asset
     })
 
-    // open the insert menu
-    await page
-      .getByTestId('insert-menu-auto-collapse-menu')
-      .getByRole('button', {name: 'Insert Image slideshow (block)'})
-      .click()
+    test.afterAll(async ({sanityClient}) => {
+      await sanityClient.delete(uploadedAsset._id)
+    })
 
-    // set up for the PTE block
-    await page.getByRole('button', {name: 'Add item'}).click()
-    await page.getByTestId('file-input-multi-browse-button').click()
-    await page.getByTestId('file-input-browse-button-sanity-default').click()
+    test('Portable Text Input - Array Input of images dragging an image will not trigger range out of bounds (toast)', async ({
+      page,
+      createDraftDocument,
+    }) => {
+      await createDraftDocument(
+        '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
+      )
 
-    // grab an image
-    await page.getByRole('button', {name: uploadedAsset.originalFilename}).click()
-    await page.getByLabel('Edit Image With Caption').getByLabel('Close dialog').click()
+      // set up the portable text editor
+      await page.getByTestId('field-body').focus()
+      await page.getByTestId('field-body').click()
 
-    // grab drag element in array element
-    await page.locator("[data-sanity-icon='drag-handle']").hover()
+      page.on('dialog', async () => {
+        await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible()
+      })
 
-    // drag and drop element
-    await page.mouse.down()
-    await page.getByRole('button', {name: 'Add item'}).hover()
-    await page.mouse.up()
+      // open the insert menu
+      await page
+        .getByTestId('insert-menu-auto-collapse-menu')
+        .getByRole('button', {name: 'Insert Image slideshow (block)'})
+        .click()
 
-    await page.locator(
-      `:has-text("Failed to execute 'getRangeAt' on 'Selection': 0 is not a valid index.']`,
-    )
+      // set up for the PTE block
+      await page.getByRole('button', {name: 'Add item'}).click()
+      await page.getByTestId('file-input-multi-browse-button').click()
+      await page.getByTestId('file-input-browse-button-sanity-default').click()
 
-    // check that the alert is not visible
-    await expect(await page.getByRole('alert').locator('div').nth(1)).not.toBeVisible()
-  })
-})
+      // grab an image
+      await page.getByRole('button', {name: uploadedAsset.originalFilename}).click()
+      await page.getByLabel('Edit Image With Caption').getByLabel('Close dialog').click()
+
+      // grab drag element in array element
+      await page.locator("[data-sanity-icon='drag-handle']").hover()
+
+      // drag and drop element
+      await page.mouse.down()
+      await page.getByRole('button', {name: 'Add item'}).hover()
+      await page.mouse.up()
+
+      await page.locator(
+        `:has-text("Failed to execute 'getRangeAt' on 'Selection': 0 is not a valid index.']`,
+      )
+
+      // check that the alert is not visible
+      await expect(await page.getByRole('alert').locator('div').nth(1)).not.toBeVisible()
+    })
+  },
+)

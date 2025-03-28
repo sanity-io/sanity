@@ -90,7 +90,7 @@
     "test": "run-s test:vitest",
     "test:vitest": "vitest --run",
     "test:vitest:watch": "vitest --watch",
-    "test:e2e": "playwright test",
+    "test:e2e": "tsx ./scripts/test-e2e.mts",
     "test:exports": "turbo run test --filter=@repo/test-exports",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
