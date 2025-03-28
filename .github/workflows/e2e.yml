@@ -182,7 +182,7 @@ jobs:
           # Add tag-based tests if tags were found
           if [ -n "$TAGS" ]; then
             echo "Including additional tag-specific tests: $TAGS"
-            TEST_CMD="$TEST_CMD --tag $TAGS"
+            TEST_CMD="$TEST_CMD --includeTag $TAGS"
           fi
 
           # Add path-based tests if paths were found
