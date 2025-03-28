@@ -43,23 +43,16 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
     if (libraryIdProp || fetchedLibraryId) {
       return
     }
-    client.request({uri: `/projects/${projectId}`}).then((project) => {
-      const {organizationId} = project
-      client
-        .withConfig({
-          useProjectHostname: false,
-        })
-        .request({uri: `/media-libraries`, query: {organizationId}, useGlobalApi: true})
-        .then((result) => {
-          const libraryIdFromResult = result.data[0]?.id
-          if (libraryIdFromResult) {
-            // Add to cache for this project (organization)
-            if (projectId) {
-              fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
-            }
-            setFetchedLibraryId(libraryIdFromResult)
-          }
-        })
+    if (!projectId) {
+      throw new Error('projectId is required to fetch Media Library ID')
+    }
+    client.request({uri: `/media-libraries`, query: {projectId}}).then((result) => {
+      const libraryIdFromResult = result.data[0]?.id
+      if (libraryIdFromResult) {
+        // Add to cache for this project (organization)
+        fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
+        setFetchedLibraryId(libraryIdFromResult)
+      }
     })
   }, [client, fetchedLibraryId, libraryIdProp, projectId])
 
