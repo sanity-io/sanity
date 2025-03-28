@@ -1,11 +1,7 @@
 import path from 'node:path'
 
+import cac from 'cac'
 import execa from 'execa'
-
-// Guard against multiple executions - only run the main logic if this is the entry script
-const isMainScript =
-  process.argv[1] === path.resolve(process.cwd(), 'scripts/test-e2e') ||
-  process.argv[1].endsWith('/scripts/test-e2e')
 
 export const E2E_ANNOTATION_TAGS = {
   flake: '@flake',
@@ -15,7 +11,7 @@ export const E2E_ANNOTATION_TAGS = {
 export type E2E_ANNOTATION_TAG = (typeof E2E_ANNOTATION_TAGS)[keyof typeof E2E_ANNOTATION_TAGS]
 const VALID_E2E_TAGS = Object.values(E2E_ANNOTATION_TAGS)
 
-function validateE2ETags(tags: string): string {
+function validateE2ETags(tags: string): string[] {
   const tagList = tags.split(',')
   const invalidTags = tagList.filter((tag) => !VALID_E2E_TAGS.includes(tag as E2E_ANNOTATION_TAG))
 
@@ -25,7 +21,7 @@ function validateE2ETags(tags: string): string {
     )
   }
 
-  return tags
+  return tagList
 }
 
 /**
@@ -46,66 +42,60 @@ function validateE2ETags(tags: string): string {
  * pnpm test:e2e --excludeTag @flake,@drag-drop,@pte
  * ```
  */
-function processE2EArgs(args: string[]): string[] {
-  // Define the tag types with their prefix and whether they should invert the grep
-  const TAG_TYPES = [
-    {name: 'include', flag: '--tag', useGrepInvert: false},
-    {name: 'exclude', flag: '--excludeTag', useGrepInvert: true},
-  ]
 
-  function createGrepArgs(tagValue: string, useInvert = false): string[] {
-    const grepFlag = useInvert ? '--grep-invert' : '--grep'
-    const grepPattern = validateE2ETags(tagValue).split(',').join('|')
-    return [grepFlag, grepPattern]
-  }
+// Only run the CLI when this is the main entry point
+// This prevents double execution when imported by Playwright
+if (
+  process.argv[1] === path.resolve(process.cwd(), 'scripts/test-e2e') ||
+  process.argv[1].endsWith('/scripts/test-e2e')
+) {
+  const cli = cac('test-e2e')
 
-  const tagHandlers = TAG_TYPES.map((tagType) => ({
-    flag: tagType.flag,
-    match: (arg: string, next: string | null) => arg === tagType.flag && next !== null,
-    process: (arg: string, next: string) => ({
-      args: createGrepArgs(next, tagType.useGrepInvert),
-      skipNext: true, // Skip the next argument since we've consumed it
-    }),
-  }))
+  cli
+    .option('--tag <tags>', 'Run tests with specific tags (comma-separated)')
+    .option('--excludeTag <tags>', 'Run tests without specific tags (comma-separated)')
+    .help()
 
-  return args.reduce<{processedArgs: string[]; indexesToSkip: number[]}>(
-    (result, arg, index, array) => {
-      if (result.indexesToSkip.includes(index)) {
-        return result
-      }
+  // Allow passing any other arguments directly to Playwright
+  cli
+    .command('[...args]', 'Additional arguments passed to Playwright')
+    .allowUnknownOptions() // This is the key fix - allow unknown options like --project
+    .action(async (args, options) => {
+      const playwrightArgs: string[] = [...args]
 
-      // Get the next argument if it exists, or null if we're at the end of the args array
-      // This lets us handle flags that consume their value from the next argument
-      const nextArg = index + 1 < array.length ? array[index + 1] : null
-      const handler = tagHandlers.find((tagHandler) => tagHandler.match(arg, nextArg))
-
-      if (handler && nextArg) {
-        const processed = handler.process(arg, nextArg)
-        return {
-          processedArgs: [...result.processedArgs, ...processed.args],
-          indexesToSkip: processed.skipNext
-            ? [...result.indexesToSkip, index + 1]
-            : result.indexesToSkip,
+      // Add all unknown options to the playwright args
+      for (const [key, value] of Object.entries(options)) {
+        if (key !== 'tag' && key !== 'excludeTag' && key !== '--') {
+          // Handle boolean flags vs flags with values
+          if (value === true) {
+            playwrightArgs.push(`--${key}`)
+          } else if (value !== false) {
+            playwrightArgs.push(`--${key}`, String(value))
+          }
         }
       }
 
-      return {
-        processedArgs: [...result.processedArgs, arg],
-        indexesToSkip: result.indexesToSkip,
+      // Process include tags
+      if (options.tag) {
+        const tags = validateE2ETags(options.tag)
+        playwrightArgs.push('--grep', tags.join('|'))
       }
-    },
-    {processedArgs: [], indexesToSkip: []},
-  ).processedArgs
-}
 
-// Only run the execution logic when this is the main script
-if (isMainScript) {
-  const playwrightArgs = processE2EArgs(process.argv.slice(2))
+      // Process exclude tags
+      if (options.excludeTag) {
+        const tags = validateE2ETags(options.excludeTag)
+        playwrightArgs.push('--grep-invert', tags.join('|'))
+      }
 
-  console.log(`[running] playwright test ${playwrightArgs.join(' ')}`)
+      console.log(`[running] playwright test ${playwrightArgs.join(' ')}`)
 
-  execa('npx', ['playwright', 'test', ...playwrightArgs], {stdio: 'inherit'}).catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+      try {
+        await execa('npx', ['playwright', 'test', ...playwrightArgs], {stdio: 'inherit'})
+      } catch (error) {
+        console.error(error)
+        process.exit(1)
+      }
+    })
+
+  cli.parse()
 }
