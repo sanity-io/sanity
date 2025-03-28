@@ -113,7 +113,7 @@ const DocumentActionsInner = memo(
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}
-            discardFromPerspective={releaseName}
+            fromPerspective={releaseName}
           />
         )}
         {showUnpublishDialog && (

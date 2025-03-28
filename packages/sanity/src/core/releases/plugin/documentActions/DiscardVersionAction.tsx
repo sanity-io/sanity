@@ -58,7 +58,7 @@ export const DiscardVersionAction = (
           documentId={version._id}
           documentType={type}
           onClose={() => setDialogOpen(false)}
-          discardFromPerspective={selectedPerspective}
+          fromPerspective={selectedPerspective}
         />
       ),
     },

@@ -243,7 +243,7 @@ export const VersionChip = memo(function VersionChip(props: {
               ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
               : documentId
           }
-          discardFromPerspective={text}
+          fromPerspective={text}
           documentType={documentType}
         />
       )}

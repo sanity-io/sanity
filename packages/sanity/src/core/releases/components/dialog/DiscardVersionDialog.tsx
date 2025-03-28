@@ -21,9 +21,9 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  discardFromPerspective: string | SelectedPerspective
+  fromPerspective: string | SelectedPerspective
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, discardFromPerspective} = props
+  const {onClose, documentId, documentType, fromPerspective} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
@@ -34,9 +34,7 @@ export function DiscardVersionDialog(props: {
   const [isDiscarding, setIsDiscarding] = useState(false)
   const discardType = isDraftId(documentId) ? 'draft' : 'release'
   const releaseName =
-    typeof discardFromPerspective === 'string'
-      ? discardFromPerspective
-      : discardFromPerspective.metadata.title
+    typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
 
   const schemaType = schema.get(documentType)
 
