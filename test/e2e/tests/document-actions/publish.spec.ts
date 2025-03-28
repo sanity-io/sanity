@@ -41,26 +41,25 @@ test(`custom publish action can patch document before publication`, async ({
 }) => {
   const title = 'Test Title'
 
-  const publishKeypress = () => page.locator('body').press('Control+Alt+p')
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-  const publishedAtInput = page.getByTestId('field-publishedAt').getByTestId('date-input')
-  const paneFooter = page.getByTestId('pane-footer-document-status')
+  const getPublishKeypress = () => page.locator('body').press('Control+Alt+p')
+  const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
+  const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
+  const getPublishedAtInput = () => page.getByTestId('field-publishedAt').getByTestId('date-input')
 
   await createDraftDocument('/test/content/input-debug;documentActionsTest')
-  await titleInput.fill(title)
+  await getTitleInput().fill(title)
 
   // Wait for the document to save before publishing.
-  await expect(paneFooter).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expect(getDocumentStatus()).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
   // Wait for the document to be published.
   //
   // Note: This is invoked using the publish keyboard shortcut, because the publish document action
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
-  await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishKeypress()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Ensure the custom publish action succeeded in setting the `publishedAt` field.
-  await expect(publishedAtInput).toHaveValue(/.*/)
+  await expect(getPublishedAtInput()).toHaveValue(/.*/)
 })

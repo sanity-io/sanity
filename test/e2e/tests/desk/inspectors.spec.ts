@@ -8,27 +8,25 @@ withDefaultClient((context) => {
     test('open and close custom inspector', async ({page}) => {
       await page.goto('/test/content/input-debug;inspectorsTest;inspectors-test')
 
+      const getCustomInspectorButton = () =>
+        page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
+      const getInspectorPanel = () => page.locator('aside[data-ui="DocumentInspectorPanel"]')
+
       // Click to open inspector
-      await page
-        .locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
-        .click({timeout: 0})
+      await getCustomInspectorButton().click({timeout: 0})
 
       // Expect button to be selected and inspector to be visible
       await expect(
         page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"][data-selected]'),
       ).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-        'Custom inspector',
-      )
+      await expect(getInspectorPanel()).toBeVisible()
+      await expect(getInspectorPanel().locator('h1')).toContainText('Custom inspector')
 
       // Click to close inspector
       await page.locator('button[aria-label="Close custom inspector"]').click()
 
       expect(
-        await page
-          .locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
-          .evaluate((el) => el.getAttribute('data-selected')),
+        await getCustomInspectorButton().evaluate((el) => el.getAttribute('data-selected')),
       ).toBe(null)
     })
 
@@ -46,6 +44,8 @@ withDefaultClient((context) => {
 
       await page.goto(`/test/content/input-debug;validationTest;${id}`)
 
+      const getInspectorPanel = () => page.locator('aside[data-ui="DocumentInspectorPanel"]')
+
       // Click to open inspector
       await page.locator('[data-ui="StatusButton"][aria-label="Validation"]').click({timeout: 0})
 
@@ -53,10 +53,8 @@ withDefaultClient((context) => {
       await expect(
         page.locator('[data-ui="StatusButton"][aria-label="Validation"][data-selected]'),
       ).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-        'Validation',
-      )
+      await expect(getInspectorPanel()).toBeVisible()
+      await expect(getInspectorPanel().locator('h1')).toContainText('Validation')
     })
 
     test('open "Review changes" inspector', async ({page}) => {
@@ -73,6 +71,8 @@ withDefaultClient((context) => {
 
       await page.goto(`/test/content/input-debug;inspectorsTest;${id}`)
 
+      const getInspectorPanel = () => page.locator('aside[data-ui="DocumentInspectorPanel"]')
+
       // Click to open inspector
       await page.locator('[data-testid="review-changes-button"]').click()
 
@@ -80,10 +80,8 @@ withDefaultClient((context) => {
       await expect(
         page.locator('[data-testid="review-changes-button"][data-selected]'),
       ).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
-      await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-        'Review changes',
-      )
+      await expect(getInspectorPanel()).toBeVisible()
+      await expect(getInspectorPanel().locator('h1')).toContainText('Review changes')
 
       await context.client.delete(id)
     })

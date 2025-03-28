@@ -52,6 +52,12 @@ test(`navigating document creates only one listener connection`, async ({page, b
 
   await page.waitForSelector('[data-testid="structure-tool-list-pane"]')
 
+  const getAuthorItem = () => page.getByTestId('pane-item-Author')
+  const getBookItem = () => page.getByTestId('pane-item-Book')
+  const getDocumentListPane = () => page.getByTestId('document-list-pane')
+  const getAuthorList = () => page.locator('#author-author-0')
+  const getBookList = () => page.locator('#book-book-0')
+
   const authorRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
   )
@@ -60,9 +66,9 @@ test(`navigating document creates only one listener connection`, async ({page, b
   )
   const keyValueRequest = page.waitForResponse((response) => response.url().includes('keyvalue'))
 
-  await page.getByTestId('pane-item-Author').click({force: true})
-  await expect(page.locator('#author-author-0')).toBeVisible()
-  await expect(page.getByTestId('document-list-pane')).toBeVisible()
+  await getAuthorItem().click({force: true})
+  await expect(getAuthorList()).toBeVisible()
+  await expect(getDocumentListPane()).toBeVisible()
   await authorRequest
   expect(bookListenersCount).toBe(0)
   expect(authorListenersCount).toBe(1)
@@ -72,23 +78,23 @@ test(`navigating document creates only one listener connection`, async ({page, b
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   await keyValueRequest
 
-  await page.getByTestId('pane-item-Book').click({force: true})
-  await expect(page.locator('#book-book-0')).toBeVisible()
-  await expect(page.getByTestId('document-list-pane')).toBeVisible()
+  await getBookItem().click({force: true})
+  await expect(getBookList()).toBeVisible()
+  await expect(getDocumentListPane()).toBeVisible()
   expect(authorListenersCount).toBe(0)
   expect(bookListenersCount).toBe(1)
   await bookRequest
 
-  await page.getByTestId('pane-item-Author').click({force: true})
-  await expect(page.locator('#author-author-0')).toBeVisible()
-  await expect(page.getByTestId('document-list-pane')).toBeVisible()
+  await getAuthorItem().click({force: true})
+  await expect(getAuthorList()).toBeVisible()
+  await expect(getDocumentListPane()).toBeVisible()
   expect(bookListenersCount).toBe(0)
   expect(authorListenersCount).toBe(1)
   await authorRequest
 
-  await page.getByTestId('pane-item-Book').click({force: true})
-  await expect(page.locator('#book-book-0')).toBeVisible()
-  await expect(page.getByTestId('document-list-pane')).toBeVisible()
+  await getBookItem().click({force: true})
+  await expect(getBookList()).toBeVisible()
+  await expect(getDocumentListPane()).toBeVisible()
   expect(authorListenersCount).toBe(0)
   expect(bookListenersCount).toBe(1)
   await bookRequest

@@ -14,6 +14,9 @@ test('clicking inspect mode sets value in storage', async ({
   await createDraftDocument('/test/content/book')
   await page.waitForLoadState('load', WAIT_OPTIONS)
 
+  const getRawJsonTab = () => page.getByRole('tab', {name: 'Raw JSON'})
+  const getParsedTab = () => page.getByRole('tab', {name: 'Parsed'})
+
   // Open inspect dialog
   const contextMenuButton = page
     .getByTestId('document-pane')
@@ -26,16 +29,13 @@ test('clicking inspect mode sets value in storage', async ({
   await inspectMenuItem.click()
 
   // Wait for inspect dialog to be visible
-  const rawJsonTab = page.getByRole('tab', {name: 'Raw JSON'})
-  await rawJsonTab.waitFor({state: 'visible', ...WAIT_OPTIONS})
+  await getRawJsonTab().waitFor({state: 'visible', ...WAIT_OPTIONS})
 
   // Set up listener for the first network request before clicking
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-
-  // Click Raw JSON tab
-  await rawJsonTab.click()
+  await getRawJsonTab().click()
 
   // Wait for and verify the response
   const keyValueResponse = await keyValueRequest
@@ -54,9 +54,8 @@ test('clicking inspect mode sets value in storage', async ({
   })
 
   // Click Parsed tab
-  const parsedTab = page.getByRole('tab', {name: 'Parsed'})
-  await parsedTab.waitFor({state: 'visible', ...WAIT_OPTIONS})
-  await parsedTab.click()
+  await getParsedTab().waitFor({state: 'visible', ...WAIT_OPTIONS})
+  await getParsedTab().click()
 
   // Wait for and verify the second response
   const response2 = await keyValueRequest2

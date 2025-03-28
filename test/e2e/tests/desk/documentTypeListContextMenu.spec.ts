@@ -29,10 +29,13 @@ test('clicking default sort order and direction sets value in storage', async ({
     })
   }
 
+  const getPaneContextMenuButton = () =>
+    page.getByTestId('pane').getByTestId('pane-context-menu-button')
+
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await getPaneContextMenuButton().click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   const responseBody = await (await keyValueRequest).json()
 
@@ -47,7 +50,7 @@ test('clicking default sort order and direction sets value in storage', async ({
   const keyValueRequest2 = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await getPaneContextMenuButton().click()
   await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
   const responseBody2 = await (await keyValueRequest2).json()
 
@@ -119,10 +122,13 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
     })
   }
 
+  const getPaneContextMenuButton = () =>
+    page.getByTestId('pane').getByTestId('pane-context-menu-button')
+
   const keyValueRequest = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await getPaneContextMenuButton().click()
   await page.getByRole('menuitem', {name: 'Detailed view'}).click()
   const responseBody = await (await keyValueRequest).json()
 
@@ -134,7 +140,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
   const keyValueRequest2 = page.waitForResponse(async (response) => {
     return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
   })
-  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await getPaneContextMenuButton().click()
   await page.getByRole('menuitem', {name: 'Compact view'}).click()
   const responseBody2 = await (await keyValueRequest2).json()
 

@@ -35,18 +35,20 @@ test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
   })
 
   const [objectArrayField, gridObjectArrayField, primitiveArrayField] = [
-    page.getByTestId('field-objectArray'),
-    page.getByTestId('field-objectArrayAsGrid'),
-    page.getByTestId('field-primitiveArray'),
+    () => page.getByTestId('field-objectArray'),
+    () => page.getByTestId('field-objectArrayAsGrid'),
+    () => page.getByTestId('field-primitiveArray'),
   ] as const
 
   for (const field of [objectArrayField, gridObjectArrayField]) {
-    await expect(field).toBeAttached()
-    await expect(field.getByTestId('array-item-menu-button')).not.toBeAttached()
-    await expect(field.getByTestId('add-single-object-button')).not.toBeAttached()
-    await expect(field.getByTestId('add-multiple-object-button')).not.toBeAttached()
+    await expect(field()).toBeAttached()
+    await expect(field().getByTestId('array-item-menu-button')).not.toBeAttached()
+    await expect(field().getByTestId('add-single-object-button')).not.toBeAttached()
+    await expect(field().getByTestId('add-multiple-object-button')).not.toBeAttached()
   }
-  await expect(primitiveArrayField).toBeAttached()
-  await expect(primitiveArrayField.getByTestId('add-single-primitive-button')).not.toBeAttached()
-  await expect(primitiveArrayField.getByTestId('add-multiple-primitive-button')).not.toBeAttached()
+  await expect(primitiveArrayField()).toBeAttached()
+  await expect(primitiveArrayField().getByTestId('add-single-primitive-button')).not.toBeAttached()
+  await expect(
+    primitiveArrayField().getByTestId('add-multiple-primitive-button'),
+  ).not.toBeAttached()
 })

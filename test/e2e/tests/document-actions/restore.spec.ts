@@ -6,52 +6,49 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   const titleA = 'Title A'
   const titleB = 'Title B'
 
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-publish')
-  const restoreButton = page.getByTestId('action-reverttorevision')
-  const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
-  const contextMenuButton = page
-    .getByTestId('document-pane')
-    .getByTestId('pane-context-menu-button')
-  const historyMenuButton = page.getByTestId('action-history')
-  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
-
-  const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
+  const getPublishButton = () => page.getByTestId('action-publish')
+  const getRestoreButton = () => page.getByTestId('action-reverttorevision')
+  const getConfirmButton = () => page.getByTestId('confirm-dialog-confirm-button')
+  const getContextMenuButton = () =>
+    page.getByTestId('document-pane').getByTestId('pane-context-menu-button')
+  const getHistoryMenuButton = () => page.getByTestId('action-history')
+  const getHistoryPane = () => page.getByLabel('History').getByTestId('scroll-container')
+  const getTimelineItemButton = () => page.getByTestId('timeline-item-button')
+  const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/book')
-  await titleInput.fill(titleA)
+  await getTitleInput().fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 60_000})
+  await expect(getDocumentStatus()).toContainText(/created/i, {useInnerText: true, timeout: 60_000})
 
   // Wait for the document to be published.
-  await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishButton().click()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Change the title.
-  await titleInput.fill(titleB)
-  await expect(titleInput).toHaveValue(titleB)
+  await getTitleInput().fill(titleB)
+  await expect(getTitleInput()).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
-  await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishButton().click()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await contextMenuButton.click()
-  await expect(contextMenuButton).toBeVisible()
-  await historyMenuButton.click()
-  await expect(historyPane).toBeVisible()
+  await getContextMenuButton().click()
+  await expect(getContextMenuButton()).toBeVisible()
+  await getHistoryMenuButton().click()
+  await expect(getHistoryPane()).toBeVisible()
 
-  await previousRevisionButton.click({force: true})
+  await getTimelineItemButton().nth(1).click({force: true})
 
-  await expect(titleInput).toHaveValue(titleA)
+  await expect(getTitleInput()).toHaveValue(titleA)
 
   // Wait for the revision to be restored.
-  await restoreButton.click()
-  await confirmButton.click()
-  await expect(titleInput).toHaveValue(titleA)
+  await getRestoreButton().click()
+  await getConfirmButton().click()
+  await expect(getTitleInput()).toHaveValue(titleA)
 })
 
 test(`respects overridden restore action`, async ({page, createDraftDocument}) => {
@@ -61,19 +58,15 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   const titleB = 'Title B'
 
   const publishKeypress = () => page.locator('body').press('Control+Alt+p')
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  const restoreButton = page.getByTestId('action-reverttorevision')
-  const customRestoreButton = page.getByRole('button').getByText('Custom restore')
-  const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
-  const contextMenuButton = page
-    .getByTestId('document-pane')
-    .getByTestId('pane-context-menu-button')
-  const historyMenuButton = page.getByTestId('action-history')
-  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
-
-  const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
+  const getCustomRestoreButton = () => page.getByRole('button').getByText('Custom restore')
+  const getConfirmButton = () => page.getByTestId('confirm-dialog-confirm-button')
+  const getContextMenuButton = () =>
+    page.getByTestId('document-pane').getByTestId('pane-context-menu-button')
+  const getHistoryMenuButton = () => page.getByTestId('action-history')
+  const getHistoryPane = () => page.getByLabel('History').getByTestId('scroll-container')
+  const getTimelineItemButton = () => page.getByTestId('timeline-item-button')
+  const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;documentActionsTest')
 
@@ -82,9 +75,9 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
     state: 'visible',
   })
 
-  await titleInput.fill(titleA)
+  await getTitleInput().fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expect(getDocumentStatus()).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
   // Wait for the document to be published.
   //
@@ -92,33 +85,29 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Change the title.
-  await titleInput.fill(titleB)
-  await expect(titleInput).toHaveValue(titleB)
+  await getTitleInput().fill(titleB)
+  await expect(getTitleInput()).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await contextMenuButton.click()
-  await expect(contextMenuButton).toBeVisible()
-  await historyMenuButton.click()
-  await expect(historyPane).toBeVisible()
-  await previousRevisionButton.click({force: true})
+  await getContextMenuButton().click()
+  await expect(getContextMenuButton()).toBeVisible()
+  await getHistoryMenuButton().click()
+  await expect(getHistoryPane()).toBeVisible()
+  await getTimelineItemButton().nth(1).click({force: true})
 
-  await expect(titleInput).toHaveValue(titleA)
+  await expect(getTitleInput()).toHaveValue(titleA)
 
-  // Ensure the custom restore button is rendered instead of the default restore button.
-  await expect(customRestoreButton).toBeVisible()
-  await expect(restoreButton).not.toBeVisible()
-
-  // Ensure the custom restore action can invoke the system restore action.
-  await customRestoreButton.click()
-  await confirmButton.click()
+  // Wait for the custom restore button to be displayed and click it.
+  await getCustomRestoreButton().click()
+  await getConfirmButton().click()
 
   // Wait for input not to be the previous value.
   await page.waitForFunction(
@@ -129,69 +118,66 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
     {selector: '[data-testid="document-panel-document-title"]', testTitle: titleB},
   )
 
-  await expect(titleInput).toHaveValue(titleA)
+  await expect(getTitleInput()).toHaveValue(titleA)
 })
 
 test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   const titleA = 'Title A'
   const titleB = 'Title B'
 
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  const publishButton = page.getByTestId('action-publish')
-  const restoreButton = page.getByTestId('action-reverttorevision')
-  const contextMenuButton = page
-    .getByTestId('document-pane')
-    .getByTestId('pane-context-menu-button')
-  const historyMenuButton = page.getByTestId('action-history')
-  const historyPane = page.getByLabel('History').getByTestId('scroll-container')
-
-  const timelineItemButton = page.getByTestId('timeline-item-button')
-  const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const getDocumentStatus = () => page.getByTestId('pane-footer-document-status')
+  const getPublishButton = () => page.getByTestId('action-publish')
+  const getRestoreButton = () => page.getByTestId('action-reverttorevision')
+  const getContextMenuButton = () =>
+    page.getByTestId('document-pane').getByTestId('pane-context-menu-button')
+  const getHistoryMenuButton = () => page.getByTestId('action-history')
+  const getHistoryPane = () => page.getByLabel('History').getByTestId('scroll-container')
+  const getTimelineItemButton = () => page.getByTestId('timeline-item-button')
+  const getTitleInput = () => page.getByTestId('field-title').getByTestId('string-input')
 
   await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
-  await titleInput.fill(titleA)
+  await getTitleInput().fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expect(getDocumentStatus()).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
 
   // Wait for the document to be published.
-  await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishButton().click()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Change the title.
-  await titleInput.fill(titleB)
-  await expect(titleInput).toHaveValue(titleB)
+  await getTitleInput().fill(titleB)
+  await expect(getTitleInput()).toHaveValue(titleB)
 
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
-  await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await getPublishButton().click()
+  await expect(getDocumentStatus()).toContainText('Published just now')
 
   // Pick the previous revision from the revision timeline.
-  await contextMenuButton.click()
-  await expect(contextMenuButton).toBeVisible()
-  await historyMenuButton.click()
-  await expect(historyPane).toBeVisible()
-  await previousRevisionButton.click({force: true})
+  await getContextMenuButton().click()
+  await expect(getContextMenuButton()).toBeVisible()
+  await getHistoryMenuButton().click()
+  await expect(getHistoryPane()).toBeVisible()
+  await getTimelineItemButton().nth(1).click({force: true})
 
-  await expect(titleInput).toHaveValue(titleA)
+  await expect(getTitleInput()).toHaveValue(titleA)
 
   // Ensure the restore button is not displayed.
-  await expect(restoreButton).not.toBeVisible()
+  await expect(getRestoreButton()).not.toBeVisible()
 })
 
 test(`user defined restore actions should not appear in any other document action group UI`, async ({
   page,
   createDraftDocument,
 }) => {
-  const actionMenuButton = page.getByTestId('action-menu-button')
-  const customRestoreButton = page.getByTestId('action-Customrestore')
-  const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
+  const getActionMenuButton = () => page.getByTestId('action-menu-button')
+  const getCustomRestoreButton = () => page.getByTestId('action-Customrestore')
+  const getPaneContextMenu = () => page.locator('[data-ui="MenuButton__popover"]')
 
   await createDraftDocument('/test/content/input-debug;documentActionsTest')
 
-  await actionMenuButton.click()
+  await getActionMenuButton().click()
 
-  await expect(paneContextMenu).toBeVisible()
-  await expect(customRestoreButton).not.toBeVisible()
+  await expect(getPaneContextMenu()).toBeVisible()
+  await expect(getCustomRestoreButton()).not.toBeVisible()
 })

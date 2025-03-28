@@ -41,6 +41,7 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
+
     await expect(page.getByText('Sanity Studio is ready to update')).toBeVisible()
   })
 
