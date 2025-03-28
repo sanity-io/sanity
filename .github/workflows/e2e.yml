@@ -193,9 +193,16 @@ jobs:
             done
           fi
 
-          # Run the tests
-          echo "Running command: $TEST_CMD"
-          $TEST_CMD --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+          # Run the tests - FIXED: Split the command into multiple executions
+          echo "Running tests with the following settings:"
+          echo "- First building studio-e2e-testing"
+          echo "- Then running tests with: --project ${{ matrix.project }} --excludeTag @nightly $([ -n "$TAGS" ] && echo "--includeTag $TAGS") $([ -n "$PATHS" ] && echo "$PATHS") --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
+
+          # First build
+          pnpm e2e:build
+
+          # Then run tests as a separate command
+          eval "$TEST_CMD --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
 
       - uses: actions/upload-artifact@v4
         if: always()
