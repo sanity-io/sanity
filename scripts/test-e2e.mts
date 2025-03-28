@@ -55,6 +55,7 @@ if (
   cli
     .option('--tag <tags>', 'Run tests with specific tags (comma-separated)')
     .option('--excludeTag <tags>', 'Run tests without specific tags (comma-separated)')
+    .option('--includeTag <tags>', 'Include tests with these tags, in addition to untagged tests (comma-separated)')
     .help()
 
   // Allow passing any other arguments directly to Playwright
@@ -66,7 +67,7 @@ if (
 
       // Add all unknown options to the playwright args
       for (const [key, value] of Object.entries(options)) {
-        if (key !== 'tag' && key !== 'excludeTag' && key !== '--') {
+        if (key !== 'tag' && key !== 'excludeTag' && key !== 'includeTag' && key !== '--') {
           // Handle boolean flags vs flags with values
           if (value === true) {
             playwrightArgs.push(`--${key}`)
@@ -76,10 +77,12 @@ if (
         }
       }
 
-      // Process include tags
-      if (options.tag) {
-        const tags = validateE2ETags(options.tag)
-        playwrightArgs.push('--grep', tags.join('|'))
+      // Process include tags (in addition to untagged tests)
+      if (options.includeTag) {
+        const tags = validateE2ETags(options.includeTag)
+        // This pattern means "match tests that have no tags OR match one of these tags"
+        const tagPattern = `^(?!.*@)|${tags.join('|')}`
+        playwrightArgs.push('--grep', tagPattern)
       }
 
       // Process exclude tags

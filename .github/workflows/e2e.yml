@@ -161,21 +161,6 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - name: Run E2E tests on PR
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
-          PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm e2e:build && pnpm test:e2e --excludeTag "@nightly" --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-
       - name: Determine tests to run
         id: test-tags
         run: node scripts/get-test-tags.mjs
@@ -191,23 +176,26 @@ jobs:
           TAGS="${{ steps.test-tags.outputs.test_tags }}"
           PATHS="${{ steps.test-tags.outputs.test_paths }}"
 
-          # Always run standard tests first
-          echo "Running standard tests..."
-          pnpm e2e:build && pnpm test:e2e --excludeTag "@nightly" --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+          # Prepare test command
+          TEST_CMD="pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --excludeTag @nightly"
 
-          # Run additional tag-specific tests if needed
+          # Add tag-based tests if tags were found
           if [ -n "$TAGS" ]; then
-            echo "Additionally running tagged tests: $TAGS"
-            pnpm test:e2e --project ${{ matrix.project }} --grep "$TAGS" --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+            echo "Including additional tag-specific tests: $TAGS"
+            TEST_CMD="$TEST_CMD --tag $TAGS"
           fi
 
-          # Run additional path-specific tests if needed
+          # Add path-based tests if paths were found
           if [ -n "$PATHS" ]; then
-            echo "Additionally running path-specific tests: $PATHS"
+            echo "Including additional path-specific tests: $PATHS"
             for path in $(echo $PATHS | tr ',' ' '); do
-              pnpm test:e2e --project ${{ matrix.project }} "$path" --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+              TEST_CMD="$TEST_CMD $path"
             done
           fi
+
+          # Run the tests
+          echo "Running command: $TEST_CMD"
+          $TEST_CMD --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -269,14 +257,3 @@ jobs:
             **[Download Full E2E Report](${{ steps.artifact-url.outputs.url }})**
 
             This report contains test results, including videos of failing tests.
-
-  - name: Run E2E tests on push to main branches
-    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next') }}
-    env:
-      PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-      SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-      SANITY_E2E_DATASET: main-${{ matrix.project }}
-    run: |
-      # Run ALL tests, including tagged tests, no exclusions 
-      pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
