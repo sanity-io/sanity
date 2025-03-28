@@ -1,4 +1,11 @@
+import path from 'node:path'
+
 import execa from 'execa'
+
+// Guard against multiple executions - only run the main logic if this is the entry script
+const isMainScript =
+  process.argv[1] === path.resolve(process.cwd(), 'scripts/test-e2e') ||
+  process.argv[1].endsWith('/scripts/test-e2e')
 
 export const E2E_ANNOTATION_TAGS = {
   flake: '@flake',
@@ -61,43 +68,44 @@ function processE2EArgs(args: string[]): string[] {
     }),
   }))
 
-  return ['test'].concat(
-    args.reduce<{processedArgs: string[]; indexesToSkip: number[]}>(
-      (result, arg, index, array) => {
-        if (result.indexesToSkip.includes(index)) {
-          return result
-        }
+  return args.reduce<{processedArgs: string[]; indexesToSkip: number[]}>(
+    (result, arg, index, array) => {
+      if (result.indexesToSkip.includes(index)) {
+        return result
+      }
 
-        // Get the next argument if it exists, or null if we're at the end of the args array
-        // This lets us handle flags that consume their value from the next argument
-        const nextArg = index + 1 < array.length ? array[index + 1] : null
-        const handler = tagHandlers.find((tagHandler) => tagHandler.match(arg, nextArg))
+      // Get the next argument if it exists, or null if we're at the end of the args array
+      // This lets us handle flags that consume their value from the next argument
+      const nextArg = index + 1 < array.length ? array[index + 1] : null
+      const handler = tagHandlers.find((tagHandler) => tagHandler.match(arg, nextArg))
 
-        if (handler && nextArg) {
-          const processed = handler.process(arg, nextArg)
-          return {
-            processedArgs: [...result.processedArgs, ...processed.args],
-            indexesToSkip: processed.skipNext
-              ? [...result.indexesToSkip, index + 1]
-              : result.indexesToSkip,
-          }
-        }
-
+      if (handler && nextArg) {
+        const processed = handler.process(arg, nextArg)
         return {
-          processedArgs: [...result.processedArgs, arg],
-          indexesToSkip: result.indexesToSkip,
+          processedArgs: [...result.processedArgs, ...processed.args],
+          indexesToSkip: processed.skipNext
+            ? [...result.indexesToSkip, index + 1]
+            : result.indexesToSkip,
         }
-      },
-      {processedArgs: [], indexesToSkip: []},
-    ).processedArgs,
-  )
+      }
+
+      return {
+        processedArgs: [...result.processedArgs, arg],
+        indexesToSkip: result.indexesToSkip,
+      }
+    },
+    {processedArgs: [], indexesToSkip: []},
+  ).processedArgs
 }
 
-const playwrightArgs = processE2EArgs(process.argv.slice(2))
+// Only run the execution logic when this is the main script
+if (isMainScript) {
+  const playwrightArgs = processE2EArgs(process.argv.slice(2))
 
-console.log(`[running] playwright ${playwrightArgs.join(' ')}`)
+  console.log(`[running] playwright test ${playwrightArgs.join(' ')}`)
 
-execa('npx', ['playwright', ...playwrightArgs], {stdio: 'inherit'}).catch((error) => {
-  console.error(error)
-  process.exit(1)
-})
+  execa('npx', ['playwright', 'test', ...playwrightArgs], {stdio: 'inherit'}).catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })
+}
