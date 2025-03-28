@@ -163,6 +163,8 @@ jobs:
 
       - name: Determine tests to run
         id: test-tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/get-test-tags.mjs
 
       - name: Run E2E tests on PR

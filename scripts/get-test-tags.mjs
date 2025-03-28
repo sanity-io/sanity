@@ -1,30 +1,81 @@
 import {execSync} from 'node:child_process'
 import fs from 'node:fs'
+import https from 'node:https'
 
 import {pathToTagMapping} from './test-mappings.mjs'
 
-function getChangedFiles() {
+function fetchPRFiles() {
+  return new Promise((resolve, reject) => {
+    const owner = process.env.GITHUB_REPOSITORY_OWNER
+    const repo = process.env.GITHUB_REPOSITORY?.split('/')[1]
+    const prNumber =
+      process.env.GITHUB_EVENT_NAME === 'pull_request'
+        ? process.env.GITHUB_REF?.split('/')[2]
+        : null
+
+    if (!prNumber) {
+      console.log('Not a PR build or PR number not found')
+      return resolve([])
+    }
+
+    console.log(`Fetching changed files for PR #${prNumber} in ${owner}/${repo}`)
+
+    const options = {
+      hostname: 'api.github.com',
+      path: `/repos/${owner}/${repo}/pulls/${prNumber}/files`,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'GitHub-Actions-PR-Files-Fetcher',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    }
+
+    // Add GitHub token if available for higher rate limits
+    if (process.env.GITHUB_TOKEN) {
+      options.headers.Authorization = `token ${process.env.GITHUB_TOKEN}`
+    }
+
+    const req = https.request(options, (res) => {
+      let data = ''
+
+      res.on('data', (chunk) => {
+        data += chunk
+      })
+
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          try {
+            const files = JSON.parse(data)
+            const filenames = files.map((file) => file.filename)
+            console.log(`Found ${filenames.length} changed files in PR`)
+            resolve(filenames)
+          } catch (e) {
+            console.error('Error parsing GitHub API response:', e)
+            resolve([])
+          }
+        } else {
+          console.error(`GitHub API returned status code ${res.statusCode}`)
+          console.error(`Response: ${data}`)
+          resolve([])
+        }
+      })
+    })
+
+    req.on('error', (error) => {
+      console.error('Error fetching PR files:', error)
+      resolve([])
+    })
+
+    req.end()
+  })
+}
+
+async function getChangedFiles() {
   try {
-    // For PRs, compare with base branch
+    // For PRs, get changed files from GitHub API
     if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
-      // Use GITHUB_BASE_REF which points to the base branch name (e.g., 'main', 'next')
-      // Make sure we fetch the base branch first
-      try {
-        const baseBranch = process.env.GITHUB_BASE_REF
-        console.log(`Fetching base branch: origin/${baseBranch}`)
-        execSync(`git fetch origin ${baseBranch} --depth=1`, {encoding: 'utf-8'})
-        console.log(`Comparing with base branch: origin/${baseBranch}`)
-        return execSync(`git diff --name-only origin/${baseBranch}...HEAD`, {encoding: 'utf-8'})
-          .trim()
-          .split('\n')
-          .filter(Boolean)
-      } catch (fetchError) {
-        console.error('Error fetching base branch:', fetchError)
-        // Fallback to getting all files in the PR using GitHub REST API
-        console.log('Falling back to GitHub API to get changed files')
-        // For now, return a representative set of files for debugging
-        return []
-      }
+      console.log('Getting changed files from GitHub API for PR')
+      return await fetchPRFiles()
     }
     // For push events, get last commit changes
     else if (process.env.GITHUB_EVENT_NAME === 'push') {
@@ -38,8 +89,6 @@ function getChangedFiles() {
           .filter(Boolean)
       } catch (error) {
         console.error('Could not get previous commit:', error)
-        // Fallback to listing all files in the repo
-        console.log('Falling back to no changes')
         return []
       }
     }
@@ -78,8 +127,8 @@ function matchesPattern(filePath, pattern) {
   return regex.test(filePath)
 }
 
-function getTestSelectors() {
-  const changedFiles = getChangedFiles()
+async function getTestSelectors() {
+  const changedFiles = await getChangedFiles()
   console.log('Changed files:', changedFiles)
 
   // Log matches for debugging
@@ -119,16 +168,26 @@ function getTestSelectors() {
   }
 }
 
-const testSelectors = getTestSelectors()
-console.log('Tags to run:', testSelectors.tags)
-console.log('Test paths to run:', testSelectors.testPaths)
+// Convert the function calls to use async/await
+const main = async () => {
+  const testSelectors = await getTestSelectors()
+  console.log('Tags to run:', testSelectors.tags)
+  console.log('Test paths to run:', testSelectors.testPaths)
 
-// Output for GitHub Actions
-if (process.env.GITHUB_OUTPUT) {
-  // Use ES module style import instead of require
-  fs.appendFileSync(process.env.GITHUB_OUTPUT, `test_tags=${testSelectors.tags.join(',')}\n`)
-  fs.appendFileSync(process.env.GITHUB_OUTPUT, `test_paths=${testSelectors.testPaths.join(',')}\n`)
-} else {
-  console.log(`::set-output name=test_tags::${testSelectors.tags.join(',')}`)
-  console.log(`::set-output name=test_paths::${testSelectors.testPaths.join(',')}`)
+  // Output for GitHub Actions
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `test_tags=${testSelectors.tags.join(',')}\n`)
+    fs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `test_paths=${testSelectors.testPaths.join(',')}\n`,
+    )
+  } else {
+    console.log(`::set-output name=test_tags::${testSelectors.tags.join(',')}`)
+    console.log(`::set-output name=test_paths::${testSelectors.testPaths.join(',')}`)
+  }
 }
+
+main().catch((error) => {
+  console.error('Error in main function:', error)
+  process.exit(1)
+})
