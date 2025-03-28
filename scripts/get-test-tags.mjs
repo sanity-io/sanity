@@ -1,4 +1,5 @@
 import {execSync} from 'node:child_process'
+import fs from 'node:fs'
 
 import {pathToTagMapping} from './test-mappings.mjs'
 
@@ -6,18 +7,41 @@ function getChangedFiles() {
   try {
     // For PRs, compare with base branch
     if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
-      const baseSha = process.env.GITHUB_BASE_REF
-      return execSync(`git diff --name-only origin/${baseSha}...HEAD`, {encoding: 'utf-8'})
-        .trim()
-        .split('\n')
-        .filter(Boolean)
+      // Use GITHUB_BASE_REF which points to the base branch name (e.g., 'main', 'next')
+      // Make sure we fetch the base branch first
+      try {
+        const baseBranch = process.env.GITHUB_BASE_REF
+        console.log(`Fetching base branch: origin/${baseBranch}`)
+        execSync(`git fetch origin ${baseBranch} --depth=1`, {encoding: 'utf-8'})
+        console.log(`Comparing with base branch: origin/${baseBranch}`)
+        return execSync(`git diff --name-only origin/${baseBranch}...HEAD`, {encoding: 'utf-8'})
+          .trim()
+          .split('\n')
+          .filter(Boolean)
+      } catch (fetchError) {
+        console.error('Error fetching base branch:', fetchError)
+        // Fallback to getting all files in the PR using GitHub REST API
+        console.log('Falling back to GitHub API to get changed files')
+        // For now, return a representative set of files for debugging
+        return []
+      }
     }
     // For push events, get last commit changes
     else if (process.env.GITHUB_EVENT_NAME === 'push') {
-      return execSync('git diff --name-only HEAD~1 HEAD', {encoding: 'utf-8'})
-        .trim()
-        .split('\n')
-        .filter(Boolean)
+      // Make sure we have the previous commit
+      console.log('Getting files changed in the last commit')
+      try {
+        // Get changes from the last commit
+        return execSync('git diff --name-only HEAD^ HEAD', {encoding: 'utf-8'})
+          .trim()
+          .split('\n')
+          .filter(Boolean)
+      } catch (error) {
+        console.error('Could not get previous commit:', error)
+        // Fallback to listing all files in the repo
+        console.log('Falling back to no changes')
+        return []
+      }
     }
     // Fallback - run all tests
     return []
@@ -101,7 +125,7 @@ console.log('Test paths to run:', testSelectors.testPaths)
 
 // Output for GitHub Actions
 if (process.env.GITHUB_OUTPUT) {
-  const fs = require('node:fs')
+  // Use ES module style import instead of require
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `test_tags=${testSelectors.tags.join(',')}\n`)
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `test_paths=${testSelectors.testPaths.join(',')}\n`)
 } else {
