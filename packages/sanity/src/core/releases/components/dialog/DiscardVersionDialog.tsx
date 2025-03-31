@@ -4,10 +4,11 @@ import {useCallback, useState} from 'react'
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
+import {type SelectedPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {Preview} from '../../../preview'
-import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
+import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseDocument} from '../../store'
@@ -20,8 +21,9 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
+  fromPerspective: string | SelectedPerspective
 }): React.JSX.Element {
-  const {onClose, documentId, documentType} = props
+  const {onClose, documentId, documentType, fromPerspective} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
@@ -30,6 +32,9 @@ export function DiscardVersionDialog(props: {
   const schema = useSchema()
   const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
+  const discardType = isDraftId(documentId) ? 'draft' : 'release'
+  const releaseName =
+    typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
 
   const schemaType = schema.get(documentType)
 
@@ -64,7 +69,13 @@ export function DiscardVersionDialog(props: {
   return (
     <Dialog
       id={'discard-version-dialog'}
-      header={t('discard-version-dialog.header')}
+      header={
+        <Translate
+          t={t}
+          i18nKey={`discard-version-dialog.header-${discardType}`}
+          values={{releaseTitle: releaseName}}
+        />
+      }
       onClose={onClose}
       width={0}
       padding={false}
@@ -74,7 +85,7 @@ export function DiscardVersionDialog(props: {
           onClick: onClose,
         },
         confirmButton: {
-          text: t('discard-version-dialog.title'),
+          text: t(`discard-version-dialog.title-${discardType}`),
           onClick: handleDiscardVersion,
           disabled: isDiscarding,
         },
@@ -88,7 +99,11 @@ export function DiscardVersionDialog(props: {
         )}
         <Box paddingX={2}>
           <Text size={1} muted>
-            {t('discard-version-dialog.description')}
+            <Translate
+              t={t}
+              i18nKey={`discard-version-dialog.description-${discardType}`}
+              values={{releaseTitle: releaseName}}
+            />
           </Text>
         </Box>
       </Stack>

@@ -15,7 +15,13 @@ import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
 const DocumentActionsInner = memo(
-  function DocumentActionsInner({document}: {document: BundleDocumentRow}) {
+  function DocumentActionsInner({
+    document,
+    releaseTitle,
+  }: {
+    document: BundleDocumentRow
+    releaseTitle: string
+  }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
     const {t: coreT} = useTranslation()
@@ -107,6 +113,7 @@ const DocumentActionsInner = memo(
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}
+            fromPerspective={releaseTitle}
           />
         )}
         {showUnpublishDialog && (
@@ -124,6 +131,7 @@ const DocumentActionsInner = memo(
 
 export const DocumentActions = memo(function GuardedDocumentActions(props: {
   document: BundleDocumentRow
+  releaseTitle: string
 }) {
   const schema = useSchema()
   const type = schema.get(props.document.document._type)
