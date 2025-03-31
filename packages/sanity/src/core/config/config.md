@@ -24,7 +24,7 @@ What's the diff between a Source and a Workspace?
   - Comments it's part of config.document, move it into features?
   - Add ConfigContext to this functions allowing users to have a callback to enable or disable, this would solve the changes introduced by this PR from user config land https://github.com/sanity-io/sanity/pull/9001
 
-This config options are placed inside the plugins, this means, any plugin users are inserting could modify the values, I think they make more sense in the WorkspaceOptions definition, meaning the the workspace will be in control of them
+This config options are placed in the plugins options, this means, any plugin users are inserting could modify the values, I think they make more sense in the WorkspaceOptions definition, meaning the the workspace will be in control of them
 
 - search
 

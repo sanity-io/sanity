@@ -26,7 +26,6 @@ import {
   type AuthConfig,
   type ComposableOption,
   type ConfigContext,
-  type DocumentActionsVersionType,
   type DocumentCommentsEnabledContext,
   type DocumentLanguageFilterComponent,
   type DocumentLayoutProps,
@@ -111,7 +110,7 @@ type Config = {
             schemaType: string // Here schema type is an string and below is a SchemaType
             // Suggestion: Move releaseId and versionType to all the contexts
             releaseId?: string
-            versionType?: DocumentActionsVersionType
+            versionType?: 'published' | 'draft' | 'revision' | 'version'
           }
         >
     unstable_fieldActions?:

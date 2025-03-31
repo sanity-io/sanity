@@ -85,7 +85,9 @@ export interface ArrayRule<Value> extends RuleDef<ArrayRule<Value>, Value> {
 }
 
 /** @public */
-export type ArrayOfEntry<T> = Omit<T, 'name' | 'hidden'> & {name?: string}
+export type ArrayOfEntry<T> = T extends {type: 'object'}
+  ? Omit<T, 'hidden'>
+  : Omit<T, 'name' | 'hidden'> & {name?: string}
 
 /** @public */
 export type IntrinsicArrayOfDefinition = {
