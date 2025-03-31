@@ -20,6 +20,7 @@ import {loadEnv} from './util/loadEnv'
 import {mergeCommands} from './util/mergeCommands'
 import {neatStack} from './util/neatStack'
 import {parseArguments} from './util/parseArguments'
+import {installProcessExitHandler} from './util/processExitHandler'
 import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
@@ -29,15 +30,6 @@ const knownEnvs = ['development', 'staging', 'production']
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function installProcessExitHack(finalTask: () => Promise<unknown>) {
-  const originalProcessExit = process.exit
-
-  // @ts-expect-error ignore TS2534
-  process.exit = (exitCode?: number | undefined): never => {
-    finalTask().finally(() => originalProcessExit(exitCode))
-  }
 }
 
 export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}): Promise<void> {
@@ -78,7 +70,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   })
 
   // UGLY HACK: process.exit(<code>) causes abrupt exit, we want to flush telemetry before exiting
-  installProcessExitHack(() =>
+  installProcessExitHandler(() =>
     // When process.exit() is called, flush telemetry events first, but wait no more than x amount of ms before exiting process
     Promise.race([wait(2000), flushTelemetry()]),
   )

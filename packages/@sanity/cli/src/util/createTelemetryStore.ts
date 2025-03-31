@@ -199,6 +199,5 @@ export function createTelemetryStore<UserProperties>({
   process.once('SIGINT', () => store.flush().finally(() => process.exit(0)))
   process.once('beforeExit', () => store.flush())
   process.once('unhandledRejection', () => store.flush())
-  process.once('uncaughtException', () => store.flush())
   return store
 }
