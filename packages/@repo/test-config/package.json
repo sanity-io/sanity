@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@repo/dev-aliases": "workspace:*",
-    "vitest": "^3.0.9"
+    "vitest": "^3.1.1"
   }
 }
