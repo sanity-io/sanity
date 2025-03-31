@@ -15,8 +15,11 @@ export interface GlobalDocumentReferenceDefinition extends BaseSchemaDefinition 
     preview?: PreviewConfig
   }[]
 
-  resourceType: string
-  resourceId: string
+  resourceType: 'media-library' | 'dataset'
+  /**
+   * format: "<projectId>.<datasetName>"
+   */
+  resourceId: `${string}.${string}`
   options?: ReferenceOptions
 
   studioUrl?: (document: {id: string; type?: string}) => string | null
