@@ -20,7 +20,7 @@ import {loadEnv} from './util/loadEnv'
 import {mergeCommands} from './util/mergeCommands'
 import {neatStack} from './util/neatStack'
 import {parseArguments} from './util/parseArguments'
-import {installProcessExitHandler} from './util/processExitHandler'
+import {installProcessExitHandler, ProcessExitError} from './util/processExitHandler'
 import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
@@ -230,6 +230,10 @@ function getCurrentWorkingDirectory(): string {
 
 function installUnhandledRejectionsHandler() {
   process.on('unhandledRejection', (reason) => {
+    if (reason instanceof ProcessExitError) {
+      // ignore, see processExitHandler
+      return
+    }
     if (rejectionHasStack(reason)) {
       console.error('Unhandled rejection:', reason.stack)
     } else {

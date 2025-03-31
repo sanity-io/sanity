@@ -1,4 +1,4 @@
-class ProcessExitError extends Error {
+export class ProcessExitError extends Error {
   public readonly exitCode: number | undefined
   public readonly name = 'ProcessExitError'
   constructor(exitCode: number | undefined) {
