@@ -1,4 +1,5 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
+import {Flex, Spinner} from '@sanity/ui'
 import {type PortableTextBlock} from 'sanity'
 
 import {imageBuilder, useQuery} from './loader'
@@ -37,7 +38,17 @@ export function SimpleBlockPortableText(): React.JSX.Element {
   }
 
   if (loading) {
-    return <p>Loading...</p>
+    return (
+      <Flex
+        align="center"
+        direction="column"
+        height="fill"
+        justify="center"
+        style={{width: '100%'}}
+      >
+        <Spinner />
+      </Flex>
+    )
   }
 
   return (

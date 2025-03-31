@@ -104,7 +104,11 @@ export const DEBUG_FIELD_GROUP_TYPES = [
   'fieldGroupsWithFieldsetsHidden',
 ]
 
-export const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']
+export const EXTERNAL_PLUGIN_INPUT_TYPES = [
+  'markdownTest',
+  'muxVideoPost',
+  'internationalizedArrayTest',
+]
 
 export const TS_DOC_TYPES = [
   'api.class',

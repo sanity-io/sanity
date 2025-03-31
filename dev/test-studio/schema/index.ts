@@ -80,6 +80,7 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
 import playlist from './playlist'
@@ -276,6 +277,7 @@ export const schemaTypes = [
   // Test documents with 3rd party plugin inputs
   markdown,
   mux,
+  internationalizedArray,
 
   // Other documents
   author,

@@ -15,6 +15,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -137,6 +138,25 @@ const sharedSettings = definePlugin({
         {id: 'es', title: 'Spanish'},
       ],
       types: ['languageFilterDebug'],
+    }),
+    internationalizedArray({
+      languages: [
+        {id: 'ar', title: 'Arabic'},
+        {id: 'en', title: 'English'},
+        {id: 'nb', title: 'Norwegian (bokmål)'},
+        {id: 'nn', title: 'Norwegian (nynorsk)'},
+        {id: 'fi', title: 'Finnish'},
+        {id: 'pt', title: 'Portuguese'},
+        {id: 'es', title: 'Spanish'},
+        {id: 'th', title: 'Thai'},
+        {id: 'zh', title: 'Chinese'},
+        {id: 'fr', title: 'French'},
+        {id: 'de', title: 'German'},
+        {id: 'it', title: 'Italian'},
+        {id: 'ja', title: 'Japanese'},
+      ],
+      defaultLanguages: ['en'],
+      fieldTypes: ['string'],
     }),
     googleMapsInput({
       apiKey: 'AIzaSyDDO2FFi5wXaQdk88S1pQUa70bRtWuMhkI',

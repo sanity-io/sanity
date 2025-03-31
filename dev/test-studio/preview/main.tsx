@@ -4,11 +4,12 @@ import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {FieldGroups} from './FieldGroups'
+import {InternationalizedArrayTest} from './InternationalizedArrayTest'
 import {useLiveMode} from './loader'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
-  const [id, setId] = useState('simple')
+  const [id, setId] = useState<'simple' | 'nested' | 'intl-array'>('simple')
   return (
     <>
       <ThemeProvider theme={studioTheme}>
@@ -29,6 +30,13 @@ function Main() {
                 onClick={() => setId('nested')}
                 selected={id === 'nested'}
               />
+              <Tab
+                aria-controls="intl-array-panel"
+                id="intl-array-tab"
+                label="InternationalizedArrayTest"
+                onClick={() => setId('intl-array')}
+                selected={id === 'intl-array'}
+              />
             </TabList>
           </Box>
 
@@ -41,6 +49,12 @@ function Main() {
           {id === 'nested' && (
             <TabPanel aria-labelledby="nested-tab" id="nested-panel">
               <FieldGroups />
+            </TabPanel>
+          )}
+
+          {id === 'intl-array' && (
+            <TabPanel aria-labelledby="intl-array-tab" id="intl-array-panel">
+              <InternationalizedArrayTest />
             </TabPanel>
           )}
         </Flex>
