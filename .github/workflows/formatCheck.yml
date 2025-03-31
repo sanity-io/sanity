@@ -1,7 +1,7 @@
 name: Format check
 on:
   push:
-    branches: [next]
+    branches: [main]
   pull_request:
 
 concurrency:

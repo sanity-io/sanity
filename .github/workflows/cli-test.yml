@@ -5,7 +5,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -50,5 +50,5 @@ jobs:
         id: test
         run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:
-          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
+          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to main
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}

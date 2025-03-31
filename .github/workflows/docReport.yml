@@ -5,7 +5,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [current, next]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -34,11 +34,11 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
-      - name: Create Docs Report on current or next
-        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/current' || github.ref == 'refs/heads/next') }}
+      - name: Create Docs Report on main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.ref == 'refs/heads/current' && 'production' || 'next'}}
+          DOCS_REPORT_DATASET: 'production'
         run: pnpm docs:report:create
 
       - name: Create Docs Report on PR

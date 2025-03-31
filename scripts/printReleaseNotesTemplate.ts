@@ -7,7 +7,7 @@ const flags = yargs(hideBin(process.argv)).argv as Record<string, any>
 const revParsed = execa.commandSync('git rev-parse --abbrev-ref HEAD', {shell: true}).stdout.trim()
 const isFromV3 = revParsed === 'v3' || revParsed === 'v3-current'
 
-const BASE_BRANCH = isFromV3 ? revParsed : 'next'
+const BASE_BRANCH = isFromV3 ? revParsed : 'main'
 const PREV_RELEASE =
   flags.from || execa.commandSync('git describe --abbrev=0', {shell: true}).stdout.trim()
 const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${PREV_RELEASE}..origin/${BASE_BRANCH}`
