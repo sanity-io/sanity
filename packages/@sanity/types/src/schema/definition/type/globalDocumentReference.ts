@@ -7,7 +7,6 @@ import {type ReferenceOptions} from './reference'
 /** @public */
 export interface GlobalDocumentReferenceDefinition extends BaseSchemaDefinition {
   type: 'globalDocumentReference'
-  weak?: boolean
   to: {
     type: string
     title?: string

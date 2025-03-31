@@ -105,7 +105,6 @@ describe('global document reference types', () => {
       description: 'Description',
       hidden: () => false,
       readOnly: () => false,
-      weak: true,
       to: [{type: 'crewMember'}],
       options: {
         disableNew: false,

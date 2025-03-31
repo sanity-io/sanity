@@ -112,57 +112,6 @@ describe('render states', () => {
 
     expect(result.getByTestId('autocomplete')).toBeInTheDocument()
   })
-
-  test('a warning is displayed if the reference value is strong while the schema says it should be weak', async () => {
-    const TestProvider = await createWrapperComponent()
-
-    const getReferenceInfo = vi.fn(() =>
-      of({
-        id: 'foo',
-        type: 'product',
-        availability: AVAILABLE,
-        preview: {
-          published: {title: `Foo`},
-        },
-      }),
-    )
-
-    const value = {
-      _type: 'globalDocumentReference',
-      _ref: 'dataset:myProject.myDataset:someActor',
-      _weak: true,
-    } satisfies GlobalDocumentReferenceValue
-
-    const {result} = await renderGlobalDocumentReferenceInput({
-      fieldDefinition: {
-        name: 'productReference',
-        type: 'globalDocumentReference',
-        resourceType: 'dataset',
-        resourceId: 'myProject.myDataset',
-        weak: false,
-        to: [
-          {
-            type: 'product',
-            preview: {
-              select: {
-                title: 'title',
-              },
-            },
-          },
-        ],
-      },
-      getReferenceInfo,
-      render: (inputProps) => {
-        return (
-          <TestProvider>
-            <GlobalDocumentReferenceInput {...inputProps} value={value} />
-          </TestProvider>
-        )
-      },
-    })
-
-    expect(result.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
-  })
 })
 
 describe('user interaction happy paths', () => {

@@ -1,6 +1,6 @@
-import {type Schema, type SchemaType} from '@sanity/types'
+import {type ReferenceSchemaType, type Schema, type SchemaType} from '@sanity/types'
 
-import {normalizeValidationRules} from './util/normalizeValidationRules'
+import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 
 // NOTE: this overload is for TS API compatibility with a previous implementation
 export function inferFromSchemaType(
@@ -25,6 +25,10 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
 
   typeDef.validation = normalizeValidationRules(typeDef)
 
+  if (isGlobalDocumentReference(typeDef)) {
+    typeDef.weak = true
+  }
+
   if ('fields' in typeDef) {
     for (const field of typeDef.fields) {
       traverse(field.type, visited)
@@ -46,4 +50,8 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
       traverse(annotation, visited)
     }
   }
+}
+
+function isGlobalDocumentReference(type: SchemaType): type is ReferenceSchemaType {
+  return getTypeChain(type).some(({name}) => name === 'globalDocumentReference')
 }
