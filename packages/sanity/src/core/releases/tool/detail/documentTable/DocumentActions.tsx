@@ -17,10 +17,10 @@ import {type BundleDocumentRow} from '../ReleaseSummary'
 const DocumentActionsInner = memo(
   function DocumentActionsInner({
     document,
-    releaseName,
+    releaseTitle,
   }: {
     document: BundleDocumentRow
-    releaseName: string
+    releaseTitle: string
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
@@ -113,7 +113,7 @@ const DocumentActionsInner = memo(
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}
-            fromPerspective={releaseName}
+            fromPerspective={releaseTitle}
           />
         )}
         {showUnpublishDialog && (
@@ -131,7 +131,7 @@ const DocumentActionsInner = memo(
 
 export const DocumentActions = memo(function GuardedDocumentActions(props: {
   document: BundleDocumentRow
-  releaseName: string
+  releaseTitle: string
 }) {
   const schema = useSchema()
   const type = schema.get(props.document.document._type)
