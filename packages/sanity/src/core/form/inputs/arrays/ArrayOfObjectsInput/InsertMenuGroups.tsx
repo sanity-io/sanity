@@ -55,9 +55,9 @@ export function InsertMenuGroup(
   }
   return (
     <MenuGroup text={text} key={pos} popover={MENU_POPOVER_PROPS}>
-      {types?.map((insertableType) => (
+      {types?.map((insertableType, i) => (
         <MenuItem
-          key={insertableType.name}
+          key={i}
           icon={insertableType.icon}
           text={insertableType.title}
           onClick={() => onInsert(pos, insertableType)}
