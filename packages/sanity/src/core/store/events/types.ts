@@ -453,7 +453,11 @@ export interface EventsStore {
   findRangeForRevision: (nextRev: string) => [string | null, string | null]
   findRangeForSince: (nextSince: string) => [string | null, string | null]
   loadMoreEvents: () => void
-  getChangesList: () => Observable<{diff: ObjectDiff | null; loading: boolean}>
+  getChangesList: () => Observable<{
+    diff: ObjectDiff | null
+    loading: boolean
+    error: Error | null
+  }>
   expandEvent: (event: DocumentGroupEvent) => Promise<void>
 }
 
