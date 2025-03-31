@@ -15,6 +15,8 @@ import importFresh from 'import-fresh'
 import {parse as parseHtml} from 'node-html-parser'
 import {renderToStaticMarkup} from 'react-dom/server'
 
+import {BasicDocument} from './components/BasicDocument'
+import {DefaultDocument} from './components/DefaultDocument'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
 import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
@@ -228,7 +230,7 @@ async function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = await getDocumentHtml(studioRootPath, props, importMap, isApp)
+  const html = getDocumentHtml(studioRootPath, props, importMap, isApp)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -237,13 +239,13 @@ async function renderDocumentFromWorkerData() {
   unregisterJs()
 }
 
-async function getDocumentHtml(
+function getDocumentHtml(
   studioRootPath: string,
   props?: DocumentProps,
   importMap?: {imports?: Record<string, string>},
   isApp?: boolean,
-): Promise<string> {
-  const Document = await getDocumentComponent(studioRootPath, isApp)
+): string {
+  const Document = getDocumentComponent(studioRootPath, isApp)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -299,17 +301,8 @@ export function addTimestampedImportMapScriptToHtml(
   return root.outerHTML
 }
 
-async function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
+function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
   debug('Loading default document component from `sanity` module')
-
-  // When running in dev mode, we use require because it doesn't need extension
-  const {BasicDocument} = __DEV__
-    ? require('../../../core/components/BasicDocument')
-    : await import('sanity')
-
-  const {DefaultDocument} = __DEV__
-    ? require('../../../core/components/DefaultDocument')
-    : await import('sanity')
 
   const Document = isApp ? BasicDocument : DefaultDocument
 

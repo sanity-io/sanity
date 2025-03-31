@@ -1,11 +1,18 @@
+/**
+ * App HTML Document, this is in the _internal package
+ * to avoid importing styled-components from sanity pacakge
+ */
+
 /* eslint-disable i18next/no-literal-string  -- title is literal for now */
+import {type JSX} from 'react'
+
 import {Favicons} from './Favicons'
-import {GlobalErrorHandler} from './globalErrorHandler'
+import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
 
 /**
- * @hidden
- * @beta */
+ * @internal
+ */
 export interface BasicDocumentProps {
   entryPath: string
   css?: string[]
@@ -18,9 +25,9 @@ const EMPTY_ARRAY: never[] = []
 
 /**
  * This is the equivalent of DefaultDocument for non-studio apps.
- * @hidden
- * @beta */
-export function BasicDocument(props: BasicDocumentProps): React.JSX.Element {
+ * @internal
+ */
+export function BasicDocument(props: BasicDocumentProps): JSX.Element {
   const {entryPath, css = EMPTY_ARRAY} = props
 
   return (
