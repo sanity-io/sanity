@@ -38,8 +38,8 @@ const testFunctionsCommand: CliCommandDefinition = {
     const flags = {...defaultFlags, ...args.extOptions}
 
     if (flags.path) {
-      const {testAction} = await import('@sanity/runtime-cli')
-      const {json, logs, error} = await testAction(flags.path, {
+      const {functionsActions: actions} = await import('@sanity/runtime-cli')
+      const {json, logs, error} = await actions.test.testAction(flags.path, {
         data: flags.data,
         file: flags.file,
         timeout: flags.timeout,

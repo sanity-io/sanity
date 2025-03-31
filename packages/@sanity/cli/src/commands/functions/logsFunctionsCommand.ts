@@ -31,11 +31,16 @@ const logsFunctionsCommand: CliCommandDefinition = {
     })
 
     if (flags.id) {
-      const token = client.config().token
-      if (token) {
-        const {logsAction} = await import('@sanity/runtime-cli')
-        const result = await logsAction(flags.id, token)
+      const {token, projectId} = client.config()
+      if (token && projectId) {
+        const {functionsActions: actions} = await import('@sanity/runtime-cli')
+        const result = await actions.logs.logs(flags.id, {
+          token,
+          projectId,
+        })
         print(JSON.stringify(result, null, 2))
+      } else {
+        print('Cannot retrieve logs for function: missing API token or project ID')
       }
     } else {
       print('You must provide a function ID')

@@ -30,9 +30,9 @@ const devFunctionsCommand: CliCommandDefinition = {
     const {print} = output
     const flags = {...defaultFlags, ...args.extOptions}
 
-    const {devAction} = await import('@sanity/runtime-cli')
+    const {functionsActions: actions} = await import('@sanity/runtime-cli')
 
-    devAction(flags.port)
+    actions.dev.dev(flags.port)
 
     print(`Server is running on port ${flags.port}\n`)
     open(`http://localhost:${flags.port}`)
