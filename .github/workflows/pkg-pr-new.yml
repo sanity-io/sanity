@@ -1,4 +1,5 @@
-name: Publish Approved Pull Requests
+name: Publish Pull Requests with pkg.pr.new
+
 on:
   pull_request_review:
     types: [submitted]
@@ -37,4 +38,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: pnpm dlx pkg-pr-new publish $(pnpm dlx lerna ls 2> /dev/null | tr '\n' ' ')
+      - name: Build
+        run: pnpm build
+
+      - run: |
+          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
+          echo "Publishing to pkg.pr.new: $PACKAGES"
+          pnpm pnpx pkg-pr-new publish --no-template $PACKAGES
