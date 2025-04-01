@@ -2,17 +2,17 @@ import {type SanityClient} from '@sanity/client'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {MANIFEST_FILENAME} from '../../../src/_internal/cli/actions/manifest/extractManifestAction'
-import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
+import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaDeployTypes'
 import {
   storeSchemasAction,
   type StoreSchemasFlags,
 } from '../../../src/_internal/cli/actions/schema/storeSchemasAction'
-import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
+import {createSchemaStoreFixture} from './mocks/schemaDeployFixture'
 import {
   createMockJsonReader,
   createMockSanityClient,
   createMockStoreSchemaContext,
-} from './mocks/schemaStoreMocks'
+} from './mocks/schemaDeployMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
 const {testManifest, testWorkspace, testMultiWorkspaceManifest, staticDate, workDir} = fixture

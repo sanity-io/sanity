@@ -5,7 +5,7 @@ import {
 } from '@sanity/cli'
 
 import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../../actions/schema/schemaStoreConstants'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../../actions/schema/schemaDeployConstants'
 import {determineIsApp} from '../../util/determineIsApp'
 
 const schemaStoreText = [

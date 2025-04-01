@@ -7,7 +7,7 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaDeployConstants'
 import storeManifestSchemas from '../schema/storeSchemasAction'
 import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {

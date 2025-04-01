@@ -3,9 +3,9 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {vi} from 'vitest'
 
-import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaStoreTypes'
+import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaDeployTypes'
 import {type ManifestJsonReader} from '../../../../src/_internal/cli/actions/schema/utils/manifestReader'
-import {type createSchemaStoreFixture} from './schemaStoreFixture'
+import {type createSchemaStoreFixture} from './schemaDeployFixture'
 
 // test code :shrug:
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

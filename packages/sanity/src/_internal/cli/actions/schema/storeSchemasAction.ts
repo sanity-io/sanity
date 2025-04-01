@@ -8,7 +8,7 @@ import {
   SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
-import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
+import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaDeployTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {type CreateManifestReader, createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
@@ -17,7 +17,7 @@ import {
   parseStoreSchemasConfig,
   type StoreSchemaCommonFlags,
   throwWriteProjectIdMismatch,
-} from './utils/schemaStoreValidation'
+} from './utils/schemaDeployValidation'
 import {getWorkspaceSchemaId} from './utils/workspaceSchemaId'
 
 export interface StoreSchemasFlags extends StoreSchemaCommonFlags {

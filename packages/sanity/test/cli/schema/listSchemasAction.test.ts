@@ -7,11 +7,11 @@ import {
   listSchemasAction,
   type SchemaListFlags,
 } from '../../../src/_internal/cli/actions/schema/listSchemasAction'
-import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
+import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaDeployTypes'
 import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
 import {type StoredWorkspaceSchema} from '../../../src/_internal/manifest/manifestTypes'
-import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
-import {createMockJsonReader, createMockStoreSchemaContext} from './mocks/schemaStoreMocks'
+import {createSchemaStoreFixture} from './mocks/schemaDeployFixture'
+import {createMockJsonReader, createMockStoreSchemaContext} from './mocks/schemaDeployMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
 const {
