@@ -324,7 +324,7 @@ describe('deploySchemasAction', () => {
         },
         {
           error:
-            '↳ Error storing schema for workspace "testWorkspace":\n' +
+            '↳ Error deploying schema for workspace "testWorkspace":\n' +
             '  No permissions to write schema for workspace "testWorkspace" with projectId "undefined"',
         },
         {
