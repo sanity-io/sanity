@@ -12,14 +12,14 @@ import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaSto
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
+import {getDatasetsOutString} from './utils/schemaStoreOutStrings'
 import {
   filterLogReadProjectIdMismatch,
   parseListSchemasConfig,
-  type StoreSchemaCommonFlags,
+  type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
-import {getDatasetsOutString} from './utils/storeSchemaOutStrings'
 
-export interface SchemaListFlags extends StoreSchemaCommonFlags {
+export interface SchemaListFlags extends SchemaStoreCommonFlags {
   json?: boolean
   id?: string
 }

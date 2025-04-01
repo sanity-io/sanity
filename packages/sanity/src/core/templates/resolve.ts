@@ -229,11 +229,11 @@ export const resolveInitialValueForType = memoizeResolveInitialValueForType(
     }
 
     if (isObjectSchemaType(type)) {
-      return resolveInitialObjectValue(type, params, maxDepth, context, options)
+      return postTask(() => resolveInitialObjectValue(type, params, maxDepth, context, options))
     }
 
     if (isArraySchemaType(type)) {
-      return resolveInitialArrayValue(type, params, maxDepth, context, options)
+      return postTask(() => resolveInitialArrayValue(type, params, maxDepth, context, options))
     }
 
     return resolveValue(type.initialValue, params, context, options)
@@ -306,4 +306,18 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   }
 
   return merged
+}
+
+/**
+ * Schedule the provided callback using `scheduler.postTask`, if it's available.
+ * Otherwise, call it immediately.
+ */
+function postTask<Result>(
+  callback: () => Result,
+  options: PostTaskOptions = {},
+): Result | Promise<Result> {
+  if ('scheduler' in window && typeof window.scheduler?.postTask === 'function') {
+    return window.scheduler.postTask(callback, options)
+  }
+  return callback()
 }

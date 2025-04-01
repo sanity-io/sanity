@@ -16,14 +16,14 @@
     "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
   },
   "devDependencies": {
-    "@sanity/client": "^6.28.3",
+    "@sanity/client": "^6.28.4",
     "@swc-node/register": "^1.10.9",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/serve-handler": "^6.1.4",
     "@types/yargs": "^17.0.7",
     "@vitejs/plugin-react": "^4.3.4",
-    "babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
+    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.0.3",
@@ -36,7 +36,7 @@
     "sanity": "workspace:*",
     "serve-handler": "^6.1.5",
     "source-map": "^0.7.4",
-    "vite": "^6.2.0",
+    "vite": "^6.2.3",
     "yargs": "17.3.0"
   }
 }

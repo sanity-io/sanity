@@ -20,9 +20,9 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 
 import {MenuButton} from '../../../../../ui-components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 

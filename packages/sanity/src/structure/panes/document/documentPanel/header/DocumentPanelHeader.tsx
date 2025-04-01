@@ -260,7 +260,13 @@ export const DocumentPanelHeader = memo(
           <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom>
             <Flex gap={3} paddingY={3}>
               <HorizontalScroller>
-                <Flex flex={1} gap={1} overflow="auto" paddingX={3}>
+                <Flex
+                  flex={1}
+                  gap={1}
+                  overflow="auto"
+                  paddingX={3}
+                  data-testid="document-perspective-list"
+                >
                   <DocumentPerspectiveList />
                 </Flex>
               </HorizontalScroller>

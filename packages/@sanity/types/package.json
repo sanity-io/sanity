@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.80.1",
+  "version": "3.81.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -50,7 +50,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.28.3"
+    "@sanity/client": "^6.28.4"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
@@ -60,7 +60,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.8"
+    "vitest": "^3.1.1"
   },
   "peerDependencies": {
     "@types/react": "18 || 19"

@@ -340,13 +340,33 @@ export type RouterState = Record<string, unknown> & {_searchParams?: SearchParam
 
 export const isNavigateOptions = (
   maybeNavigateOptions: unknown,
-): maybeNavigateOptions is NavigateOptions & {state?: RouterState | null} =>
-  typeof maybeNavigateOptions === 'object' &&
-  maybeNavigateOptions !== null &&
-  !Array.isArray(maybeNavigateOptions) &&
-  ('replace' in maybeNavigateOptions ||
+): maybeNavigateOptions is NavigateOptions & {state?: RouterState | null} => {
+  if (
+    typeof maybeNavigateOptions !== 'object' ||
+    maybeNavigateOptions === null ||
+    Array.isArray(maybeNavigateOptions)
+  ) {
+    return false
+  }
+
+  const hasNavigationProps =
+    'replace' in maybeNavigateOptions ||
     'stickyParams' in maybeNavigateOptions ||
-    'state' in maybeNavigateOptions)
+    'state' in maybeNavigateOptions
+
+  if (!hasNavigationProps) {
+    return false
+  }
+
+  // if state exists then it should be of RouterState type
+  if ('state' in maybeNavigateOptions) {
+    const {state} = maybeNavigateOptions as {state: unknown}
+    // allow null or undefined or RouterState (including empty object)
+    return state === null || state === undefined || typeof state === 'object'
+  }
+
+  return true
+}
 
 /**
  * Type representing either a new router state or navigation options with an optional state.

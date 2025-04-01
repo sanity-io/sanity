@@ -80,9 +80,13 @@ export async function runTest({
 
   try {
     log('Launching browser…')
-    browser = await chromium.launch({headless})
+    browser = await chromium.launch({
+      headless,
+      args: ['--disable-gpu', '--disable-software-rasterizer'],
+    })
     context = await browser.newContext({
       recordVideo: recordVideo ? {dir: testResultsDir} : undefined,
+      reducedMotion: 'reduce',
       storageState: {
         cookies: [],
         origins: [

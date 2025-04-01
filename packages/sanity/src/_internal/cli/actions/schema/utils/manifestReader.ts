@@ -7,7 +7,7 @@ import chalk from 'chalk'
 
 import {type CreateManifest, type ManifestSchemaType} from '../../../../manifest/manifestTypes'
 import {MANIFEST_FILENAME} from '../../manifest/extractManifestAction'
-import {type StoreSchemasFlags} from '../storeSchemasAction'
+import {type DeploySchemasFlags} from '../deploySchemasAction'
 
 export type ManifestJsonReader = <T>(
   filePath: string,
@@ -53,7 +53,7 @@ export const createManifestReader: CreateManifestReaderFactory = ({
     const result = await jsonReader<CreateManifest>(manifestFile)
     if (!result) {
       throw new Error(
-        `Manifest does not exist at ${manifestFile}. To create the manifest file, omit --no-${'extract-manifest' satisfies keyof StoreSchemasFlags} or run "sanity manifest extract" first.`,
+        `Manifest does not exist at ${manifestFile}. To create the manifest file, omit --no-${'extract-manifest' satisfies keyof DeploySchemasFlags} or run "sanity manifest extract" first.`,
       )
     }
 

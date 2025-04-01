@@ -152,7 +152,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           clearUploadStatus()
         },
         complete: () => {
-          onChange([unset(['hotspot']), unset(['crop'])])
+          onChange([unset(['hotspot']), unset(['crop']), unset(['media'])])
           setIsUploading(false)
           // push({
           //   status: 'success',
@@ -178,7 +178,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   )
 
   const handleClearField = useCallback(() => {
-    onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
+    onChange([unset(['asset']), unset(['crop']), unset(['hotspot']), unset(['media'])])
   }, [onChange])
   const handleRemoveButtonClick = useCallback(() => {
     // When removing the image, we should also remove any crop and hotspot
@@ -190,11 +190,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     // the array logic will check for an "empty" value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key),
+      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot', 'media'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
-    const removeKeys = ['asset']
+    const removeKeys = ['asset', 'media']
       .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
       .map((key) => unset([key]))
 

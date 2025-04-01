@@ -1,6 +1,6 @@
 import {type Path} from 'sanity'
-import {StructureToolProvider} from 'sanity/structure'
 
+import {StructureToolProvider} from '../../structure/StructureToolProvider'
 import {type PresentationSearchParams, type StructureDocumentPaneParams} from '../types'
 import {DocumentPane} from './DocumentPane'
 

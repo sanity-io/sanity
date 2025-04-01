@@ -395,6 +395,52 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
+export const mediaLibraryEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryLibraryIdReducer = (opts: {
+  config: PluginOptions
+  initialValue: string | undefined
+}): string | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.libraryId
+
+    if (!resolver && typeof resolver !== 'string') return acc
+    if (typeof resolver === 'string') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const serverDocumentActionsReducer = (opts: {
   config: PluginOptions
   initialValue: boolean | undefined

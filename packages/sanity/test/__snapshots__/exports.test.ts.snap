@@ -247,6 +247,8 @@ exports[`exports snapshot 1`] = `
     "createProjectStore": "function",
     "createPublishedFrom": "function",
     "createSWR": "function",
+    "createSanityMediaLibraryFileSource": "function",
+    "createSanityMediaLibraryImageSource": "function",
     "createSchema": "function",
     "createSearch": "function",
     "createSharedResizeObserver": "function",

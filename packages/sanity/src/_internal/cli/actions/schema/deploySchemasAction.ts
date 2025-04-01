@@ -14,23 +14,23 @@ import {type CreateManifestReader, createManifestReader} from './utils/manifestR
 import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
   FlagValidationError,
-  parseStoreSchemasConfig,
-  type StoreSchemaCommonFlags,
+  parseDeploySchemasConfig,
+  type SchemaStoreCommonFlags,
   throwWriteProjectIdMismatch,
 } from './utils/schemaStoreValidation'
 import {getWorkspaceSchemaId} from './utils/workspaceSchemaId'
 
-export interface StoreSchemasFlags extends StoreSchemaCommonFlags {
+export interface DeploySchemasFlags extends SchemaStoreCommonFlags {
   'workspace'?: string
   'id-prefix'?: string
   'schema-required'?: boolean
 }
 
-export default function storeSchemasActionForCommand(
-  flags: StoreSchemasFlags,
+export default function deploySchemasActionForCommand(
+  flags: DeploySchemasFlags,
   context: CliCommandContext,
 ): Promise<SchemaStoreActionResult> {
-  return storeSchemasAction(
+  return deploySchemasAction(
     {
       ...flags,
       //invoking the command through CLI implies that schema is required
@@ -52,12 +52,12 @@ export default function storeSchemasActionForCommand(
  * Manifest generation can be optionally disabled with --no-manifest-extract.
  * In this case the command uses and existing file or throws when missing.
  */
-export async function storeSchemasAction(
-  flags: StoreSchemasFlags,
+export async function deploySchemasAction(
+  flags: DeploySchemasFlags,
   context: SchemaStoreContext,
 ): Promise<SchemaStoreActionResult> {
   const {workspaceName, verbose, idPrefix, manifestDir, extractManifest, schemaRequired} =
-    parseStoreSchemasConfig(flags, context)
+    parseDeploySchemasConfig(flags, context)
 
   const {output, apiClient, jsonReader, manifestExtractor} = context
 
@@ -102,11 +102,11 @@ export async function storeSchemasAction(
     const [successes, failures] = partition(results, (result) => result.status === 'fulfilled')
     if (failures.length) {
       throw new Error(
-        `Failed to store ${failures.length}/${targetWorkspaces.length} schemas. Successfully stored ${successes.length}/${targetWorkspaces.length} schemas.`,
+        `Failed to deploy ${failures.length}/${targetWorkspaces.length} schemas. Successfully deployed ${successes.length}/${targetWorkspaces.length} schemas.`,
       )
     }
 
-    output.success(`Stored ${successes.length}/${targetWorkspaces.length} schemas`)
+    output.success(`Deployed ${successes.length}/${targetWorkspaces.length} schemas`)
     return 'success'
   } catch (err) {
     if (schemaRequired || err instanceof FlagValidationError) {
@@ -116,7 +116,9 @@ export async function storeSchemasAction(
       return 'failure'
     }
   } finally {
-    output.print(`${chalk.gray('↳ List stored schemas with:')} ${chalk.cyan('sanity schema list')}`)
+    output.print(
+      `${chalk.gray('↳ List deployed schemas with:')} ${chalk.cyan('sanity schema list')}`,
+    )
   }
 }
 
@@ -157,7 +159,7 @@ function createStoreWorkspaceSchema(args: {
       }
     } catch (err) {
       output.error(
-        `↳ Error storing schema for workspace "${workspace.name}":\n  ${chalk.red(`${err.message}`)}`,
+        `↳ Error deploying schema for workspace "${workspace.name}":\n  ${chalk.red(`${err.message}`)}`,
       )
       throw err
     }

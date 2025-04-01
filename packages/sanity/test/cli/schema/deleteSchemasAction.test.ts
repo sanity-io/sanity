@@ -14,7 +14,7 @@ import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,
   createMockSanityClient,
-  createMockStoreSchemaContext,
+  createMockSchemaStoreContext,
 } from './mocks/schemaStoreMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
@@ -59,7 +59,7 @@ describe('deleteSchemasAction', () => {
       outputLog,
       apiClient,
       mockStores: stores,
-    } = createMockStoreSchemaContext(fixture, {
+    } = createMockSchemaStoreContext(fixture, {
       jsonReader: createMockJsonReader({
         staticDate,
         files: {

@@ -11,7 +11,7 @@ import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema
 import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
 import {type StoredWorkspaceSchema} from '../../../src/_internal/manifest/manifestTypes'
 import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
-import {createMockJsonReader, createMockStoreSchemaContext} from './mocks/schemaStoreMocks'
+import {createMockJsonReader, createMockSchemaStoreContext} from './mocks/schemaStoreMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
 const {
@@ -64,7 +64,7 @@ describe('deleteSchemasAction', () => {
       outputLog,
       apiClient,
       mockStores: stores,
-    } = createMockStoreSchemaContext(fixture, {
+    } = createMockSchemaStoreContext(fixture, {
       jsonReader: createMockJsonReader({
         staticDate,
         files: {
