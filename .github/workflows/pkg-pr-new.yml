@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check permissions
         id: checkPermissions
-        uses: actions-cool/check-user-permission@v2
+        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2
         with:
           # In this example, the approver must have the write access
           # to the repository to trigger the package preview.
