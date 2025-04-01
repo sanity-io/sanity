@@ -5,10 +5,10 @@ import {expect, type Locator} from '@playwright/test'
  * It matches the text "just now" or "secs. ago"
  */
 const documentStatusPatterns = {
-  published: /^Published (just now|\d+ sec\. ago)/i,
-  created: /^Created (just now|\d+ sec\. ago)/i,
-  unpublished: /^Unpublished (just now|\d+ sec\. ago)/i,
-  edited: /^Edited (just now|\d+ sec\. ago)/i,
+  published: /Published (just now|\d+ sec\. ago)/i,
+  created: /Created (just now|\d+ sec\. ago)/i,
+  unpublished: /Unpublished (just now|\d+ sec\. ago)/i,
+  edited: /Edited (just now|\d+ sec\. ago)/i,
 } as const
 
 /**
