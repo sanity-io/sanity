@@ -96,6 +96,7 @@
         "react-is",
         "react-rx",
         "react",
+        "use-sync-external-store",
         "styled-components",
         "typescript"
       ],

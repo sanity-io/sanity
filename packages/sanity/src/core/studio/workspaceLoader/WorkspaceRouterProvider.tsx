@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
-import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
 import {ErrorBoundary} from '../../../ui-components'
 import {type Tool, type Workspace} from '../../config'
