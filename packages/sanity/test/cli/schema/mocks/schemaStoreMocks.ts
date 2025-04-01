@@ -11,7 +11,7 @@ import {type createSchemaStoreFixture} from './schemaStoreFixture'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ANY = any
 
-export function createMockStoreSchemaContext(
+export function createMockSchemaStoreContext(
   fixture: ReturnType<typeof createSchemaStoreFixture>,
   overrides?: Partial<SchemaStoreContext>,
 ) {

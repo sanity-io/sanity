@@ -7,14 +7,14 @@ import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaSto
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
+import {getDatasetsOutString, getStringList} from './utils/schemaStoreOutStrings'
 import {
   filterLogReadProjectIdMismatch,
   parseDeleteSchemasConfig,
-  type StoreSchemaCommonFlags,
+  type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
-import {getDatasetsOutString, getStringList} from './utils/storeSchemaOutStrings'
 
-export interface DeleteSchemaFlags extends StoreSchemaCommonFlags {
+export interface DeleteSchemaFlags extends SchemaStoreCommonFlags {
   ids?: string
   dataset?: string
 }

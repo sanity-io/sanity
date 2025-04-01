@@ -4,8 +4,8 @@ import uniqBy from 'lodash/uniqBy'
 import {isDefined} from '../../../../manifest/manifestTypeHelpers'
 import {SANITY_WORKSPACE_SCHEMA_TYPE} from '../../../../manifest/manifestTypes'
 import {type DeleteSchemaFlags} from '../deleteSchemaAction'
+import {type DeploySchemasFlags} from '../deploySchemasAction'
 import {type SchemaListFlags} from '../listSchemasAction'
-import {type StoreSchemasFlags} from '../storeSchemasAction'
 import {resolveManifestDirectory} from './manifestReader'
 
 export const validForIdChars = 'a-zA-Z0-9._-'
@@ -28,14 +28,14 @@ interface WorkspaceSchemaId {
   workspace: string
 }
 
-export interface StoreSchemaCommonFlags {
+export interface SchemaStoreCommonFlags {
   'extract-manifest'?: boolean
   'manifest-dir'?: string
   'verbose'?: boolean
 }
 
 function parseCommonFlags(
-  flags: StoreSchemaCommonFlags,
+  flags: SchemaStoreCommonFlags,
   context: {workDir: string},
   errors: string[],
 ) {
@@ -52,7 +52,7 @@ function parseCommonFlags(
   }
 }
 
-export function parseStoreSchemasConfig(flags: StoreSchemasFlags, context: {workDir: string}) {
+export function parseDeploySchemasConfig(flags: DeploySchemasFlags, context: {workDir: string}) {
   const errors: string[] = []
 
   const commonFlags = parseCommonFlags(flags, context, errors)
