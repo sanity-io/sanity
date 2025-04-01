@@ -1,6 +1,12 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {
+  expectCreatedStatus,
+  expectPublishedStatus,
+  expectUnpublishedStatus,
+} from '../../helpers/documentStatusAssertions'
+
 test(`should be able to unpublish a published document`, async ({page, createDraftDocument}) => {
   /** publish initial action */
   const titleA = 'Title A'
@@ -20,11 +26,11 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await createDraftDocument('/test/content/book')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   await contextFooterMenu.click()
   await expect(unpublishButton).toBeVisible()
@@ -38,5 +44,5 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   // Check the published button is disabled that is the reference to determine the published document doesn't exist.
   await expect(button).toBeDisabled()
-  await expect(documentStatus).toContainText('Unpublished just now')
+  await expectUnpublishedStatus(documentStatus)
 })

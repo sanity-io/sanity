@@ -6,6 +6,12 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {
+  expectCreatedStatus,
+  expectEditedStatus,
+  expectPublishedStatus,
+} from '../../helpers/documentStatusAssertions'
+
 const kanji = `
 速ヒマヤレ誌相ルなあね日諸せ変評ホ真攻同潔ク作先た員勝どそ際接レゅ自17浅ッ実情スヤ籍認ス重力務鳥の。8平はートご多乗12青國暮整ル通国うれけこ能新ロコラハ元横ミ休探ミソ梓批ざょにね薬展むい本隣ば禁抗ワアミ部真えくト提知週むすほ。査ル人形ルおじつ政謙減セヲモ読見れレぞえ録精てざ定第ぐゆとス務接産ヤ写馬エモス聞氏サヘマ有午ごね客岡ヘロ修彩枝雨父のけリド。
 
@@ -87,21 +93,21 @@ test.describe('inputs: text', () => {
 
     await titleInput.fill('Title A')
     // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
-    await expect(paneFooter).toHaveText(/Created just now/i)
+    await expectCreatedStatus(paneFooter)
     await titleInput.fill('Title A updated')
     // A subsequent edit will show that the document was edited just now.
-    await expect(paneFooter).toHaveText(/Edited just now/i)
+    await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toHaveText(/published/i)
+    await expectPublishedStatus(paneFooter)
 
     // Change the title.
     await titleInput.fill('Title B')
-    await expect(paneFooter).toHaveText(/Created just now/i)
+    await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toHaveText(/published/i)
+    await expectPublishedStatus(paneFooter)
   })
 })
