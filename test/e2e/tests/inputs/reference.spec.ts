@@ -2,6 +2,7 @@ import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 import {withDefaultClient} from '../../helpers'
+import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
@@ -47,7 +48,7 @@ withDefaultClient((context) => {
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    await expectPublishedStatus(paneFooter)
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
@@ -63,7 +64,7 @@ withDefaultClient((context) => {
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    await expectPublishedStatus(paneFooter)
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
@@ -174,14 +175,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
@@ -223,14 +224,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
