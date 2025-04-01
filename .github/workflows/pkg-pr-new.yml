@@ -37,4 +37,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: pnpm dlx pkg-pr-new publish './packages/*'
+      - run: pnpm dlx pkg-pr-new publish $(pnpm dlx lerna ls 2> /dev/null | tr '\n' ' ')
