@@ -579,7 +579,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */
-  'inputs.file.browse-button.text': 'Browse',
+  'inputs.file.browse-button.text': 'Select',
   /** Select file */
   'inputs.file.dialog.title': 'Select file',
   /** Unknown member kind: `{{kind}}` */
