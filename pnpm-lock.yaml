@@ -1653,8 +1653,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^4.1.26
-        version: 4.1.26(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^4.1.27
+        version: 4.1.27(react@18.3.1)(rxjs@7.8.2)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -10218,8 +10218,8 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  react-rx@4.1.26:
-    resolution: {integrity: sha512-yOW5IF27svIQouq2zF2qjDZcQFoLktsa9vu93gq+F64UFxfg40hBDli8egPKn4VXeTLFXBD8n1H51B5N5/PMKQ==}
+  react-rx@4.1.27:
+    resolution: {integrity: sha512-o12Z5DPARcQ/r7xyoiAB+PpogPUv6zaAObmr6ZeI+7oxq8ir7vVfmbmkOV5j5KGObC7E5+SYtp/13S/dgnf24w==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -21806,10 +21806,6 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  react-compiler-runtime@19.0.0-beta-aeaed83-20250323(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   react-compiler-runtime@19.0.0-beta-aeaed83-20250323(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -21914,19 +21910,19 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-rx@4.1.26(react@18.3.1)(rxjs@7.8.2):
+  react-rx@4.1.27(react@18.3.1)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 18.3.1
-      react-compiler-runtime: 19.0.0-beta-aeaed83-20250323(react@18.3.1)
+      react-compiler-runtime: 19.0.0-beta-e993439-20250328(react@18.3.1)
       rxjs: 7.8.2
       use-effect-event: 1.0.2(react@18.3.1)
 
-  react-rx@4.1.26(react@19.1.0)(rxjs@7.8.2):
+  react-rx@4.1.27(react@19.1.0)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.1.0
-      react-compiler-runtime: 19.0.0-beta-aeaed83-20250323(react@19.1.0)
+      react-compiler-runtime: 19.0.0-beta-e993439-20250328(react@19.1.0)
       rxjs: 7.8.2
       use-effect-event: 1.0.2(react@19.1.0)
 
@@ -22522,7 +22518,7 @@ snapshots:
       lodash: 4.17.21
       react: 19.1.0
       react-is: 18.3.1
-      react-rx: 4.1.26(react@19.1.0)(rxjs@7.8.2)
+      react-rx: 4.1.27(react@19.1.0)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
