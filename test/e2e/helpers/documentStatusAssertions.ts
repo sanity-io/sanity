@@ -8,6 +8,7 @@ const documentStatusPatterns = {
   published: /^Published (just now|\d+ sec\. ago)/i,
   created: /^Created (just now|\d+ sec\. ago)/i,
   unpublished: /^Unpublished (just now|\d+ sec\. ago)/i,
+  edited: /^Edited (just now|\d+ sec\. ago)/i,
 } as const
 
 /**
@@ -57,6 +58,19 @@ export async function expectUnpublishedStatus(
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
   await expect(statusElement).toContainText(documentStatusPatterns.unpublished, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows a edited state
+ */
+export async function expectEditedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toContainText(documentStatusPatterns.edited, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
   })
