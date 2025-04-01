@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {mockActionsFeatureToggle} from '../../helpers/mockActionsFeatureToggle'
+import {test} from '../fixtures/harFixture'
 
 // This test is skipped because the feature toggle is disable by the use of `releases`, see https://github.com/sanity-io/sanity/blob/corel/packages/sanity/src/core/releases/plugin/index.ts#L61-L62
 // Re enable once the feature toggle is removed and we support serverDocumentActions with releases.

@@ -3,7 +3,8 @@ import path from 'node:path'
 
 import {expect} from '@playwright/test'
 import {type SanityImageAssetDocument} from '@sanity/client'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test.describe('Portable Text Input - ImageArrayDraft', () => {
   let uploadedAsset: SanityImageAssetDocument

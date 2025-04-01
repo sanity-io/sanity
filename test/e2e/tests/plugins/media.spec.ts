@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test('media plugin should open from input', async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/input-standard;imagesTest')

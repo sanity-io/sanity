@@ -2,9 +2,9 @@ import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
 import {expect, type Page} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {createFileDataTransferHandle} from '../../helpers'
+import {test} from '../fixtures/harFixture'
 
 const fileName = 'capybara.jpg'
 const image = readFileSync(path.join(__dirname, '..', '..', 'resources', fileName))

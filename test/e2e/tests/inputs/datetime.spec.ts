@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test(`datetime input shows validation on selecting date from datepicker`, async ({
   page,

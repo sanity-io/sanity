@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../fixtures/harFixture'
 
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
   test.slow()
