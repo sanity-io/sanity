@@ -55,7 +55,11 @@ export default async function startAppDevServer(
     output.print(
       chalk.blue(
         chalk.underline(
-          getCoreAppURL({organizationId, httpHost: config.httpHost, httpPort: config.httpPort}),
+          await getCoreAppURL({
+            organizationId,
+            httpHost: config.httpHost,
+            httpPort: config.httpPort,
+          }),
         ),
       ),
     )
