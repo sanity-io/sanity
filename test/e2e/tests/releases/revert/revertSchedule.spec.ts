@@ -18,8 +18,6 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Revert Scheduled', () => {
-  // skipping to deal with issues in the CI
-  test.skip()
   const scheduledReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
@@ -81,7 +79,7 @@ test.describe('Revert Scheduled', () => {
     // this seems to be the lowest interval that works without hanging / flaking
     await scheduleAndConfirmRelease({
       page,
-      date: new Date(new Date().setSeconds(new Date().getSeconds() + 70)),
+      date: new Date(Date.now() + 70 * 1000),
     })
 
     // retention policy card

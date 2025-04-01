@@ -73,7 +73,6 @@ export const scheduleAndConfirmRelease = async ({page, date}: {page: Page; date:
     hour12: false,
   })
   await page.getByRole('textbox', {name: 'Select time'}).fill(timeString)
-  await page.getByTestId('date-input-dialog').click()
   await page.getByTestId('select-date-button').click()
   await expect(page.getByTestId('date-input-dialog')).not.toBeVisible()
 
