@@ -36,7 +36,7 @@ const deploySchemaCommand = {
   action: async (args, context) => {
     const mod = await import('../../actions/schema/deploySchemasAction')
 
-    const result = await mod.deploySchemasActionForCommand(args.extOptions, context)
+    const result = await mod.default(args.extOptions, context)
     if (result === 'failure') process.exit(1)
     return result
   },
