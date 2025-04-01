@@ -2,7 +2,7 @@
 
 import {isFileSource} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -503,6 +503,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
               text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
+              iconRight={ChevronDownIcon}
             />
           }
           data-testid="input-select-button"
