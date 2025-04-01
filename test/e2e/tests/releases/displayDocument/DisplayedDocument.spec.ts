@@ -27,9 +27,6 @@ import {
 test.describe.configure({mode: 'serial'})
 
 test.describe('displayedDocument', () => {
-  // skipping to deal with issues in the CI
-  test.skip()
-
   /** documents */
   let publishedDocument: SanityDocument
   let publishedDocumentDupe: SanityDocument

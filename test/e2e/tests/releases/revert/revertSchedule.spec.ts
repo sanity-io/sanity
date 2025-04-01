@@ -18,8 +18,6 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Revert Scheduled', () => {
-  // skipping to deal with issues in the CI
-  test.skip()
   const scheduledReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
