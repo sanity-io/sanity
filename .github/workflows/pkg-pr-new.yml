@@ -25,6 +25,9 @@ jobs:
     # Publish the preview package only if the permissions check passed.
     if: needs.check.outputs.has-permissions == 'true'
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
