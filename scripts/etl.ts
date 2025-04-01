@@ -83,7 +83,7 @@ async function etl(options: {
     strict: true,
     tsconfig: tsdocConfig?.input?.tsconfig ?? (baseConfig.tsconfig || 'tsconfig.json'),
     bundledPackages: tsdocConfig?.input?.bundledPackages,
-    legacyExports: tsdocConfig?.legacyExports ?? baseConfig.legacyExports ?? true,
+    legacyExports: tsdocConfig?.legacyExports ?? baseConfig.legacyExports ?? false,
   })
   timer.end()
 
