@@ -228,6 +228,29 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   )
 }
 
+export const directUploadsReducer = (opts: {
+  config: PluginOptions
+  schemaTypeName: 'file' | 'image'
+}): boolean => {
+  const {config, schemaTypeName} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.form?.[schemaTypeName]?.directUploads
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`form.${schemaTypeName}.directUploads\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, true)
+
+  return result
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},

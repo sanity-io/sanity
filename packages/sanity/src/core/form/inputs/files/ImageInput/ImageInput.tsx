@@ -305,7 +305,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     return (
       <ImageInputAssetMenu
         assetSources={assetSources}
-        directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
         handleSelectFiles={handleSelectFiles}
@@ -324,7 +323,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [
     assetSources,
-    directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
     handleSelectFiles,
@@ -342,13 +340,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <ImageInputBrowser
         assetSources={assetSources}
         readOnly={readOnly}
-        directUploads={directUploads}
         id={id}
         setMenuOpen={setMenuOpen}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
       />
     )
-  }, [assetSources, directUploads, handleSelectImageFromAssetSource, id, readOnly])
+  }, [assetSources, handleSelectImageFromAssetSource, id, readOnly])
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
