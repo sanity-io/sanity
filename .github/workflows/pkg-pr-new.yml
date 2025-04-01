@@ -36,7 +36,6 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-
       - name: Install project dependencies
         run: pnpm install
 
@@ -49,13 +48,8 @@ jobs:
 
       - run: pnpm build
         env:
-          PKG_VERSION: ${{ steps.pre-flight.version }}
+          PKG_VERSION: ${{ steps.pre-flight.outputs.version }}
 
       - run: |
-          echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.packages }}"
-          pnpm pnpx pkg-pr-new publish --no-template ${{ steps.pre-flight.packages }}
-
-      - run: |
-          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
-          echo "Publishing to pkg.pr.new: $PACKAGES"
-          pnpm pnpx pkg-pr-new publish --no-template $PACKAGES
+          echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.outputs.packages }}"
+          pnpm pnpx pkg-pr-new publish --no-template ${{ steps.pre-flight.outputs.packages }}
