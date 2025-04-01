@@ -18,7 +18,6 @@ exports[`exports snapshot 1`] = `
     "ArrayOfPrimitivesItem": "function",
     "AutoCollapseMenu": "object",
     "AvatarSkeleton": "object",
-    "BasicDocument": "function",
     "BetaBadge": "function",
     "BlockEditor": "function",
     "BlockImagePreview": "function",

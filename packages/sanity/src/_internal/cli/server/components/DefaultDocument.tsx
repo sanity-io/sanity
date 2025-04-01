@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 
 import {Favicons} from './Favicons'
-import {GlobalErrorHandler} from './globalErrorHandler'
+import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
 
 const globalStyles = `
@@ -119,10 +119,7 @@ export interface DefaultDocumentProps {
 const EMPTY_ARRAY: never[] = []
 
 /**
- * @hidden
- * @beta
- *
- * @deprecated Moved to `_internal` package
+ * @internal
  */
 export function DefaultDocument(props: DefaultDocumentProps): React.JSX.Element {
   const {entryPath, css = EMPTY_ARRAY} = props
