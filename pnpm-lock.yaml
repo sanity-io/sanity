@@ -482,8 +482,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
-        specifier: ^2.1.6
-        version: 2.1.6(@sanity/client@6.28.4(debug@4.4.0))
+        specifier: ^2.1.7
+        version: 2.1.7(@sanity/client@6.28.4(debug@4.4.0))
       '@sanity/react-loader':
         specifier: ^1.10.35
         version: 1.11.0(@sanity/types@packages+@sanity+types)(react@19.1.0)
@@ -509,8 +509,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 2.13.14
-        version: 2.13.14(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.4)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+        specifier: 2.13.15
+        version: 2.13.15(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.4)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -1435,10 +1435,10 @@ importers:
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
         specifier: ^1.0.13
-        version: 1.0.13(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+        version: 1.0.14(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.6
-        version: 2.1.6(@sanity/client@6.28.4(debug@4.4.0))
+        version: 2.1.7(@sanity/client@6.28.4(debug@4.4.0))
       '@sanity/schema':
         specifier: 3.82.0
         version: link:../@sanity/schema
@@ -4686,22 +4686,22 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation-comlink@1.0.13':
-    resolution: {integrity: sha512-pAytpE+Fbe8HLq1NgkRhEtqBJcwHc9TeuKVbnaTXLj77m2xNUwd0JSvbM79wkO8orTaGgnbY59L6EfSzxjoWPw==}
+  '@sanity/presentation-comlink@1.0.14':
+    resolution: {integrity: sha512-oYqNRucAsOK4KBHVcrPoh9LJ3ZG5XohZWpectbGzegJbXO/2rzDkep1xcDcV0iBE2GoDXh1/QOfDym/E2+LO2g==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.28.3
+      '@sanity/client': ^6.28.4
 
   '@sanity/prettier-config@1.0.3':
     resolution: {integrity: sha512-daeoWaW67I2t3yIV1s3PI2o8+A7jZnucFQzaIphpFDhHYM/mqjNvEROka300TcZ1Csm4VyPBSvx1IQQ/FkqA5Q==}
     peerDependencies:
       prettier: ^3.2.5
 
-  '@sanity/preview-url-secret@2.1.6':
-    resolution: {integrity: sha512-cvPUREWZo34NGR8sAFaQji6wv8iYiGDIGp9n8W85iKfvrJuQhsvfVvtbDiYrCyPb9GK2e514RE/5dHh/c0UQHA==}
+  '@sanity/preview-url-secret@2.1.7':
+    resolution: {integrity: sha512-3XK7J0qFdL16+CwFWh9JtqhOfaca5UrEF0Rz09W2X1qhtMA+mCwXWtKXLG2T8sJ6yxlvJWcynP9Or4Ccq3m5TQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.28.3
+      '@sanity/client': ^6.28.4
 
   '@sanity/react-loader@1.11.0':
     resolution: {integrity: sha512-6AXcTLYRwPURmM+kMITVtCu4puajPAEHMnolFlhw033dB4Z3I9HEtp2bp9YIGUDVqh5LDjNSdyUdYo3mo2lXtA==}
@@ -4786,12 +4786,12 @@ packages:
       '@sanity/types':
         optional: true
 
-  '@sanity/visual-editing@2.13.14':
-    resolution: {integrity: sha512-+Vz2iz1y05Yc6/k01NLu317fEm/uUemENQ6lTRyCigou3lBM4TteXqo5tRYkXXhxE85oIwN9p7z2HostPYI8iA==}
+  '@sanity/visual-editing@2.13.15':
+    resolution: {integrity: sha512-9RRJtbr+edJ3jLKC/zL2TFKja+wluDtB/CaAKb/KBR2U2cpD06jebSFN6ITT+DUJxVjNt1wDBNiYuOZs1scpFw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.28.3
+      '@sanity/client': ^6.28.4
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0 || >=15.0.0-rc'
       react: ^18.3 || >=19.0.0-rc
@@ -6786,8 +6786,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.14.3:
-    resolution: {integrity: sha512-vAFR9MKztuv9d5he+AnxRxQi0dyXqGpnxI/30pr2La+l3+dPXT1f288H+FEASqmupPRbk4mcxpYsHB80lSfETw==}
+  effect@3.14.4:
+    resolution: {integrity: sha512-BDWLFYYoJ5uq0n+jSekM55nwLfnzquoJ+1llaHJ/IlCnmBjo5x6xVHL94Y8socyHVJ+1ECl6ldRtxgFQnXYdaw==}
 
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
@@ -14046,7 +14046,7 @@ snapshots:
       ast-types: 0.14.2
       cli-high: 0.4.3
       diff: 5.2.0
-      effect: 3.14.3
+      effect: 3.14.4
       nanoid: 5.1.5
       recast: 0.23.11
       xycolors: 0.1.2
@@ -15023,7 +15023,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.28.4(debug@4.4.0)
       '@sanity/comlink': 3.0.1
-      '@sanity/presentation-comlink': 1.0.13(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 1.0.14(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 2.0.11(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -15369,7 +15369,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation-comlink@1.0.13(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.14(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 6.28.4(debug@4.4.0)
       '@sanity/comlink': 3.0.1
@@ -15382,7 +15382,7 @@ snapshots:
       prettier: 3.5.0
       prettier-plugin-packagejson: 2.5.8(prettier@3.5.0)
 
-  '@sanity/preview-url-secret@2.1.6(@sanity/client@6.28.4(debug@4.4.0))':
+  '@sanity/preview-url-secret@2.1.7(@sanity/client@6.28.4(debug@4.4.0))':
     dependencies:
       '@sanity/client': 6.28.4(debug@4.4.0)
       '@sanity/uuid': 3.0.2
@@ -15714,20 +15714,20 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@2.13.14(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.4)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
+  '@sanity/visual-editing@2.13.15(@emotion/is-prop-valid@1.3.1)(@sanity/client@6.28.4)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
     dependencies:
       '@sanity/comlink': 3.0.1
       '@sanity/icons': 3.7.0(react@19.1.0)
       '@sanity/insert-menu': 1.1.8(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.19.2)
-      '@sanity/presentation-comlink': 1.0.13(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 2.1.6(@sanity/client@6.28.4(debug@4.4.0))
+      '@sanity/presentation-comlink': 1.0.14(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/preview-url-secret': 2.1.7(@sanity/client@6.28.4(debug@4.4.0))
       '@sanity/ui': 2.15.11(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@sanity/visual-editing-csm': 2.0.11(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
       react: 19.1.0
-      react-compiler-runtime: 19.0.0-beta-aeaed83-20250323(react@19.1.0)
+      react-compiler-runtime: 19.0.0-beta-e993439-20250328(react@19.1.0)
       react-dom: 19.1.0(react@19.1.0)
       react-is: 18.3.1
       rxjs: 7.8.2
@@ -17927,7 +17927,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.14.3:
+  effect@3.14.4:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
