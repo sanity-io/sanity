@@ -36,11 +36,24 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
+
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Build
-        run: pnpm build
+      - id: pre-flight
+        run: |
+          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
+          echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
+          VERSION="$(jq -r .version lerna.json)-pkg.pr.new@$(git rev-parse --short HEAD)"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - run: pnpm build
+        env:
+          PKG_VERSION: ${{ steps.pre-flight.version }}
+
+      - run: |
+          echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.packages }}"
+          pnpm pnpx pkg-pr-new publish --no-template ${{ steps.pre-flight.packages }}
 
       - run: |
           PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
