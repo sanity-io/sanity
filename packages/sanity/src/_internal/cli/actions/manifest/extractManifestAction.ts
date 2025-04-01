@@ -15,7 +15,7 @@ import {
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {getTimer} from '../../util/timing'
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaDeployConstants'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'

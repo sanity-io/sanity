@@ -5,7 +5,7 @@ import {
   parseIdPrefix,
   parseIds,
   parseWorkspaceSchemaId,
-} from '../../../src/_internal/cli/actions/schema/utils/schemaDeployValidation'
+} from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
 
 const workspaceIdCases = [
   {

@@ -2,7 +2,7 @@ import {type CliCommandArguments, type CliCommandContext, type CliOutputter} fro
 import chalk from 'chalk'
 
 import {type ExtractManifestFlags, extractManifestSafe} from '../../manifest/extractManifestAction'
-import {FlagValidationError} from './schemaDeployValidation'
+import {FlagValidationError} from './schemaStoreValidation'
 
 export type ManifestExtractor = (manifestDir: string) => Promise<void>
 

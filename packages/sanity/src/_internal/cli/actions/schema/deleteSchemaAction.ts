@@ -3,18 +3,18 @@ import chalk from 'chalk'
 import uniq from 'lodash/uniq'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
-import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaDeployTypes'
-import {getDatasetsOutString, getStringList} from './utils/deploySchemaOutStrings'
+import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
+import {getDatasetsOutString, getStringList} from './utils/schemaStoreOutStrings'
 import {
   filterLogReadProjectIdMismatch,
   parseDeleteSchemasConfig,
-  type StoreSchemaCommonFlags,
-} from './utils/schemaDeployValidation'
+  type SchemaStoreCommonFlags,
+} from './utils/schemaStoreValidation'
 
-export interface DeleteSchemaFlags extends StoreSchemaCommonFlags {
+export interface DeleteSchemaFlags extends SchemaStoreCommonFlags {
   ids?: string
   dataset?: string
 }

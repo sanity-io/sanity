@@ -3,15 +3,15 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {vi} from 'vitest'
 
-import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaDeployTypes'
+import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {type ManifestJsonReader} from '../../../../src/_internal/cli/actions/schema/utils/manifestReader'
-import {type createSchemaStoreFixture} from './schemaDeployFixture'
+import {type createSchemaStoreFixture} from './schemaStoreFixture'
 
 // test code :shrug:
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ANY = any
 
-export function createMockStoreSchemaContext(
+export function createMockSchemaStoreContext(
   fixture: ReturnType<typeof createSchemaStoreFixture>,
   overrides?: Partial<SchemaStoreContext>,
 ) {

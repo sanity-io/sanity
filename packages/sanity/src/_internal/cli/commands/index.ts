@@ -1,6 +1,6 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../actions/schema/schemaDeployConstants'
+import {SCHEMA_STORE_FEATURE_ENABLED} from '../actions/schema/schemaStoreConstants'
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -48,10 +48,10 @@ import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
 import deleteSchemaCommand from './schema/deleteSchemaCommand'
+import deploySchemaCommand from './schema/deploySchemaCommand'
 import extractSchemaCommand from './schema/extractSchemaCommand'
 import schemaGroup from './schema/schemaGroup'
 import fetchSchemaCommand from './schema/schemaListCommand'
-import storeSchemaCommand from './schema/storeSchemaCommand'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
 import inviteUserCommand from './users/inviteUserCommand'
@@ -114,7 +114,7 @@ const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   extractManifestCommand,
 ]
 
-const featureToggledSchemaCommands = [fetchSchemaCommand, storeSchemaCommand, deleteSchemaCommand]
+const featureToggledSchemaCommands = [fetchSchemaCommand, deploySchemaCommand, deleteSchemaCommand]
 
 // Include experimental commands only when the feature flag is enabled
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [

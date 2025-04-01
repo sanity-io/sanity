@@ -7,15 +7,15 @@ import {
   deleteSchemaAction,
   type DeleteSchemaFlags,
 } from '../../../src/_internal/cli/actions/schema/deleteSchemaAction'
-import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaDeployTypes'
+import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {getWorkspaceSchemaId} from '../../../src/_internal/cli/actions/schema/utils/workspaceSchemaId'
 import {type StoredWorkspaceSchema} from '../../../src/_internal/manifest/manifestTypes'
-import {createSchemaStoreFixture} from './mocks/schemaDeployFixture'
+import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,
   createMockSanityClient,
-  createMockStoreSchemaContext,
-} from './mocks/schemaDeployMocks'
+  createMockSchemaStoreContext,
+} from './mocks/schemaStoreMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
 const {files, testSchema, testWorkspace, testMultiWorkspaceManifest, staticDate, workDir} = fixture
@@ -59,7 +59,7 @@ describe('deleteSchemasAction', () => {
       outputLog,
       apiClient,
       mockStores: stores,
-    } = createMockStoreSchemaContext(fixture, {
+    } = createMockSchemaStoreContext(fixture, {
       jsonReader: createMockJsonReader({
         staticDate,
         files: {
