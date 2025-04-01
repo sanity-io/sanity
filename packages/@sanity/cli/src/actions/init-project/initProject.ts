@@ -98,7 +98,7 @@ export interface ProjectTemplate {
   importPrompt?: string
   configTemplate?: string | ((variables: GenerateConfigOptions['variables']) => string)
   typescriptOnly?: boolean
-  appLocation?: string
+  entry?: string
   scripts?: Record<string, string>
 }
 

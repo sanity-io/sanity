@@ -414,8 +414,7 @@ describe('getOrCreateApplication', () => {
     output: mockOutput,
     prompt: mockPrompt,
     cliConfig: {
-      // eslint-disable-next-line camelcase
-      __experimental_appConfiguration: {
+      app: {
         organizationId: 'test-org',
       },
     },

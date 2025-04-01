@@ -34,7 +34,7 @@ export interface StaticBuildOptions {
 
   vite?: UserViteConfig
   reactCompiler: ReactCompilerConfig | undefined
-  appLocation?: string
+  entry?: string
   isApp?: boolean
 }
 
@@ -50,7 +50,7 @@ export async function buildStaticFiles(
     vite: extendViteConfig,
     importMap,
     reactCompiler,
-    appLocation,
+    entry,
     isApp,
   } = options
 
@@ -60,7 +60,7 @@ export async function buildStaticFiles(
     reactStrictMode: false,
     watch: false,
     basePath,
-    appLocation,
+    entry,
     isApp,
   })
 

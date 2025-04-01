@@ -34,10 +34,7 @@ export default async function deployAppAction(
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
 
   const installedSanityVersion = await getInstalledSanityVersion()
-  const appId =
-    cliConfig &&
-    '__experimental_appConfiguration' in cliConfig &&
-    cliConfig.__experimental_appConfiguration?.appId
+  const appId = cliConfig && 'app' in cliConfig && cliConfig.app?.id
 
   const client = apiClient({
     requireUser: true,
@@ -143,8 +140,8 @@ export default async function deployAppAction(
     output.print(`\nSuccess! Application deployed`)
 
     if (!appId) {
-      output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
-      output.print(`to __experimental_appConfiguration in sanity.cli.js or sanity.cli.ts`)
+      output.print(`\nAdd ${chalk.cyan(`id: '${userApplication.id}'`)}`)
+      output.print('to `app` in sanity.cli.js or sanity.cli.ts')
       output.print(`to avoid prompting on next deploy.`)
     }
   } catch (err) {

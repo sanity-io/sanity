@@ -17,7 +17,7 @@ export interface DevServerOptions {
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
-  appLocation?: string
+  entry?: string
   isApp?: boolean
   skipStartLog?: boolean
 }
@@ -35,14 +35,14 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactStrictMode,
     vite: extendViteConfig,
     reactCompiler,
-    appLocation,
+    entry,
     isApp,
     skipStartLog,
   } = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isApp})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, entry, isApp})
 
   debug('Resolving vite config')
   const mode = 'development'
