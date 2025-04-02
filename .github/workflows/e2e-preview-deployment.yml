@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   build-cli:
+    if: ${{ contains(github.event.head_commit.message, '[build-e2e-preview]') }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:

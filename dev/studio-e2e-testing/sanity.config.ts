@@ -20,14 +20,12 @@ import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
-export default defineConfig({
+const defaultConfig = defineConfig({
   name: 'default',
   title: 'studio-e2e-testing',
 
   projectId: process.env.SANITY_E2E_PROJECT_ID!,
   dataset: process.env.SANITY_E2E_DATASET!,
-
-  basePath: '/test',
 
   schema: {
     types: schemaTypes,
@@ -119,3 +117,23 @@ export default defineConfig({
     enabled: true,
   },
 })
+
+export default defineConfig([
+  {
+    ...defaultConfig,
+    // TODO: Update for /test-chromium path
+    basePath: '/test',
+    name: 'chromium',
+    title: 'studio-e2e-testing-chromium',
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+  },
+  {
+    ...defaultConfig,
+    basePath: '/test-firefox',
+    name: 'firefox',
+    title: 'studio-e2e-testing-firefox',
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+  },
+])
