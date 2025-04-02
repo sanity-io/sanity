@@ -79,7 +79,7 @@ jobs:
           SANITY_E2E_DATASET: pr-${{ github.event.number }}
         run: |
           pnpm run build:e2e
-          vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} --cwd dev/studio-e2e-testing/dist
+        #   vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} --cwd dev/studio-e2e-testing/dist
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} --cwd dev/studio-e2e-testing/dist
