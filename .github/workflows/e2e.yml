@@ -43,7 +43,7 @@ jobs:
         # This warms up the turborepo remote cache
         run: pnpm build:cli --output-logs=full --log-order=grouped
 
-      - name: dataset setup on PR (chromium) 
+      - name: dataset setup on PR (chromium)
         if: ${{ github.event_name == 'pull_request' }}
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
@@ -104,29 +104,15 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Build CLI
-        # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
-      - name: Cache E2E test studio on main
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
-        run: pnpm e2e:setup
-
-      - name: Cache E2E test studio on PR
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
-        run: pnpm e2e:setup
+      # - name: Cache E2E test studio on next
+      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+      #   env:
+      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+      #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+      #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+      #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+      #     SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
+      #   run: pnpm e2e:setup
 
   deploy-preview:
     runs-on: ubuntu-latest
