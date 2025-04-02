@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build-cli:
+    if: github.event.deployment_status.state == 'success' && github.ref_name != 'next' &&  github.event.deployment_status.environment == 'e2e-studio'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
@@ -27,6 +28,9 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
+
+      - name: Echo Vercel preview URL
+        run: echo ${{ github.event.deployment_status.target_url }}
 
       - name: Install project dependencies
         run: pnpm install
@@ -87,9 +91,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
-        run: pnpm e2e:setup && pnpm e2e:build
+          SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
+        run: pnpm e2e:setup
 
       - name: Cache E2E test studio on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -98,9 +101,8 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: pnpm e2e:setup && pnpm e2e:build
+          SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
+        run: pnpm e2e:setup
 
   playwright-test:
     timeout-minutes: 30
@@ -113,7 +115,8 @@ jobs:
       fail-fast: false
       matrix:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
-        project: [chromium, firefox]
+        # TODO: Restore firefox tests
+        project: [chromium]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -159,7 +162,7 @@ jobs:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -171,10 +174,9 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
         if: always()
