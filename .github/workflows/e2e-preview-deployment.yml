@@ -36,15 +36,30 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-cli]
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Build CLI
+         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
+        run: pnpm build:cli --output-logs=full --log-order=grouped
 
       - name: dataset setup
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ github.event.number }}
-        run: echo pr-${{ github.event.number }} && pnpm e2e:setup
+        run: |
+          echo pr-${{ github.event.number }} 
+          pnpm e2e:setup
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
 
       - name: Build Project Artifacts
         env:
@@ -52,7 +67,9 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ github.event.number }}
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          pnpm run build:e2e
+          vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd dev/studio-e2e-testing/dist
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd dev/studio-e2e-testing/dist
