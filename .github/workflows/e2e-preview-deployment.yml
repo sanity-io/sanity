@@ -51,7 +51,6 @@ jobs:
 
       - name: Build CLI
          # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
-         #  TODO: Why this is not using the build:cli from the cache
         run: pnpm build:cli --output-logs=full --log-order=grouped
 
       - name: dataset setup
@@ -65,6 +64,9 @@ jobs:
 
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project Artifacts
         env:
