@@ -125,7 +125,6 @@ export default defineConfig([
     basePath: '/test',
     name: 'chromium',
     title: 'studio-e2e-testing-chromium',
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
     dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
   },
   {
@@ -133,7 +132,6 @@ export default defineConfig([
     basePath: '/test-firefox',
     name: 'firefox',
     title: 'studio-e2e-testing-firefox',
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
   },
 ])
