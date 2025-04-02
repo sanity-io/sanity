@@ -83,7 +83,7 @@ importers:
         specifier: ^22.10.0
         version: 22.13.1
       '@types/react':
-        specifier: ^19.0.12
+        specifier: ^19.1.0
         version: 19.1.0
       '@types/semver':
         specifier: ^7.5.6
@@ -291,7 +291,7 @@ importers:
         version: 19.1.0
       '@types/react-dom':
         specifier: ^19.1.0
-        version: 19.1.0(@types/react@19.1.0)
+        version: 19.1.1(@types/react@19.1.0)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))
@@ -1143,7 +1143,7 @@ importers:
         specifier: ^1.13.0
         version: 1.13.0
       '@types/react':
-        specifier: ^19.0.12
+        specifier: ^19.1.0
         version: 19.1.0
       rimraf:
         specifier: ^5.0.10
@@ -1168,7 +1168,7 @@ importers:
         specifier: 1.1.8
         version: 1.1.8(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.16(react-dom@19.1.0(react@18.3.1))(react@18.3.1))
       '@types/react':
-        specifier: ^19.0.12
+        specifier: ^19.1.0
         version: 19.1.0
       '@vitejs/plugin-react':
         specifier: ^4.3.4
@@ -1769,7 +1769,7 @@ importers:
         version: 6.6.3
       '@testing-library/react':
         specifier: ^16.2.0
-        version: 16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.0(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.1(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/user-event':
         specifier: ^13.5.0
         version: 13.5.0(@testing-library/dom@10.4.0)
@@ -1798,11 +1798,11 @@ importers:
         specifier: ^3.4.0
         version: 3.4.3
       '@types/react':
-        specifier: ^19.0.12
+        specifier: ^19.1.0
         version: 19.1.0
       '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.1.0(@types/react@19.1.0)
+        specifier: ^19.1.1
+        version: 19.1.1(@types/react@19.1.0)
       '@types/refractor':
         specifier: ^3.0.0
         version: 3.4.1
@@ -1900,11 +1900,11 @@ importers:
         specifier: ^1.10.9
         version: 1.10.9(@swc/core@1.10.15)(@swc/types@0.1.17)(typescript@5.7.3)
       '@types/react':
-        specifier: ^19.0.12
+        specifier: ^19.1.0
         version: 19.1.0
       '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.1.0(@types/react@19.1.0)
+        specifier: ^19.1.1
+        version: 19.1.1(@types/react@19.1.0)
       '@types/serve-handler':
         specifier: ^6.1.4
         version: 6.1.4
@@ -5201,8 +5201,8 @@ packages:
   '@types/raf@3.4.3':
     resolution: {integrity: sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==}
 
-  '@types/react-dom@19.1.0':
-    resolution: {integrity: sha512-21E2zejNNRtjG4hKIyJz4aWswGEcNFTgttA0bZIRGjj1HA/tbSUxIJnIcYbn98pwJck0cS1bsQhn6eaKqbcFWw==}
+  '@types/react-dom@19.1.1':
+    resolution: {integrity: sha512-jFf/woGTVTjUJsl2O7hcopJ1r0upqoq/vIOoCj0yLh3RIXxWcljlpuZ+vEBRXsymD1jhfeJrlyTy/S1UW+4y1w==}
     peerDependencies:
       '@types/react': ^19.0.0
 
@@ -15936,7 +15936,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
 
-  '@testing-library/react@16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.0(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@testing-library/react@16.2.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.1(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.27.0
       '@testing-library/dom': 10.4.0
@@ -15944,7 +15944,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
       '@types/react': 19.1.0
-      '@types/react-dom': 19.1.0(@types/react@19.1.0)
+      '@types/react-dom': 19.1.1(@types/react@19.1.0)
 
   '@testing-library/user-event@13.5.0(@testing-library/dom@10.4.0)':
     dependencies:
@@ -16126,7 +16126,7 @@ snapshots:
 
   '@types/raf@3.4.3': {}
 
-  '@types/react-dom@19.1.0(@types/react@19.1.0)':
+  '@types/react-dom@19.1.1(@types/react@19.1.0)':
     dependencies:
       '@types/react': 19.1.0
 
