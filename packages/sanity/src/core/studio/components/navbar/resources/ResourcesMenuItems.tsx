@@ -1,6 +1,6 @@
-import {Box, MenuDivider, Text} from '@sanity/ui'
+import {Box, MenuDivider, Stack, Text} from '@sanity/ui'
 
-import {MenuItem} from '../../../../../ui-components'
+import {Button, MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
@@ -12,9 +12,15 @@ interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
   value?: ResourcesResponse
+  onAboutDialogOpen: () => void
 }
 
-export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
+export function ResourcesMenuItems({
+  error,
+  isLoading,
+  value,
+  onAboutDialogOpen,
+}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
   const isAutoUpdating = hasSanityPackageInImportMap()
@@ -60,20 +66,28 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
         })}
 
       {/* Studio version information */}
-      <Box padding={3}>
-        <Text size={1} muted weight="medium" textOverflow="ellipsis">
-          {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
-        </Text>
-        {!error && latestStudioVersion && !isAutoUpdating && (
-          <Box paddingTop={2}>
-            <Text size={1} muted textOverflow="ellipsis">
-              {t('help-resources.latest-sanity-version', {
-                latestVersion: latestStudioVersion,
-              })}
-            </Text>
-          </Box>
-        )}
-      </Box>
+      <Button
+        onClick={onAboutDialogOpen}
+        mode="bleed"
+        tooltipProps={{
+          content: <Text size={1}>{t('help-resources.action.version-menu-tooltip')}</Text>,
+        }}
+      >
+        <Stack space={1}>
+          <Text size={1} muted weight="medium" textOverflow="ellipsis">
+            {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
+          </Text>
+          {!error && latestStudioVersion && !isAutoUpdating && (
+            <Box paddingTop={2}>
+              <Text size={1} muted textOverflow="ellipsis">
+                {t('help-resources.latest-sanity-version', {
+                  latestVersion: latestStudioVersion,
+                })}
+              </Text>
+            </Box>
+          )}
+        </Stack>
+      </Button>
     </>
   )
 }
