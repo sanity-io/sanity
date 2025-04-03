@@ -1,4 +1,4 @@
-import {Flex, Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -10,9 +10,8 @@ import {
   useTranslation,
   useVersionOperations,
 } from 'sanity'
-import {structureLocaleNamespace} from 'sanity/structure'
 
-import {Button} from '../../../../../ui-components'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {useConditionalToast} from '../documentViews/useConditionalToast'
 import {Banner} from './Banner'
 
@@ -84,32 +83,28 @@ export function AddToReleaseBanner({
   return (
     <Banner
       tone={tone}
-      paddingY={0}
       content={
-        <Flex align="center" justify="space-between" gap={1} flex={1}>
-          <Text size={1}>
-            <Translate
-              i18nKey="banners.release.not-in-release"
-              t={t}
-              values={{
-                title:
-                  currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
-              }}
-              components={{
-                VersionBadge: getVersionInlineBadge(currentRelease),
-              }}
-            />
-          </Text>
-          <Flex gap={2} align="center" justify="center">
-            <Button
-              text={t('banners.release.action.add-to-release')}
-              tone={tone}
-              disabled={Boolean(versionCreateState)}
-              onClick={handleAddToRelease}
-            />
-          </Flex>
-        </Flex>
+        <Text size={1}>
+          <Translate
+            i18nKey="banners.release.not-in-release"
+            t={t}
+            values={{
+              title:
+                currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
+            }}
+            components={{
+              VersionBadge: getVersionInlineBadge(currentRelease),
+            }}
+          />
+        </Text>
       }
+      action={{
+        text: t('banners.release.action.add-to-release'),
+        tone: tone,
+        disabled: Boolean(versionCreateState),
+        onClick: handleAddToRelease,
+        mode: 'default',
+      }}
     />
   )
 }

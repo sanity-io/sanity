@@ -6,8 +6,8 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
-const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop']
-const DEFAULT_FILE_FIELDS = ['asset']
+const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop', 'media']
+const DEFAULT_FILE_FIELDS = ['asset', 'media']
 const DEFAULT_GEOPOINT_FIELDS = ['lat', 'lng', 'alt']
 const DEFAULT_SLUG_FIELDS = ['current', 'source']
 

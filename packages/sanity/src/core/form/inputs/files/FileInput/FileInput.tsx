@@ -2,7 +2,7 @@
 
 import {isFileSource} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -113,11 +113,11 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
     // value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset'].includes(key),
+      (key) => !['_type', '_key', '_upload', 'asset', 'media'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
-    const removeKeys = ['asset']
+    const removeKeys = ['asset', 'media']
       .concat(allKeys.filter((key) => ['_upload'].includes(key)))
       .map((key) => unset([key]))
 
@@ -152,7 +152,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   handleClearField = () => {
-    this.props.onChange(unset(['asset']))
+    this.props.onChange([unset(['asset']), unset(['media'])])
   }
 
   handleSelectFiles = (files: globalThis.File[]) => {
@@ -465,7 +465,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   renderAssetMenu(tone: ThemeColorToneKey) {
-    const {schemaType, readOnly, directUploads, resolveUploader} = this.props
+    const {schemaType, readOnly, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
@@ -479,7 +479,6 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
             hoveringFiles={hoveringFiles}
             acceptedFiles={acceptedFiles}
             rejectedFilesCount={rejectedFilesCount}
-            directUploads={directUploads}
             type="file"
           />
         </FlexContainer>
@@ -488,11 +487,11 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads, id, t} = this.props
+    const {assetSources, readOnly, id, t} = this.props
 
     if (assetSources.length === 0) return null
 
-    if (assetSources.length > 1 && !readOnly && directUploads) {
+    if (assetSources.length > 1 && !readOnly) {
       return (
         <MenuButton
           id={`${id}_assetFileButton`}
@@ -503,6 +502,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
               text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
+              iconRight={ChevronDownIcon}
             />
           }
           data-testid="input-select-button"
@@ -512,7 +512,10 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
                 return (
                   <MenuItem
                     key={assetSource.name}
-                    text={assetSource.title}
+                    text={
+                      (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+                      startCase(assetSource.name)
+                    }
                     onClick={() => {
                       this.setState({isMenuOpen: false})
                       this.handleSelectFileFromAssetSource(assetSource)

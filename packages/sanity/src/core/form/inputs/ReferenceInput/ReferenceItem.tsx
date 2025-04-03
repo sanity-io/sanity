@@ -226,6 +226,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             button={
               <ContextMenuButton
                 selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
+                tooltipProps={{
+                  fallbackPlacements: ['top', 'bottom'],
+                  placement: 'right',
+                }}
               />
             }
             id={`${inputId}-menuButton`}

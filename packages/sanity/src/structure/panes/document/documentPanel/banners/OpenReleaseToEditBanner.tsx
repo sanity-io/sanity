@@ -13,9 +13,9 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
-import {structureLocaleNamespace} from 'sanity/structure'
 
 import {Button} from '../../../../../ui-components'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
 export function OpenReleaseToEditBanner({

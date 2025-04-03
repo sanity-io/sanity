@@ -1,6 +1,8 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+
 const name = 'Test Name'
 
 test(`unpublished documents can be deleted`, async ({page, createDraftDocument}) => {
@@ -9,7 +11,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
   // Wait for the document to save before deleting.
-  await expect(paneFooter).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(paneFooter)
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
@@ -25,11 +27,11 @@ test(`published documents can be deleted`, async ({page, createDraftDocument}) =
   const publishButton = page.getByTestId('action-publish')
 
   // Wait for the document to save before publishing.
-  await expect(paneFooter).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(paneFooter)
 
   // Wait for the document to be published.
   await publishButton.click()
-  await expect(paneFooter).toContainText(/published/i, {useInnerText: true, timeout: 30_000})
+  await expectPublishedStatus(paneFooter)
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()

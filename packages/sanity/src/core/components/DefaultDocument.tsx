@@ -120,7 +120,10 @@ const EMPTY_ARRAY: never[] = []
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ *
+ * @deprecated Moved to `_internal` package
+ */
 export function DefaultDocument(props: DefaultDocumentProps): React.JSX.Element {
   const {entryPath, css = EMPTY_ARRAY} = props
 

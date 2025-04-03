@@ -43,6 +43,7 @@ import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../release
 import {
   type DocumentPresence,
   type EditStateFor,
+  type InitialValueState,
   type PermissionCheckResult,
   useDocumentValuePermissions,
   usePresenceStore,
@@ -64,7 +65,7 @@ interface DocumentFormOptions {
   documentType: string
   documentId: string
   releaseId?: ReleaseId
-  initialValue?: SanityDocumentLike
+  initialValue?: InitialValueState
   initialFocusPath?: Path
   selectedPerspectiveName?: ReleaseId | 'published'
   readOnly?: boolean | ((editState: EditStateFor) => boolean)
@@ -192,7 +193,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [comparisonValueRaw, editState])
 
   const value: SanityDocumentLike = useMemo(() => {
-    const baseValue = initialValue || {_id: documentId, _type: documentType}
+    const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
       return editState.version || editState.draft || editState.published || baseValue
     }
@@ -269,7 +270,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const isNonExistent = !value?._id
   const isCreateLinked = isSanityCreateLinkedDocument(value)
 
-  const ready = connectionState === 'connected' && editState.ready
+  const ready = connectionState === 'connected' && editState.ready && !initialValue?.loading
 
   const selectedPerspective = useMemo(() => {
     return getSelectedPerspective(selectedPerspectiveName, releases)
@@ -382,7 +383,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
           telemetry.log(CreatedDraft)
         }
 
-        patch.execute(toMutationPatches(event.patches), initialValue)
+        patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
     }
   }, [

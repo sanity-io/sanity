@@ -21,10 +21,13 @@ import {omit} from 'lodash'
  */
 export function prepareVersionReferences<T = any>(obj: T): T {
   if (isReference(obj)) {
+    const isStrengthenOnPublish = typeof obj._strengthenOnPublish !== 'undefined'
     const isSchemaMandatedWeakReference = obj._strengthenOnPublish?.weak === true
-    if (!isSchemaMandatedWeakReference) {
+
+    if (isStrengthenOnPublish && !isSchemaMandatedWeakReference) {
       return omit(obj, ['_weak']) as T
     }
+
     return obj
   }
   if (typeof obj !== 'object' || !obj) return obj

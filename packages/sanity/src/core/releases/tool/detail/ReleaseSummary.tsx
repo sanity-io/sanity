@@ -74,9 +74,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       if (!isBundleDocumentRow(rowProps.datum)) return null
       if (rowProps.datum.isPending) return null
 
-      return <DocumentActions document={rowProps.datum} />
+      return <DocumentActions document={rowProps.datum} releaseTitle={release.metadata.title} />
     },
-    [release.state],
+    [release.metadata.title, release.state],
   )
 
   const documentTableColumnDefs = useMemo(

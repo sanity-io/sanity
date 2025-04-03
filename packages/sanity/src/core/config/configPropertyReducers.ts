@@ -228,6 +228,29 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   )
 }
 
+export const directUploadsReducer = (opts: {
+  config: PluginOptions
+  schemaTypeName: 'file' | 'image'
+}): boolean => {
+  const {config, schemaTypeName} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.form?.[schemaTypeName]?.directUploads
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`form.${schemaTypeName}.directUploads\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, true)
+
+  return result
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
@@ -388,6 +411,52 @@ export const eventsAPIReducer = (opts: {
     throw new Error(
       `Expected \`beta.eventsAPI.${opts.key}\` to be a boolean, but received ${getPrintableType(
         enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryLibraryIdReducer = (opts: {
+  config: PluginOptions
+  initialValue: string | undefined
+}): string | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.libraryId
+
+    if (!resolver && typeof resolver !== 'string') return acc
+    if (typeof resolver === 'string') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
+        resolver,
       )}`,
     )
   }, initialValue)

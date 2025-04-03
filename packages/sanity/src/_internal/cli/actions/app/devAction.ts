@@ -28,12 +28,8 @@ export default async function startAppDevServer(
   }
 
   let organizationId: string | undefined
-  if (
-    cliConfig &&
-    '__experimental_appConfiguration' in cliConfig &&
-    cliConfig.__experimental_appConfiguration?.organizationId
-  ) {
-    organizationId = cliConfig.__experimental_appConfiguration.organizationId
+  if (cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId) {
+    organizationId = cliConfig.app.organizationId
   }
 
   if (!organizationId) {
@@ -59,7 +55,11 @@ export default async function startAppDevServer(
     output.print(
       chalk.blue(
         chalk.underline(
-          getCoreAppURL({organizationId, httpHost: config.httpHost, httpPort: config.httpPort}),
+          await getCoreAppURL({
+            organizationId,
+            httpHost: config.httpHost,
+            httpPort: config.httpPort,
+          }),
         ),
       ),
     )

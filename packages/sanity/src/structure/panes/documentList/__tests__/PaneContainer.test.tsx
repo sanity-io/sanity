@@ -1,10 +1,10 @@
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {defineConfig, type PerspectiveContextValue, useSearchState} from 'sanity'
-import {type DocumentListPaneNode, type StructureToolContextValue} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
+import {type DocumentListPaneNode, type StructureToolContextValue} from '../../../types'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {PaneContainer} from '../PaneContainer'
 

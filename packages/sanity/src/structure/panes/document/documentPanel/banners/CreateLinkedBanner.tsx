@@ -1,6 +1,6 @@
 import {getSanityCreateLinkMetadata, useSanityCreateConfig} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 
+import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 export function CreateLinkedBanner() {

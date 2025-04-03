@@ -34,9 +34,14 @@ const playwrightConfig = createPlaywrightConfig({
           return {
             ...projectConfig,
             permissions: ['clipboard-read', 'clipboard-write'],
+            launchOptions: {
+              args: ['--disable-gpu', '--disable-software-rasterizer'],
+            },
             contextOptions: {
+              ...projectConfig.use?.contextOptions,
               // chromium-specific permissions
               permissions: ['clipboard-read', 'clipboard-write'],
+              reducedMotion: 'reduce',
             },
           }
         }
@@ -49,6 +54,10 @@ const playwrightConfig = createPlaywrightConfig({
                 'dom.events.asyncClipboard.readText': true,
                 'dom.events.testing.asyncClipboard': true,
               },
+            },
+            contextOptions: {
+              ...projectConfig.use?.contextOptions,
+              reducedMotion: 'reduce',
             },
           }
         }

@@ -79,7 +79,7 @@ test.describe('Revert Scheduled', () => {
     // this seems to be the lowest interval that works without hanging / flaking
     await scheduleAndConfirmRelease({
       page,
-      date: new Date(new Date().setSeconds(new Date().getSeconds() + 70)),
+      date: new Date(Date.now() + 70 * 1000),
     })
 
     // retention policy card

@@ -48,7 +48,7 @@ export function getSharedServerConfig({
   httpHost: string
   basePath: string
   vite: CliConfig['vite']
-  appLocation?: string
+  entry?: string
   isApp?: boolean
 } {
   // Order of preference: CLI flags, environment variables, user build config, default config
@@ -66,8 +66,8 @@ export function getSharedServerConfig({
     env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/'),
   )
 
-  const isApp = cliConfig && '__experimental_appConfiguration' in cliConfig
-  const appLocation = cliConfig?.__experimental_appConfiguration?.appLocation
+  const isApp = cliConfig && 'app' in cliConfig
+  const entry = cliConfig?.app?.entry
 
   return {
     cwd: workDir,
@@ -75,7 +75,7 @@ export function getSharedServerConfig({
     httpHost,
     basePath,
     vite: cliConfig?.vite,
-    appLocation,
+    entry,
     isApp,
   }
 }

@@ -2,7 +2,7 @@ import {pick, startCase} from 'lodash'
 
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD} from './image/fieldDefs'
+import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD, MEDIA_LIBRARY_ASSET_FIELD} from './image/fieldDefs'
 import {createFieldsets} from './object'
 import {lazyGetter} from './utils'
 
@@ -29,7 +29,12 @@ export const ImageType = {
       hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
     }
 
-    const fields = [ASSET_FIELD, ...hotspotFields, ...(rawSubTypeDef.fields || [])]
+    const fields = [
+      ASSET_FIELD,
+      MEDIA_LIBRARY_ASSET_FIELD,
+      ...hotspotFields,
+      ...(rawSubTypeDef.fields || []),
+    ]
     const subTypeDef = {...rawSubTypeDef, fields}
 
     const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {

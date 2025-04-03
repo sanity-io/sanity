@@ -10,6 +10,32 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** "Disabled" status for auto-updates in About-dialog */
+  'about-dialog.version-info.auto-updates.disabled': 'Disabled',
+  /** "Enabled" status for auto-updates in About-dialog */
+  'about-dialog.version-info.auto-updates.enabled': 'Enabled',
+  /** "Auto Updates" status header in About-dialog */
+  'about-dialog.version-info.auto-updates.header': 'Auto Updates',
+  /** "How to enable" next to Disabled state for Auto updates in about dialog */
+  'about-dialog.version-info.auto-updates.how-to-enable': 'How to enable',
+  /** Text displayed on the "Copy to clipboard"-button after clicked */
+  'about-dialog.version-info.copy-to-clipboard-button.copied-text':
+    'Copied to Clipboard. Happy pasting!',
+  /** "Copy to Clipboard" button text for copying version details from About-dialog */
+  'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
+  /** "Current version" header in about dialog  */
+  'about-dialog.version-info.current-version.header': 'Current version',
+  /** "How to upgrade" link text */
+  'about-dialog.version-info.how-to-upgrade': 'How to upgrade',
+  /** "Latest version" header in about dialog */
+  'about-dialog.version-info.latest-version.header': 'Latest version',
+  /** "Latest version" header in about dialog */
+  'about-dialog.version-info.latest-version.text': 'Latest version is {{latestStudioVersion}}',
+  /** "Up to date" status in About-dialog */
+  'about-dialog.version-info.up-to-date': '(Up to date)',
+  /** "User agent" header in About-dialog */
+  'about-dialog.version-info.user-agent.header': 'User agent',
+
   /** The text used in the tooltip shown in the dialog close button */
   'announcement.dialog.close': 'Close',
   /** Aria label to be used in the dialog close button */
@@ -69,11 +95,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown when the list of assets only include a specific set of types */
   'asset-source.dialog.accept-message':
     'Only showing assets of accepted types: <strong>{{acceptTypes}}</strong>',
+  /** Select asset dialog cancel-button */
+  'asset-source.dialog.button.cancel': 'Cancel',
+  /** Select asset dialog select-button */
+  'asset-source.dialog.button.select': 'Select',
   /** Keys shared between both image asset source and file asset source */
   /** Select asset dialog title for files */
   'asset-source.dialog.default-title_file': 'Select file',
   /** Select asset dialog title for images */
   'asset-source.dialog.default-title_image': 'Select image',
+  /** Insert asset error */
+  'asset-source.dialog.insert-asset-error':
+    'Error inserting asset. See the console for more information.',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
   /** Text shown when selecting a file but there's no files to select from */
@@ -100,6 +133,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.image.asset-list.delete-successful': 'Image was deleted',
   /** Text displayed on button or menu invoking the image asset source */
   'asset-source.image.title': 'Uploaded images',
+  /** Menu Items for Media Library */
+  'asset-source.media-library.file.title': 'Media Library',
+  'asset-source.media-library.image.title': 'Media Library',
   'asset-source.usage-list.documents-using-file_named_one':
     'One document is using file <code>{{filename}}</code>',
   'asset-source.usage-list.documents-using-file_named_other':
@@ -469,16 +505,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.contact-sales': 'Contact sales',
+
   /**
    * Label for "help and support" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.help-and-support': 'Help and support',
+
   /**
    * Label for "join our community" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.join-our-community': 'Join our community',
+
+  /**
+   * Label for version info menu tooltip
+   */
+  'help-resources.action.version-menu-tooltip': 'More details',
+
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is {{latestVersion}}',
   /** Information for what studio version the current studio is running */
@@ -569,7 +613,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */
-  'inputs.file.browse-button.text': 'Browse',
+  'inputs.file.browse-button.text': 'Select',
   /** Select file */
   'inputs.file.dialog.title': 'Select file',
   /** Unknown member kind: `{{kind}}` */

@@ -311,6 +311,15 @@ export interface ReactCompilerConfig {
   compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all'
 }
 
+interface AppConfig {
+  organizationId: string
+  /**
+   * Defaults to './src/App'
+   */
+  entry?: string
+  id?: string
+}
+
 export interface CliConfig {
   api?: CliApiConfig
 
@@ -349,13 +358,8 @@ export interface CliConfig {
   /**
    * Parameter used to configure other kinds of applications.
    * Signals to `sanity` commands that this is not a studio.
-   * @internal
    */
-  __experimental_appConfiguration?: {
-    organizationId: string
-    appLocation?: string
-    appId?: string
-  }
+  app?: AppConfig
 }
 
 export type UserViteConfig =

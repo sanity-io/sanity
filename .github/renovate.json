@@ -61,7 +61,8 @@
         "framer-motion",
         "get-it",
         "groq-js",
-        "react-rx"
+        "react-rx",
+        "scrollmirror"
       ],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"
@@ -95,6 +96,7 @@
         "react-is",
         "react-rx",
         "react",
+        "use-sync-external-store",
         "styled-components",
         "typescript"
       ],

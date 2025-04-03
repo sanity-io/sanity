@@ -25,21 +25,10 @@ import {MenuButton, Tooltip} from '../../../../ui-components'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {type EditableReleaseDocument, isReleaseType, type ReleaseType} from '../../store/types'
+import {RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
-
-const RELEASE_TYPES: Record<ReleaseType, {tone: BadgeTone}> = {
-  asap: {
-    tone: 'critical',
-  },
-  scheduled: {
-    tone: 'primary',
-  },
-  undecided: {
-    tone: 'suggest',
-  },
-}
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -159,7 +148,7 @@ export function ReleaseForm(props: {
                 <Flex justify="space-between" align="center">
                   <ReleaseTypeOption
                     text={t(`release.type.${buttonReleaseType}`)}
-                    tone={RELEASE_TYPES[buttonReleaseType].tone}
+                    tone={RELEASE_TYPES_TONES[buttonReleaseType].tone}
                   />
                   <Text size={1}>
                     <ChevronDownIcon />
@@ -174,7 +163,7 @@ export function ReleaseForm(props: {
             }}
             menu={
               <Menu>
-                {Object.entries(RELEASE_TYPES).map(([type, {tone}]) => (
+                {Object.entries(RELEASE_TYPES_TONES).map(([type, {tone}]) => (
                   <MenuItem key={type} data-value={type} onClick={handleButtonReleaseTypeChange}>
                     <ReleaseTypeOption text={t(`release.type.${type}`)} tone={tone} />
                   </MenuItem>

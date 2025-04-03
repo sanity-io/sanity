@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.80.1",
+  "version": "3.82.0",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -22,6 +22,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -32,7 +33,7 @@
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.esm.js",
+  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",

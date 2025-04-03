@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -7,8 +7,9 @@ import {
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
-import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
@@ -42,22 +43,19 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
   return (
     <Banner
       tone="caution"
-      paddingY={2}
       content={
-        <Flex align="center" justify="space-between" gap={1} flex={1}>
-          <Text size={1}>
-            <Translate
-              t={t}
-              i18nKey={description}
-              values={{
-                title,
-              }}
-              components={{
-                VersionBadge: getVersionInlineBadge(release),
-              }}
-            />
-          </Text>
-        </Flex>
+        <Text size={1}>
+          <Translate
+            t={t}
+            i18nKey={description}
+            values={{
+              title,
+            }}
+            components={{
+              VersionBadge: getVersionInlineBadge(release),
+            }}
+          />
+        </Text>
       }
       action={
         params?.archivedRelease

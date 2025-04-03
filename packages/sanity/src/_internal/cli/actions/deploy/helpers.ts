@@ -274,10 +274,7 @@ export async function getOrCreateApplication({
   spinner,
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
   const {prompt, cliConfig} = context
-  const organizationId =
-    cliConfig &&
-    '__experimental_appConfiguration' in cliConfig &&
-    cliConfig.__experimental_appConfiguration?.organizationId
+  const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
@@ -415,10 +412,7 @@ async function getOrCreateAppFromConfig({
   appId,
 }: AppConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
-  const organizationId =
-    cliConfig &&
-    '__experimental_appConfiguration' in cliConfig &&
-    cliConfig.__experimental_appConfiguration?.organizationId
+  const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
@@ -433,7 +427,7 @@ async function getOrCreateAppFromConfig({
   }
 
   // core apps cannot arbitrarily create ids or hosts, so send them to create option
-  output.print('The appId provided in your configuration is not recognized.')
+  output.print('The id provided in your configuration is not recognized.')
   output.print('Checking existing applications...')
   return getOrCreateApplication({client, context, spinner})
 }

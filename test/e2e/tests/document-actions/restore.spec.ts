@@ -1,6 +1,8 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
   test.slow()
   const titleA = 'Title A'
@@ -23,11 +25,11 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   await createDraftDocument('/test/content/book')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 60_000})
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
@@ -36,7 +38,7 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()
@@ -84,7 +86,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
 
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
   //
@@ -92,7 +94,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
@@ -101,7 +103,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()
@@ -152,11 +154,11 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
-  await expect(documentStatus).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
@@ -165,7 +167,7 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   // Wait for the document to be published.
   await page.waitForTimeout(2_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()

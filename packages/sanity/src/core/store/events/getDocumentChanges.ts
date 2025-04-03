@@ -3,6 +3,7 @@ import {diffInput, wrap} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
 import {
+  catchError,
   combineLatest,
   from,
   map,
@@ -177,7 +178,7 @@ export function getDocumentChanges({
   to$: Observable<EventsStoreRevision | null>
   remoteTransactions$: Observable<TransactionLogEventWithEffects[]>
   since$: Observable<EventsStoreRevision | null>
-}): Observable<{loading: boolean; diff: ObjectDiff | null}> {
+}): Observable<{loading: boolean; diff: ObjectDiff | null; error: Error | null}> {
   let lastResolvedSince: string | null = null
   let lastResolvedTo: string | null = null
   let lastTransactions: TransactionLogEventWithEffects[] = []
@@ -197,7 +198,7 @@ export function getDocumentChanges({
         }
       }
       if (!sinceDoc) {
-        return of({loading: false, diff: null})
+        return of({loading: false, diff: null, error: null})
       }
 
       return remoteTransactions$.pipe(
@@ -240,12 +241,18 @@ export function getDocumentChanges({
               return {
                 loading: false,
                 diff: calculateDiff({documentId, initialDoc: sinceDoc, transactions, events}),
+                error: null,
               }
             }),
           )
         }),
+        catchError((error) => {
+          console.error(error)
+          return of({loading: false, diff: null, error})
+        }),
         startWith({
           loading: true,
+          error: null,
           diff:
             sinceDoc && to
               ? (diffInput(

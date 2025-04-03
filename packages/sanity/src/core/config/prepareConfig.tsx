@@ -8,7 +8,14 @@ import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} fr
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {FileSource, ImageSource} from '../form/studio/assetSource'
+import {
+  FileSource as DefaultFileSource,
+  ImageSource as DefaultImageSource,
+} from '../form/studio/assetSourceDefault'
+import {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
@@ -21,6 +28,7 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
   createFallbackOriginReducer,
+  directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -34,6 +42,8 @@ import {
   initialLanguageFilter,
   internalTasksReducer,
   legacySearchEnabledReducer,
+  mediaLibraryEnabledReducer,
+  mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
@@ -55,6 +65,7 @@ import {
   type Config,
   type ConfigContext,
   type MissingConfigFile,
+  type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
   type Source,
@@ -79,6 +90,29 @@ function normalizeIcon(
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
+// Create media library sources with configuration
+const createMediaLibrarySources = (config: PluginOptions) => {
+  const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
+  const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
+
+  // Only create sources if media library is enabled
+  if (!enabled) {
+    return {fileSource: null, imageSource: null}
+  }
+
+  const fileSource = createSanityMediaLibraryFileSource({
+    name: 'sanity-media-library-file-source',
+    libraryId: libraryId || null,
+  })
+
+  const imageSource = createSanityMediaLibraryImageSource({
+    name: 'sanity-media-library-image-source',
+    libraryId: libraryId || null,
+  })
+
+  return {fileSource, imageSource}
+}
 
 /**
  * Takes in a config (created from the `defineConfig` function) and returns
@@ -127,7 +161,26 @@ export function prepareConfig(
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
       return {
         ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
+          /*
+           * @FIXME: with the introduction of global references, @sanity/assist broke
+           * As a quickfix the plugins was released with a know property on the plugin definition.
+           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
+           * This ensures auto updating studios can start, albeit without assist, it it is old.
+           */
+          .filter((plugin) => {
+            const validPlugin =
+              plugin.name !== '@sanity/assist' ||
+              (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
+            if (!validPlugin) {
+              console.warn(
+                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
+                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+              )
+            }
+
+            return validPlugin
+          }),
       }
     })
 
@@ -307,6 +360,8 @@ function resolveSource({
   ) as any as SanityClient
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
+
+  const mediaLibrarySources = createMediaLibrarySources(config)
 
   let templates!: Source['templates']
   try {
@@ -568,27 +623,25 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [FileSource],
+          initialValue: mediaLibrarySources.fileSource
+            ? [DefaultFileSource, mediaLibrarySources.fileSource]
+            : [DefaultFileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'file'}),
       },
       image: {
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [ImageSource],
+          initialValue: mediaLibrarySources.imageSource
+            ? [DefaultImageSource, mediaLibrarySources.imageSource]
+            : [DefaultImageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.image?.directUploads === undefined ? true : config.form.image.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'image'}),
       },
     },
 
@@ -666,6 +719,11 @@ function resolveSource({
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
+    },
+
+    mediaLibrary: {
+      enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
+      libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
     },
   }
 

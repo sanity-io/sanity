@@ -6,11 +6,11 @@ import {
   usePerspective,
   useReleasesIds,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {useDocumentPane} from '../../../useDocumentPane'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
 vi.mock('../../../useDocumentPane', () => ({

@@ -6,7 +6,7 @@ import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {testServerCommand} from './shared/devServer'
-import {getTestRunArgs, studiosPath, studioVersions} from './shared/environment'
+import {fixturesPath, getTestRunArgs, studiosPath, studioVersions} from './shared/environment'
 
 describeCliTest('CLI: `sanity dev`', () => {
   describe.each(studioVersions)('%s', (version) => {
@@ -77,6 +77,41 @@ describeCliTest('CLI: `sanity dev`', () => {
       // Check the use of environment variables from dotfiles
       expect(startHtml).toContain('data-studio-mode="production"')
       expect(startHtml).toContain('data-studio-dataset="ds-production"')
+    })
+
+    test('start with load-in-dashboard flag', async () => {
+      const testRunArgs = getTestRunArgs(version)
+      const {stdout} = await testServerCommand({
+        command: 'dev',
+        port: testRunArgs.port - 3,
+        basePath: '/config-base-path',
+        args: ['--port', `${testRunArgs.port - 3}`, '--load-in-dashboard'],
+        cwd: path.join(studiosPath, version),
+        expectedTitle: 'Sanity Studio',
+      })
+
+      // Verify that the dashboard URL is printed
+      expect(stdout).toContain('View your app in the Sanity dashboard here:')
+      expect(stdout).toMatch(/https:\/\/(?:www\.)?(?:sanity\.io|sanity\.work)\/@/)
+      expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${testRunArgs.port - 3}`)
+    })
+
+    test('start with app', async () => {
+      const testRunArgs = getTestRunArgs(version)
+      const port = testRunArgs.port - 4
+      const {stdout} = await testServerCommand({
+        command: 'dev',
+        port: port,
+        basePath: '/app-base-path',
+        args: ['--port', `${port}`],
+        cwd: path.join(fixturesPath, 'app'),
+        expectedTitle: 'Sanity CORE App',
+      })
+
+      // Verify that the dashboard URL is printed
+      expect(stdout).toContain('View your app in the Sanity dashboard here:')
+      expect(stdout).toMatch(/https:\/\/(?:www\.)?(?:sanity\.io|sanity\.work)\/@/)
+      expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
     })
   })
 })

@@ -21,7 +21,7 @@ export interface RuntimeOptions {
   reactStrictMode: boolean
   watch: boolean
   basePath?: string
-  appLocation?: string
+  entry?: string
   isApp?: boolean
 }
 
@@ -37,7 +37,7 @@ export async function writeSanityRuntime({
   reactStrictMode,
   watch,
   basePath,
-  appLocation,
+  entry,
   isApp,
 }: RuntimeOptions): Promise<void> {
   debug('Resolving Sanity monorepo information')
@@ -82,12 +82,12 @@ export async function writeSanityRuntime({
     relativeConfigLocation = studioConfigPath ? path.relative(runtimeDir, studioConfigPath) : null
   }
 
-  const relativeAppLocation = cwd ? path.resolve(cwd, appLocation || './src/App') : appLocation
+  const relativeEntry = cwd ? path.resolve(cwd, entry || './src/App') : entry
   const appJsContent = getEntryModule({
     reactStrictMode,
     relativeConfigLocation,
     basePath,
-    appLocation: relativeAppLocation,
+    entry: relativeEntry,
     isApp,
   })
   await fs.writeFile(path.join(runtimeDir, 'app.js'), appJsContent)
