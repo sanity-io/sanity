@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
   test.slow()
@@ -22,7 +22,7 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
   await expectCreatedStatus(documentStatus)
@@ -77,7 +77,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
 
   // waits for the top most form layer to finish loading
   await page.waitForSelector('[data-testid="document-panel-scroller"]', {
@@ -151,7 +151,7 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
+  await createDraftDocument('/content/input-debug;removeRestoreActionTest')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
   await expectCreatedStatus(documentStatus)
@@ -190,7 +190,7 @@ test(`user defined restore actions should not appear in any other document actio
   const customRestoreButton = page.getByTestId('action-Customrestore')
   const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
 
   await actionMenuButton.click()
 

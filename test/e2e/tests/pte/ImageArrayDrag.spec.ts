@@ -3,7 +3,8 @@ import path from 'node:path'
 
 import {expect} from '@playwright/test'
 import {type SanityImageAssetDocument} from '@sanity/client'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Portable Text Input - ImageArrayDraft', () => {
   let uploadedAsset: SanityImageAssetDocument
@@ -27,9 +28,7 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
     page,
     createDraftDocument,
   }) => {
-    await createDraftDocument(
-      '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
-    )
+    await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     // set up the portable text editor
     await page.getByTestId('field-body').focus()
