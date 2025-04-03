@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import {test as sanityTest} from '@sanity/test'
 
 export const test = sanityTest.extend({

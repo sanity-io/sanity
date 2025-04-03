@@ -11,10 +11,10 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
   test.beforeAll(async ({sanityClient}) => {
     const asset = await sanityClient.assets.upload(
       'image',
-      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara.jpg')),
+      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara-studio.jpg')),
       {
-        filename: 'image-array-drag.jpg',
-        title: 'image-array-drag',
+        filename: 'capybara-studio.jpg',
+        title: 'capybara-studio',
       },
     )
     uploadedAsset = asset
@@ -50,7 +50,7 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
     await page.getByTestId('file-input-browse-button-sanity-default').click()
 
     // grab an image
-    await page.getByRole('button', {name: uploadedAsset.originalFilename}).click()
+    await page.getByRole('button', {name: uploadedAsset.originalFilename}).first().click()
     await page.getByLabel('Edit Image With Caption').getByLabel('Close dialog').click()
 
     // grab drag element in array element
