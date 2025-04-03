@@ -9,6 +9,7 @@ import {
 } from './constants'
 import {calculateCropHandles, getHotspotHandlePosition} from './Handles'
 import {useHoverHandlers} from './hooks/useHoverHandlers'
+import {useKeyboardControls} from './hooks/useKeyboardControls'
 import {usePointerHandlers} from './hooks/usePointerHandlers'
 import {useRectCalculations} from './hooks/useRectCalculations'
 import {
@@ -69,6 +70,15 @@ function ToolSVGComponent(props: ToolSVGProps) {
       hotspotRef,
       cropRef,
     })
+
+  const {handleKeyDown, handleKeyUp} = useKeyboardControls({
+    value,
+    onChange,
+    onChangeEnd,
+    innerRect,
+    focusTarget,
+    readOnly,
+  })
 
   const cropHandles = useMemo(() => calculateCropHandles(cropRect), [cropRect])
 
@@ -243,6 +253,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onMouseLeave={handleMouseLeave}
             onFocus={handleHotspotFocus}
             onBlur={handleHotspotBlur}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
             style={{pointerEvents: 'visiblePainted'}}
           />
 
@@ -348,6 +360,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
             onMouseLeave={handleMouseLeave}
             onFocus={handleCropFocus}
             onBlur={handleCropBlur}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
           />
 
           {/* Crop handles */}
