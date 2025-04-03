@@ -8,6 +8,7 @@ loadEnvFiles()
 
 const CI = readBoolEnv('CI', false)
 const HEADLESS = readBoolEnv('HEADLESS', true)
+const BASE_URL = readEnv('SANITY_E2E_BASE_URL')
 
 /**
  * Excludes the GitHub reporter until https://github.com/microsoft/playwright/issues/19817 is resolved, since it creates a lot of noise in our PRs.
@@ -74,16 +75,20 @@ const playwrightConfig = createPlaywrightConfig({
       use: {
         ...config.use,
         video: 'retain-on-failure',
-        baseURL: 'http://localhost:3339',
+        baseURL: BASE_URL,
         headless: HEADLESS,
         contextOptions: {reducedMotion: 'reduce'},
       },
       projects,
-      webServer: {
-        ...config.webServer,
-        command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',
-        port: 3339,
-      },
+      webServer:
+        // Using deployed site, no need to run web server
+        BASE_URL.includes('.sanity.dev')
+          ? undefined
+          : {
+              ...config.webServer,
+              command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',
+              port: 3339,
+            },
     }
   },
 })
