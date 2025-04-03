@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useLayoutEffect, useRef, useState} from 'react'
 
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {resizeObserver} from '../../../../../util/resizeObserver'
@@ -13,26 +13,20 @@ export interface ImageToolProps extends Omit<ToolSVGProps, 'image' | 'size'> {
 
 export function ImageTool(props: ImageToolProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [containerSize, setContainerSize] = useState<{width: number; height: number} | null>(null)
+  const [containerWidth, setContainerWidth] = useState<number | null>(null)
+  const [containerHeight, setContainerHeight] = useState<number | null>(null)
 
   // Set up resize observer to track container size changes
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!containerRef.current) return undefined
-
     const updateSize = (entry: ResizeObserverEntry) => {
-      setContainerSize({
-        width: entry.contentRect.width,
-        height: entry.contentRect.height,
-      })
+      setContainerWidth(entry.contentRect.width)
+      setContainerHeight(entry.contentRect.height)
     }
-
     if (containerRef.current) {
-      setContainerSize({
-        width: containerRef.current.clientWidth,
-        height: containerRef.current.clientHeight,
-      })
+      setContainerWidth(containerRef.current.clientWidth)
+      setContainerHeight(containerRef.current.clientHeight)
     }
-
     return resizeObserver.observe(containerRef.current, updateSize)
   }, [])
 
@@ -45,7 +39,7 @@ export function ImageTool(props: ImageToolProps) {
         height: '100%',
       }}
     >
-      {containerSize && (
+      {containerWidth !== null && containerHeight !== null && (
         <ImageLoader src={props.src}>
           {({isLoading, image, error}) => {
             if (isLoading) {
@@ -56,11 +50,7 @@ export function ImageTool(props: ImageToolProps) {
             }
             if (image) {
               return (
-                <ResizeSVG
-                  image={image}
-                  maxHeight={containerSize.height}
-                  maxWidth={containerSize.width}
-                >
+                <ResizeSVG image={image} maxHeight={containerHeight} maxWidth={containerWidth}>
                   {(size) => <ToolSVG {...props} image={image} size={size} />}
                 </ResizeSVG>
               )
