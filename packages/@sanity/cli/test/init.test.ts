@@ -150,7 +150,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'https://github.com/sanity-io/sanity/tree/next/packages/@sanity/cli/test/__fixtures__/remote-template',
+        'https://github.com/sanity-io/sanity/tree/main/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
