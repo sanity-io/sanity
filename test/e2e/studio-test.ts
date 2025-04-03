@@ -1,6 +1,6 @@
-import {test as baseTest} from '@sanity/test'
+import {test as sanityTest} from '@sanity/test'
 
-export const test = baseTest.extend({
+export const test = sanityTest.extend({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   page: async ({page, baseURL}, use) => {
     const originalGoto = page.goto.bind(page)

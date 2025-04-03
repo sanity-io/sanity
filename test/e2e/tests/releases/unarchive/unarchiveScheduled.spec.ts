@@ -53,7 +53,7 @@ test.describe('Unarchive Scheduled', () => {
       _id: `versions.${scheduledReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${scheduledReleaseIdTestOne}`)
+    await page.goto(`/releases/${scheduledReleaseIdTestOne}`)
 
     await archiveRelease({sanityClient, dataset, releaseId: scheduledReleaseIdTestOne})
     await expect(page.getByTestId('retention-policy-card')).toBeVisible()
