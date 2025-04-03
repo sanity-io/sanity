@@ -41,7 +41,7 @@ test.describe('Unarchive Undecided', () => {
       _id: `versions.${undecidedReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
+    await page.goto(`/releases/${undecidedReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName}) => {
