@@ -2,9 +2,9 @@ import {readFileSync} from 'node:fs'
 import path from 'node:path'
 
 import {expect, type Page} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {createFileDataTransferHandle} from '../../helpers'
+import {test} from '../../studio-test'
 
 const fileName = 'capybara.jpg'
 const image = readFileSync(path.join(__dirname, '..', '..', 'resources', fileName))
@@ -13,7 +13,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/input-standard;arraysTest')
+  await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
@@ -59,7 +59,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
 })
 
 test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/input-standard;arraysTest')
+  await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
@@ -110,7 +110,7 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
     createArrayFieldLocators(page)
 
   // Given an array field allowing multiple types
-  await createDraftDocument('/test/content/input-standard;arraysTest')
+  await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
@@ -164,7 +164,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
     createArrayFieldLocators(page)
 
   // Given an array field allowing multiple types
-  await createDraftDocument('/test/content/input-standard;arraysTest')
+  await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,

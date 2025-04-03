@@ -1,11 +1,13 @@
-import {expect, test} from '@playwright/test'
+import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 // We just need an id in the URL to render the form
 const id = 'test-id'
 
 test.describe('Document Components API:', () => {
   test('document.components.layout', async ({page}) => {
-    page.goto(`/test/content/v3;formComponentsApi;${id}`)
+    page.goto(`/content/v3;formComponentsApi;${id}`)
 
     await expect(
       page

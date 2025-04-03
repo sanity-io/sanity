@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialScheduledReleaseMetadata} from '../utils/__fixtures__/releases'
 import {

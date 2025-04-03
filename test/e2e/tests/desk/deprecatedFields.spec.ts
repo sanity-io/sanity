@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 const allTypes = [
   'string',
@@ -24,7 +25,7 @@ const allTypes = [
 
 for (const type of allTypes) {
   test(`${type} type shows deprecated message`, async ({page, createDraftDocument}) => {
-    await createDraftDocument('/test/content/input-debug;deprecatedFields')
+    await createDraftDocument('/content/input-debug;deprecatedFields')
 
     await expect(await page.getByTestId(`deprecated-badge-${type}`)).toBeVisible()
 
