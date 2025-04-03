@@ -1,5 +1,5 @@
 import {uuid} from '@sanity/uuid'
-import {memo, useCallback, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {
   DEFAULT_CROP,
@@ -43,6 +43,23 @@ function ToolSVGComponent(props: ToolSVGProps) {
 
   // Generate a unique ID for the clipPath
   const hotspotClipId = useMemo(() => `hotspotClip-${uuid()}`, [])
+
+  useEffect(() => {
+    const svgElement = svgRef.current
+    if (!svgElement) return undefined
+
+    const handleTouchMove = (e: TouchEvent) => {
+      // Prevent iOS scrolling page while dragging the element
+      e.preventDefault()
+      return undefined
+    }
+
+    svgElement.addEventListener('touchmove', handleTouchMove, {passive: false})
+
+    return () => {
+      svgElement.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [])
 
   const {innerRect, cropRect, constrainedHotspot, hotspotRect} = useRectCalculations({
     size,
