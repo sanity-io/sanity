@@ -16,5 +16,5 @@ test('create new document from menu button', async ({page, baseURL}) => {
 
   await page.waitForSelector('data-testid=document-pane')
 
-  expect(page.url()).toMatch(/test\/content\/author;[0-9a-fA-F-]/)
+  expect(page.url()).toMatch(/(chromium|firefox)\/content\/author;[0-9a-fA-F-]/)
 })
