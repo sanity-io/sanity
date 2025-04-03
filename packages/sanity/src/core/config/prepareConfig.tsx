@@ -28,6 +28,7 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
   createFallbackOriginReducer,
+  directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -628,10 +629,7 @@ function resolveSource({
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'file'}),
       },
       image: {
         assetSources: resolveConfigProperty({
@@ -643,10 +641,7 @@ function resolveSource({
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.image?.directUploads === undefined ? true : config.form.image.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'image'}),
       },
     },
 
