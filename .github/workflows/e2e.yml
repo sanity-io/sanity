@@ -254,7 +254,6 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
