@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useRef} from 'react'
 
 import {
   DEFAULT_CROP,
@@ -58,15 +58,6 @@ export function useKeyboardControls({
       initialCursorRef.current = null
     }
   }, [onChangeEnd, value])
-
-  // Clean up the debounce timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (changeEndTimeoutRef.current !== null) {
-        window.clearTimeout(changeEndTimeoutRef.current)
-      }
-    }
-  }, [])
 
   // Handle hotspot keyboard interactions
   const handleHotspotKeyDown = useCallback(
