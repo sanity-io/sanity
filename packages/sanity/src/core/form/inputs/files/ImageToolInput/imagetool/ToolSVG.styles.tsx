@@ -4,14 +4,17 @@ import {css, styled} from 'styled-components'
 
 export const SVGContainer = styled.div`
   position: relative;
-  user-select: none;
-  touch-action: none;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
   overflow: visible;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 `
 
 export const StyledSVG = styled.svg`
