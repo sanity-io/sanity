@@ -34,6 +34,9 @@ test(`file drop event should not propagate to dialog parent`, async ({
 
   await expect(list).toBeVisible()
 
+  // Scroll list into view
+  await list.scrollIntoViewIfNeeded()
+
   // Drop the file.
   await list.dispatchEvent('drop', {dataTransfer})
 
