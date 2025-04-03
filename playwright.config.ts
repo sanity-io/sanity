@@ -44,6 +44,9 @@ const playwrightConfig = createPlaywrightConfig({
               permissions: ['clipboard-read', 'clipboard-write'],
               reducedMotion: 'reduce',
             },
+            use: {
+              baseURL: `${BASE_URL}/${project.name}`,
+            },
           }
         }
 
@@ -59,6 +62,9 @@ const playwrightConfig = createPlaywrightConfig({
             contextOptions: {
               ...projectConfig.use?.contextOptions,
               reducedMotion: 'reduce',
+            },
+            use: {
+              baseURL: `${BASE_URL}/${project.name}`,
             },
           }
         }
