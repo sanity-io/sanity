@@ -103,10 +103,10 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      # - name: Cache E2E test studio on next
-      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+      # - name: Cache E2E test studio on main
+      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       #   env:
-      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
       #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
       #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
       #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
