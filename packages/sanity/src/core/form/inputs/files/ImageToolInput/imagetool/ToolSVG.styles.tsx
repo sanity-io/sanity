@@ -20,6 +20,7 @@ export const SVGContainer = styled.div`
 export const StyledSVG = styled.svg`
   display: block;
   overflow: visible;
+  shape-rendering: crispEdges;
 `
 
 export const DarkenedOverlay = styled.rect`
@@ -57,8 +58,6 @@ export const CropRect = styled.rect<StyledElementProps>`
   stroke: ${getCropStrokeColor};
   stroke-opacity: 1;
   stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
-  shape-rendering: crispEdges;
   outline: none;
   ${(props) =>
     props.$focused &&
@@ -72,7 +71,6 @@ export const CropCornerHandle = styled.path<StyledElementProps>`
   fill: #fff;
   stroke: ${getHandleStrokeColor};
   stroke-width: 1;
-  shape-rendering: crispEdges;
   outline: none;
 `
 
@@ -80,7 +78,6 @@ export const CropEdgeHandle = styled.rect<StyledElementProps>`
   fill: #fff;
   stroke: ${getHandleStrokeColor};
   stroke-width: 1;
-  shape-rendering: crispEdges;
   outline: none;
 `
 
@@ -101,7 +98,6 @@ export const HotspotHandle = styled.circle<StyledElementProps>`
   fill: #fff;
   stroke: ${getHandleStrokeColor};
   stroke-width: 1;
-  shape-rendering: crispEdges;
   outline: none;
 `
 
