@@ -174,7 +174,11 @@ function ToolSVGComponent(props: ToolSVGProps) {
         preserveAspectRatio="xMidYMid"
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        style={{cursor: currentCursor, width: `${size.width}px`, height: `${size.height}px`}}
+        style={{
+          cursor: readOnly ? 'default' : currentCursor,
+          width: `${size.width}px`,
+          height: `${size.height}px`,
+        }}
       >
         {/* Background image with reduced opacity */}
         <image
@@ -250,19 +254,19 @@ function ToolSVGComponent(props: ToolSVGProps) {
         <g>
           {/* Hotspot ellipse - make it interactive for dragging but allow crop handles to take precedence */}
           <HotspotEllipse
-            data-hotspot-main
             ref={hotspotRef}
             cx={getRectCenterX(hotspotRect)}
             cy={getRectCenterY(hotspotRect)}
             rx={Math.max(0.01, hotspotRect.width / 2)}
             ry={Math.max(0.01, hotspotRect.height / 2)}
             $hovered={
-              hoverTarget === 'hotspot' ||
-              hoverTarget === 'hotspotHandle' ||
-              dragTarget === 'hotspot' ||
-              dragTarget === 'hotspotHandle'
+              !readOnly &&
+              (hoverTarget === 'hotspot' ||
+                hoverTarget === 'hotspotHandle' ||
+                dragTarget === 'hotspot' ||
+                dragTarget === 'hotspotHandle')
             }
-            $focused={focusTarget === 'hotspot'}
+            $focused={!readOnly && focusTarget === 'hotspot'}
             data-handle="hotspot"
             onPointerDown={handlePointerDown}
             tabIndex={readOnly ? -1 : 0}
@@ -296,12 +300,13 @@ function ToolSVGComponent(props: ToolSVGProps) {
                 cy={hotspotHandlePosition.y}
                 r={hotspotHandlePosition.radius}
                 $hovered={
-                  hoverTarget === 'hotspot' ||
-                  hoverTarget === 'hotspotHandle' ||
-                  dragTarget === 'hotspot' ||
-                  dragTarget === 'hotspotHandle'
+                  !readOnly &&
+                  (hoverTarget === 'hotspot' ||
+                    hoverTarget === 'hotspotHandle' ||
+                    dragTarget === 'hotspot' ||
+                    dragTarget === 'hotspotHandle')
                 }
-                $focused={focusTarget === 'hotspot'}
+                $focused={!readOnly && focusTarget === 'hotspot'}
                 pointerEvents="none"
               />
             </g>
@@ -364,12 +369,13 @@ function ToolSVGComponent(props: ToolSVGProps) {
             width={cropRect.width}
             height={cropRect.height}
             $hovered={
-              hoverTarget === 'crop' ||
-              Boolean(hoverTarget?.startsWith('crop-')) ||
-              dragTarget === 'crop' ||
-              dragTarget === 'cropHandle'
+              !readOnly &&
+              (hoverTarget === 'crop' ||
+                Boolean(hoverTarget?.startsWith('crop-')) ||
+                dragTarget === 'crop' ||
+                dragTarget === 'cropHandle')
             }
-            $focused={focusTarget === 'crop'}
+            $focused={!readOnly && focusTarget === 'crop'}
             data-handle="crop"
             onPointerDown={handlePointerDown}
             tabIndex={readOnly ? -1 : 0}
@@ -406,8 +412,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
                     >
                       <CropCornerHandle
                         d={handle.path}
-                        $hovered={isHandleHovered(key)}
-                        $focused={focusTarget === 'crop'}
+                        $hovered={!readOnly && isHandleHovered(key)}
+                        $focused={!readOnly && focusTarget === 'crop'}
                         pointerEvents="none"
                       />
                     </g>
@@ -417,8 +423,8 @@ function ToolSVGComponent(props: ToolSVGProps) {
                       y={handle.visual.top}
                       width={handle.visual.width}
                       height={handle.visual.height}
-                      $hovered={isHandleHovered(key)}
-                      $focused={focusTarget === 'crop'}
+                      $hovered={!readOnly && isHandleHovered(key)}
+                      $focused={!readOnly && focusTarget === 'crop'}
                       pointerEvents="none"
                     />
                   )}
