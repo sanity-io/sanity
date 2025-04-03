@@ -90,7 +90,7 @@
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.17"
+    "styled-components": "^6.1.16"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
