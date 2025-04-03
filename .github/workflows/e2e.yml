@@ -66,7 +66,6 @@ jobs:
   install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: [dataset-setup]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -116,7 +115,6 @@ jobs:
 
   deploy-preview:
     runs-on: ubuntu-latest
-    needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -173,7 +171,7 @@ jobs:
   playwright-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: [deploy-preview]
+    needs: [deploy-preview, install, dataset-setup]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -242,6 +240,7 @@ jobs:
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
