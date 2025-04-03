@@ -68,6 +68,9 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       image: {
         assetSources: [imageAssetSource],
       },
+      file: {
+        assetSources: [imageAssetSource],
+      },
     },
 
     i18n: {

@@ -465,7 +465,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   renderAssetMenu(tone: ThemeColorToneKey) {
-    const {schemaType, readOnly, directUploads, resolveUploader} = this.props
+    const {schemaType, readOnly, resolveUploader} = this.props
     const {hoveringFiles} = this.state
 
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
@@ -479,7 +479,6 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
             hoveringFiles={hoveringFiles}
             acceptedFiles={acceptedFiles}
             rejectedFilesCount={rejectedFilesCount}
-            directUploads={directUploads}
             type="file"
           />
         </FlexContainer>
@@ -488,11 +487,11 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads, id, t} = this.props
+    const {assetSources, readOnly, id, t} = this.props
 
     if (assetSources.length === 0) return null
 
-    if (assetSources.length > 1 && !readOnly && directUploads) {
+    if (assetSources.length > 1 && !readOnly) {
       return (
         <MenuButton
           id={`${id}_assetFileButton`}
