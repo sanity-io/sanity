@@ -6,10 +6,11 @@ workflows:
     jobs:
       - build:
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only:
-                - current
-
+              # Jobs will run each commit unless explicitly told to ignore branches
+              ignore: /.*/
 jobs:
   build:
     docker:
