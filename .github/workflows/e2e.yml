@@ -161,20 +161,50 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
+      - name: Determine tests to run
+        id: test-tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/get-test-tags.mjs
+
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
-          # Missing in docs but in use
-          # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        # As e2e:build ran in the `install` job, turbopack restores it from cache here
-        run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: |
+          TAGS="${{ steps.test-tags.outputs.test_tags }}"
+          PATHS="${{ steps.test-tags.outputs.test_paths }}"
+
+          # Prepare test command
+          TEST_CMD="pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --excludeTag @nightly"
+
+          # Add tag-based tests if tags were found
+          if [ -n "$TAGS" ]; then
+            echo "Including additional tag-specific tests: $TAGS"
+            TEST_CMD="$TEST_CMD --includeTag $TAGS"
+          fi
+
+          # Add path-based tests if paths were found
+          if [ -n "$PATHS" ]; then
+            echo "Including additional path-specific tests: $PATHS"
+            for path in $(echo $PATHS | tr ',' ' '); do
+              TEST_CMD="$TEST_CMD $path"
+            done
+          fi
+
+          # Run the tests - FIXED: Split the command into multiple executions
+          echo "Running tests with the following settings:"
+          echo "- First building studio-e2e-testing"
+          echo "- Then running tests with: --project ${{ matrix.project }} --excludeTag @nightly $([ -n "$TAGS" ] && echo "--includeTag $TAGS") $([ -n "$PATHS" ] && echo "$PATHS") --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
+
+          # First build
+          pnpm e2e:build
+
+          # Then run tests as a separate command
+          eval "$TEST_CMD --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}"
 
       - uses: actions/upload-artifact@v4
         if: always()
