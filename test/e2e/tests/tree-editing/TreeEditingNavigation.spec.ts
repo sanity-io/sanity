@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test.skip('navigation - tree sidebar', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}) => {
@@ -8,7 +9,7 @@ test.skip('navigation - tree sidebar', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await createDraftDocument('/content/input-debug;objectsDebug')
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })
@@ -121,7 +122,7 @@ test.skip('navigation - tree sidebar', () => {
 test.skip('navigation - breadcrumb', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // set up an array with two items: Albert, the whale and Lucy, the cat
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await createDraftDocument('/content/input-debug;objectsDebug')
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
     })

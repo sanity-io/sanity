@@ -1,5 +1,6 @@
 import {expect, type Page} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 const WAIT_OPTIONS = {
   timeout: 20 * 1000, // 20 seconds
@@ -21,7 +22,7 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   // Function to perform all steps up to text selection
   async function setupAndSelectText() {
     // 1. Create a new draft document
-    await createDraftDocument('/test/content/input-ci;commentsCI')
+    await createDraftDocument('/content/input-ci;commentsCI')
 
     // Wait for network to become idle to ensure document is fully loaded
     await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})

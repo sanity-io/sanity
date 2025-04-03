@@ -1,8 +1,8 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
@@ -27,7 +27,7 @@ withDefaultClient((context) => {
       ].map((document) => context.client.createIfNotExists(document)),
     )
 
-    await createDraftDocument('/test/content/book')
+    await createDraftDocument('/content/book')
 
     // Reference fields don't seem to be given a test id, so this selection can't be more specific
     // at the moment e.g. `page.getByTestId('field-author')`.
@@ -76,7 +76,7 @@ withDefaultClient((context) => {
     test.slow()
     const originalTitle = 'Initial Doc'
 
-    await createDraftDocument('/test/content/input-standard;referenceTest')
+    await createDraftDocument('/content/input-standard;referenceTest')
     page.getByTestId('string-input').fill(originalTitle)
 
     await expect(
@@ -114,7 +114,7 @@ withDefaultClient((context) => {
     const originalTitle = 'Initial Doc'
 
     await page.goto(
-      `/test/intent/create/template=referenceTest;type=referenceTest;version=r56VOgCmW/?perspective=r56VOgCmW`,
+      `/intent/create/template=referenceTest;type=referenceTest;version=r56VOgCmW/?perspective=r56VOgCmW`,
     )
 
     page.getByTestId('string-input').fill(originalTitle)
@@ -157,7 +157,7 @@ withDefaultClient((context) => {
     const originalTitle = 'Initial Doc'
     const documentStatus = page.getByTestId('pane-footer-document-status')
 
-    await createDraftDocument('/test/content/input-debug;simpleReferences')
+    await createDraftDocument('/content/input-debug;simpleReferences')
     page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
@@ -205,7 +205,7 @@ withDefaultClient((context) => {
     const originalTitle = 'Initial Doc'
     const documentStatus = page.getByTestId('pane-footer-document-status')
 
-    await createDraftDocument('/test/content/input-debug;simpleReferences')
+    await createDraftDocument('/content/input-debug;simpleReferences')
     await expect(page.getByTestId('string-input')).toBeVisible()
     await page.getByTestId('string-input').fill(originalTitle)
 
