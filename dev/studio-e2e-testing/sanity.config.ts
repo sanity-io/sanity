@@ -121,15 +121,14 @@ const defaultConfig = defineConfig({
 export default defineConfig([
   {
     ...defaultConfig,
-    // TODO: Update for /test-chromium path
-    basePath: '/test',
+    basePath: '/chromium',
     name: 'chromium',
     title: 'studio-e2e-testing-chromium',
     dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
   },
   {
     ...defaultConfig,
-    basePath: '/test-firefox',
+    basePath: '/firefox',
     name: 'firefox',
     title: 'studio-e2e-testing-firefox',
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
