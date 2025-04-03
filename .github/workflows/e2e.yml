@@ -155,7 +155,17 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} | tail -n 1)" >> $GITHUB_OUTPUT
+          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+          -m githubDeployment="1" \
+          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+          -m githubCommitMessage="${{ github.event.head_commit.message || github.event.pull_request.title }}" \
+          -m githubCommitOrg="${{ github.repository_owner }}" \
+          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+          -m githubCommitRepo="${{ github.event.repository.name }}" \
+          -m githubCommitSha="${{ github.sha }}" \
+          -m githubOrg="${{ github.repository_owner }}" \
+          -m githubRepo="${{ github.event.repository.name }}" \
+          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
 
       - name: Echo the preview URL
         run: echo ${{ steps.deploy.outputs.DEPLOY_URL }}
