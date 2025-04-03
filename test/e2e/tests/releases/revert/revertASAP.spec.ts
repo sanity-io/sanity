@@ -48,7 +48,7 @@ test.describe('Revert ASAP', () => {
       _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
+    await page.goto(`/releases/${asapReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {

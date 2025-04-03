@@ -52,7 +52,7 @@ test.describe('Revert Scheduled', () => {
       _id: `versions.${scheduledReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${scheduledReleaseIdTestOne}`)
+    await page.goto(`/releases/${scheduledReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {
