@@ -116,6 +116,9 @@ const defaultConfig = defineConfig({
   releases: {
     enabled: true,
   },
+  create: {
+    startInCreateEnabled: false,
+  },
 })
 
 export default defineConfig([
