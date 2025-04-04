@@ -7,6 +7,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {type GlobalPresence} from '../../../../store'
+import {getPublishedId} from '../../../../util'
 
 interface PresenceListRowProps {
   focused: boolean
@@ -51,7 +52,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
         // @ts-expect-error - `intent` is valid when using `IntentLink`
         intent="edit"
         params={{
-          id: lastActiveLocation.documentId,
+          id: getPublishedId(lastActiveLocation.documentId),
           path: PathUtils.toString(lastActiveLocation.path),
         }}
         // Shared props
