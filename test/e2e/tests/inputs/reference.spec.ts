@@ -2,7 +2,7 @@ import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 import {withDefaultClient} from '../../helpers'
-import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
@@ -46,6 +46,9 @@ withDefaultClient((context) => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
+    // wait for the edit to finish
+    await expectEditedStatus(paneFooter)
+
     // Wait for the document to be published.
     publishButton.click()
     await expectPublishedStatus(paneFooter)
@@ -53,9 +56,8 @@ withDefaultClient((context) => {
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
-    await referenceInput.getByLabel('Open').click()
     // instead of opening with the dropdown button, open with the space key
-    await referenceInput.getByTestId('autocomplete').press(' ')
+    await referenceInput.getByTestId('autocomplete').press('Space')
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
@@ -63,6 +65,9 @@ withDefaultClient((context) => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
+
+    // wait for the edit to finish
+    await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
