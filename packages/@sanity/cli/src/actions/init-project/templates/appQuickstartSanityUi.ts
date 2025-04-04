@@ -21,7 +21,7 @@ const appSanityUiTemplate: ProjectTemplate = {
     'sanity': '^3',
     'typescript': '^5.1.6',
   },
-  appLocation: './src/App.tsx',
+  entry: './src/App.tsx',
   scripts: {
     dev: 'sanity dev',
     build: 'sanity build',
