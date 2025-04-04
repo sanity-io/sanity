@@ -5190,6 +5190,139 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
 ]
 `;
 
+exports[`Extract schema test > will extract global document reference types 1`] = `
+[
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "_ref": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+            "_type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+                "value": "globalDocumentSubtype",
+              },
+            },
+            "_weak": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "book": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "book",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
+  },
+  {
+    "name": "book",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "book",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "name": "globalDocumentSubtype",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "globalDocumentSubtype",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+]
+`;
+
 exports[`Extract schema test > will ignore global document reference types at the moment 1`] = `
 [
   {
