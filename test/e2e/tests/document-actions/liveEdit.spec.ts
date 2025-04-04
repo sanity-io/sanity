@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test(`liveEdited document can be created, edited, and deleted`, async ({
   page,
@@ -7,7 +8,7 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
 }) => {
   const name = 'Test Name'
 
-  await createDraftDocument('/test/content/playlist')
+  await createDraftDocument('/content/playlist')
   await page.getByText('select the publish document to edit it')
   // Navigate to the published perspective
   await page.getByRole('button', {name: 'Published'}).click()

@@ -148,16 +148,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     [ref],
   )
 
-  // const after = useMemo(
-  //   () =>
-  //     Array.isArray(afterEditorComponents) &&
-  //     afterEditorComponents.map(
-  //       (AfterEditorComponent: ComponentType<{documentId: string}>, idx: number) => (
-  //         <AfterEditorComponent key={String(idx)} documentId={documentId} />
-  //       )
-  //     ),
-  //   [documentId]
-  // )
+  const isReadOnly = connectionState === 'reconnecting' || formState?.readOnly || !editState?.ready
 
   return (
     <Container
@@ -169,7 +160,13 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <Box as="form" onSubmit={preventDefault} ref={setRef}>
+        <Box
+          as="form"
+          onSubmit={preventDefault}
+          ref={setRef}
+          data-testid="form-view"
+          data-read-only={isReadOnly ? 'true' : undefined}
+        >
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
@@ -209,9 +206,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 presence={presence}
-                readOnly={
-                  connectionState === 'reconnecting' || formState.readOnly || !editState?.ready
-                }
+                readOnly={isReadOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={

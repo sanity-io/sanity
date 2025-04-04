@@ -1,7 +1,7 @@
-/* eslint-disable max-nested-callbacks */
-import {expect, test} from '@playwright/test'
+import {expect} from '@playwright/test'
 
 import {createUniqueDocument, withDefaultClient} from '../../helpers'
+import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
   test.describe('sanity/structure: document pane', () => {
@@ -17,7 +17,7 @@ withDefaultClient((context) => {
         name: 'Edited by e2e test runner',
       })
 
-      await page.goto(`/test/content/playlist;${id}`)
+      await page.goto(`/content/playlist;${id}`)
 
       await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
       await expect(page.getByTestId('string-input')).toBeAttached()

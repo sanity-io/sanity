@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'
 const CUSTOM_SORT_KEY = 'studio.structure-tool.sort-order.book'
@@ -14,7 +15,7 @@ test('clicking default sort order and direction sets value in storage', async ({
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
 
-  await page.goto('/test/content/author')
+  await page.goto('/content/author')
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SORT_KEY}`,
@@ -68,7 +69,7 @@ test('clicking custom sort order and direction sets value in storage', async ({
   // For now, only test in Chromium due to flakiness in Firefox and WebKit
   test.skip(browserName !== 'chromium')
 
-  await page.goto('/test/content/book')
+  await page.goto('/content/book')
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
@@ -104,7 +105,7 @@ test('clicking custom sort order and direction sets value in storage', async ({
 })
 
 test('clicking list view sets value in storage', async ({page, sanityClient}) => {
-  await page.goto('/test/content/author')
+  await page.goto('/content/author')
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${LAYOUT_KEY}`,

@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`document panel displays correct title for published document`, async ({
   page,
@@ -9,7 +9,7 @@ test(`document panel displays correct title for published document`, async ({
 }) => {
   const title = 'Test Title'
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await page.getByTestId('field-title').getByTestId('string-input').fill(title)
 
   // Ensure the correct title is displayed before publishing.
@@ -49,7 +49,7 @@ test(`custom publish action can patch document before publication`, async ({
   const publishedAtInput = page.getByTestId('field-publishedAt').getByTestId('date-input')
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
   await titleInput.fill(title)
 
   // Wait for the document to save before publishing.

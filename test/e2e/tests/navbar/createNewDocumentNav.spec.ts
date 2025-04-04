@@ -1,8 +1,9 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test('create new document from menu button', async ({page, baseURL}) => {
-  await page.goto(baseURL ?? '/test/content')
+  await page.goto(baseURL ?? '/content')
   await page.getByLabel('Create new document').click()
   await page.getByTestId('new-document-button-search-input').fill('Author')
   const authorLink = await page.getByTestId('create-new-author')
@@ -15,5 +16,5 @@ test('create new document from menu button', async ({page, baseURL}) => {
 
   await page.waitForSelector('data-testid=document-pane')
 
-  expect(page.url()).toMatch(/test\/content\/author;[0-9a-fA-F-]/)
+  expect(page.url()).toMatch(/(chromium|firefox)\/content\/author;[0-9a-fA-F-]/)
 })
