@@ -19,50 +19,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dataset-setup:
-    timeout-minutes: 30
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Echo Vercel preview URL
-        run: echo ${{ github.event.deployment_status.target_url }}
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Build CLI
-        # This warms up the turborepo remote cache
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
-      - name: dataset setup on PR (chromium)
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
-        run: |
-          echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
-          pnpm e2e:setup
-
-      - name: dataset setup on PR (firefox)
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
-        run: |
-          echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
-          pnpm e2e:setup
-
   install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -103,18 +59,55 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      # - name: Cache E2E test studio on main
-      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      #   env:
-      #     # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
-      #     # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-      #     # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-      #     SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-      #     SANITY_E2E_BASE_URL: ${{ github.event.deployment_status.target_url }}
-      #   run: pnpm e2e:setup
+  dataset-setup:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [install]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
 
+      - name: Echo Vercel preview URL
+        run: echo ${{ github.event.deployment_status.target_url }}
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Build CLI
+        if: ${{ github.event_name == 'pull_request' }}
+        # This warms up the turborepo remote cache
+        run: pnpm build:cli --output-logs=full --log-order=grouped
+
+      - name: dataset setup on PR (chromium)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+        run: |
+          echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
+          pnpm e2e:setup
+
+      - name: dataset setup on PR (firefox)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
+        run: |
+          echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
+          pnpm e2e:setup
+      # TODO: Add a dataset setup for main for each project [chromium, firefox]
   deploy-preview:
     runs-on: ubuntu-latest
+    needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -140,7 +133,8 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
-      - name: Build Project Artifacts
+      - name: Build Project Artifacts on PR
+        if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
@@ -148,6 +142,18 @@ jobs:
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
+        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+
+      - name: Build Project Artifacts on main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+          # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
+          # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
+          # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
         run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
@@ -168,10 +174,20 @@ jobs:
       - name: Echo the preview URL
         run: echo ${{ steps.deploy.outputs.DEPLOY_URL }}
 
+      - name: Add PR Comment with preview URL
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "e2e-preview-url"
+          message: |
+            ### 📊 E2E Preview URL
+
+            **[Preview URL](${{ steps.deploy.outputs.DEPLOY_URL }})**
+
   playwright-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: [deploy-preview, install, dataset-setup]
+    needs: [deploy-preview, dataset-setup]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
