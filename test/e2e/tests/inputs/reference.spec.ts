@@ -35,7 +35,7 @@ withDefaultClient((context) => {
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
     const authorListbox = page.locator('#author-listbox')
-    const popover = page.locator("[data-ui='Popover']")
+    const popover = page.getByTestId('autocomplete-popover')
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
@@ -54,6 +54,8 @@ withDefaultClient((context) => {
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     await referenceInput.getByLabel('Open').click()
+    // instead of opening with the dropdown button, open with the space key
+    await referenceInput.getByTestId('autocomplete').press(' ')
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
