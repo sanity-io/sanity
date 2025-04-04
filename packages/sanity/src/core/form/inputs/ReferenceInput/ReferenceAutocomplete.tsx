@@ -54,6 +54,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       contentRef: Ref<HTMLDivElement>,
     ) => (
       <StyledPopover
+        data-testid="autocomplete-popover"
         placement="bottom-start"
         fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
