@@ -13,7 +13,7 @@ const PostMessageTelemetry: FC<PostMessageTelemetryProps> = (props) => {
   const telemetry = useTelemetry()
 
   useEffect(() => {
-    return comlink.on('visual-editing/telemetry-log', async (message) => {
+    return comlink.on('visual-editing/telemetry-log', (message) => {
       const {event, data} = message
 
       // SANITY_STUDIO_DEBUG_TELEMETRY ensures noop/in-browser logging for telemetry events

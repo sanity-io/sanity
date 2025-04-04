@@ -1,7 +1,75 @@
 import {Box} from '@sanity/ui'
 import {motion, type VariantLabels, type Variants} from 'framer-motion'
-import {forwardRef, type ReactEventHandler, useId} from 'react'
-import {styled} from 'styled-components'
+import {forwardRef, type ReactEventHandler, useEffect, useImperativeHandle, useRef} from 'react'
+import {createGlobalStyle, styled} from 'styled-components'
+
+import {useId} from '../useId'
+
+interface IFrameProps {
+  animate: VariantLabels
+  initial: VariantLabels
+  onLoad: ReactEventHandler<HTMLIFrameElement>
+  preventClick: boolean
+  src: string
+  variants: Variants
+  style: React.CSSProperties
+}
+
+export const IFrame = forwardRef<HTMLIFrameElement, IFrameProps>(
+  function IFrame(props, forwardedRef) {
+    const {animate, initial, onLoad, preventClick, src, variants, style} = props
+
+    const ref = useRef<HTMLIFrameElement | null>(null)
+    // Forward the iframe ref to the parent component
+    useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
+      forwardedRef,
+      () => ref.current,
+    )
+
+    /**
+     * Ensure that clicking outside of menus and dialogs will close as focus shifts to the iframe
+     */
+
+    useEffect(() => {
+      if (!ref.current) {
+        return undefined
+      }
+      const instance = ref.current
+      function handleBlur() {
+        if (instance !== document.activeElement) {
+          return
+        }
+
+        instance.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true}))
+      }
+      window.addEventListener('blur', handleBlur)
+      return () => {
+        window.removeEventListener('blur', handleBlur)
+      }
+    }, [])
+
+    const viewTransitionName = useId()
+
+    return (
+      <>
+        <IFrameElement
+          style={{
+            ...style,
+            viewTransitionName,
+          }}
+          animate={animate}
+          initial={initial}
+          onLoad={onLoad}
+          ref={ref}
+          src={src}
+          variants={variants}
+        />
+        {preventClick && <IFrameOverlay />}
+        <GlobalViewTransition />
+      </>
+    )
+  },
+)
 
 const IFrameElement = motion.create(styled.iframe`
   box-shadow: 0 0 0 1px var(--card-border-color);
@@ -17,37 +85,17 @@ const IFrameOverlay = styled(Box)`
   background: transparent;
 `
 
-interface IFrameProps {
-  animate: VariantLabels
-  initial: VariantLabels
-  onLoad: ReactEventHandler<HTMLIFrameElement>
-  preventClick: boolean
-  src: string
-  variants: Variants
-  style: React.CSSProperties
+const GlobalViewTransition = createGlobalStyle`
+html:active-view-transition-type(sanity-iframe-viewport) {
+  view-transition-name: none;
+  &::view-transition {
+    pointer-events: none;
+  }
+  /* &::view-transition-old(root) {
+    display: none;
+  }
+  &::view-transition-new(root) {
+    animation: none;
+  } */
 }
-
-export const IFrame = forwardRef<HTMLIFrameElement, IFrameProps>(function IFrame(props, ref) {
-  const {animate, initial, onLoad, preventClick, src, variants, style} = props
-  const id = useId()
-
-  return (
-    <>
-      <IFrameElement
-        style={{
-          ...style,
-          // useId() guarantees that the ID will be unique, even if we add support for multiple iframe instances,
-          // while `view-transition-class: presentation-tool-iframe` provides userland a way to customize the transition with CSS if they wish
-          viewTransitionName: `presentation-tool-iframe-${id.replace(/[^a-zA-Z0-9-_]/g, '_')}`,
-        }}
-        animate={animate}
-        initial={initial}
-        onLoad={onLoad}
-        ref={ref}
-        src={src}
-        variants={variants}
-      />
-      {preventClick && <IFrameOverlay />}
-    </>
-  )
-})
+`

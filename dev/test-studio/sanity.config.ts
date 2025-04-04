@@ -50,6 +50,9 @@ import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
+import {CustomNavigator} from './schema/presentation/CustomNavigator'
+import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
+import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
@@ -119,7 +122,8 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       debugSecrets(),
       presentationTool({
-        previewUrl: {preview: '/preview/index.html'},
+        allow: ['https://*.sanity.dev', 'http://localhost:*/preview/index.html'],
+        previewUrl: '/preview/index.html',
         resolve: {
           mainDocuments: defineDocuments([
             {
@@ -390,5 +394,77 @@ export default defineConfig([
         input: StegaDebugger,
       },
     },
+  },
+  {
+    // Based on https://github.com/sanity-io/preview-kit/blob/195a476e5791421c5c8aa16275bad79a67b6ac58/apps/studio/sanity.config.ts#L42-L120
+    name: 'presentation-preview-kit',
+    title: 'Presentation with Preview Kit',
+    basePath: '/presentation-preview-kit',
+    announcements: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    releases: {enabled: true},
+    projectId: 'pv8y60vp',
+    dataset: 'production',
+    schema: {types: presentationPreviewKitSchemaTypes},
+    plugins: [
+      structureTool(),
+      presentationTool({
+        allow: [
+          'https://preview-kit-next-app-router.sanity.dev',
+          'https://preview-kit-next-pages-router.sanity.dev',
+          'https://preview-kit-remix.sanity.dev',
+          'https://preview-kit-next-app-router-git-*.sanity.dev',
+          'https://preview-kit-next-pages-router-git-*.sanity.dev',
+          'https://preview-kit-remix-git-*.sanity.dev',
+          'http://localhost:*',
+        ],
+        previewUrl: {
+          initial: 'https://preview-kit-next-app-router.sanity.dev',
+          previewMode: ({origin, targetOrigin}) =>
+            origin === targetOrigin
+              ? false
+              : {
+                  enable: '/api/draft',
+                },
+        },
+        resolve: {
+          locations: {
+            page: defineLocations({
+              locations: [
+                {title: 'App Router', href: 'https://preview-kit-next-app-router.sanity.dev/'},
+                {title: 'Pages Router', href: 'https://preview-kit-next-pages-router.sanity.dev/'},
+                {title: 'Remix', href: 'https://preview-kit-remix.sanity.dev/'},
+              ],
+            }),
+          },
+        },
+        components: {
+          unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
+        },
+      }),
+      visionTool(),
+    ],
+  },
+  {
+    // Based on https://github.com/sanity-io/next-sanity/blob/1d451c5aa606eb471e8dc4ddcd7ebf6253ae8eec/apps/mvp/sanity.config.ts#L5-L29
+    name: 'presentation-next-sanity',
+    title: 'Presentation with Next Sanity',
+    basePath: '/presentation-next-sanity',
+    projectId: 'pv8y60vp',
+    dataset: 'production',
+    schema: {types: presentationNextSanitySchemaTypes},
+    plugins: [
+      assist(),
+      structureTool(),
+      presentationTool({
+        allow: ['https://*.sanity.build', 'https://*.sanity.dev'],
+        previewUrl: {
+          initial: 'https://next.sanity.build',
+          previewMode: {enable: '/api/draft-mode/enable'},
+        },
+      }),
+      visionTool(),
+    ],
   },
 ]) as WorkspaceOptions[]
