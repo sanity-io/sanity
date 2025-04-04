@@ -180,9 +180,26 @@ jobs:
         with:
           comment_tag: "e2e-preview-url"
           message: |
-            ### 📊 E2E Preview URL
+            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }}) 
 
-            **[Preview URL](${{ steps.deploy.outputs.DEPLOY_URL }})**
+            <details>
+            <summary> 🔑 Environment Variables for Local Testing</summary>
+
+            This is the preview URL for the E2E tests: **${{ steps.deploy.outputs.DEPLOY_URL }}**
+
+            To run the E2E tests locally, you can use the following environment variables, then run `pnpm test:e2e --ui` to open the Playwright test runner.
+
+            💬 Remember to build the project first with `pnpm build:e2e`.
+
+            ```
+              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID }}
+              SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
+              SANITY_E2E_DATASET="update depending the project you want to test (${{ env.CHROMIUM_DATASET }} || ${{ env.FIREFOX_DATASET }} )"
+              SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
+              SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
+            ```
+
+            </details>
 
   playwright-test:
     timeout-minutes: 30

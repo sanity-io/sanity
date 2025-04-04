@@ -24,13 +24,11 @@ export const test = sanityTest.extend({
       const id = _testContext.getUniqueDocumentId()
 
       await page.goto(`${navigationPath};${id}`)
+      await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
 
-      await page.waitForSelector('[data-testid="form-view"]', {state: 'visible', timeout: 30_000})
-
-      await page.waitForSelector('[data-testid="form-view"]:not([data-read-only="true"])', {
-        state: 'visible',
-        timeout: 30_000,
-      })
+      await page
+        .locator('[data-testid="form-view"]:not([data-read-only="true"])')
+        .waitFor({state: 'visible', timeout: 30_000})
 
       return id
     }
