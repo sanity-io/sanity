@@ -3,6 +3,7 @@ import {test as sanityTest} from '@sanity/test'
 
 export const test = sanityTest.extend({
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
+  // This is used to ensure the navigation goes to the correct workspace.
   page: async ({page, baseURL}, use) => {
     const originalGoto = page.goto.bind(page)
     const baseUrl = new URL(baseURL || '')
@@ -17,5 +18,24 @@ export const test = sanityTest.extend({
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(page)
+  },
+  createDraftDocument: async ({page, _testContext}, use) => {
+    async function createDraftDocument(navigationPath: string) {
+      const id = _testContext.getUniqueDocumentId()
+
+      await page.goto(`${navigationPath};${id}`)
+
+      await page.waitForSelector('[data-testid="form-view"]', {state: 'visible', timeout: 30_000})
+
+      await page.waitForSelector('[data-testid="form-view"]:not([data-read-only="true"])', {
+        state: 'visible',
+        timeout: 30_000,
+      })
+
+      return id
+    }
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    await use(createDraftDocument)
   },
 })

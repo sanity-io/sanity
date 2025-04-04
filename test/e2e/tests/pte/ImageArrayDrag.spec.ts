@@ -30,13 +30,14 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
   }) => {
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
+    const pteEditor = page.getByTestId('field-body')
+    // Wait for the text block to be editable
+    await expect(
+      pteEditor.locator('[data-testid="text-block__text"]:not([data-read-only="true"])'),
+    ).toBeVisible()
     // set up the portable text editor
-    await page.getByTestId('field-body').focus()
-    await page.getByTestId('field-body').click()
-
-    page.on('dialog', async () => {
-      await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible()
-    })
+    await pteEditor.focus()
+    await pteEditor.click()
 
     // open the insert menu
     await page
