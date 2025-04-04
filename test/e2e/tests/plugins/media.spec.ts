@@ -21,7 +21,7 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
 })
 
 test('open media plugin from navbar', async ({page, createDraftDocument}) => {
-  await createDraftDocument('/')
+  await page.goto('/')
   await expect(page.getByTestId('parent-config-studio-tool-menu')).toBeVisible()
 
   // click media plugin
