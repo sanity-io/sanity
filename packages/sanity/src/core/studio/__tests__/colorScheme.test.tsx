@@ -35,10 +35,13 @@ describe('ColorScheme', () => {
     test('renders with non default (dark) scheme', () => {
       render(
         <ColorSchemeProvider scheme="dark">
-          <div data-testid="child">Test</div>
+          <ColorSchemeValueContext.Consumer>
+            {(value) => <div data-testid="scheme-value">{value}</div>}
+          </ColorSchemeValueContext.Consumer>
         </ColorSchemeProvider>,
       )
-      expect(screen.getByTestId('child')).toBeInTheDocument()
+      expect(screen.getByTestId('scheme-value')).toBeInTheDocument()
+      expect(screen.getByTestId('scheme-value')).toHaveTextContent('dark')
     })
   })
 
