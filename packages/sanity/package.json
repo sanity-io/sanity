@@ -304,7 +304,6 @@
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/expect": "^3.1.1",
-    "@vvo/tzdb": "6.137.0",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "blob-polyfill": "^9.0.20240710",
     "date-fns-tz": "2.0.1",
