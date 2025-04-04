@@ -1,7 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {format as formatTZ, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -15,6 +15,7 @@ import {
   useRef,
 } from 'react'
 
+import {format} from '../../../../../../../@sanity/util/src/legacyDateFormat'
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
@@ -26,39 +27,6 @@ import {features} from './features'
 import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
-
-const format = (date: Date, formatStr: string, options?: {timeZone?: string}) => {
-  if (!options?.timeZone) {
-    const dateParts = date
-      .toLocaleString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      .split('/')
-
-    switch (formatStr) {
-      case 'DD':
-        return dateParts[1]
-      case 'MM':
-        return dateParts[0]
-      default:
-        return dateParts[2]
-    }
-  }
-
-  const zonedDate = utcToZonedTime(date, options.timeZone)
-  const formatPattern =
-    {
-      DD: 'dd',
-      MM: 'MM',
-      YYYY: 'yyyy',
-    }[formatStr] || 'yyyy'
-
-  return formatTZ(zonedDate, formatPattern, {
-    timeZone: options.timeZone,
-  })
-}
 
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
