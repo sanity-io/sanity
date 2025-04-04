@@ -30,7 +30,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Latest version" header in about dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
   /** "Latest version" header in about dialog */
-  'about-dialog.version-info.latest-version.text': 'Latest version is {{latestStudioVersion}}',
+  'about-dialog.version-info.latest-version.text': 'Latest version is {{latestVersion}}',
   /** "Up to date" status in About-dialog */
   'about-dialog.version-info.up-to-date': '(Up to date)',
   /** "User agent" header in About-dialog */
@@ -517,11 +517,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.join-our-community': 'Join our community',
-
-  /**
-   * Label for version info menu tooltip
-   */
-  'help-resources.action.version-menu-tooltip': 'More details',
 
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is {{latestVersion}}',
