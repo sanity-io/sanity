@@ -101,7 +101,7 @@ async function getChangedFiles() {
 }
 
 // Simple pattern matcher that handles basic glob patterns with * and **
-function matchesPattern(filePath, pattern) {
+export function matchesPattern(filePath, pattern) {
   // Handle exact matches first
   if (!pattern.includes('*')) {
     // For directory patterns (ending with /)
@@ -127,13 +127,20 @@ function matchesPattern(filePath, pattern) {
   return regex.test(filePath)
 }
 
-async function getTestSelectors() {
+export async function getTestSelectors() {
   const changedFiles = await getChangedFiles()
   console.log('Changed files:', changedFiles)
 
+  // Get all available tags from the mapping for exclusion logic
+  const allMappedTags = new Set<string>()
+  pathToTagMapping.forEach((mapping) => {
+    if (mapping.tags) {
+      mapping.tags.forEach((tag) => allMappedTags.add(tag))
+    }
+  })
+
   // Log matches for debugging
   const matchedPaths = []
-
   const tagsToRun = new Set()
   const testPathsToRun = new Set()
 
@@ -162,9 +169,21 @@ async function getTestSelectors() {
 
   console.log('File pattern matches:', matchedPaths.length > 0 ? matchedPaths : 'None')
 
+  // If no specific tags or paths were found, exclude all mapped tags
+  if (tagsToRun.size === 0 && testPathsToRun.size === 0) {
+    return {
+      tags: [],
+      testPaths: [],
+      usingDefaults: true,
+      excludeTags: Array.from(allMappedTags),
+    }
+  }
+
   return {
     tags: Array.from(tagsToRun),
     testPaths: Array.from(testPathsToRun),
+    usingDefaults: false,
+    excludeTags: [],
   }
 }
 
@@ -173,6 +192,7 @@ const main = async () => {
   const testSelectors = await getTestSelectors()
   console.log('Tags to run:', testSelectors.tags)
   console.log('Test paths to run:', testSelectors.testPaths)
+  console.log('Exclude tags:', testSelectors.excludeTags)
 
   // Output for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
@@ -181,9 +201,14 @@ const main = async () => {
       process.env.GITHUB_OUTPUT,
       `test_paths=${testSelectors.testPaths.join(',')}\n`,
     )
+    fs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `exclude_tags=${testSelectors.excludeTags.join(',')}\n`,
+    )
   } else {
     console.log(`::set-output name=test_tags::${testSelectors.tags.join(',')}`)
     console.log(`::set-output name=test_paths::${testSelectors.testPaths.join(',')}`)
+    console.log(`::set-output name=exclude_tags::${testSelectors.excludeTags.join(',')}`)
   }
 }
 

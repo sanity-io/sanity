@@ -80,18 +80,40 @@ if (
         }
       }
 
-      // Process include tags (in addition to untagged tests)
-      if (options.includeTag) {
-        const tags = validateE2ETags(options.includeTag)
-        // This pattern means "match tests that have no tags OR match one of these tags"
-        const tagPattern = `^(?!.*@)|${tags.join('|')}`
-        playwrightArgs.push('--grep', tagPattern)
-      }
+      // Process tags with correct prioritization
+      if (options.includeTag || options.excludeTag) {
+        let includeTags: string[] = []
+        let excludeTags: string[] = []
 
-      // Process exclude tags
-      if (options.excludeTag) {
-        const tags = validateE2ETags(options.excludeTag)
-        playwrightArgs.push('--grep-invert', tags.join('|'))
+        if (options.includeTag) {
+          includeTags = validateE2ETags(options.includeTag)
+        }
+
+        if (options.excludeTag) {
+          excludeTags = validateE2ETags(options.excludeTag)
+        }
+
+        // Create a pattern that:
+        // 1. Includes tests with any of the includeTags (high priority)
+        // 2. Includes tests with no tags
+        // 3. Excludes tests with excludeTags (unless they also have includeTags)
+        let tagPattern = ''
+
+        if (includeTags.length > 0 && excludeTags.length > 0) {
+          // If we have both include and exclude tags, prioritize includes
+          tagPattern = `(${includeTags.join('|')})|^(?!.*@)|^(?!.*(${excludeTags.join('|')})).*$`
+        } else if (includeTags.length > 0) {
+          // Only include tags - match tests with these tags or no tags
+          tagPattern = `^(?!.*@)|${includeTags.join('|')}`
+        } else if (excludeTags.length > 0) {
+          // Only exclude tags - match tests without these tags
+          tagPattern = `^(?!.*(${excludeTags.join('|')})).*$`
+        }
+
+        playwrightArgs.push('--grep', tagPattern)
+
+        // Remove the original grep-invert as we're handling exclusion in our pattern
+        // Don't use grep-invert anymore
       }
 
       console.log(`[running] playwright test ${playwrightArgs.join(' ')}`)

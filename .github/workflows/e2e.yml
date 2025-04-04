@@ -165,7 +165,7 @@ jobs:
         id: test-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/get-test-tags.mjs
+        run: node scripts/get-test-tags.mts
 
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}

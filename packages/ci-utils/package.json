@@ -1,0 +1,14 @@
+{
+  "name": "@sanity/ci-utils",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    // dependencies
+  },
+  "devDependencies": {
+    "vitest": "^0.28.0"
+  }
+} 
