@@ -3,7 +3,7 @@
   "description": "Shared TS config that are used for builds, dts generation, etl extract, and vscode/intellisense",
   "compilerOptions": {
     // Everything needs to use the same lib settings for `paths` to work consistently throughout the monorepo
-    "lib": ["dom", "es2020", "ES2022.Error"],
+    "lib": ["dom", "es2020", "ES2022.Error", "ES2022.Intl"],
 
     // Output settings
     "target": "ESNext",
