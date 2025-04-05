@@ -42,6 +42,10 @@ import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import extractManifestCommand from './manifest/extractManifestCommand'
 import manifestGroup from './manifest/manifestGroup'
+import createAspectCommand from './media/createAspectCommand'
+import deleteAspectCommand from './media/deleteAspectCommand'
+import deployAspectCommand from './media/deployAspectCommand'
+import mediaGroup from './media/mediaGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
 import migrationGroup from './migration/migrationGroup'
@@ -112,6 +116,10 @@ const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   execCommand,
   manifestGroup,
   extractManifestCommand,
+  mediaGroup,
+  createAspectCommand,
+  deleteAspectCommand,
+  deployAspectCommand,
 ]
 
 const featureToggledSchemaCommands = [fetchSchemaCommand, deploySchemaCommand, deleteSchemaCommand]
