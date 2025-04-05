@@ -23,6 +23,9 @@ export default defineCliConfig({
     projectId: 'ppsg7ml5',
     dataset: 'test',
   },
+  mediaLibrary: {
+    aspectsPath: 'aspects',
+  },
 
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
