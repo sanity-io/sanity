@@ -27,6 +27,7 @@ import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQu
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
+import {QueryRecall} from './QueryRecall'
 import {usePaneSize} from './usePaneSize'
 import {
   InputBackgroundContainerLeft,
@@ -577,84 +578,78 @@ export function VisionGui(props: VisionGuiProps) {
         url={url}
         perspective={perspective}
       />
-      <SplitpaneContainer flex="auto">
-        <SplitPane
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
-          minSize={280}
-          defaultSize={400}
-          maxSize={-400}
-        >
-          <Box height="stretch" flex={1}>
-            {/*
-                    The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
-                    - It sets the initial size of the panes to 1/2 of the total available height of the container
-                    - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
-                    - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
-                    - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
-                    - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
-                    - Disables resize if the container height is less then 500px
-                    This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
-                  */}
-            <SplitPane
-              className="sidebarPanes"
-              split="horizontal"
-              defaultSize={
-                isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-              }
-              size={paneSizeOptions.size}
-              allowResize={paneSizeOptions.allowResize}
-              minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
-              maxSize={paneSizeOptions.maxSize}
-              primary="first"
-            >
-              <InputContainer display="flex" data-testid="vision-query-editor">
-                <Box flex={1}>
-                  <InputBackgroundContainerLeft>
-                    <Flex>
-                      <StyledLabel muted>{t('query.label')}</StyledLabel>
-                    </Flex>
-                  </InputBackgroundContainerLeft>
-                  <VisionCodeMirror initialValue={query} onChange={setQuery} ref={editorQueryRef} />
-                </Box>
-              </InputContainer>
-              <InputContainer display="flex">
-                <ParamsEditor
-                  value={params.raw}
-                  onChange={handleParamsChange}
-                  paramsError={params.error}
-                  hasValidParams={params.valid}
-                  editorRef={editorParamsRef}
-                />
 
-                <VisionGuiControls
-                  hasValidParams={params.valid}
-                  queryInProgress={queryInProgress}
-                  listenInProgress={listenInProgress}
-                  onQueryExecution={handleQueryExecution}
-                  onListenExecution={handleListenExecution}
-                  query={query}
-                  setQuery={setQuery}
-                  params={params}
-                  setParams={setParams}
-                  perspective={perspective}
-                  setPerspective={setPerspective}
-                  editorQueryRef={editorQueryRef}
-                  editorParamsRef={editorParamsRef}
-                />
-              </InputContainer>
-            </SplitPane>
-          </Box>
-          <VisionGuiResult
-            error={error}
-            queryInProgress={queryInProgress}
-            queryResult={queryResult}
-            listenInProgress={listenInProgress}
-            listenMutations={listenMutations}
-            dataset={dataset}
-            queryTime={queryTime}
-            e2eTime={e2eTime}
+      <SplitpaneContainer flex="auto">
+        <SplitPane minSize={280} defaultSize={340} maxSize={-400}>
+          <QueryRecall
+            params={params}
+            perspective={perspective}
+            query={query}
+            setQuery={setQuery}
+            setParams={setParams}
+            setPerspective={setPerspective}
+            editorQueryRef={editorQueryRef}
+            editorParamsRef={editorParamsRef}
           />
+          {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
+          <SplitPane split={isNarrowBreakpoint ? 'vertical' : 'horizontal'} minSize={300}>
+            <Box height="stretch" flex={1}>
+              <SplitPane
+                className="sidebarPanes"
+                split="horizontal"
+                defaultSize={
+                  isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+                }
+                size={paneSizeOptions.size}
+                allowResize={paneSizeOptions.allowResize}
+                minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
+                maxSize={paneSizeOptions.maxSize}
+                primary="first"
+              >
+                <InputContainer display="flex" data-testid="vision-query-editor">
+                  <Box flex={1}>
+                    <InputBackgroundContainerLeft>
+                      <Flex>
+                        <StyledLabel muted>{t('query.label')}</StyledLabel>
+                      </Flex>
+                    </InputBackgroundContainerLeft>
+                    <VisionCodeMirror
+                      initialValue={query}
+                      onChange={setQuery}
+                      ref={editorQueryRef}
+                    />
+                  </Box>
+                </InputContainer>
+                <InputContainer display="flex">
+                  <ParamsEditor
+                    value={params.raw}
+                    onChange={handleParamsChange}
+                    paramsError={params.error}
+                    hasValidParams={params.valid}
+                    editorRef={editorParamsRef}
+                  />
+
+                  <VisionGuiControls
+                    hasValidParams={params.valid}
+                    queryInProgress={queryInProgress}
+                    listenInProgress={listenInProgress}
+                    onQueryExecution={handleQueryExecution}
+                    onListenExecution={handleListenExecution}
+                  />
+                </InputContainer>
+              </SplitPane>
+            </Box>
+            <VisionGuiResult
+              error={error}
+              queryInProgress={queryInProgress}
+              queryResult={queryResult}
+              listenInProgress={listenInProgress}
+              listenMutations={listenMutations}
+              dataset={dataset}
+              queryTime={queryTime}
+              e2eTime={e2eTime}
+            />
+          </SplitPane>
         </SplitPane>
       </SplitpaneContainer>
     </Root>

@@ -1,5 +1,5 @@
-import {ArchiveIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {Box, Button, Code, Dialog, Flex, Text, useToast} from '@sanity/ui'
+import {ClockIcon} from '@sanity/icons'
+import {Badge, Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type Dispatch, type RefObject, type SetStateAction, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
@@ -85,13 +85,15 @@ const DialogContentWrapper = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
 `
+// ADAM design notes
+// -Avoid modals, use a sidebar or a drawer
+// -Title/better info for high-level view
 
 // TODO
 // -Error handling for delete
 // -Confirm dialog for delete
 // -title/description for saved queries
 // -can/should saved queries be in a sidebar so you can tab between queries?
-
 export function QueryRecall({
   params,
   setParams,
@@ -144,117 +146,171 @@ export function QueryRecall({
   }, [params.raw, query, perspective, saveQuery, saveQueryError, t, toast])
 
   return (
-    <>
-      <Flex justify="space-evenly" marginTop={3}>
-        <Box flex={1}>
-          <Button
-            width="fill"
-            text={t('action.load-query')}
-            onClick={() => setOpen(true)}
-            icon={UnarchiveIcon}
-            mode="ghost"
-            // tone="primary"
-          />
+    <Box>
+      <Stack>
+        <Box padding={3}>
+          <Text weight="semibold" style={{textTransform: 'uppercase'}} size={1} muted>
+            {t('label.all-queries')}
+          </Text>
         </Box>
-        <Box flex={1} marginLeft={3}>
-          <Button
-            text={t('action.save-query')}
-            icon={ArchiveIcon}
-            disabled={saving}
-            mode="ghost"
-            tone="positive"
-            width="fill"
-            onClick={handleSave}
-          />
+        <Box>
+          <Stack>
+            {queries?.map((q) => {
+              return (
+                <Card
+                  key={q._key}
+                  width={'fill'}
+                  padding={4}
+                  border
+                  onClick={() => {
+                    setQuery(q.query)
+                    setPerspective(q.perspective)
+                    setParams(parseParams(q.params, t))
+                    editorQueryRef.current?.resetEditorContent(q.query)
+                    editorParamsRef.current?.resetEditorContent(q.params)
+                  }}
+                >
+                  <Stack space={3}>
+                    <Flex justify="space-between">
+                      {/* eslint-disable-next-line i18next/no-literal-string */}
+                      <Text weight="bold">Title</Text>
+                      <Badge tone="primary" padding={2} radius={1}>
+                        <Text weight="medium" size={1}>
+                          {t('label.personal')}
+                        </Text>
+                      </Badge>
+                    </Flex>
+                    <Text size={2} muted>
+                      {q.query}
+                    </Text>
+                    <Flex>
+                      <Text size={1} muted>
+                        <ClockIcon />
+                        &nbsp;
+                        {new Date(q.savedAt).toLocaleString()}
+                      </Text>
+                    </Flex>
+                  </Stack>
+                </Card>
+              )
+            })}
+          </Stack>
         </Box>
-      </Flex>
-      {open && (
-        <Dialog
-          header={
-            <Flex paddingTop={3}>
-              <Text size={3} weight="semibold">
-                {t('action.load-queries')}
-              </Text>
-            </Flex>
-          }
-          id="query-save-dialog"
-          onClose={() => setOpen(false)}
-          zOffset={100}
-          width={2}
-        >
-          <DialogContentWrapper>
-            <Box padding={4}>
-              <Table>
-                <thead>
-                  <tr>
-                    <th>
-                      <Text muted>{t('query.label')}</Text>
-                    </th>
-                    <th>
-                      <Text muted>{t('params.label')}</Text>
-                    </th>
-                    {/* <th>
-                      <Text muted>{t('settings.perspective-label')}</Text>
-                    </th> */}
-                    <th>
-                      <Text muted>{t('label.saved-at')}</Text>
-                    </th>
-                    <th>
-                      <Text muted>{t('label.actions')}</Text>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {queries?.map((q) => (
-                    <tr key={q._key}>
-                      <td className="query">
-                        <Code size={1}>{q.query}</Code>
-                      </td>
-                      <td className="params">
-                        <Code size={1}>{q.params}</Code>
-                      </td>
-                      {/* <td className="perspective">
-                        <Text size={1}>{q.perspective}</Text>
-                      </td> */}
-                      <td className="saved-at">
-                        <Text>{new Date(q.savedAt).toLocaleString()}</Text>
-                      </td>
-                      <td className="action-buttons">
-                        <Flex direction={'column'} gap={2}>
-                          <Button
-                            text={t('action.load-query')}
-                            disabled={deleting?.includes(q._key)}
-                            width="fill"
-                            icon={UnarchiveIcon}
-                            onClick={() => {
-                              setQuery(q.query)
-                              setPerspective(q.perspective)
-                              setParams(parseParams(q.params, t))
-                              editorQueryRef.current?.resetEditorContent(q.query)
-                              editorParamsRef.current?.resetEditorContent(q.params)
-                            }}
-                          />
+      </Stack>
+    </Box>
+    // <>
+    //   <Flex justify="space-evenly" marginTop={3}>
+    //     <Box flex={1}>
+    //       <Button
+    //         width="fill"
+    //         text={t('action.load-query')}
+    //         onClick={() => setOpen(true)}
+    //         icon={UnarchiveIcon}
+    //         mode="ghost"
+    //         // tone="primary"
+    //       />
+    //     </Box>
+    //     <Box flex={1} marginLeft={3}>
+    //       <Button
+    //         text={t('action.save-query')}
+    //         icon={ArchiveIcon}
+    //         disabled={saving}
+    //         mode="ghost"
+    //         tone="positive"
+    //         width="fill"
+    //         onClick={handleSave}
+    //       />
+    //     </Box>
+    //   </Flex>
+    //   {open && (
+    //     <Dialog
+    //       header={
+    //         <Flex paddingTop={3}>
+    //           <Text size={3} weight="semibold">
+    //             {t('action.load-queries')}
+    //           </Text>
+    //         </Flex>
+    //       }
+    //       id="query-save-dialog"
+    //       onClose={() => setOpen(false)}
+    //       zOffset={100}
+    //       width={2}
+    //     >
+    //       <DialogContentWrapper>
+    //         <Box padding={4}>
+    //           <Table>
+    //             <thead>
+    //               <tr>
+    //                 <th>
+    //                   <Text muted>{t('query.label')}</Text>
+    //                 </th>
+    //                 <th>
+    //                   <Text muted>{t('params.label')}</Text>
+    //                 </th>
+    //                 {/* <th>
+    //                   <Text muted>{t('settings.perspective-label')}</Text>
+    //                 </th> */}
+    //                 <th>
+    //                   <Text muted>{t('label.saved-at')}</Text>
+    //                 </th>
+    //                 <th>
+    //                   <Text muted>{t('label.actions')}</Text>
+    //                 </th>
+    //               </tr>
+    //             </thead>
+    //             <tbody>
+    //               {queries?.map((q) => (
+    //                 <tr key={q._key}>
+    //                   <td className="query">
+    //                     <Code size={1}>{q.query}</Code>
+    //                   </td>
+    //                   <td className="params">
+    //                     <Code size={1}>{q.params}</Code>
+    //                   </td>
+    //                   {/* <td className="perspective">
+    //                     <Text size={1}>{q.perspective}</Text>
+    //                   </td> */}
+    //                   <td className="saved-at">
+    //                     <Text>{new Date(q.savedAt).toLocaleString()}</Text>
+    //                   </td>
+    //                   <td className="action-buttons">
+    //                     <Flex direction={'column'} gap={2}>
+    //                       <Button
+    //                         text={t('action.load-query')}
+    //                         disabled={deleting?.includes(q._key)}
+    //                         width="fill"
+    //                         mode="ghost"
+    //                         icon={UnarchiveIcon}
+    //                         onClick={() => {
+    //                           setQuery(q.query)
+    //                           setPerspective(q.perspective)
+    //                           setParams(parseParams(q.params, t))
+    //                           editorQueryRef.current?.resetEditorContent(q.query)
+    //                           editorParamsRef.current?.resetEditorContent(q.params)
+    //                         }}
+    //                       />
 
-                          <Button
-                            tone="critical"
-                            width="fill"
-                            disabled={deleting?.includes(q._key)}
-                            icon={TrashIcon}
-                            text={t('action.delete')}
-                            onClick={() => {
-                              deleteQuery(q._key)
-                            }}
-                          />
-                        </Flex>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Box>
-          </DialogContentWrapper>
-        </Dialog>
-      )}
-    </>
+    //                       <Button
+    //                         tone="critical"
+    //                         mode="ghost"
+    //                         width="fill"
+    //                         disabled={deleting?.includes(q._key)}
+    //                         icon={TrashIcon}
+    //                         text={t('action.delete')}
+    //                         onClick={() => {
+    //                           deleteQuery(q._key)
+    //                         }}
+    //                       />
+    //                     </Flex>
+    //                   </td>
+    //                 </tr>
+    //               ))}
+    //             </tbody>
+    //           </Table>
+    //         </Box>
+    //       </DialogContentWrapper>
+    //     </Dialog>
+    //   )}
+    // </>
   )
 }

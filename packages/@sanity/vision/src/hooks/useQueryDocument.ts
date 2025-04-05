@@ -15,7 +15,7 @@ interface QueryConfig {
 interface UserQueryDocument extends SanityDocument {
   queries: QueryConfig[]
 }
-
+// TODO swap to add-on dataset
 export function useQueryDocument(): {
   document: UserQueryDocument | undefined
   error: Error | undefined

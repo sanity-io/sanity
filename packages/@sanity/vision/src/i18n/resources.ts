@@ -28,13 +28,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Label for actions user can take */
   'label.actions': 'Actions',
+  /** All queries */
+  'label.all-queries': 'All queries',
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.
    * This defines what the text of that label is. Keep it short and sweet.
    */
   'label.new': 'New',
+  /** Label for query type "personal" */
+  'label.personal': 'Personal',
   /** Label for savedAt date */
   'label.saved-at': 'Saved at',
+  /** Label for saved query type "team" */
+  'label.team': 'Team',
 
   /** Error message for when the "Params" input are not a valid json */
   'params.error.params-invalid-json': 'Parameters are not valid JSON',
