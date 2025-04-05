@@ -7,6 +7,7 @@ import {TextWithTone} from '../../components/textWithTone/TextWithTone'
 import {isDev} from '../../environment'
 import {useTranslation} from '../../i18n'
 import {usePerspective} from '../../perspective/usePerspective'
+import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useWorkspace} from '../../studio'
 import {useSanityCreateConfig} from '../context'
 import {getCreateLinkUrl} from '../createDocumentUrls'
@@ -26,6 +27,7 @@ export function StartInCreateBanner(props: StartInCreateBannerProps) {
   const {document, isInitialValueLoading} = props
   const {appIdCache, startInCreateEnabled} = useSanityCreateConfig()
   const {selectedPerspectiveName} = usePerspective()
+  const {data: documentVersions} = useDocumentVersions({documentId: document._id})
   const isExcludedByOption = isSanityCreateExcludedType(props.documentType)
   const isNewPristineDoc = !document._createdAt
   const isStartCreateCompatible = isSanityCreateStartCompatibleDoc(props.document)
@@ -33,6 +35,13 @@ export function StartInCreateBanner(props: StartInCreateBannerProps) {
   const liveEdit = Boolean(props.documentType?.liveEdit)
 
   const excludeOnPublished = selectedPerspectiveName === 'published' && !liveEdit
+
+  // Prevent display of banner when creating a document draft inside a document group that already
+  // contains a version document.
+  const excludeOnUpstreamVersion =
+    (typeof selectedPerspectiveName === 'undefined' || selectedPerspectiveName === 'published') &&
+    documentVersions.length !== 0
+
   if (
     excludeOnPublished ||
     !isNewPristineDoc ||
@@ -40,7 +49,8 @@ export function StartInCreateBanner(props: StartInCreateBannerProps) {
     isExcludedByOption ||
     !appIdCache ||
     !isStartCreateCompatible ||
-    isInitialValueLoading
+    isInitialValueLoading ||
+    excludeOnUpstreamVersion
   ) {
     return null
   }
