@@ -1,90 +1,104 @@
-import {ClockIcon} from '@sanity/icons'
-import {Badge, Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type Dispatch, type RefObject, type SetStateAction, useCallback, useState} from 'react'
+import {AddIcon, ClockIcon, SearchIcon} from '@sanity/icons'
+import {Badge, Box, Button, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {type Dispatch, type RefObject, type SetStateAction, useCallback} from 'react'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
 
+// import styled from 'styled-components'
 import {type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
 import {parseParams} from './ParamsEditor'
 import {type Params} from './VisionGui'
 
-const Table = styled.table`
-  width: 100%;
-  margin: 0 auto;
-  border-collapse: collapse;
+// const Table = styled.table`
+//   width: 100%;
+//   margin: 0 auto;
+//   border-collapse: collapse;
 
-  & thead > tr {
-    text-align: left;
-    border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-  }
+//   & thead > tr {
+//     text-align: left;
+//     border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+//   }
 
-  & th {
-    padding: 0.75em;
-    position: sticky;
-    top: 0;
-    background: ${({theme}) => theme.sanity.color.base.bg};
-    z-index: 1;
-  }
+//   & th {
+//     padding: 0.75em;
+//     position: sticky;
+//     top: 0;
+//     background: ${({theme}) => theme.sanity.color.base.bg};
+//     z-index: 1;
+//   }
 
-  & tbody > tr {
-    border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
-    transition: background-color 0.2s ease;
+//   & tbody > tr {
+//     border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+//     transition: background-color 0.2s ease;
 
-    &:hover {
-      background-color: ${({theme}) => theme.sanity.color.base.hover};
-    }
-  }
+//     &:hover {
+//       background-color: ${({theme}) => theme.sanity.color.base.hover};
+//     }
+//   }
 
-  & tbody > tr > td {
-    padding: 1em 0.75em;
-    vertical-align: top;
+//   & tbody > tr > td {
+//     padding: 1em 0.75em;
+//     vertical-align: top;
 
-    &.action-buttons {
-      width: 120px;
-    }
+//     &.action-buttons {
+//       width: 120px;
+//     }
 
-    &.query,
-    &.params {
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+//     &.query,
+//     &.params {
+//       max-width: 300px;
+//       overflow: hidden;
+//       text-overflow: ellipsis;
+//       white-space: nowrap;
 
-      /* Add expand on hover */
-      &:hover {
-        overflow: visible;
-        white-space: pre-wrap;
-        word-break: break-all;
-        background: ${({theme}) => theme.sanity.color.base.bg};
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-    }
+//       /* Add expand on hover */
+//       &:hover {
+//         overflow: visible;
+//         white-space: pre-wrap;
+//         word-break: break-all;
+//         background: ${({theme}) => theme.sanity.color.base.bg};
+//         position: relative;
+//         z-index: 1;
+//         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//       }
+//     }
 
-    &.saved-at {
-      width: 180px;
-      white-space: nowrap;
-    }
-  }
-`
+//     &.saved-at {
+//       width: 180px;
+//       white-space: nowrap;
+//     }
+//   }
+// `
 
-const DialogContentWrapper = styled.div`
-  min-height: 66vh;
-  max-height: 80vh;
-  overflow: auto;
+// const DialogContentWrapper = styled.div`
+//   min-height: 66vh;
+//   max-height: 80vh;
+//   overflow: auto;
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  ::-webkit-scrollbar {
-    display: none;
-  }
+//   /* Hide scrollbar for Chrome, Safari and Opera */
+//   ::-webkit-scrollbar {
+//     display: none;
+//   }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-`
+//   /* Hide scrollbar for IE, Edge and Firefox */
+//   -ms-overflow-style: none;
+//   scrollbar-width: none;
+// `
+
+const formatDate = (date: string) => {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  })
+    .format(new Date(date))
+    .replace(',', '')
+}
+
 // ADAM design notes
 // -Avoid modals, use a sidebar or a drawer
 // -Title/better info for high-level view
@@ -113,7 +127,7 @@ export function QueryRecall({
   editorQueryRef: RefObject<VisionCodeMirrorHandle | null>
   editorParamsRef: RefObject<VisionCodeMirrorHandle | null>
 }) {
-  const [open, setOpen] = useState(false)
+  // const [open, setOpen] = useState(false)
   const toast = useToast()
   const {saveQuery, document, deleteQuery, saving, deleting, saveQueryError} = useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
@@ -148,10 +162,19 @@ export function QueryRecall({
   return (
     <Box>
       <Stack>
-        <Box padding={3}>
-          <Text weight="semibold" style={{textTransform: 'uppercase'}} size={1} muted>
-            {t('label.all-queries')}
+        <Flex padding={3} justify="space-between" align="center">
+          <Text weight="semibold" style={{textTransform: 'capitalize'}} size={4}>
+            {t('label.saved-queries')}
           </Text>
+          <Button
+            // text={t('action.save-query')}
+            icon={AddIcon}
+            disabled={saving}
+            onClick={handleSave}
+          />
+        </Flex>
+        <Box padding={3}>
+          <TextInput placeholder={t('label.search-queries')} icon={SearchIcon} />
         </Box>
         <Box>
           <Stack>
@@ -171,23 +194,23 @@ export function QueryRecall({
                   }}
                 >
                   <Stack space={3}>
-                    <Flex justify="space-between">
+                    <Flex justify="space-between" align={'center'}>
                       {/* eslint-disable-next-line i18next/no-literal-string */}
-                      <Text weight="bold">Title</Text>
+                      <Text weight="bold" size={3}>
+                        Title
+                      </Text>
                       <Badge tone="primary" padding={2} radius={1}>
-                        <Text weight="medium" size={1}>
-                          {t('label.personal')}
-                        </Text>
+                        {t('label.personal')}
                       </Badge>
                     </Flex>
                     <Text size={2} muted>
-                      {q.query}
+                      {/** Probably a smarter way to do this */}
+                      {q.query.split('{')[0]}
                     </Text>
-                    <Flex>
+                    <Flex align="center" gap={1}>
+                      <ClockIcon />
                       <Text size={1} muted>
-                        <ClockIcon />
-                        &nbsp;
-                        {new Date(q.savedAt).toLocaleString()}
+                        {formatDate(q.savedAt)}
                       </Text>
                     </Flex>
                   </Stack>
@@ -271,7 +294,7 @@ export function QueryRecall({
     //                     <Text size={1}>{q.perspective}</Text>
     //                   </td> */}
     //                   <td className="saved-at">
-    //                     <Text>{new Date(q.savedAt).toLocaleString()}</Text>
+    //                     <Text>{formatDate(q.savedAt)}</Text>
     //                   </td>
     //                   <td className="action-buttons">
     //                     <Flex direction={'column'} gap={2}>

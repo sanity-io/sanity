@@ -28,8 +28,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Label for actions user can take */
   'label.actions': 'Actions',
-  /** All queries */
-  'label.all-queries': 'All queries',
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.
    * This defines what the text of that label is. Keep it short and sweet.
@@ -39,6 +37,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'label.personal': 'Personal',
   /** Label for savedAt date */
   'label.saved-at': 'Saved at',
+  /** Saved queries */
+  'label.saved-queries': 'Saved queries',
+  /** Search queries */
+  'label.search-queries': 'Search queries',
   /** Label for saved query type "team" */
   'label.team': 'Team',
 
