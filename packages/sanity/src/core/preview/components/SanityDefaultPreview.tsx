@@ -86,16 +86,18 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return false
     }
 
-    if (isValidElementType(mediaProp)) {
-      return mediaProp
-    }
+    if (mediaProp) {
+      if (isValidElementType(mediaProp)) {
+        return mediaProp
+      }
 
-    if (isValidElement(mediaProp)) {
-      return mediaProp
-    }
+      if (isValidElement(mediaProp)) {
+        return mediaProp
+      }
 
-    if (isImageSource(mediaProp)) {
-      return renderMedia
+      if (isImageSource(mediaProp)) {
+        return renderMedia
+      }
     }
 
     // Handle image urls
