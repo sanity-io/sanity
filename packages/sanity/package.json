@@ -166,6 +166,7 @@
     "@sanity/eventsource": "^5.0.0",
     "@sanity/export": "^3.42.2",
     "@sanity/icons": "^3.7.0",
+    "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.38.2",
     "@sanity/insert-menu": "^1.1.9",

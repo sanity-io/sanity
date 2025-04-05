@@ -1415,6 +1415,9 @@ importers:
       '@sanity/icons':
         specifier: ^3.7.0
         version: 3.7.0(react@18.3.1)
+      '@sanity/id-utils':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.1.0
@@ -4731,6 +4734,10 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
+
+  '@sanity/id-utils@1.0.0':
+    resolution: {integrity: sha512-2sb7tbdMDuUuVyocJPKG0gZBiOML/ovCe+mJiLrv1j69ODOfa2LfUjDVR+dRw/A/+XuxoJSSP8ebG7NiwTOgIA==}
+    engines: {node: '>=18'}
 
   '@sanity/image-url@1.1.0':
     resolution: {integrity: sha512-JHumVRxzzaZAJyOimntdukA9TjjzsJiaiq/uUBdTknMLCNvtM6KQ5OCp6W5fIdY78uyFxtQjz+MPXwK8WBIxWg==}
@@ -11473,6 +11480,9 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
+  ts-brand@0.2.0:
+    resolution: {integrity: sha512-H5uo7OqMvd91D2EefFmltBP9oeNInNzWLAZUSt6coGDn8b814Eis6SnEtzyXORr9ccEb38PfzyiRVDacdkycSQ==}
+
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -15341,6 +15351,12 @@ snapshots:
   '@sanity/icons@3.7.0(react@19.1.0)':
     dependencies:
       react: 19.1.0
+
+  '@sanity/id-utils@1.0.0':
+    dependencies:
+      '@sanity/uuid': 3.0.2
+      lodash: 4.17.21
+      ts-brand: 0.2.0
 
   '@sanity/image-url@1.1.0': {}
 
@@ -23711,6 +23727,8 @@ snapshots:
   ts-api-utils@1.4.3(typescript@5.8.3):
     dependencies:
       typescript: 5.8.3
+
+  ts-brand@0.2.0: {}
 
   ts-node@10.9.2(@swc/core@1.10.15)(@types/node@22.13.1)(typescript@5.8.3):
     dependencies:
