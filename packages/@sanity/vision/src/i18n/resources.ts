@@ -74,6 +74,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   'result.timing-not-applicable': 'n/a',
 
+  /** Query already saved error label */
+  'save-query.already-saved': 'Query already saved',
   /** Save error label */
   'save-query.error': 'Error saving query',
   /** Save success label */

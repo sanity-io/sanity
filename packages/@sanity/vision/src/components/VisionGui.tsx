@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
@@ -420,30 +421,18 @@ export function VisionGui(props: VisionGuiProps) {
     },
     [params.valid, handleQueryExecution],
   )
-
-  const handlePaste = useCallback(
-    (evt: ClipboardEvent) => {
-      if (!evt.clipboardData) {
-        return
-      }
-
-      const data = evt.clipboardData.getData('text/plain')
+  const getStateFromUrl = useCallback(
+    (data: string) => {
       const match = data.match(sanityUrl)
       if (!match) {
-        return
+        return {}
       }
 
       const [, usedApiVersion, usedDataset, urlQuery] = match
-      let parts: ParsedApiQueryString
 
-      try {
-        const qs = new URLSearchParams(urlQuery)
-        parts = parseApiQueryString(qs)
-      } catch (err) {
-        console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
-        return // Give up on error
-      }
-
+      const qs = new URLSearchParams(urlQuery)
+      const parts: ParsedApiQueryString = parseApiQueryString(qs)
+      if (!parts) return {}
       let newApiVersion: string | undefined
       let newCustomApiVersion: string | false | undefined
 
@@ -475,7 +464,7 @@ export function VisionGui(props: VisionGuiProps) {
         })
       }
 
-      const finalState = {
+      return {
         query: parts.query,
         params: parts.params,
         rawParams: JSON.stringify(parts.params, null, 2),
@@ -483,42 +472,55 @@ export function VisionGui(props: VisionGuiProps) {
         apiVersion: newApiVersion || apiVersion,
         customApiVersion: newCustomApiVersion,
         perspective: newPerspective || perspective,
+        url: data,
       }
-
-      evt.preventDefault()
-
+    },
+    [datasets, dataset, apiVersion, perspective, toast],
+  )
+  const setStateFromParsedUrl = useCallback(
+    (parsedUrlObj: any) => {
       // Update state with pasted values
-
-      setDataset(finalState.dataset)
-      setQuery(finalState.query)
+      setDataset(parsedUrlObj.dataset)
+      setQuery(parsedUrlObj.query)
       setParams({
-        parsed: finalState.params,
-        raw: finalState.rawParams,
+        parsed: parsedUrlObj.params,
+        raw: parsedUrlObj.rawParams,
         valid: true,
         error: undefined,
       })
-      setApiVersion(finalState.apiVersion)
-      if (finalState.customApiVersion) {
-        setCustomApiVersion(finalState.customApiVersion)
+      setApiVersion(parsedUrlObj.apiVersion)
+      if (parsedUrlObj.customApiVersion) {
+        setCustomApiVersion(parsedUrlObj.customApiVersion)
       }
-      setPerspectiveState(finalState.perspective)
-
+      setPerspectiveState(parsedUrlObj.perspective)
+      setUrl(parsedUrlObj.url)
       // Update the codemirror editor content
-      editorQueryRef.current?.resetEditorContent(finalState.query)
-      editorParamsRef.current?.resetEditorContent(finalState.rawParams)
+      editorQueryRef.current?.resetEditorContent(parsedUrlObj.query)
+      editorParamsRef.current?.resetEditorContent(parsedUrlObj.rawParams)
 
       // Update localStorage and client config
       localStorage.merge({
-        query: finalState.query,
-        params: finalState.rawParams,
-        dataset: finalState.dataset,
-        apiVersion: finalState.customApiVersion || finalState.apiVersion,
-        perspective: finalState.perspective,
+        query: parsedUrlObj.query,
+        params: parsedUrlObj.rawParams,
+        dataset: parsedUrlObj.dataset,
+        apiVersion: parsedUrlObj.customApiVersion || parsedUrlObj.apiVersion,
+        perspective: parsedUrlObj.perspective,
       })
 
       // Execute query with new values
-      handleQueryExecution(finalState)
+      handleQueryExecution(parsedUrlObj)
+    },
+    [localStorage, handleQueryExecution],
+  )
+  const handlePaste = useCallback(
+    (evt: ClipboardEvent) => {
+      if (!evt.clipboardData) {
+        return
+      }
 
+      const data = evt.clipboardData.getData('text/plain')
+      evt.preventDefault()
+      setStateFromParsedUrl(getStateFromUrl(data))
       toast.push({
         closable: true,
         id: 'vision-paste',
@@ -526,7 +528,7 @@ export function VisionGui(props: VisionGuiProps) {
         title: 'Parsed URL to query',
       })
     },
-    [datasets, dataset, apiVersion, perspective, localStorage, toast, handleQueryExecution],
+    [getStateFromUrl, setStateFromParsedUrl, toast],
   )
 
   useEffect(() => {
@@ -582,14 +584,9 @@ export function VisionGui(props: VisionGuiProps) {
       <SplitpaneContainer flex="auto">
         <SplitPane minSize={280} defaultSize={340} maxSize={-400}>
           <QueryRecall
-            params={params}
-            perspective={perspective}
-            query={query}
-            setQuery={setQuery}
-            setParams={setParams}
-            setPerspective={setPerspective}
-            editorQueryRef={editorQueryRef}
-            editorParamsRef={editorParamsRef}
+            url={url}
+            getStateFromUrl={getStateFromUrl}
+            setStateFromParsedUrl={setStateFromParsedUrl}
           />
           {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
           <SplitPane split={isNarrowBreakpoint ? 'vertical' : 'horizontal'} minSize={300}>
