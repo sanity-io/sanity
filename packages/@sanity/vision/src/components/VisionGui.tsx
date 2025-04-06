@@ -80,6 +80,17 @@ interface VisionGuiProps extends VisionProps {
   defaultDataset: string
 }
 
+export interface ParsedUrlState {
+  query: string
+  params: Record<string, unknown>
+  rawParams: string
+  dataset: string
+  apiVersion: string
+  customApiVersion: string | false | undefined
+  perspective: SupportedPerspective
+  url: string
+}
+
 export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
@@ -411,7 +422,7 @@ export function VisionGui(props: VisionGuiProps) {
 
   // Get object of state values from provided URL
   const getStateFromUrl = useCallback(
-    (data: string) => {
+    (data: string): Partial<ParsedUrlState> => {
       const match = data.match(sanityUrl)
       if (!match) {
         return {}
@@ -469,8 +480,7 @@ export function VisionGui(props: VisionGuiProps) {
 
   // Use state object from parsed URL to update state
   const setStateFromParsedUrl = useCallback(
-    // TODO: fix any
-    (parsedUrlObj: any) => {
+    (parsedUrlObj: ParsedUrlState) => {
       // Update state with pasted values
       setDataset(parsedUrlObj.dataset)
       setQuery(parsedUrlObj.query)

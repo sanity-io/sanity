@@ -4,11 +4,9 @@ import {useClient, useCurrentUser} from 'sanity'
 
 // import {type SupportedPerspective} from '../perspectives'
 
-interface QueryConfig {
+export interface QueryConfig {
   url: string
-  // query: string
-  // params: string
-  // perspective: SupportedPerspective
+  title: string
   savedAt: string
   _key: string
 }

@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   Card,
+  Code,
   Flex,
   Menu,
   MenuButton,
@@ -23,8 +24,9 @@ import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
-import {useQueryDocument} from '../hooks/useQueryDocument'
+import {type QueryConfig, useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
+import {type ParsedUrlState} from './VisionGui'
 
 const FixedHeader = styled(Stack)`
   position: sticky;
@@ -66,13 +68,9 @@ const formatDate = (date: string) => {
     .replace(',', '')
 }
 
-// ADAM design notes
-// -Avoid modals, use a sidebar or a drawer
-// -Title/better info for high-level view
-
 // TODO
 // -how to delete queries?
-// -editable title
+// -clean up title edit UI
 // -Add team queries
 // -seearch queries
 export function QueryRecall({
@@ -81,8 +79,8 @@ export function QueryRecall({
   setStateFromParsedUrl,
 }: {
   url?: string
-  getStateFromUrl: (data: string) => any // TODO: any
-  setStateFromParsedUrl: any // TODO: any
+  getStateFromUrl: (data: string) => ParsedUrlState
+  setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
 }) {
   const toast = useToast()
   const {saveQuery, updateQuery, document, deleteQuery, saving, deleting, saveQueryError} =
@@ -93,13 +91,17 @@ export function QueryRecall({
 
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
+  const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
 
   const handleSave = useCallback(async () => {
     if (url && queries?.map((q) => q.url).includes(url)) {
       toast.push({
         closable: true,
-        status: 'info',
+        status: 'warning',
         title: t('save-query.already-saved'),
+        description: `${queries.find((q) => q.url === url)?.title} - ${formatDate(
+          queries.find((q) => q.url === url)?.savedAt || '',
+        )}`,
       })
       return
     }
@@ -128,28 +130,42 @@ export function QueryRecall({
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
       setEditingKey(null)
+      // Set optimistic title
+      setOptimisticTitles((prev) => ({...prev, [query._key]: newTitle}))
 
-      await updateQuery({
-        ...query,
-        title: newTitle,
-      })
-
-      if (saveQueryError) {
+      try {
+        await updateQuery({
+          ...query,
+          title: newTitle,
+        })
+        // Clear optimistic title on success
+        setOptimisticTitles((prev) => {
+          const next = {...prev}
+          delete next[query._key]
+          return next
+        })
+      } catch (err) {
+        // Clear optimistic title on error
+        setOptimisticTitles((prev) => {
+          const next = {...prev}
+          delete next[query._key]
+          return next
+        })
         toast.push({
           closable: true,
           status: 'error',
           title: t('save-query.error'),
-          description: saveQueryError.message,
+          description: err.message,
         })
       }
     },
-    [updateQuery, saveQueryError, toast, t],
+    [updateQuery, toast, t],
   )
 
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
-        <Flex padding={3} justify="space-between" align="center">
+        <Flex padding={3} paddingTop={4} paddingBottom={0} justify="space-between" align="center">
           <Text weight="semibold" style={{textTransform: 'capitalize'}} size={4}>
             {t('label.saved-queries')}
           </Text>
@@ -161,7 +177,7 @@ export function QueryRecall({
             mode="bleed"
           />
         </Flex>
-        <Box padding={3}>
+        <Box padding={3} paddingTop={0}>
           <TextInput placeholder={t('label.search-queries')} icon={SearchIcon} />
         </Box>
       </FixedHeader>
@@ -180,7 +196,7 @@ export function QueryRecall({
             >
               <Stack space={3}>
                 <Flex justify="space-between" align={'center'}>
-                  <Flex align="center" gap={2}>
+                  <Flex align="center" gap={2} paddingRight={1}>
                     {editingKey === q._key ? (
                       <TextInput
                         value={editingTitle}
@@ -194,27 +210,41 @@ export function QueryRecall({
                         }}
                         onBlur={() => handleTitleSave(q, editingTitle)}
                         autoFocus
+                        style={{maxWidth: '170px'}}
                       />
                     ) : (
                       <>
-                        <Text weight="bold" size={3}>
-                          {q.title || q._key.slice(q._key.length - 5, q._key.length)}
+                        <Text
+                          weight="bold"
+                          size={3}
+                          textOverflow="ellipsis"
+                          style={{maxWidth: '170px'}}
+                          title={
+                            optimisticTitles[q._key] ||
+                            q.title ||
+                            q._key.slice(q._key.length - 5, q._key.length)
+                          }
+                        >
+                          {optimisticTitles[q._key] ||
+                            q.title ||
+                            q._key.slice(q._key.length - 5, q._key.length)}
                         </Text>
                       </>
                     )}
                   </Flex>
                   <Flex gap={2} align="center">
-                    <Badge tone="primary" padding={2} radius={1}>
+                    <Badge tone="primary" size={1} padding={2} radius={1}>
                       {t('label.personal')}
                     </Badge>
                     <MenuButton
                       button={<EllipsisVerticalIcon />}
-                      id="menu-button-example"
+                      id={`${q._key}-menu`}
                       menu={
                         <Menu>
                           <Button
                             mode="bleed"
                             icon={EditIcon}
+                            width="fill"
                             onClick={(event) => {
                               event.stopPropagation()
                               setEditingKey(q._key)
@@ -225,6 +255,7 @@ export function QueryRecall({
                           <Button
                             mode="bleed"
                             tone="critical"
+                            width="fill"
                             icon={TrashIcon}
                             text={t('action.delete')}
                             onClick={(event) => {
@@ -235,14 +266,13 @@ export function QueryRecall({
                           />
                         </Menu>
                       }
-                      placement="right"
                       popover={{portal: true, placement: 'bottom-end'}}
                     />
                   </Flex>
                 </Flex>
-                <Text size={2} muted>
-                  {queryObj.query.split('{')[0]}
-                </Text>
+
+                <Code muted>{queryObj.query.split('{')[0]}</Code>
+
                 <Flex align="center" gap={1}>
                   <ClockIcon />
                   <Text size={1} muted>
