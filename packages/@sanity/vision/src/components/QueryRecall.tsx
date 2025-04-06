@@ -191,7 +191,10 @@ export function QueryRecall({
               padding={4}
               border
               onClick={() => {
-                setStateFromParsedUrl(getStateFromUrl(q.url))
+                const parsedUrl = getStateFromUrl(q.url)
+                if (parsedUrl) {
+                  setStateFromParsedUrl(parsedUrl)
+                }
               }}
             >
               <Stack space={3}>
@@ -271,7 +274,7 @@ export function QueryRecall({
                   </Flex>
                 </Flex>
 
-                <Code muted>{queryObj.query.split('{')[0]}</Code>
+                <Code muted>{queryObj?.query.split('{')[0]}</Code>
 
                 <Flex align="center" gap={1}>
                   <ClockIcon />
