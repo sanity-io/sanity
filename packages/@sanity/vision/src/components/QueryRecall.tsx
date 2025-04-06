@@ -20,39 +20,13 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {type ReactElement, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
 
 import {type QueryConfig, useQueryDocument} from '../hooks/useQueryDocument'
 import {visionLocaleNamespace} from '../i18n'
+import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
 import {type ParsedUrlState} from './VisionGui'
-
-const FixedHeader = styled(Stack)`
-  position: sticky;
-  top: 0;
-  background: ${({theme}) => theme.sanity.color.base.bg};
-  z-index: 1;
-`
-
-const ScrollContainer = styled(Box)`
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({theme}) => theme.sanity.color.base.border};
-    border-radius: 4px;
-  }
-`
 
 // TODO: Locale from user preferences?
 const formatDate = (date: string) => {
@@ -69,10 +43,10 @@ const formatDate = (date: string) => {
 }
 
 // TODO
-// -how to delete queries?
 // -clean up title edit UI
 // -Add team queries
 // -seearch queries
+// -check typing for url parser and state setter
 export function QueryRecall({
   url,
   getStateFromUrl,
@@ -81,7 +55,7 @@ export function QueryRecall({
   url?: string
   getStateFromUrl: (data: string) => ParsedUrlState | null
   setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
-}) {
+}): ReactElement {
   const toast = useToast()
   const {saveQuery, updateQuery, document, deleteQuery, saving, deleting, saveQueryError} =
     useQueryDocument()
@@ -92,6 +66,7 @@ export function QueryRecall({
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
+  const [searchQuery, setSearchQuery] = useState('')
 
   const handleSave = useCallback(async () => {
     if (url && queries?.map((q) => q.url).includes(url)) {
@@ -162,6 +137,11 @@ export function QueryRecall({
     [updateQuery, toast, t],
   )
 
+  const filteredQueries = queries?.filter((q) => {
+    const title = q.title || q._key.slice(q._key.length - 5, q._key.length)
+    return title.toLowerCase().includes(searchQuery.toLowerCase())
+  })
+
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
@@ -178,11 +158,16 @@ export function QueryRecall({
           />
         </Flex>
         <Box padding={3} paddingTop={0}>
-          <TextInput placeholder={t('label.search-queries')} icon={SearchIcon} />
+          <TextInput
+            placeholder={t('label.search-queries')}
+            icon={SearchIcon}
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+          />
         </Box>
       </FixedHeader>
       <Stack padding={3}>
-        {queries?.map((q) => {
+        {filteredQueries?.map((q) => {
           const queryObj = getStateFromUrl(q.url)
           return (
             <Card
