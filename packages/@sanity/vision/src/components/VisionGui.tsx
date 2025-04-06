@@ -409,18 +409,7 @@ export function VisionGui(props: VisionGuiProps) {
     [localStorage],
   )
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const isWithinRoot =
-        visionRootRef.current && nodeContains(visionRootRef.current, event.target)
-      if (isRunHotkey(event) && isWithinRoot && params.valid) {
-        handleQueryExecution()
-        event.preventDefault()
-        event.stopPropagation()
-      }
-    },
-    [params.valid, handleQueryExecution],
-  )
+  // Get object of state values from provided URL
   const getStateFromUrl = useCallback(
     (data: string) => {
       const match = data.match(sanityUrl)
@@ -477,7 +466,10 @@ export function VisionGui(props: VisionGuiProps) {
     },
     [datasets, dataset, apiVersion, perspective, toast],
   )
+
+  // Use state object from parsed URL to update state
   const setStateFromParsedUrl = useCallback(
+    // TODO: fix any
     (parsedUrlObj: any) => {
       // Update state with pasted values
       setDataset(parsedUrlObj.dataset)
@@ -512,6 +504,7 @@ export function VisionGui(props: VisionGuiProps) {
     },
     [localStorage, handleQueryExecution],
   )
+
   const handlePaste = useCallback(
     (evt: ClipboardEvent) => {
       if (!evt.clipboardData) {
@@ -529,6 +522,19 @@ export function VisionGui(props: VisionGuiProps) {
       })
     },
     [getStateFromUrl, setStateFromParsedUrl, toast],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const isWithinRoot =
+        visionRootRef.current && nodeContains(visionRootRef.current, event.target)
+      if (isRunHotkey(event) && isWithinRoot && params.valid) {
+        handleQueryExecution()
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    },
+    [params.valid, handleQueryExecution],
   )
 
   useEffect(() => {

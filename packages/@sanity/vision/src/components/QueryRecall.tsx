@@ -62,8 +62,8 @@ export function QueryRecall({
   setStateFromParsedUrl,
 }: {
   url?: string
-  getStateFromUrl: (data: string) => any
-  setStateFromParsedUrl: any
+  getStateFromUrl: (data: string) => any // TODO: any
+  setStateFromParsedUrl: any // TODO: any
 }) {
   const toast = useToast()
   const {saveQuery, document, deleteQuery, saving, deleting, saveQueryError} = useQueryDocument()
