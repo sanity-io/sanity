@@ -45,7 +45,6 @@ const formatDate = (date: string) => {
 // TODO
 // -clean up title edit UI
 // -Add team queries
-// -seearch queries
 // -check typing for url parser and state setter
 export function QueryRecall({
   url,
