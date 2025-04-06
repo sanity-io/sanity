@@ -117,8 +117,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
       const [aValue, bValue]: (number | string)[] = [a, b].map(
         (sortValue) =>
-          sortColumn?.sortTransform?.(sortValue as RowDatum<TableData, AdditionalRowTableData>) ??
-          get(sortValue, sort.column),
+          sortColumn?.sortTransform?.(
+            sortValue as RowDatum<TableData, AdditionalRowTableData>,
+            sort.direction,
+          ) ?? get(sortValue, sort.column),
       )
       if (
         typeof aValue === 'string' &&
@@ -175,7 +177,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 
   const amalgamatedColumnDefs = useMemo(
-    () => (rowActions ? [...columnDefs, rowActionColumnDef] : columnDefs),
+    () =>
+      (rowActions ? [...columnDefs, rowActionColumnDef] : columnDefs).filter(
+        (column) => !column.hidden,
+      ),
     [columnDefs, rowActionColumnDef, rowActions],
   )
 

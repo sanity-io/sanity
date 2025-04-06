@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-shadow */
+import {type StackablePerspective} from '@sanity/client'
 import {get} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {isObservable, map, type Observable, of, switchMap} from 'rxjs'
 import {
   type DocumentStore,
   getDraftId,
+  getPublishedId,
+  getVersionId,
   isRecord,
   isReference,
   type Previewable,
@@ -46,24 +49,37 @@ function cleanPreviewable(id: string | undefined, previewable: Previewable) {
   return clean
 }
 
-function listen(id: string, fields: string[], store: DocumentStore) {
+function listen(
+  id: string,
+  fields: string[],
+  store: DocumentStore,
+  perspectiveStack: StackablePerspective[],
+) {
   const projection = fields.join(', ')
   const query = {
     fetch: `*[_id==$id][0]{${projection}}`,
     // TODO: is it more performant to use `||` instead of `in`?
-    listen: `*[_id in [$id,$draftId]]`,
+    listen: `*[_id in $versions]`,
   }
-  const params = {id, draftId: getDraftId(id)}
+  const params = {
+    id,
+    versions: perspectiveStack
+      .map((p) => {
+        if (p === 'drafts') return getDraftId(id)
+        return getVersionId(getPublishedId(id), p)
+      })
+      .concat(getPublishedId(id)),
+  }
   return store.listenQuery(query, params, {
-    perspective: 'drafts',
-    tag: 'drafts',
+    perspective: perspectiveStack,
+    tag: 'use-document-locations',
   }) as Observable<SanityDocument | null>
 }
-
 function observeDocument(
   value: Previewable | null,
   paths: string[][],
   store: DocumentStore,
+  perspectiveStack: StackablePerspective[],
 ): Observable<Record<string, unknown> | null> {
   if (!value || typeof value !== 'object') {
     return of(value)
@@ -76,10 +92,10 @@ function observeDocument(
 
   if (id && headlessPaths.length) {
     const fields = [...new Set(headlessPaths.map((path: string[]) => path[0]))]
-    return listen(id, fields, store).pipe(
+    return listen(id, fields, store, perspectiveStack).pipe(
       switchMap((snapshot) => {
         if (snapshot) {
-          return observeDocument(snapshot, paths, store)
+          return observeDocument(snapshot, paths, store, perspectiveStack)
         }
         return of(null)
       }),
@@ -100,7 +116,7 @@ function observeDocument(
       res[head] = isRecord(value) ? (value as Record<string, unknown>)[head] : undefined
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      res[head] = observeDocument((value as any)[head], tails, store)
+      res[head] = observeDocument((value as any)[head], tails, store, perspectiveStack)
     }
     return res
   }, currentValue)
@@ -112,11 +128,12 @@ function observeForLocations(
   documentId: string,
   resolver: DocumentLocationResolverObject<string>,
   documentStore: DocumentStore,
+  perspectiveStack: StackablePerspective[],
 ) {
   const {select} = resolver
   const paths = Object.values(select).map((value) => String(value).split('.')) || []
   const doc = {_type: 'reference', _ref: documentId}
-  return observeDocument(doc, paths, documentStore).pipe(
+  return observeDocument(doc, paths, documentStore, perspectiveStack).pipe(
     map((doc) => {
       return Object.keys(select).reduce<Record<string, unknown>>((acc, key) => {
         acc[key] = get(doc, select[key])
@@ -160,7 +177,7 @@ export function useDocumentLocations(props: {
 
     // Simplified resolver pattern which abstracts away Observable logic
     if ('select' in resolver && 'resolve' in resolver) {
-      return observeForLocations(id, resolver, documentStore)
+      return observeForLocations(id, resolver, documentStore, perspectiveStack)
     }
 
     // Resolver is explicitly provided state

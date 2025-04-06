@@ -30,7 +30,7 @@ const appEntryModule = `
 // Modifications to this file is automatically discarded
 import {createRoot} from 'react-dom/client'
 import {createElement} from 'react'
-import App from %APP_LOCATION%
+import App from %ENTRY%
 
 const root = createRoot(document.getElementById('root'))
 const element = createElement(App)
@@ -41,13 +41,13 @@ export function getEntryModule(options: {
   reactStrictMode: boolean
   relativeConfigLocation: string | null
   basePath?: string
-  appLocation?: string
+  entry?: string
   isApp?: boolean
 }): string {
-  const {reactStrictMode, relativeConfigLocation, basePath, appLocation, isApp} = options
+  const {reactStrictMode, relativeConfigLocation, basePath, entry, isApp} = options
 
   if (isApp) {
-    return appEntryModule.replace(/%APP_LOCATION%/, JSON.stringify(appLocation || './src/App'))
+    return appEntryModule.replace(/%ENTRY%/, JSON.stringify(entry || './src/App'))
   }
 
   const sourceModule = relativeConfigLocation ? entryModule : noConfigEntryModule

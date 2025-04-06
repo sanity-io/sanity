@@ -52,9 +52,8 @@ describe('undeployAppAction', () => {
       },
       prompt: {single: vi.fn()},
       cliConfig: {
-        // eslint-disable-next-line camelcase
-        __experimental_appConfiguration: {
-          appId: 'app-id',
+        app: {
+          id: 'app-id',
         },
       },
     } as unknown as CliCommandContext
@@ -68,7 +67,7 @@ describe('undeployAppAction', () => {
 
     expect(mockContext.output.print).toHaveBeenCalledWith('No application ID provided.')
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      'Please set appId in `__experimental_appConfiguration` in sanity.cli.js or sanity.cli.ts.',
+      'Please set id in `app` in sanity.cli.js or sanity.cli.ts.',
     )
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })

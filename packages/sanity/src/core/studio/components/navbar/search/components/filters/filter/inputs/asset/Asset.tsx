@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
-import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSource'
+import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSourceDefault'
 import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'

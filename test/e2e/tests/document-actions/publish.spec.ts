@@ -1,6 +1,8 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+
 test(`document panel displays correct title for published document`, async ({
   page,
   createDraftDocument,
@@ -29,7 +31,7 @@ test(`document panel displays correct title for published document`, async ({
 
   // Wait for the document to be published.
   page.getByTestId('action-publish').click()
-  await expect(page.getByText('Published just now')).toBeVisible({timeout: 30_000})
+  await expectPublishedStatus(page.getByTestId('pane-footer-document-status'))
 
   // Ensure the correct title is displayed after publishing.
   expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
@@ -51,7 +53,7 @@ test(`custom publish action can patch document before publication`, async ({
   await titleInput.fill(title)
 
   // Wait for the document to save before publishing.
-  await expect(paneFooter).toContainText(/created/i, {useInnerText: true, timeout: 30_000})
+  await expectCreatedStatus(paneFooter)
 
   // Wait for the document to be published.
   //
@@ -59,7 +61,7 @@ test(`custom publish action can patch document before publication`, async ({
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Ensure the custom publish action succeeded in setting the `publishedAt` field.
   await expect(publishedAtInput).toHaveValue(/.*/)

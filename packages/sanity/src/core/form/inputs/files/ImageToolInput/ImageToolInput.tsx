@@ -160,6 +160,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
           tabIndex={0}
           ref={elementProps.ref}
           onFocus={handleFocus}
+          border
         >
           <ChangeIndicator
             path={path.concat(HOTSPOT_PATH)}
@@ -183,7 +184,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 </LoadStatus>
               )}
               {!isImageLoading && image && (
-                <Box margin={1}>
+                <Box>
                   <ImageTool
                     value={localValue}
                     src={image.src}

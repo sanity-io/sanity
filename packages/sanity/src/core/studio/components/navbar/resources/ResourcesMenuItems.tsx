@@ -1,4 +1,11 @@
-import {Box, MenuDivider, Text} from '@sanity/ui'
+import {
+  Box,
+  MenuDivider,
+  // eslint-disable-next-line no-restricted-imports
+  MenuItem as UIMenuItem,
+  Stack,
+  Text,
+} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
@@ -12,11 +19,17 @@ interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
   value?: ResourcesResponse
+  onAboutDialogOpen: () => void
 }
 
-export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
+export function ResourcesMenuItems({
+  error,
+  isLoading,
+  value,
+  onAboutDialogOpen,
+}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
-  const latestStudioVersion = value?.latestVersion
+  const latestVersion = value?.latestVersion
   const isAutoUpdating = hasSanityPackageInImportMap()
   const {t} = useTranslation()
 
@@ -60,20 +73,22 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
         })}
 
       {/* Studio version information */}
-      <Box padding={3}>
-        <Text size={1} muted weight="medium" textOverflow="ellipsis">
-          {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
-        </Text>
-        {!error && latestStudioVersion && !isAutoUpdating && (
-          <Box paddingTop={2}>
-            <Text size={1} muted textOverflow="ellipsis">
-              {t('help-resources.latest-sanity-version', {
-                latestVersion: latestStudioVersion,
-              })}
-            </Text>
-          </Box>
-        )}
-      </Box>
+      <UIMenuItem onClick={onAboutDialogOpen}>
+        <Stack space={1}>
+          <Text size={1} weight="medium" textOverflow="ellipsis">
+            {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
+          </Text>
+          {!error && latestVersion && !isAutoUpdating && (
+            <Box paddingTop={2}>
+              <Text size={1} textOverflow="ellipsis">
+                {t('help-resources.latest-sanity-version', {
+                  latestVersion,
+                })}
+              </Text>
+            </Box>
+          )}
+        </Stack>
+      </UIMenuItem>
     </>
   )
 }

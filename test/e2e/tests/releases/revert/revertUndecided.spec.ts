@@ -72,7 +72,7 @@ test.describe('Revert Undecided', () => {
     // this seems to be the lowest interval that works without hanging / flaking
     await scheduleAndConfirmReleaseMenu({
       page,
-      date: new Date(new Date().setSeconds(new Date().getSeconds() + 70)),
+      date: new Date(Date.now() + 70 * 1000),
     })
 
     // retention policy card

@@ -45,6 +45,7 @@ const SpinnerContainer = styled(Flex)`
 const DIFF_INITIAL_VALUE = {
   diff: null,
   loading: true,
+  error: null,
 }
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
@@ -54,7 +55,11 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   const isComparingCurrent = !revision?.revisionId
   const changesList$ = useMemo(() => getChangesList(), [getChangesList])
-  const {diff, loading: diffLoading} = useObservable(changesList$, DIFF_INITIAL_VALUE)
+  const {
+    diff,
+    loading: diffLoading,
+    error: diffError,
+  } = useObservable(changesList$, DIFF_INITIAL_VALUE)
 
   const {t} = useTranslation('studio')
 
@@ -136,7 +141,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
               {showChanges && (
                 <Content
                   documentContext={documentContext}
-                  error={timelineError}
+                  error={timelineError || diffError}
                   loading={revision?.loading || sinceRevision?.loading || false}
                   schemaType={schemaType}
                 />

@@ -21,12 +21,12 @@ pnpm dev
 # Release/workflow guidelines
 
 - `current` always points to the last released version
-- Anything in the `next` branch is scheduled for the next release and should always be ready to released
-- To work on something new, create a descriptively named branch off of `next` (ie: `feat/some-new-feature`)
+- Anything in the `main` branch is scheduled for the next release and should always be ready to released
+- To work on something new, create a descriptively named branch off of `main` (ie: `feat/some-new-feature`)
 - Commit to that branch locally and regularly push your work to the same named branch on the remote
-- Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging
-- Once it's done, open a pull request targeting `next`
-- After at least two reviewers has approved the pull request, you can merge it into `next` when you feel ready (if you're on the Sanity team, obviously)
+- Rebase your feature branch regularly against `main`. Make sure its even with `main` before merging
+- Once it's done, open a pull request targeting `main`
+- After at least two reviewers has approved the pull request, you can merge it into `main` when you feel ready (if you're on the Sanity team, obviously)
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
 
   - The changes/feature are reviewed and tested by you
@@ -41,8 +41,8 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 
 ## Branches
 
-- `current`: This contains all the features and fixes included in the latest official release.
-- `next`: This includes everything scheduled for the next, upcoming release.
+- `main`: The main branch, where official releases goes out from (i.e. on the `latest` npm tag). When a PR is merged to `main` it should be considered safe to release. Also development branches are typically made from here.
+- `stable`: Releases on the `stable` tag goes out from here. Commits in this branch is typically released every Tuesday and typically only includes changes that has been released from `main` and been out for a few days.
 
 # How to file an issue
 

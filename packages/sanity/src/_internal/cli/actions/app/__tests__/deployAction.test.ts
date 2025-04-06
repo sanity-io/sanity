@@ -63,9 +63,8 @@ describe('deployAppAction', () => {
       },
       prompt: {single: vi.fn()},
       cliConfig: {
-        // eslint-disable-next-line camelcase
-        __experimental_appConfiguration: {
-          appLocation: 'app',
+        app: {
+          entry: 'app',
           organizationId: 'org-id',
         },
       },
@@ -129,8 +128,8 @@ describe('deployAppAction', () => {
     const mockSpinner = mockContext.output.spinner('')
     mockContext.cliConfig = {
       // eslint-disable-next-line camelcase
-      __experimental_appConfiguration: {
-        appId: 'configured-app-id',
+      app: {
+        id: 'configured-app-id',
         organizationId: 'org-id',
       },
     } as CliConfig
@@ -322,7 +321,7 @@ describe('deployAppAction', () => {
     // Create a context without appId in the config
     mockContext.cliConfig = {
       // eslint-disable-next-line camelcase
-      __experimental_appConfiguration: {
+      app: {
         organizationId: 'org-id',
       },
     } as CliConfig
@@ -351,11 +350,9 @@ describe('deployAppAction', () => {
 
     // Verify the hint to add appId to config is shown
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining("Add appId: 'app-id'"),
+      expect.stringContaining("Add id: 'app-id'"),
     )
-    expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining('to __experimental_appConfiguration'),
-    )
+    expect(mockContext.output.print).toHaveBeenCalledWith(expect.stringContaining('to `app`'))
     expect(mockContext.output.print).toHaveBeenCalledWith(
       expect.stringContaining('to avoid prompting on next deploy'),
     )

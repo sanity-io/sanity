@@ -11,6 +11,7 @@ import chalk from 'chalk'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
+import {debug as debugIt} from '../../debug'
 import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
@@ -24,13 +25,74 @@ export interface StartDevServerCommandFlags {
   'force'?: boolean
 }
 
-export const getCoreURL = (): string => {
+const debug = debugIt.extend('dev')
+
+const getDefaultCoreURL = ({
+  organizationId,
+  url,
+}: {
+  organizationId: string
+  url: string
+}): string => {
+  const params = new URLSearchParams({
+    url,
+  })
+
   return process.env.SANITY_INTERNAL_ENV === 'staging'
-    ? 'https://core.sanity.work'
-    : 'https://core.sanity.io'
+    ? `https://sanity.work/@${organizationId}?${params.toString()}`
+    : `https://sanity.io/@${organizationId}?${params.toString()}`
 }
 
-export const getCoreAppURL = ({
+const getCoreApiURL = (): string => {
+  return process.env.SANITY_INTERNAL_ENV === 'staging' ? 'https://sanity.work' : 'https://sanity.io'
+}
+
+export const getCoreURL = async ({
+  fetchFn = globalThis.fetch,
+  timeout = 5000,
+  organizationId,
+  url,
+}: {
+  fetchFn?: typeof globalThis.fetch
+  timeout?: number
+  organizationId: string
+  url: string
+}): Promise<string> => {
+  const abortController = new AbortController()
+  // Wait for 5 seconds before aborting the request
+  const timer = setTimeout(() => abortController.abort(), timeout)
+  try {
+    const queryParams = new URLSearchParams({
+      organizationId,
+      url,
+    })
+
+    const res = await fetchFn(
+      `${getCoreApiURL()}/api/dashboard/mode/development/resolve-url?${queryParams.toString()}`,
+      {
+        signal: abortController.signal,
+      },
+    )
+
+    if (!res.ok) {
+      debug(`Failed to fetch core URL: ${res.statusText}`)
+      return getDefaultCoreURL({organizationId, url})
+    }
+
+    const body = await res.json()
+    return body.url
+  } catch (err) {
+    debug(`Failed to fetch core URL: ${err.message}`)
+    return getDefaultCoreURL({organizationId, url})
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+/**
+ * Gets the core URL from API or uses the default core URL
+ */
+export const getCoreAppURL = async ({
   organizationId,
   httpHost = 'localhost',
   httpPort = 3333,
@@ -38,9 +100,14 @@ export const getCoreAppURL = ({
   organizationId: string
   httpHost?: string
   httpPort?: number
-}): string => {
+}): Promise<string> => {
+  const url = await getCoreURL({
+    organizationId,
+    url: `http://${httpHost}:${httpPort}`,
+  })
+
   // <core-app-url>/<orgniazationId>?dev=<dev-server-url>
-  return `${getCoreURL()}/@${organizationId}?dev=http://${httpHost}:${httpPort}`
+  return url
 }
 
 function parseCliFlags(args: {argv?: string[]}) {
@@ -92,6 +159,7 @@ export default async function startSanityDevServer(
       const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
       organizationId = project.organizationId
     } catch (err) {
+      debug(`Failed to get organization Id from project Id: ${err}`)
       output.error('Failed to get organization Id from project Id')
       process.exit(1)
     }
@@ -113,7 +181,7 @@ export default async function startSanityDevServer(
       output.print(
         chalk.blue(
           chalk.underline(
-            getCoreAppURL({
+            await getCoreAppURL({
               organizationId,
               httpHost: config.httpHost,
               httpPort: config.httpPort,
@@ -123,6 +191,7 @@ export default async function startSanityDevServer(
       )
     }
   } catch (err) {
+    debug(`Failed to start dev server: ${err}`)
     gracefulServerDeath('dev', config.httpHost, config.httpPort, err)
   }
 }

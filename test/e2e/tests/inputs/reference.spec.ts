@@ -2,6 +2,7 @@ import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 import {withDefaultClient} from '../../helpers'
+import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
@@ -34,7 +35,7 @@ withDefaultClient((context) => {
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
     const authorListbox = page.locator('#author-listbox')
-    const popover = page.locator("[data-ui='Popover']")
+    const popover = page.getByTestId('autocomplete-popover')
 
     // Open the Author reference input.
     await referenceInput.getByLabel('Open').click()
@@ -45,14 +46,18 @@ withDefaultClient((context) => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
+    // wait for the edit to finish
+    await expectEditedStatus(paneFooter)
+
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    await expectPublishedStatus(paneFooter)
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
-    await referenceInput.getByLabel('Open').click()
+    // instead of opening with the dropdown button, open with the space key
+    await referenceInput.getByTestId('autocomplete').press('Space')
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
@@ -61,9 +66,12 @@ withDefaultClient((context) => {
     await page.keyboard.press('Enter')
     await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
+    // wait for the edit to finish
+    await expectEditedStatus(paneFooter)
+
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now', {timeout: 30_000})
+    await expectPublishedStatus(paneFooter)
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({
@@ -174,14 +182,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()
@@ -223,14 +231,14 @@ withDefaultClient((context) => {
       'Reference test',
     )
     page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expect(documentStatus.nth(1)).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
     page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     page.getByTestId('action-publish').first().click() // publish reference
 
-    await expect(documentStatus.first()).toContainText('Published just now')
+    await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
     page.getByTestId('pane-context-menu-button').first().click()

@@ -177,10 +177,7 @@ export default async function buildSanityStudio(
       importMap,
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
-      appLocation:
-        cliConfig && '__experimental_appConfiguration' in cliConfig
-          ? cliConfig.__experimental_appConfiguration?.appLocation
-          : undefined,
+      entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
       isApp,
     })
 

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.80.1",
+  "version": "3.82.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -23,6 +23,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -33,7 +34,7 @@
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.esm.js",
+  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
@@ -49,17 +50,17 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.28.3"
+    "@sanity/client": "^6.28.4"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "1.1.7",
-    "@types/react": "^19.0.10",
+    "@sanity/insert-menu": "1.1.8",
+    "@types/react": "^19.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
     "rimraf": "^5.0.10",
-    "vitest": "^3.0.8"
+    "vitest": "^3.1.1"
   },
   "peerDependencies": {
     "@types/react": "18 || 19"

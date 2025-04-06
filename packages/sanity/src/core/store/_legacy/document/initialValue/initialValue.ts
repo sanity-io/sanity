@@ -76,7 +76,7 @@ export function getInitialValueStream(
 
       if (!opts.templateName) {
         // @todo: Make sure this is the correct behavior
-        return of({isResolving: false, initialValue: undefined})
+        return of({isResolving: false, initialValue: undefined, type: 'success'})
       }
 
       const template = initialValueTemplates.find((t) => t.id === opts.templateName)
@@ -84,7 +84,7 @@ export function getInitialValueStream(
       if (!template) {
         // eslint-disable-next-line no-console
         console.warn('Template "%s" not defined, using empty initial value', opts.templateName)
-        return of({isResolving: false, initialValue: undefined})
+        return of({isResolving: false, initialValue: undefined, type: 'success'})
       }
 
       const initialValueWithParams$ = from(

@@ -15,6 +15,8 @@ import importFresh from 'import-fresh'
 import {parse as parseHtml} from 'node-html-parser'
 import {renderToStaticMarkup} from 'react-dom/server'
 
+import {BasicDocument} from './components/BasicDocument'
+import {DefaultDocument} from './components/DefaultDocument'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
 import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
@@ -172,7 +174,7 @@ if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
 
-function renderDocumentFromWorkerData() {
+async function renderDocumentFromWorkerData() {
   if (!parentPort || !workerData) {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
@@ -301,14 +303,6 @@ export function addTimestampedImportMapScriptToHtml(
 
 function getDocumentComponent(studioRootPath: string, isApp?: boolean) {
   debug('Loading default document component from `sanity` module')
-
-  const {BasicDocument} = __DEV__
-    ? require('../../../core/components/BasicDocument')
-    : require('sanity')
-
-  const {DefaultDocument} = __DEV__
-    ? require('../../../core/components/DefaultDocument')
-    : require('sanity')
 
   const Document = isApp ? BasicDocument : DefaultDocument
 

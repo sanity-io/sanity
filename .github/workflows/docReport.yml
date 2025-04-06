@@ -1,11 +1,12 @@
 name: Create Documentation Report
 
 on:
-  # Build on pushes branches that have a PR (including drafts)
-  pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
+  # Build on version tags
   push:
-    branches: [current, next]
+    tags:
+      - "v*"
+
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -34,11 +35,11 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
-      - name: Create Docs Report on current or next
-        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/current' || github.ref == 'refs/heads/next') }}
+      - name: Create Docs Report on version tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.ref == 'refs/heads/current' && 'production' || 'next'}}
+          DOCS_REPORT_DATASET: "production"
         run: pnpm docs:report:create
 
       - name: Create Docs Report on PR

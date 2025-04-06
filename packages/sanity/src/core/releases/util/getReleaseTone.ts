@@ -2,6 +2,7 @@ import {type BadgeTone} from '@sanity/ui'
 
 import {type SelectedPerspective} from '../../perspective/types'
 import {isReleaseDocument} from '../store/types'
+import {RELEASE_TYPES_TONES} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
 
 /** @internal */
@@ -15,15 +16,15 @@ export function getReleaseTone(release: SelectedPerspective): BadgeTone {
     }
 
     if (release?.metadata?.releaseType === 'asap') {
-      return 'caution'
+      return RELEASE_TYPES_TONES.asap.tone
     }
 
     if (release?.metadata?.releaseType === 'undecided') {
-      return 'neutral'
+      return RELEASE_TYPES_TONES.undecided.tone
     }
 
     if (release?.metadata?.releaseType === 'scheduled') {
-      return 'suggest'
+      return RELEASE_TYPES_TONES.scheduled.tone
     }
   }
 

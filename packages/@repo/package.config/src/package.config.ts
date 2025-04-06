@@ -26,7 +26,7 @@ export default defineConfig({
       'ae-missing-release-tag': 'off',
     },
   },
-  legacyExports: true,
+  legacyExports: false,
   rollup: {
     optimizeLodash: true,
   },

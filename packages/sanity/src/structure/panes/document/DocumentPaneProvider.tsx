@@ -201,7 +201,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useDocumentForm({
     documentType,
     documentId,
-    initialValue: initialValue.value,
+    initialValue: initialValue,
     comparisonValue: getComparisonValue,
     releaseId: selectedReleaseId,
     selectedPerspectiveName,

@@ -3,7 +3,7 @@ name: Prettier
 
 on:
   push:
-    branches: [next]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -18,7 +18,7 @@ jobs:
     name: Can the code be prettier? 🤔
     runs-on: ubuntu-latest
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
-    if: ${{ github.ref_name == 'next' }}
+    if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

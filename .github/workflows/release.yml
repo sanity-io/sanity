@@ -55,12 +55,12 @@ jobs:
 
           # Fetch all branches (-u allows fetching the current branch)
           git fetch origin current:current -u
-          git fetch origin next:next -u
+          git fetch origin main:main -u
           git fetch origin ${{ github.ref }}:${{ github.ref }} -u
 
-          # Check for unexpected commits in 'next'
-          git log next..current --oneline | grep -q '.' && { \
-            echo "Error: 'current' has commits that 'next' does not. Aborting."; \
+          # Check for unexpected commits in 'main'
+          git log main..current --oneline | grep -q '.' && { \
+            echo "Error: 'current' has commits that 'main' does not. Aborting."; \
             exit 1; } || true
 
           # Check for unexpected commits in selected branch

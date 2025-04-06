@@ -25,7 +25,7 @@ import {
 
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
-import {getPublishedId, isVersionId} from '../util/draftUtils'
+import {getPublishedId, idMatchesPerspective, isVersionId} from '../util/draftUtils'
 import {INCLUDE_FIELDS} from './constants'
 import {
   type ApiConfig,
@@ -75,11 +75,6 @@ export function createObserveFields(options: {
   invalidationChannel: Observable<InvalidationChannelEvent>
 }) {
   const {client: currentDatasetClient, invalidationChannel} = options
-  function listen(id: Id) {
-    return invalidationChannel.pipe(
-      filter((event) => event.type === 'connected' || getPublishedId(event.documentId) === id),
-    )
-  }
 
   function fetchAllDocumentPathsWith(client: SanityClient, perspective?: StackablePerspective[]) {
     return function fetchAllDocumentPath(selections: Selection[]) {
@@ -116,38 +111,55 @@ export function createObserveFields(options: {
   }
 
   function currentDatasetListenFields(
-    originalId: Id,
+    documentId: Id,
     fields: FieldName[],
     perspective?: StackablePerspective[],
   ) {
-    /**
-     * Q: Why are we using published id if perspective is provided?
-     * A: The queries for fetching preview values will be based on the id, for example:
-     * `*[_id == "drafts.foo"]` and if we then pass a perspective, we will not get any hits for drafts, since, if using perspectives, the `_id` will always be the published id
-     * Therefore, if perspective is provided, we need to subscribe to the published id instead.
-     */
-    const id = perspective?.length ? getPublishedId(originalId) : originalId
-
     const {fast: fetchDocumentPathsFast, slow: fetchDocumentPathsSlow} =
       getBatchFetchersForPerspective(perspective)
 
-    return listen(originalId).pipe(
+    const hasPerspective = perspective && perspective.length > 0
+    /**
+     * Q: Why are we using published id if perspective is provided?
+     * A: Normally, queries for fetching preview values will be based on the _id of the document,
+     * for example `*[_id == "drafts.foo"]`. However, if a perspective passed, the query
+     * `*[_id == "drafts.foo"]` will not match anything since the `_id` will always be the published id
+     * Therefore, if perspective is provided, we need to refetch using the published id instead.
+     */
+    const fetchId = hasPerspective ? getPublishedId(documentId) : documentId
+
+    return invalidationChannel.pipe(
+      filter((event) => {
+        // we always want to fetch when the listener just (re) connected
+        if (event.type === 'connected') {
+          return true
+        }
+        if (hasPerspective) {
+          // if a perspective stack was provided, we need to refetch if we receive a mutation
+          // for a document whose _id matches either:
+          // - the published _id (since it's always implied)
+          // - any version id matching the provided perspectives
+          return idMatchesPerspective(perspective, documentId)
+        }
+        // if not using perspective, refetch previews for the document that was actually changed
+        return event.documentId === documentId
+      }),
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
-          return fetchDocumentPathsFast(id, fields).pipe(
+          return fetchDocumentPathsFast(fetchId, fields).pipe(
             mergeMap((result) => {
               return concat(
                 of(result),
                 result === null // hack: if we get undefined as result here it can be because the document has
                   ? // just been created and is not yet indexed. We therefore need to wait a bit
                     // and then re-fetch.
-                    fetchDocumentPathsSlow(id, fields)
+                    fetchDocumentPathsSlow(fetchId, fields)
                   : [],
               )
             }),
           )
         }
-        return fetchDocumentPathsSlow(id, fields)
+        return fetchDocumentPathsSlow(fetchId, fields)
       }),
     )
   }

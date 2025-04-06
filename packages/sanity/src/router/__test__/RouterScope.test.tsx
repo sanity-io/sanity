@@ -427,4 +427,54 @@ describe('RouteScope', () => {
       },
     })
   })
+
+  describe('navigate with string state', () => {
+    it('should handle navigation with string state in options', () => {
+      const wrapper = createWrapper()
+      const {result} = renderHook(() => useRouter(), {wrapper})
+
+      act(() => {
+        result.current.navigate({
+          state: 'stringState',
+        })
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          _searchParams: [['stickyParam', 'stickyValue']],
+          tool: 'desk',
+          testScope: {
+            state: 'stringState',
+          },
+        },
+      })
+    })
+
+    it('should handle navigation with string state and replace option', () => {
+      const wrapper = createWrapper()
+      const {result} = renderHook(() => useRouter(), {wrapper})
+
+      act(() => {
+        result.current.navigate(
+          {
+            state: 'stringState',
+          },
+          {
+            replace: true,
+          },
+        )
+      })
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          _searchParams: [['stickyParam', 'stickyValue']],
+          tool: 'desk',
+          testScope: {
+            state: 'stringState',
+          },
+        },
+        replace: true,
+      })
+    })
+  })
 })

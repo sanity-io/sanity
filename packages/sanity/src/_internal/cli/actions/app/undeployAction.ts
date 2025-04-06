@@ -20,17 +20,12 @@ export default async function undeployAppAction(
   // Check that the project has an application ID
   let spinner = output.spinner('Checking application info').start()
 
-  const appId =
-    cliConfig && '__experimental_appConfiguration' in cliConfig
-      ? cliConfig.__experimental_appConfiguration?.appId
-      : undefined
+  const appId = cliConfig && 'app' in cliConfig ? cliConfig.app?.id : undefined
 
   if (!appId) {
     spinner.fail()
     output.print(`No application ID provided.`)
-    output.print(
-      'Please set appId in `__experimental_appConfiguration` in sanity.cli.js or sanity.cli.ts.',
-    )
+    output.print('Please set id in `app` in sanity.cli.js or sanity.cli.ts.')
     output.print('Nothing to undeploy.')
     return
   }

@@ -1,3 +1,7 @@
+import {type SanityDocumentLike} from '@sanity/types'
+
+export const SANITY_WORKSPACE_SCHEMA_TYPE = 'sanity.workspace.schema'
+
 export type ManifestSerializable =
   | string
   | number
@@ -97,4 +101,20 @@ export interface ManifestTool {
    */
   icon: string | null
   type: string | null
+}
+
+export type DefaultWorkspaceSchemaId = `${typeof SANITY_WORKSPACE_SCHEMA_TYPE}.${string}`
+export type PrefixedWorkspaceSchemaId = `${string}.${DefaultWorkspaceSchemaId}`
+export type WorkspaceSchemaId = DefaultWorkspaceSchemaId | PrefixedWorkspaceSchemaId
+
+export interface StoredWorkspaceSchema extends SanityDocumentLike {
+  _type: typeof SANITY_WORKSPACE_SCHEMA_TYPE
+  _id: WorkspaceSchemaId
+  workspace: ManifestWorkspaceFile
+  /**
+   * JSON.stringify version of ManifestSchemaType[] to save on attribute paths.
+   * Consumers must use JSON.parse on the value.
+   */
+  schema: string
+  //schema: ManifestSchemaType[]
 }

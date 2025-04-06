@@ -4,16 +4,16 @@ const defaultAppTemplate = `
 import {defineCliConfig} from 'sanity/cli'
 
 export default defineCliConfig({
-  __experimental_appConfiguration: {
+  app: {
     organizationId: '%organizationId%',
-    appLocation: '%appLocation%',
+    entry: '%entry%',
   },
 })
 `
 
 export interface GenerateCliConfigOptions {
   organizationId?: string
-  appLocation: string
+  entry: string
 }
 
 export function createAppCliConfig(options: GenerateCliConfigOptions): string {

@@ -119,14 +119,22 @@ const releasesLocaleStrings = {
   'diff.no-changes': 'No changes',
   /** Text for when there's no changes in a release diff */
   'diff.list-empty': 'Changes list is empty, see document',
+  /** Description for discarding a draft of a document dialog */
+  'discard-version-dialog.description-draft':
+    'This will permanently remove all changes made to this document. This action cannot be undone.',
   /** Description for discarding a version of a document dialog */
-  'discard-version-dialog.description':
-    'This will also permanently remove the changes made to this document within this release.',
-  /** Header for discarding a version of a document dialog */
-  'discard-version-dialog.header':
-    'Are you sure you want to remove this document from the release?',
+  'discard-version-dialog.description-release':
+    "This will permanently remove all changes made to this document within the '<strong>{{releaseTitle}}</strong>' release. This action cannot be undone.",
+  /** Title for dialog for discarding a draft of a document */
+  'discard-version-dialog.header-draft': 'Discard draft?',
+  /** Header for discarding a version from a release of a document dialog */
+  'discard-version-dialog.header-release':
+    "Remove document from the '<strong>{{releaseTitle}}</strong>' release?",
+
+  /** Title for dialog for discarding a draft of a document */
+  'discard-version-dialog.title-draft': 'Discard draft',
   /** Title for dialog for discarding a version of a document */
-  'discard-version-dialog.title': 'Yes, discard version',
+  'discard-version-dialog.title-release': 'Remove from release',
 
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',

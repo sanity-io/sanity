@@ -69,7 +69,13 @@ export function getSentryErrorReporter(): ErrorReporter {
   let client: BrowserClient | undefined
   let scope: Scope | undefined
 
-  function initialize() {
+  // Keep tabs of events reported before initialized.
+  const preInitErrors: {
+    error: Error
+    options: ErrorInfo
+  }[] = []
+
+  function _initialize() {
     // If this _Sanity_ implementation of the reporter is already initialized, do not re-instantiate
     if (client) {
       return
@@ -131,9 +137,17 @@ export function getSentryErrorReporter(): ErrorReporter {
     scope = getCurrentScope()
   }
 
+  function initialize() {
+    _initialize()
+    if (client && preInitErrors.length > 0) {
+      preInitErrors.forEach(({error, options}) => reportError(error, options))
+      preInitErrors.length = 0
+    }
+  }
+
   function reportError(error: Error, options: ErrorInfo = {}) {
     if (!client) {
-      console.warn('[reportError] called before reporter is initialized, skipping')
+      preInitErrors.push({error, options})
       return null
     }
 

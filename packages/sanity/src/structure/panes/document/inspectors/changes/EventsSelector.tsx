@@ -12,11 +12,11 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
+import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
