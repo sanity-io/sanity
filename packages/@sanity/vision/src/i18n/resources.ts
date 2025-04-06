@@ -11,6 +11,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.copy-url-to-clipboard': 'Copy to clipboard',
   /** Label for deleting a query */
   'action.delete': 'Delete',
+  /** Label for editing a query's title */
+  'action.edit-title': 'Edit title',
   /** Label for stopping an ongoing listen operation */
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */

@@ -1,6 +1,25 @@
-import {AddIcon, ClockIcon, SearchIcon} from '@sanity/icons'
-import {Badge, Box, Button, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
-import {useCallback} from 'react'
+import {
+  AddIcon,
+  ClockIcon,
+  EditIcon,
+  EllipsisVerticalIcon,
+  SearchIcon,
+  TrashIcon,
+} from '@sanity/icons'
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Menu,
+  MenuButton,
+  Stack,
+  Text,
+  TextInput,
+  useToast,
+} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
@@ -66,10 +85,14 @@ export function QueryRecall({
   setStateFromParsedUrl: any // TODO: any
 }) {
   const toast = useToast()
-  const {saveQuery, document, deleteQuery, saving, deleting, saveQueryError} = useQueryDocument()
+  const {saveQuery, updateQuery, document, deleteQuery, saving, deleting, saveQueryError} =
+    useQueryDocument()
   const {t} = useTranslation(visionLocaleNamespace)
 
   const queries = document?.queries
+
+  const [editingKey, setEditingKey] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
 
   const handleSave = useCallback(async () => {
     if (url && queries?.map((q) => q.url).includes(url)) {
@@ -83,6 +106,7 @@ export function QueryRecall({
     await saveQuery({
       url,
       savedAt: new Date().toISOString(),
+      title: 'Untitled',
     })
 
     if (saveQueryError) {
@@ -100,6 +124,27 @@ export function QueryRecall({
       })
     }
   }, [queries, url, saveQuery, saveQueryError, toast, t])
+
+  const handleTitleSave = useCallback(
+    async (query: QueryConfig, newTitle: string) => {
+      setEditingKey(null)
+
+      await updateQuery({
+        ...query,
+        title: newTitle,
+      })
+
+      if (saveQueryError) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: saveQueryError.message,
+        })
+      }
+    },
+    [updateQuery, saveQueryError, toast, t],
+  )
 
   return (
     <ScrollContainer>
@@ -135,23 +180,64 @@ export function QueryRecall({
             >
               <Stack space={3}>
                 <Flex justify="space-between" align={'center'}>
-                  <Text weight="bold" size={3}>
-                    {q._key.slice(0, 5)}
-                  </Text>
+                  <Flex align="center" gap={2}>
+                    {editingKey === q._key ? (
+                      <TextInput
+                        value={editingTitle}
+                        onChange={(event) => setEditingTitle(event.currentTarget.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            handleTitleSave(q, editingTitle)
+                          } else if (event.key === 'Escape') {
+                            setEditingKey(null)
+                          }
+                        }}
+                        onBlur={() => handleTitleSave(q, editingTitle)}
+                        autoFocus
+                      />
+                    ) : (
+                      <>
+                        <Text weight="bold" size={3}>
+                          {q.title || q._key.slice(q._key.length - 5, q._key.length)}
+                        </Text>
+                      </>
+                    )}
+                  </Flex>
                   <Flex gap={2} align="center">
                     <Badge tone="primary" padding={2} radius={1}>
                       {t('label.personal')}
                     </Badge>
-                    {/* <Button
-                      mode="bleed"
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        deleteQuery(q._key)
-                      }}
-                      disabled={deleting.includes(q._key)}
-                    /> */}
+                    <MenuButton
+                      button={<EllipsisVerticalIcon />}
+                      id="menu-button-example"
+                      menu={
+                        <Menu>
+                          <Button
+                            mode="bleed"
+                            icon={EditIcon}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              setEditingKey(q._key)
+                              setEditingTitle(q.title || q._key.slice(0, 5))
+                            }}
+                            text={t('action.edit-title')}
+                          />
+                          <Button
+                            mode="bleed"
+                            tone="critical"
+                            icon={TrashIcon}
+                            text={t('action.delete')}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              deleteQuery(q._key)
+                            }}
+                            disabled={deleting.includes(q._key)}
+                          />
+                        </Menu>
+                      }
+                      placement="right"
+                      popover={{portal: true, placement: 'bottom-end'}}
+                    />
                   </Flex>
                 </Flex>
                 <Text size={2} muted>

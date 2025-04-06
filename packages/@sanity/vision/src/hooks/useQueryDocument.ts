@@ -21,6 +21,7 @@ export function useQueryDocument(): {
   document: UserQueryDocument | undefined
   error: Error | undefined
   saveQuery: (query: Record<string, unknown>) => void
+  updateQuery: (query: QueryConfig) => Promise<void>
   deleteQuery: (key: string) => void
   saving: boolean
   saveQueryError: Error | undefined
@@ -73,6 +74,23 @@ export function useQueryDocument(): {
       .finally(() => setSaving(false))
   }
 
+  const updateQuery = async (query: QueryConfig) => {
+    setSaving(true)
+    setSaveQueryError(undefined)
+    await client
+      .patch(documentId)
+      .set({
+        [`queries[_key == "${query._key}"]`]: {
+          ...query,
+          // savedAt: new Date().toISOString(),
+        },
+      })
+      .commit()
+      .then((updatedDoc) => setDocument(updatedDoc as UserQueryDocument))
+      .catch((err) => setSaveQueryError(err))
+      .finally(() => setSaving(false))
+  }
+
   const deleteQuery = async (key: string) => {
     setDeleting((prev) => [...prev, key])
     setDeleteQueryError(undefined)
@@ -89,6 +107,7 @@ export function useQueryDocument(): {
     document,
     error,
     saveQuery,
+    updateQuery,
     deleteQuery,
     saving,
     saveQueryError,
