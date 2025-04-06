@@ -79,7 +79,7 @@ export function QueryRecall({
   setStateFromParsedUrl,
 }: {
   url?: string
-  getStateFromUrl: (data: string) => ParsedUrlState
+  getStateFromUrl: (data: string) => ParsedUrlState | null
   setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
 }) {
   const toast = useToast()

@@ -422,17 +422,17 @@ export function VisionGui(props: VisionGuiProps) {
 
   // Get object of state values from provided URL
   const getStateFromUrl = useCallback(
-    (data: string): Partial<ParsedUrlState> => {
+    (data: string): ParsedUrlState | null => {
       const match = data.match(sanityUrl)
       if (!match) {
-        return {}
+        return null
       }
 
       const [, usedApiVersion, usedDataset, urlQuery] = match
 
       const qs = new URLSearchParams(urlQuery)
       const parts: ParsedApiQueryString = parseApiQueryString(qs)
-      if (!parts) return {}
+      if (!parts) return null
       let newApiVersion: string | undefined
       let newCustomApiVersion: string | false | undefined
 
@@ -523,13 +523,16 @@ export function VisionGui(props: VisionGuiProps) {
 
       const data = evt.clipboardData.getData('text/plain')
       evt.preventDefault()
-      setStateFromParsedUrl(getStateFromUrl(data))
-      toast.push({
-        closable: true,
-        id: 'vision-paste',
-        status: 'info',
-        title: 'Parsed URL to query',
-      })
+      const urlState = getStateFromUrl(data)
+      if (urlState) {
+        setStateFromParsedUrl(urlState)
+        toast.push({
+          closable: true,
+          id: 'vision-paste',
+          status: 'info',
+          title: 'Parsed URL to query',
+        })
+      }
     },
     [getStateFromUrl, setStateFromParsedUrl, toast],
   )
