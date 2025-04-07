@@ -4,10 +4,10 @@ import {getPartialEnvWithNpmPath, type PackageManager} from './packageManagerCho
 
 export interface InstallOptions {
   packageManager: PackageManager
-  packages: string[]
+  packages: [name: string, version: string][]
 }
 
-export async function installNewPackages(
+export async function upgradePackages(
   options: InstallOptions,
   context: {output: {print: (output: string) => void}; workDir: string},
 ): Promise<void> {
@@ -19,29 +19,31 @@ export async function installNewPackages(
     cwd: workDir,
     stdio: 'inherit',
   }
-
-  const npmArgs = ['install', '--legacy-peer-deps', '--save', ...packages]
+  const upgradePackageArgs = packages.map((pkg) => pkg.join('@'))
+  const npmArgs = ['upgrade', '--legacy-peer-deps', ...upgradePackageArgs]
   let result: ExecaReturnValue<string> | undefined
   if (packageManager === 'npm') {
-    output.print(`Running 'npm ${npmArgs.join(' ')}'`)
+    output.print(`Running 'npm upgrade ${npmArgs.join(' ')}'`)
     result = await execa('npm', npmArgs, execOptions)
   } else if (packageManager === 'yarn') {
-    const yarnArgs = ['add', ...packages]
+    const yarnArgs = ['upgrade ', ...upgradePackageArgs]
     output.print(`Running 'yarn ${yarnArgs.join(' ')}'`)
     result = await execa('yarn', yarnArgs, execOptions)
   } else if (packageManager === 'pnpm') {
-    const pnpmArgs = ['add', '--save-prod', ...packages]
+    const pnpmArgs = ['upgrade', ...upgradePackageArgs]
     output.print(`Running 'pnpm ${pnpmArgs.join(' ')}'`)
     result = await execa('pnpm', pnpmArgs, execOptions)
   } else if (packageManager === 'bun') {
-    const bunArgs = ['add', ...packages]
+    const bunArgs = ['upgrade', ...upgradePackageArgs]
     output.print(`Running 'bun ${bunArgs.join(' ')}'`)
     result = await execa('bun', bunArgs, execOptions)
   } else if (packageManager === 'manual') {
-    output.print(`Manual installation selected - run 'npm ${npmArgs.join(' ')}' or equivalent`)
+    output.print(
+      `Manual installation selected - run 'npm upgrade ${upgradePackageArgs.join(' ')}' or equivalent`,
+    )
   }
 
   if (result?.exitCode || result?.failed) {
-    throw new Error('Package installation failed')
+    throw new Error('Package upgrade failed')
   }
 }

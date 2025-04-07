@@ -18,8 +18,8 @@ import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
-import {getUpgradeCommand} from '../../util/packageManager/getUpgradeCommand'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
+import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
@@ -169,7 +169,7 @@ export default async function startSanityDevServer(
 
     // mismatch between local and auto-updating dependencies
     if (result?.length) {
-      const shouldContinue = await prompt.single({
+      const shouldUpgrade = await prompt.single({
         type: 'confirm',
         message: chalk.yellow(
           `The following local package versions are different from the versions currently served at runtime.\n` +
@@ -179,17 +179,15 @@ export default async function startSanityDevServer(
         ),
         default: true,
       })
-      if (!shouldContinue) {
-        process.exit(0)
+      if (shouldUpgrade) {
+        await upgradePackages(
+          {
+            packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+            packages: result.map((res) => [res.pkg, res.remote]),
+          },
+          context,
+        )
       }
-
-      const upgradeCommand = getUpgradeCommand({
-        packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
-        packages: result.map((res) => [res.pkg, res.remote]),
-      })
-      //eslint-disable-next-line no-console
-      console.log('Run %s', upgradeCommand)
-      process.exit(0)
     }
   }
 
