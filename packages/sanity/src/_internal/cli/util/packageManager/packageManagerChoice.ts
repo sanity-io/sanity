@@ -161,7 +161,7 @@ function getPathEnvVarKey(): string {
 }
 
 function getCommandPath(cmd: string, cwd?: string): Promise<string | null> {
-  const options = cwd ? {path: getNpmRunPath(cwd)} : {}
+  const options = {path: cwd ? getNpmRunPath(cwd) : undefined}
   return which(cmd, options).catch(() => null)
 }
 
