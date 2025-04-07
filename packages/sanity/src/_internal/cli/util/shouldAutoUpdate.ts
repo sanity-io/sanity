@@ -1,9 +1,7 @@
 import {type CliConfig} from '@sanity/cli'
 
-import {type BuildSanityStudioCommandFlags} from '../actions/build/buildAction'
-
 interface AutoUpdateSources {
-  flags: BuildSanityStudioCommandFlags
+  flags: {['auto-updates']?: boolean}
   cliConfig?: CliConfig
 }
 
