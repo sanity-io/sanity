@@ -14,7 +14,7 @@
     "start": "sanity start --port 3300"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
+    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",
