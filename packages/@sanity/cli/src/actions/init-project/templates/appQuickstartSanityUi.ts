@@ -4,7 +4,7 @@ const appSanityUiTemplate: ProjectTemplate = {
   dependencies: {
     '@sanity/sdk': '^0.0.0-rc',
     '@sanity/sdk-react': '^0.0.0-rc',
-    '@sanity/ui': '^2.15.12',
+    '@sanity/ui': '^2',
     'react': '^19',
     'react-dom': '^19',
     'styled-components': '^6.1.17',
