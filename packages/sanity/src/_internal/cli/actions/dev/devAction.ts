@@ -247,7 +247,7 @@ export function getDevServerConfig({
   cliConfig,
   output,
 }: {
-  flags: Awaited<ReturnType<typeof parseCliFlags>>
+  flags: {host?: string; port?: number}
   workDir: string
   cliConfig?: CliConfig
   output: CliOutputter
