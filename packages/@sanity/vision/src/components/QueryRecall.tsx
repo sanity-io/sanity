@@ -16,6 +16,7 @@ import {
   Menu,
   MenuButton,
   Stack,
+  Switch,
   Text,
   TextInput,
   useToast,
@@ -66,6 +67,7 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
 
   const handleSave = useCallback(async () => {
     if (url && queries?.map((q) => q.url).includes(url)) {
@@ -129,6 +131,40 @@ export function QueryRecall({
           closable: true,
           status: 'error',
           title: t('save-query.error'),
+          description: err.message,
+        })
+      }
+    },
+    [updateQuery, toast, t],
+  )
+
+  const handleShareToggle = useCallback(
+    async (query: QueryConfig) => {
+      // Set optimistic shared status
+      setOptimisticShared((prev) => ({...prev, [query._key]: !query.shared}))
+
+      try {
+        await updateQuery({
+          ...query,
+          shared: !query.shared,
+        })
+        // Clear optimistic value on success
+        setOptimisticShared((prev) => {
+          const next = {...prev}
+          delete next[query._key]
+          return next
+        })
+      } catch (err) {
+        // Clear optimistic value on error
+        setOptimisticShared((prev) => {
+          const next = {...prev}
+          delete next[query._key]
+          return next
+        })
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('share-query.error'),
           description: err.message,
         })
       }
@@ -220,8 +256,15 @@ export function QueryRecall({
                     )}
                   </Flex>
                   <Flex gap={2} align="center">
-                    <Badge tone="primary" size={1} padding={2} radius={1}>
-                      {t('label.personal')}
+                    <Badge
+                      tone={(optimisticShared[q._key] ?? q.shared) ? 'positive' : 'primary'}
+                      size={1}
+                      padding={2}
+                      radius={1}
+                    >
+                      {t(
+                        (optimisticShared[q._key] ?? q.shared) ? 'label.shared' : 'label.personal',
+                      )}
                     </Badge>
                     <MenuButton
                       button={<EllipsisVerticalIcon />}
@@ -239,6 +282,27 @@ export function QueryRecall({
                             }}
                             text={t('action.edit-title')}
                           />
+                          {/* <Button
+                            mode="bleed"
+                            icon={ShareIcon}
+                            width="fill"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              handleShareToggle(q)
+                            }}
+                            text={q.shared ? t('action.make-private') : t('action.make-shared')}
+                          /> */}
+                          <Flex>
+                            <Switch
+                              onChange={(event) => {
+                                event.stopPropagation()
+                                handleShareToggle(q)
+                              }}
+                              checked={optimisticShared[q._key] ?? q.shared}
+                            />
+
+                            <Text>{t('label.share')}</Text>
+                          </Flex>
                           <Button
                             mode="bleed"
                             tone="critical"

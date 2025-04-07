@@ -5,10 +5,11 @@ import {useClient, useCurrentUser} from 'sanity'
 // import {type SupportedPerspective} from '../perspectives'
 
 export interface QueryConfig {
-  url: string
-  title: string
-  savedAt: string
   _key: string
+  url: string
+  savedAt: string
+  title?: string
+  shared?: boolean
 }
 
 interface UserQueryDocument extends SanityDocument {
@@ -35,17 +36,17 @@ export function useQueryDocument(): {
   const [saveQueryError, setSaveQueryError] = useState<Error | undefined>()
   const [deleting, setDeleting] = useState<string[]>([])
   const [deleteQueryError, setDeleteQueryError] = useState<Error | undefined>()
-  const documentId = `vision.userQueries.${id}`
+  const userDocumentId = `vision.userQueries.${id}`
 
   useEffect(() => {
-    const query$ = client.observable.getDocument(documentId).subscribe({
+    const query$ = client.observable.getDocument(userDocumentId).subscribe({
       next: (doc) => {
         if (doc) {
           setDocument(doc as UserQueryDocument)
         } else {
           client
             .createIfNotExists({
-              _id: documentId,
+              _id: userDocumentId,
               _type: 'vision.userQueries',
               queries: [],
             })
@@ -57,13 +58,13 @@ export function useQueryDocument(): {
     })
 
     return () => query$.unsubscribe()
-  }, [client, documentId])
+  }, [client, userDocumentId])
 
   const saveQuery = async (query: Record<string, unknown>) => {
     setSaving(true)
     setSaveQueryError(undefined)
     await client
-      .patch(documentId)
+      .patch(userDocumentId)
       .setIfMissing({queries: []})
       .insert('before', 'queries[0]', [query])
       .commit({autoGenerateArrayKeys: true})
@@ -76,7 +77,7 @@ export function useQueryDocument(): {
     setSaving(true)
     setSaveQueryError(undefined)
     await client
-      .patch(documentId)
+      .patch(userDocumentId)
       .set({
         [`queries[_key == "${query._key}"]`]: {
           ...query,
@@ -93,7 +94,7 @@ export function useQueryDocument(): {
     setDeleting((prev) => [...prev, key])
     setDeleteQueryError(undefined)
     await client
-      .patch(documentId)
+      .patch(userDocumentId)
       .unset([`queries[_key == "${key}"]`])
       .commit()
       .then((updatedDoc) => setDocument(updatedDoc as UserQueryDocument))
