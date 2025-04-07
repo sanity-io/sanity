@@ -28,6 +28,7 @@ export default defineConfig({
   dataset: process.env.SANITY_E2E_DATASET!,
 
   basePath: '/test',
+  apiHost: 'https://api.sanity.work',
 
   schema: {
     types: schemaTypes,
