@@ -7,7 +7,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {type GlobalPresence} from '../../../../store'
-import {getPublishedId} from '../../../../util'
+import {getPublishedId, getVersionFromId} from '../../../../util'
 
 interface PresenceListRowProps {
   focused: boolean
@@ -46,6 +46,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   const hasLink = Boolean(lastActiveLocation?.documentId)
 
   if (lastActiveLocation) {
+    const perspective = getVersionFromId(lastActiveLocation.documentId)
     return (
       <MenuItem
         as={IntentLink}
@@ -55,6 +56,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           id: getPublishedId(lastActiveLocation.documentId),
           path: PathUtils.toString(lastActiveLocation.path),
         }}
+        searchParams={perspective ? [['perspective', perspective]] : []}
         // Shared props
         data-as="a"
         onFocus={handleFocus}
