@@ -18,6 +18,8 @@ import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getUpgradeCommand} from '../../util/packageManager/getUpgradeCommand'
+import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
@@ -130,7 +132,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = await parseCliFlags(args)
-  const {output, apiClient, workDir, cliConfig, prompt} = context
+  const {output, apiClient, workDir, cliConfig, prompt, cliPackageManager} = context
 
   const {loadInDashboard} = flags
 
@@ -171,7 +173,7 @@ export default async function startSanityDevServer(
         type: 'confirm',
         message: chalk.yellow(
           `The following local package versions are different from the versions currently served at runtime.\n` +
-            `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+            `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
             `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
             `Do you want to upgrade local versions?`,
         ),
@@ -180,6 +182,14 @@ export default async function startSanityDevServer(
       if (!shouldContinue) {
         process.exit(0)
       }
+
+      const upgradeCommand = getUpgradeCommand({
+        packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+        packages: result.map((res) => [res.pkg, res.remote]),
+      })
+      //eslint-disable-next-line no-console
+      console.log('Run %s', upgradeCommand)
+      process.exit(0)
     }
   }
 
