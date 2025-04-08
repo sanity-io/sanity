@@ -1291,7 +1291,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** The toast description that will be shown when the user has a release perspective which is now archived */
-  'release.toast.archived-release.description': 'This release has been unpinned.',
+  'release.toast.archived-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
@@ -1299,7 +1299,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /**The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** The toast description that will be shown when the user has a release perspective which is now published */
-  'release.toast.published-release.description': 'This release has been unpinned.',
+  'release.toast.published-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Label for when a version of a document has already been added to the release */
