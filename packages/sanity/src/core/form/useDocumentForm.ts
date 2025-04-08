@@ -227,9 +227,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
-    const subscription = presenceStore.documentPresence(value._id).subscribe((nextPresence) => {
-      setPresence(nextPresence)
-    })
+    const subscription = presenceStore
+      .documentPresence(value._id, {excludeVersions: true})
+      .subscribe((nextPresence) => {
+        setPresence(nextPresence)
+      })
     return () => {
       subscription.unsubscribe()
     }
