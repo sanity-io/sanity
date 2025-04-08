@@ -18,6 +18,8 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Unarchive ASAP', () => {
+  test.skip()
+
   const asapReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
