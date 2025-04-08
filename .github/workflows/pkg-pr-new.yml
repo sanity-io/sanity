@@ -1,29 +1,22 @@
 name: Publish Pull Requests with pkg.pr.new
 
+permissions:
+  pull-requests: write
+
 on:
-  pull_request_review:
-    types: [submitted]
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, labeled]
 
 jobs:
-  check:
-    # First, trigger a permissions check on the user approving the pull request.
-    if: github.event.review.state == 'approved'
-    runs-on: ubuntu-latest
-    outputs:
-      has-permissions: ${{ steps.checkPermissions.outputs.require-result }}
-    steps:
-      - name: Check permissions
-        id: checkPermissions
-        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2
-        with:
-          # In this example, the approver must have the write access
-          # to the repository to trigger the package preview.
-          require: "write"
-
   publish:
-    needs: check
-    # Publish the preview package only if the permissions check passed.
-    if: needs.check.outputs.has-permissions == 'true'
+    if: >
+      github.repository == 'sanity-io/sanity' &&
+      (github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'trigger: preview')))
+
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
