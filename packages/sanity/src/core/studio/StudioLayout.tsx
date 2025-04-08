@@ -7,6 +7,7 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
@@ -81,6 +82,11 @@ export function StudioLayout() {
  * */
 export function StudioLayoutComponent() {
   const {name, title, tools} = useWorkspace()
+
+  // In the background, check if the network protocol used to communicate with the
+  // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
+  useNetworkProtocolCheck()
+
   const router = useRouter()
   const activeToolName = useRouterState(
     useCallback(
