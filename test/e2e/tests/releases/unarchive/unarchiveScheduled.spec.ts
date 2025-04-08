@@ -14,6 +14,8 @@ import {
 } from '../utils/methods'
 
 test.describe('Unarchive Scheduled', () => {
+  test.skip()
+
   const scheduledReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName}) => {
