@@ -61,34 +61,35 @@ function useRouterFromWorkspaceHistory(
   router: Router,
   tools: Tool[],
 ): [RouterState | null, HandleNavigate] {
-  // React will only re-subscribe if store.subscribe changes identity, so by memoizing the whole store
-  // we ensure that if any of the dependencies used by store.selector changes, we'll re-subscribe.
-  // If we don't, we risk hot reload seeing stale workspace configs as the user is editing them.
-  const store = useMemo(() => {
-    const routerBasePath = router.getBasePath()
-    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
-    // matches where the pathname is a false subset of the current pathname.
-    const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
-    const shouldHandle = (pathname: string) =>
-      // this is necessary to prevent emissions intended for other workspaces.
-      routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
-    return {
-      subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
-      getSnapshot: () => `${history.location.pathname}${history.location.search || ''}`,
-      // Always return null for the server snapshot, as we can't know how to resolve intents until after authentication is done, which is browser-only
-      getServerSnapshot: () => null,
-      selector: (pathname: string | null) =>
-        typeof pathname === 'string' && shouldHandle(pathname)
-          ? decodeUrlState(router, pathname)
-          : null,
-    }
-  }, [history, router])
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => history.listen(onStoreChange),
+    [history],
+  )
 
+  const selector = useCallback(
+    (snapshot: string | null) => {
+      const routerBasePath = router.getBasePath()
+      // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
+      // matches where the pathname is a false subset of the current pathname.
+      const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
+      const shouldHandle = (pathname: string) =>
+        // this is necessary to prevent emissions intended for other workspaces.
+        routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
+      return typeof snapshot === 'string' && shouldHandle(snapshot)
+        ? decodeUrlState(router, snapshot)
+        : null
+    },
+    [router],
+  )
   const event = useSyncExternalStoreWithSelector(
-    store.subscribe,
-    store.getSnapshot,
-    store.getServerSnapshot,
-    store.selector,
+    // React will only re-subscribe if store.subscribe changes identity, so by memoizing the whole store
+    // we ensure that if any of the dependencies used by store.selector changes, we'll re-subscribe.
+    // If we don't, we risk hot reload seeing stale workspace configs as the user is editing them.
+    subscribe,
+    () => `${history.location.pathname}${history.location.search || ''}`,
+    // Always return null for the server snapshot, as we can't know how to resolve intents until after authentication is done, which is browser-only
+    () => null,
+    selector,
     isEqual,
   )
   /**
@@ -135,7 +136,7 @@ function useRouterFromWorkspaceHistory(
     // console.count('handleNavigate')
     return ({path, replace}) => {
       // Handle intent resolving early, so we avoid rendering intermediate states in the workspace root, as it otherwise resolves intents in useEffect handlers
-      const predictedEvent = store.selector(path)
+      const predictedEvent = selector(path)
       const resolvedIntent = maybeResolveIntent(predictedEvent, router, tools, prevEvent)
       const resolvedPath = typeof resolvedIntent === 'string' ? resolvedIntent : path
 
@@ -145,7 +146,7 @@ function useRouterFromWorkspaceHistory(
         history.push(resolvedPath)
       }
     }
-  }, [history, router, store, tools])
+  }, [history, router, selector, tools])
 
   return [event?.state ?? null, handleNavigate]
 }
