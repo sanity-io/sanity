@@ -79,12 +79,11 @@ ${navigator.userAgent}
           </Text>
           <Text muted size={1}>
             <Translate t={t} i18nKey="" components={{}} />
-            {t('about-dialog.version-info.latest-version.text', {latestVersion})}
+            {t('about-dialog.version-info.latest-version.text', {latestVersion})}{' '}
             {latestVersion === currentVersion ? (
               <>({t('about-dialog.version-info.up-to-date')})</>
             ) : (
               <>
-                {' '}
                 (
                 <a href="https://www.sanity.io/docs/upgrade">
                   {t('about-dialog.version-info.how-to-upgrade')}
