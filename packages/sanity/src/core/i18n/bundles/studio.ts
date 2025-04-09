@@ -32,7 +32,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Latest version" header in about dialog */
   'about-dialog.version-info.latest-version.text': 'Latest version is {{latestVersion}}',
   /** "Up to date" status in About-dialog */
-  'about-dialog.version-info.up-to-date': '(Up to date)',
+  'about-dialog.version-info.up-to-date': 'Up to date',
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
 
