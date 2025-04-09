@@ -78,7 +78,7 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
           </Text>
           {description && (
             <Tooltip content={description} placement="right">
-              <InfoOutlineIcon />
+              <InfoOutlineIcon data-testid="schema-description-icon" />
             </Tooltip>
           )}
         </Inline>
