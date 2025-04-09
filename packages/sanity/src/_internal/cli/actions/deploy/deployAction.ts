@@ -148,7 +148,7 @@ export default async function deployStudioAction(
   const base = path.basename(sourceDir)
   const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
 
-  spinner = output.spinner('Deploying to Sanity.Studio').start()
+  spinner = output.spinner('Deploying to sanity.studio').start()
   try {
     const {location} = await createDeployment({
       client,
