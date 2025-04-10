@@ -1,6 +1,8 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {defineField, defineType, type Rule} from 'sanity'
 
+import {DisableOnReleasesInput, DisableOnReleasesSlugField} from './CustomComponents'
+
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
   {value: 'designer', title: 'Designer'},
@@ -43,11 +45,35 @@ export default defineType({
       },
       validation: (rule: Rule) => rule.required(),
     }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+      },
+      components: {
+        field: DisableOnReleasesSlugField,
+        input: DisableOnReleasesInput,
+      },
+    }),
+    defineField({
+      name: 'isFeatured',
+      title: 'Is featured',
+      type: 'boolean',
+      initialValue: false,
+      components: {
+        input: DisableOnReleasesInput,
+      },
+    }),
     {
       name: 'bestFriend',
       title: 'Best friend',
       type: 'reference',
       to: [{type: 'author'}],
+      components: {
+        input: DisableOnReleasesInput,
+      },
     },
     {
       name: 'role',
@@ -56,12 +82,18 @@ export default defineType({
       options: {
         list: AUTHOR_ROLES,
       },
+      components: {
+        input: DisableOnReleasesInput,
+      },
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
       options: {hotspot: true},
+      components: {
+        input: DisableOnReleasesInput,
+      },
     },
     {
       name: 'awards',
@@ -83,6 +115,9 @@ export default defineType({
           to: {type: 'book'},
         },
       ],
+      components: {
+        input: DisableOnReleasesInput,
+      },
     },
     {
       name: 'minimalBlock',
