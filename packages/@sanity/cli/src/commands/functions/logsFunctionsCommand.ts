@@ -11,6 +11,7 @@ Examples
 
 const defaultFlags = {
   id: undefined,
+  limit: 50,
 }
 
 const logsFunctionsCommand: CliCommandDefinition = {
@@ -32,10 +33,19 @@ const logsFunctionsCommand: CliCommandDefinition = {
 
     if (flags.id) {
       const token = client.config().token
-      if (token) {
-        const {logsAction} = await import('@sanity/runtime-cli')
-        const result = await logsAction(flags.id, token)
+      const {blueprintsActions} = await import('@sanity/runtime-cli')
+      const blueprintConfig = blueprintsActions.blueprint.readConfigFile()
+
+      if (token && blueprintConfig?.projectId) {
+        const {functionsActions} = await import('@sanity/runtime-cli')
+        const result = await functionsActions.logs.logs(
+          flags.id,
+          {limit: flags.limit},
+          {token, projectId: blueprintConfig.projectId},
+        )
         print(JSON.stringify(result, null, 2))
+      } else {
+        print('You must run this command from a blueprints project')
       }
     } else {
       print('You must provide a function ID')
