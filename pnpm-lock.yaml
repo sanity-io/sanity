@@ -119,11 +119,11 @@ importers:
         specifier: ^3.2.0
         version: 3.3.0
       esbuild:
-        specifier: 0.21.5
-        version: 0.21.5
+        specifier: 0.25.0
+        version: 0.25.0
       esbuild-register:
         specifier: ^3.6.0
-        version: 3.6.0(esbuild@0.21.5)
+        version: 3.6.0(esbuild@0.25.0)
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
@@ -18207,6 +18207,13 @@ snapshots:
     dependencies:
       debug: 4.4.0(supports-color@9.4.0)
       esbuild: 0.24.2
+    transitivePeerDependencies:
+      - supports-color
+
+  esbuild-register@3.6.0(esbuild@0.25.0):
+    dependencies:
+      debug: 4.4.0(supports-color@9.4.0)
+      esbuild: 0.25.0
     transitivePeerDependencies:
       - supports-color
 
