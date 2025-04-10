@@ -4,7 +4,7 @@ import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, DecoratorShortcutPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
 import * as selectors from '@portabletext/editor/selectors'
 import {useEffect} from 'react'
-import {BlockEditor, defineType, type PortableTextInputProps} from 'sanity'
+import {defineType, type PortableTextInputProps} from 'sanity'
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -27,17 +27,17 @@ export const customPlugins = defineType({
       ],
       components: {
         input: (props: PortableTextInputProps) => {
-          return (
-            <BlockEditor
-              {...props}
-              renderPlugins={(pluginProps) => (
+          return props.renderDefault({
+            ...props,
+            renderPlugins: (pluginProps) => {
+              return (
                 <>
                   {pluginProps.renderDefault(pluginProps)}
                   <OneLinePlugin />
                 </>
-              )}
-            />
-          )
+              )
+            },
+          })
         },
       },
     },
@@ -63,28 +63,25 @@ export const customPlugins = defineType({
       ],
       components: {
         input: (props: PortableTextInputProps) => {
-          return (
-            <BlockEditor
-              {...props}
-              renderPlugins={(pluginProps) => (
-                <>
-                  {pluginProps.renderDefault({
-                    ...pluginProps,
-                    renderMarkdownPlugin: (markdownPluginProps) => {
-                      return markdownPluginProps.renderDefault({
-                        config: {
-                          ...markdownPluginProps.config,
-                          boldDecorator: ({schema}) =>
-                            schema.decorators.find((decorator) => decorator.value === 'bold')
-                              ?.value,
-                        },
-                      })
-                    },
-                  })}
-                </>
-              )}
-            />
-          )
+          return props.renderDefault({
+            ...props,
+            renderPlugins: (pluginProps) => (
+              <>
+                {pluginProps.renderDefault({
+                  ...pluginProps,
+                  renderMarkdownPlugin: (markdownPluginProps) => {
+                    return markdownPluginProps.renderDefault({
+                      config: {
+                        ...markdownPluginProps.config,
+                        boldDecorator: ({schema}) =>
+                          schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+                      },
+                    })
+                  },
+                })}
+              </>
+            ),
+          })
         },
       },
     },
@@ -100,63 +97,61 @@ export const customPlugins = defineType({
       ],
       components: {
         input: (props: PortableTextInputProps) => {
-          return (
-            <BlockEditor
-              {...props}
-              renderPlugins={(pluginProps) => (
-                <>
-                  <DecoratorShortcutPlugin
-                    decorator={({schema}) =>
-                      schema.decorators.find((decorator) => decorator.value === 'strong')?.value
-                    }
-                    pair={{
-                      char: '👻',
-                      amount: 2,
-                    }}
-                  />
-                  <DecoratorShortcutPlugin
-                    decorator={({schema}) =>
-                      schema.decorators.find((decorator) => decorator.value === 'strong')?.value
-                    }
-                    pair={{
-                      char: '🕹️',
-                      amount: 2,
-                    }}
-                  />
-                  <DecoratorShortcutPlugin
-                    decorator={({schema}) =>
-                      schema.decorators.find((decorator) => decorator.value === 'em')?.value
-                    }
-                    pair={{
-                      char: '👻',
-                      amount: 1,
-                    }}
-                  />
-                  <DecoratorShortcutPlugin
-                    decorator={({schema}) =>
-                      schema.decorators.find((decorator) => decorator.value === 'em')?.value
-                    }
-                    pair={{
-                      char: '🕹️',
-                      amount: 1,
-                    }}
-                  />
-                  {pluginProps.renderDefault({
-                    ...pluginProps,
-                    renderMarkdownPlugin: (markdownPluginProps) => {
-                      return markdownPluginProps.renderDefault({
-                        config: {
-                          ...markdownPluginProps.config,
-                          boldDecorator: undefined,
-                          italicDecorator: undefined,
-                        },
-                      })
-                    },
-                  })}
-                </>
-              )}
-            />
-          )
+          return props.renderDefault({
+            ...props,
+            renderPlugins: (pluginProps) => (
+              <>
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'em')?.value
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 1,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'em')?.value
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 1,
+                  }}
+                />
+                {pluginProps.renderDefault({
+                  ...pluginProps,
+                  renderMarkdownPlugin: (markdownPluginProps) => {
+                    return markdownPluginProps.renderDefault({
+                      config: {
+                        ...markdownPluginProps.config,
+                        boldDecorator: undefined,
+                        italicDecorator: undefined,
+                      },
+                    })
+                  },
+                })}
+              </>
+            ),
+          })
         },
       },
     },
@@ -172,7 +167,10 @@ export const customPlugins = defineType({
       ],
       components: {
         input: (props: PortableTextInputProps) => {
-          return <BlockEditor {...props} renderPlugins={() => <></>} />
+          return props.renderDefault({
+            ...props,
+            renderPlugins: () => <></>,
+          })
         },
       },
     },
@@ -188,34 +186,32 @@ export const customPlugins = defineType({
       ],
       components: {
         input: (props: PortableTextInputProps) => {
-          return (
-            <BlockEditor
-              {...props}
-              renderPlugins={(pluginProps) => (
-                <>
-                  <BehaviorPlugin
-                    behaviors={[
-                      defineBehavior({
-                        on: 'insert.text',
-                        actions: [
-                          ({event}) => [
-                            {
-                              type: 'effect',
-                              effect: () => {
-                                // eslint-disable-next-line no-console
-                                console.log(event)
-                              },
+          return props.renderDefault({
+            ...props,
+            renderPlugins: (pluginProps) => (
+              <>
+                <BehaviorPlugin
+                  behaviors={[
+                    defineBehavior({
+                      on: 'insert.text',
+                      actions: [
+                        ({event}) => [
+                          {
+                            type: 'effect',
+                            effect: () => {
+                              // eslint-disable-next-line no-console
+                              console.log(event)
                             },
-                          ],
+                          },
                         ],
-                      }),
-                    ]}
-                  />
-                  {pluginProps.renderDefault(pluginProps)}
-                </>
-              )}
-            />
-          )
+                      ],
+                    }),
+                  ]}
+                />
+                {pluginProps.renderDefault(pluginProps)}
+              </>
+            ),
+          })
         },
       },
     },
@@ -226,19 +222,19 @@ export const customPlugins = defineType({
       description: 'Custom <AutoCloseBracketsPlugin /> that automatically closes "(", "[", and "{"',
       of: [{type: 'block'}],
       components: {
-        input: (props: PortableTextInputProps) => (
-          <BlockEditor
-            {...props}
-            renderPlugins={(pluginProps) => {
+        input: (props: PortableTextInputProps) => {
+          return props.renderDefault({
+            ...props,
+            renderPlugins: (pluginProps) => {
               return (
                 <>
                   <AutoCloseBracketsPlugin />
                   {pluginProps.renderDefault(pluginProps)}
                 </>
               )
-            }}
-          />
-        ),
+            },
+          })
+        },
       },
     },
   ],
