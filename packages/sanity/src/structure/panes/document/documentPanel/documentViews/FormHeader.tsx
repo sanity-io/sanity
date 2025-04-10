@@ -1,8 +1,10 @@
+import {InfoOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'react-i18next'
+import {Heading, Inline, Stack, Text} from '@sanity/ui'
+import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 
 interface DocumentHeaderProps {
@@ -61,20 +63,26 @@ export const TitleContainer = styled(Stack)`
  */
 export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
   const isSingleton = documentId === schemaType.name
+  const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (schemaType.__experimental_formPreviewTitle === false) {
     return null
   }
-
   return (
     <TitleContainer marginBottom={6} space={4}>
       {!isSingleton && (
-        <Text muted size={1}>
-          {schemaType.title ?? schemaType.name}
-        </Text>
+        <Inline space={1}>
+          <Text muted size={1}>
+            {schemaType.title ?? schemaType.name}
+          </Text>
+          {description && (
+            <Tooltip content={description} placement="right">
+              <InfoOutlineIcon data-testid="schema-description-icon" />
+            </Tooltip>
+          )}
+        </Inline>
       )}
-
       <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
         {title ?? t('document-view.form-view.form-title-fallback')}
       </Heading>
