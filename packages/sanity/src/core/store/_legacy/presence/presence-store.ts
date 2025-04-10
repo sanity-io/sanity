@@ -32,6 +32,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
+import {documentIdEquals} from '../../../util'
 import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
 import {debugParams$} from '../debugParams'
 import {type UserStore} from '../user'
@@ -58,7 +59,10 @@ export interface PresenceStore {
   /**
    * @internal
    */
-  documentPresence: (documentId: string) => Observable<DocumentPresence[]>
+  documentPresence: (
+    documentId: string,
+    options?: {excludeVersions?: boolean},
+  ) => Observable<DocumentPresence[]>
 
   /**
    * @internal
@@ -261,17 +265,7 @@ export function createPresenceStore(context: {
       }))
     }),
     withLatestFrom(debugIntrospect$),
-    map(([userAndSessions, debugIntrospect]) =>
-      userAndSessions.filter((userAndSession) => {
-        if (debugIntrospect) {
-          return true
-        }
-
-        const isCurrent = userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID)
-
-        return !isCurrent
-      }),
-    ),
+    map(([userAndSessions, debugIntrospect]) => userAndSessions),
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
@@ -312,11 +306,27 @@ export function createPresenceStore(context: {
     shareReplay(1),
   )
 
-  // export
-  const documentPresence = (documentId: string): Observable<DocumentPresence[]> => {
+  /**
+   * Returns document presence for the given documennt id
+   * Presence are returned for all versions of the document
+   */
+  const documentPresence = (
+    documentId: string,
+    options?: {excludeVersions?: boolean},
+  ): Observable<DocumentPresence[]> => {
     return allDocumentsPresence$.pipe(
       map((allPresence) =>
-        allPresence.filter((item) => item.documentId === documentId).map((item) => item.presence),
+        allPresence
+          .filter((item) =>
+            options?.excludeVersions
+              ? item.documentId === documentId
+              : documentIdEquals(item.documentId, documentId),
+          )
+          .map((item) => ({
+            ...item.presence,
+            //documentId: getPublishedId(item.documentId),
+            documentId: item.documentId,
+          })),
       ),
       // Only emit if the presence has changed for this document id
       distinctUntilChanged((prev, curr) => isEqual(prev, curr)),

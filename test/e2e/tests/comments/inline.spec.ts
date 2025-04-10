@@ -26,9 +26,9 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
     // Wait for network to become idle to ensure document is fully loaded
     await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})
 
-    // 2. Click the overlay to active the editor.
-    await page.getByTestId('activate-overlay').waitFor(WAIT_OPTIONS)
-    await page.click('[data-testid="activate-overlay"]')
+    // 2. Click the editor.
+    const editor = page.locator('[data-testid="pt-editor"]')
+    await editor.click()
 
     // Wait for any network activity triggered by activating the editor to complete
     await page.waitForLoadState('load', {timeout: WAIT_OPTIONS.timeout * 2})

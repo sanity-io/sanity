@@ -1,6 +1,13 @@
-import {Box, MenuDivider, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  MenuDivider,
+  // eslint-disable-next-line no-restricted-imports
+  MenuItem as UIMenuItem,
+  Stack,
+  Text,
+} from '@sanity/ui'
 
-import {Button, MenuItem} from '../../../../../ui-components'
+import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
@@ -22,7 +29,7 @@ export function ResourcesMenuItems({
   onAboutDialogOpen,
 }: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
-  const latestStudioVersion = value?.latestVersion
+  const latestVersion = value?.latestVersion
   const isAutoUpdating = hasSanityPackageInImportMap()
   const {t} = useTranslation()
 
@@ -66,28 +73,22 @@ export function ResourcesMenuItems({
         })}
 
       {/* Studio version information */}
-      <Button
-        onClick={onAboutDialogOpen}
-        mode="bleed"
-        tooltipProps={{
-          content: <Text size={1}>{t('help-resources.action.version-menu-tooltip')}</Text>,
-        }}
-      >
+      <UIMenuItem onClick={onAboutDialogOpen}>
         <Stack space={1}>
-          <Text size={1} muted weight="medium" textOverflow="ellipsis">
+          <Text size={1} weight="medium" textOverflow="ellipsis">
             {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
           </Text>
-          {!error && latestStudioVersion && !isAutoUpdating && (
+          {!error && latestVersion && !isAutoUpdating && (
             <Box paddingTop={2}>
-              <Text size={1} muted textOverflow="ellipsis">
+              <Text size={1} textOverflow="ellipsis">
                 {t('help-resources.latest-sanity-version', {
-                  latestVersion: latestStudioVersion,
+                  latestVersion,
                 })}
               </Text>
             </Box>
           )}
         </Stack>
-      </Button>
+      </UIMenuItem>
     </>
   )
 }

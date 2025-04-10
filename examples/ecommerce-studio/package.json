@@ -1,6 +1,6 @@
 {
   "name": "ecommerce-studio",
-  "version": "3.82.0",
+  "version": "3.83.0",
   "private": true,
   "description": "",
   "keywords": [
@@ -29,8 +29,8 @@
     "start": "sanity dev --port 3337"
   },
   "dependencies": {
-    "@sanity/cli": "3.82.0",
-    "@sanity/ui": "^2.15.12",
+    "@sanity/cli": "3.83.0",
+    "@sanity/ui": "^2.15.13",
     "react": "^18.3.1",
     "react-barcode": "^1.4.1",
     "react-dom": "^18.3.1",

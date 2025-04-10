@@ -1,4 +1,4 @@
-const appTemplates = ['app-quickstart']
+const appTemplates = ['app-quickstart', 'app-sanity-ui']
 
 /**
  * Determine if a given template is a studio template.

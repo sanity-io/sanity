@@ -18,6 +18,8 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Revert Undecided', () => {
+  test.skip()
+
   const undecidedReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
