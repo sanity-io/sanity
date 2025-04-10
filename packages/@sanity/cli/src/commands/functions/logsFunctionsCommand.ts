@@ -5,10 +5,18 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Options
   --name <name> The name of the function to retrieve logs for
+  --limit <limit> The number of log entries to retrieve
+  --json If set return json
 
 Examples
   # Retrieve logs for Sanity Function abcd1234
   sanity functions logs --name echo
+
+  # Retrieve the last two log entries for Sanity Function abcd1234
+  sanity functions logs --name echo --limit 2
+
+  # Retrieve logs for Sanity Function abcd1234 in json format
+  sanity functions logs --name echo --json
 `
 
 const defaultFlags = {
