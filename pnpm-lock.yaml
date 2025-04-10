@@ -1434,7 +1434,7 @@ importers:
         specifier: 3.83.0
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^1.0.14
+        specifier: ^1.0.15
         version: 1.0.15(@sanity/client@6.28.4(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.7
