@@ -1,7 +1,6 @@
 import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
@@ -11,6 +10,7 @@ import {
   GetFormValueProvider,
   type Path,
   useGlobalCopyPasteElementHandler,
+  useTranslation,
   useZIndex,
 } from 'sanity'
 import {styled} from 'styled-components'

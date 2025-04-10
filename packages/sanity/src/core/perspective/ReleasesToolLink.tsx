@@ -2,12 +2,12 @@ import {CalendarIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
 import {useCallback} from 'react'
-import {useTranslation} from 'react-i18next'
 import {useObservable} from 'react-rx'
 import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {RELEASES_TOOL_NAME} from '../releases/plugin'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'

@@ -1,8 +1,8 @@
 import {Flex, Stack, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 
 import {Button} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'

@@ -1,5 +1,9 @@
 import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
-import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+import {
+  type FallbackNs,
+  // eslint-disable-next-line no-restricted-imports
+  useTranslation as useOriginalTranslation,
+} from 'react-i18next'
 // @ts-expect-error types are missing
 import {type $Tuple} from 'react-i18next/helpers'
 

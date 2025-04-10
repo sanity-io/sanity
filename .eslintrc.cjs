@@ -40,6 +40,11 @@ const noRestrictedImportPaths = [
     message:
       'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
   },
+  {
+    name: 'react-i18next',
+    importNames: ['useTranslation'],
+    message: 'Please use `import {useTranslation} from "sanity"` instead.',
+  },
 ]
 
 const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']

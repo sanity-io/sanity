@@ -8,7 +8,7 @@ import {
   Flex,
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 
 /** @internal */
 export type DialogProps = Pick<
