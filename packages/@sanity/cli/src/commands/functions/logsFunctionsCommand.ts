@@ -1,3 +1,5 @@
+import {type StackFunctionResource} from '@sanity/runtime-cli/dist/utils/types'
+
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -38,28 +40,30 @@ const logsFunctionsCommand: CliCommandDefinition = {
     }
 
     const token = client.config().token
-    const {blueprintsActions} = await import('@sanity/runtime-cli')
+    const {blueprintsActions, utils} = await import('@sanity/runtime-cli')
 
     const {deployedStack} = await blueprintsActions.blueprint.readBlueprintOnDisk({
       getStack: true,
       token,
     })
 
-    if (!deployedStack) print('Stack not found') // returns
+    if (!deployedStack) {
+      print('Stack not found')
+      return
+    }
 
     const blueprintConfig = blueprintsActions.blueprint.readConfigFile()
     const projectId = blueprintConfig?.projectId
 
-    const func = deployedStack?.resources?.find(
-      (r) => r?.type?.startsWith('sanity.function.') && r.name === flags.name,
-    )
-
-    if (!func) throw Error(`Unable to find function ${flags.name}`)
+    const {externalId} = utils.findFunctions.findFunctionByName(
+      deployedStack,
+      flags.name,
+    ) as StackFunctionResource
 
     if (token && projectId) {
       const {functionsActions} = await import('@sanity/runtime-cli')
       const {ok, error, logs, total} = await functionsActions.logs.logs(
-        func.externalId,
+        externalId,
         {limit: flags.limit},
         {token, projectId},
       )
