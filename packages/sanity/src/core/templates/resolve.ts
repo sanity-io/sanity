@@ -298,7 +298,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   const merged = deepAssign(fieldValues, initialObject)
 
   if (isDeepEmpty(merged)) {
-    return undefined
+    return {}
   }
 
   if (type.name !== 'object') {
