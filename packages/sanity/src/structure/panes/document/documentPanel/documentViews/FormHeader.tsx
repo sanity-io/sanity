@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'

@@ -5,13 +5,12 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {FormHeader} from '../FormHeader'
 
-vi.mock('react-i18next', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}))
-
+vi.mock('sanity', async (importOriginal) => {
+  return {
+    ...(await importOriginal()),
+    useTranslation: vi.fn(() => ({t: (key: string) => key})),
+  }
+})
 describe('FormHeader', () => {
   const mockSchemaType: ObjectSchemaType = {
     name: 'testType',
