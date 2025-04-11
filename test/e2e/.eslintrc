@@ -1,0 +1,6 @@
+{
+    "rules": {
+        "react-hooks/rules-of-hooks": "off",
+        "max-nested-callbacks": "off"
+    }
+}

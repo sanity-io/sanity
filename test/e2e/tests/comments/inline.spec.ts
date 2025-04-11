@@ -1,6 +1,8 @@
 import {expect, type Page} from '@playwright/test'
 import {test} from '@sanity/test'
 
+import {E2E_ANNOTATION_TAGS} from '../../../../scripts/test-e2e.mjs'
+
 const WAIT_OPTIONS = {
   timeout: 20 * 1000, // 20 seconds
 }
@@ -169,20 +171,24 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   )
 }
 
-test.describe('Inline comments:', () => {
-  test('should create inline comment', async ({page, createDraftDocument}) => {
-    await inlineCommentCreationTest({page, createDraftDocument})
-  })
+test.describe(
+  'Inline comments:',
+  {tag: [E2E_ANNOTATION_TAGS.pte, E2E_ANNOTATION_TAGS.nightly]},
+  () => {
+    test('should create inline comment', async ({page, createDraftDocument}) => {
+      await inlineCommentCreationTest({page, createDraftDocument})
+    })
 
-  test('should resolve inline comment', async ({page, createDraftDocument}) => {
-    // 1. Create a new inline comment
-    await inlineCommentCreationTest({page, createDraftDocument})
+    test('should resolve inline comment', async ({page, createDraftDocument}) => {
+      // 1. Create a new inline comment
+      await inlineCommentCreationTest({page, createDraftDocument})
 
-    // 2. Resolve the comment by clicking the status button in the comments list item.
-    await page.getByTestId('comments-list-item-status-button').waitFor(WAIT_OPTIONS)
-    await page.locator('[data-testid="comments-list-item-status-button"]').click()
+      // 2. Resolve the comment by clicking the status button in the comments list item.
+      await page.getByTestId('comments-list-item-status-button').waitFor(WAIT_OPTIONS)
+      await page.locator('[data-testid="comments-list-item-status-button"]').click()
 
-    // 3. Verify that the text is no longer highlighted in the editor.
-    await expect(page.locator('[data-inline-comment-state="added"]')).not.toBeVisible()
-  })
-})
+      // 3. Verify that the text is no longer highlighted in the editor.
+      await expect(page.locator('[data-inline-comment-state="added"]')).not.toBeVisible()
+    })
+  },
+)
