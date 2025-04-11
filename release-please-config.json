@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "plugins": ["node-workspace"],
+  "packages": {
+    "packages/@sanity/block-tools": {},
+    "packages/@sanity/cli": {},
+    "packages/@sanity/codegen": {},
+    "packages/@sanity/diff": {},
+    "packages/@sanity/migrate": {},
+    "packages/@sanity/mutator": {},
+    "packages/@sanity/schema": {},
+    "packages/@sanity/types": {},
+    "packages/@sanity/util": {},
+    "packages/@sanity/vision": {},
+    "packages/create-sanity": {},
+    "packages/groq": {},
+    "packages/sanity": {}
+  }
+}

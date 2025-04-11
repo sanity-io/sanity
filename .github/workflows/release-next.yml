@@ -1,0 +1,76 @@
+name: Release sanity@next
+
+on:
+  push:
+    branches:
+      # todo: change to `main`
+      - release-next
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish packages to NPM on `next` tag
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  release-next:
+    permissions:
+      contents: write # for push to release branch
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      # Publish to NPM on new releases
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+      - name: install deps & build
+        run: pnpm install --ignore-scripts
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Pre-flight
+        run: |
+          # Check if `NODE_AUTH_TOKEN` is working
+          npm whoami
+
+          # Configure git
+          # https://github.com/actions/checkout/pull/1184
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git fetch origin ${{ github.ref }}:${{ github.ref }} -u
+
+      - name: Publish
+        # Publish needs to be done in two steps for provenance to work:
+        # 1. bump package.json versions across packages in a separate commit
+        # 2. publish to npm
+        run: |
+          lerna version                \
+            --no-private               \
+            --force-publish            \
+            --conventional-commits     \
+            --conventional-prerelease  \
+            --git-tag-command "echo 'skip for now'" \
+            --exact                    \
+            --preid next               \
+            --yes                      \
+            prerelease
+
+          # https://github.com/lerna/lerna/tree/v8.1.2/libs/commands/publish#bump-from-package
+          lerna publish            \
+            --force-publish        \
+            --exact                \
+            --yes                  \
+            --dist-tag next        \
+            from-package
+        env:
+          NPM_CONFIG_PROVENANCE: true
