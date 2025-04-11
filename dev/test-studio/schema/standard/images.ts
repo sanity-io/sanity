@@ -204,7 +204,6 @@ export default defineType({
       description: 'Should have custom hotspot preview aspect ratios',
       options: {
         hotspot: {
-          enabled: true,
           previews: [
             {title: '2:1', aspectRatio: 2 / 1},
             {title: '4:5', aspectRatio: 4 / 5},
