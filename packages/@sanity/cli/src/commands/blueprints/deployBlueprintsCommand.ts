@@ -15,6 +15,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
   signature: '',
   description: 'Deploy a Blueprint',
   hideFromHelp: true,
+  /* eslint-disable-next-line complexity, max-statements */
   async action(args, context) {
     const {apiClient, output, prompt} = context
     const {print} = output
@@ -93,18 +94,30 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     }
 
     const validResources = resources?.filter((r) => r.type)
-    const processedResources = await processFunctionResources(
-      validResources,
-      auth,
-      actions,
-      print,
-      display,
-    )
+    const functionResources = validResources?.filter((r) => r.type.startsWith('sanity.function.'))
+
+    if (functionResources?.length) {
+      for (const resource of functionResources) {
+        print(`Processing ${resource.name}...`)
+        const result = await actions.assets.stashAsset({resource, auth})
+
+        if (result.success && result.assetId) {
+          const src = resource.src
+          resource.src = result.assetId // ! this will change! for now, the API expects the assetId
+          const {yellow} = display.colors
+          print(`${resource.name} <${yellow(result.assetId)}>`)
+          print(`   Source: ${src}`)
+        } else {
+          print(`   Error: ${result.error}`)
+          throw new Error(`Failed to process ${resource.name}`)
+        }
+      }
+    }
 
     const stackPayload = {
       name,
       projectId,
-      document: {resources: processedResources},
+      document: {resources: validResources},
     }
 
     print('Deploying stack...')
@@ -135,28 +148,6 @@ const deployBlueprintsCommand: CliCommandDefinition = {
       print(`Error: ${deployError || JSON.stringify(stack, null, 2) || 'Unknown error'}`)
     }
   },
-}
-
-async function processFunctionResources(resources, auth, actions, print, display) {
-  const functionResources = resources?.filter((r) => r.type.startsWith('sanity.function.'))
-  if (!functionResources?.length) return resources
-
-  for (const resource of functionResources) {
-    print(`Processing ${resource.name}...`)
-    const result = await actions.assets.stashAsset({resource, auth})
-
-    if (result.success && result.assetId) {
-      const src = resource.src
-      resource.src = result.assetId // TODO: properly reference asset - for now, the API expects the assetId
-      const {yellow} = display.colors
-      print(`${resource.name} <${yellow(result.assetId)}>`)
-      print(`   Source: ${src}`)
-    } else {
-      print(`   Error: ${result.error}`)
-      throw new Error(`Failed to process ${resource.name}`)
-    }
-  }
-  return resources
 }
 
 export default deployBlueprintsCommand
