@@ -127,7 +127,23 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
               filter: `_type == "simpleBlock" && isMain`,
             },
           ]),
-          locations: {simpleBlock: defineLocations({locations: [{title: 'Home', href: '/'}]})},
+          locations: {
+            simpleBlock: defineLocations({
+              select: {
+                title: 'name',
+              },
+              resolve: (doc) => {
+                return {
+                  locations: [
+                    {
+                      title: doc?.title || 'Untitled',
+                      href: `/${doc?.title}`,
+                    },
+                  ],
+                }
+              },
+            }),
+          },
         },
       }),
       languageFilter({
