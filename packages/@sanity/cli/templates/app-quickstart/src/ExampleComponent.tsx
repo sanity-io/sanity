@@ -28,7 +28,7 @@ export function ExampleComponent() {
         <pre>{`import {YourComponent} from './YourComponent'
 
 // Then use it in your JSX
-<SanityApp sanityConfigs={sanityConfigs}>
+<SanityApp config={sanityConfigs}>
   <YourComponent />
 </SanityApp>`}</pre>
       </div>
