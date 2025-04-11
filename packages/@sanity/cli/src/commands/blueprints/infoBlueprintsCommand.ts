@@ -50,7 +50,11 @@ const infoBlueprintsCommand: CliCommandDefinition = {
         result = deployedStack
       }
 
-      print(display.blueprintsFormatting.formatStackInfo(result))
+      if (result) {
+        print(display.blueprintsFormatting.formatStackInfo(result))
+      } else {
+        print('No stack found')
+      }
     } else {
       print('Cannot retrieve information for Blueprint: missing API token or project ID')
     }
