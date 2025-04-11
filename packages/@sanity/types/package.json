@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.83.0",
+  "version": "3.84.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "1.1.8",
+    "@sanity/insert-menu": "1.1.9",
     "@types/react": "^19.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
