@@ -65,6 +65,7 @@ function listen(
     id,
     versions: perspectiveStack
       .map((p) => {
+        if (p === 'published') return getPublishedId(id)
         if (p === 'drafts') return getDraftId(id)
         return getVersionId(getPublishedId(id), p)
       })
