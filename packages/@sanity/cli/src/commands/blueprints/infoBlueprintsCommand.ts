@@ -1,6 +1,15 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
+Options
+  --id, -i  Stack ID
+
+Examples
+  # Retrieve information about the current Stack
+  sanity blueprints info
+
+  # Retrieve information about a specific Stack
+  sanity blueprints info --id <stack-id>
 `
 
 const defaultFlags = {id: undefined}
@@ -10,7 +19,7 @@ const infoBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Retrieve information about a Sanity Blueprint',
+  description: 'Retrieve information about a Blueprint Stack',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output} = context
@@ -53,10 +62,10 @@ const infoBlueprintsCommand: CliCommandDefinition = {
       if (result) {
         print(display.blueprintsFormatting.formatStackInfo(result))
       } else {
-        print('No stack found')
+        print('No Stack found')
       }
     } else {
-      print('Cannot retrieve information for Blueprint: missing API token or project ID')
+      print('Cannot retrieve information for Blueprint: missing API token or Project ID')
     }
   },
 }

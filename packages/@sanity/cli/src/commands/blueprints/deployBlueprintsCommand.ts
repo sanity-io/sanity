@@ -1,8 +1,6 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Deploy a Blueprint to create or update a stack.
-
 Examples
   # Deploy the current blueprint
   sanity blueprints deploy
@@ -13,7 +11,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Deploy a Blueprint',
+  description: 'Deploy a Blueprint to create or update a Stack',
   hideFromHelp: true,
   /* eslint-disable-next-line complexity, max-statements */
   async action(args, context) {
@@ -31,7 +29,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     } = await import('@sanity/runtime-cli')
 
     if (!token) {
-      print('No API token found. Please set a token using `sanity login` first.')
+      print('No API token found. Please run `sanity login` first.')
       return
     }
 
@@ -52,7 +50,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (stackId && !deployedStack) {
-      print('Stack ID defined but deployed stack not found')
+      print('Stack ID defined but deployed Stack not found')
       return
     }
 

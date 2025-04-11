@@ -1,10 +1,8 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-List all Blueprint Stacks for the current project.
-
 Examples
-  # List all stacks for the current project
+  # List all Stacks for the current Project
   sanity blueprints stacks
 `
 
@@ -13,7 +11,7 @@ const stacksBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'List all Blueprint Stacks',
+  description: 'List all Blueprint Stacks for the current Project',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output} = context
@@ -22,7 +20,7 @@ const stacksBlueprintsCommand: CliCommandDefinition = {
     const {token} = client.config()
 
     if (!token) {
-      print('No API token found. Please set a token using `sanity login` first.')
+      print('No API token found. Please run `sanity login` first.')
       return
     }
 
@@ -39,7 +37,7 @@ const stacksBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (!projectId) {
-      print('Blueprint is not configured for a project. Run `sanity blueprints config`')
+      print('Blueprint is not configured for a Project. Run `sanity blueprints config`')
       return
     }
 
@@ -47,12 +45,12 @@ const stacksBlueprintsCommand: CliCommandDefinition = {
     const {ok, stacks, error} = await actions.stacks.listStacks(auth)
 
     if (!ok) {
-      print(error || 'Failed to list stacks')
+      print(error || 'Failed to list Stacks')
       return
     }
 
     if (!stacks || stacks.length === 0) {
-      print('No stacks found')
+      print('No Stacks found')
       return
     }
 

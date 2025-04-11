@@ -1,7 +1,7 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Enumerate resources to be deployed - will not modify any resources.
+Safe to run at any time. Will not modify any Resources.
 
 Examples
   # Show deployment plan
@@ -13,7 +13,7 @@ const planBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Enumerate resources to be deployed - will not modify any resources',
+  description: 'Enumerate Resources to be deployed',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output} = context
@@ -36,7 +36,7 @@ const planBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (!projectId) {
-      print('Blueprint must contain a project resource')
+      print('Blueprint must contain a Project Resource')
     }
 
     const name = stackId || 'Unknown'

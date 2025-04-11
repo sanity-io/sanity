@@ -1,8 +1,6 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-View or edit Blueprint configuration.
-
 Options
   --edit  Edit the configuration
 
@@ -23,7 +21,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '[--edit]',
-  description: 'View or edit Blueprint configuration',
+  description: 'View or edit local Blueprints configuration',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output, prompt} = context
@@ -51,7 +49,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (!token) {
-      print('No API token found. Please set a token using `sanity login` first.')
+      print('No API token found. Please run `sanity login` first.')
       return
     }
 
@@ -62,7 +60,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (!projects || projects.length === 0) {
-      print('No projects found. Please create a project in Sanity.io first.')
+      print('No Projects found. Please create a Project in Sanity.io first.')
       return
     }
 
@@ -73,7 +71,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
 
     const projectId = await prompt.single({
       type: 'list',
-      message: 'Select your Sanity project:',
+      message: 'Select your Sanity Project:',
       choices: projectChoices,
       default: config.projectId,
     })
@@ -96,7 +94,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
 
       stackId = await prompt.single({
         type: 'list',
-        message: 'Select a stack:',
+        message: 'Select a Stack:',
         choices: stackChoices,
         default: config.stackId,
       })

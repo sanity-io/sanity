@@ -1,17 +1,20 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Display logs for a Blueprint stack.
-
-Options
+${
+  /*Options
   --watch, -w  Watch for new logs (streaming mode)
-
+*/ ''
+}
 Examples
-  # Show logs for the current stack
+  # Show logs for the current Stack
   sanity blueprints logs
-
+${
+  /*
   # Watch for new logs
   sanity blueprints logs --watch
+*/ ''
+}
 `
 
 // const defaultFlags = {watch: false}
@@ -21,7 +24,7 @@ const logsBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '[--watch]',
-  description: 'Display logs for a Blueprint stack',
+  description: 'Display logs for the current Blueprint Stack',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output} = context
@@ -33,7 +36,7 @@ const logsBlueprintsCommand: CliCommandDefinition = {
     const {token} = client.config()
 
     if (!token) {
-      print('No API token found. Please set a token using `sanity login` first.')
+      print('No API token found. Please run `sanity login` first.')
       return
     }
 
@@ -74,7 +77,7 @@ const logsBlueprintsCommand: CliCommandDefinition = {
       }
 
       if (logs.length === 0) {
-        print(`No logs found for stack ${stackId}`)
+        print(`No logs found for Stack ${stackId}`)
         return
       }
 

@@ -4,10 +4,8 @@ import {cwd} from 'node:process'
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Initialize a new Blueprint file.
-
 Examples
-  # Create a new blueprint
+  # Create a new Blueprint manifest file
   sanity blueprints init
 `
 
@@ -16,7 +14,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Initialize a new Blueprint',
+  description: 'Initialize a new Blueprint manifest file',
   hideFromHelp: true,
   async action(args, context) {
     const {apiClient, output, prompt} = context
@@ -29,7 +27,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
     const {token} = client.config()
 
     if (!token) {
-      print('No API token found. Please set a token using `sanity login` first.')
+      print('No API token found. Please run `sanity login` first.')
       return
     }
 
@@ -44,7 +42,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
 
     const blueprintExtension = await prompt.single({
       type: 'list',
-      message: 'Choose a blueprint type:',
+      message: 'Choose a Blueprint manifest file type:',
       choices: [
         {value: 'json', name: 'JSON (Recommended)'},
         {value: 'js', name: 'JavaScript (Beta)'},
@@ -60,7 +58,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (!projects || projects.length === 0) {
-      print('No projects found. Please create a project in Sanity.io first.')
+      print('No Projects found. Please create a Project in Sanity.io first.')
       return
     }
 
@@ -71,7 +69,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
 
     const projectId = await prompt.single({
       type: 'list',
-      message: 'Select your Sanity project:',
+      message: 'Select your Sanity Project:',
       choices: projectChoices,
     })
 
