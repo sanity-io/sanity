@@ -1,4 +1,4 @@
-import {type Image, type ImageSchemaType} from '@sanity/types'
+import {type HotspotImagePreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
@@ -23,11 +23,11 @@ export interface ImageToolInputProps
 
 const HOTSPOT_PATH = ['hotspot']
 
-const PREVIEW_ASPECT_RATIOS = [
-  ['3:4', 3 / 4],
-  ['Square', 1 / 1],
-  ['16:9', 16 / 9],
-  ['Panorama', 4 / 1],
+const DEFAULT_PREVIEWS: HotspotImagePreview[] = [
+  {title: '3:4', aspectRatio: 3 / 4},
+  {title: 'Square', aspectRatio: 1 / 1},
+  {title: '16:9', aspectRatio: 16 / 9},
+  {title: 'Panorama', aspectRatio: 4 / 1},
 ] as const
 
 const DEFAULT_VALUE: Partial<Image> = {
@@ -76,6 +76,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
   }, [value])
 
   const hasFocus = focusPath[0] === 'hotspot'
+
+  const hotspotPreviews =
+    (typeof schemaType.options?.hotspot === 'object' && schemaType.options.hotspot.previews) ||
+    DEFAULT_PREVIEWS
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
@@ -197,34 +201,37 @@ export function ImageToolInput(props: ImageToolInputProps) {
             </RatioBox>
           </ChangeIndicator>
         </Card>
-        <Box marginTop={3}>
-          <Grid columns={PREVIEW_ASPECT_RATIOS.length} gap={1}>
-            {PREVIEW_ASPECT_RATIOS.map(([title, ratio]) => (
-              <div key={ratio}>
-                <Heading as="h4" size={0}>
-                  {title}
-                </Heading>
-                <Box marginTop={2}>
-                  <RatioBox ratio={ratio}>
-                    <Card __unstable_checkered>
-                      {!isImageLoading && image ? (
-                        <HotspotImage
-                          aspectRatio={ratio}
-                          src={image.src}
-                          srcAspectRatio={image.width / image.height}
-                          hotspot={localValue.hotspot || DEFAULT_HOTSPOT}
-                          crop={localValue.crop || DEFAULT_CROP}
-                        />
-                      ) : (
-                        <Placeholder />
-                      )}
-                    </Card>
-                  </RatioBox>
-                </Box>
-              </div>
-            ))}
-          </Grid>
-        </Box>
+
+        {hotspotPreviews.length > 0 ? (
+          <Box marginTop={3}>
+            <Grid columns={4} gap={1}>
+              {hotspotPreviews.map(({title, aspectRatio}) => (
+                <div key={title}>
+                  <Heading as="h4" size={0}>
+                    {title}
+                  </Heading>
+                  <Box marginTop={2}>
+                    <RatioBox ratio={aspectRatio}>
+                      <Card __unstable_checkered border>
+                        {!isImageLoading && image ? (
+                          <HotspotImage
+                            aspectRatio={aspectRatio}
+                            src={image.src}
+                            srcAspectRatio={image.width / image.height}
+                            hotspot={localValue.hotspot || DEFAULT_HOTSPOT}
+                            crop={localValue.crop || DEFAULT_CROP}
+                          />
+                        ) : (
+                          <Placeholder />
+                        )}
+                      </Card>
+                    </RatioBox>
+                  </Box>
+                </div>
+              ))}
+            </Grid>
+          </Box>
+        ) : null}
       </div>
     </FormField>
   )
