@@ -1,4 +1,4 @@
-import {type HotspotImagePreview, type Image, type ImageSchemaType} from '@sanity/types'
+import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
@@ -23,7 +23,7 @@ export interface ImageToolInputProps
 
 const HOTSPOT_PATH = ['hotspot']
 
-const DEFAULT_PREVIEWS: HotspotImagePreview[] = [
+const DEFAULT_PREVIEWS: HotspotPreview[] = [
   {title: '3:4', aspectRatio: 3 / 4},
   {title: 'Square', aspectRatio: 1 / 1},
   {title: '16:9', aspectRatio: 16 / 9},

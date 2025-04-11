@@ -9,14 +9,14 @@ import {type ObjectDefinition} from './object'
 export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'image' | 'location'
 
 /** @public */
-export interface HotspotImagePreview {
+export interface HotspotPreview {
   title: string
   aspectRatio: number
 }
 
 /** @public */
 export interface HotspotOptions {
-  previews?: HotspotImagePreview[]
+  previews?: HotspotPreview[]
 }
 
 /** @public */
