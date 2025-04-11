@@ -4,24 +4,24 @@ const helpText = `
 Options
   --data <data> Data to send to the function
   --file <file> Read data from file and send to the function
-  --path <path> Path to your Sanity Function code
+  --name <name> The name of your Sanity Function
   --timeout <timeout> Execution timeout value in seconds
 
 Examples
   # Test function passing event data on command line
-  sanity functions test --path ./test.ts --data '{ "id": 1 }'
+  sanity functions test --name echo --data '{ "id": 1 }'
 
   # Test function passing event data via a file
-  sanity functions test -path ./test.js --file 'payload.json'
+  sanity functions test -name echo --file 'payload.json'
 
   # Test function passing event data on command line and cap execution time to 60 seconds
-  sanity functions test -path ./test.ts --data '{ "id": 1 }' --timeout 60
+  sanity functions test -name echo --data '{ "id": 1 }' --timeout 60
 `
 
 const defaultFlags = {
   data: undefined,
   file: undefined,
-  path: undefined,
+  name: '',
   timeout: 5, // seconds
 }
 
@@ -37,24 +37,35 @@ const testFunctionsCommand: CliCommandDefinition = {
     const {print} = output
     const flags = {...defaultFlags, ...args.extOptions}
 
-    if (flags.path) {
-      const {testAction} = await import('@sanity/runtime-cli')
-      const {json, logs, error} = await testAction(flags.path, {
-        data: flags.data,
-        file: flags.file,
-        timeout: flags.timeout,
-      })
+    if (flags.name === '') {
+      print('You must provide a function name')
+      return
+    }
 
-      if (error) {
-        print(error.toString())
-      } else {
-        print('Logs:')
-        print(logs)
-        print('Response:')
-        print(JSON.stringify(json, null, 2))
-      }
+    const {blueprintsActions, functionsActions, utils} = await import('@sanity/runtime-cli')
+
+    const {parsedBlueprint} = await blueprintsActions.blueprint.readBlueprintOnDisk({
+      getStack: false,
+    })
+
+    const src = utils.findFunctions.getFunctionSource(parsedBlueprint, flags.name)
+    if (!src) {
+      print(`Error: Function ${flags.name} has no source code`)
+    }
+
+    const {json, logs, error} = await functionsActions.test.testAction(src, {
+      data: flags.data,
+      file: flags.file,
+      timeout: flags.timeout,
+    })
+
+    if (error) {
+      print(error.toString())
     } else {
-      print('You must provide a path to the Sanity Function code')
+      print('Logs:')
+      print(logs)
+      print('Response:')
+      print(JSON.stringify(json, null, 2))
     }
   },
 }
