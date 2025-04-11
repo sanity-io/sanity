@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
 const WAIT_OPTIONS = {timeout: 30000}
@@ -11,7 +12,7 @@ test('clicking inspect mode sets value in storage', async ({
 }) => {
   test.slow(browserName === 'firefox')
   // Create document and wait for it to be fully loaded
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await page.waitForLoadState('load', WAIT_OPTIONS)
 
   // Open inspect dialog

@@ -1,7 +1,7 @@
 import {expect, type Page} from '@playwright/test'
 
 export async function openPresentationTool(page: Page): Promise<void> {
-  await page.goto('/test/presentation')
+  await page.goto('/presentation')
   // Wait for presentation to be visible
   await expect(page.getByTestId('presentation-root')).toBeVisible()
 }

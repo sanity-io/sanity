@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
-import {test} from '@sanity/test'
 
+import {test} from '../../../studio-test'
 import {
   speciesDocumentNameASAP,
   speciesDocumentNameDraft,
@@ -133,7 +133,7 @@ test.describe('displayedDocument', () => {
         _id: `drafts.${_testContext.getUniqueDocumentId()}`,
       })
 
-      await page.goto(`/test/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
+      await page.goto(`/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
 
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
@@ -159,7 +159,7 @@ test.describe('displayedDocument', () => {
 
       test.slow()
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${publishedDocument._id}`)
+      await page.goto(`/content/species;${publishedDocument._id}`)
 
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
@@ -180,7 +180,7 @@ test.describe('displayedDocument', () => {
       test.slow()
 
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${singleASAPVersionDocument._id}`)
+      await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
       const versionChip = page.getByTestId('document-header-ASAP-Release-A-chip')
 
       // wait to load
@@ -202,7 +202,7 @@ test.describe('displayedDocument', () => {
 
       test.slow()
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${multipleVersionsDocId}`)
+      await page.goto(`/content/species;${multipleVersionsDocId}`)
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
       const undecidedChip = page.getByTestId('document-header-Undecided-Release-A-chip')
 
@@ -225,7 +225,7 @@ test.describe('displayedDocument', () => {
       test.slow()
       skipIfBrowser(browserName)
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${singleASAPVersionDocument._id}`)
+      await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
       const input = page.getByTestId('field-name').getByTestId('string-input')
       // wait to load
       await expect(input).toBeVisible()
@@ -244,7 +244,7 @@ test.describe('displayedDocument', () => {
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${publishedDocument._id}?perspective=published`)
+      await page.goto(`/content/species;${publishedDocument._id}?perspective=published`)
 
       // Wait for document to load
       await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
@@ -269,7 +269,7 @@ test.describe('displayedDocument', () => {
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${publishedWithVersion._id}?perspective=published`)
+      await page.goto(`/content/species;${publishedWithVersion._id}?perspective=published`)
 
       // wait to load
       await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
@@ -302,7 +302,7 @@ test.describe('displayedDocument', () => {
         _id: `drafts.${_testContext.getUniqueDocumentId()}`,
       })
 
-      await page.goto(`/test/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
+      await page.goto(`/content/species;${customDraft._id}?perspective=${asapReleaseId}`)
 
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
@@ -329,7 +329,7 @@ test.describe('displayedDocument', () => {
 
       // specific document set up for this test in mind
       await page.goto(
-        `/test/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
+        `/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
       )
 
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
@@ -358,7 +358,7 @@ test.describe('displayedDocument', () => {
 
       // specific document set up for this test in mind
       await page.goto(
-        `/test/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
+        `/content/species;${singleASAPVersionDocument._id}?perspective=${asapReleaseId}`,
       )
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
 
@@ -385,9 +385,7 @@ test.describe('displayedDocument', () => {
       skipIfBrowser(browserName)
 
       // specific document set up for this test in mind
-      await page.goto(
-        `/test/content/species;${multipleVersionsDocId}?perspective=${undecidedReleaseId}`,
-      )
+      await page.goto(`/content/species;${multipleVersionsDocId}?perspective=${undecidedReleaseId}`)
       const undecidedChip = page.getByTestId('document-header-Undecided-Release-A-chip')
 
       // wait to load
@@ -428,7 +426,7 @@ test.describe('displayedDocument', () => {
       })
 
       // specific document set up for this test in mind
-      await page.goto(`/test/content/species;${multipleVersionsDocId}?perspective=${scheduledId}`)
+      await page.goto(`/content/species;${multipleVersionsDocId}?perspective=${scheduledId}`)
 
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()

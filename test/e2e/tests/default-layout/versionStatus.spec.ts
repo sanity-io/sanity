@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 //non-updating studio case
 test('should not show package version toast if not in auto-updating studio', async ({

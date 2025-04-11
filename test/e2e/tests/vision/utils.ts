@@ -20,7 +20,7 @@ export function encodeQueryString(
 }
 
 export const openVisionTool = async (page: Page) => {
-  await page.goto('/test/vision')
+  await page.goto('/vision')
   // Wait for vision to be visible
   await expect(page.getByTestId('vision-root')).toBeVisible()
 }

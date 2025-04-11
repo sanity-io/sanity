@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
 import {
@@ -41,7 +41,7 @@ test.describe('Unarchive ASAP', () => {
       _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
+    await page.goto(`/releases/${asapReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName}) => {

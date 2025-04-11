@@ -1,13 +1,13 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`isn't possible to discard changes if a changed document has no published version`, async ({
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const actionMenuButton = page.getByTestId('action-menu-button')
@@ -25,7 +25,7 @@ test(`is possible to discard changes if a changed document has a published versi
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const publishButton = page.getByTestId('action-publish')
@@ -54,7 +54,7 @@ test(`displays the published document state after discarding changes`, async ({
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const publishButton = page.getByTestId('action-publish')

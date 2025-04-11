@@ -20,14 +20,12 @@ import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
-export default defineConfig({
+const defaultConfig = defineConfig({
   name: 'default',
   title: 'studio-e2e-testing',
 
   projectId: process.env.SANITY_E2E_PROJECT_ID!,
   dataset: process.env.SANITY_E2E_DATASET!,
-
-  basePath: '/test',
 
   schema: {
     types: schemaTypes,
@@ -118,4 +116,24 @@ export default defineConfig({
   releases: {
     enabled: true,
   },
+  create: {
+    startInCreateEnabled: false,
+  },
 })
+
+export default defineConfig([
+  {
+    ...defaultConfig,
+    basePath: '/chromium',
+    name: 'chromium',
+    title: 'studio-e2e-testing-chromium',
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+  },
+  {
+    ...defaultConfig,
+    basePath: '/firefox',
+    name: 'firefox',
+    title: 'studio-e2e-testing-firefox',
+    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+  },
+])
