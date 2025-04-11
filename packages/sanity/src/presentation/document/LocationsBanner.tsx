@@ -110,19 +110,26 @@ export function LocationsBanner(props: {
               </Flex>
             </Card>
             <Stack hidden={!expanded} marginTop={1} space={1}>
-              {locations.map((l, index) => (
-                <LocationItem
-                  active={
-                    (options.name || DEFAULT_TOOL_NAME) === presentationName &&
-                    l.href === presentation?.params.preview
-                  }
-                  documentId={documentId}
-                  documentType={schemaType.name}
-                  key={index}
-                  node={l}
-                  toolName={options.name || DEFAULT_TOOL_NAME}
-                />
-              ))}
+              {locations.map((l) => {
+                let active = false
+                if (
+                  (options.name || DEFAULT_TOOL_NAME) === presentationName &&
+                  presentation?.params.preview
+                ) {
+                  active = areUrlsMatching(presentation.params.preview, l.href)
+                }
+
+                return (
+                  <LocationItem
+                    active={active}
+                    documentId={documentId}
+                    documentType={schemaType.name}
+                    key={l.href}
+                    node={l}
+                    toolName={options.name || DEFAULT_TOOL_NAME}
+                  />
+                )
+              })}
             </Stack>
           </>
         )}
@@ -188,4 +195,36 @@ function LocationItem(props: {
       </Flex>
     </Card>
   )
+}
+
+/**
+ * Compares two URLs to determine if they match based on origin, pathname, and search parameters
+ * The previewUrl should have all the search parameters that are in the locationUrl
+ */
+function areUrlsMatching(previewUrlString: string, locationUrlString: string): boolean {
+  try {
+    const previewUrl = new URL(previewUrlString, location.origin)
+    const locationUrl = new URL(locationUrlString, previewUrl.origin)
+
+    // First compare origin and pathname
+    if (previewUrl.origin !== locationUrl.origin || previewUrl.pathname !== locationUrl.pathname) {
+      return false
+    }
+
+    // Then check search params
+    // All search params in locationUrl must exist with the same values in previewUrl
+    const locationParams = new URLSearchParams(locationUrl.search)
+    const previewParams = new URLSearchParams(previewUrl.search)
+
+    for (const [key, value] of locationParams.entries()) {
+      if (previewParams.get(key) !== value) {
+        return false
+      }
+    }
+
+    return true
+  } catch {
+    // If URL parsing fails, URLs don't match
+    return false
+  }
 }

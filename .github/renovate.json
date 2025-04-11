@@ -62,7 +62,9 @@
         "get-it",
         "groq-js",
         "react-rx",
-        "scrollmirror"
+        "scrollmirror",
+        "xstate",
+        "@xstate/react"
       ],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"

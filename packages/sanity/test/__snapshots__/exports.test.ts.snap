@@ -809,10 +809,6 @@ exports[`exports snapshot 1`] = `
     "unset": "function",
   },
   "./presentation": {
-    "ACTION_IFRAME_LOADED": "string",
-    "ACTION_IFRAME_REFRESH": "string",
-    "ACTION_IFRAME_RELOAD": "string",
-    "ACTION_VISUAL_EDITING_OVERLAYS_TOGGLE": "string",
     "defineDocuments": "function",
     "defineLocations": "function",
     "presentationTool": "function",

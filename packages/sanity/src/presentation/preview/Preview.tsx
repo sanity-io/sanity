@@ -1,11 +1,28 @@
 /* eslint-disable react/no-unused-prop-types,no-nested-ternary */
+import {createConnectionMachine, createController} from '@sanity/comlink'
+import {
+  createCompatibilityActors,
+  type VisualEditingControllerMsg,
+  type VisualEditingNodeMsg,
+} from '@sanity/presentation-comlink'
 import {
   urlSearchParamPreviewPerspective,
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Code, Flex, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {
+  Card,
+  Code,
+  Flex,
+  Label,
+  Spinner,
+  Stack,
+  Text,
+  usePrefersReducedMotion,
+  useToast,
+} from '@sanity/ui'
+import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
 import {
   forwardRef,
@@ -19,24 +36,23 @@ import {
   useSyncExternalStore,
 } from 'react'
 import {flushSync} from 'react-dom'
-import {useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Button, TooltipDelayGroupProvider} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
-import {
-  ACTION_IFRAME_LOADED,
-  ACTION_IFRAME_RELOAD,
-  type DispatchPresentationAction,
-  type PresentationState,
-} from '../reducers/presentationReducer'
+import {type PresentationMachineRef} from '../machines/presentation-machine'
+import {type PreviewUrlRef} from '../machines/preview-url'
 import {
   type ConnectionStatus,
   type HeaderOptions,
   type PresentationPerspective,
   type PresentationViewport,
 } from '../types'
+import {useAllowPatterns} from '../useAllowPatterns'
+import {usePresentationNavigate} from '../usePresentationNavigate'
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
@@ -45,11 +61,10 @@ import {PreviewHeader} from './PreviewHeader'
 const MotionFlex = motion.create(Flex)
 
 /** @public */
-export interface PreviewProps extends Pick<PresentationState, 'iframe' | 'visualEditing'> {
+export interface PreviewProps {
   canSharePreviewAccess: boolean
   canToggleSharePreviewAccess: boolean
   canUseSharedPreviewAccess: boolean
-  dispatch: DispatchPresentationAction
   header?: HeaderOptions
   initialUrl: URL
   loadersConnection: ConnectionStatus
@@ -58,6 +73,7 @@ export interface PreviewProps extends Pick<PresentationState, 'iframe' | 'visual
   onRefresh: (fallback: () => void) => void
   openPopup: (url: string) => void
   overlaysConnection: ConnectionStatus
+  presentationRef: PresentationMachineRef
   perspective: PresentationPerspective
   previewUrl?: string
   setViewport: (mode: 'desktop' | 'mobile') => void
@@ -66,13 +82,12 @@ export interface PreviewProps extends Pick<PresentationState, 'iframe' | 'visual
   toggleOverlay: () => void
   viewport: PresentationViewport
   vercelProtectionBypass: string | null
+  previewUrlRef: PreviewUrlRef
 }
 
 export const Preview = memo(
   forwardRef<HTMLIFrameElement, PreviewProps>(function PreviewComponent(props, forwardedRef) {
     const {
-      dispatch,
-      iframe,
       header,
       initialUrl,
       loadersConnection,
@@ -80,6 +95,8 @@ export const Preview = memo(
       perspective,
       viewport,
       vercelProtectionBypass,
+      presentationRef,
+      previewUrlRef,
     } = props
 
     const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
@@ -133,11 +150,17 @@ export const Preview = memo(
       () => ref.current,
     )
 
-    const loading = iframe.status === 'loading' || iframe.status === 'reloading'
+    const isLoading = useSelector(
+      presentationRef,
+      (state) => state.matches('loading') || state.matches({loaded: 'reloading'}),
+    )
+
     const [timedOut, setTimedOut] = useState(false)
-    const refreshing = iframe.status === 'refreshing'
+    const isRefreshing = useSelector(presentationRef, (state) =>
+      state.matches({loaded: 'refreshing'}),
+    )
     const [somethingIsWrong, setSomethingIsWrong] = useState(false)
-    const iframeIsBusy = loading || refreshing || overlaysConnection === 'connecting'
+    const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
 
     const handleRetry = useCallback(() => {
       if (!ref.current) {
@@ -146,8 +169,8 @@ export const Preview = memo(
 
       ref.current.src = previewUrl.toString()
 
-      dispatch({type: ACTION_IFRAME_RELOAD})
-    }, [dispatch, previewUrl])
+      presentationRef.send({type: 'iframe reload'})
+    }, [presentationRef, previewUrl])
     const handleContinueAnyway = useCallback(() => {
       setContinueAnyway(true)
     }, [])
@@ -155,7 +178,7 @@ export const Preview = memo(
     const [continueAnyway, setContinueAnyway] = useState(false)
     const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
     useEffect(() => {
-      if (loading || refreshing) {
+      if (isLoading || isRefreshing) {
         return undefined
       }
 
@@ -166,10 +189,10 @@ export const Preview = memo(
         return () => clearTimeout(timeout)
       }
       return undefined
-    }, [overlaysConnection, loading, refreshing])
+    }, [overlaysConnection, isLoading, isRefreshing])
 
     useEffect(() => {
-      if (loading || refreshing || !showOverlaysConnectionStatus) {
+      if (isLoading || isRefreshing || !showOverlaysConnectionStatus) {
         return undefined
       }
       if (overlaysConnection === 'connected') {
@@ -196,39 +219,17 @@ export const Preview = memo(
         return () => clearTimeout(timeout)
       }
       return undefined
-    }, [loading, overlaysConnection, refreshing, showOverlaysConnectionStatus])
+    }, [isLoading, overlaysConnection, isRefreshing, showOverlaysConnectionStatus])
 
     const onIFrameLoad = useCallback(() => {
-      dispatch({type: ACTION_IFRAME_LOADED})
-    }, [dispatch])
-
-    /**
-     * Ensure that clicking outside of menus and dialogs will close as focus shifts to the iframe
-     */
-    useEffect(() => {
-      if (!ref.current) {
-        return undefined
-      }
-      const instance = ref.current
-      function handleBlur() {
-        if (instance !== document.activeElement) {
-          return
-        }
-
-        instance.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true}))
-      }
-      window.addEventListener('blur', handleBlur)
-      return () => {
-        window.removeEventListener('blur', handleBlur)
-      }
-    }, [])
+      presentationRef.send({type: 'iframe loaded'})
+    }, [presentationRef])
 
     const preventIframeInteraction = useMemo(() => {
       return (
-        (loading || (overlaysConnection === 'connecting' && iframe.status !== 'refreshing')) &&
-        !continueAnyway
+        (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) && !continueAnyway
       )
-    }, [continueAnyway, iframe.status, loading, overlaysConnection])
+    }, [continueAnyway, isLoading, isRefreshing, overlaysConnection])
 
     const canUseViewTransition = useSyncExternalStore(
       // eslint-disable-next-line no-empty-function
@@ -238,7 +239,7 @@ export const Preview = memo(
     const iframeAnimations = useMemo(() => {
       return [
         preventIframeInteraction ? 'background' : 'active',
-        loading ? 'reloading' : 'idle',
+        isLoading ? 'reloading' : 'idle',
         // If CSS View Transitions are supported, then transition iframe viewport dimensions with that instead of Motion
         canUseViewTransition ? '' : viewport,
         showOverlaysConnectionStatus && !continueAnyway ? 'timedOut' : '',
@@ -246,7 +247,7 @@ export const Preview = memo(
     }, [
       canUseViewTransition,
       continueAnyway,
-      loading,
+      isLoading,
       preventIframeInteraction,
       showOverlaysConnectionStatus,
       viewport,
@@ -265,19 +266,135 @@ export const Preview = memo(
           'startViewTransition' in document &&
           typeof document.startViewTransition === 'function'
         ) {
-          document.startViewTransition(() => flushSync(() => update()))
+          document.startViewTransition({
+            // @ts-expect-error - fix typings
+            update: () => flushSync(() => update()),
+            types: ['sanity-iframe-viewport'],
+          })
         } else {
           update()
         }
       }
     }, [canUseViewTransition, prefersReducedMotion, currentViewport, viewport])
 
+    const toast = useToast()
+    const allowOrigins = useAllowPatterns(previewUrlRef)
+    const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
+    const [reportedMismatches] = useState(new Set<string>())
+    const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
+      if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
+        setCheckOrigin(reportedOrigin)
+        return
+      }
+      if (reportedMismatches.has(reportedOrigin)) return
+      reportedMismatches.add(reportedOrigin)
+      console.warn('Visual Editing is here but misconfigured', {reportedOrigin})
+      toast.push({
+        closable: true,
+        id: `presentation-iframe-origin-mismatch-${reportedOrigin}`,
+        status: 'error',
+        duration: Infinity,
+        title: t('preview-frame.configuration.error.title'),
+        description: (
+          <Translate
+            t={t}
+            i18nKey="preview-frame.configuration.error.description"
+            components={{Code: 'code'}}
+            values={{
+              targetOrigin: previewUrl.origin,
+              reportedOrigin,
+            }}
+          />
+        ),
+      })
+    })
+    const navigate = usePresentationNavigate()
+    const navigateEvent = useEffectEvent((url: string) => {
+      if (!checkOrigin) return
+      const nextUrl = new URL(url, checkOrigin)
+      navigate(`${checkOrigin}${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`)
+    })
+    useEffect(() => {
+      if (!checkOrigin) {
+        return undefined
+      }
+      const target = ref.current?.contentWindow
+      if (!target) {
+        return undefined
+      }
+      const controller = createController({targetOrigin: checkOrigin})
+      controller.addTarget(target)
+      const comlink = controller.createChannel<VisualEditingControllerMsg, VisualEditingNodeMsg>(
+        {
+          name: 'presentation',
+          heartbeat: true,
+          connectTo: 'visual-editing',
+        },
+        createConnectionMachine<VisualEditingControllerMsg, VisualEditingNodeMsg>().provide({
+          actors: createCompatibilityActors<VisualEditingControllerMsg>(),
+        }),
+      )
+
+      comlink.on('visual-editing/navigate', (data) => {
+        navigateEvent(data.url)
+      })
+      const stop = comlink.start()
+
+      return () => {
+        stop()
+        controller.destroy()
+      }
+    }, [checkOrigin])
+    useEffect(() => {
+      if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
+        const interval = setInterval(() => {
+          ref.current?.contentWindow?.postMessage(
+            {domain: 'sanity/channels', from: 'presentation', type: 'presentation/status'},
+            /**
+             * The targetOrigin is set to '*' intentionally here, as we need to find out if the iframe is misconfigured and has the wrong origin
+             */
+            '*',
+          )
+        }, 1_000)
+
+        const controller = new AbortController()
+        window.addEventListener(
+          'message',
+          ({data}: MessageEvent<unknown>) => {
+            /**
+             * Listen for replies to presentation/status
+             */
+            if (
+              data &&
+              typeof data === 'object' &&
+              'domain' in data &&
+              data.domain === 'sanity/channels' &&
+              'type' in data &&
+              data.type === 'visual-editing/status' &&
+              'data' in data &&
+              typeof data.data === 'object' &&
+              data.data &&
+              'origin' in data.data &&
+              typeof data.data.origin === 'string'
+            ) {
+              reportMismatchingOrigin(data.data.origin)
+            }
+          },
+          {signal: controller.signal},
+        )
+
+        return () => {
+          controller.abort()
+          clearInterval(interval)
+        }
+      }
+      return undefined
+    }, [overlaysConnection, timedOut])
+
     return (
       <MotionConfig transition={prefersReducedMotion ? {duration: 0} : undefined}>
         <TooltipDelayGroupProvider>
           {previewHeader}
-
-          {/* @TODO: Move this to <PreviewFrame /> */}
           <Card flex={1} tone="transparent">
             <Flex
               align="center"
@@ -292,8 +409,8 @@ export const Preview = memo(
             >
               <AnimatePresence>
                 {!somethingIsWrong &&
-                !loading &&
-                !refreshing &&
+                !isLoading &&
+                !isRefreshing &&
                 // viewport, // using CSS View Transitions instead of framer motion to drive this
                 showOverlaysConnectionStatus &&
                 !continueAnyway ? (
@@ -359,8 +476,7 @@ export const Preview = memo(
                       )}
                     </Flex>
                   </MotionFlex>
-                ) : (loading ||
-                    (overlaysConnection === 'connecting' && iframe.status !== 'refreshing')) &&
+                ) : (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) &&
                   !continueAnyway ? (
                   <MotionFlex
                     initial="initial"

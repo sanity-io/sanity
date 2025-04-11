@@ -75,6 +75,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
           const arr = Array.from(paths)
           const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
           const query = `*[_id == $id][0]{${projection}}`
+          // Should implement max 25 concurrent queries here
           const result = await client.fetch(
             query,
             {id: getPublishedId(id)},
