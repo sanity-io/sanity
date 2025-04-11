@@ -42,7 +42,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "2.13.15",
+    "@sanity/visual-editing": "2.13.17",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
@@ -67,6 +67,6 @@
     "@million/lint": "1.0.14",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "chokidar": "^3.6.0",
-    "vite": "^6.2.5"
+    "vite": "^6.2.6"
   }
 }
