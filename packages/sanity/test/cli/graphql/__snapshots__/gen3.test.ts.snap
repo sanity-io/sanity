@@ -1631,6 +1631,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReference",
         },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "interfaces": [
         "Document",
@@ -1688,6 +1692,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "CdrPersonReferenceFilter",
         },
+        {
+          "fieldName": "productReference",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "DocumentWithCdrFieldFilter",
@@ -1725,6 +1734,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReferenceSorting",
+        },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -6470,6 +6483,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReference",
         },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "interfaces": [
         "Document",
@@ -6527,6 +6544,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": undefined,
           "type": "CdrPersonReferenceCustomFilterSuffix",
         },
+        {
+          "fieldName": "productReference",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceCustomFilterSuffix",
+        },
       ],
       "kind": "InputObject",
       "name": "DocumentWithCdrFieldCustomFilterSuffix",
@@ -6564,6 +6586,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
         {
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReferenceSorting",
+        },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -32109,6 +32135,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReference",
         },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "interfaces": [
         "Document",
@@ -32166,6 +32196,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "CdrPersonReferenceFilter",
         },
+        {
+          "fieldName": "productReference",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "DocumentWithCdrFieldFilter",
@@ -32203,6 +32238,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReferenceSorting",
+        },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -36948,6 +36987,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReference",
         },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "interfaces": [
         "Document",
@@ -37005,6 +37048,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "CdrPersonReferenceFilter",
         },
+        {
+          "fieldName": "productReference",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "DocumentWithCdrFieldFilter",
@@ -37042,6 +37090,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "cdrFieldNamed",
           "type": "CdrPersonReferenceSorting",
+        },
+        {
+          "fieldName": "productReference",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",

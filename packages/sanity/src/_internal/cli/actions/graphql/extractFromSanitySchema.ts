@@ -3,6 +3,7 @@ import {Schema} from '@sanity/schema'
 import {
   type ArraySchemaType,
   type CrossDatasetReferenceSchemaType,
+  type GlobalDocumentReferenceSchemaType,
   type IntrinsicTypeName,
   isDeprecationConfiguration,
   type ObjectField,
@@ -138,6 +139,12 @@ function isCrossDatasetReference(
   return isType(typeDef, 'crossDatasetReference')
 }
 
+function isGlobalDocumentReferenceType(
+  typeDef: SchemaType | ObjectField | ObjectFieldType | GlobalDocumentReferenceSchemaType,
+) {
+  return isType(typeDef, 'globalDocumentReferenceType')
+}
+
 function getCrossDatasetReferenceMetadata(
   typeDef: SchemaType | ObjectField | ObjectFieldType | CrossDatasetReferenceSchemaType,
 ) {
@@ -167,6 +174,63 @@ function getCrossDatasetReferenceMetadata(
   if (typeof dataset !== 'string') return undefined
 
   return {typeNames, dataset}
+}
+
+function getGlobalDocumentReferenceMetadata(
+  typeDef: SchemaType | ObjectField | ObjectFieldType | GlobalDocumentReferenceSchemaType,
+) {
+  if (!isGlobalDocumentReferenceType(typeDef)) return undefined
+
+  function getTypeNames(
+    type:
+      | SchemaType
+      | ObjectField
+      | ObjectFieldType
+      | GlobalDocumentReferenceSchemaType
+      | undefined,
+  ) {
+    if (!type) return undefined
+    if (!('to' in type)) return getTypeNames(type.type)
+    return type.to.map((t) => t.type).filter((t): t is string => typeof t === 'string')
+  }
+
+  function getResourceType(
+    type:
+      | SchemaType
+      | ObjectField
+      | ObjectFieldType
+      | GlobalDocumentReferenceSchemaType
+      | undefined,
+  ) {
+    if (!type) return undefined
+    if ('resourceType' in type && typeof type.resourceType === 'string') return type.resourceType
+    if (type.type) return getResourceType(type.type)
+    return undefined
+  }
+
+  function getResourceId(
+    type:
+      | SchemaType
+      | ObjectField
+      | ObjectFieldType
+      | GlobalDocumentReferenceSchemaType
+      | undefined,
+  ) {
+    if (!type) return undefined
+    if ('getResourceId' in type && typeof type.getResourceId === 'string') return type.getResourceId
+    if (type.type) return getResourceId(type.type)
+    return undefined
+  }
+
+  const typeNames = getTypeNames(typeDef)
+  if (!typeNames) return undefined
+
+  const resourceType = getResourceType(typeDef)
+  if (typeof resourceType !== 'string') return undefined
+  const resourceId = getResourceId(typeDef)
+  if (typeof resourceId !== 'string') return undefined
+
+  return {typeNames, resourceType, resourceId}
 }
 
 export function extractFromSanitySchema(
@@ -294,6 +358,7 @@ export function extractFromSanitySchema(
     const originalName = type.name
     const original = gqlName === originalName ? {} : {originalName: originalName}
     const crossDatasetReferenceMetadata = getCrossDatasetReferenceMetadata(type)
+    const globalDocumentReferenceMetadata = getGlobalDocumentReferenceMetadata(type)
 
     return {
       ...getDeprecation(type.type),
@@ -301,6 +366,7 @@ export function extractFromSanitySchema(
       ...mapped,
       ...original,
       ...(crossDatasetReferenceMetadata && {crossDatasetReferenceMetadata}),
+      ...(globalDocumentReferenceMetadata && {globalDocumentReferenceMetadata}),
     }
   }
 

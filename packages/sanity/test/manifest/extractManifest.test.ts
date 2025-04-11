@@ -819,6 +819,30 @@ describe('Extract studio manifest', () => {
                 ],
               }),
               defineField({
+                type: 'globalDocumentReference',
+                name: 'globalDocumentSubtype',
+                title: 'Subtype of global document references',
+                resourceType: 'dataset',
+                resourceId: 'exx11uqh.blog',
+                to: [
+                  {
+                    type: 'book',
+                    preview: {
+                      select: {
+                        title: 'title',
+                        media: 'coverImage',
+                      },
+                      prepare(val) {
+                        return {
+                          title: val.title,
+                          media: val.coverImage,
+                        }
+                      },
+                    },
+                  },
+                ],
+              }),
+              defineField({
                 title: 'Reference array',
                 name: 'refArray',
                 type: 'array',
@@ -860,6 +884,24 @@ describe('Extract studio manifest', () => {
                 },
               },
             ],
+          },
+          {
+            name: 'globalDocumentSubtype',
+            resourceId: 'exx11uqh.blog',
+            resourceType: 'dataset',
+            title: 'Subtype of global document references',
+            to: [
+              {
+                preview: {
+                  select: {
+                    media: 'coverImage',
+                    title: 'title',
+                  },
+                },
+                type: 'book',
+              },
+            ],
+            type: 'globalDocumentReference',
           },
           {
             name: 'refArray',
