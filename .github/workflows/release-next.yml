@@ -59,6 +59,7 @@ jobs:
             --force-publish            \
             --conventional-commits     \
             --conventional-prerelease  \
+            --no-changelog             \
             --git-tag-command "echo 'skip for now'" \
             --exact                    \
             --preid next               \
