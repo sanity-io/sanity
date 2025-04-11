@@ -138,9 +138,8 @@ export function isSystemBundleName(
 
 /**  @internal */
 export function getVersionId(id: string, version: string): string {
-  if (isSystemBundle(version)) {
-    throw new Error('Version can not be "published" or "drafts"')
-  }
+  if (version === 'published') return getPublishedId(id)
+  if (version === 'drafts') return getDraftId(id)
 
   return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${getPublishedId(id)}`
 }

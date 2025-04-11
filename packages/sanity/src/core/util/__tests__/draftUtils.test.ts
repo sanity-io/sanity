@@ -74,6 +74,8 @@ test.each([
     'summer-drop',
     'versions.summer-drop.agot',
   ],
+  ['Should support published id', 'agot', 'published', 'agot'],
+  ['Should support drafts id', 'agot', 'drafts', 'drafts.agot'],
 ])('getVersionId(): %s', (_, documentId, equalsDocumentId, shouldEqual) => {
   expect(getVersionId(documentId, equalsDocumentId)).toEqual(shouldEqual)
 })
