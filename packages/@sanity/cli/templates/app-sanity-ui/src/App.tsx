@@ -1,6 +1,6 @@
 import {type SanityConfig} from '@sanity/sdk'
 import {SanityApp} from '@sanity/sdk-react'
-import {ThemeProvider} from '@sanity/ui'
+import {Flex, Spinner, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ExampleComponent} from './ExampleComponent'
 
@@ -15,15 +15,21 @@ export function App() {
     }
   ]
 
+  function Loading() {
+    return (
+      <Flex justify='center' align='center' width='100vw' height='fill'>
+        <Spinner />
+      </Flex>
+    )
+  }
+
   return (
-    <div className="app-container">
-      <SanityApp sanityConfigs={sanityConfigs} fallback={<div>Loading...</div>}>
-        <ThemeProvider theme={theme}>
-          {/* add your own components here! */}
-          <ExampleComponent />
-        </ThemeProvider>
-      </SanityApp>
-    </div>
+    <SanityApp config={sanityConfigs} fallback={<Loading />}>
+      <ThemeProvider theme={theme}>
+        {/* add your own components here! */}
+        <ExampleComponent />
+      </ThemeProvider>
+    </SanityApp>
   )
 }
 
