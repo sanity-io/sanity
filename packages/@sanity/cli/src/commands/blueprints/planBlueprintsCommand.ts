@@ -26,17 +26,31 @@ const planBlueprintsCommand: CliCommandDefinition = {
       utils: {display},
     } = await import('@sanity/runtime-cli')
 
-    const {errors, projectId, stackId, parsedBlueprint, fileInfo} =
-      await actions.blueprint.readBlueprintOnDisk({token})
+    let blueprint = null
+    try {
+      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+    } catch (error) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
 
-    const {resources} = parsedBlueprint || {resources: []}
+    if (!blueprint) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
+
+    const {errors, projectId, stackId, parsedBlueprint, fileInfo} = blueprint
 
     if (errors && errors.length > 0) {
       print(errors)
     }
 
+    const resources = parsedBlueprint.resources || []
+
     if (!projectId) {
-      print('Blueprint must contain a Project Resource')
+      print('Unable to determine Project ID.')
+      print('To configure this Blueprint, run `sanity blueprints config`')
+      // continue to show the plan
     }
 
     const name = stackId || 'Unknown'

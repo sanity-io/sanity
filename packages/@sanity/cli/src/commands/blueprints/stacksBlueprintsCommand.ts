@@ -29,7 +29,20 @@ const stacksBlueprintsCommand: CliCommandDefinition = {
       utils: {display},
     } = await import('@sanity/runtime-cli')
 
-    const {errors, projectId, stackId} = await actions.blueprint.readBlueprintOnDisk()
+    let blueprint = null
+    try {
+      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+    } catch (error) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
+
+    if (!blueprint) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
+
+    const {errors, projectId, stackId} = blueprint
 
     if (errors && errors.length > 0) {
       print(errors)

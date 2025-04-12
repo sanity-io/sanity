@@ -33,16 +33,26 @@ const deployBlueprintsCommand: CliCommandDefinition = {
       return
     }
 
+    let blueprint = null
+    try {
+      blueprint = await actions.blueprint.readBlueprintOnDisk({getStack: true, token})
+    } catch (error) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
+
+    if (!blueprint) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
+
     const {
       errors,
       projectId: configuredProjectId,
       stackId,
       parsedBlueprint,
       deployedStack,
-    } = await actions.blueprint.readBlueprintOnDisk({
-      getStack: true,
-      token,
-    })
+    } = blueprint
 
     if (errors && errors.length > 0) {
       print(errors)
@@ -50,11 +60,11 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     }
 
     if (stackId && !deployedStack) {
-      print('Stack ID defined but deployed Stack not found')
+      print('Stack specified in config, but deployed Stack not found.')
       return
     }
 
-    const {resources} = parsedBlueprint || {resources: []}
+    const resources = parsedBlueprint.resources || []
 
     let projectId = configuredProjectId
     if (!projectId) {
@@ -70,6 +80,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
 
     if (!projectId) {
       print('Sanity Project context is required')
+      print('To configure this Blueprint, run `sanity blueprints config`')
       return
     }
 

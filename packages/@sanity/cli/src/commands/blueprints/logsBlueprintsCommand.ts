@@ -45,29 +45,39 @@ const logsBlueprintsCommand: CliCommandDefinition = {
       utils: {display},
     } = await import('@sanity/runtime-cli')
 
+    let blueprint = null
     try {
-      const {errors, deployedStack} = await actions.blueprint.readBlueprintOnDisk({
-        getStack: true,
-        token,
-      })
+      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+    } catch (error) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
 
-      if (errors && errors.length > 0) {
-        print(errors)
-        return
-      }
+    if (!blueprint) {
+      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
+      return
+    }
 
-      if (!deployedStack) {
-        print('Stack not found')
-        return
-      }
+    const {errors, deployedStack} = blueprint
 
-      const {id: stackId, projectId, name} = deployedStack
-      const auth = {token, projectId}
+    if (errors && errors.length > 0) {
+      print(errors)
+      return
+    }
 
-      print(`Fetching logs for stack ${display.colors.yellow(`<${stackId}>`)}`)
+    if (!deployedStack) {
+      print('Stack not found')
+      return
+    }
 
-      // enable watch mode here
+    const {id: stackId, projectId, name} = deployedStack
+    const auth = {token, projectId}
 
+    print(`Fetching logs for stack ${display.colors.yellow(`<${stackId}>`)}`)
+
+    // enable watch mode here
+
+    try {
       const {ok, logs, error} = await actions.logs.getLogs(stackId, auth)
 
       if (!ok) {
