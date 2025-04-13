@@ -302,6 +302,12 @@ importers:
         specifier: ^6.2.4
         version: 6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)
 
+  dev/media-library-aspects-studio:
+    dependencies:
+      sanity:
+        specifier: workspace:^
+        version: link:../../packages/sanity
+
   dev/page-building-studio:
     dependencies:
       '@sanity/vision':
