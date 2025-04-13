@@ -45,6 +45,8 @@ import manifestGroup from './manifest/manifestGroup'
 import createAspectCommand from './media/createAspectCommand'
 import deleteAspectCommand from './media/deleteAspectCommand'
 import deployAspectCommand from './media/deployAspectCommand'
+import exportMediaCommand from './media/exportMediaCommand'
+import importMediaCommand from './media/importMediaCommand'
 import mediaGroup from './media/mediaGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
@@ -117,6 +119,8 @@ const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   manifestGroup,
   extractManifestCommand,
   mediaGroup,
+  importMediaCommand,
+  exportMediaCommand,
   createAspectCommand,
   deleteAspectCommand,
   deployAspectCommand,
