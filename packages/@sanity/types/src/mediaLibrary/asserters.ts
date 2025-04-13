@@ -5,6 +5,8 @@ import {MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME, type MediaLibraryAssetAspectDocume
  *
  * Note: This function does not perform a comprehensive check.
  *
+ * @see validateMediaLibraryAssetAspect
+ *
  * @internal
  */
 export function isAssetAspect(
