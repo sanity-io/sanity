@@ -16,4 +16,5 @@ export {
   type TypeWithProblems,
   type SchemaValidationResult as ValidationResult,
 } from '../sanity/typedefs'
+export {validateMediaLibraryAssetAspect} from '../sanity/validateMediaLibraryAssetAspect'
 export {validateSchema} from '../sanity/validateSchema'
