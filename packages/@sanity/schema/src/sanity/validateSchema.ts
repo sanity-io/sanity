@@ -47,13 +47,22 @@ function combine(...visitors: any) {
   }
 }
 
+interface Options {
+  transformTypeVisitors?: (visitors: typeof typeVisitors) => Partial<typeof typeVisitors>
+}
+
 /**
  * @internal
  */
-export function validateSchema(schemaTypes: _FIXME_) {
+export function validateSchema(
+  schemaTypes: _FIXME_,
+  {transformTypeVisitors = (visitors) => visitors}: Options = {},
+) {
   return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
-      (schemaDef && schemaDef.type && (typeVisitors as any)[schemaDef.type]) ||
+      (schemaDef &&
+        schemaDef.type &&
+        (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
       getNoopVisitor(visitorContext)
 
     if (visitorContext.isRoot) {
