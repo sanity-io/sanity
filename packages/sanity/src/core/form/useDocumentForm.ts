@@ -60,6 +60,7 @@ import {
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {useComlinkViewHistory} from './useComlinkViewHistory'
 
 interface DocumentFormOptions {
   documentType: string
@@ -422,6 +423,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useEffect(() => {
     formStateRef.current = formState
   }, [formState])
+
+  useComlinkViewHistory({editState})
 
   const handleSetOpenPath = useCallback(
     (path: Path) => {
