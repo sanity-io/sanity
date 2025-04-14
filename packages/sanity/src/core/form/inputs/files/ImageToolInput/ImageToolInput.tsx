@@ -203,10 +203,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
         </Card>
 
         {hotspotPreviews.length > 0 ? (
-          <Box marginTop={3}>
+          <Box marginTop={2}>
             <Grid columns={4} gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
-                <div key={title}>
+                <Box marginTop={2} key={title}>
                   <Heading as="h4" size={0}>
                     {title}
                   </Heading>
@@ -227,7 +227,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                       </Card>
                     </RatioBox>
                   </Box>
-                </div>
+                </Box>
               ))}
             </Grid>
           </Box>
