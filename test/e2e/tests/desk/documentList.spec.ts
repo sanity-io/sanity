@@ -1,5 +1,6 @@
 import {expect, type Request} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 function getListenEventType(request: Request): string | null | undefined {
   if (request.url().includes('data/listen')) {
@@ -15,7 +16,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
   test.skip(browserName === 'firefox')
 
   test.slow()
-  await page.goto('/test/content')
+  await page.goto('/content')
 
   let authorListenersCount = 0
   let bookListenersCount = 0
