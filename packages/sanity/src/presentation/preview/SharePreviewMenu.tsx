@@ -108,7 +108,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
       setDisabling(true)
       await disablePreviewAccessSharing(
         client,
-        '@sanity/presentation',
+        'sanity/presentation',
         typeof window === 'undefined' ? '' : location.href,
         currentUser?.id,
       )
@@ -125,7 +125,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
 
       const previewUrlSecret = await enablePreviewAccessSharing(
         client,
-        '@sanity/presentation',
+        'sanity/presentation',
         typeof window === 'undefined' ? '' : location.href,
         currentUser?.id,
       )

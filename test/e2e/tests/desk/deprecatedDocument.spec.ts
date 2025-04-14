@@ -1,8 +1,9 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test(`deprecated document type shows deprecated message`, async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/input-debug;deprecatedDocument')
+  await createDraftDocument('/content/input-debug;deprecatedDocument')
 
   await page.waitForSelector(`data-testid=deprecated-document-type-banner`)
 

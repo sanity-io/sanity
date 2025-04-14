@@ -6,17 +6,14 @@ import {
   type VisualEditingControllerMsg,
   type VisualEditingNodeMsg,
 } from '@sanity/presentation-comlink'
-import {
-  type PreviewUrlResolver,
-  type PreviewUrlResolverOptions,
-} from '@sanity/preview-url-secret/define-preview-url'
+import {type PreviewUrlResolver} from '@sanity/preview-url-secret/define-preview-url'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 import {type DocumentStore, type SanityClient} from 'sanity'
 
 import {type PreviewHeaderProps} from './preview/PreviewHeader'
 
-export type {PreviewUrlResolver, PreviewUrlResolverOptions}
+export type {PreviewUrlResolver}
 
 /**
  * Represents a document location
@@ -82,7 +79,141 @@ export interface HeaderOptions {
 }
 
 /** @public */
-export type PreviewUrlOption = string | PreviewUrlResolver<SanityClient> | PreviewUrlResolverOptions
+export interface PreviewUrlAllowOptionContext {
+  client: SanityClient
+  /**
+   * Equivalent to `location.origin`
+   */
+  origin: string
+  /**
+   * The initial URL of the preview
+   */
+  initialUrl: URL
+}
+
+/** @public */
+export interface PreviewUrlInitialOptionContext {
+  client: SanityClient
+  /**
+   * Equivalent to `location.origin`
+   */
+  origin: string
+}
+
+/** @public */
+export interface PreviewUrlPreviewModeOptionContext {
+  client: SanityClient
+  /**
+   * Equivalent to `location.origin`
+   */
+  origin: string
+  /**
+   * The origin on the URL that will be used in the preview iframe
+   */
+  targetOrigin: string
+}
+
+/** @public */
+export type PreviewUrlAllowOption =
+  | string
+  | string[]
+  | ((context: PreviewUrlAllowOptionContext) => string | string[] | Promise<string | string[]>)
+
+/** @public */
+export type PreviewUrlInitialOption =
+  | string
+  | ((context: PreviewUrlInitialOptionContext) => string | Promise<string>)
+
+/** @public */
+export type PreviewUrlPreviewModeOption =
+  | PreviewUrlPreviewMode
+  | ((
+      context: PreviewUrlPreviewModeOptionContext,
+    ) => false | PreviewUrlPreviewMode | Promise<false | PreviewUrlPreviewMode>)
+
+/** @public */
+export interface PreviewUrlPreviewMode {
+  /**
+   * The route that enables Preview Mode
+   * @example '/api/preview'
+   * @example '/api/draft-mode/enable'
+   */
+  enable: string
+  /**
+   * Allow sharing access to a preview with others.
+   * This is enabled/disabled in the Presentation Tool. It's initially disabled, and can be enabled by someone who has access to creating draft documents in the Studio.
+   * Custom roles can limit access to `_id in path("drafts.**") && _type == "sanity.previewUrlSecret"`.
+   * This will create a secret that is valid until sharing is disabled. Turning sharing off and on again will create a new secret and can be used to remove access for folks that got the link in an email but should no longer have access.
+   * Share URLs to previews will append this secret and give access to anyone who is given the URL, they don't need to be logged into the Studio or to Vercel.
+   */
+  shareAccess?: boolean
+  /**
+   * The route that reports if Preview Mode is enabled or not, useful for debugging
+   * @example '/api/check-preview'
+   * @deprecated - this API is not yet implemented
+   */
+  check?: string
+  /**
+   * The route that disables Preview Mode, useful for debugging
+   * @example '/api/disable-preview'
+   * @deprecated - this API is not yet implemented
+   */
+  disable?: string
+}
+
+/**
+ * @public
+ */
+export interface PreviewUrlResolverOptions {
+  /**
+   * The default preview URL, used when the URL to use is not yet known, or there's no `&preview=...` search param in the studio URL.
+   * @example '/en/preview?q=shoes'
+   * @example 'https://example.com'
+   * @defaultValue `location.origin`
+   */
+  initial?: PreviewUrlInitialOption
+  previewMode?: PreviewUrlPreviewModeOption
+  /**
+   * @defaultValue `location.origin`
+   * @deprecated - use `previewMode.initial` instead
+   */
+  origin?: string
+  /**
+   * @defaultValue '/'
+   * @deprecated - use `previewMode.initial` instead
+   */
+  preview?: string
+  /**
+   * @deprecated - use `previewMode` instead
+   */
+  draftMode?: {
+    /**
+     * @deprecated - use `previewMode.enable` instead
+     */
+    enable: string
+    /**
+     * @deprecated - use `previewMode.shareAccess` instead
+     */
+    shareAccess?: boolean
+    /**
+     * @deprecated - use `previewMode.check` instead
+     */
+    check?: string
+    /**
+     * @deprecated - use `previewMode.disable` instead
+     */
+    disable?: string
+  }
+}
+
+/**
+ * @deprecated the `previewUrl.initial`, `previewUrl.allowOrigins` and `previewUrl.previewMode.enable` supports async functions that offer advanced control over how preview URLs are resolved
+ * @public
+ */
+export type DeprecatedPreviewUrlResolver = PreviewUrlResolver<SanityClient>
+
+/** @public */
+export type PreviewUrlOption = string | DeprecatedPreviewUrlResolver | PreviewUrlResolverOptions
 
 /**
  * Object of document location resolver definitions per document type
@@ -160,6 +291,8 @@ export interface PresentationPluginOptions {
   icon?: ComponentType
   name?: string
   title?: string
+  allowOrigins?: PreviewUrlAllowOption
+  previewUrl: PreviewUrlOption
   /**
    * @deprecated use `resolve.locations` instead
    */
@@ -168,7 +301,6 @@ export interface PresentationPluginOptions {
     mainDocuments?: DocumentResolver[]
     locations?: DocumentLocationResolvers | DocumentLocationResolver
   }
-  previewUrl: PreviewUrlOption
   components?: {
     unstable_header?: HeaderOptions
     unstable_navigator?: NavigatorOptions

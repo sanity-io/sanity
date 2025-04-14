@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../studio-test'
 import {encodeQueryString, getVisionRegions, openVisionTool} from './utils'
 
 test.describe('Vision', () => {
