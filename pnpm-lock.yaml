@@ -1484,6 +1484,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0))
+      '@xstate/react':
+        specifier: ^5.0.3
+        version: 5.0.3(@types/react@19.1.0)(react@18.3.1)(xstate@5.19.2)
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -1694,15 +1697,15 @@ importers:
       speakingurl:
         specifier: ^14.0.1
         version: 14.0.1
-      suspend-react:
-        specifier: 0.1.3
-        version: 0.1.3(react@18.3.1)
       tar-fs:
         specifier: ^2.1.1
         version: 2.1.2
       tar-stream:
         specifier: ^3.1.7
         version: 3.1.7
+      urlpattern-polyfill:
+        specifier: 10.0.0
+        version: 10.0.0
       use-device-pixel-ratio:
         specifier: ^1.1.0
         version: 1.1.2(react@18.3.1)
@@ -1718,12 +1721,12 @@ importers:
       uuid:
         specifier: ^11.0.5
         version: 11.0.5
-      valibot:
-        specifier: 0.31.1
-        version: 0.31.1
       vite:
         specifier: ^6.2.4
         version: 6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.7.0)
+      xstate:
+        specifier: ^5.19.2
+        version: 5.19.2
       yargs:
         specifier: ^17.3.0
         version: 17.3.0
@@ -11694,6 +11697,9 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
+  urlpattern-polyfill@10.0.0:
+    resolution: {integrity: sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==}
+
   use-callback-ref@1.3.3:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
@@ -11789,9 +11795,6 @@ packages:
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
-
-  valibot@0.31.1:
-    resolution: {integrity: sha512-2YYIhPrnVSz/gfT2/iXVTrSj92HwchCt9Cga/6hX4B26iCz9zkIsGTS0HjDYTZfTi1Un0X6aRvhBi1cfqs/i0Q==}
 
   valibot@1.0.0:
     resolution: {integrity: sha512-1Hc0ihzWxBar6NGeZv7fPLY0QuxFMyxwYR2sF1Blu7Wq7EnremwY2W02tit2ij2VJT8HcSkHAQqmFfl77f73Yw==}
@@ -23293,10 +23296,6 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  suspend-react@0.1.3(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   suspend-react@0.1.3(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -23794,6 +23793,8 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
+  urlpattern-polyfill@10.0.0: {}
+
   use-callback-ref@1.3.3(@types/react@19.1.0)(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -23872,8 +23873,6 @@ snapshots:
   uuidv7@0.4.4: {}
 
   v8-compile-cache-lib@3.0.1: {}
-
-  valibot@0.31.1: {}
 
   valibot@1.0.0(typescript@5.7.3):
     optionalDependencies:
