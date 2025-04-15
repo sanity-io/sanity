@@ -2,12 +2,15 @@
 
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {createComlinkStore} from '../comlink/createComlinkStore'
+import {type ComlinkStore} from '../comlink/types'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {createRenderingContextStore} from '../renderingContext/createRenderingContextStore'
 import {type RenderingContextStore} from '../renderingContext/types'
@@ -332,4 +335,27 @@ export function useRenderingContextStore(): RenderingContextStore {
 
     return renderingContextStore
   }, [resourceCache])
+}
+
+/** @internal */
+export function useComlinkStore(): ComlinkStore {
+  const resourceCache = useResourceCache()
+  const renderingContext = useRenderingContextStore()
+  const capabilities = useObservable(renderingContext.capabilities, {})
+
+  return useMemo(() => {
+    const comlinkStore =
+      resourceCache.get<ComlinkStore>({
+        dependencies: [capabilities],
+        namespace: 'ComlinkStore',
+      }) || createComlinkStore({capabilities})
+
+    resourceCache.set({
+      dependencies: [capabilities],
+      namespace: 'ComlinkStore',
+      value: comlinkStore,
+    })
+
+    return comlinkStore
+  }, [capabilities, resourceCache])
 }
