@@ -1,14 +1,16 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import {get, startCase} from 'lodash'
-import {memo, type ReactNode, useMemo} from 'react'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
+import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
 
@@ -19,7 +21,7 @@ function ImageInputAssetMenuComponent(
   > & {
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    handleSelectFiles: (files: File[]) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
@@ -32,7 +34,7 @@ function ImageInputAssetMenuComponent(
     assetSources,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFiles,
+    onSelectFiles,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -95,10 +97,11 @@ function ImageInputAssetMenuComponent(
   return (
     <ImageInputAssetMenuWithReferenceAsset
       accept={accept}
+      assetSources={assetSources}
       browseMenuItem={browseMenuItem}
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
-      handleSelectFiles={handleSelectFiles}
+      onSelectFiles={onSelectFiles}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
@@ -121,10 +124,11 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
   > & {
     accept: string
+    assetSources: AssetSource[]
     browseMenuItem: ReactNode
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    handleSelectFiles: (files: File[]) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
@@ -136,11 +140,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 ) {
   const {
     accept,
+    assetSources,
     browseMenuItem,
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFiles,
+    onSelectFiles,
     imageUrlBuilder,
     isMenuOpen,
     observeAsset,
@@ -153,9 +158,27 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     value,
   } = props
 
+  const {t} = useTranslation()
+
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
   const asset = useObservable(observable)
+  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.uploader))
+
+  // TODO: fix this in same style as FileInput
+  const handleSelectFilesFromAssetSource = useCallback(
+    (assetSource: AssetSource, files: File[]) => {
+      onSelectFiles(assetSource, files)
+    },
+    [onSelectFiles],
+  )
+
+  const handleSelectFilesFromAssetSourceSingle = useCallback(
+    (files: File[]) => {
+      handleSelectFilesFromAssetSource(assetSourcesWithUpload[0], files)
+    },
+    [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
+  )
 
   if (!documentId || !asset) {
     return <ImageActionsMenuWaitPlaceholder />
@@ -171,6 +194,37 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     copyUrl = imageUrlBuilder.image(_id).url()
   }
 
+  let uploadMenuItem: ReactNode = null
+  switch (assetSourcesWithUpload.length) {
+    case 0:
+      uploadMenuItem = null
+      break
+    case 1:
+      uploadMenuItem = (
+        <FileInputMenuItem
+          icon={UploadIcon}
+          onSelect={handleSelectFilesFromAssetSourceSingle}
+          accept={accept}
+          data-asset-source-name={assetSourcesWithUpload[0].name}
+          text={t('inputs.files.common.actions-menu.upload.label')}
+          data-testid="file-input-upload-button"
+          disabled={readOnly || !directUploads}
+        />
+      )
+      break
+    default:
+      uploadMenuItem = (
+        <UploadDropDownMenu
+          accept={accept}
+          assetSources={assetSourcesWithUpload}
+          directUploads={directUploads}
+          onSelectFiles={handleSelectFilesFromAssetSource}
+          readOnly={readOnly}
+          renderAsMenuGroup
+        />
+      )
+  }
+
   return (
     <ImageActionsMenu
       isMenuOpen={isMenuOpen}
@@ -181,14 +235,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
       showEdit={!!showAdvancedEditButton}
     >
       <ActionsMenu
-        onUpload={handleSelectFiles}
+        upload={uploadMenuItem}
         browse={browseMenuItem}
         onReset={handleRemoveButtonClick}
         downloadUrl={downloadUrl}
         copyUrl={copyUrl}
         readOnly={readOnly}
-        directUploads={directUploads}
-        accept={accept}
       />
     </ImageActionsMenu>
   )
