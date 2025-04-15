@@ -35,6 +35,18 @@ import {
 } from './types'
 
 type RenderDefault = (props: any) => ReactNode
+type DocumentCallbackContext = ConfigContext & {
+  documentId?: string
+  documentType: string
+  /**
+   * @deprecated use documentType instead
+   */
+  schemaType: string
+  schema: SchemaType
+  // Suggestion: Move releaseId and versionType to all the contexts
+  releaseId?: string
+  versionType?: 'published' | 'draft' | 'revision' | 'version'
+}
 
 type Config = {
   // ==== WorkspaceOptions extends SourceOptions ====
@@ -95,63 +107,38 @@ type Config = {
     // This context are similar but different, would be great to have a single type for this.
     badges?:
       | DocumentBadgeComponent[]
-      | ComposableOption<
-          DocumentBadgeComponent[],
-          // DocumentBadgesContext
-          ConfigContext & {documentId?: string; schemaType: string}
-        >
+      | ComposableOption<DocumentBadgeComponent[], DocumentCallbackContext>
     actions?:
       | DocumentActionComponent[]
-      | ComposableOption<
-          DocumentActionComponent[],
-          // DocumentActionsContext
-          ConfigContext & {
-            documentId?: string
-            schemaType: string // Here schema type is an string and below is a SchemaType
-            // Suggestion: Move releaseId and versionType to all the contexts
-            releaseId?: string
-            versionType?: 'published' | 'draft' | 'revision' | 'version'
-          }
-        >
+      | ComposableOption<DocumentActionComponent[], DocumentCallbackContext>
     unstable_fieldActions?:
       | DocumentFieldAction[]
       | ComposableOption<
           DocumentFieldAction[],
-          // DocumentFieldActionsResolverContext
-          ConfigContext & {
-            documentId: string
-            documentType: string
+          Omit<DocumentCallbackContext, 'schemaType'> & {
+            // This will be a breaking change if we change it to string, preserve it for now and tag as deprecated
+            // @deprecated use schema instead
             schemaType: SchemaType
           }
         >
     inspectors?:
       | DocumentInspector[]
-      | ComposableOption<
-          DocumentInspector[],
-          //   DocumentInspectorContext
-          ConfigContext & {
-            documentId?: string
-            documentType: string
-          }
-        >
+      | ComposableOption<DocumentInspector[], DocumentCallbackContext>
     productionUrl?: AsyncComposableOption<
       string | undefined,
-      //  ResolveProductionUrlContext
-      ConfigContext & {
-        document: SanityDocumentLike // This is the only one that takes a document, rest use id and type.
+      DocumentCallbackContext & {
+        // This is the only one that takes a document.
+        // @deprecated use documentId and documentType instead
+        document: SanityDocumentLike
       }
     >
     unstable_languageFilter?: ComposableOption<
       DocumentLanguageFilterComponent[],
-      // DocumentLanguageFilterContext
-      ConfigContext & {
-        documentId?: string
-        schemaType: string
-      }
+      DocumentCallbackContext
     >
     newDocumentOptions?: ComposableOption<
       TemplateItem[],
-      ConfigContext & {
+      DocumentCallbackContext & {
         creationContext:
           | {type: 'global'; documentId?: undefined; schemaType?: undefined}
           | {type: 'document'; documentId: string; schemaType: string}
