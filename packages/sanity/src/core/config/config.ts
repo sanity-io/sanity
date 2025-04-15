@@ -78,6 +78,28 @@ type Config = {
     }
   }
 
+  search?: {
+    strategy?: 'groqLegacy' | 'groq2024'
+    enableLegacySearch?: boolean
+  }
+
+  beta?: {
+    treeArrayEditing?: {enabled: boolean} // @deprecated, remove this.
+    create?: {
+      startInCreateEnabled: boolean
+      fallbackStudioOrigin?: string
+    }
+    eventsAPI?: {
+      documents?: boolean
+      releases?: boolean
+    }
+    search?: {
+      partialIndexing?: {
+        enabled: boolean
+      }
+    }
+  }
+
   // ==== SourceOptions extends PluginOptions ====
   title?: string
   projectId: string
@@ -207,30 +229,6 @@ type Config = {
 
   i18n?: LocalePluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
-
-  // Suggestion: Move to workspaceOptions?
-  search?: {
-    strategy?: 'groqLegacy' | 'groq2024'
-    enableLegacySearch?: boolean
-  }
-
-  // Suggestion: Move to workspaceOptions?
-  beta?: {
-    treeArrayEditing?: {enabled: boolean} // @deprecated, remove this.
-    create?: {
-      startInCreateEnabled: boolean
-      fallbackStudioOrigin?: string
-    }
-    eventsAPI?: {
-      documents?: boolean
-      releases?: boolean
-    }
-    search?: {
-      partialIndexing?: {
-        enabled: boolean
-      }
-    }
-  }
 
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
 }
