@@ -151,8 +151,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
       id: `${published}.${id}${allowTimeZoneSwitch ? '' : '.fixed'}`,
+      relativeDate: value ? new Date(value) : undefined,
     }),
-    [allowTimeZoneSwitch, displayTimeZone, id, published],
+    [allowTimeZoneSwitch, displayTimeZone, id, published, value],
   )
 
   const {timeZone} = useTimeZone(timeZoneScope)
@@ -171,7 +172,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
 
   const formatInputValue = useCallback(
     (date: Date) => format(date, `${dateFormat} ${timeFormat}`, {timeZone: timeZone.name}),
-    [dateFormat, timeFormat, timeZone.name],
+    [dateFormat, timeFormat, timeZone],
   )
 
   const deserialize = useMemo(() => getDeserializer(timeZone.name), [timeZone.name])
@@ -180,7 +181,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   const parseInputValue = useCallback(
     (inputValue: string): ParseResult =>
       parse(inputValue, `${dateFormat} ${timeFormat}`, timeZone.name),
-    [dateFormat, timeFormat, timeZone.name],
+    [dateFormat, timeFormat, timeZone],
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   const commonProps = useMemo(
@@ -208,7 +209,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       parseInputValue,
       schemaType.placeholder,
       memoizedSerialize,
-      timeZone.name,
+      timeZone,
       timeStep,
       value,
       timeZoneScope,

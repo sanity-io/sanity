@@ -1,5 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {
@@ -15,7 +16,6 @@ import {
   useRef,
 } from 'react'
 
-import {format} from '../../../../../../../@sanity/util/src/legacyDateFormat'
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'

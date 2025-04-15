@@ -39,14 +39,14 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                     mode="bleed"
                     readOnly={!allowTimeZoneSwitch}
                     onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
-                    text={`${timeZone.abbreviation}`}
+                    text={`${timeZone.city}`}
                   />
                 ) : (
                   <Inline space={2} padding={2}>
                     <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
                     </Text>
-                    <Text weight={'medium'} size={1}>{`${timeZone.abbreviation}`}</Text>
+                    <Text weight={'medium'} size={1}>{`${timeZone.city}`}</Text>
                   </Inline>
                 )}
               </Box>
