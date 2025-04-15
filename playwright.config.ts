@@ -137,7 +137,7 @@ const playwrightConfig: PlaywrightTestConfig = {
          * Locally run the dev server
          */
         command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',
-        port: 3333,
+        port: 3339,
         reuseExistingServer: !CI,
         stdout: 'pipe',
       },
