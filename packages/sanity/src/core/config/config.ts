@@ -234,9 +234,4 @@ type Config = {
   }
 
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
-
-  // this is strictly internal, remove it if possible and hardcode it into the studio
-  __internal_tasks?: {
-    footerAction: ReactNode
-  }
 }
