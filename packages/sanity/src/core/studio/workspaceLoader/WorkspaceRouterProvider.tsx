@@ -69,9 +69,15 @@ function useRouterFromWorkspaceHistory(
     // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
     // matches where the pathname is a false subset of the current pathname.
     const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
-    const shouldHandle = (pathname: string) =>
-      // this is necessary to prevent emissions intended for other workspaces.
-      routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
+    const shouldHandle = (pathname: string) => {
+      // Short-circuit for root path
+      if (routerBasePath === '/') return true
+
+      // For non-root paths, extract the path part (before any query string)
+      const pathPart = pathname.split('?')[0]
+      return routerBasePathRegex.test(pathPart)
+    }
+
     return {
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
       getSnapshot: () => `${history.location.pathname}${history.location.search || ''}`,
