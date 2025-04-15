@@ -66,16 +66,12 @@ function useRouterFromWorkspaceHistory(
   // If we don't, we risk hot reload seeing stale workspace configs as the user is editing them.
   const store = useMemo(() => {
     const routerBasePath = router.getBasePath()
-    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
-    // matches where the pathname is a false subset of the current pathname.
-    const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
-    const shouldHandle = (pathname: string) => {
-      // For non-root paths, extract the path part (before any query string)
-      const [pathPart] = pathname.split('?')
-
+    // this regex ends with patterns that match end of path, query params, or trailing slash
+    // to prevent false matches where the pathname is a false subset of the current pathname.
+    const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|\\?|$)`, 'i')
+    const shouldHandle = (pathname: string) =>
       // this is necessary to prevent emissions intended for other workspaces.
-      return routerBasePath === '/' ? true : routerBasePathRegex.test(pathPart)
-    }
+      routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
 
     return {
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
