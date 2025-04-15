@@ -3,6 +3,7 @@ import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
 import docsCommand from './docs/docsCommand'
 import devfunctionsCommand from './functions/devFunctionsCommand'
+import envFunctionsCommand from './functions/envFunctionsCommand'
 import functionsGroup from './functions/functionsGroup'
 import logsfunctionsCommand from './functions/logsFunctionsCommand'
 import testfunctionsCommand from './functions/testFunctionsCommand'
@@ -47,4 +48,5 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   devfunctionsCommand,
   logsfunctionsCommand,
   testfunctionsCommand,
+  envFunctionsCommand,
 ]

@@ -1,11 +1,12 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test(`date input shows validation on selecting date from datepicker`, async ({
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/input-debug;dateValidation')
+  await createDraftDocument('/content/input-debug;dateValidation')
 
   await expect(await page.getByTestId(`field-requiredDate`)).toBeVisible()
 
@@ -26,7 +27,7 @@ test.skip(`date input shows validation on entering date in the text field`, asyn
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/input-debug;dateValidation')
+  await createDraftDocument('/content/input-debug;dateValidation')
 
   await page.waitForSelector(`data-testid=field-requiredDate`)
 
@@ -43,7 +44,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/input-debug;dateValidation')
+  await createDraftDocument('/content/input-debug;dateValidation')
 
   await expect(await page.getByTestId('field-requiredDate')).toBeVisible()
 
@@ -58,7 +59,7 @@ test(`date input shows validation on entering date in the textfield and onBlur`,
   page,
   createDraftDocument,
 }) => {
-  await createDraftDocument('/test/content/input-debug;dateValidation')
+  await createDraftDocument('/content/input-debug;dateValidation')
 
   await page.waitForSelector(`data-testid=field-requiredDate`)
 

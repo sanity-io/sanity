@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../studio-test'
 import {getPresentationRegions, openPresentationTool} from './utils'
 
 test.describe('Presentation', () => {

@@ -1,8 +1,9 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test('fields groups can use/not use i18n titles', async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/input-debug;field-groups;fieldGroupsWithI18n')
+  await createDraftDocument('/content/input-debug;field-groups;fieldGroupsWithI18n')
 
   await expect(await page.getByTestId(`group-tab-i18n-group1`)).toBeVisible()
 

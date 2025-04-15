@@ -1,6 +1,7 @@
 import {expect} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
-import {test as base} from '@sanity/test'
+
+import {test as base} from '../../studio-test'
 
 const test = base.extend<{testDoc: SanityDocument}>({
   testDoc: async ({page, sanityClient}, fnUse) => {
@@ -29,7 +30,7 @@ const test = base.extend<{testDoc: SanityDocument}>({
 })
 
 test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
-  await page.goto(`/test/content/input-debug;arrayCapabilities;${testDoc._id}`)
+  await page.goto(`/content/input-debug;arrayCapabilities;${testDoc._id}`)
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })

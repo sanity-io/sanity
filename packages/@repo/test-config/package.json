@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-config",
-  "version": "3.83.0",
+  "version": "3.84.0",
   "private": true,
   "description": "Test (as in unit test) config shared across packages in the sanity monorepo",
   "type": "module",
