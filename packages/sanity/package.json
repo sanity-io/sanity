@@ -177,6 +177,7 @@
     "@sanity/presentation-comlink": "^1.0.16",
     "@sanity/preview-url-secret": "^2.1.7",
     "@sanity/schema": "3.84.0",
+    "@sanity/sdk": "0.0.0-alpha.25",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "3.84.0",
     "@sanity/ui": "^2.15.13",
