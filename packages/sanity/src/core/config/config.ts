@@ -73,6 +73,9 @@ type Config = {
       enabled?: boolean
       libraryId?: string
     }
+    announcements?: {
+      enabled: boolean
+    }
   }
 
   // ==== SourceOptions extends PluginOptions ====
@@ -227,10 +230,6 @@ type Config = {
         enabled: boolean
       }
     }
-  }
-  // Suggestion: Move to workspaceOptions?
-  announcements?: {
-    enabled: boolean
   }
 
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
