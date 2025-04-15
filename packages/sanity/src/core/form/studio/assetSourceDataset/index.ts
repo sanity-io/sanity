@@ -1,2 +1,5 @@
-export * from './FileAssetSource'
-export * from './ImageAssetSource'
+export {
+  createDatasetFileAssetSource,
+  createDatasetImageAssetSource,
+  sourceName,
+} from './createAssetSource'
