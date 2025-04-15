@@ -76,9 +76,6 @@ type Config = {
     }
   }
 
-  // Suggestion: Move this behind `beta` or deprecate it, it's on by default now.
-  __internal_serverDocumentActions?: {enabled: boolean}
-
   // ==== SourceOptions extends PluginOptions ====
   title?: string
   projectId: string
