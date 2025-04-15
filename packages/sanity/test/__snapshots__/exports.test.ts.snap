@@ -503,6 +503,7 @@ exports[`exports snapshot 1`] = `
     "useColorSchemeOptions": "function",
     "useColorSchemeSetValue": "function",
     "useColorSchemeValue": "function",
+    "useComlinkStore": "function",
     "useComments": "function",
     "useCommentsEnabled": "function",
     "useCommentsSelectedPath": "function",

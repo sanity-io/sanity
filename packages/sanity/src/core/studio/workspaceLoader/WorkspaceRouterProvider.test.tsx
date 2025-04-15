@@ -12,6 +12,7 @@ vi.mock('../router/RouterHistoryContext', () => ({
     location: {pathname: '/'},
     listen: vi.fn(),
   }),
+  RouterHistoryProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 
 vi.mock('../router', () => ({
@@ -71,6 +72,7 @@ describe('WorkspaceRouterProvider', () => {
     expect(screen.getByText('Children')).toBeInTheDocument()
   })
 
+  // TODO: This test has been broken by the addition of `ActiveWorkspaceMatcherProvider` to `TestProvider`.
   it('calls onUncaughtError when an error is caught', async () => {
     const onUncaughtError = vi.fn()
 

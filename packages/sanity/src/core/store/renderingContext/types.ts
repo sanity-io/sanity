@@ -34,7 +34,7 @@ export type StudioRenderingContext = DefaultRenderingContext | CoreUiRenderingCo
 /**
  * @internal
  */
-export const capabilities = ['globalUserMenu', 'globalWorkspaceControl'] as const
+export const capabilities = ['globalUserMenu', 'globalWorkspaceControl', 'comlink'] as const
 
 /**
  * @internal
