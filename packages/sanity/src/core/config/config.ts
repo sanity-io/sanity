@@ -58,19 +58,22 @@ type Config = {
   // TODO: Why is this here? It seems internal implementation details are leaking into user land.
   unstable_sources?: SourceOptions[]
 
-  // Official plugins configs -
-  // Suggestion: wrap under `features`?
-  // Suggestion: add a callback exposing the config context to the official plugins
-  unstable_tasks?: {enabled: boolean} // @deprecated
-  tasks?: {enabled: boolean}
-  releases?: {enabled: boolean}
-  scheduledPublishing?: {
-    enabled: boolean
-    inputDateTimeFormat?: string
-    __internal__workspaceEnabled?: boolean // This shouldn't be exposed to users, it's an internal implementation detail.
-    showReleasesBanner?: boolean
+  // Official plugins configs, require growth or above.
+  features?: {
+    tasks?: {enabled: boolean}
+    releases?: {enabled: boolean}
+    scheduledPublishing?: {
+      enabled: boolean
+      inputDateTimeFormat?: string
+      __internal__workspaceEnabled?: boolean // This shouldn't be exposed to users, it's an internal implementation detail.
+      showReleasesBanner?: boolean
+    }
+    comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)}
+    mediaLibrary?: {
+      enabled?: boolean
+      libraryId?: string
+    }
   }
-  // Suggestion: Comments is a plugin which missing from here, maybe it should be part of the `config` rather than in the DocumentOptions.
 
   // Suggestion: Move this behind `beta` or deprecate it, it's on by default now.
   __internal_serverDocumentActions?: {enabled: boolean}
@@ -145,10 +148,6 @@ type Config = {
           | {type: 'structure'; documentId?: undefined; schemaType: string}
       }
     >
-
-    // Suggestion: Move this to the root? With the rest of official plugins?
-    unstable_comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)} // @deprecated
-    comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)}
   }
   form?: {
     // SanityFormConfig
@@ -214,11 +213,6 @@ type Config = {
     }
     strategy?: 'groqLegacy' | 'groq2024'
     enableLegacySearch?: boolean
-  }
-
-  mediaLibrary?: {
-    enabled?: boolean
-    libraryId?: string
   }
 
   // Suggestion: Move to workspaceOptions?
