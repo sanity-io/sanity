@@ -25,16 +25,31 @@ import {
   type AsyncComposableOption,
   type AuthConfig,
   type ComposableOption,
-  type ConfigContext,
+  type ConfigContext as ConfigContextType,
   type DocumentCommentsEnabledContext,
   type DocumentLanguageFilterComponent,
   type DocumentLayoutProps,
   type PluginOptions,
-  type SourceOptions,
   type Tool,
 } from './types'
 
+type ConfigContext = ConfigContextType & {
+  workspaceName: string
+}
+
 type RenderDefault = (props: any) => ReactNode
+type DocumentCallbackContext = ConfigContext & {
+  documentId?: string
+  documentType: string
+  /**
+   * @deprecated use documentType instead
+   */
+  schemaType: string
+  schema: SchemaType
+  // Suggestion: Move releaseId and versionType to all the contexts
+  releaseId?: string
+  versionType?: 'published' | 'draft' | 'revision' | 'version'
+}
 
 type Config = {
   // ==== WorkspaceOptions extends SourceOptions ====
@@ -43,25 +58,47 @@ type Config = {
   logo?: ComponentType
   icon?: ComponentType
   theme?: StudioTheme
-  // TODO: Why is this here? It seems internal implementation details are leaking into user land.
-  unstable_sources?: SourceOptions[]
 
-  // Official plugins configs -
-  // Suggestion: wrap under `features`?
-  // Suggestion: add a callback exposing the config context to the official plugins
-  unstable_tasks?: {enabled: boolean} // @deprecated
-  tasks?: {enabled: boolean}
-  releases?: {enabled: boolean}
-  scheduledPublishing?: {
-    enabled: boolean
-    inputDateTimeFormat?: string
-    __internal__workspaceEnabled?: boolean // This shouldn't be exposed to users, it's an internal implementation detail.
-    showReleasesBanner?: boolean
+  // Official plugins configs, require growth or above.
+  features?: {
+    tasks?: {enabled: boolean}
+    releases?: {enabled: boolean}
+    scheduledPublishing?: {
+      enabled: boolean
+      inputDateTimeFormat?: string
+      showReleasesBanner?: boolean
+    }
+    comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)}
+    mediaLibrary?: {
+      enabled?: boolean
+      libraryId?: string
+    }
+    announcements?: {
+      enabled: boolean
+    }
   }
-  // Suggestion: Comments is a plugin which missing from here, maybe it should be part of the `config` rather than in the DocumentOptions.
 
-  // Suggestion: Move this behind `beta` or deprecate it, it's on by default now.
-  __internal_serverDocumentActions?: {enabled: boolean}
+  search?: {
+    strategy?: 'groqLegacy' | 'groq2024'
+    enableLegacySearch?: boolean
+  }
+
+  beta?: {
+    treeArrayEditing?: {enabled: boolean} // @deprecated, remove this.
+    create?: {
+      startInCreateEnabled: boolean
+      fallbackStudioOrigin?: string
+    }
+    eventsAPI?: {
+      documents?: boolean
+      releases?: boolean
+    }
+    search?: {
+      partialIndexing?: {
+        enabled: boolean
+      }
+    }
+  }
 
   // ==== SourceOptions extends PluginOptions ====
   title?: string
@@ -75,15 +112,12 @@ type Config = {
   plugins?: PluginOptions[]
   schema?: {
     name?: string
-    types?:
-      | SchemaTypeDefinition[]
-      | ComposableOption<SchemaTypeDefinition[], {projectId: string; dataset: string}> // Suggestion: Make this ConfigContext
+    types?: SchemaTypeDefinition[] | ComposableOption<SchemaTypeDefinition[], ConfigContext>
     templates?: Template[] | ComposableOption<Template[], ConfigContext>
   }
   document?: {
     components?: {
-      // Suggestion: rename to layout
-      unstable_layout?: ComponentType<{
+      layout?: ComponentType<{
         documentId: string
         documentType: string
         renderDefault: (props: DocumentLayoutProps) => React.JSX.Element
@@ -95,73 +129,49 @@ type Config = {
     // This context are similar but different, would be great to have a single type for this.
     badges?:
       | DocumentBadgeComponent[]
-      | ComposableOption<
-          DocumentBadgeComponent[],
-          // DocumentBadgesContext
-          ConfigContext & {documentId?: string; schemaType: string}
-        >
+      | ComposableOption<DocumentBadgeComponent[], DocumentCallbackContext>
     actions?:
       | DocumentActionComponent[]
-      | ComposableOption<
-          DocumentActionComponent[],
-          // DocumentActionsContext
-          ConfigContext & {
-            documentId?: string
-            schemaType: string // Here schema type is an string and below is a SchemaType
-            // Suggestion: Move releaseId and versionType to all the contexts
-            releaseId?: string
-            versionType?: 'published' | 'draft' | 'revision' | 'version'
-          }
-        >
-    unstable_fieldActions?:
+      | ComposableOption<DocumentActionComponent[], DocumentCallbackContext>
+    fieldActions?:
       | DocumentFieldAction[]
       | ComposableOption<
           DocumentFieldAction[],
-          // DocumentFieldActionsResolverContext
-          ConfigContext & {
-            documentId: string
-            documentType: string
+          Omit<DocumentCallbackContext, 'schemaType'> & {
+            // This will be a breaking change if we change it to string, preserve it for now and tag as deprecated
+            // @deprecated use schema instead
             schemaType: SchemaType
           }
         >
     inspectors?:
       | DocumentInspector[]
-      | ComposableOption<
-          DocumentInspector[],
-          //   DocumentInspectorContext
-          ConfigContext & {
-            documentId?: string
-            documentType: string
-          }
-        >
+      | ComposableOption<DocumentInspector[], DocumentCallbackContext>
     productionUrl?: AsyncComposableOption<
       string | undefined,
-      //  ResolveProductionUrlContext
-      ConfigContext & {
-        document: SanityDocumentLike // This is the only one that takes a document, rest use id and type.
+      DocumentCallbackContext & {
+        // This is the only one that takes a document.
+        // @deprecated use documentId and documentType instead
+        document: SanityDocumentLike
       }
     >
+    /**
+     * This is preserved as unstable, it is a implementation created for the i18n plugin
+     * It renders in the DocumentPanelHeader, but it is used for more things than just the
+     * plugin, ideally we will rename it to something that indicates it can be reused.
+     */
     unstable_languageFilter?: ComposableOption<
       DocumentLanguageFilterComponent[],
-      // DocumentLanguageFilterContext
-      ConfigContext & {
-        documentId?: string
-        schemaType: string
-      }
+      DocumentCallbackContext
     >
     newDocumentOptions?: ComposableOption<
       TemplateItem[],
-      ConfigContext & {
+      DocumentCallbackContext & {
         creationContext:
           | {type: 'global'; documentId?: undefined; schemaType?: undefined}
           | {type: 'document'; documentId: string; schemaType: string}
           | {type: 'structure'; documentId?: undefined; schemaType: string}
       }
     >
-
-    // Suggestion: Move this to the root? With the rest of official plugins?
-    unstable_comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)} // @deprecated
-    comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)}
   }
   form?: {
     // SanityFormConfig
@@ -203,7 +213,7 @@ type Config = {
         title: string
       }>
       navbar: ComponentType<{
-        __internal_actions: NavbarAction[]
+        actions: NavbarAction[]
         title: string
       }>
       toolMenu: ComponentType<{
@@ -220,41 +230,5 @@ type Config = {
   i18n?: LocalePluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
 
-  // Suggestion: Move to workspaceOptions?
-  search?: {
-    unstable_partialIndexing?: {
-      enabled: boolean
-    }
-    strategy?: 'groqLegacy' | 'groq2024'
-    enableLegacySearch?: boolean
-  }
-
-  mediaLibrary?: {
-    enabled?: boolean
-    libraryId?: string
-  }
-
-  // Suggestion: Move to workspaceOptions?
-  beta?: {
-    treeArrayEditing?: {enabled: boolean} // @deprecated, remove this.
-    create?: {
-      startInCreateEnabled: boolean
-      fallbackStudioOrigin?: string
-    }
-    eventsAPI?: {
-      documents?: boolean
-      releases?: boolean
-    }
-  }
-  // Suggestion: Move to workspaceOptions?
-  announcements?: {
-    enabled: boolean
-  }
-
   onUncaughtError?: (error: Error, errorInfo: ErrorInfo) => void
-
-  // this is strictly internal, remove it if possible and hardcode it into the studio
-  __internal_tasks?: {
-    footerAction: ReactNode
-  }
 }
