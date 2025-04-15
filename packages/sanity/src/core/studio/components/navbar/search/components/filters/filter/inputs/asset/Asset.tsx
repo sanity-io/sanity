@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
-import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSourceDefault'
+import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
 import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
@@ -50,9 +50,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const assetSources = useMemo(() => {
       switch (type) {
         case 'file':
-          return file.assetSources.filter((a) => a.name === FileSource.name)
+          return file.assetSources.filter((a) => a.name === defaultSourceName)
         case 'image':
-          return image.assetSources.filter((a) => a.name === ImageSource.name)
+          return image.assetSources.filter((a) => a.name === defaultSourceName)
         default:
           throw Error('Unknown asset source found')
       }
@@ -118,6 +118,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             <Portal>
               <AssetSourceComponent
                 assetType={type}
+                assetSource={selectedAssetSource}
                 dialogHeaderTitle={t('search.action.select-asset', {context: type})}
                 onClose={handleCloseAssetSource}
                 onSelect={handleSelectAssetFromSource}

@@ -9,9 +9,9 @@ import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
 import {
-  FileSource as DefaultFileSource,
-  ImageSource as DefaultImageSource,
-} from '../form/studio/assetSourceDefault'
+  createDatasetFileAssetSource,
+  createDatasetImageAssetSource,
+} from '../form/studio/assetSourceDataset'
 import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
@@ -92,7 +92,7 @@ function normalizeIcon(
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
 
 // Create media library sources with configuration
-const createMediaLibrarySources = (config: PluginOptions) => {
+const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
 
@@ -102,13 +102,29 @@ const createMediaLibrarySources = (config: PluginOptions) => {
   }
 
   const fileSource = createSanityMediaLibraryFileSource({
-    name: 'sanity-media-library-file-source',
     libraryId: libraryId || null,
   })
 
   const imageSource = createSanityMediaLibraryImageSource({
-    name: 'sanity-media-library-image-source',
     libraryId: libraryId || null,
+  })
+
+  return {fileSource, imageSource}
+}
+
+// Create default asset sources with configuration
+const createDatasetAssetSources = (
+  config: SourceOptions,
+  context: ConfigContext & {client: SanityClient},
+) => {
+  const fileSource = createDatasetFileAssetSource({
+    client: context.client,
+    config,
+  })
+
+  const imageSource = createDatasetImageAssetSource({
+    client: context.client,
+    config,
   })
 
   return {fileSource, imageSource}
@@ -361,7 +377,8 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
-  const mediaLibrarySources = createMediaLibrarySources(config)
+  const defaultAssetSources = createDatasetAssetSources(config, context)
+  const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
   let templates!: Source['templates']
   try {
@@ -623,9 +640,9 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibrarySources.fileSource
-            ? [DefaultFileSource, mediaLibrarySources.fileSource]
-            : [DefaultFileSource],
+          initialValue: mediaLibraryAssetSources.fileSource
+            ? [defaultAssetSources.fileSource, mediaLibraryAssetSources.fileSource]
+            : [defaultAssetSources.fileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
@@ -635,9 +652,9 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: mediaLibrarySources.imageSource
-            ? [DefaultImageSource, mediaLibrarySources.imageSource]
-            : [DefaultImageSource],
+          initialValue: mediaLibraryAssetSources.imageSource
+            ? [defaultAssetSources.imageSource, mediaLibraryAssetSources.imageSource]
+            : [defaultAssetSources.imageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
