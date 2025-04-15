@@ -66,7 +66,6 @@ type Config = {
     scheduledPublishing?: {
       enabled: boolean
       inputDateTimeFormat?: string
-      __internal__workspaceEnabled?: boolean // This shouldn't be exposed to users, it's an internal implementation detail.
       showReleasesBanner?: boolean
     }
     comments?: {enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)}
