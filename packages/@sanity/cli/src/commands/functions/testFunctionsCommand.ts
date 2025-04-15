@@ -42,22 +42,28 @@ const testFunctionsCommand: CliCommandDefinition = {
       return
     }
 
-    const {blueprintsActions, functionsActions, utils} = await import('@sanity/runtime-cli')
+    const {test} = await import('@sanity/runtime-cli/actions/functions')
+    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {findFunction} = await import('@sanity/runtime-cli/utils')
 
-    const {parsedBlueprint} = await blueprintsActions.blueprint.readBlueprintOnDisk({
+    const {parsedBlueprint} = await blueprint.readBlueprintOnDisk({
       getStack: false,
     })
 
-    const src = utils.findFunctions.getFunctionSource(parsedBlueprint, flags.name)
+    const src = findFunction.getFunctionSource(parsedBlueprint, flags.name)
     if (!src) {
       print(`Error: Function ${flags.name} has no source code`)
     }
 
-    const {json, logs, error} = await functionsActions.test.testAction(src, {
-      data: flags.data,
-      file: flags.file,
-      timeout: flags.timeout,
-    })
+    const {json, logs, error} = await test.testAction(
+      src,
+      {
+        data: flags.data,
+        file: flags.file,
+        timeout: flags.timeout,
+      },
+      {}, // @TODO: Add context
+    )
 
     if (error) {
       print(error.toString())

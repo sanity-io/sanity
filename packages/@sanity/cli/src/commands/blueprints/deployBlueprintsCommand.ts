@@ -24,9 +24,11 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     })
     const {token} = client.config()
     const {
-      blueprintsActions: actions,
-      utils: {display},
-    } = await import('@sanity/runtime-cli')
+      blueprint: blueprintAction,
+      stacks: stacksAction,
+      assets: assetsAction,
+    } = await import('@sanity/runtime-cli/actions/blueprints')
+    const {display} = await import('@sanity/runtime-cli/utils')
 
     if (!token) {
       print('No API token found. Please run `sanity login` first.')
@@ -35,7 +37,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
 
     let blueprint = null
     try {
-      blueprint = await actions.blueprint.readBlueprintOnDisk({getStack: true, token})
+      blueprint = await blueprintAction.readBlueprintOnDisk({getStack: true, token})
     } catch (error) {
       print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
       return
@@ -108,7 +110,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
     if (functionResources?.length) {
       for (const resource of functionResources) {
         print(`Processing ${resource.name}...`)
-        const result = await actions.assets.stashAsset({resource, auth})
+        const result = await assetsAction.stashAsset({resource, auth})
 
         if (result.success && result.assetId) {
           const src = resource.src
@@ -136,8 +138,8 @@ const deployBlueprintsCommand: CliCommandDefinition = {
       stack,
       error: deployError,
     } = deployedStack
-      ? await actions.stacks.updateStack({stackId: deployedStack.id, stackPayload, auth})
-      : await actions.stacks.createStack({stackPayload, auth})
+      ? await stacksAction.updateStack({stackId: deployedStack.id, stackPayload, auth})
+      : await stacksAction.createStack({stackPayload, auth})
 
     if (deployOk) {
       const {green, bold, yellow} = display.colors
@@ -145,7 +147,7 @@ const deployBlueprintsCommand: CliCommandDefinition = {
         `${green('Success!')} Stack "${bold(stack.name)}" ${deployedStack ? 'updated' : 'created'} <${yellow(stack.id)}>`,
       )
 
-      actions.blueprint.writeConfigFile({
+      blueprintAction.writeConfigFile({
         projectId,
         stackId: stack.id,
       })

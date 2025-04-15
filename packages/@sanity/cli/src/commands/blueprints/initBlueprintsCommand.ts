@@ -31,9 +31,11 @@ const initBlueprintsCommand: CliCommandDefinition = {
       return
     }
 
-    const {blueprintsActions: actions} = await import('@sanity/runtime-cli')
+    const {blueprint: blueprintAction, projects: projectsAction} = await import(
+      '@sanity/runtime-cli/actions/blueprints'
+    )
 
-    const existingBlueprint = actions.blueprint.findBlueprintFile()
+    const existingBlueprint = blueprintAction.findBlueprintFile()
 
     if (existingBlueprint) {
       print(`A blueprint file already exists: ${existingBlueprint.fileName}`)
@@ -50,7 +52,7 @@ const initBlueprintsCommand: CliCommandDefinition = {
       ],
     })
 
-    const {ok, projects, error} = await actions.projects.listProjects({token})
+    const {ok, projects, error} = await projectsAction.listProjects({token})
 
     if (!ok) {
       print(error)
@@ -76,12 +78,12 @@ const initBlueprintsCommand: CliCommandDefinition = {
     const fileName = `blueprint.${blueprintExtension}`
     const filePath = join(cwd(), fileName)
 
-    actions.blueprint.writeBlueprintToDisk({
+    blueprintAction.writeBlueprintToDisk({
       path: filePath,
       fileType: blueprintExtension as 'json' | 'js' | 'ts',
     })
 
-    actions.blueprint.writeConfigFile({projectId})
+    blueprintAction.writeConfigFile({projectId})
 
     print(`Created new blueprint: ./${fileName}`)
 

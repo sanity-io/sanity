@@ -1,6 +1,8 @@
-import {type StackFunctionResource} from '@sanity/runtime-cli/dist/utils/types'
+import {type types} from '@sanity/runtime-cli/utils'
 
 import {type CliCommandDefinition} from '../../types'
+
+type StackFunctionResource = types.StackFunctionResource
 
 const helpText = `
 Options
@@ -49,9 +51,11 @@ const envFunctionsCommand: CliCommandDefinition = {
     }
 
     const token = client.config().token
-    const {blueprintsActions, functionsActions, utils} = await import('@sanity/runtime-cli')
+    const {env} = await import('@sanity/runtime-cli/actions/functions')
+    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {findFunction} = await import('@sanity/runtime-cli/utils')
 
-    const {deployedStack} = await blueprintsActions.blueprint.readBlueprintOnDisk({
+    const {deployedStack} = await blueprint.readBlueprintOnDisk({
       getStack: true,
       token,
     })
@@ -61,10 +65,10 @@ const envFunctionsCommand: CliCommandDefinition = {
       return
     }
 
-    const blueprintConfig = blueprintsActions.blueprint.readConfigFile()
+    const blueprintConfig = blueprint.readConfigFile()
     const projectId = blueprintConfig?.projectId
 
-    const {externalId} = utils.findFunctions.findFunctionByName(
+    const {externalId} = findFunction.findFunctionByName(
       deployedStack,
       flags.name,
     ) as StackFunctionResource
@@ -72,15 +76,10 @@ const envFunctionsCommand: CliCommandDefinition = {
     if (token && projectId) {
       if (flags.add) {
         print(`Updating "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await functionsActions.env.update.update(
-          externalId,
-          flags.key,
-          flags.value,
-          {
-            token,
-            projectId,
-          },
-        )
+        const result = await env.update.update(externalId, flags.key, flags.value, {
+          token,
+          projectId,
+        })
         if (result.ok) {
           print(`Update of ${flags.key} succeeded`)
         } else {
@@ -89,7 +88,7 @@ const envFunctionsCommand: CliCommandDefinition = {
         }
       } else if (flags.remove) {
         print(`Removing "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await functionsActions.env.remove.remove(externalId, flags.key, {
+        const result = await env.remove.remove(externalId, flags.key, {
           token,
           projectId,
         })

@@ -33,9 +33,13 @@ const configBlueprintsCommand: CliCommandDefinition = {
       requireProject: false,
     })
     const {token} = client.config()
-    const {blueprintsActions: actions} = await import('@sanity/runtime-cli')
+    const {
+      blueprint: blueprintAction,
+      projects: projectsAction,
+      stacks: stacksAction,
+    } = await import('@sanity/runtime-cli/actions/blueprints')
 
-    const config = actions.blueprint.readConfigFile()
+    const config = blueprintAction.readConfigFile()
     if (!config) {
       print('No configuration found. Run `sanity blueprints init` first.')
       return
@@ -53,7 +57,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
       return
     }
 
-    const {ok, projects, error} = await actions.projects.listProjects({token})
+    const {ok, projects, error} = await projectsAction.listProjects({token})
     if (!ok) {
       print(error)
       return
@@ -79,7 +83,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
     const auth = {token, projectId}
 
     // get stacks for selected project
-    const {ok: stacksOk, stacks, error: stacksError} = await actions.stacks.listStacks(auth)
+    const {ok: stacksOk, stacks, error: stacksError} = await stacksAction.listStacks(auth)
     if (!stacksOk) {
       print(stacksError)
       return
@@ -100,7 +104,7 @@ const configBlueprintsCommand: CliCommandDefinition = {
       })
     }
 
-    actions.blueprint.writeConfigFile({projectId, stackId})
+    blueprintAction.writeConfigFile({projectId, stackId})
     print('\nConfiguration updated successfully.')
   },
 }

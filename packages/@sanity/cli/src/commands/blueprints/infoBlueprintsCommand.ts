@@ -31,14 +31,14 @@ const infoBlueprintsCommand: CliCommandDefinition = {
       requireProject: false,
     })
     const {token} = client.config()
-    const {
-      blueprintsActions: actions,
-      utils: {display},
-    } = await import('@sanity/runtime-cli')
+    const {blueprint: blueprintAction, stacks: stacksAction} = await import(
+      '@sanity/runtime-cli/actions/blueprints'
+    )
+    const {display} = await import('@sanity/runtime-cli/utils')
 
     let blueprint = null
     try {
-      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+      blueprint = await blueprintAction.readBlueprintOnDisk({token})
     } catch (error) {
       print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
       return
@@ -60,7 +60,7 @@ const infoBlueprintsCommand: CliCommandDefinition = {
       const auth = {token, projectId}
       let result
       if (flags.id) {
-        const {stack, error, ok} = await actions.stacks.getStack({stackId: flags.id, auth})
+        const {stack, error, ok} = await stacksAction.getStack({stackId: flags.id, auth})
         if (ok) {
           result = stack
         } else {

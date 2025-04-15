@@ -21,14 +21,12 @@ const planBlueprintsCommand: CliCommandDefinition = {
 
     const client = apiClient({requireUser: true, requireProject: false})
     const {token} = client.config()
-    const {
-      blueprintsActions: actions,
-      utils: {display},
-    } = await import('@sanity/runtime-cli')
+    const {blueprint: blueprintAction} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {display} = await import('@sanity/runtime-cli/utils')
 
     let blueprint = null
     try {
-      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+      blueprint = await blueprintAction.readBlueprintOnDisk({token})
     } catch (error) {
       print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
       return

@@ -27,9 +27,11 @@ const addBlueprintsCommand: CliCommandDefinition = {
       return
     }
 
-    const {blueprintsActions: actions} = await import('@sanity/runtime-cli')
+    const {blueprint: blueprintAction, resources: resourcesAction} = await import(
+      '@sanity/runtime-cli/actions/blueprints'
+    )
 
-    const existingBlueprint = actions.blueprint.findBlueprintFile()
+    const existingBlueprint = blueprintAction.findBlueprintFile()
     if (!existingBlueprint) {
       print('No blueprint file found. Run `sanity blueprints init` first.')
       return
@@ -53,7 +55,7 @@ const addBlueprintsCommand: CliCommandDefinition = {
         ],
       })
 
-      const {filePath, resourceAdded, resource} = actions.resources.createFunctionResource({
+      const {filePath, resourceAdded, resource} = resourcesAction.createFunctionResource({
         name: functionName,
         type: functionType,
         displayName: functionName,

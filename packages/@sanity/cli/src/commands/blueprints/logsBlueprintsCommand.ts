@@ -40,14 +40,14 @@ const logsBlueprintsCommand: CliCommandDefinition = {
       return
     }
 
-    const {
-      blueprintsActions: actions,
-      utils: {display},
-    } = await import('@sanity/runtime-cli')
+    const {blueprint: blueprintAction, logs: logsAction} = await import(
+      '@sanity/runtime-cli/actions/blueprints'
+    )
+    const {display} = await import('@sanity/runtime-cli/utils')
 
     let blueprint = null
     try {
-      blueprint = await actions.blueprint.readBlueprintOnDisk({token})
+      blueprint = await blueprintAction.readBlueprintOnDisk({token})
     } catch (error) {
       print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
       return
@@ -78,7 +78,7 @@ const logsBlueprintsCommand: CliCommandDefinition = {
     // enable watch mode here
 
     try {
-      const {ok, logs, error} = await actions.logs.getLogs(stackId, auth)
+      const {ok, logs, error} = await logsAction.getLogs(stackId, auth)
 
       if (!ok) {
         print(`${display.colors.red('Failed')} to retrieve logs`)
