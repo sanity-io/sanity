@@ -6,6 +6,7 @@ const capabilitiesByRenderingContext: Record<StudioRenderingContext['name'], Cap
   coreUi: {
     globalUserMenu: true,
     globalWorkspaceControl: true,
+    comlink: true,
   },
   default: {},
 }
