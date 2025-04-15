@@ -128,6 +128,7 @@ export default defineConfig([
     name: 'chromium',
     title: 'studio-e2e-testing-chromium',
     dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
   },
   {
     ...defaultConfig,
@@ -135,5 +136,6 @@ export default defineConfig([
     name: 'firefox',
     title: 'studio-e2e-testing-firefox',
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
   },
 ])
