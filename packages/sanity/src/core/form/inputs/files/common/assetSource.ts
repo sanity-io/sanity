@@ -13,7 +13,7 @@ import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
 type DOMFile = globalThis.File
 
 interface Props {
-  assetFromSource: AssetFromSource[]
+  assetsFromSource: AssetFromSource[]
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   type: FileSchemaType
   resolveUploader: UploaderResolver
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function handleSelectAssetFromSource({
-  assetFromSource,
+  assetsFromSource,
   onChange,
   type,
   resolveUploader,
@@ -30,13 +30,13 @@ export function handleSelectAssetFromSource({
   isImage,
 }: Props): void {
   // const {onChange, type, resolveUploader} = this.props
-  if (!assetFromSource) {
+  if (!assetsFromSource) {
     throw new Error('No asset given')
   }
-  if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
+  if (!Array.isArray(assetsFromSource) || assetsFromSource.length === 0) {
     throw new Error('Returned value must be an array with at least one item (asset)')
   }
-  const firstAsset = assetFromSource[0]
+  const firstAsset = assetsFromSource[0]
   const assetProps = firstAsset.assetDocumentProps
   const mediaLibraryProps = firstAsset.mediaLibraryProps
   const originalFilename = assetProps?.originalFilename
