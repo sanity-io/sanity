@@ -171,6 +171,7 @@
     "@sanity/import": "^3.38.2",
     "@sanity/insert-menu": "^1.1.9",
     "@sanity/logos": "^2.1.13",
+    "@sanity/message-protocol": "^0.9.0",
     "@sanity/migrate": "3.84.0",
     "@sanity/mutator": "3.84.0",
     "@sanity/presentation-comlink": "^1.0.16",
