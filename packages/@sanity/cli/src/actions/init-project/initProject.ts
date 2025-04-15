@@ -315,12 +315,15 @@ export default async function initSanity(
   let initNext = false
   const isNextJs = detectedFramework?.slug === 'nextjs'
   if (isNextJs) {
-    initNext = await prompt.single({
-      type: 'confirm',
-      message:
-        'Would you like to add configuration files for a Sanity project in this Next.js folder?',
-      default: true,
-    })
+    initNext =
+      unattended ||
+      (await prompt.single({
+        type: 'confirm',
+        message:
+          'Would you like to add configuration files for a Sanity project in this Next.js folder?',
+        default: true,
+      }))
+
     trace.log({
       step: 'useDetectedFramework',
       selectedOption: initNext ? 'yes' : 'no',
