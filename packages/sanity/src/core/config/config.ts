@@ -25,14 +25,17 @@ import {
   type AsyncComposableOption,
   type AuthConfig,
   type ComposableOption,
-  type ConfigContext,
+  type ConfigContext as ConfigContextType,
   type DocumentCommentsEnabledContext,
   type DocumentLanguageFilterComponent,
   type DocumentLayoutProps,
   type PluginOptions,
-  type SourceOptions,
   type Tool,
 } from './types'
+
+type ConfigContext = ConfigContextType & {
+  workspaceName: string
+}
 
 type RenderDefault = (props: any) => ReactNode
 type DocumentCallbackContext = ConfigContext & {
@@ -55,8 +58,6 @@ type Config = {
   logo?: ComponentType
   icon?: ComponentType
   theme?: StudioTheme
-  // TODO: Why is this here? It seems internal implementation details are leaking into user land.
-  unstable_sources?: SourceOptions[]
 
   // Official plugins configs, require growth or above.
   features?: {
@@ -90,15 +91,12 @@ type Config = {
   plugins?: PluginOptions[]
   schema?: {
     name?: string
-    types?:
-      | SchemaTypeDefinition[]
-      | ComposableOption<SchemaTypeDefinition[], {projectId: string; dataset: string}> // Suggestion: Make this ConfigContext
+    types?: SchemaTypeDefinition[] | ComposableOption<SchemaTypeDefinition[], ConfigContext>
     templates?: Template[] | ComposableOption<Template[], ConfigContext>
   }
   document?: {
     components?: {
-      // Suggestion: rename to layout
-      unstable_layout?: ComponentType<{
+      layout?: ComponentType<{
         documentId: string
         documentType: string
         renderDefault: (props: DocumentLayoutProps) => React.JSX.Element
@@ -114,7 +112,7 @@ type Config = {
     actions?:
       | DocumentActionComponent[]
       | ComposableOption<DocumentActionComponent[], DocumentCallbackContext>
-    unstable_fieldActions?:
+    fieldActions?:
       | DocumentFieldAction[]
       | ComposableOption<
           DocumentFieldAction[],
@@ -135,6 +133,11 @@ type Config = {
         document: SanityDocumentLike
       }
     >
+    /**
+     * This is preserved as unstable, it is a implementation created for the i18n plugin
+     * It renders in the DocumentPanelHeader, but it is used for more things than just the
+     * plugin, ideally we will rename it to something that indicates it can be reused.
+     */
     unstable_languageFilter?: ComposableOption<
       DocumentLanguageFilterComponent[],
       DocumentCallbackContext
@@ -208,9 +211,6 @@ type Config = {
 
   // Suggestion: Move to workspaceOptions?
   search?: {
-    unstable_partialIndexing?: {
-      enabled: boolean
-    }
     strategy?: 'groqLegacy' | 'groq2024'
     enableLegacySearch?: boolean
   }
@@ -225,6 +225,11 @@ type Config = {
     eventsAPI?: {
       documents?: boolean
       releases?: boolean
+    }
+    search?: {
+      partialIndexing?: {
+        enabled: boolean
+      }
     }
   }
   // Suggestion: Move to workspaceOptions?
