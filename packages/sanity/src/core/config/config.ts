@@ -229,6 +229,11 @@ type Config = {
     enableLegacySearch?: boolean
   }
 
+  mediaLibrary?: {
+    enabled?: boolean
+    libraryId?: string
+  }
+
   // Suggestion: Move to workspaceOptions?
   beta?: {
     treeArrayEditing?: {enabled: boolean} // @deprecated, remove this.
