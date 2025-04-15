@@ -188,7 +188,7 @@ type Config = {
         title: string
       }>
       navbar: ComponentType<{
-        __internal_actions: NavbarAction[]
+        actions: NavbarAction[]
         title: string
       }>
       toolMenu: ComponentType<{
