@@ -11,14 +11,20 @@ import {type BaseImageInputProps} from './types'
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 
 function ImageInputBrowserComponent(
-  props: Pick<BaseImageInputProps, 'assetSources' | 'readOnly' | 'id'> & {
+  props: Pick<BaseImageInputProps, 'assetSources' | 'readOnly' | 'id' | 'schemaType'> & {
     setMenuOpen: (isOpen: boolean) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
   },
   forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {assetSources, readOnly, id, setMenuOpen, handleSelectImageFromAssetSource} = props
+  const {assetSources, readOnly, id, setMenuOpen, handleSelectImageFromAssetSource, schemaType} =
+    props
+  const sourcesFromSchema = schemaType.options?.sources
   const {t} = useTranslation()
+
+  if (sourcesFromSchema?.length === 0) {
+    return null
+  }
 
   if (assetSources && assetSources.length === 0) return null
 
