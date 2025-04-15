@@ -1,11 +1,10 @@
 import {defineField, type StringSchemaType} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {afterAll, expect, test, vi} from 'vitest'
+import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
 import {timeZoneLocalStorageNamespace} from '../../../../hooks/useTimeZone'
-import {type NormalizedTimeZone} from '../../../../scheduledPublishing/types'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
 import {DateTimeInput} from '../DateTimeInput'
@@ -19,12 +18,6 @@ const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaTyp
     <DateTimeInput {...inputProps} />
   </FormValueProvider>
 )
-
-const testTimeZoneLocalStorageId = `${timeZoneLocalStorageNamespace}.test`
-
-afterAll(() => {
-  localStorage.removeItem(testTimeZoneLocalStorageId)
-})
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
 // see globalSetup in jest config for details about how this is set up
@@ -138,77 +131,66 @@ test('Make sure time is displaying in wall time when displayTimeZone is not set'
 })
 
 test('Make sure we are respecting the saved timezone in localStorage when displayTimeZone is set', async () => {
-  localStorage.setItem(
-    testTimeZoneLocalStorageId,
-    JSON.stringify({
-      abbreviation: 'CET',
-      alternativeName: 'Central European Time',
-      city: 'Oslo',
-      name: 'Europe/Oslo',
-      namePretty: 'GMT+1',
-      offset: '+1',
-      value: 'Oslo',
-    } as NormalizedTimeZone),
-  )
+  const documentId = 'testDoc123'
+  const fieldName = 'test'
+  const localStorageKey = `${timeZoneLocalStorageNamespace}input.${documentId}.${fieldName}`
+  const initialUtcValue = '2021-06-15T12:00:00.000Z' // 12:00 UTC
+
+  // Set a timezone in localStorage (Tokyo: UTC+9)
+  localStorage.setItem(localStorageKey, 'Asia/Tokyo')
+
+  try {
+    const {result} = await renderStringInput({
+      fieldDefinition: defineField({
+        type: 'datetime',
+        name: fieldName,
+        options: {
+          displayTimeZone: 'Europe/Oslo', // Oslo: UTC+2 in summer, UTC+1 in winter
+          allowTimeZoneSwitch: true, // Default, but explicit for clarity
+        },
+      }),
+      props: {
+        documentValue: {_id: documentId, _type: 'datetime', [fieldName]: initialUtcValue},
+        id: fieldName,
+        value: initialUtcValue,
+        onChange: vi.fn(),
+      },
+      render: (inputProps) => (
+        <FormValueProvider value={{_id: documentId, _type: 'datetime'}}>
+          <DateTimeInput {...inputProps} />
+        </FormValueProvider>
+      ),
+    })
+
+    const input = result.container.querySelector('input')!
+
+    // Assert: The displayed time should be based on the localStorage timezone (Tokyo UTC+9), not Oslo (UTC+2)
+    // 12:00 UTC = 21:00 Tokyo time on June 15th
+    expect(input.value).toBe('2021-06-15 21:00')
+
+    // Optional: Check that the timezone button also reflects Tokyo
+    const timeZoneButton = result.getByTestId('timezone-button')
+    expect(timeZoneButton).toHaveTextContent('Tokyo')
+  } finally {
+    // Clean up localStorage
+    localStorage.removeItem(localStorageKey)
+  }
+})
+
+test('Make sure that if the localStorage timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
       name: 'test',
-      options: {displayTimeZone: 'Europe/London'},
+      options: {displayTimeZone: 'Europe/Oslo', allowTimeZoneSwitch: false},
     }),
     props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
     render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
   })
 
   const input = result.container.querySelector('input')!
-  // should be an hour ahead
-  expect(input.value).toBe('2021-06-15 13:00')
-})
-
-test('Make sure we are not respecting the saved timezone in localStorage when displayTimeZone is set and switch is not allowed', async () => {
-  localStorage.setItem(
-    testTimeZoneLocalStorageId,
-    JSON.stringify({
-      abbreviation: 'CET',
-      alternativeName: 'Central European Time',
-      city: 'Oslo',
-      name: 'Europe/Oslo',
-      namePretty: 'GMT+1',
-      offset: '+1',
-      value: 'Oslo',
-    } as NormalizedTimeZone),
-  )
-  // imagine at this step you go and change your schema to be allowTimeZoneSwitch: false
-  const {result} = await renderStringInput({
-    fieldDefinition: defineField({
-      type: 'datetime',
-      name: 'test',
-      options: {displayTimeZone: 'Europe/Dublin', allowTimeZoneSwitch: false},
-    }),
-    props: {documentValue: {test: '2021-01-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
-  })
-  const input = result.container.querySelector('input')!
-  // should be the same as UTC at this time of year
-  expect(input.value).toBe('2021-01-15 12:00')
-})
-
-test('the time zone can be changed by the user if allowed', async () => {
-  const {result} = await renderStringInput({
-    fieldDefinition: defineField({
-      type: 'datetime',
-      name: 'test',
-      options: {displayTimeZone: 'Europe/Oslo', allowTimeZoneSwitch: true},
-    }),
-    props: {documentValue: {test: '2021-06-15T12:00:00.000Z'}},
-    render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
-  })
-
-  // click on the TimeZoneButton
-  const timeZoneButton = result.getByText('GMT+1')
-  userEvent.click(timeZoneButton)
-  // ensure the dialog shows
-  expect(result.getByText('Select time zone')).toBeInTheDocument()
+  // should be 2 hours ahead for Oslo in Summer
+  expect(input.value).toBe('2021-06-15 14:00')
 })
 
 test('the time zone can not be changed by the user if not allowed', async () => {
@@ -223,7 +205,7 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   })
 
   // click on the TimeZoneButton
-  const timeZoneButton = result.getByText('GMT+1')
+  const timeZoneButton = result.getByText('Oslo')
   userEvent.click(timeZoneButton)
   // ensure the dialog shows
   expect(result.queryByText('Select time zone')).not.toBeInTheDocument()

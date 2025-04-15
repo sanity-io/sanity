@@ -35,6 +35,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
               <Box className="button-small">
                 {allowTimeZoneSwitch ? (
                   <Button
+                    data-testid="timezone-button"
                     icon={EarthAmericasIcon}
                     mode="bleed"
                     readOnly={!allowTimeZoneSwitch}
@@ -63,6 +64,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                   </Inline>
                 ) : (
                   <Button
+                    data-testid="timezone-button"
                     icon={EarthAmericasIcon}
                     mode="bleed"
                     readOnly={!allowTimeZoneSwitch}

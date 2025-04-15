@@ -118,8 +118,8 @@
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
     "@sanity/client": "^6.28.4",
-    "date-fns": "^4.1.0",
     "@sanity/types": "3.84.0",
+    "date-fns": "^4.1.0",
     "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.2"
   },

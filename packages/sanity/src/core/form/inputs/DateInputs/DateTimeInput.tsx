@@ -250,7 +250,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     displayTimeZone && (
                       <ButtonTimeZoneElementQuery>
                         <ButtonTimeZone
-                          data-testid="timezone-button"
                           tooltipContent={
                             <Translate
                               t={t}

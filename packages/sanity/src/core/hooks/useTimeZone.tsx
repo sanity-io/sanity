@@ -33,7 +33,7 @@ export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
 
-const timeZoneLocalStorageNamespace = 'timeZone.'
+export const timeZoneLocalStorageNamespace = 'timeZone.'
 
 const offsetToMinutes = (offset: string): number => {
   if (!offset) return 0
