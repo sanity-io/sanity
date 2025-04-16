@@ -361,6 +361,7 @@ exports[`exports snapshot 1`] = `
     "isCreateSquashedMutation": "function",
     "isCrossDatasetReference": "function",
     "isCrossDatasetReferenceSchemaType": "function",
+    "isDateTimeSchemaType": "function",
     "isDeleteDocumentGroupEvent": "function",
     "isDeleteDocumentVersionEvent": "function",
     "isDeleteMutation": "function",
