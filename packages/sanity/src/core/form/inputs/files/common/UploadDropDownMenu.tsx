@@ -49,6 +49,7 @@ function UploadDropDownMenuComponent(
   const {t} = useTranslation()
 
   const uniqId = useMemo(() => uniqueId(), [])
+  const uploadsDisabled = readOnly || directUploads === false
 
   const createAssetSourceInputId = useCallback(
     (assetSource: AssetSource) => {
@@ -87,10 +88,9 @@ function UploadDropDownMenuComponent(
   )
 
   const renderMenuItemForAssetSource = useCallback(
-    (assetSource: AssetSource) => {
+    (assetSource: AssetSource, index: number) => {
       const inputId = createAssetSourceInputId(assetSource)
       const isDefaultSource = assetSource.name === assetSources[0].name
-      const disabled = readOnly || (directUploads === false && isDefaultSource)
       return (
         <MenuItem
           {...{[ASSET_SOURCE_DATA_ATTRIBUTE]: assetSource.name}}
@@ -99,8 +99,8 @@ function UploadDropDownMenuComponent(
               ? t('input.files.common.upload-placeholder.file-input-button.default-source.badge')
               : undefined
           }
-          data-testid={`file-input-browse-button-${assetSource.name}`}
-          disabled={disabled}
+          data-testid={`file-input-upload-button-${index}`}
+          disabled={uploadsDisabled}
           htmlFor={inputId}
           icon={assetSource.icon}
           key={`${inputId}-menu-button`}
@@ -116,11 +116,10 @@ function UploadDropDownMenuComponent(
     [
       assetSources,
       createAssetSourceInputId,
-      directUploads,
       handleMenuItemClick,
-      readOnly,
       renderMenuItemLabel,
       t,
+      uploadsDisabled,
     ],
   )
 
@@ -160,13 +159,14 @@ function UploadDropDownMenuComponent(
     })
   }, [accept, assetSources, capture, createAssetSourceInputId, handleFileInputChange, multiple])
 
-  if (assetSources && assetSources.length > 1 && !readOnly) {
-    const menuItems = assetSources.map((assetSource) => renderMenuItemForAssetSource(assetSource))
+  if (assetSources && assetSources.length > 1) {
+    const menuItems = assetSources.map((assetSource, index) =>
+      renderMenuItemForAssetSource(assetSource, index),
+    )
     if (renderAsMenuGroup) {
       return (
         <>
           <MenuGroup
-            data-testid="upload-button-drop-down-menu-button"
             icon={UploadIcon}
             text={t('input.files.common.upload-placeholder.file-input-button.text')}
             popover={MENU_GROUP_POPOVER}
@@ -184,10 +184,11 @@ function UploadDropDownMenuComponent(
           ref={forwardedRef}
           button={
             <Button
-              data-testid="upload-button-drop-down-menu-button"
+              data-testid="file-input-upload-button-0"
               icon={UploadIcon}
               iconRight={ChevronDownIcon}
               mode="bleed"
+              disabled={uploadsDisabled}
               text={t('input.files.common.upload-placeholder.file-input-button.text')}
             />
           }
