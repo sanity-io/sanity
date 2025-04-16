@@ -45,19 +45,7 @@ export function StudioImageInput(props: ImageInputProps) {
     [supportsImageUploads],
   )
 
-  // NOTE: type.options.sources may be an empty array and in that case we're
-  // disabling selecting images from asset source  (it's a feature, not a bug)
-  const assetSources = useMemo(() => {
-    if (sourcesFromSchema) {
-      if (sourcesFromSchema.length === 0) {
-        // First asset source with upload capabilities should be present in order to upload
-        const firstWithUpload = imageConfig.assetSources.filter((source) => source.uploader)[0]
-        return firstWithUpload ? [firstWithUpload] : []
-      }
-      return sourcesFromSchema
-    }
-    return imageConfig.assetSources
-  }, [imageConfig, sourcesFromSchema])
+  const assetSources = sourcesFromSchema || imageConfig.assetSources
 
   const builder = useMemo(() => imageUrlBuilder(client), [client])
 

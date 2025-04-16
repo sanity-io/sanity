@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {useClient} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
@@ -36,19 +36,8 @@ export function StudioFileInput(props: FileInputProps) {
     },
     [fileConfig.directUploads],
   )
-  // NOTE: type.options.sources may be an empty array and in that case we're
-  // disabling selecting images from asset source  (it's a feature, not a bug)
-  const assetSources = useMemo(() => {
-    if (sourcesFromSchema) {
-      if (sourcesFromSchema.length === 0) {
-        // First asset source with upload capabilities should be present in order to upload
-        const firstWithUpload = fileConfig.assetSources.filter((source) => source.uploader)[0]
-        return firstWithUpload ? [firstWithUpload] : []
-      }
-      return sourcesFromSchema
-    }
-    return fileConfig.assetSources
-  }, [fileConfig, sourcesFromSchema])
+
+  const assetSources = sourcesFromSchema || fileConfig.assetSources
 
   const observeAsset = useCallback(
     (id: string) => observeFileAsset(documentPreviewStore, id),
