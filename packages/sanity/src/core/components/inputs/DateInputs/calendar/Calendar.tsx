@@ -91,12 +91,12 @@ export const Calendar = forwardRef(function Calendar(
   const {timeZone} = useTimeZone(timeZoneScope)
 
   const getDisplayMonth = useCallback(() => {
-    return Number(format(selectedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
-  }, [selectedDate, timeZone.name])
+    return Number(format(focusedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
+  }, [focusedDate, timeZone.name])
 
   const getDisplayYear = useCallback(() => {
-    return Number(format(selectedDate, 'YYYY', {timeZone: timeZone.name}))
-  }, [selectedDate, timeZone.name])
+    return Number(format(focusedDate, 'YYYY', {timeZone: timeZone.name}))
+  }, [focusedDate, timeZone.name])
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
   const setFocusedDate = useCallback(
