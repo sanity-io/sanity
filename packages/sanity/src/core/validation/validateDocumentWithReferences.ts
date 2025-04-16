@@ -73,7 +73,6 @@ type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
 const listenDocumentExists = (
   observeDocumentAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability'],
-  getClient: (options: SourceClientOptions) => SanityClient,
   id: string,
   versionId: string | undefined,
 ): Observable<boolean> =>
@@ -124,12 +123,7 @@ export function validateDocumentWithReferences(
       id$.pipe(
         distinct(),
         mergeMap(([{versionId}, id]) =>
-          listenDocumentExists(
-            ctx.observeDocumentPairAvailability,
-            ctx.getClient,
-            id,
-            versionId,
-          ).pipe(
+          listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
             map(
               // eslint-disable-next-line max-nested-callbacks
               (result) => [id, result] as const,

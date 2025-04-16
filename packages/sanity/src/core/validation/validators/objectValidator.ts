@@ -54,7 +54,16 @@ export const objectValidators: Validators = {
 
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
-      if (await getClient(RELEASES_STUDIO_CLIENT_OPTIONS).getDocument(value._ref)) {
+      const publishedDocumentExists = await getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+        .getDocument(value._ref)
+        .then((result) => !!result)
+        .catch(() => false)
+
+      /**
+       * If publishedDocumentExists then getDocuemtnExists is returning false
+       * because the published document will be unpublished in the current release
+       */
+      if (publishedDocumentExists) {
         return i18n.t('validation:object.reference-deleted', {documentId: value._ref})
       }
 
