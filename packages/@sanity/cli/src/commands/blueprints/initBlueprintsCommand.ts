@@ -47,8 +47,8 @@ const initBlueprintsCommand: CliCommandDefinition = {
       message: 'Choose a Blueprint manifest file type:',
       choices: [
         {value: 'json', name: 'JSON (Recommended)'},
-        {value: 'js', name: 'JavaScript (Beta)'},
-        {value: 'ts', name: 'TypeScript (Alpha)'},
+        {value: 'js', name: 'JavaScript (Available soon)', disabled: true},
+        {value: 'ts', name: 'TypeScript (Available soon)', disabled: true},
       ],
     })
 
