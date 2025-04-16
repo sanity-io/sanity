@@ -15,8 +15,12 @@ interface Props {
 
 const DocumentPreview = (props: Props) => {
   const {schedule, schemaType} = props
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
 
-  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(schedule)
+  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(
+    schedule,
+    timeZoneScope,
+  )
   const {onComplete} = useDocumentActionProps()
   const publishedId = useMemo(() => getScheduledDocumentId(schedule), [schedule])
 

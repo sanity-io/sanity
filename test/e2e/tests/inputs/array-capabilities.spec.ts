@@ -4,7 +4,7 @@ import {type SanityDocument} from '@sanity/client'
 import {test as base} from '../../studio-test'
 
 const test = base.extend<{testDoc: SanityDocument}>({
-  testDoc: async ({page, sanityClient}, use) => {
+  testDoc: async ({page, sanityClient}, fnUse) => {
     const referenceDoc = await sanityClient.create({
       _type: 'author',
       name: 'Test Author',
@@ -23,8 +23,7 @@ const test = base.extend<{testDoc: SanityDocument}>({
       primitiveArray: ['First', 2],
       arrayOfReferences: [{_type: 'reference', _ref: referenceDoc._id}],
     })
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    await use(testDoc)
+    await fnUse(testDoc)
     await sanityClient.delete(testDoc._id)
     await sanityClient.delete(referenceDoc._id)
   },
