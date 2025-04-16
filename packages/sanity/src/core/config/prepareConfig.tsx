@@ -111,18 +111,15 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
 }
 
 // Create default asset sources with configuration
-const createDatasetAssetSources = (
-  config: SourceOptions,
-  context: ConfigContext & {client: SanityClient},
-) => {
+const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) => {
   const fileSource = createDatasetFileAssetSource({
-    client: context.client,
-    config,
+    client,
+    title: config.title || config.name,
   })
 
   const imageSource = createDatasetImageAssetSource({
-    client: context.client,
-    config,
+    client,
+    title: config.title || config.name,
   })
 
   return {fileSource, imageSource}
@@ -375,7 +372,7 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
-  const defaultAssetSources = createDatasetAssetSources(config, context)
+  const defaultAssetSources = createDatasetAssetSources(config, context.client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
   let templates!: Source['templates']
