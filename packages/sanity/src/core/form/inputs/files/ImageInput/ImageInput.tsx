@@ -95,10 +95,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     value?._upload,
     value?.asset,
   ])
-  const isImageToolEnabled = useCallback(
-    () => get(schemaType, 'options.hotspot') === true,
-    [schemaType],
-  )
+  const isImageToolEnabled = useCallback(() => {
+    const hotspotOptions = get(schemaType, 'options.hotspot')
+    return typeof hotspotOptions === 'object' || hotspotOptions === true
+  }, [schemaType])
   const valueIsArrayElement = useCallback(() => {
     const parentPathSegment = path.slice(-1)[0]
 

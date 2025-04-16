@@ -9,9 +9,20 @@ import {type ObjectDefinition} from './object'
 export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'image' | 'location'
 
 /** @public */
+export interface HotspotPreview {
+  title: string
+  aspectRatio: number
+}
+
+/** @public */
+export interface HotspotOptions {
+  previews?: HotspotPreview[]
+}
+
+/** @public */
 export interface ImageOptions extends FileOptions {
   metadata?: ImageMetadataType[]
-  hotspot?: boolean
+  hotspot?: boolean | HotspotOptions
 }
 
 /** @public */
