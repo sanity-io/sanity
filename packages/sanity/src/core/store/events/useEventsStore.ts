@@ -14,6 +14,7 @@ import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {
   type DocumentGroupEvent,
   type EventsStore,
+  isCreateDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
@@ -109,7 +110,6 @@ export function useEventsStore({
     [client, documentId, revisionId],
   )
   const revision = useObservable(revision$, null)
-
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
     if (!events) return null
@@ -118,6 +118,10 @@ export function useEventsStore({
       // Skip the first published, the since and rev cannot be the same.
       const lastPublishedId = events.slice(1).find(isPublishDocumentVersionEvent)?.id
       if (lastPublishedId) return lastPublishedId
+
+      // If it doesn't have a published event used the creation event as the since.
+      const creationEvent = events.find(isCreateDocumentVersionEvent)
+      if (creationEvent) return creationEvent.id
     }
 
     // rev has not been selected, the is seeing the last version of the document, select the event that comes after

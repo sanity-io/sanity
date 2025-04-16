@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.84.0",
+  "version": "3.85.1",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -117,8 +117,8 @@
   "dependencies": {
     "@date-fns/tz": "^1.2.0",
     "@date-fns/utc": "^2.1.0",
-    "@sanity/client": "^6.28.4",
-    "@sanity/types": "3.84.0",
+    "@sanity/client": "^6.29.0",
+    "@sanity/types": "3.85.1",
     "date-fns": "^4.1.0",
     "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.2"

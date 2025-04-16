@@ -360,6 +360,17 @@ export interface CliConfig {
    * Signals to `sanity` commands that this is not a studio.
    */
   app?: AppConfig
+
+  /**
+   * Configuration for Sanity media libraries.
+   */
+  mediaLibrary?: {
+    /**
+     * The path to the Media Library aspects directory. When using the CLI to manage aspects, this
+     * is the directory they will be read from and written to.
+     */
+    aspectsPath: string
+  }
 }
 
 export type UserViteConfig =
