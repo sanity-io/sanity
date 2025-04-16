@@ -1003,7 +1003,7 @@ export interface BetaFeatures {
   }
 
   /**
-   * @beta
+   * @deprecated - start in create is no longer available.
    */
   create?: {
     /**

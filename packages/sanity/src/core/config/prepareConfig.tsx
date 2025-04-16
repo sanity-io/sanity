@@ -27,7 +27,6 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
-  createFallbackOriginReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -51,7 +50,6 @@ import {
   schemaTemplatesReducer,
   searchStrategyReducer,
   serverDocumentActionsReducer,
-  startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -708,8 +706,8 @@ function resolveSource({
         enabled: false,
       },
       create: {
-        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
-        fallbackStudioOrigin: createFallbackOriginReducer(config),
+        startInCreateEnabled: false,
+        fallbackStudioOrigin: undefined,
       },
     },
     // eslint-disable-next-line camelcase
