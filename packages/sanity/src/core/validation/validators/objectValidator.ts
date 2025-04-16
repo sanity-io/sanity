@@ -60,7 +60,7 @@ export const objectValidators: Validators = {
         .catch(() => false)
 
       /**
-       * If publishedDocumentExists then getDocuemtnExists is returning false
+       * If publishedDocumentExists then getDocumentExists is returning false
        * because the published document will be unpublished in the current release
        */
       if (publishedDocumentExists) {
