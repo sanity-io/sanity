@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {DocumentsIcon, ImageIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 
-import {type SourceOptions} from '../../../config'
 import {DatasetAssetSource} from './shared/DatasetAssetSource'
 import {createDatasetUploader} from './uploader'
 
@@ -12,7 +11,6 @@ export const sourceName = 'sanity-default'
 
 export interface CreateDatasetAssetSourceProps {
   client: SanityClient
-  config: SourceOptions
   title?: string
 }
 
@@ -24,7 +22,7 @@ export interface CreateDatasetAssetSourceProps {
 export function createDatasetImageAssetSource(props: CreateDatasetAssetSourceProps): AssetSource {
   return {
     name: sourceName,
-    title: props.title || props.config.title || props.config.name,
+    title: props.title,
     // i18nKey: 'asset-sources.dataset.image.title',
     component: DatasetAssetSource,
     icon: ImageIcon,
@@ -41,7 +39,7 @@ export function createDatasetImageAssetSource(props: CreateDatasetAssetSourcePro
 export function createDatasetFileAssetSource(props: CreateDatasetAssetSourceProps): AssetSource {
   return {
     name: sourceName,
-    title: props.title || props.config.title || props.config.name,
+    title: props.title,
     // i18nKey: 'asset-sources.dataset.file.title',
     component: DatasetAssetSource,
     icon: DocumentsIcon,
