@@ -48,8 +48,8 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-    expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
+    expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+    expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
   })
 
   it('renders only the upload button when it has no assetSources', async () => {
@@ -62,9 +62,9 @@ describe('FileInput with empty state', () => {
       observeAsset: observeAssetStub,
       render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} />,
     })
-
-    expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-    expect(result.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
+    expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
+    expect(result.queryByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
+    expect(result.queryByTestId('file-input-browse-button-sanity-default')).not.toBeInTheDocument()
   })
 
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
@@ -78,14 +78,14 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => (
         <BaseFileInput
           {...inputProps}
-          assetSources={[{name: 'source1'}, {name: 'source2'}] as any}
+          assetSources={[{name: 'source1', uploader: {}}, {name: 'source2'}] as any}
         />
       ),
     })
 
     const browseButton = result.queryByTestId('file-input-multi-browse-button')
 
-    expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
+    expect(result.queryByTestId('file-input-upload-button-source1')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
     fireEvent.click(browseButton!)
@@ -109,9 +109,9 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-      'true',
-    )
+    expect(
+      result.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
+    ).toBe('true')
   })
 
   it('has default text that mentions that you cannot upload files when directUploads is false', async () => {
@@ -125,9 +125,9 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-      'true',
-    )
+    expect(
+      result.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
+    ).toBe('true')
   })
 
   /* readOnly - the file input is read only or not */
@@ -143,9 +143,9 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-      'true',
-    )
+    expect(
+      result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+    ).toBe('true')
   })
 
   it('does not allow for browsing when input is readOnly', async () => {
@@ -159,9 +159,9 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
-    expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
-      'true',
-    )
+    expect(
+      result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+    ).toBe('true')
   })
 
   it('does not allow for upload when input is readOnly', async () => {
@@ -239,11 +239,11 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
+      expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
     })
   })
 
-  it('renders the browse button in the file menu when it has no assetSources', async () => {
+  it('renders the upload button, but no browse item in the file menu when it has empty sources in the schema type', async () => {
     const {result} = await renderFileInput({
       fieldDefinition: {
         name: 'someFile',
@@ -251,14 +251,23 @@ describe('FileInput with asset', () => {
         type: 'file',
       },
       observeAsset: observeAssetStub,
-      render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} value={value} />,
+      render: (inputProps) => (
+        <BaseFileInput
+          {...inputProps}
+          schemaType={{
+            ...inputProps.schemaType,
+            options: {...inputProps.schemaType.options, sources: []},
+          }}
+          value={value}
+        />
+      ),
     })
 
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
+      expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+      expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
     })
   })
 
@@ -303,9 +312,9 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-        '',
-      )
+      expect(
+        result.queryByTestId('file-input-upload-button-test-source')?.getAttribute('data-disabled'),
+      ).toBe('')
     })
   })
 
@@ -325,9 +334,9 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-        '',
-      )
+      expect(
+        result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      ).toBe('')
     })
   })
 
@@ -345,7 +354,9 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button')!.hasAttribute('data-disabled'))
+      expect(
+        result.queryByTestId('file-input-browse-button-test-source')!.hasAttribute('data-disabled'),
+      )
     })
   })
 
