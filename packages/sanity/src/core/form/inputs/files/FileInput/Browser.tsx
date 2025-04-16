@@ -85,7 +85,7 @@ export function Browser(props: FileAssetProps) {
       mode="bleed"
       // eslint-disable-next-line react/jsx-no-bind
       onClick={() => handleSelectAssetFromSource(assetSources[0])}
-      data-testid="file-input-browse-button"
+      data-testid={`file-input-browse-button-${assetSources[0].name}`}
       disabled={readOnly}
       ref={browseButtonElementRef}
     />

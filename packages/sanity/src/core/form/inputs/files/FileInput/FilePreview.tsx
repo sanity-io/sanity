@@ -123,11 +123,10 @@ export function FilePreview(props: FileAssetProps) {
             accept={accept}
             data-asset-source-name={assetSourcesWithUpload[0].name}
             text={t('inputs.files.common.actions-menu.upload.label')}
-            data-testid="file-input-upload-button"
+            data-testid={`file-input-upload-button-${assetSourcesWithUpload[0].name}`}
             disabled={readOnly || !directUploads}
           />
         )
-        break
       default:
         return (
           <UploadDropDownMenu
@@ -136,6 +135,7 @@ export function FilePreview(props: FileAssetProps) {
             directUploads={directUploads}
             onSelectFiles={handleSelectFilesFromAssetSource}
             readOnly={readOnly}
+            data-testid="file-input-upload-drop-down-menu-button"
             renderAsMenuGroup
           />
         )
