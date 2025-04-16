@@ -48,9 +48,8 @@ const addBlueprintsCommand: CliCommandDefinition = {
         type: 'list',
         message: 'Choose function type:',
         choices: [
-          {value: 'document-mutation', name: 'Document Mutation'},
-          {value: 'document-publish', name: 'Document Publish (Available soon)', disabled: true},
-          {value: 'document-update', name: 'Document Update (Available soon)', disabled: true},
+          {value: 'document-publish', name: 'Document Publish'},
+          {value: 'document-create', name: 'Document Create (Available soon)', disabled: true},
           {value: 'document-delete', name: 'Document Delete (Available soon)', disabled: true},
         ],
       })
