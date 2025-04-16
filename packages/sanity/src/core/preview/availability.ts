@@ -6,7 +6,7 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord, isVersionId} from '../util'
+import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
@@ -85,10 +85,10 @@ export function createPreviewAvailabilityObserver(
    */
   function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
     // check for existence
-    return observePaths(isVersionId(id) ? {_ref: id} : {_ref: id}, [['_rev'], ['_system']]).pipe(
+    return observePaths({_ref: id}, [['_rev'], ['_system']]).pipe(
       map((res) => ({
         hasRev: isRecord(res) && Boolean('_rev' in res && res?._rev),
-        isDeleted: isRecord(res) && res?._system?.delete === true,
+        isDeleted: isRecord(res) && res._system?.delete === true,
       })),
       distinctUntilChanged(),
       switchMap(({hasRev, isDeleted}) => {
