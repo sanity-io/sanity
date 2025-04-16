@@ -263,12 +263,6 @@ const config = {
                 message:
                   'Please use named imports, e.g. `import {test} from "studio-test"` instead.',
               },
-              {
-                name: '@sanity/test',
-                importNames: ['test', 'default'],
-                message:
-                  'Please use named imports, e.g. `import {test} from "studio-test"` instead.',
-              },
             ],
           },
         ],
