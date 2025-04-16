@@ -1,5 +1,6 @@
 import {isReference, type Validators} from '@sanity/types'
 
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getPublishedId} from '../../util'
 import {genericValidators} from './genericValidator'
 
@@ -27,7 +28,7 @@ export const objectValidators: Validators = {
       return true
     }
 
-    const {type, document, getDocumentExists, i18n} = context
+    const {type, document, getDocumentExists, i18n, getClient} = context
 
     if (!isReference(value)) {
       return message || i18n.t('validation:object.not-reference')
@@ -50,8 +51,13 @@ export const objectValidators: Validators = {
       // a document should be able to reference itself without first being published
       return true
     }
+
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
+      if (await getClient(RELEASES_STUDIO_CLIENT_OPTIONS).getDocument(value._ref)) {
+        return i18n.t('validation:object.reference-deleted', {documentId: value._ref})
+      }
+
       return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
     }
 

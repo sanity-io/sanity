@@ -73,11 +73,18 @@ type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 
 const listenDocumentExists = (
   observeDocumentAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability'],
+  getClient: (options: SourceClientOptions) => SanityClient,
   id: string,
   versionId: string | undefined,
 ): Observable<boolean> =>
   observeDocumentAvailability(id, {version: versionId}).pipe(
-    map(({published, version}) => published.available || version?.available || false),
+    map(({published, version}) => {
+      if (!version?.available && version?.reason === 'VERSION_DELETED') {
+        return false
+      }
+
+      return published.available || version?.available || false
+    }),
   )
 
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
@@ -117,7 +124,12 @@ export function validateDocumentWithReferences(
       id$.pipe(
         distinct(),
         mergeMap(([{versionId}, id]) =>
-          listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
+          listenDocumentExists(
+            ctx.observeDocumentPairAvailability,
+            ctx.getClient,
+            id,
+            versionId,
+          ).pipe(
             map(
               // eslint-disable-next-line max-nested-callbacks
               (result) => [id, result] as const,

@@ -18,6 +18,7 @@ export type Id = string
 export type Previewable = (
   | {_id: string}
   | {_type: string}
+  | {_system?: {delete: boolean}}
   | {_ref: string; _dataset?: string; _projectId?: string}
 ) & {
   /**
@@ -77,7 +78,7 @@ export type DocumentAvailability =
     }
   | {
       available: false
-      reason: 'PERMISSION_DENIED' | 'NOT_FOUND'
+      reason: 'PERMISSION_DENIED' | 'NOT_FOUND' | 'VERSION_DELETED'
     }
 
 /**
