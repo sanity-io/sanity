@@ -7,8 +7,9 @@ type StackFunctionResource = types.StackFunctionResource
 const helpText = `
 Options
   --name <name> The name of the function to retrieve logs for
-  --limit <limit> The number of log entries to retrieve
+  --limit <limit> The number of log entries to retrieve [default 50]
   --json If set return json
+  --utc Use UTC dates in logs
 
 Examples
   # Retrieve logs for Sanity Function abcd1234
@@ -25,6 +26,7 @@ const defaultFlags = {
   name: '',
   limit: 50,
   json: false,
+  utc: false,
 }
 
 const logsFunctionsCommand: CliCommandDefinition = {
@@ -45,8 +47,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
     })
 
     if (flags.name === '') {
-      print('You must provide a function name')
-      return
+      throw new Error('You must provide a function name via the --name flag')
     }
 
     const token = client.config().token
@@ -59,8 +60,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
     })
 
     if (!deployedStack) {
-      print('Stack not found')
-      return
+      throw new Error('Stack not found')
     }
 
     const blueprintConfig = blueprint.readConfigFile()
@@ -105,7 +105,10 @@ const logsFunctionsCommand: CliCommandDefinition = {
         for (const log of filteredLogs) {
           const {time, level, message} = log
           const date = new Date(time)
-          print(`${date.toLocaleDateString()} ${date.toLocaleTimeString()} ${level} ${message}`)
+          const dateString = flags.utc
+            ? date.toUTCString()
+            : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+          print(`${dateString} ${level} ${message}`)
         }
       }
     } else {

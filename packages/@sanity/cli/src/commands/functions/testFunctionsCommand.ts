@@ -38,8 +38,7 @@ const testFunctionsCommand: CliCommandDefinition = {
     const flags = {...defaultFlags, ...args.extOptions}
 
     if (flags.name === '') {
-      print('You must provide a function name')
-      return
+      throw new Error('You must provide a function name via the --name flag')
     }
 
     const {test} = await import('@sanity/runtime-cli/actions/functions')
@@ -52,7 +51,7 @@ const testFunctionsCommand: CliCommandDefinition = {
 
     const src = findFunction.getFunctionSource(parsedBlueprint, flags.name)
     if (!src) {
-      print(`Error: Function ${flags.name} has no source code`)
+      throw new Error(`Error: Function ${flags.name} has no source code`)
     }
 
     const {json, logs, error} = await test.testAction(
