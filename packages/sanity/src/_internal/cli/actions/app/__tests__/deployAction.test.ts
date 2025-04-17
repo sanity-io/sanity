@@ -4,19 +4,19 @@ import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import buildSanityStudio from '../../build/buildAction'
 import * as _helpers from '../../deploy/helpers'
 import {type UserApplication} from '../../deploy/helpers'
+import buildSanityApp from '../buildAction'
 import deployAppAction, {type DeployAppActionFlags} from '../deployAction'
 
 // Mock dependencies
 vi.mock('tar-fs')
 vi.mock('node:zlib')
 vi.mock('../../deploy/helpers')
-vi.mock('../../build/buildAction')
+vi.mock('../buildAction')
 
 const helpers = vi.mocked(_helpers)
-const buildSanityStudioMock = vi.mocked(buildSanityStudio)
+const buildSanityAppMock = vi.mocked(buildSanityApp)
 const tarPackMock = vi.mocked(tar.pack)
 const zlibCreateGzipMock = vi.mocked(zlib.createGzip)
 type SpinnerInstance = {
@@ -79,7 +79,7 @@ describe('deployAppAction', () => {
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
@@ -94,7 +94,7 @@ describe('deployAppAction', () => {
     )
 
     // Check that buildSanityStudio was called
-    expect(buildSanityStudioMock).toHaveBeenCalledWith(
+    expect(buildSanityAppMock).toHaveBeenCalledWith(
       expect.objectContaining({
         extOptions: {build: true},
         argsWithoutOptions: ['customSourceDir'],
@@ -139,7 +139,7 @@ describe('deployAppAction', () => {
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockApp)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
@@ -186,7 +186,7 @@ describe('deployAppAction', () => {
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
@@ -208,7 +208,7 @@ describe('deployAppAction', () => {
       message: expect.stringContaining('is not empty, do you want to proceed?'),
       default: false,
     })
-    expect(buildSanityStudioMock).toHaveBeenCalled()
+    expect(buildSanityAppMock).toHaveBeenCalled()
     expect(mockSpinner.start).toHaveBeenCalled()
     expect(mockSpinner.succeed).toHaveBeenCalled()
   })
@@ -217,7 +217,7 @@ describe('deployAppAction', () => {
     const mockSpinner = mockContext.output.spinner('')
 
     helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: false})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: false})
 
     await deployAppAction(
       {
@@ -227,7 +227,7 @@ describe('deployAppAction', () => {
       mockContext,
     )
 
-    expect(buildSanityStudioMock).toHaveBeenCalled()
+    expect(buildSanityAppMock).toHaveBeenCalled()
     expect(helpers.createDeployment).not.toHaveBeenCalled()
     expect(mockSpinner.fail).not.toHaveBeenCalled()
   })
@@ -237,7 +237,7 @@ describe('deployAppAction', () => {
 
     helpers.checkDir.mockRejectedValueOnce(new Error('Example error'))
     helpers.dirIsEmptyOrNonExistent.mockResolvedValue(true)
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
 
     await expect(
       deployAppAction(
@@ -276,7 +276,7 @@ describe('deployAppAction', () => {
     )
 
     // Check that buildSanityStudio was NOT called
-    expect(buildSanityStudioMock).not.toHaveBeenCalled()
+    expect(buildSanityAppMock).not.toHaveBeenCalled()
     expect(helpers.createDeployment).toHaveBeenCalled()
   })
 
@@ -289,7 +289,7 @@ describe('deployAppAction', () => {
       message: 'Application limit reached',
       error: 'Payment Required',
     })
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
@@ -331,7 +331,7 @@ describe('deployAppAction', () => {
     helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
     helpers.getOrCreateApplication.mockResolvedValueOnce(mockApp)
     helpers.createDeployment.mockResolvedValueOnce({location: 'https://app-host'})
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
+    buildSanityAppMock.mockResolvedValueOnce({didCompile: true})
     tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
       typeof tar.pack
     >)
