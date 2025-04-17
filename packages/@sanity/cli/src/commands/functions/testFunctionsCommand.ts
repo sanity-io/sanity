@@ -4,24 +4,24 @@ const helpText = `
 Options
   --data <data> Data to send to the function
   --file <file> Read data from file and send to the function
-  --path <path> Path to your Sanity Function code
+  --name <name> The name of your Sanity Function
   --timeout <timeout> Execution timeout value in seconds
 
 Examples
   # Test function passing event data on command line
-  sanity functions test --path ./test.ts --data '{ "id": 1 }'
+  sanity functions test --name echo --data '{ "id": 1 }'
 
   # Test function passing event data via a file
-  sanity functions test -path ./test.js --file 'payload.json'
+  sanity functions test -name echo --file 'payload.json'
 
   # Test function passing event data on command line and cap execution time to 60 seconds
-  sanity functions test -path ./test.ts --data '{ "id": 1 }' --timeout 60
+  sanity functions test -name echo --data '{ "id": 1 }' --timeout 60
 `
 
 const defaultFlags = {
   data: undefined,
   file: undefined,
-  path: undefined,
+  name: '',
   timeout: 5, // seconds
 }
 
@@ -37,24 +37,41 @@ const testFunctionsCommand: CliCommandDefinition = {
     const {print} = output
     const flags = {...defaultFlags, ...args.extOptions}
 
-    if (flags.path) {
-      const {testAction} = await import('@sanity/runtime-cli')
-      const {json, logs, error} = await testAction(flags.path, {
+    if (flags.name === '') {
+      print('You must provide a function name')
+      return
+    }
+
+    const {test} = await import('@sanity/runtime-cli/actions/functions')
+    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {findFunction} = await import('@sanity/runtime-cli/utils')
+
+    const {parsedBlueprint} = await blueprint.readBlueprintOnDisk({
+      getStack: false,
+    })
+
+    const src = findFunction.getFunctionSource(parsedBlueprint, flags.name)
+    if (!src) {
+      print(`Error: Function ${flags.name} has no source code`)
+    }
+
+    const {json, logs, error} = await test.testAction(
+      src,
+      {
         data: flags.data,
         file: flags.file,
         timeout: flags.timeout,
-      })
+      },
+      {}, // @TODO: Add context
+    )
 
-      if (error) {
-        print(error.toString())
-      } else {
-        print('Logs:')
-        print(logs)
-        print('Response:')
-        print(JSON.stringify(json, null, 2))
-      }
+    if (error) {
+      print(error.toString())
     } else {
-      print('You must provide a path to the Sanity Function code')
+      print('Logs:')
+      print(logs)
+      print('Response:')
+      print(JSON.stringify(json, null, 2))
     }
   },
 }

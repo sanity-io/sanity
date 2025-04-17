@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 const SEARCH_KEY = 'studio.search.recent'
 test('searching creates unique saved searches', async ({
@@ -8,7 +9,7 @@ test('searching creates unique saved searches', async ({
   sanityClient,
 }) => {
   const dataset = sanityClient.config().dataset
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
 
   const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SEARCH_KEY}.${dataset}`,

@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {mockActionsFeatureToggle} from '../../helpers/mockActionsFeatureToggle'
+import {test} from '../../studio-test'
 
 // This test is skipped because the feature toggle is disable by the use of `releases`, see https://github.com/sanity-io/sanity/blob/corel/packages/sanity/src/core/releases/plugin/index.ts#L61-L62
 // Re enable once the feature toggle is removed and we support serverDocumentActions with releases.
@@ -27,7 +27,7 @@ test.skip('Actions API should be used if the feature toggle is enabled and the S
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill('Test title')
   const actionsEditResponse = await (await actionsEditRequest).json()
 
@@ -59,7 +59,7 @@ test('Actions API should not be used if the feature toggle is enabled, but the S
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill('Test title')
   const mutateEditResponse = await (await mutateEditRequest).json()
 
@@ -97,7 +97,7 @@ test('Actions API should not be used if the feature toggle is not enabled, regar
 
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill('Test title')
   const mutateEditResponse = await (await mutateEditRequest).json()
 

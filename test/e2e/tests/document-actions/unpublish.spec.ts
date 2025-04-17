@@ -1,11 +1,11 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {
   expectCreatedStatus,
   expectPublishedStatus,
   expectUnpublishedStatus,
 } from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`should be able to unpublish a published document`, async ({page, createDraftDocument}) => {
   /** publish initial action */
@@ -23,7 +23,7 @@ test(`should be able to unpublish a published document`, async ({page, createDra
     .filter({hasText: 'Unpublish document?Are you'})
     .nth(1)
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
   await expectCreatedStatus(documentStatus)

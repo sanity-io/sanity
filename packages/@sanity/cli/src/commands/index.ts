@@ -1,8 +1,18 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
+import addBlueprintsCommand from './blueprints/addBlueprintsCommand'
+import blueprintsGroup from './blueprints/blueprintsGroup'
+import configBlueprintsCommand from './blueprints/configBlueprintsCommand'
+import deployBlueprintsCommand from './blueprints/deployBlueprintsCommand'
+import infoBlueprintsCommand from './blueprints/infoBlueprintsCommand'
+import initBlueprintsCommand from './blueprints/initBlueprintsCommand'
+import logsBlueprintsCommand from './blueprints/logsBlueprintsCommand'
+import planBlueprintsCommand from './blueprints/planBlueprintsCommand'
+import listBlueprintsCommand from './blueprints/stacksBlueprintsCommand'
 import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
 import docsCommand from './docs/docsCommand'
 import devfunctionsCommand from './functions/devFunctionsCommand'
+import envFunctionsCommand from './functions/envFunctionsCommand'
 import functionsGroup from './functions/functionsGroup'
 import logsfunctionsCommand from './functions/logsFunctionsCommand'
 import testfunctionsCommand from './functions/testFunctionsCommand'
@@ -47,4 +57,14 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   devfunctionsCommand,
   logsfunctionsCommand,
   testfunctionsCommand,
+  envFunctionsCommand,
+  blueprintsGroup,
+  infoBlueprintsCommand,
+  listBlueprintsCommand,
+  initBlueprintsCommand,
+  deployBlueprintsCommand,
+  logsBlueprintsCommand,
+  addBlueprintsCommand,
+  configBlueprintsCommand,
+  planBlueprintsCommand,
 ]
