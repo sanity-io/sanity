@@ -30,10 +30,10 @@ export type ImageInputProps = Omit<
  * @beta */
 export function StudioImageInput(props: ImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
-  const {image} = useFormBuilder().__internal
+  const {image: imageConfig} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const supportsImageUploads = image.directUploads
+  const supportsImageUploads = imageConfig.directUploads
 
   const resolveUploader = useCallback(
     (type: SchemaType, file: FileLike) => {
@@ -45,12 +45,7 @@ export function StudioImageInput(props: ImageInputProps) {
     [supportsImageUploads],
   )
 
-  // note: type.options.sources may be an empty array and in that case we're
-  // disabling selecting images from asset source  (it's a feature, not a bug)
-  const assetSources = useMemo(
-    () => sourcesFromSchema || image.assetSources,
-    [image, sourcesFromSchema],
-  )
+  const assetSources = sourcesFromSchema || imageConfig.assetSources
 
   const builder = useMemo(() => imageUrlBuilder(client), [client])
 
