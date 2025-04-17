@@ -123,7 +123,7 @@ export default async function deployAppAction(
   const base = path.basename(sourceDir)
   const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
 
-  spinner = output.spinner('Deploying to Core...').start()
+  spinner = output.spinner('Deploying...').start()
   try {
     await createDeployment({
       client,

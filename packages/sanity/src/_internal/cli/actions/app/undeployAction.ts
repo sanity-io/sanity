@@ -51,7 +51,7 @@ export default async function undeployAppAction(
     type: 'confirm',
     default: false,
     message:
-      `This will undeploy ${chalk.yellow(userApplication.appHost)} and make it unavailable for your users.
+      `This will undeploy ${chalk.yellow(userApplication.id)} and make it unavailable for your users.
   The hostname will be available for anyone to claim.
   Are you ${chalk.red('sure')} you want to undeploy?`.trim(),
   })
