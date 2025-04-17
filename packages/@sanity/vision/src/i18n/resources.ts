@@ -43,6 +43,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'label.saved-queries': 'Saved queries',
   /** Search queries */
   'label.search-queries': 'Search queries',
+  /** Share query */
+  'label.share': 'Share',
   /** Label for saved query type "team" */
   'label.team': 'Team',
 

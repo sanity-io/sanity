@@ -1,13 +1,5 @@
+import {AddIcon, EditIcon, EllipsisVerticalIcon, SearchIcon, TrashIcon} from '@sanity/icons'
 import {
-  AddIcon,
-  ClockIcon,
-  EditIcon,
-  EllipsisVerticalIcon,
-  SearchIcon,
-  TrashIcon,
-} from '@sanity/icons'
-import {
-  Badge,
   Box,
   Button,
   Card,
@@ -16,7 +8,6 @@ import {
   Menu,
   MenuButton,
   Stack,
-  Switch,
   Text,
   TextInput,
   useToast,
@@ -67,7 +58,8 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
+  const [selectedUrl, setSelectedUrl] = useState<string | null>(url)
+  // const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
 
   const handleSave = useCallback(async () => {
     if (url && queries?.map((q) => q.url).includes(url)) {
@@ -138,45 +130,45 @@ export function QueryRecall({
     [updateQuery, toast, t],
   )
 
-  const handleShareToggle = useCallback(
-    async (query: QueryConfig) => {
-      // Set optimistic shared status
-      setOptimisticShared((prev) => ({...prev, [query._key]: !query.shared}))
+  // const handleShareToggle = useCallback(
+  //   async (query: QueryConfig) => {
+  //     // Set optimistic shared status
+  //     setOptimisticShared((prev) => ({...prev, [query._key]: !query.shared}))
 
-      try {
-        await updateQuery({
-          ...query,
-          shared: !query.shared,
-        })
-        // Clear optimistic value on success
-        setOptimisticShared((prev) => {
-          const next = {...prev}
-          delete next[query._key]
-          return next
-        })
-      } catch (err) {
-        // Clear optimistic value on error
-        setOptimisticShared((prev) => {
-          const next = {...prev}
-          delete next[query._key]
-          return next
-        })
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('share-query.error'),
-          description: err.message,
-        })
-      }
-    },
-    [updateQuery, toast, t],
-  )
+  //     try {
+  //       await updateQuery({
+  //         ...query,
+  //         shared: !query.shared,
+  //       })
+  //       // Clear optimistic value on success
+  //       setOptimisticShared((prev) => {
+  //         const next = {...prev}
+  //         delete next[query._key]
+  //         return next
+  //       })
+  //     } catch (err) {
+  //       // Clear optimistic value on error
+  //       setOptimisticShared((prev) => {
+  //         const next = {...prev}
+  //         delete next[query._key]
+  //         return next
+  //       })
+  //       toast.push({
+  //         closable: true,
+  //         status: 'error',
+  //         title: t('share-query.error'),
+  //         description: err.message,
+  //       })
+  //     }
+  //   },
+  //   [updateQuery, toast, t],
+  // )
 
   const filteredQueries = queries?.filter((q) => {
     const title = q.title || q._key.slice(q._key.length - 5, q._key.length)
     return title.toLowerCase().includes(searchQuery.toLowerCase())
   })
-
+  // console.log('url', url)
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
@@ -203,14 +195,18 @@ export function QueryRecall({
       </FixedHeader>
       <Stack padding={3}>
         {filteredQueries?.map((q) => {
+          // console.log('q', q.url === url)
           const queryObj = getStateFromUrl(q.url)
+          const isSelected = selectedUrl === q.url
           return (
             <Card
               key={q._key}
               width={'fill'}
               padding={4}
               border
+              tone={isSelected ? 'positive' : 'default'}
               onClick={() => {
+                setSelectedUrl(q.url) // Update the selected query immediately
                 const parsedUrl = getStateFromUrl(q.url)
                 if (parsedUrl) {
                   setStateFromParsedUrl(parsedUrl)
@@ -256,16 +252,14 @@ export function QueryRecall({
                     )}
                   </Flex>
                   <Flex gap={2} align="center">
-                    <Badge
+                    {/* <Badge
                       tone={(optimisticShared[q._key] ?? q.shared) ? 'positive' : 'primary'}
                       size={1}
                       padding={2}
                       radius={1}
                     >
-                      {t(
-                        (optimisticShared[q._key] ?? q.shared) ? 'label.shared' : 'label.personal',
-                      )}
-                    </Badge>
+                      {t((optimisticShared[q._key] ?? q.shared) ? 'label.team' : 'label.personal')}
+                    </Badge> */}
                     <MenuButton
                       button={<EllipsisVerticalIcon />}
                       id={`${q._key}-menu`}
@@ -273,48 +267,65 @@ export function QueryRecall({
                         <Menu>
                           <Button
                             mode="bleed"
-                            icon={EditIcon}
                             width="fill"
                             onClick={(event) => {
                               event.stopPropagation()
                               setEditingKey(q._key)
                               setEditingTitle(q.title || q._key.slice(0, 5))
                             }}
-                            text={t('action.edit-title')}
-                          />
-                          {/* <Button
-                            mode="bleed"
-                            icon={ShareIcon}
-                            width="fill"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              handleShareToggle(q)
-                            }}
-                            text={q.shared ? t('action.make-private') : t('action.make-shared')}
-                          /> */}
-                          <Flex>
-                            <Switch
-                              onChange={(event) => {
-                                event.stopPropagation()
-                                handleShareToggle(q)
-                              }}
-                              checked={optimisticShared[q._key] ?? q.shared}
-                            />
-
-                            <Text>{t('label.share')}</Text>
-                          </Flex>
+                          >
+                            <Flex align="center" gap={2} padding={1}>
+                              <Box
+                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
+                              >
+                                <EditIcon />
+                              </Box>
+                              <Text size={1}>{t('action.edit-title')}</Text>
+                            </Flex>
+                          </Button>
                           <Button
                             mode="bleed"
                             tone="critical"
                             width="fill"
-                            icon={TrashIcon}
-                            text={t('action.delete')}
                             onClick={(event) => {
                               event.stopPropagation()
                               deleteQuery(q._key)
                             }}
                             disabled={deleting.includes(q._key)}
-                          />
+                          >
+                            <Flex align="center" gap={2} padding={1}>
+                              <Box
+                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
+                              >
+                                <TrashIcon />
+                              </Box>
+                              <Text size={1}>{t('action.delete')}</Text>
+                            </Flex>
+                          </Button>
+                          {/* <MenuDivider />
+                          <Button
+                            mode="bleed"
+                            width="fill"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              handleShareToggle(q)
+                            }}
+                          >
+                            <Flex align="center" gap={2} padding={1}>
+                              <Box
+                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
+                              >
+                                <Switch
+                                  onChange={(event) => {
+                                    event.stopPropagation()
+                                    handleShareToggle(q)
+                                  }}
+                                  checked={optimisticShared[q._key] ?? q.shared}
+                                />
+                              </Box>
+                              <Text size={1}>{t('label.share')}</Text>
+                            </Flex>
+                          </Button> */}
                         </Menu>
                       }
                       popover={{portal: true, placement: 'bottom-end'}}
@@ -325,7 +336,7 @@ export function QueryRecall({
                 <Code muted>{queryObj?.query.split('{')[0]}</Code>
 
                 <Flex align="center" gap={1}>
-                  <ClockIcon />
+                  {/* <ClockIcon /> */}
                   <Text size={1} muted>
                     {formatDate(q.savedAt)}
                   </Text>
