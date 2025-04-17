@@ -161,6 +161,7 @@ exports[`exports snapshot 1`] = `
     "SANITY_PATCH_TYPE": "symbol",
     "SANITY_VERSION": "string",
     "SESSION_ID": "string",
+    "SanityCreateConfigProvider": "function",
     "SanityDefaultPreview": "object",
     "ScheduleAction": "function",
     "ScheduledBadge": "function",
