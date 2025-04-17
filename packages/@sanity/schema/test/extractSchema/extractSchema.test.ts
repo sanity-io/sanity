@@ -650,7 +650,7 @@ describe('Extract schema test', () => {
     expect(extracted).toMatchSnapshot()
   })
 
-  test('will ignore global document reference types at the moment', () => {
+  test('will extract global document reference types', () => {
     const schema = createSchema(
       {
         name: 'test',
@@ -711,7 +711,11 @@ describe('Extract schema test', () => {
     )
 
     const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument', 'book'])
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'validDocument',
+      'book',
+      'globalDocumentSubtype',
+    ])
     const validDocument = extracted.find((type) => type.name === 'validDocument')
     expect(validDocument).toBeDefined()
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
