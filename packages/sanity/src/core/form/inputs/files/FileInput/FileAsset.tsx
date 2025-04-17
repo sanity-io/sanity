@@ -1,6 +1,5 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {type AssetSource} from '@sanity/types'
-// eslint-disable-next-line no-restricted-imports
 import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
 import {get} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
