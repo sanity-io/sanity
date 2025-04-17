@@ -114,6 +114,7 @@ export const test = baseTest.extend<SanityFixtures>({
       token: process.env.SANITY_E2E_SESSION_TOKEN,
       useCdn: false,
       apiVersion: '2021-08-31',
+      apiHost: 'https://api.sanity.work',
     })
 
     await use(client)

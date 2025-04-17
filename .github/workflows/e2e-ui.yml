@@ -128,8 +128,8 @@ jobs:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: pnpm e2e:setup && pnpm e2e:build
 
@@ -193,8 +193,8 @@ jobs:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
