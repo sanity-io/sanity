@@ -134,7 +134,10 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
  * @param moduleName - Name of module to get installed version for
  * @returns Version number, of null
  */
-async function readModuleVersion(studioPath: string, moduleName: string): Promise<string | null> {
+export async function readModuleVersion(
+  studioPath: string,
+  moduleName: string,
+): Promise<string | null> {
   const manifestPath = resolveFrom.silent(studioPath, path.join(moduleName, 'package.json'))
   return manifestPath ? (await readPackageManifest(manifestPath)).version : null
 }
