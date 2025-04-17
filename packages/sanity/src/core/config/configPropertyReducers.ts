@@ -576,51 +576,6 @@ export const searchStrategyReducer = ({
   return explicit ?? implicit ?? initialValue
 }
 
-export const startInCreateEnabledReducer = (opts: {
-  config: PluginOptions
-  initialValue: boolean
-}): boolean => {
-  const {config, initialValue} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.create?.startInCreateEnabled
-
-    if (!resolver && typeof resolver !== 'boolean') return acc
-    if (typeof resolver === 'boolean') return resolver
-
-    throw new Error(
-      `Expected \`beta.create.startInCreateEnabled\` to be a boolean, but received ${getPrintableType(
-        resolver,
-      )}`,
-    )
-  }, initialValue)
-
-  return result
-}
-
-export const createFallbackOriginReducer = (config: PluginOptions): string | undefined => {
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc, {config: innerConfig}) => {
-      const resolver = innerConfig.beta?.create?.fallbackStudioOrigin
-
-      if (!resolver) return acc
-      if (typeof resolver === 'string') return resolver
-
-      throw new Error(
-        `Expected \`beta.create.fallbackStudioOrigin\` to be a string, but received ${getPrintableType(
-          resolver,
-        )}`,
-      )
-    },
-    undefined as string | undefined,
-  )
-
-  return result
-}
-
 export const announcementsEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
