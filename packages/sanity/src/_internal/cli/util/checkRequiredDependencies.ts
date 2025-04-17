@@ -1,14 +1,14 @@
-import {readFile} from 'node:fs/promises'
 import path from 'node:path'
 
-import {type CliCommandContext, type PackageJson} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
 import execa from 'execa'
 import oneline from 'oneline'
-import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
 import {peerDependencies} from '../../../../package.json'
 import {determineIsApp} from './determineIsApp'
+import {readModuleVersion} from './readModuleVersion'
+import {type PartialPackageManifest, readPackageManifest} from './readPackageManifest'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -128,44 +128,6 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
 }
 
 /**
- * Reads the version number of the _installed_ module, or returns `null` if not found
- *
- * @param studioPath - Path of the studio
- * @param moduleName - Name of module to get installed version for
- * @returns Version number, of null
- */
-async function readModuleVersion(studioPath: string, moduleName: string): Promise<string | null> {
-  const manifestPath = resolveFrom.silent(studioPath, path.join(moduleName, 'package.json'))
-  return manifestPath ? (await readPackageManifest(manifestPath)).version : null
-}
-
-/**
- * Read the `package.json` file at the given path and return an object that guarantees
- * the presence of name, version, dependencies, dev dependencies and peer dependencies
- *
- * @param packageJsonPath - Path to package.json to read
- * @returns Reduced package.json with guarantees for name, version and dependency fields
- */
-async function readPackageManifest(
-  packageJsonPath: string,
-  defaults: Partial<PartialPackageManifest> = {},
-): Promise<PackageManifest> {
-  let manifest: unknown
-  try {
-    manifest = {...defaults, ...(await readPackageJson(packageJsonPath))}
-  } catch (err) {
-    throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`)
-  }
-
-  if (!isPackageManifest(manifest)) {
-    throw new Error(`Failed to read "${packageJsonPath}": Invalid package manifest`)
-  }
-
-  const {name, version, dependencies = {}, devDependencies = {}} = manifest
-  return {name, version, dependencies, devDependencies}
-}
-
-/**
  * Install the passed dependencies at the given version/version range,
  * prompting the user which package manager to use. We will try to detect
  * a package manager from files in the directory and show that as the default
@@ -205,29 +167,6 @@ async function installDependencies(
   await installNewPackages({packages, packageManager: pkgManager}, context)
 }
 
-function isPackageManifest(item: unknown): item is PartialPackageManifest {
-  return typeof item === 'object' && item !== null && 'name' in item && 'version' in item
-}
-
 function isComparableRange(range: string): boolean {
   return /^[\^~]?\d+(\.\d+)?(\.\d+)?$/.test(range)
-}
-
-function readPackageJson(filePath: string): Promise<PackageJson> {
-  return readFile(filePath, 'utf8').then((res) => JSON.parse(res))
-}
-
-interface PackageManifest extends DependencyDeclarations {
-  name: string
-  version: string
-}
-
-interface PartialPackageManifest extends Partial<DependencyDeclarations> {
-  name: string
-  version: string
-}
-
-interface DependencyDeclarations {
-  dependencies: Record<string, string | undefined>
-  devDependencies: Record<string, string | undefined>
 }

@@ -1,23 +1,23 @@
+/* eslint-disable max-statements */
 import path from 'node:path'
 
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
 import {info} from 'log-symbols'
-import semver from 'semver'
-import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import semver from 'semver'
 
-import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
-import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
-import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
-import {getTimer} from '../../util/timing'
-import {BuildTrace} from './build.telemetry'
+import {buildStaticFiles, type ChunkModule, type ChunkStats} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {getTimer} from '../../util/timing'
+import {BuildTrace} from './build.telemetry'
 
-export interface BuildSanityStudioCommandFlags {
+export interface BuildSanityAppCommandFlags {
   'yes'?: boolean
   'y'?: boolean
   'minify'?: boolean
@@ -26,14 +26,14 @@ export interface BuildSanityStudioCommandFlags {
   'auto-updates'?: boolean
 }
 
-export default async function buildSanityStudio(
-  args: CliCommandArguments<BuildSanityStudioCommandFlags>,
+export default async function buildSanityApp(
+  args: CliCommandArguments<BuildSanityAppCommandFlags>,
   context: CliCommandContext,
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
   const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
-  const flags: BuildSanityStudioCommandFlags = {
+  const flags: BuildSanityAppCommandFlags = {
     'minify': true,
     'stats': false,
     'source-maps': false,
@@ -47,21 +47,17 @@ export default async function buildSanityStudio(
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
 
-  await checkStudioDependencyVersions(workDir)
-
-  // If the check resulted in a dependency install, the CLI command will be re-run,
-  // thus we want to exit early
-  const {didInstall, installedSanityVersion} = await checkRequiredDependencies(context)
-  if (didInstall) {
-    return {didCompile: false}
-  }
-
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
 
+  const installedSdkVersion = await readModuleVersion(context.workDir, '@sanity/sdk-react')
+
+  if (!installedSdkVersion) {
+    throw new Error(`Failed to find installed @sanity/sdk-react version`)
+  }
   // Get the version without any tags if any
-  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
+  const coercedSanityVersion = semver.coerce(installedSdkVersion)?.version
   if (autoUpdatesEnabled && !coercedSanityVersion) {
-    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+    throw new Error(`Failed to parse installed Sanity version: ${installedSdkVersion}`)
   }
   const version = encodeURIComponent(`^${coercedSanityVersion}`)
   const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
@@ -70,28 +66,24 @@ export default async function buildSanityStudio(
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    try {
-      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
 
-      // If it is in unattended mode, we don't want to prompt
-      if (result?.length && !unattendedMode) {
-        const shouldContinue = await prompt.single({
-          type: 'confirm',
-          message: chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Continue anyway?`,
-          ),
-          default: false,
-        })
+    // If it is in unattended mode, we don't want to prompt
+    if (result?.length && !unattendedMode) {
+      const shouldContinue = await prompt.single({
+        type: 'confirm',
+        message: chalk.yellow(
+          `The following local package versions are different from the versions currently served at runtime.\n` +
+            `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+            `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+            `Continue anyway?`,
+        ),
+        default: false,
+      })
 
-        if (!shouldContinue) {
-          return process.exit(0)
-        }
+      if (!shouldContinue) {
+        return process.exit(0)
       }
-    } catch (err) {
-      throw err
     }
   }
 
@@ -146,7 +138,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner(`Build Sanity Studio`).start()
+  spin = output.spinner(`Build Sanity application`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -176,6 +168,7 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      isApp: true,
     })
 
     trace.log({
@@ -185,7 +178,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity application (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()
