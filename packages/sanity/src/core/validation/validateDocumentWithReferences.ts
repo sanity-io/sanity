@@ -77,7 +77,13 @@ const listenDocumentExists = (
   versionId: string | undefined,
 ): Observable<boolean> =>
   observeDocumentAvailability(id, {version: versionId}).pipe(
-    map(({published, version}) => published.available || version?.available || false),
+    map(({published, version}) => {
+      if (!version?.available && version?.reason === 'VERSION_DELETED') {
+        return false
+      }
+
+      return published.available || version?.available || false
+    }),
   )
 
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)

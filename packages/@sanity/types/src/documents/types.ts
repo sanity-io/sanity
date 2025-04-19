@@ -21,6 +21,9 @@ export interface SanityDocumentLike {
   _createdAt?: string
   _updatedAt?: string
   _rev?: string
+  _system?: {
+    delete?: boolean
+  }
   [key: string]: unknown
 }
 
