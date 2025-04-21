@@ -8,10 +8,11 @@ import {info} from 'log-symbols'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 
-import {buildStaticFiles, type ChunkModule, type ChunkStats} from '../../server'
+import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
-import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
-import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
@@ -50,23 +51,27 @@ export default async function buildSanityApp(
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
 
   const installedSdkVersion = await readModuleVersion(context.workDir, '@sanity/sdk-react')
+  const installedSanityVersion = await readModuleVersion(context.workDir, 'sanity')
 
   if (!installedSdkVersion) {
     throw new Error(`Failed to find installed @sanity/sdk-react version`)
   }
   // Get the version without any tags if any
-  const coercedSanityVersion = semver.coerce(installedSdkVersion)?.version
-  if (autoUpdatesEnabled && !coercedSanityVersion) {
-    throw new Error(`Failed to parse installed Sanity version: ${installedSdkVersion}`)
+  const coercedSdkVersion = semver.coerce(installedSdkVersion)?.version
+  // Sanity might not be installed, but if it is we want to auto update it.
+  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
+  if (autoUpdatesEnabled && !coercedSdkVersion) {
+    throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
   }
-  const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
+  const sdkVersion = encodeURIComponent(`^${coercedSdkVersion}`)
+  const sanityVersion = coercedSanityVersion && encodeURIComponent(`^${coercedSanityVersion}`)
+  const autoUpdatesImports = getAppAutoUpdateImportMap({sdkVersion, sanityVersion})
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
 
     // If it is in unattended mode, we don't want to prompt
     if (result?.length && !unattendedMode) {
@@ -198,29 +203,4 @@ export default async function buildSanityApp(
 // eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_STUDIO_'))
-}
-
-function sortModulesBySize(chunks: ChunkStats[]): ChunkModule[] {
-  return chunks
-    .flatMap((chunk) => chunk.modules)
-    .sort((modA, modB) => modB.renderedLength - modA.renderedLength)
-}
-
-function formatModuleSizes(modules: ChunkModule[]): string {
-  const lines: string[] = []
-  for (const mod of modules) {
-    lines.push(` - ${formatModuleName(mod.name)} (${formatSize(mod.renderedLength)})`)
-  }
-
-  return lines.join('\n')
-}
-
-function formatModuleName(modName: string): string {
-  const delimiter = '/node_modules/'
-  const nodeIndex = modName.lastIndexOf(delimiter)
-  return nodeIndex === -1 ? modName : modName.slice(nodeIndex + delimiter.length)
-}
-
-function formatSize(bytes: number): string {
-  return chalk.cyan(`${(bytes / 1024).toFixed()} kB`)
 }

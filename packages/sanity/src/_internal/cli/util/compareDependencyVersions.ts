@@ -3,7 +3,10 @@ import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 
-import {type StudioAutoUpdatesImportMap} from './getAutoUpdatesImportMap'
+import {
+  type SanityAppAutoUpdatesImportMap,
+  type StudioAutoUpdatesImportMap,
+} from './getAutoUpdatesImportMap'
 import {readPackageManifest} from './readPackageManifest'
 
 async function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
@@ -15,14 +18,14 @@ async function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
   }
 }
 
-interface CompareStudioDependencyVersions {
+interface CompareDependencyVersions {
   pkg: string
   installed: string
   remote: string
 }
 
 /**
- * Compares the versions of dependencies in the studio with their remote versions.
+ * Compares the versions of dependencies in the studio or app with their remote versions.
  *
  * This function reads the package.json file in the provided working directory, and compares the versions of the dependencies
  * specified in the `autoUpdatesImports` parameter with their remote versions. If the versions do not match, the dependency is
@@ -41,15 +44,15 @@ interface CompareStudioDependencyVersions {
  * @throws Throws an error if the remote version of a package cannot be fetched, or if the local version of a package
  * cannot be parsed.
  */
-export async function compareStudioDependencyVersions(
-  autoUpdatesImports: StudioAutoUpdatesImportMap,
+export async function compareDependencyVersions(
+  autoUpdatesImports: StudioAutoUpdatesImportMap | SanityAppAutoUpdatesImportMap,
   workDir: string,
   fetchFn = globalThis.fetch,
-): Promise<Array<CompareStudioDependencyVersions>> {
+): Promise<Array<CompareDependencyVersions>> {
   const manifest = await readPackageManifest(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
-  const failedDependencies: Array<CompareStudioDependencyVersions> = []
+  const failedDependencies: Array<CompareDependencyVersions> = []
 
   // Filter out the packages that are wildcards in the import map
   const filteredAutoUpdatesImports = Object.entries(autoUpdatesImports).filter(
