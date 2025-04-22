@@ -10,5 +10,6 @@
   "packages/@sanity/vision": "3.85.1",
   "packages/create-sanity": "3.85.1",
   "packages/groq": "3.85.1",
-  "packages/sanity": "3.85.1"
+  "packages/sanity": "3.85.1",
+  ".": "1.0.0"
 }

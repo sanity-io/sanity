@@ -168,6 +168,31 @@
 - releases tool tables show skeletons when loading rather than spinner ([#8989](https://github.com/sanity-io/sanity/issues/8989)) ([fad8013](https://github.com/sanity-io/sanity/commit/fad8013dc9a9c2ab266d038d9f8b8f5bb8b53298))
 - **vision:** transforms vision GUI into a functional component ([#8879](https://github.com/sanity-io/sanity/issues/8879)) ([4ca0841](https://github.com/sanity-io/sanity/commit/4ca0841d20dbafd3448c700293dee9fe14087c64))
 
+## 1.0.0 (2025-04-22)
+
+
+### Features
+
+* **cli:** blueprints commands ([#9197](https://github.com/sanity-io/sanity/issues/9197)) ([e97fccb](https://github.com/sanity-io/sanity/commit/e97fccbde58692d48e538cf60e15e77e3f958a3a))
+* **core:** add image schema options for hotspot tool configuration ([#9185](https://github.com/sanity-io/sanity/issues/9185)) ([b829684](https://github.com/sanity-io/sanity/commit/b82968441c1d74692531b633ece970398cdd68a2))
+
+
+### Bug Fixes
+
+* **core:** useDocumentVersions should use stable initial value ([#9213](https://github.com/sanity-io/sanity/issues/9213)) ([9e27921](https://github.com/sanity-io/sanity/commit/9e27921bb76ebee1461011b0feea44c8a5045a79))
+* **deps:** esbuild upgrade ([#9169](https://github.com/sanity-io/sanity/issues/9169)) ([4c4e03d](https://github.com/sanity-io/sanity/commit/4c4e03d407106dbda12f52cfd9511fbfe75a9696))
+* **deps:** update dependency @portabletext/block-tools to ^1.1.19 ([#9210](https://github.com/sanity-io/sanity/issues/9210)) ([6e2112e](https://github.com/sanity-io/sanity/commit/6e2112e6799eeb5ed210c19b8e46bff58f7f7208))
+* **deps:** update dependency @portabletext/editor to ^1.47.11 ([#9211](https://github.com/sanity-io/sanity/issues/9211)) ([297f173](https://github.com/sanity-io/sanity/commit/297f1736b40d77b5e00ec0bf6a1db18fab58f67f))
+* excluding query params from pathname check when routing to tool ([#9202](https://github.com/sanity-io/sanity/issues/9202)) ([bf07121](https://github.com/sanity-io/sanity/commit/bf0712199efb5cc547cb32d8a852e9dd23626952))
+* **studio:** add missing negative margin to global perspective menu ([3146826](https://github.com/sanity-io/sanity/commit/3146826318ff361bc8ccb4652c19b1d504875527))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * sanity bumped to 3.86.0
+
 ## [3.80.1](https://github.com/sanity-io/sanity/compare/v3.80.0...v3.80.1) (2025-03-19)
 
 ### Bug Fixes
