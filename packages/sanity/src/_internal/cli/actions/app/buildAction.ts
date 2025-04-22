@@ -112,14 +112,14 @@ export default async function buildSanityApp(
 
   // Determine base path for built studio
   let basePath = '/'
-  const envBasePath = process.env.SANITY_STUDIO_BASEPATH
+  const envBasePath = process.env.SANITY_APP_BASEPATH
   const configBasePath = cliConfig?.project?.basePath
 
   // Allow `sanity deploy` to override base path
   if (overrides?.basePath) {
     basePath = overrides.basePath
   } else if (envBasePath) {
-    // Environment variable (SANITY_STUDIO_BASEPATH)
+    // Environment variable (SANITY_APP_BASEPATH)
     basePath = envBasePath
   } else if (configBasePath) {
     // `sanity.cli.ts`
@@ -202,5 +202,5 @@ export default async function buildSanityApp(
 
 // eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
-  return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_STUDIO_'))
+  return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_APP_'))
 }
