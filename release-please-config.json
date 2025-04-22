@@ -2,30 +2,90 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
-    "packages/@sanity/cli": {"component": "studio"},
-    "packages/@repo/package.bundle": {"component": "studio"},
-    "packages/@sanity/codegen": {"component": "studio"},
-    "packages/@sanity/diff": {"component": "studio"},
-    "packages/@sanity/migrate": {"component": "studio"},
-    "packages/@sanity/mutator": {"component": "studio"},
-    "packages/@sanity/schema": {"component": "studio"},
-    "packages/@sanity/types": {"component": "studio"},
-    "packages/@sanity/util": {"component": "studio"},
-    "packages/@sanity/vision": {"component": "studio"},
-    "packages/create-sanity": {"component": "studio"},
-    "packages/groq": {"component": "studio"},
-    "packages/sanity": {"component": "studio"}
+    "packages/@sanity/cli": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@repo/package.bundle": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/codegen": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/diff": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/migrate": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/mutator": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/schema": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/types": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/util": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/@sanity/vision": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/create-sanity": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/groq": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    },
+    "packages/sanity": {
+      "component": "studio",
+      "draft-pull-request": true,
+      "include-component-in-tag": false,
+      "merge": true
+    }
   },
   "plugins": [
     {
-      "merge": true,
       "type": "linked-versions",
       "groupName": "studio",
       "components": ["studio"]
     }
-  ],
-  "always-update": true,
-  "draft-pull-request": true,
-  "include-component-in-tag": false,
-  "separate-pull-requests": false
+  ]
 }
