@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
-    "packages/@sanity/block-tools": {"component": "block-tools"},
     "packages/@sanity/cli": {"component": "cli"},
     "packages/@sanity/codegen": {"component": "codegen"},
     "packages/@sanity/diff": {"component": "diff"},
@@ -21,7 +21,6 @@
       "type": "linked-versions",
       "groupName": "studio",
       "components": [
-        "block-tools",
         "cli",
         "codegen",
         "diff",
@@ -37,5 +36,5 @@
       ]
     }
   ],
-  "separate-pull-requests": true
+  "separate-pull-requests": false
 }
