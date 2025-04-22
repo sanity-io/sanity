@@ -1,4 +1,5 @@
 {
+  ".": "3.85.1",
   "packages/@sanity/block-tools": "3.85.1",
   "packages/@sanity/cli": "3.85.1",
   "packages/@sanity/codegen": "3.85.1",

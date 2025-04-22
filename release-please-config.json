@@ -1,19 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
-    "packages/@sanity/block-tools": {"component": "block-tools"},
-    "packages/@sanity/cli": {"component": "cli"},
-    "packages/@sanity/codegen": {"component": "codegen"},
-    "packages/@sanity/diff": {"component": "diff"},
-    "packages/@sanity/migrate": {"component": "migrate"},
-    "packages/@sanity/mutator": {"component": "mutator"},
-    "packages/@sanity/schema": {"component": "schema"},
-    "packages/@sanity/types": {"component": "types"},
-    "packages/@sanity/util": {"component": "util"},
-    "packages/@sanity/vision": {"component": "vision"},
-    "packages/create-sanity": {"component": "create-sanity"},
-    "packages/groq": {"component": "groq"},
-    "packages/sanity": {"component": "sanity"}
+    "packages/@sanity/block-tools": {"include-component-in-tag": false, "component": "block-tools"},
+    "packages/@sanity/cli": {"include-component-in-tag": false, "component": "cli"},
+    "packages/@sanity/codegen": {"include-component-in-tag": false, "component": "codegen"},
+    "packages/@sanity/diff": {"include-component-in-tag": false, "component": "diff"},
+    "packages/@sanity/migrate": {"include-component-in-tag": false, "component": "migrate"},
+    "packages/@sanity/mutator": {"include-component-in-tag": false, "component": "mutator"},
+    "packages/@sanity/schema": {"include-component-in-tag": false, "component": "schema"},
+    "packages/@sanity/types": {"include-component-in-tag": false, "component": "types"},
+    "packages/@sanity/util": {"include-component-in-tag": false, "component": "util"},
+    "packages/@sanity/vision": {"include-component-in-tag": false, "component": "vision"},
+    "packages/create-sanity": {"include-component-in-tag": false, "component": "create-sanity"},
+    "packages/groq": {"include-component-in-tag": false, "component": "groq"},
+    "packages/sanity": {"include-component-in-tag": false, "component": "sanity"}
   },
   "plugins": [
     "node-workspace",
