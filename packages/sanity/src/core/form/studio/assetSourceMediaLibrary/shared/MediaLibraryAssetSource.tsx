@@ -21,7 +21,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
-    accept, // TODO: make the plugin respect this filter
+    accept, // TODO: make the plugin respect this filter?
     action = 'select',
     assetSource,
     assetType = 'image',
@@ -29,7 +29,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     libraryId: libraryIdProp,
     onClose,
     onSelect,
-    selectedAssets, // TODO: allow for pre-selected assets
+    selectedAssets, // TODO: allow for pre-selected assets?
   } = props
 
   const {t} = useTranslation()
