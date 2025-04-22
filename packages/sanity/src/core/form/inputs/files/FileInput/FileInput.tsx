@@ -177,6 +177,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   const handleSelectFilesToUpload = useCallback(
     (assetSource: AssetSource, files: File[]) => {
+      if (files.length === 0) {
+        return
+      }
       setSelectedAssetSource(assetSource)
       const uploader = assetSource.uploader
       if (uploader) {
