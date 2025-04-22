@@ -220,6 +220,11 @@ const defaultWorkspace = defineConfig({
   tasks: {
     enabled: true,
   },
+  features: {
+    canvas: {
+      enabled: true,
+    },
+  },
 })
 
 export default defineConfig([
