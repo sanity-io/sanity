@@ -36,5 +36,6 @@
       ]
     }
   ],
+  "include-component-in-tag": false,
   "separate-pull-requests": false
 }
