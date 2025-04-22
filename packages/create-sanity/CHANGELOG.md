@@ -1,0 +1,15 @@
+# Changelog
+
+## [3.86.0](https://github.com/sanity-io/sanity/compare/create-sanity-v3.85.1...create-sanity-v3.86.0) (2025-04-22)
+
+
+### Miscellaneous Chores
+
+* **create-sanity:** Synchronize studio versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/cli bumped from 3.85.1 to 3.86.0
