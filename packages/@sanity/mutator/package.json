@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.1.1",
-    "@sanity/types": "3.85.1",
+    "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "debug": "^4.3.4",
     "lodash": "^4.17.21"
