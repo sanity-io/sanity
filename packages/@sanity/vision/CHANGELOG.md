@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @sanity/cli bumped to 3.86.1
+    * sanity bumped to 3.86.1
+
 ## [3.86.0](https://github.com/sanity-io/sanity/compare/vision-v3.85.1...vision-v3.86.0) (2025-04-22)
 
 
