@@ -83,6 +83,10 @@
   },
   "plugins": [
     {
+      "type": "node-workspace",
+      "merge": false
+    },
+    {
       "type": "linked-versions",
       "groupName": "studio",
       "components": ["studio"]
