@@ -2,15 +2,15 @@ import resolveFrom from 'resolve-from'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {compareStudioDependencyVersions} from '../compareStudioDependencyVersions'
-import {readPackageJson} from '../readPackageJson'
+import {readPackageManifest} from '../readPackageManifest'
 
 vi.mock('resolve-from')
-vi.mock('../readPackageJson')
+vi.mock('../readPackageManifest')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockedFetch = vi.fn()
 const mockedResolveFrom = vi.mocked(resolveFrom)
-const mockedReadPackageJson = vi.mocked(readPackageJson)
+const mockedReadPackageManifest = vi.mocked(readPackageManifest)
 
 const autoUpdatesImports = {
   'sanity': 'v1/modules/sanity',
@@ -33,8 +33,8 @@ describe('compareStudioDependencyVersions', () => {
     vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
-    mockedReadPackageJson
-      .mockReturnValueOnce({
+    mockedReadPackageManifest
+      .mockResolvedValueOnce({
         dependencies: {
           'sanity': '^3.40.0',
           '@sanity/vision': '^3.40.0',
@@ -43,11 +43,15 @@ describe('compareStudioDependencyVersions', () => {
         name: 'test-package',
         version: '0.0.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: 'sanity',
         version: '3.40.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: '@sanity/vision',
         version: '3.40.0',
       })
@@ -70,8 +74,8 @@ describe('compareStudioDependencyVersions', () => {
     vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
-    mockedReadPackageJson
-      .mockReturnValueOnce({
+    mockedReadPackageManifest
+      .mockResolvedValueOnce({
         dependencies: {
           'sanity': '^3.40.0',
           '@sanity/vision': '^3.40.0',
@@ -80,11 +84,15 @@ describe('compareStudioDependencyVersions', () => {
         name: 'test-package',
         version: '0.0.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: 'sanity',
         version: '3.30.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: '@sanity/vision',
         version: '3.40.0',
       })
@@ -112,8 +120,8 @@ describe('compareStudioDependencyVersions', () => {
     vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
-    mockedReadPackageJson
-      .mockReturnValueOnce({
+    mockedReadPackageManifest
+      .mockResolvedValueOnce({
         dependencies: {
           'sanity': '^3.40.0',
           '@sanity/vision': '^3.40.0',
@@ -122,11 +130,15 @@ describe('compareStudioDependencyVersions', () => {
         name: 'test-package',
         version: '0.0.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: 'sanity',
         version: '3.30.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: '@sanity/vision',
         version: '3.30.0',
       })
@@ -160,8 +172,8 @@ describe('compareStudioDependencyVersions', () => {
     vi.mocked(mockedResolveFrom.silent)
       .mockReturnValueOnce('/test/workdir/node_modules/sanity/package.json')
       .mockReturnValueOnce('/test/workdir/node_modules/@sanity/vision/package.json')
-    mockedReadPackageJson
-      .mockReturnValueOnce({
+    mockedReadPackageManifest
+      .mockResolvedValueOnce({
         dependencies: {
           'sanity': '^3.40.0',
           '@sanity/vision': '^3.40.0',
@@ -170,11 +182,15 @@ describe('compareStudioDependencyVersions', () => {
         name: 'test-package',
         version: '0.0.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: 'sanity',
         version: '3.50.0',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
+        dependencies: {},
+        devDependencies: {},
         name: '@sanity/vision',
         version: '3.40.0',
       })
@@ -200,7 +216,7 @@ describe('compareStudioDependencyVersions', () => {
         get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
       },
     })
-    mockedReadPackageJson.mockReturnValueOnce({
+    mockedReadPackageManifest.mockResolvedValueOnce({
       dependencies: {
         'sanity': '^3.20.0',
         '@sanity/vision': '^3.20.0',
@@ -216,7 +232,7 @@ describe('compareStudioDependencyVersions', () => {
       mockedFetch,
     )
 
-    expect(readPackageJson).toHaveBeenCalledTimes(1)
+    expect(mockedReadPackageManifest).toHaveBeenCalledTimes(1)
 
     expect(result).toEqual([
       {
