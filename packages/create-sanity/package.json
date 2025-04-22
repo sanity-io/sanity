@@ -26,7 +26,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@sanity/cli": "3.85.1",
+    "@sanity/cli": "workspace:*",
     "resolve-pkg": "^2.0.0"
   },
   "engines": {
