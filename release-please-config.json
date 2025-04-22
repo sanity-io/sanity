@@ -2,19 +2,20 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "include-component-in-tag": false,
+  "release-type": "node",
   "packages": {
-    "packages/@sanity/cli": {"component": "cli"},
-    "packages/@sanity/codegen": {"component": "codegen"},
-    "packages/@sanity/diff": {"component": "diff"},
-    "packages/@sanity/migrate": {"component": "migrate"},
-    "packages/@sanity/mutator": {"component": "mutator"},
-    "packages/@sanity/schema": {"component": "schema"},
-    "packages/@sanity/types": {"component": "types"},
-    "packages/@sanity/util": {"component": "util"},
-    "packages/@sanity/vision": {"component": "vision"},
-    "packages/create-sanity": {"component": "create-sanity"},
-    "packages/groq": {"component": "groq"},
-    "packages/sanity": {"component": "sanity"}
+    "packages/@sanity/cli": {"component": "cli", "include-component-in-tag": false},
+    "packages/@sanity/codegen": {"component": "codegen", "include-component-in-tag": false},
+    "packages/@sanity/diff": {"component": "diff", "include-component-in-tag": false},
+    "packages/@sanity/migrate": {"component": "migrate", "include-component-in-tag": false},
+    "packages/@sanity/mutator": {"component": "mutator", "include-component-in-tag": false},
+    "packages/@sanity/schema": {"component": "schema", "include-component-in-tag": false},
+    "packages/@sanity/types": {"component": "types", "include-component-in-tag": false},
+    "packages/@sanity/util": {"component": "util", "include-component-in-tag": false},
+    "packages/@sanity/vision": {"component": "vision", "include-component-in-tag": false},
+    "packages/create-sanity": {"component": "create-sanity", "include-component-in-tag": false},
+    "packages/groq": {"component": "groq", "include-component-in-tag": false},
+    "packages/sanity": {"component": "sanity", "include-component-in-tag": false}
   },
   "plugins": [
     {
