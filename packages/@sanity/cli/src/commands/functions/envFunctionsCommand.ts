@@ -5,25 +5,25 @@ import {type CliCommandDefinition} from '../../types'
 type StackFunctionResource = types.StackFunctionResource
 
 const helpText = `
+Arguments
+  [add] Add or update an environment variable
+  [remove] Remove an environment variable
+
 Options
   --name <name> The name of the function
-  --add Add or update an environment variable
-  --remove Remove an environment variable
   --key <key> The name of the environment variable
   --value <value> The value of the environment variable
 
 Examples
   # Add or update an environment variable
-  sanity functions env --name echo --add --key API_URL --value https://api.example.com/
+  sanity functions env add --name echo --key API_URL --value https://api.example.com/
 
   # Remove an environment variable
-  sanity functions env --name echo --remove --key API_URL
+  sanity functions env remove --name echo --key API_URL
 `
 
 const defaultFlags = {
   name: '',
-  add: false,
-  remove: false,
   key: '',
   value: '',
 }
@@ -38,7 +38,12 @@ const envFunctionsCommand: CliCommandDefinition = {
   async action(args, context) {
     const {apiClient, output} = context
     const {print} = output
+    const [subCommand] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
+
+    if (!subCommand || !['add', 'remove'].includes(subCommand)) {
+      throw new Error('You must specify if you wish to add or remove an environment variable')
+    }
 
     const client = apiClient({
       requireUser: true,
@@ -46,8 +51,7 @@ const envFunctionsCommand: CliCommandDefinition = {
     })
 
     if (flags.name === '') {
-      print('You must provide a function name')
-      return
+      throw new Error('You must provide a function name via the --name flag')
     }
 
     const token = client.config().token
@@ -61,8 +65,7 @@ const envFunctionsCommand: CliCommandDefinition = {
     })
 
     if (!deployedStack) {
-      print('Stack not found')
-      return
+      throw new Error('Stack not found')
     }
 
     const blueprintConfig = blueprint.readConfigFile()
@@ -74,7 +77,7 @@ const envFunctionsCommand: CliCommandDefinition = {
     ) as StackFunctionResource
 
     if (token && projectId) {
-      if (flags.add) {
+      if (subCommand === 'add') {
         print(`Updating "${flags.key}" environment variable in "${flags.name}"`)
         const result = await env.update.update(externalId, flags.key, flags.value, {
           token,
@@ -86,7 +89,7 @@ const envFunctionsCommand: CliCommandDefinition = {
           print(`Failed to update ${flags.key}`)
           print(`Error: ${result.error || 'Unknown error'}`)
         }
-      } else if (flags.remove) {
+      } else if (subCommand === 'remove') {
         print(`Removing "${flags.key}" environment variable in "${flags.name}"`)
         const result = await env.remove.remove(externalId, flags.key, {
           token,
