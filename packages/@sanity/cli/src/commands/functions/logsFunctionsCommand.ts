@@ -106,7 +106,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
           const {time, level, message} = log
           const date = new Date(time)
           const dateString = flags.utc
-            ? date.toUTCString()
+            ? date.toISOString().slice(0, 19).split('T').join(' ')
             : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
           print(`${dateString} ${level} ${message}`)
         }
