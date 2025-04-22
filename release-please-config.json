@@ -19,6 +19,7 @@
   "plugins": [
     "node-workspace",
     {
+      "merge": true,
       "type": "linked-versions",
       "groupName": "studio",
       "components": [
@@ -37,6 +38,8 @@
       ]
     }
   ],
+  "always-update": true,
+  "draft-pull-request": true,
   "include-component-in-tag": false,
   "separate-pull-requests": false
 }
