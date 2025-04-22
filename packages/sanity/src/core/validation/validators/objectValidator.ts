@@ -27,7 +27,7 @@ export const objectValidators: Validators = {
       return true
     }
 
-    const {type, document, getDocumentExists, i18n, getClient} = context
+    const {type, document, getDocumentExists, i18n} = context
 
     if (!isReference(value)) {
       return message || i18n.t('validation:object.not-reference')
@@ -50,7 +50,6 @@ export const objectValidators: Validators = {
       // a document should be able to reference itself without first being published
       return true
     }
-
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
       return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
