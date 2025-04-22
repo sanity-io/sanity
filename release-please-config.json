@@ -3,6 +3,7 @@
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
     "packages/@sanity/cli": {"component": "cli"},
+    "packages/@repo/package.bundle": {"component": "package.bundle"},
     "packages/@sanity/codegen": {"component": "codegen"},
     "packages/@sanity/diff": {"component": "diff"},
     "packages/@sanity/migrate": {"component": "migrate"},
