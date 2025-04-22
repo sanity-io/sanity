@@ -3,7 +3,7 @@
   "initial-version": "3.85.1",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
-    "packages/@sanity/block-tools": {"include-component-in-tag": false, "component": "block-tools"},
+    ".": {},
     "packages/@sanity/cli": {"include-component-in-tag": false, "component": "cli"},
     "packages/@sanity/codegen": {"include-component-in-tag": false, "component": "codegen"},
     "packages/@sanity/diff": {"include-component-in-tag": false, "component": "diff"},
@@ -23,7 +23,6 @@
       "type": "linked-versions",
       "groupName": "studio",
       "components": [
-        "block-tools",
         "cli",
         "codegen",
         "diff",
