@@ -6,7 +6,6 @@ import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {
   checkDir,
   createDeployment,
@@ -17,8 +16,9 @@ import {
   getOrCreateUserApplicationFromConfig,
   type UserApplication,
 } from '../deploy/helpers'
+import buildSanityApp, {type BuildSanityAppCommandFlags} from './buildAction'
 
-export interface DeployAppActionFlags extends BuildSanityStudioCommandFlags {
+export interface DeployAppActionFlags extends BuildSanityAppCommandFlags {
   build?: boolean
 }
 
@@ -100,7 +100,7 @@ export default async function deployAppAction(
       extOptions: flags,
       argsWithoutOptions: [customSourceDir].filter(Boolean),
     }
-    const {didCompile} = await buildSanityStudio(buildArgs, context, {basePath: '/'})
+    const {didCompile} = await buildSanityApp(buildArgs, context, {basePath: '/'})
 
     if (!didCompile) {
       return

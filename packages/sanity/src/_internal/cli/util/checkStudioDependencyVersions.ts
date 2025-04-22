@@ -4,7 +4,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
-import {readPackageJson} from './readPackageJson'
+import {readPackageManifest} from './readPackageManifest'
 
 interface PackageInfo {
   name: string
@@ -25,11 +25,11 @@ const PACKAGES = [
   {name: '@sanity/ui', supported: ['^2'], deprecatedBelow: null},
 ]
 
-export function checkStudioDependencyVersions(workDir: string): void {
-  const manifest = readPackageJson(path.join(workDir, 'package.json'))
+export async function checkStudioDependencyVersions(workDir: string): Promise<void> {
+  const manifest = await readPackageManifest(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
-  const packageInfo = PACKAGES.map((pkg): PackageInfo | false => {
+  const packageInfo = PACKAGES.map(async (pkg): Promise<PackageInfo | false> => {
     const dependency = dependencies[pkg.name]
     if (!dependency) {
       return false
@@ -37,7 +37,9 @@ export function checkStudioDependencyVersions(workDir: string): void {
 
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg.name, 'package.json'))
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, ''),
+      manifestPath
+        ? (await readPackageManifest(manifestPath)).version
+        : dependency.replace(/[\D.]/g, ''),
     )
 
     if (!installed) {
@@ -69,7 +71,9 @@ export function checkStudioDependencyVersions(workDir: string): void {
     }
   })
 
-  const installedPackages = packageInfo.filter((inp): inp is PackageInfo => inp !== false)
+  const installedPackages = (await Promise.all(packageInfo)).filter(
+    (inp): inp is PackageInfo => inp !== false,
+  )
   const unsupported = installedPackages.filter((pkg) => pkg.isUnsupported)
   const deprecated = installedPackages.filter((pkg) => !pkg.isUnsupported && pkg.isDeprecated)
   const untested = installedPackages.filter((pkg) => pkg.isUntested)

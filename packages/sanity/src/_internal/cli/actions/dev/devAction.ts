@@ -129,7 +129,7 @@ export default async function startSanityDevServer(
   const {loadInDashboard} = flags
 
   timers.start('checkStudioDependencyVersions')
-  checkStudioDependencyVersions(workDir)
+  await checkStudioDependencyVersions(workDir)
   timers.end('checkStudioDependencyVersions')
 
   // If the check resulted in a dependency install, the CLI command will be re-run,
