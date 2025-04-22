@@ -90,25 +90,22 @@ export function FilePreview(props: FileAssetProps) {
         />
       )
     }
-    if (assetSources.length > 1) {
-      return assetSources.map((assetSource) => {
-        return (
-          <MenuItem
-            key={assetSource.name}
-            text={
-              (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-              startCase(assetSource.name)
-            }
-            onClick={handleSelectFileMenuItemClicked}
-            icon={assetSource.icon || ImageIcon}
-            disabled={readOnly}
-            data-testid={`file-input-browse-button-${assetSource.name}`}
-            data-asset-source-name={assetSource.name}
-          />
-        )
-      })
-    }
-    return null
+    return assetSources.map((assetSource) => {
+      return (
+        <MenuItem
+          key={assetSource.name}
+          text={
+            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+            startCase(assetSource.name)
+          }
+          onClick={handleSelectFileMenuItemClicked}
+          icon={assetSource.icon || ImageIcon}
+          disabled={readOnly}
+          data-testid={`file-input-browse-button-${assetSource.name}`}
+          data-asset-source-name={assetSource.name}
+        />
+      )
+    })
   }, [assetSources, handleSelectFileMenuItemClicked, readOnly, sourcesFromSchema?.length, t])
 
   const uploadMenuItem: ReactNode = useMemo(() => {
