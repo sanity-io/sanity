@@ -211,7 +211,7 @@ async function packCli(): Promise<string> {
   // a working example)
   const packResult = JSON.parse(pack.stdout) || {}
   if (!packResult || !packResult.name) {
-    throw new Error('Unexpected `npm pack` result')
+    throw new Error('Unexpected `pnpm pack` result')
   }
 
   const packedFilePath = path.join(cwd, packResult.filename)
