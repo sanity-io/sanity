@@ -17,7 +17,6 @@
     "packages/sanity": {"component": "studio"}
   },
   "plugins": [
-    "node-workspace",
     {
       "merge": true,
       "type": "linked-versions",
