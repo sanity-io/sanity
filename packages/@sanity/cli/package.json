@@ -59,11 +59,11 @@
   "dependencies": {
     "@babel/traverse": "^7.23.5",
     "@sanity/client": "^6.29.0",
-    "@sanity/codegen": "3.85.1",
+    "@sanity/codegen": "workspace:*",
     "@sanity/runtime-cli": "^3.0.0",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
-    "@sanity/util": "3.85.1",
+    "@sanity/util": "workspace:",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
