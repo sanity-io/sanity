@@ -2,19 +2,19 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
   "packages": {
-    "packages/@sanity/cli": {"component": "cli"},
-    "packages/@repo/package.bundle": {"component": "package.bundle"},
-    "packages/@sanity/codegen": {"component": "codegen"},
-    "packages/@sanity/diff": {"component": "diff"},
-    "packages/@sanity/migrate": {"component": "migrate"},
-    "packages/@sanity/mutator": {"component": "mutator"},
-    "packages/@sanity/schema": {"component": "schema"},
-    "packages/@sanity/types": {"component": "types"},
-    "packages/@sanity/util": {"component": "util"},
-    "packages/@sanity/vision": {"component": "vision"},
-    "packages/create-sanity": {"component": "create-sanity"},
-    "packages/groq": {"component": "groq"},
-    "packages/sanity": {"component": "sanity"}
+    "packages/@sanity/cli": {"component": "studio"},
+    "packages/@repo/package.bundle": {"component": "studio"},
+    "packages/@sanity/codegen": {"component": "studio"},
+    "packages/@sanity/diff": {"component": "studio"},
+    "packages/@sanity/migrate": {"component": "studio"},
+    "packages/@sanity/mutator": {"component": "studio"},
+    "packages/@sanity/schema": {"component": "studio"},
+    "packages/@sanity/types": {"component": "studio"},
+    "packages/@sanity/util": {"component": "studio"},
+    "packages/@sanity/vision": {"component": "studio"},
+    "packages/create-sanity": {"component": "studio"},
+    "packages/groq": {"component": "studio"},
+    "packages/sanity": {"component": "studio"}
   },
   "plugins": [
     "node-workspace",
@@ -22,20 +22,7 @@
       "merge": true,
       "type": "linked-versions",
       "groupName": "studio",
-      "components": [
-        "cli",
-        "codegen",
-        "diff",
-        "migrate",
-        "mutator",
-        "schema",
-        "types",
-        "util",
-        "vision",
-        "create-sanity",
-        "groq",
-        "sanity"
-      ]
+      "components": ["studio"]
     }
   ],
   "always-update": true,
