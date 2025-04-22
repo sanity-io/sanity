@@ -1,4 +1,5 @@
 {
+  "packages/@repo/package.bundle": "3.86.0",
   "packages/@sanity/cli": "3.86.0",
   "packages/@sanity/codegen": "3.86.0",
   "packages/@sanity/diff": "3.86.0",
