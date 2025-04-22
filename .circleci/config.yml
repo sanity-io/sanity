@@ -6,11 +6,9 @@ workflows:
     jobs:
       - build:
           filters:
-            tags:
-              only: /^v.*/
             branches:
-              # Jobs will run each commit unless explicitly told to ignore branches
-              ignore: /.*/
+              only:
+                - rebuild-auto-updating-studios
 jobs:
   build:
     docker:
