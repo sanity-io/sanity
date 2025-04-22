@@ -398,24 +398,24 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <MarkdownPlugin
                 config={{
                   boldDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'strong')?.value,
+                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name,
                   codeDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'code')?.value,
+                    schema.decorators.find((decorator) => decorator.name === 'code')?.name,
                   italicDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'em')?.value,
+                    schema.decorators.find((decorator) => decorator.name === 'em')?.name,
                   strikeThroughDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'strike-through')
-                      ?.value,
+                    schema.decorators.find((decorator) => decorator.name === 'strike-through')
+                      ?.name,
                   defaultStyle: ({schema}) =>
-                    schema.styles.find((style) => style.value === 'normal')?.value,
+                    schema.styles.find((style) => style.name === 'normal')?.name,
                   blockquoteStyle: ({schema}) =>
-                    schema.styles.find((style) => style.value === 'blockquote')?.value,
+                    schema.styles.find((style) => style.name === 'blockquote')?.name,
                   headingStyle: ({schema, level}) =>
-                    schema.styles.find((style) => style.value === `h${level}`)?.value,
+                    schema.styles.find((style) => style.name === `h${level}`)?.name,
                   orderedListStyle: ({schema}) =>
-                    schema.lists.find((list) => list.value === 'number')?.value,
+                    schema.lists.find((list) => list.name === 'number')?.name,
                   unorderedListStyle: ({schema}) =>
-                    schema.lists.find((list) => list.value === 'bullet')?.value,
+                    schema.lists.find((list) => list.name === 'bullet')?.name,
                 }}
               />
               <Compositor
