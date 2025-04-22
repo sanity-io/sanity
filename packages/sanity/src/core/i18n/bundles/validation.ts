@@ -58,8 +58,6 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'object.asset-required_image': 'Image is required',
   /** Object is not a reference to a document (eg `{_ref: 'documentId'}`) */
   'object.not-reference': 'Must be a reference to a document',
-  /** Object references a document which will be deleted in this release */
-  'object.reference-deleted': 'Referenced document will be deleted in this release',
   /** Object references a document which is not published */
   'object.reference-not-published': 'Referenced document must be published',
   /** Accessibility label for closing the validation panel */

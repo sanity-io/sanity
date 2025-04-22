@@ -1,6 +1,5 @@
 import {isReference, type Validators} from '@sanity/types'
 
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getPublishedId} from '../../util'
 import {genericValidators} from './genericValidator'
 
@@ -54,19 +53,6 @@ export const objectValidators: Validators = {
 
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
-      const publishedDocumentExists = await getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-        .getDocument(value._ref)
-        .then((result) => !!result)
-        .catch(() => false)
-
-      /**
-       * If publishedDocumentExists then getDocumentExists is returning false
-       * because the published document will be unpublished in the current release
-       */
-      if (publishedDocumentExists) {
-        return i18n.t('validation:object.reference-deleted', {documentId: value._ref})
-      }
-
       return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
     }
 
