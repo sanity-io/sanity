@@ -182,7 +182,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return undefined
   }, [allTimeZones, localStorageId])
 
-  const getLocalTimeZone = useCallback((): NormalizedTimeZone | undefined => {
+  const getLocalTimeZone = useCallback((): NormalizedTimeZone => {
     const localTzName = Intl.DateTimeFormat().resolvedOptions().timeZone
     const foundLocal = allTimeZones.find((tz) => tz.name === localTzName)
     if (foundLocal) return foundLocal
@@ -194,13 +194,11 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return allTimeZones[0]
   }, [allTimeZones])
 
-  const getInitialTimeZone = useCallback((): NormalizedTimeZone | undefined => {
+  const getInitialTimeZone = useCallback((): NormalizedTimeZone => {
     return getStoredTimeZone() || getDefaultTimeZone() || getLocalTimeZone()
   }, [getStoredTimeZone, getDefaultTimeZone, getLocalTimeZone])
 
-  const [timeZone, setTimeZone] = useState<NormalizedTimeZone | undefined>(() =>
-    getInitialTimeZone(),
-  )
+  const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
     setTimeZone(getInitialTimeZone())
@@ -247,9 +245,9 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   }, [timeZone])
 
   const getTimeZone = useCallback(
-    (tzValue: string): NormalizedTimeZone | undefined =>
-      allTimeZones.find((tz) => tzValue === tz.value),
-    [allTimeZones],
+    (tzValue: string): NormalizedTimeZone =>
+      allTimeZones.find((tz) => tzValue === tz.value) || getInitialTimeZone(),
+    [allTimeZones, getInitialTimeZone],
   )
 
   const handleNewValue = useCallback(
