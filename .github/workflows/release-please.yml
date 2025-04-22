@@ -1,0 +1,70 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to NPM
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release-please:
+    permissions:
+      contents: read # for checkout
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+      # This action will create a release PR when regular conventional commits are pushed to main, it'll also detect if a release PR is merged and npm publish should happen
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+
+      # Publish to NPM on new releases
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+      - uses: pnpm/action-setup@v4
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+      - uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: install deps & build
+        run: pnpm install --ignore-scripts
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+      # Release Please has already incremented versions and published tags, so we just
+      # need to publish all unpublished versions to NPM here
+      - run: |
+          # https://github.com/lerna/lerna/tree/v8.1.2/libs/commands/publish#bump-from-package
+          lerna publish           \
+          --force-publish       \
+          --exact               \
+          --yes                 \
+          from-package
+
+        if: ${{ steps.release.outputs.releases_created == 'true' || github.event.inputs.publish == 'true' }}
+        env:
+          NPM_CONFIG_PROVENANCE: true

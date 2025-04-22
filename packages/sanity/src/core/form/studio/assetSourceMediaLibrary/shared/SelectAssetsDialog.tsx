@@ -1,8 +1,8 @@
 import {Flex, Stack, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 
 import {Button} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
@@ -13,6 +13,7 @@ import {Iframe} from './Iframe'
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
   libraryId: string
+  open: boolean
   onClose: () => void
   onSelect: (selection: AssetSelectionItem[]) => Promise<void>
   ref: React.Ref<HTMLDivElement>
@@ -36,6 +37,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     dialogHeaderTitle,
     libraryId,
     onClose,
+    open,
     onSelect,
     selectionType = 'single',
     ref,
@@ -72,6 +74,9 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   }, [])
 
   const {setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
+  if (!open) {
+    return null
+  }
 
   return (
     <AppDialog

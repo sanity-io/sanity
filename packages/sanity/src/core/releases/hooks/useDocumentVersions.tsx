@@ -19,7 +19,11 @@ export interface DocumentPerspectiveState {
 }
 
 const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
-
+const INITIAL_VALUE = {
+  data: [],
+  error: null,
+  loading: true,
+}
 /**
  * Fetches the document versions for a given document
  * @param props - document Id of the document (might include release id)
@@ -52,7 +56,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       )
   }, [documentPreviewStore, publishedId])
 
-  const result = useObservable(observable, {data: [], error: null, loading: true})
+  const result = useObservable(observable, INITIAL_VALUE)
 
   return result
 }

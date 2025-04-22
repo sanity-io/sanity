@@ -1,24 +1,21 @@
-import {CopyIcon, DownloadIcon, ResetIcon, UploadIcon} from '@sanity/icons'
+import {CopyIcon, DownloadIcon, ResetIcon} from '@sanity/icons'
 import {MenuDivider, useToast} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
 interface Props {
-  onUpload: (files: File[]) => void
   browse: ReactNode
   readOnly?: boolean
   onReset: MouseEventHandler<HTMLDivElement>
-  accept: string
-  directUploads?: boolean
   downloadUrl?: string
   copyUrl?: string
+  upload: ReactNode
 }
 
 export function ActionsMenu(props: Props) {
-  const {onUpload, onReset, readOnly, accept, directUploads, browse, downloadUrl, copyUrl} = props
+  const {onReset, readOnly, browse, downloadUrl, copyUrl, upload} = props
 
   const {push: pushToast} = useToast()
   const {t} = useTranslation()
@@ -34,14 +31,8 @@ export function ActionsMenu(props: Props) {
 
   return (
     <>
-      <FileInputMenuItem
-        icon={UploadIcon}
-        onSelect={onUpload}
-        accept={accept}
-        text={t('inputs.files.common.actions-menu.upload.label')}
-        data-testid="file-input-upload-button"
-        disabled={readOnly || !directUploads}
-      />
+      {upload}
+      {upload && browse && <MenuDivider />}
       {browse}
 
       {(downloadUrl || copyUrl) && <MenuDivider />}

@@ -99,7 +99,7 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const DefaultAssetSource = function DefaultAssetSource(
+const SelectAssetsComponent = function SelectAssetsComponent(
   props: AssetSourceComponentProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
@@ -294,4 +294,4 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 }
 
-export const DefaultSource = memo(forwardRef(DefaultAssetSource))
+export const SelectAssetsDialog = memo(forwardRef(SelectAssetsComponent))

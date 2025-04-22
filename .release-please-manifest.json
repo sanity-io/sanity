@@ -1,0 +1,14 @@
+{
+  "packages/@sanity/cli": "3.86.0",
+  "packages/@sanity/codegen": "3.86.0",
+  "packages/@sanity/diff": "3.86.0",
+  "packages/@sanity/migrate": "3.86.0",
+  "packages/@sanity/mutator": "3.86.0",
+  "packages/@sanity/schema": "3.86.0",
+  "packages/@sanity/types": "3.86.0",
+  "packages/@sanity/util": "3.86.0",
+  "packages/@sanity/vision": "3.86.0",
+  "packages/create-sanity": "3.86.0",
+  "packages/groq": "3.86.0",
+  "packages/sanity": "3.86.0"
+}

@@ -1,3 +1,4 @@
+import {type AssetSource} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {get} from 'lodash'
 import {memo, useMemo} from 'react'
@@ -6,8 +7,9 @@ import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {type BaseImageInputProps, type FileInfo} from './types'
 
 function ImageInputUploadPlaceholderComponent(props: {
+  assetSources: BaseImageInputProps['assetSources']
   directUploads: boolean | undefined
-  handleSelectFiles: (files: File[]) => void
+  onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   hoveringFiles: FileInfo[]
   readOnly: boolean | undefined
   renderBrowser(): React.JSX.Element | null
@@ -15,8 +17,9 @@ function ImageInputUploadPlaceholderComponent(props: {
   schemaType: BaseImageInputProps['schemaType']
 }) {
   const {
+    assetSources,
     directUploads,
-    handleSelectFiles,
+    onSelectFiles,
     hoveringFiles,
     readOnly,
     renderBrowser,
@@ -43,15 +46,16 @@ function ImageInputUploadPlaceholderComponent(props: {
         style={hoveringFiles.length === 0 ? {} : {borderColor: 'transparent'}}
       >
         <UploadPlaceholder
-          browse={renderBrowser()}
-          onUpload={handleSelectFiles}
-          readOnly={readOnly}
-          hoveringFiles={hoveringFiles}
+          accept={accept}
           acceptedFiles={acceptedFiles}
+          assetSources={assetSources}
+          browse={renderBrowser()}
+          directUploads={directUploads}
+          hoveringFiles={hoveringFiles}
+          onUpload={onSelectFiles}
+          readOnly={readOnly}
           rejectedFilesCount={rejectedFilesCount}
           type="image"
-          accept={accept}
-          directUploads={directUploads}
         />
       </Card>
     </div>
