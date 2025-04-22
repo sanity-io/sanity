@@ -1,85 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
+  "include-component-in-tag": false,
   "packages": {
-    "packages/@sanity/cli": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@repo/package.bundle": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/codegen": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/diff": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/migrate": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/mutator": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/schema": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/types": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/util": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/@sanity/vision": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/create-sanity": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/groq": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    },
-    "packages/sanity": {
-      "component": "studio",
-      "draft-pull-request": true,
-      "include-component-in-tag": false,
-      "merge": true
-    }
+    "packages/@sanity/cli": {"component": "cli"},
+    "packages/@sanity/codegen": {"component": "codegen"},
+    "packages/@sanity/diff": {"component": "diff"},
+    "packages/@sanity/migrate": {"component": "migrate"},
+    "packages/@sanity/mutator": {"component": "mutator"},
+    "packages/@sanity/schema": {"component": "schema"},
+    "packages/@sanity/types": {"component": "types"},
+    "packages/@sanity/util": {"component": "util"},
+    "packages/@sanity/vision": {"component": "vision"},
+    "packages/create-sanity": {"component": "create-sanity"},
+    "packages/groq": {"component": "groq"},
+    "packages/sanity": {"component": "sanity"}
   },
   "plugins": [
     {
@@ -89,7 +24,21 @@
     {
       "type": "linked-versions",
       "groupName": "studio",
-      "components": ["studio"]
+      "components": [
+        "cli",
+        "codegen",
+        "diff",
+        "migrate",
+        "mutator",
+        "schema",
+        "types",
+        "util",
+        "vision",
+        "create-sanity",
+        "groq",
+        "sanity"
+      ]
     }
-  ]
+  ],
+  "separate-pull-requests": false
 }
