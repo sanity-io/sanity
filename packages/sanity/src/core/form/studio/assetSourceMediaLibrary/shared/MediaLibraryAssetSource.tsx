@@ -9,23 +9,27 @@ import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} f
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
+import {type AssetSelectionItem} from '../types'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
+import {UploadAssetsDialog} from './UploadAssetDialog'
 
 // Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
 const fetchedLibraryIdCache: Map<string, string> = new Map()
 
-const MediaLibraryAssetSource = function MediaLibraryAssetSource(
+const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
   props: AssetSourceComponentProps & {libraryId: string | null},
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
-    accept,
+    accept, // TODO: make the plugin respect this filter?
+    action = 'select',
+    assetSource,
     assetType = 'image',
     dialogHeaderTitle,
     libraryId: libraryIdProp,
     onClose,
     onSelect,
-    selectedAssets,
+    selectedAssets, // TODO: allow for pre-selected assets?
   } = props
 
   const {t} = useTranslation()
@@ -73,7 +77,7 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
           body: {
             mediaLibraryId: resolvedLibraryId,
             assetInstanceId: asset.assetInstanceId,
-            assetId: asset.assetId,
+            assetId: asset.asset._id,
           },
         })
         const assetDocument: SanityDocument = result.document
@@ -83,7 +87,7 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
             value: assetDocument._id,
             mediaLibraryProps: {
               mediaLibraryId: resolvedLibraryId,
-              assetId: asset.assetId,
+              assetId: asset.asset._id,
               assetInstanceId: asset.assetInstanceId,
             },
           },
@@ -103,26 +107,44 @@ const MediaLibraryAssetSource = function MediaLibraryAssetSource(
     [client, onClose, onSelect, resolvedLibraryId, t, toast],
   )
 
+  const handleUploaded = useCallback(
+    async (assets: AssetSelectionItem[]) => {
+      handleSelect(assets)
+      onClose()
+    },
+    [handleSelect, onClose],
+  )
+
   if (!resolvedLibraryId) {
     return null
   }
 
   return (
-    <SelectAssetsDialog
-      dialogHeaderTitle={
-        dialogHeaderTitle ||
-        t('asset-source.dialog.default-title', {
-          context: assetType,
-        })
-      }
-      ref={ref}
-      onClose={onClose}
-      onSelect={handleSelect}
-      selection={[]}
-      libraryId={resolvedLibraryId}
-      selectAssetType={assetType}
-    />
+    <>
+      <UploadAssetsDialog
+        open={action === 'upload'}
+        libraryId={resolvedLibraryId}
+        onUploaded={handleUploaded}
+        uploader={assetSource.uploader}
+      />
+
+      <SelectAssetsDialog
+        dialogHeaderTitle={
+          dialogHeaderTitle ||
+          t('asset-source.dialog.default-title', {
+            context: assetType,
+          })
+        }
+        open={action === 'select'}
+        ref={ref}
+        onClose={onClose}
+        onSelect={handleSelect}
+        selection={[]}
+        libraryId={resolvedLibraryId}
+        selectAssetType={assetType}
+      />
+    </>
   )
 }
 
-export const MediaLibrarySource = memo(forwardRef(MediaLibraryAssetSource))
+export const MediaLibraryAssetSource = memo(forwardRef(MediaLibraryAssetSourceComponent))

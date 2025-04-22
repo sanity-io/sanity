@@ -6,7 +6,7 @@ import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {type BaseImageInputProps} from './types'
 
 function ImageInputAssetSourceComponent(
-  props: Pick<BaseImageInputProps, 'value' | 'schemaType' | 'observeAsset'> & {
+  props: Pick<BaseImageInputProps, 'value' | 'schemaType' | 'observeAsset' | 'isUploading'> & {
     selectedAssetSource: AssetSource | null
     handleAssetSourceClosed: () => void
     handleSelectAssetFromSource: (assetFromSource: AssetFromSource[]) => void
@@ -15,6 +15,7 @@ function ImageInputAssetSourceComponent(
   const {
     handleAssetSourceClosed,
     handleSelectAssetFromSource,
+    isUploading,
     observeAsset,
     schemaType,
     selectedAssetSource,
@@ -32,6 +33,8 @@ function ImageInputAssetSourceComponent(
       <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
         {(imageAsset) => (
           <Component
+            action={isUploading ? 'upload' : 'select'}
+            assetSource={selectedAssetSource}
             selectedAssets={[imageAsset]}
             assetType="image"
             accept={accept}
@@ -45,6 +48,8 @@ function ImageInputAssetSourceComponent(
   }
   return (
     <Component
+      action={isUploading ? 'upload' : 'select'}
+      assetSource={selectedAssetSource}
       selectedAssets={[]}
       selectionType="single"
       assetType="image"

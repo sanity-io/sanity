@@ -88,8 +88,8 @@ jobs:
       - name: dataset setup on PR (chromium)
         if: ${{ github.event_name == 'pull_request' }}
         env:
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
         run: |
           echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
@@ -98,8 +98,8 @@ jobs:
       - name: dataset setup on PR (firefox)
         if: ${{ github.event_name == 'pull_request' }}
         env:
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
         run: |
           echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
@@ -138,7 +138,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
@@ -149,8 +149,8 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
           # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
           # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
@@ -192,7 +192,7 @@ jobs:
             💬 Remember to build the project first with `pnpm build:e2e`.
 
             ```
-              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID }}
+              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
               SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
               SANITY_E2E_DATASET="update depending the project you want to test (${{ env.CHROMIUM_DATASET }} || ${{ env.FIREFOX_DATASET }} )"
               SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
@@ -209,7 +209,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       SANITY_E2E_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
-      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
+      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
     strategy:
       fail-fast: false
       matrix:
@@ -257,9 +257,9 @@ jobs:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
@@ -272,7 +272,7 @@ jobs:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}

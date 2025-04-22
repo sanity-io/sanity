@@ -15,5 +15,6 @@ export function createE2EClient(dataset: string): SanityClient {
     token: readEnv<KnownEnvVar>('SANITY_E2E_SESSION_TOKEN'),
     apiVersion: '2023-02-03',
     useCdn: false,
+    apiHost: 'https://api.sanity.work',
   })
 }

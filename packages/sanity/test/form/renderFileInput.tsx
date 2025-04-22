@@ -12,7 +12,7 @@ import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
 
-const STUB_ASSET_SOURCES: AssetSource[] = [{} as any] // @todo
+const STUB_ASSET_SOURCES: AssetSource[] = [{uploader: {}, name: 'test-source'} as AssetSource] // @todo
 
 const STUB_OBSERVE_ASSET = () => EMPTY
 
