@@ -492,6 +492,12 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   releases?: DefaultPluginsWorkspaceOptions['releases']
+  features?: {
+    /**
+     * @internal
+     */
+    canvas?: {enabled: boolean}
+  }
 
   /**
    * @hidden
