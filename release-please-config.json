@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "packages/@sanity/block-tools": {"component": "block-tools"},
+    "packages/@sanity/cli": {"component": "cli"},
+    "packages/@sanity/codegen": {"component": "codegen"},
+    "packages/@sanity/diff": {"component": "diff"},
+    "packages/@sanity/migrate": {"component": "migrate"},
+    "packages/@sanity/mutator": {"component": "mutator"},
+    "packages/@sanity/schema": {"component": "schema"},
+    "packages/@sanity/types": {"component": "types"},
+    "packages/@sanity/util": {"component": "util"},
+    "packages/@sanity/vision": {"component": "vision"},
+    "packages/create-sanity": {"component": "create-sanity"},
+    "packages/groq": {"component": "groq"},
+    "packages/sanity": {"component": "sanity"}
+  },
+  "plugins": [
+    "node-workspace",
+    {
+      "type": "linked-versions",
+      "groupName": "studio",
+      "components": [
+        "block-tools",
+        "cli",
+        "codegen",
+        "diff",
+        "migrate",
+        "mutator",
+        "schema",
+        "types",
+        "util",
+        "vision",
+        "create-sanity",
+        "groq",
+        "sanity"
+      ]
+    }
+  ],
+  "separate-pull-requests": true
+}
