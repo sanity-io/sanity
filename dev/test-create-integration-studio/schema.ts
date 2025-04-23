@@ -49,6 +49,23 @@ export const schemaTypes = [
     ],
   }),
   defineType({
+    type: 'document',
+    liveEdit: true,
+    name: 'has-live-edit',
+    fields: [
+      defineField({
+        name: 'title',
+        type: 'string',
+        initialValue: 'Live edit',
+      }),
+      defineField({
+        name: 'description',
+        type: 'string',
+        initialValue: 'Live edit description',
+      }),
+    ],
+  }),
+  defineType({
     title: 'Documentation Article',
     name: 'create-test-article',
     type: 'document',
