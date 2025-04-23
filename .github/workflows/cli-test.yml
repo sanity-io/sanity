@@ -13,6 +13,17 @@ concurrency:
 
 jobs:
   cli-test:
+    # Do not run cli tests on release PRs or when the release PR is merged because
+    # the CLI tests will attempt to install the not-yet-released packages from npm
+    if: |
+      !(
+        github.event_name == 'pull_request' &&
+        contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease: pending')
+      ) &&
+      !(
+        github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'chore: release')
+      )
     timeout-minutes: 60
     name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
