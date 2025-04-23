@@ -1,15 +1,15 @@
 {
-  "packages/@repo/package.bundle": "3.86.1",
-  "packages/@sanity/cli": "3.86.1",
-  "packages/@sanity/codegen": "3.86.1",
-  "packages/@sanity/diff": "3.86.1",
-  "packages/@sanity/migrate": "3.86.1",
-  "packages/@sanity/mutator": "3.86.1",
-  "packages/@sanity/schema": "3.86.1",
-  "packages/@sanity/types": "3.86.1",
-  "packages/@sanity/util": "3.86.1",
-  "packages/@sanity/vision": "3.86.1",
-  "packages/create-sanity": "3.86.1",
-  "packages/groq": "3.86.1",
-  "packages/sanity": "3.86.1"
+  "packages/@repo/package.bundle": "3.86.2",
+  "packages/@sanity/cli": "3.87.0",
+  "packages/@sanity/codegen": "3.86.2",
+  "packages/@sanity/diff": "3.86.2",
+  "packages/@sanity/migrate": "3.86.2",
+  "packages/@sanity/mutator": "3.86.2",
+  "packages/@sanity/schema": "3.86.2",
+  "packages/@sanity/types": "3.87.0",
+  "packages/@sanity/util": "3.86.2",
+  "packages/@sanity/vision": "3.86.2",
+  "packages/create-sanity": "3.86.2",
+  "packages/groq": "3.86.2",
+  "packages/sanity": "3.87.0"
 }

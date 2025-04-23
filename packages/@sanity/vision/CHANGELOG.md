@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.86.2](https://github.com/sanity-io/sanity/compare/v3.86.1...v3.86.2) (2025-04-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @sanity/cli bumped to 3.87.0
+    * @sanity/codegen bumped to 3.86.2
+    * @sanity/diff bumped to 3.86.2
+    * @sanity/migrate bumped to 3.86.2
+    * @sanity/mutator bumped to 3.86.2
+    * @sanity/schema bumped to 3.86.2
+    * @sanity/types bumped to 3.87.0
+    * @sanity/util bumped to 3.86.2
+    * sanity bumped to 3.87.0
+
 ## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
 
 
