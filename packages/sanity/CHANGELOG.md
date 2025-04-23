@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to ^1.47.12 ([#9241](https://github.com/sanity-io/sanity/issues/9241)) ([95b9e92](https://github.com/sanity-io/sanity/commit/95b9e92ba83682aa6988c523e835a71c65d9e883))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/cli bumped to 3.86.1
+    * @sanity/diff bumped to 3.86.1
+    * @sanity/migrate bumped to 3.86.1
+    * @sanity/mutator bumped to 3.86.1
+    * @sanity/schema bumped to 3.86.1
+    * @sanity/types bumped to 3.86.1
+    * @sanity/util bumped to 3.86.1
+  * devDependencies
+    * @sanity/codegen bumped to 3.86.1
+
 ## [3.86.0](https://github.com/sanity-io/sanity/compare/sanity-v3.85.1...sanity-v3.86.0) (2025-04-22)
 
 
