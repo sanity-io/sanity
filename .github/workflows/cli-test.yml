@@ -45,19 +45,18 @@ jobs:
       # Note: we can't skip, because this is a required status check, but exit 0 will report success
       - name: Skip for release PR or commit
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]] && \
-             [[ "${{ toJson(github.event.pull_request.labels.*.name) }}" == *"autorelease: pending"* ]]; then
-            echo "✅ Skipping test on release PR"
-            exit 0
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.pull_request.title }}" == chore:\ release* ]]; then
+              echo "✅ Skipping test on release PR"
+              exit 0
+            fi
           fi
-
-          if [[ "${{ github.event_name }}" == "push" ]] && \
-             [[ "${{ github.event.head_commit.message }}" == chore:\ release* ]]; then
-            echo "✅ Skipping test on release commit"
-            exit 0
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.event.head_commit.message }}" == chore:\ release* ]]; then
+              echo "✅ Skipping test on release commit"
+              exit 0
+            fi
           fi
-
-          echo "🔧 Continuing with full test flow"
       - name: Install project dependencies
         run: pnpm install
 
