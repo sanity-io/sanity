@@ -1,0 +1,84 @@
+import {ComposeSparklesIcon} from '@sanity/icons'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+
+import {
+  type DocumentActionComponent,
+  type DocumentActionProps,
+} from '../../../config/document/actions'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {isReleaseDocument} from '../../../releases/store/types'
+import {useRenderingContext} from '../../../store/renderingContext/useIsInRenderContext'
+import {canvasLocaleNamespace} from '../../i18n'
+import {useCompanionDoc} from '../useCompanionDoc'
+import {LinkToCanvasDialog} from './LinkToCanvasDialog'
+
+const useIsExcludedType = (type: string) => {
+  const schema = useSchema()
+  const isExcludedType = schema.get(type)?.options?.sanityCreate?.exclude
+  return isExcludedType
+}
+
+export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
+  const {t} = useTranslation(canvasLocaleNamespace)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const {selectedPerspective} = usePerspective()
+  const {isLinked, loading} = useCompanionDoc(props.id)
+
+  const isExcludedType = useIsExcludedType(props.type)
+
+  const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
+  const handleOpenDialog = useCallback(() => setIsDialogOpen(true), [])
+  const renderingContext = useRenderingContext()
+  const isInDashboard = renderingContext?.name === 'coreUi'
+  const isVersionDocument = Boolean(props.release)
+
+  const disabled = useMemo(() => {
+    if (!isInDashboard) {
+      return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
+    }
+    if (isVersionDocument) {
+      return {disabled: true, reason: t('action.link-document-disabled.version-document')}
+    }
+
+    return {disabled: false, reason: undefined}
+  }, [isInDashboard, isVersionDocument, t])
+
+  useEffect(() => {
+    if (isLinked) {
+      handleCloseDialog()
+    }
+  }, [isLinked, handleCloseDialog])
+
+  if (isLinked || loading || isExcludedType) return null
+  // Hide the action in published perspective unless the document is live editable
+  if (selectedPerspective === 'published' && !props.liveEditSchemaType) return null
+  // Release documents are not yet supported in Canvas
+  if (isReleaseDocument(selectedPerspective)) return null
+
+  // Hide the action in the dashboard - TODO Remove this once dashboard is released
+  if (!isInDashboard) return null
+
+  return {
+    disabled: disabled.disabled,
+    icon: ComposeSparklesIcon,
+    dialog: isDialogOpen
+      ? {
+          type: 'custom',
+          component: (
+            <LinkToCanvasDialog
+              onClose={handleCloseDialog}
+              document={props.version || props.draft || props.published || undefined}
+            />
+          ),
+        }
+      : undefined,
+    label: t('action.link-document'),
+    title: disabled.reason,
+    onHandle: handleOpenDialog,
+  }
+}
+
+LinkToCanvasAction.action = 'linkToCanvas'
+LinkToCanvasAction.displayName = 'LinkToCanvasAction'

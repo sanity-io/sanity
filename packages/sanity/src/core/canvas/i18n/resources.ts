@@ -30,6 +30,25 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   'dialog.link-to-canvas.validating': 'Validating',
   /** The text for the "Link to Canvas" dialog when the document is being redirected. */
   'dialog.link-to-canvas.redirecting': 'Taking you to Canvas to complete linking...',
+  /** The text for the Link to Canvas dialog when there is a error. */
+  'dialog.link-to-canvas.error': 'Failed to link to Canvas',
+
+  /** The title for the "Unlink from Canvas" dialog. */
+  'dialog.unlink-from-canvas.title': 'Unlink from Canvas',
+  /** The text for the "Unlink from Canvas" dialog when the document is being unlinked. */
+  'dialog.unlink-from-canvas.unlinking':
+    "You're unlinking  <strong>“{{documentTitle}}”</strong> from Canvas.",
+  /** The text for the "Unlink from Canvas" dialog cancel button. */
+  'dialog.unlink-from-canvas.cancel': 'Cancel',
+  /** The text for the "Unlink from Canvas" dialog unlink button. */
+  'dialog.unlink-from-canvas.unlink-action': 'Unlink now',
+  /** The text for the "Unlink from Canvas" dialog description. */
+  'dialog.unlink-from-canvas.description':
+    'Once unlinked, it will be editable here with current changes and future edits made in Canvas will no longer be automatically mapped to this document.',
+  /** The text for the "Unlink from Canvas" dialog success message. */
+  'dialog.unlink-from-canvas.success': 'Unlinked from Canvas',
+  /** The text for the "Unlink from Canvas" dialog error message. */
+  'dialog.unlink-from-canvas.error': 'Failed to unlink from Canvas',
 })
 
 /**

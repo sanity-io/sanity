@@ -55,6 +55,8 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
     | 'publish'
     | 'unpublish'
     | 'linkToCanvas'
+    | 'editInCanvas'
+    | 'unlinkFromCanvas'
   /**
    * For debugging purposes
    */
