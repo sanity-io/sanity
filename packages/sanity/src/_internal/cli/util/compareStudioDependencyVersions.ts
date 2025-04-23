@@ -3,8 +3,8 @@ import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 
-import {type AutoUpdatesImportMap} from './getAutoUpdatesImportMap'
-import {readPackageJson} from './readPackageJson'
+import {type StudioAutoUpdatesImportMap} from './getAutoUpdatesImportMap'
+import {readPackageManifest} from './readPackageManifest'
 
 async function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
   try {
@@ -42,11 +42,11 @@ interface CompareStudioDependencyVersions {
  * cannot be parsed.
  */
 export async function compareStudioDependencyVersions(
-  autoUpdatesImports: AutoUpdatesImportMap,
+  autoUpdatesImports: StudioAutoUpdatesImportMap,
   workDir: string,
   fetchFn = globalThis.fetch,
 ): Promise<Array<CompareStudioDependencyVersions>> {
-  const manifest = readPackageJson(path.join(workDir, 'package.json'))
+  const manifest = await readPackageManifest(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
   const failedDependencies: Array<CompareStudioDependencyVersions> = []
@@ -67,7 +67,7 @@ export async function compareStudioDependencyVersions(
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg, 'package.json'))
 
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependency,
+      manifestPath ? (await readPackageManifest(manifestPath)).version : dependency,
     )
 
     if (!installed) {

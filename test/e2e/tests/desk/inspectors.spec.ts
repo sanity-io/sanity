@@ -1,12 +1,13 @@
 /* eslint-disable max-nested-callbacks */
-import {expect, test} from '@playwright/test'
+import {expect} from '@playwright/test'
 
 import {createUniqueDocument, withDefaultClient} from '../../helpers'
+import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
   test.describe.skip('sanity/structure: document inspectors', () => {
     test('open and close custom inspector', async ({page}) => {
-      await page.goto('/test/content/input-debug;inspectorsTest;inspectors-test')
+      await page.goto('/content/input-debug;inspectorsTest;inspectors-test')
 
       // Click to open inspector
       await page
@@ -44,7 +45,7 @@ withDefaultClient((context) => {
         name: 'Edited by e2e test runner',
       })
 
-      await page.goto(`/test/content/input-debug;validationTest;${id}`)
+      await page.goto(`/content/input-debug;validationTest;${id}`)
 
       // Click to open inspector
       await page.locator('[data-ui="StatusButton"][aria-label="Validation"]').click({timeout: 0})
@@ -71,7 +72,7 @@ withDefaultClient((context) => {
         name: 'Edited by e2e test runner',
       })
 
-      await page.goto(`/test/content/input-debug;inspectorsTest;${id}`)
+      await page.goto(`/content/input-debug;inspectorsTest;${id}`)
 
       // Click to open inspector
       await page.locator('[data-testid="review-changes-button"]').click()

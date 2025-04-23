@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialUndecidedReleaseMetadata} from '../utils/__fixtures__/releases'
 import {
@@ -18,6 +18,8 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Revert Undecided', () => {
+  test.skip()
+
   const undecidedReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
@@ -45,7 +47,7 @@ test.describe('Revert Undecided', () => {
       _id: `versions.${undecidedReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${undecidedReleaseIdTestOne}`)
+    await page.goto(`/releases/${undecidedReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {

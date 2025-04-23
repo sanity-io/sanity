@@ -4,7 +4,6 @@ import {SanityCreateConfigContext} from 'sanity/_singletons'
 import {useSource} from '../../studio'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
 import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
-import {StartInCreateBanner} from '../components/StartInCreateBanner'
 import {createAppIdCache} from '../studio-app/appIdCache'
 import {type SanityCreateConfigContextValue} from './useSanityCreateConfig'
 
@@ -31,7 +30,6 @@ export function SanityCreateConfigProvider(
       components: {
         documentLinkedBannerContent: CreateLinkedDocumentBannerContent,
         documentLinkedActions: CreateLinkedActions,
-        startInCreateBanner: StartInCreateBanner,
       },
     }
   }, [beta?.create, appIdCache])

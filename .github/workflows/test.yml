@@ -96,4 +96,4 @@ jobs:
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        uses: davelosert/vitest-coverage-report-action@5a78cb16e761204097ad8a39369ea5d0ff7c8a5d # v2
+        uses: davelosert/vitest-coverage-report-action@7bf7d3c1b17a0e27c7e0d14190fb39168584bed2 # v2

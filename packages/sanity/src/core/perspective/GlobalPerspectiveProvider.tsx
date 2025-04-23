@@ -4,6 +4,7 @@ import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
+import {type ReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {LATEST} from '../releases/util/const'
@@ -14,6 +15,23 @@ import {PerspectiveProvider} from './PerspectiveProvider'
 import {type ReleaseId} from './types'
 import {usePerspective} from './usePerspective'
 import {useSetPerspective} from './useSetPerspective'
+
+const getToastTitleAndDescription = (
+  archived?: ReleaseDocument,
+): {title: string; description?: string} => {
+  if (!archived) return {title: 'release.toast.not-found-release.title'}
+
+  if (archived.state === 'published')
+    return {
+      title: 'release.toast.published-release.title',
+      description: 'release.toast.published-release.description',
+    }
+
+  return {
+    title: 'release.toast.archived-release.title',
+    description: 'release.toast.archived-release.description',
+  }
+}
 
 const ResetPerspectiveHandler = () => {
   const toast = useToast()
@@ -40,6 +58,8 @@ const ResetPerspectiveHandler = () => {
         (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedPerspectiveName,
       )
 
+      const {title, description} = getToastTitleAndDescription(archived)
+
       toast.push({
         id: `bundle-deleted-toast-${selectedPerspectiveName}`,
         status: 'warning',
@@ -47,13 +67,14 @@ const ResetPerspectiveHandler = () => {
           <Text muted size={1}>
             <Translate
               t={t}
-              i18nKey={
-                archived
-                  ? 'release.toast.archived-release.title'
-                  : 'release.toast.not-found-release.title'
-              }
+              i18nKey={title}
               values={{title: archived?.metadata?.title || selectedPerspectiveName}}
             />
+          </Text>
+        ),
+        description: description && (
+          <Text muted size={1}>
+            <Translate t={t} i18nKey={description} />
           </Text>
         ),
         duration: 10000,

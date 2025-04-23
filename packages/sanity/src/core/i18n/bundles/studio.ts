@@ -32,7 +32,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Latest version" header in about dialog */
   'about-dialog.version-info.latest-version.text': 'Latest version is {{latestVersion}}',
   /** "Up to date" status in About-dialog */
-  'about-dialog.version-info.up-to-date': '(Up to date)',
+  'about-dialog.version-info.up-to-date': 'Up to date',
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
 
@@ -133,9 +133,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.image.asset-list.delete-successful': 'Image was deleted',
   /** Text displayed on button or menu invoking the image asset source */
   'asset-source.image.title': 'Uploaded images',
-  /** Menu Items for Media Library */
-  'asset-source.media-library.file.title': 'Media Library',
-  'asset-source.media-library.image.title': 'Media Library',
+  /** Built in asset source usage texts */
   'asset-source.usage-list.documents-using-file_named_one':
     'One document is using file <code>{{filename}}</code>',
   'asset-source.usage-list.documents-using-file_named_other':
@@ -160,6 +158,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     '{{count}} documents are using this image',
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
+
+  /** Common (all) Asset Source texts. Note that all translation keys starting with 'asset-source.' is for the built in asset source. */
+  'asset-sources.common.uploader.upload-failed.description':
+    'See the console for more information.',
+  'asset-sources.common.uploader.upload-failed.title': 'Upload failed',
+
+  /** Menu Items for Dataset Asset Source (will be replaced with workspace name by default) */
+  'asset-sources.dataset.file.title': 'Workspace files',
+  'asset-sources.dataset.image.title': 'Workspace images',
+
+  /** Menu Items for Media Library Asset Source */
+  'asset-sources.media-library.file.title': 'Media Library',
+  'asset-sources.media-library.image.title': 'Media Library',
 
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
@@ -527,6 +538,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
+  /** Text for menuitem upload button default asset source */
+  'input.files.common.upload-placeholder.file-input-button.default-source.badge': 'Default',
   /** Text for file input button in upload placeholder */
   'input.files.common.upload-placeholder.file-input-button.text': 'Upload',
   /** Uploading <FileName/> */
@@ -669,6 +682,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.files.common.placeholder.drop-to-upload_image': 'Drop to upload image',
   /** Read only */
   'inputs.files.common.placeholder.read-only': 'Read only',
+  /** Select asset source destination for files to upload */
+  'inputs.files.common.placeholder.select-asset-source-upload-destination': 'Upload files to:',
   /** Can't upload files here */
   'inputs.files.common.placeholder.upload-not-supported': "Can't upload files here",
   /** Clear upload */
@@ -1290,12 +1305,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.tooltip': 'Releases',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
+  /** The toast description that will be shown when the user has a release perspective which is now archived */
+  'release.toast.archived-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
-  /** The toast tiele that will be shown the creating a release fails */
+  /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
   /**The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
+  /** The toast description that will be shown when the user has a release perspective which is now published */
+  'release.toast.published-release.description': 'This release has been unpinned',
+  /** The toast title that will be shown when the user has a release perspective which is now deleted */
+  'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

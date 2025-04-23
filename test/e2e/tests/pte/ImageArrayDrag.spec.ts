@@ -3,17 +3,18 @@ import path from 'node:path'
 
 import {expect} from '@playwright/test'
 import {type SanityImageAssetDocument} from '@sanity/client'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Portable Text Input - ImageArrayDraft', () => {
   let uploadedAsset: SanityImageAssetDocument
   test.beforeAll(async ({sanityClient}) => {
     const asset = await sanityClient.assets.upload(
       'image',
-      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara.jpg')),
+      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara-studio.jpg')),
       {
-        filename: 'image-array-drag.jpg',
-        title: 'image-array-drag',
+        filename: 'capybara-studio.jpg',
+        title: 'capybara-studio',
       },
     )
     uploadedAsset = asset
@@ -27,17 +28,16 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
     page,
     createDraftDocument,
   }) => {
-    await createDraftDocument(
-      '/test/content/input-standard;portable-text;pt_allTheBellsAndWhistles',
-    )
+    await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
+    const pteEditor = page.getByTestId('field-body')
+    // Wait for the text block to be editable
+    await expect(
+      pteEditor.locator('[data-testid="text-block__text"]:not([data-read-only="true"])'),
+    ).toBeVisible()
     // set up the portable text editor
-    await page.getByTestId('field-body').focus()
-    await page.getByTestId('field-body').click()
-
-    page.on('dialog', async () => {
-      await expect(page.getByTestId('insert-menu-auto-collapse-menu')).toBeVisible()
-    })
+    await pteEditor.focus()
+    await pteEditor.click()
 
     // open the insert menu
     await page
@@ -51,7 +51,7 @@ test.describe('Portable Text Input - ImageArrayDraft', () => {
     await page.getByTestId('file-input-browse-button-sanity-default').click()
 
     // grab an image
-    await page.getByRole('button', {name: uploadedAsset.originalFilename}).click()
+    await page.getByRole('button', {name: uploadedAsset.originalFilename}).first().click()
     await page.getByLabel('Edit Image With Caption').getByLabel('Close dialog').click()
 
     // grab drag element in array element

@@ -14,9 +14,8 @@ import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
-import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-import {determineIsApp} from '../../util/determineIsApp'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -47,7 +46,6 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const isApp = determineIsApp(cliConfig)
 
   await checkStudioDependencyVersions(workDir)
 
@@ -66,7 +64,7 @@ export default async function buildSanityStudio(
     throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
   }
   const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getAutoUpdateImportMap(version)
+  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
@@ -148,7 +146,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner(`Build Sanity ${isApp ? 'application' : 'Studio'}`).start()
+  spin = output.spinner(`Build Sanity Studio`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -178,7 +176,6 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
-      isApp,
     })
 
     trace.log({
@@ -188,7 +185,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity ${isApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()

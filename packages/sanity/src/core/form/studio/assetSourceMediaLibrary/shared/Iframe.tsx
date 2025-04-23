@@ -1,25 +1,30 @@
 import {Card} from '@sanity/ui'
-import {forwardRef, type Ref} from 'react'
+import {type CSSProperties, forwardRef, type Ref} from 'react'
 
 export interface IframeProps {
   src: string
+  hidden?: boolean
+}
+
+const defaultStyle: CSSProperties = {
+  display: 'flex',
+  width: '100%',
+  height: '100%',
+  flexDirection: 'column',
+  overflow: 'hidden',
+}
+
+const hiddenStyle: CSSProperties = {
+  display: 'none',
 }
 
 export const Iframe = forwardRef(function Iframe(
   props: IframeProps,
   forwardedRef: Ref<HTMLIFrameElement>,
 ) {
-  const {src} = props
+  const {src, hidden} = props
   return (
-    <Card
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
+    <Card style={hidden ? hiddenStyle : defaultStyle}>
       <iframe
         ref={forwardedRef}
         src={src}

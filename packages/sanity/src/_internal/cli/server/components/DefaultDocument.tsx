@@ -90,7 +90,12 @@ const globalStyles = `
     src: url("https://studio-static.sanity.io/Inter-BlackItalic.woff2") format("woff2");
   }
   html {
-    background-color: #f1f3f6;
+    @media (prefers-color-scheme: dark) {
+      background-color: #13141b;
+    }
+    @media (prefers-color-scheme: light) {
+      background-color: #ffffff;
+    }
   }
   html,
   body,

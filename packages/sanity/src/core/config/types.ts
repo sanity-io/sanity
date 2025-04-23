@@ -1003,7 +1003,7 @@ export interface BetaFeatures {
   }
 
   /**
-   * @beta
+   * @deprecated - The Start in Create flow has been removed and will be updated in an upcoming studio release.
    */
   create?: {
     /**

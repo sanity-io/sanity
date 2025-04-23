@@ -1,7 +1,7 @@
 /**
  * @internal
  */
-export interface AutoUpdatesImportMap {
+export interface StudioAutoUpdatesImportMap {
   'sanity': string
   'sanity/': string
   '@sanity/vision': string
@@ -16,7 +16,7 @@ const MODULES_HOST =
 /**
  * @internal
  */
-export function getAutoUpdateImportMap(version: string): AutoUpdatesImportMap {
+export function getStudioAutoUpdateImportMap(version: string): StudioAutoUpdatesImportMap {
   const timestamp = `t${Math.floor(Date.now() / 1000)}`
 
   const autoUpdatesImports = {

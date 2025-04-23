@@ -51,7 +51,7 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 }
 
 const sanityUrl =
-  /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+  /\.(?:api|apicdn)\.sanity\.(?:io|work)\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)

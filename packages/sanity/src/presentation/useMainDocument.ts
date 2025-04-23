@@ -12,7 +12,6 @@ import {
   type MainDocument,
   type MainDocumentState,
   type PresentationNavigate,
-  type PreviewUrlOption,
 } from './types'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
@@ -97,10 +96,10 @@ export function useMainDocument(props: {
   navigate?: PresentationNavigate
   navigationHistory: RouterState[]
   path?: string
-  previewUrl?: PreviewUrlOption
+  targetOrigin: string
   resolvers?: DocumentResolver[]
 }): MainDocumentState | undefined {
-  const {navigate, navigationHistory, path, previewUrl, resolvers = []} = props
+  const {navigate, navigationHistory, path, targetOrigin, resolvers = []} = props
   const {state: routerState} = useRouter()
   const {perspectiveStack} = usePerspective()
   const client = useClient({apiVersion: API_VERSION})
@@ -136,14 +135,7 @@ export function useMainDocument(props: {
   })
 
   useEffect(() => {
-    const base =
-      // eslint-disable-next-line no-nested-ternary
-      typeof previewUrl === 'string'
-        ? previewUrl
-        : typeof previewUrl === 'object'
-          ? previewUrl?.origin || location.origin
-          : location.origin
-    const url = new URL(relativeUrl, base)
+    const url = new URL(relativeUrl, targetOrigin)
 
     if (resolvers.length) {
       let result:
@@ -188,7 +180,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, previewUrl, relativeUrl, resolvers, perspectiveStack])
+  }, [client, perspectiveStack, relativeUrl, resolvers, targetOrigin])
 
   return mainDocumentState
 }

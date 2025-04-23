@@ -62,22 +62,11 @@ export interface AssetMenuAction {
 export type AssetType = 'image' | 'file'
 
 /**
- * Simple version of the Media Library's Asset type (only stuff that is needed for the plugin)
- * @internal
- */
-export interface Asset {
-  _id: string
-  instanceId: string
-  assetType: string
-}
-
-/**
  * The type that is returned from the Media Library for an selected asset item
  * @internal
  */
 export interface AssetSelectionItem {
-  assetId: string
-  assetType: string
+  asset: {_id: string; _type: string}
   assetInstanceId: string
 }
 
@@ -114,12 +103,27 @@ export type PluginPostMessageDocumentUpdate = {
   document: SanityDocument | null
 }
 
+export type FileStatus = 'pending' | 'uploading' | 'complete' | 'error'
+
+/**
+ * Message sent from the plugin when files are uploading
+ */
+export type PluginPostMessageUploadFilesProgress = {
+  type: 'uploadProgress'
+  files: {id: string; status: FileStatus; progress: number; error?: Error}[]
+}
+
 /**
  * Message sent from the plugin that the user wants to upload files
  */
 export type PluginPostMessageUploadFilesRequest = {
   type: 'uploadRequest'
-  files: File[]
+  files: {id: string; file: File}[]
+}
+
+export type PluginPostMessageAbortUploadRequest = {
+  type: 'abortUploadRequest'
+  files?: {id: string}[]
 }
 
 export type PluginPostMessageAssetSelection = {
@@ -132,7 +136,7 @@ export type PluginPostMessageAssetSelection = {
  */
 export type PluginPostMessageUploadFilesResponse = {
   type: 'uploadResponse'
-  assets: Asset[]
+  assets: AssetSelectionItem[]
 }
 
 export type PluginPostMessage =
@@ -142,5 +146,7 @@ export type PluginPostMessage =
   | PluginPostMessagePageLoaded
   | PluginPostMessagePageUnloaded
   | PluginPostMessageUploadFilesRequest
+  | PluginPostMessageAbortUploadRequest
+  | PluginPostMessageUploadFilesProgress
   | PluginPostMessageUploadFilesResponse
   | PluginPostMessageDocumentUpdate

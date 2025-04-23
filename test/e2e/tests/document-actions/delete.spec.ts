@@ -1,12 +1,12 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
 import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 const name = 'Test Name'
 
 test(`unpublished documents can be deleted`, async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/author')
+  await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
@@ -21,7 +21,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
 })
 
 test(`published documents can be deleted`, async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/author')
+  await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
   const publishButton = page.getByTestId('action-publish')

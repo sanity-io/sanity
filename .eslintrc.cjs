@@ -250,7 +250,24 @@ const config = {
         ],
       },
     },
-
+    {
+      files: ['test/e2e/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@playwright/test',
+                importNames: ['test', 'default'],
+                message:
+                  'Please use named imports, e.g. `import {test} from "studio-test"` instead.',
+              },
+            ],
+          },
+        ],
+      },
+    },
     // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
     {
       files: ['packages/sanity/src/_singletons/**'],

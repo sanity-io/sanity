@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
 
+import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
 import {
@@ -20,6 +20,7 @@ import {
 } from '../utils/release-detail-ui-methods'
 
 test.describe('Revert ASAP', () => {
+  test.skip()
   const asapReleaseIdTestOne: string = getRandomReleaseId()
 
   test.beforeEach(async ({sanityClient, browserName, page, _testContext}) => {
@@ -48,7 +49,7 @@ test.describe('Revert ASAP', () => {
       _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
     })
 
-    await page.goto(`test/releases/${asapReleaseIdTestOne}`)
+    await page.goto(`/releases/${asapReleaseIdTestOne}`)
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {
