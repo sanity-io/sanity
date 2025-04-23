@@ -13,17 +13,6 @@ concurrency:
 
 jobs:
   cli-test:
-    # Do not run cli tests on release PRs or when the release PR is merged because
-    # the CLI tests will attempt to install the not-yet-released packages from npm
-    if: |
-      !(
-        github.event_name == 'pull_request' &&
-        contains(join(github.event.pull_request.labels.*.name, ','), 'autorelease: pending')
-      ) &&
-      !(
-        github.event_name == 'push' &&
-        startsWith(github.event.head_commit.message, 'chore: release')
-      )
     timeout-minutes: 60
     name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
@@ -51,6 +40,24 @@ jobs:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
+      # Do not run cli tests on release PRs or when the release PR is merged because
+      # the CLI tests will attempt to install the not-yet-released packages from npm
+      # Note: we can't skip, because this is a required status check, but exit 0 will report success
+      - name: Skip for release PR or commit
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]] && \
+             [[ "${{ toJson(github.event.pull_request.labels.*.name) }}" == *"autorelease: pending"* ]]; then
+            echo "✅ Skipping test on release PR"
+            exit 0
+          fi
+
+          if [[ "${{ github.event_name }}" == "push" ]] && \
+             [[ "${{ github.event.head_commit.message }}" == chore:\ release* ]]; then
+            echo "✅ Skipping test on release commit"
+            exit 0
+          fi
+
+          echo "🔧 Continuing with full test flow"
       - name: Install project dependencies
         run: pnpm install
 
