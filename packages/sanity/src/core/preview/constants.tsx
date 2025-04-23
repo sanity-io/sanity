@@ -25,6 +25,11 @@ export const AVAILABILITY_NOT_FOUND = {
   reason: 'NOT_FOUND',
 } as const
 
+export const AVAILABILITY_VERSION_DELETED = {
+  available: false,
+  reason: 'VERSION_DELETED',
+} as const
+
 export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   title: 'Invalid preview config',
   subtitle: 'Check the error log in the console',
