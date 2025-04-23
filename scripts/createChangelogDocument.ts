@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-// This script requires Node.js 22+ with the --experimental-strip-types flag
-// (In Node.js 23+, this flag is enabled by default)
-// Use --no-warnings flag to suppress experimental feature warnings
-// Example: node --no-warnings --experimental-strip-types scripts/printReleaseNotesTemplate.ts
+// Usage: npx tsx scripts/createChangelogDocuments.ts
 
 // Using ES module imports
 import fs from 'node:fs'
@@ -100,7 +97,7 @@ function extractCommitData(): {features: string[]; bugfixes: string[]; changelog
   const latestTag = execa.sync('git describe --abbrev=0', {shell: true}).stdout.trim()
 
   // Generate changelog from latest tag to next branch
-  const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${latestTag}..origin/next`
+  const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${latestTag}..origin/main`
   const changelogOutput = execa.sync(CHANGELOG_COMMAND, {shell: true}).stdout
 
   // Extract feature and bugfix commits for highlights
@@ -150,7 +147,6 @@ function generateDocuments(releaseContext: ReleaseContext) {
   const versionDoc = {
     _id: versionDocId,
     _type: 'apiVersion',
-    semver: '0.0.0',
     date: new Date().toISOString().split('T')[0],
     summary: `${releaseContext.product} v${releaseContext.version} release`,
     platform: {
@@ -265,10 +261,10 @@ async function main() {
         '1. Create a .env file in the project root with SANITY_WEB_AUTH_TOKEN=your-token',
       )
       console.error(
-        '2. Set it in your environment: SANITY_WEB_AUTH_TOKEN=your-token node scripts/printReleaseNotesTemplate.ts',
+        '2. Set it in your environment: SANITY_WEB_AUTH_TOKEN=your-token npx tsx scripts/createChangelogDocuments.ts',
       )
       console.error(
-        '3. Provide it as a command-line argument: node scripts/printReleaseNotesTemplate.ts --token=your-token',
+        '3. Provide it as a command-line argument: npx tsx scripts/createChangelogDocuments.ts --token=your-token',
       )
       process.exit(1)
     }
@@ -284,7 +280,6 @@ async function main() {
     try {
       changelogId = await createSanityChangelogDocuments(
         sanityConfig,
-        releaseContext,
         versionDoc,
         changeDoc,
         flags.debug,
@@ -304,7 +299,6 @@ async function main() {
  */
 async function createSanityChangelogDocuments(
   config: any,
-  context: ReleaseContext,
   versionDoc: any,
   changeDoc: any,
   debug?: boolean,
