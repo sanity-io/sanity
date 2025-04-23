@@ -33,37 +33,43 @@ jobs:
         #     experimental: true
 
     steps:
+      - name: Check if this is a release PR or commit
+        # Provide a way to skip running cli tests on release PRs or when the release PR is merged because
+        # the CLI tests will attempt to install the not-yet-released packages from npm
+        id: check_release
+        run: |
+          SKIP="false"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.pull_request.title }}" == chore:\ release* ]]; then
+              SKIP="true"
+            fi
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.event.head_commit.message }}" == chore:\ release* ]]; then
+              SKIP="true"
+            fi
+          fi
+          echo "skip=$SKIP" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
+        if: steps.check_release.outputs.skip != 'true'
       - uses: pnpm/action-setup@v4
+        if: steps.check_release.outputs.skip != 'true'
       - uses: actions/setup-node@v4
+        if: steps.check_release.outputs.skip != 'true'
         with:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
-      # Do not run cli tests on release PRs or when the release PR is merged because
-      # the CLI tests will attempt to install the not-yet-released packages from npm
-      # Note: we can't skip, because this is a required status check, but exit 0 will report success
-      - name: Skip for release PR or commit
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            if [[ "${{ github.event.pull_request.title }}" == chore:\ release* ]]; then
-              echo "✅ Skipping test on release PR"
-              exit 0
-            fi
-          fi
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            if [[ "${{ github.event.head_commit.message }}" == chore:\ release* ]]; then
-              echo "✅ Skipping test on release commit"
-              exit 0
-            fi
-          fi
       - name: Install project dependencies
+        if: steps.check_release.outputs.skip != 'true'
         run: pnpm install
 
       - name: Build CLI
+        if: steps.check_release.outputs.skip != 'true'
         run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
+        if: steps.check_release.outputs.skip != 'true'
         id: test
         run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:
