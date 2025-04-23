@@ -25,5 +25,8 @@
 /packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
+# Ignore package.json
+/packages/@sanity/codegen/package.json
+
 # Presentation Tool, which interfaces with Visual Editing libraries
 /packages/sanity/src/presentation/ @sanity-io/ecosystem
