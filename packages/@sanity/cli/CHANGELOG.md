@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
+
+
+### Bug Fixes
+
+* **cli:** address comments from RUN-341 ([#9216](https://github.com/sanity-io/sanity/issues/9216)) ([58cfcae](https://github.com/sanity-io/sanity/commit/58cfcae3474cb7ffe5e34e22db3d10f5bf2b20fe))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/codegen bumped to 3.86.1
+    * @sanity/util bumped to 3.86.1
+  * devDependencies
+    * @sanity/types bumped to 3.86.1
+
 ## [3.86.0](https://github.com/sanity-io/sanity/compare/cli-v3.85.1...cli-v3.86.0) (2025-04-22)
 
 
