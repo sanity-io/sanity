@@ -5,6 +5,7 @@
   "separate-pull-requests": false,
   "draft-pull-request": true,
   "packages": {
+    "packages/@repo/package.bundle": {"component": "internal", "include-component-in-tag": false},
     "packages/@sanity/cli": {"component": "cli", "include-component-in-tag": false},
     "packages/@sanity/codegen": {"component": "codegen", "include-component-in-tag": false},
     "packages/@sanity/diff": {"component": "diff", "include-component-in-tag": false},
