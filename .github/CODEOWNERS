@@ -8,7 +8,7 @@
 # areas to improve maintainablitly and availability
 
 # Releases
-/packages/sanity/src/core/releases @sanity-io/studio-app
+/packages/sanity/src/core/releases @sanity-io/studio
 
 # -- Others --
 
