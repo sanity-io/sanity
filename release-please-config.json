@@ -4,7 +4,6 @@
   "release-type": "node",
   "separate-pull-requests": false,
   "draft-pull-request": true,
-  "skip-github-release": true,
   "always-update": true,
   "include-component-in-tag": false,
   "packages": {
