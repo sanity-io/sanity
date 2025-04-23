@@ -55,18 +55,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
+  const showFirstActionButton = firstActionState && !selectedReleaseId && !editState?.liveEdit
 
   const sideMenuItems = useMemo(() => {
-    return selectedReleaseId ? [firstActionState, ...menuActionStates] : menuActionStates
-  }, [selectedReleaseId, firstActionState, menuActionStates])
+    return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
+  }, [showFirstActionButton, firstActionState, menuActionStates])
 
-  const canShowAction = firstActionState && !selectedReleaseId && !editState?.liveEdit
-
-  /* Version / Bundling handling */
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {canShowAction && (
+      {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
