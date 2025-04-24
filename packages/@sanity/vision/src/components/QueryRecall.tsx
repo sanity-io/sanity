@@ -59,7 +59,7 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedUrl, setSelectedUrl] = useState<string | null>(url)
+  const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
   // const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
 
   const handleSave = useCallback(async () => {
