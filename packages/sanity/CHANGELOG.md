@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.86.2](https://github.com/sanity-io/sanity/compare/v3.86.1...v3.86.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* unpublished references fail validation ([#9215](https://github.com/sanity-io/sanity/issues/9215)) ([2f5f6ed](https://github.com/sanity-io/sanity/commit/2f5f6edd26efe121174154ad9fc1d472e66e7e0f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/cli bumped to 3.86.2
+    * @sanity/diff bumped to 3.86.2
+    * @sanity/migrate bumped to 3.86.2
+    * @sanity/mutator bumped to 3.86.2
+    * @sanity/schema bumped to 3.86.2
+    * @sanity/types bumped to 3.86.2
+    * @sanity/util bumped to 3.86.2
+  * devDependencies
+    * @sanity/codegen bumped to 3.86.2
+
 ## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
 
 
