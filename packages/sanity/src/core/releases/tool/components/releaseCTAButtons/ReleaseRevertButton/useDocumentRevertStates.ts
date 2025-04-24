@@ -61,11 +61,9 @@ export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) =
       ),
     ).pipe(
       map((transactions) => {
-        if (transactions.length === 0) throw new Error('No transactions found.')
-
         const getDocumentTransaction = (docId: string) =>
-          // second element is the transaction before the release
-          transactions.filter(({documentIDs}) => documentIDs.includes(docId))[1]?.id
+          // reverting to the last transaction before the release
+          transactions.find(({documentIDs}) => documentIDs.includes(docId))?.id
 
         return publishedDocuments.map((document) => ({
           docId: document._id,
