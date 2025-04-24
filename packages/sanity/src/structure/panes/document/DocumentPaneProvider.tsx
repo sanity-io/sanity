@@ -159,10 +159,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
-      const seeingHistoryDocument = revisionId !== null
+      const seeingHistoryDocument = params.rev !== null
       return seeingHistoryDocument || isDeleting || isDeleted
     },
-    [getIsDeleted, isDeleting, revisionId],
+    [getIsDeleted, isDeleting, params.rev],
   )
 
   const getDisplayed = useCallback(
@@ -446,7 +446,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         views,
         formState,
         unstable_languageFilter: languageFilter,
-        revisionId,
         lastNonDeletedRevId,
       }) satisfies DocumentPaneContextValue,
     [
@@ -505,7 +504,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       views,
       formState,
       languageFilter,
-      revisionId,
       lastNonDeletedRevId,
     ],
   )
