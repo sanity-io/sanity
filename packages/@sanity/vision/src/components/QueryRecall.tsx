@@ -204,6 +204,7 @@ export function QueryRecall({
                           size={3}
                           textOverflow="ellipsis"
                           style={{maxWidth: '170px'}}
+                          // Doesn't do anything but would be nice!
                           title={
                             optimisticTitles[q._key] ||
                             q.title ||
