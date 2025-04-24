@@ -99,5 +99,6 @@ export interface DocumentPaneContextValue {
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 
   // History specific values
+  revisionId: string | null
   lastNonDeletedRevId: string | null
 }
