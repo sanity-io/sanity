@@ -35,10 +35,17 @@ const formatDate = (date: string) => {
 }
 
 // TODO
-// -fetch/set from add-on dataset
+// -cellar for storage
+// -saving behavior - be explicit that things have changed & need to be saved
+// -does it save duplicates?
 // -clean up title edit UI
 // -check typing for url parser and state setter
 // -show when the selected query has been edited but not saved
+
+// Path to publish
+// -Cellar storage
+// -save state
+// -get design approval in studio channel
 export function QueryRecall({
   url,
   getStateFromUrl,
