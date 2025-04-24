@@ -4,10 +4,14 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
+import {CustomAction} from './CustomAction'
 import {schemaTypes} from './schema'
 
 const baseConfig = defineConfig({
   plugins: [structureTool(), codeInput(), visionTool()],
+  document: {
+    actions: [CustomAction],
+  },
   projectId: 'ppsg7ml5',
   dataset: 'test',
   schema: {types: schemaTypes},

@@ -5,6 +5,7 @@ import {
   type DocumentActionGroup,
   type DocumentActionProps,
   GetHookCollectionState,
+  useCompanionDoc,
   useTranslation,
 } from 'sanity'
 
@@ -17,7 +18,10 @@ export interface Action<Args, Description> {
 
 /** @internal */
 export interface RenderActionCollectionProps {
-  actions: Action<DocumentActionProps, DocumentActionDescription>[]
+  actions: Action<
+    DocumentActionProps,
+    DocumentActionDescription & {action: DocumentActionComponent['action']}
+  >[]
   actionProps: Omit<DocumentActionProps, 'onComplete'>
   children: (props: {states: DocumentActionDescription[]}) => ReactNode
   onActionComplete?: () => void
@@ -59,12 +63,6 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
   'unpublish',
 ]
 
-/**
- * TODO: See PR https://github.com/sanity-io/sanity/pull/9289 for the removal of this
- * This will be `const {isLinked} = useCanvasCompanionDoc(documentId)`
- * Do not change this constant to true or all custom actions will be disabled.
- */
-const TEMP_DISABLED_BY_CANVAS = false
 interface ActionsGuardWrapperProps {
   states: Array<DocumentActionDescription & {action?: DocumentActionComponent['action']}>
   documentId: string
@@ -74,8 +72,9 @@ interface ActionsGuardWrapperProps {
 const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {
   const {states, children, documentId} = props
   const {t} = useTranslation(structureLocaleNamespace)
+  const {isLinked} = useCompanionDoc(documentId)
   const result = useMemo(() => {
-    if (TEMP_DISABLED_BY_CANVAS) {
+    if (isLinked) {
       return children({
         states: states.map((s) => {
           if (!s.action || !SUPPORTED_LINKED_TO_CANVAS_ACTIONS.includes(s.action)) {
