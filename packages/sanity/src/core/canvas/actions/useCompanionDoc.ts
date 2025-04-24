@@ -12,21 +12,24 @@ import {useCompanionDocsStore} from '../store/useCompanionDocsStore'
 export const useCompanionDoc = (documentId: string) => {
   const {selectedPerspectiveName} = usePerspective()
   const companionDocsStore = useCompanionDocsStore()
+  const publishedId = getPublishedId(documentId)
   const companionDocs$ = useMemo(
-    () => companionDocsStore.getCompanionDocs(documentId),
-    [documentId, companionDocsStore],
+    () => companionDocsStore.getCompanionDocs(publishedId),
+    [publishedId, companionDocsStore],
   )
   const companionDocs = useObservable(companionDocs$)
-
   const perspectiveDocumentId = useMemo(() => {
     if (!selectedPerspectiveName) return getDraftId(documentId)
     if (selectedPerspectiveName === 'published') return getPublishedId(documentId)
     return getVersionId(documentId, selectedPerspectiveName)
   }, [documentId, selectedPerspectiveName])
 
-  const companionDoc = companionDocs?.data.find(
-    (companion) => companion?.studioDocumentId === perspectiveDocumentId,
+  const companionDoc = useMemo(
+    () =>
+      companionDocs?.data.find(
+        (companion) => companion?.studioDocumentId === perspectiveDocumentId,
+      ),
+    [companionDocs, perspectiveDocumentId],
   )
-
   return {isLinked: Boolean(companionDoc), companionDoc, loading: companionDocs?.loading}
 }
