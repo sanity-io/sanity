@@ -446,6 +446,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         views,
         formState,
         unstable_languageFilter: languageFilter,
+        revisionId,
         lastNonDeletedRevId,
       }) satisfies DocumentPaneContextValue,
     [
@@ -504,6 +505,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       views,
       formState,
       languageFilter,
+      revisionId,
       lastNonDeletedRevId,
     ],
   )
