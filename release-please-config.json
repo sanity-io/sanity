@@ -6,7 +6,7 @@
   "always-update": true,
   "include-component-in-tag": false,
   "packages": {
-    "packages/@repo/package.bundle": {"component": "package.bundle"},
+    "packages/@repo/package.bundle": {"component": "package.bundle", "florp": "blargh"},
     "packages/@sanity/cli": {"component": "cli"},
     "packages/@sanity/codegen": {"component": "codegen"},
     "packages/@sanity/diff": {"component": "diff"},
