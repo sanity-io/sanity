@@ -35,9 +35,10 @@ const formatDate = (date: string) => {
 }
 
 // TODO
+// -fetch/set from add-on dataset
 // -clean up title edit UI
-// -Add team queries
 // -check typing for url parser and state setter
+// -show when the selected query has been edited but not saved
 export function QueryRecall({
   url,
   getStateFromUrl,
@@ -98,7 +99,6 @@ export function QueryRecall({
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
       setEditingKey(null)
-      // Set optimistic title
       setOptimisticTitles((prev) => ({...prev, [query._key]: newTitle}))
 
       try {
@@ -130,44 +130,10 @@ export function QueryRecall({
     [updateQuery, toast, t],
   )
 
-  // const handleShareToggle = useCallback(
-  //   async (query: QueryConfig) => {
-  //     // Set optimistic shared status
-  //     setOptimisticShared((prev) => ({...prev, [query._key]: !query.shared}))
-
-  //     try {
-  //       await updateQuery({
-  //         ...query,
-  //         shared: !query.shared,
-  //       })
-  //       // Clear optimistic value on success
-  //       setOptimisticShared((prev) => {
-  //         const next = {...prev}
-  //         delete next[query._key]
-  //         return next
-  //       })
-  //     } catch (err) {
-  //       // Clear optimistic value on error
-  //       setOptimisticShared((prev) => {
-  //         const next = {...prev}
-  //         delete next[query._key]
-  //         return next
-  //       })
-  //       toast.push({
-  //         closable: true,
-  //         status: 'error',
-  //         title: t('share-query.error'),
-  //         description: err.message,
-  //       })
-  //     }
-  //   },
-  //   [updateQuery, toast, t],
-  // )
-
   const filteredQueries = queries?.filter((q) => {
-    const title = q.title || q._key.slice(q._key.length - 5, q._key.length)
-    return title.toLowerCase().includes(searchQuery.toLowerCase())
+    return q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
   })
+
   // console.log('url', url)
   return (
     <ScrollContainer>
@@ -193,7 +159,7 @@ export function QueryRecall({
           />
         </Box>
       </FixedHeader>
-      <Stack padding={3}>
+      <Stack paddingY={3}>
         {filteredQueries?.map((q) => {
           // console.log('q', q.url === url)
           const queryObj = getStateFromUrl(q.url)
