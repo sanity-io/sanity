@@ -57,13 +57,6 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
 function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
   const isDisabled = typeof documentIdStack?.previousId === 'undefined'
 
-  // TODO: It would be preferable to display the option in an inert state, but the `isDisabled`
-  // property does not appear to have any impact. Instead, we simply exclude the option when
-  // there is no version to compare.
-  if (isDisabled) {
-    return null
-  }
-
   return {
     action: 'compareVersions',
     group: 'inspectors',
