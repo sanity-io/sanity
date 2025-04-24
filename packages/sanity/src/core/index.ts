@@ -1,3 +1,4 @@
+export {useCompanionDoc} from './canvas/actions/useCompanionDoc'
 export * from './changeIndicators'
 export * from './comments'
 export * from './components'

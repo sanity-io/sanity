@@ -192,6 +192,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
 
+  /** The text for the canvas linked banner action button */
+  'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner */
+  'canvas.banner.linked-text': 'This document is linked to Canvas',
+  /** The text for the canvas linked banner popover button */
+  'canvas.banner.popover-button-text': 'Learn more',
+  /** The description for the canvas linked banner popover */
+  'canvas.banner.popover-description':
+    'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
+  /** The heading for the canvas linked banner popover */
+  'canvas.banner.popover-heading': 'Idea first authoring',
+
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/

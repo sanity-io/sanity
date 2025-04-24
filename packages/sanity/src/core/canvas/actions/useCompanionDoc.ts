@@ -4,6 +4,10 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {useCanvasContext} from '../CanvasDocumentLayout'
 
+/**
+ * Given a document id, returns whether it is linked to canvas and the companion doc if it exists.
+ * @beta
+ */
 export const useCompanionDoc = (documentId: string) => {
   const {companionDocs} = useCanvasContext()
   const {selectedPerspectiveName} = usePerspective()

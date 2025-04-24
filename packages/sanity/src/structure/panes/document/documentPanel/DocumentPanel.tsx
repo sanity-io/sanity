@@ -29,6 +29,7 @@ import {
 } from './banners'
 import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
+import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
@@ -215,6 +216,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         )}
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
+        <CanvasLinkedBanner />
         <DeletedDocumentBanners />
         <UnpublishedDocumentBanner />
         <OpenReleaseToEditBanner

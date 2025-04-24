@@ -24,6 +24,7 @@ export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActio
   }, [isInDashboard, t])
 
   const navigateToCanvas = useCallback(() => {
+    // TODO: get this dynamically
     const organizationId = '@oF5P8QpKU'
     window.open(
       `https://www.sanity.work/${organizationId}/canvas/doc/${companionDoc?.canvasDocumentId}`,

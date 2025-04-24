@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, tap, timeout} from 'rxjs'
+import {catchError, map, type Observable, of, timeout} from 'rxjs'
 
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useClient} from '../../../hooks/useClient'
@@ -56,6 +56,8 @@ const getCanvasLinkUrl = ({
   applicationId: string
   projectId: string
 }) => {
+  // TODO: get this dynamically
+  const orgId = '@oF5P8QpKU'
   // https://www.sanity.work/@oF5P8QpKU/canvas/studio-import?projectId=9wn4ukz1&da&documentType=article&documentId=drafts.4648db26-098f-49f4-93a3-97cc5c584a98&workspaceName=default&applicationId=uelr1cps6hg1s4hyq5heq7kt
   const queryParams = new URLSearchParams({
     projectId,
@@ -66,7 +68,7 @@ const getCanvasLinkUrl = ({
     applicationId,
   })
 
-  return `https://www.sanity.work/@oF5P8QpKU/canvas/studio-import?${queryParams.toString()}`
+  return `https://www.sanity.work/${orgId}/canvas/studio-import?${queryParams.toString()}`
 }
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
