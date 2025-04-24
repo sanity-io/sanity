@@ -1,5 +1,5 @@
 import {UnlinkIcon} from '@sanity/icons'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -7,7 +7,6 @@ import {
 } from '../../../config/document/actions'
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useRenderingContext} from '../../../store/renderingContext/useIsInRenderContext'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCompanionDoc} from '../useCompanionDoc'
@@ -42,18 +41,8 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
     }
   }, [client, companionDoc?._id, handleCloseDialog])
 
-  const renderingContext = useRenderingContext()
-  const isInDashboard = renderingContext?.name === 'coreUi'
-  const disabled = useMemo(() => {
-    if (!isInDashboard) {
-      return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
-    }
-    return {disabled: false, reason: undefined}
-  }, [isInDashboard, t])
   const document = props.version || props.draft || props.published
-  if (!document) {
-    return null
-  }
+  if (!document) return null
   if (
     // If we are deleting the document in this action, we don't want to remove the dialog
     // until we show to the users that the document has been deleted
@@ -63,7 +52,6 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
     return null
   }
   return {
-    disabled: disabled.disabled,
     icon: UnlinkIcon,
     dialog: isDialogOpen
       ? {
@@ -80,7 +68,6 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
         }
       : undefined,
     label: t('action.unlink-document'),
-    title: disabled.reason,
     onHandle: handleOpenDialog,
   }
 }

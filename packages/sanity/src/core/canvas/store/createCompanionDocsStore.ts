@@ -1,43 +1,38 @@
-import {createContext, useContext, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, retry, startWith} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {catchError, map, type Observable, of, retry, shareReplay, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
-import {type DocumentLayoutProps} from '../config/types'
-import {useClient} from '../hooks/useClient'
-import {useDocumentPreviewStore} from '../store/_legacy/datastores'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {getPublishedId} from '../util/draftUtils'
-import {type CompanionDoc} from './types'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
+import {getPublishedId} from '../../util/draftUtils'
+import {type CompanionDoc} from '../types'
 
-const CanvasContext = createContext<{
-  companionDocs: CompanionDocs
-} | null>(null)
-
+export interface CompanionDocsStore {
+  getCompanionDocs: (documentId: string) => Observable<CompanionDocs>
+}
+interface CompanionDocs {
+  data: CompanionDoc[]
+  error: null | string
+  loading: boolean
+}
 const INITIAL_VALUE: CompanionDocs = {
   data: [],
   error: null,
   loading: true,
 }
 
-interface CompanionDocs {
-  data: CompanionDoc[]
-  error: null | string
-  loading: boolean
-}
-
-export function CanvasDocumentLayout(props: DocumentLayoutProps) {
-  const documentPreviewStore = useDocumentPreviewStore()
-  const {documentId} = props
-  const publishedId = getPublishedId(documentId)
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const companionDocs$: Observable<CompanionDocs> = useMemo(() => {
+const getCompanionDocs = memoize(
+  (
+    publishedId: string,
+    client: SanityClient,
+    previewStore: DocumentPreviewStore,
+  ): Observable<CompanionDocs> => {
     const companionDocsIdsListener$ = (id: string) =>
-      documentPreviewStore.unstable_observeDocumentIdSet(
+      previewStore.unstable_observeDocumentIdSet(
         `_type == "sanity.canvas.link" && (
             studioDocumentId in path("versions.**."+ $publishedId) || 
             studioDocumentId in [$publishedId, "drafts." + $publishedId]
-          )`,
+         )`,
         {publishedId: id},
       )
 
@@ -67,22 +62,21 @@ export function CanvasDocumentLayout(props: DocumentLayoutProps) {
       map((value) => ({error: null, data: value, loading: false})),
       catchError((error) => of({error, data: [], loading: false})),
       startWith(INITIAL_VALUE),
+      shareReplay(1),
     )
-  }, [documentPreviewStore, publishedId, client])
+  },
+  (publishedId, client) => `${publishedId}-${client.config().dataset}-${client.config().projectId}`,
+)
 
-  const companionDocs = useObservable(companionDocs$, INITIAL_VALUE)
-
-  return (
-    <CanvasContext.Provider value={{companionDocs}}>
-      {props.renderDefault(props)}
-    </CanvasContext.Provider>
-  )
-}
-
-export function useCanvasContext() {
-  const context = useContext(CanvasContext)
-  if (!context) {
-    throw new Error('useCanvasContext must be used within a CanvasDocumentLayout')
+export function createCompanionDocsStore({
+  client,
+  previewStore,
+}: {
+  client: SanityClient
+  previewStore: DocumentPreviewStore
+}): CompanionDocsStore {
+  return {
+    getCompanionDocs: (documentId: string) =>
+      getCompanionDocs(getPublishedId(documentId), client, previewStore),
   }
-  return context
 }

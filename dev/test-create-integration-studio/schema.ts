@@ -81,7 +81,7 @@ export const schemaTypes = [
       }),
       defineField({
         name: 'description',
-        title: 'Description – with initial value – Create excluded',
+        title: 'Description',
         type: 'text',
         rows: 3,
         description: 'Lede and page summary.',

@@ -22,6 +22,7 @@ import {
 } from 'react'
 import deepEquals from 'react-fast-compare'
 
+import {useCompanionDoc} from '../canvas/actions/useCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
@@ -286,6 +287,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         : false,
     [selectedPerspective],
   )
+  const {isLinked} = useCompanionDoc(documentId)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
@@ -323,6 +325,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
     const isReadOnly =
       !ready ||
+      isLinked ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -337,6 +340,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return Boolean(readOnlyProp)
   }, [
     isPermissionsLoading,
+    isLinked,
     permissions?.granted,
     schemaType,
     isNonExistent,
