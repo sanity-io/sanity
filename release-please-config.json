@@ -6,19 +6,19 @@
   "always-update": true,
   "include-component-in-tag": false,
   "packages": {
-    "packages/@repo/package.bundle": {"component": "package.bundle"},
-    "packages/@sanity/cli": {"component": "cli"},
-    "packages/@sanity/codegen": {"component": "codegen"},
-    "packages/@sanity/diff": {"component": "diff"},
-    "packages/@sanity/migrate": {"component": "migrate"},
-    "packages/@sanity/mutator": {"component": "mutator"},
-    "packages/@sanity/schema": {"component": "schema"},
-    "packages/@sanity/types": {"component": "types"},
-    "packages/@sanity/util": {"component": "util"},
-    "packages/@sanity/vision": {"component": "vision"},
-    "packages/create-sanity": {"component": "create-sanity"},
-    "packages/groq": {"component": "groq"},
-    "packages/sanity": {"component": "sanity"}
+    "packages/@repo/package.bundle": {"component": "package.bundle", "release-type": "node"},
+    "packages/@sanity/cli": {"component": "cli", "release-type": "node"},
+    "packages/@sanity/codegen": {"component": "codegen", "release-type": "node"},
+    "packages/@sanity/diff": {"component": "diff", "release-type": "node"},
+    "packages/@sanity/migrate": {"component": "migrate", "release-type": "node"},
+    "packages/@sanity/mutator": {"component": "mutator", "release-type": "node"},
+    "packages/@sanity/schema": {"component": "schema", "release-type": "node"},
+    "packages/@sanity/types": {"component": "types", "release-type": "node"},
+    "packages/@sanity/util": {"component": "util", "release-type": "node"},
+    "packages/@sanity/vision": {"component": "vision", "release-type": "node"},
+    "packages/create-sanity": {"component": "create-sanity", "release-type": "node"},
+    "packages/groq": {"component": "groq", "release-type": "node"},
+    "packages/sanity": {"component": "sanity", "release-type": "node"}
   },
   "plugins": [
     {
