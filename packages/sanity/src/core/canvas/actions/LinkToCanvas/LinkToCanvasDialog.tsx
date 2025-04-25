@@ -1,16 +1,17 @@
 import {type SanityDocument} from '@sanity/client'
+import {ComposeSparklesIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useEffect, useId} from 'react'
+import {useCallback, useId} from 'react'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
+import {LinkToCanvasDiff} from './LinkToCanvasDiff'
 import {useLinkToCanvas} from './useLinkToCanvas'
 
-const FadeInBlock = motion.create(Box)
 const RedirectingBlock = styled(Flex)`
   min-height: 75px; // Keeps it consistent with the loading block, to avoid CLS
 `
@@ -24,13 +25,13 @@ export const LinkToCanvasDialog = ({
 }) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const id = useId()
-  const {status, error, redirectUrl} = useLinkToCanvas({document})
-  useEffect(() => {
-    if (redirectUrl) {
-      // TODO: Use comlink to navigate to canvas
-      window.open(redirectUrl, '_blank')
-    }
+  const {status, error, redirectUrl, response} = useLinkToCanvas({document})
+
+  const navigateToCanvas = useCallback(() => {
+    // TODO: Use comlink to navigate to canvas
+    window.open(redirectUrl, '_blank')
   }, [redirectUrl])
+
   return (
     <Dialog
       id={`dialog-link-to-canvas-${id}`}
@@ -38,13 +39,33 @@ export const LinkToCanvasDialog = ({
       onClose={onClose}
       width={1}
       bodyHeight="stretch"
+      padding={false}
+      footer={
+        status === 'diff'
+          ? {
+              description: t('dialog.confirm-document-changes.footer-description'),
+              confirmButton: {
+                text: t('dialog.confirm-document-changes.confirm'),
+                icon: ComposeSparklesIcon,
+                tone: 'default',
+                onClick: navigateToCanvas,
+              },
+              cancelButton: {
+                text: t('dialog.confirm-document-changes.cancel'),
+                onClick: onClose,
+              },
+            }
+          : undefined
+      }
     >
-      <Box paddingY={5}>
+      <Box padding={3}>
         {status === 'validating' && (
-          <LoadingBlock title={t('dialog.link-to-canvas.validating')} showText />
+          <Box paddingY={5}>
+            <LoadingBlock title={t('dialog.link-to-canvas.validating')} showText />
+          </Box>
         )}
         {status === 'redirecting' && (
-          <FadeInBlock
+          <motion.div
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
@@ -55,10 +76,10 @@ export const LinkToCanvasDialog = ({
                 {t('dialog.link-to-canvas.redirecting')}
               </Text>
             </RedirectingBlock>
-          </FadeInBlock>
+          </motion.div>
         )}
         {(status === 'error' || status === 'missing-document-id') && (
-          <FadeInBlock
+          <motion.div
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
@@ -69,7 +90,10 @@ export const LinkToCanvasDialog = ({
                 {error || t('dialog.link-to-canvas.error')}
               </Text>
             </Card>
-          </FadeInBlock>
+          </motion.div>
+        )}
+        {status === 'diff' && response && (
+          <LinkToCanvasDiff originalDocument={document} mappedDocument={response.mappedDocument} />
         )}
       </Box>
     </Dialog>

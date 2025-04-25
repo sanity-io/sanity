@@ -1,5 +1,7 @@
 import {defineArrayMember, defineField, defineType, type FieldGroupDefinition} from 'sanity'
 
+import {Coloured, Custom} from './CustomStyle'
+
 export const mainGroup: FieldGroupDefinition = {
   name: 'main',
   title: 'Common fields',
@@ -77,6 +79,13 @@ export const schemaTypes = [
         title: 'Title',
         type: 'string',
         description: 'Main header and page title.',
+        group: [mainGroup.name],
+      }),
+      defineField({
+        name: 'liveEditRef',
+        title: 'Live edit ref',
+        type: 'reference',
+        to: [{type: 'has-live-edit'}],
         group: [mainGroup.name],
       }),
       defineField({
@@ -208,6 +217,7 @@ export const schemaTypes = [
       {
         title: 'Block',
         type: 'block',
+        of: [{name: 'liveEditRef', type: 'reference', to: [{type: 'has-live-edit'}]}],
         styles: [
           {title: 'Normal', value: 'normal'},
           {title: 'H1', value: 'h1'},
@@ -215,6 +225,8 @@ export const schemaTypes = [
           {title: 'H3', value: 'h3'},
           {title: 'H4', value: 'h4'},
           {title: 'Quote', value: 'blockquote'},
+          {title: 'Custom', value: 'custom', component: Custom},
+          {title: 'Coloured', value: 'coloured', component: Coloured},
         ],
         marks: {
           decorators: [

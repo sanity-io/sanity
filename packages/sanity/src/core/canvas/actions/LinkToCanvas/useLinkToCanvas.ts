@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, timeout} from 'rxjs'
+import {catchError, map, type Observable, of, tap, timeout} from 'rxjs'
 
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useClient} from '../../../hooks/useClient'
@@ -9,10 +9,15 @@ import {useWorkspace} from '../../../studio/workspace'
 
 interface CanvasResponse {
   error?: string
-  redirectUrl?: string
   originalDocument?: SanityDocument
   mappedDocument?: SanityDocument
   canvasContent?: unknown
+  diff?: {
+    indexedPath: string[]
+    prevValue: unknown
+    value: unknown
+    type: string
+  }[]
 }
 
 type StudioToCanvasRequestBody = ({documentId: string} | {document: SanityDocument}) & {
@@ -29,9 +34,10 @@ const useWorkspaceSchemaId = () => {
   return `sanity.workspace.schema.${workspace.name || 'default'}`
 }
 interface UseLinkToCanvasResponse {
-  status: 'validating' | 'redirecting' | 'error' | 'missing-document-id'
+  status: 'validating' | 'redirecting' | 'error' | 'missing-document-id' | 'diff'
   error?: string | null
   redirectUrl?: string
+  response?: CanvasResponse
 }
 const initialState: UseLinkToCanvasResponse = {
   status: 'validating',
@@ -70,6 +76,8 @@ const getCanvasLinkUrl = ({
 
   return `https://www.sanity.work/${orgId}/canvas/studio-import?${queryParams.toString()}`
 }
+
+const localSettings = Intl.DateTimeFormat().resolvedOptions()
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
   // Canvas requires vX api version for now
@@ -122,8 +130,8 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
           document,
           schemaId,
           localeSettings: {
-            locale: 'en-US',
-            timeZone: 'UTC',
+            locale: localSettings.locale,
+            timeZone: localSettings.timeZone,
           },
         } satisfies StudioToCanvasRequestBody,
       })
@@ -131,14 +139,23 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         map((response) => {
           if (!response.error) {
             return {
-              status: 'redirecting' as const,
+              status: response.diff?.length ? ('diff' as const) : ('redirecting' as const),
               error: null,
               redirectUrl: canvasLinkUrl,
+              response: response,
             }
           }
+
           return {
             status: 'error' as const,
             error: response.error,
+            response: response,
+          }
+        }),
+        tap((response) => {
+          if (response.status === 'redirecting') {
+            // TODO: use comlink to navigate to canvas
+            window.open(canvasLinkUrl, '_blank')
           }
         }),
         catchError((error) => {

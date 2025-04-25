@@ -24,6 +24,18 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   /** The text for the action button in the banner when the document is linked to Canvas. */
   'banner.edit-document-in-canvas': 'Edit in Canvas',
 
+  /** The title for the "Confirm document changes" dialog. */
+  'dialog.confirm-document-changes.title': 'Confirm document changes',
+  /** The description for the "Confirm document changes" dialog. */
+  'dialog.confirm-document-changes.description':
+    'This document needs to be updated to be compatible with Canvas.\n Existing content may be edited or removed as part of this process.',
+  /** The text for the "Confirm document changes" dialog confirm button. */
+  'dialog.confirm-document-changes.confirm': 'Accept and continue',
+  /** The text for the "Confirm document changes" dialog cancel button. */
+  'dialog.confirm-document-changes.cancel': 'Cancel',
+  /** The description for the "Confirm document changes" dialog footer. */
+  'dialog.confirm-document-changes.footer-description': 'You can unlink from Canvas at any time',
+
   /** The title for the "Link to Canvas" dialog. */
   'dialog.link-to-canvas.title': 'Link to Canvas',
   /** The text for the "Link to Canvas" dialog when the document is being validated. */
