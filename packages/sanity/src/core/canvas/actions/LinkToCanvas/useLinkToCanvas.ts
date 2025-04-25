@@ -1,7 +1,7 @@
-import {type SanityDocument} from '@sanity/client'
+import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, tap} from 'rxjs'
+import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
@@ -55,33 +55,71 @@ const getCanvasLinkUrl = ({
   documentId,
   workspaceName,
   documentType,
-  dataset,
   applicationId,
-  projectId,
+  client,
 }: {
   documentId: string
   workspaceName: string
   documentType: string
-  dataset: string
   applicationId: string
-  projectId: string
+  client: SanityClient
 }) => {
-  // TODO: get this dynamically
-  const orgId = '@oF5P8QpKU'
-  // https://www.sanity.work/@oF5P8QpKU/canvas/studio-import?projectId=9wn4ukz1&da&documentType=article&documentId=drafts.4648db26-098f-49f4-93a3-97cc5c584a98&workspaceName=default&applicationId=uelr1cps6hg1s4hyq5heq7kt
-  const queryParams = new URLSearchParams({
-    projectId,
-    dataset,
-    documentType,
-    documentId,
-    workspaceName,
-    applicationId,
-  })
+  const dataset = client.config().dataset || ''
+  const projectId = client.config().projectId || ''
+  // TODO: If comlink is available don't get the org id, use comlink to navigate to canvas
+  return client.observable
+    .request<{organizationId: string}>({
+      url: `projects/${projectId}`,
+      tag: 'sanity.canvas.get-org-id',
+      query: {
+        includeMembers: 'false',
+        includeFeatures: 'false',
+        includeOrganization: 'true',
+      },
+    })
+    .pipe(
+      map((response) => {
+        const queryParams = new URLSearchParams({
+          projectId,
+          dataset,
+          documentType,
+          documentId,
+          workspaceName,
+          applicationId,
+        })
+        const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
-  return `https://www.sanity.work/${orgId}/canvas/studio-import?${queryParams.toString()}`
+        return `https://www.sanity.${isStaging ? 'work' : 'io'}/@${response.organizationId}/canvas/studio-import?${queryParams.toString()}`
+      }),
+    )
 }
 
 const localSettings = Intl.DateTimeFormat().resolvedOptions()
+
+const canvasPreflight = ({
+  client,
+  document,
+  schemaId,
+}: {
+  client: SanityClient
+  document: SanityDocument
+  schemaId: string
+}) => {
+  const dataset = client.config().dataset
+  return client.observable.request<CanvasResponse>({
+    url: `/assist/studio-to-canvas/${dataset}`,
+    tag: 'sanity.canvas',
+    method: 'POST',
+    body: {
+      document,
+      schemaId,
+      localeSettings: {
+        locale: localSettings.locale,
+        timeZone: localSettings.timeZone,
+      },
+    } satisfies StudioToCanvasRequestBody,
+  })
+}
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
   const [appIdCache] = useState(() => createAppIdCache())
@@ -92,37 +130,12 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     fallbackStudioOrigin:
       workspace.features?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
   })
-
   const schemaId = useWorkspaceSchemaId()
   const client = useClient(CANVAS_CLIENT_CONFIG)
 
-  const dataset = client.config().dataset
-  const projectId = client.config().projectId
-  const canvasLinkUrl = useMemo(() => {
-    if (!document?._id || !dataset || !projectId || !studioApp?.appId) {
-      return null
-    }
-    return getCanvasLinkUrl({
-      documentId: document._id,
-      workspaceName: workspace.name,
-      documentType: document._type,
-      dataset: dataset,
-      projectId: projectId,
-      applicationId: studioApp?.appId || '',
-    })
-  }, [document, dataset, projectId, workspace.name, studioApp?.appId])
-
-  const observable: Observable<UseLinkToCanvasResponse> = useMemo(() => {
+  const linkToCanvas$: Observable<UseLinkToCanvasResponse> = useMemo(() => {
     if (appIdLoading) {
-      return of({
-        status: 'validating' as const,
-      })
-    }
-    if (!canvasLinkUrl) {
-      return of({
-        status: 'error' as const,
-        error: 'Missing canvas link URL',
-      })
+      return of({status: 'validating' as const})
     }
     if (!document?._id) {
       return of({
@@ -130,52 +143,46 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         error: 'Missing document ID',
       })
     }
-    return client.observable
-      .request<CanvasResponse>({
-        url: `/assist/studio-to-canvas/${dataset}`,
-        tag: 'sanity.canvas',
-        method: 'POST',
-        body: {
-          // documentId: document._id,
-          document,
-          schemaId,
-          localeSettings: {
-            locale: localSettings.locale,
-            timeZone: localSettings.timeZone,
-          },
-        } satisfies StudioToCanvasRequestBody,
-      })
-      .pipe(
-        map((response) => {
-          if (!response.error) {
-            return {
-              status: response.diff?.length ? ('diff' as const) : ('redirecting' as const),
-              error: null,
-              redirectUrl: canvasLinkUrl,
-              response: response,
-            }
-          }
-
+    return combineLatest([
+      canvasPreflight({client, document, schemaId}),
+      getCanvasLinkUrl({
+        documentId: document._id,
+        workspaceName: workspace.name,
+        documentType: document._type,
+        applicationId: studioApp?.appId || '',
+        client,
+      }),
+    ]).pipe(
+      map(([preflight, canvasLinkUrl]) => {
+        if (!preflight.error) {
           return {
-            status: 'error' as const,
-            error: response.error,
-            response: response,
+            status: preflight.diff?.length ? ('diff' as const) : ('redirecting' as const),
+            error: null,
+            redirectUrl: canvasLinkUrl,
+            response: preflight,
           }
-        }),
-        tap((response) => {
-          if (response.status === 'redirecting') {
-            // TODO: use comlink to navigate to canvas
-            window.open(canvasLinkUrl, '_blank')
-          }
-        }),
-        catchError((error) => {
-          return of({
-            status: 'error' as const,
-            error: error.message,
-          })
-        }),
-      )
-  }, [appIdLoading, canvasLinkUrl, document, client.observable, dataset, schemaId])
+        }
 
-  return useObservable(observable, initialState)
+        return {
+          status: 'error' as const,
+          error: preflight.error,
+          response: preflight,
+          redirectUrl: undefined,
+        }
+      }),
+      tap(({status, redirectUrl}) => {
+        if (status === 'redirecting') {
+          window.open(redirectUrl, '_blank')
+        }
+      }),
+      catchError((error) => {
+        return of({
+          status: 'error' as const,
+          error: error.message,
+        })
+      }),
+    )
+  }, [appIdLoading, client, document, schemaId, studioApp?.appId, workspace.name])
+
+  return useObservable(linkToCanvas$, initialState)
 }
