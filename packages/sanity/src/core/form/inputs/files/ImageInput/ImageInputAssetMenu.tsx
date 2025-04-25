@@ -17,7 +17,13 @@ import {type BaseImageInputProps} from './types'
 function ImageInputAssetMenuComponent(
   props: Pick<
     BaseImageInputProps,
-    'assetSources' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
+    | 'assetSources'
+    | 'directUploads'
+    | 'imageUrlBuilder'
+    | 'observeAsset'
+    | 'readOnly'
+    | 'schemaType'
+    | 'value'
   > & {
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
@@ -32,6 +38,7 @@ function ImageInputAssetMenuComponent(
 ) {
   const {
     assetSources,
+    directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
     onSelectFiles,
@@ -99,6 +106,7 @@ function ImageInputAssetMenuComponent(
       accept={accept}
       assetSources={assetSources}
       browseMenuItem={browseMenuItem}
+      directUploads={directUploads}
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
       onSelectFiles={onSelectFiles}
