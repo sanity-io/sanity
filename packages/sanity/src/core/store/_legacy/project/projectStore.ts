@@ -1,7 +1,28 @@
 import {type SanityClient} from '@sanity/client'
-import {type Observable} from 'rxjs'
+import {map, type Observable, shareReplay} from 'rxjs'
 
+import {memoize} from '../document/utils/createMemoizer'
 import {type ProjectData, type ProjectStore} from './types'
+
+const getOrganizationId = memoize(
+  (client: SanityClient) => {
+    return client.observable
+      .request<ProjectData>({
+        url: `/projects/${client.config().projectId}`,
+        tag: 'get-org-id',
+        query: {
+          includeMembers: 'false',
+          includeFeatures: 'false',
+          includeOrganization: 'true',
+        },
+      })
+      .pipe(
+        map((res) => res.organizationId),
+        shareReplay(1),
+      )
+  },
+  (client) => `${client.config().projectId}-${client.config().dataset}`,
+)
 
 /** @internal */
 export function createProjectStore(context: {client: SanityClient}): ProjectStore {
@@ -21,5 +42,5 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     })
   }
 
-  return {get, getDatasets}
+  return {get, getDatasets, getOrganizationId: () => getOrganizationId(versionedClient)}
 }
