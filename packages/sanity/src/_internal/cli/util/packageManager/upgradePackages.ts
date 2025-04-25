@@ -34,7 +34,7 @@ export async function upgradePackages(
     output.print(`Running 'pnpm ${pnpmArgs.join(' ')}'`)
     result = await execa('pnpm', pnpmArgs, execOptions)
   } else if (packageManager === 'bun') {
-    const bunArgs = ['upgrade', ...upgradePackageArgs]
+    const bunArgs = ['update', ...upgradePackageArgs]
     output.print(`Running 'bun ${bunArgs.join(' ')}'`)
     result = await execa('bun', bunArgs, execOptions)
   } else if (packageManager === 'manual') {
