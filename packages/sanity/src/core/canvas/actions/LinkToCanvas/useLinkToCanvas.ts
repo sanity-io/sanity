@@ -1,10 +1,12 @@
 import {type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, type Observable, of, tap, timeout} from 'rxjs'
+import {catchError, map, type Observable, of, tap} from 'rxjs'
 
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
+import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
+import {useSource} from '../../../studio/source'
 import {useWorkspace} from '../../../studio/workspace'
 
 interface CanvasResponse {
@@ -42,6 +44,8 @@ interface UseLinkToCanvasResponse {
 const initialState: UseLinkToCanvasResponse = {
   status: 'validating',
 }
+
+// Canvas requires vX api version for now
 const CANVAS_CLIENT_CONFIG = {
   apiVersion: 'vX',
   dataset: 'playground',
@@ -80,12 +84,18 @@ const getCanvasLinkUrl = ({
 const localSettings = Intl.DateTimeFormat().resolvedOptions()
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
-  // Canvas requires vX api version for now
   const [appIdCache] = useState(() => createAppIdCache())
-  const studioApp = {appId: 'w7r15hwlj2azs8qe43panyi4'} //  = useStudioAppIdStore(appIdCache)
+  const workspace = useWorkspace()
+  const {beta} = useSource()
+  const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
+    enabled: true,
+    fallbackStudioOrigin:
+      workspace.features?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
+  })
+
   const schemaId = useWorkspaceSchemaId()
   const client = useClient(CANVAS_CLIENT_CONFIG)
-  const workspace = useWorkspace()
+
   const dataset = client.config().dataset
   const projectId = client.config().projectId
   const canvasLinkUrl = useMemo(() => {
@@ -103,16 +113,16 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   }, [document, dataset, projectId, workspace.name, studioApp?.appId])
 
   const observable: Observable<UseLinkToCanvasResponse> = useMemo(() => {
-    if (!canvasLinkUrl) {
+    if (appIdLoading) {
       return of({
         status: 'validating' as const,
-      }).pipe(
-        timeout(5000),
-        map(() => ({
-          status: 'error' as const,
-          error: 'Missing canvas link URL',
-        })),
-      )
+      })
+    }
+    if (!canvasLinkUrl) {
+      return of({
+        status: 'error' as const,
+        error: 'Missing canvas link URL',
+      })
     }
     if (!document?._id) {
       return of({
@@ -165,7 +175,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
           })
         }),
       )
-  }, [client.observable, dataset, document, schemaId, canvasLinkUrl])
+  }, [appIdLoading, canvasLinkUrl, document, client.observable, dataset, schemaId])
 
   return useObservable(observable, initialState)
 }

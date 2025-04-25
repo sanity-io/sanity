@@ -496,7 +496,27 @@ export interface WorkspaceOptions extends SourceOptions {
     /**
      * @internal
      */
-    canvas?: {enabled: boolean}
+    canvas?: {
+      enabled: boolean
+      /**
+       * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in sanity.io/manage
+       * provide a fallback origin as a string.
+       *
+       * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
+       *
+       * If the provided fallback Studio does not expose create-manifest.json "Link to canvas" will fail when using the fallback.
+       *
+       * Example: `wonderful.sanity.studio`
+       *
+       * Keep in mind that when fallback origin is used, Canvas will use the schema types and dataset in the *deployed* Studio,
+       * not from localhost.
+       *
+       * To see data synced from Canvas in your localhost Studio, you must ensure that the deployed fallback studio uses the same
+       * workspace and schemas as your local configuration.
+       *
+       */
+      fallbackStudioOrigin?: string
+    }
   }
 
   /**
@@ -927,6 +947,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    */
   unstable_sources: Source[]
   scheduledPublishing: ScheduledPublishingPluginOptions
+  features: WorkspaceOptions['features']
 }
 
 /**

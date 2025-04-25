@@ -2,7 +2,6 @@ import {useEffect, useMemo, useState} from 'react'
 
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
-import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
 
@@ -16,9 +15,14 @@ export interface ResolvedStudioApp {
  *
  * @internal
  */
-export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioApp {
+export function useStudioAppIdStore(
+  cache: AppIdCache,
+  config?: {
+    enabled: boolean
+    fallbackStudioOrigin?: string
+  },
+): ResolvedStudioApp {
   const client = useClient({apiVersion: '2024-09-01'})
-  const config = useSanityCreateConfig()
   const {projectId} = useSource()
 
   const appIdFetcher: AppIdFetcher = useMemo(() => {
@@ -26,15 +30,15 @@ export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioApp {
       fetchCreateCompatibleAppId({
         projectId: pId,
         client,
-        fallbackOrigin: config.fallbackStudioOrigin,
+        fallbackOrigin: config?.fallbackStudioOrigin,
       })
-  }, [client, config.fallbackStudioOrigin])
+  }, [client, config?.fallbackStudioOrigin])
 
   return useStudioAppIdStoreInner({
     projectId,
     cache,
     appIdFetcher,
-    enabled: config.startInCreateEnabled,
+    enabled: config?.enabled || false,
   })
 }
 

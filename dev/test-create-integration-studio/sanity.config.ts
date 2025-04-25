@@ -29,6 +29,7 @@ export default defineConfig([
     features: {
       canvas: {
         enabled: true,
+        fallbackStudioOrigin: 'canvas-integration-staging.sanity.studio',
       },
     },
   },
