@@ -79,7 +79,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || !directUploads) {
+      if (rejectedFilesCount > 0 || directUploads === false) {
         return 'critical'
       }
     }

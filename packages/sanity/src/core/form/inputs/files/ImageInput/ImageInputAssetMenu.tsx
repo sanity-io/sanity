@@ -208,7 +208,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           data-asset-source-name={assetSourcesWithUpload[0].name}
           text={t('inputs.files.common.actions-menu.upload.label')}
           data-testid="file-input-upload-button"
-          disabled={readOnly || !directUploads}
+          disabled={readOnly || directUploads === false}
         />
       )
       break
