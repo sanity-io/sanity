@@ -105,7 +105,7 @@ function ImageInputAssetComponent(props: {
       const acceptedFiles = files.filter((file) => resolveUploader?.(schemaType, file))
       const rejectedFilesCount = files.length - acceptedFiles.length
 
-      if (rejectedFilesCount > 0 || directUploads === false) {
+      if (rejectedFilesCount > 0) {
         return
       }
 
