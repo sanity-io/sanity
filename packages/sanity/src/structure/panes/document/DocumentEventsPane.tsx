@@ -82,7 +82,9 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     () => ({
       error: eventsStore.error,
       revisionId: eventsStore.revision?.revisionId || null,
-      onOlderRevision: Boolean(eventsStore.revision?.document && eventsStore.revision?.revisionId),
+      onOlderRevision: Boolean(
+        rev && eventsStore.revision?.document && eventsStore.revision?.revisionId,
+      ),
       revisionDocument: eventsStore.revision?.document || null,
       sinceDocument: eventsStore.sinceRevision?.document || null,
       ready: !eventsStore.loading,
@@ -92,7 +94,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
           (e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e),
         )?.id || null,
     }),
-    [eventsStore],
+    [eventsStore, rev],
   )
 
   const value = useMemo(() => eventsStore, [eventsStore])
