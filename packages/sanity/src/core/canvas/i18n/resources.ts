@@ -15,6 +15,9 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   /** The text for the "Link to Canvas" action when the document is a version document. */
   'action.link-document-disabled.version-document':
     'Version documents are not yet supported in Canvas',
+  /** The text for the "Link to Canvas" action when the document is not yet resolved. */
+  'action.link-document-disabled.initial-value-not-resolved':
+    'Please wait until the document initial values are resolved',
   /** The text for the "Unlink from Canvas" action. */
   'action.unlink-document': 'Unlink from Canvas',
   /** The text for the "Edit in Canvas" action. */
