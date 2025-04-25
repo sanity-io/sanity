@@ -1,7 +1,7 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {useCompanionDoc, useTranslation} from 'sanity'
+import {useCompanionDoc, useNavigateToCanvasDoc, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../ui-components'
@@ -95,9 +95,10 @@ export function CanvasLinkedBanner() {
   const {documentId} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const {companionDoc} = useCompanionDoc(documentId)
-  // TODO: get this dynamically
-  const orgId = '@oF5P8QpKU'
+  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
+
   if (!companionDoc) return null
+
   return (
     <Banner
       tone="neutral"
@@ -107,13 +108,7 @@ export function CanvasLinkedBanner() {
       action={{
         mode: 'ghost',
         text: t('canvas.banner.edit-in-canvas-action'),
-        onClick: () => {
-          // TODO: Use comlink to open the canvas document
-          window.open(
-            `https://www.sanity.work/${orgId}/canvas/doc/${companionDoc.canvasDocumentId}`,
-            '_blank',
-          )
-        },
+        onClick: navigateToCanvas,
       }}
     />
   )

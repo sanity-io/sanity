@@ -33,7 +33,7 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
       setTimeout(() => {
         handleCloseDialog()
         setStatus('idle')
-      }, 2000)
+      }, 1000)
     } catch (e) {
       console.error(e)
       setError(e.message)

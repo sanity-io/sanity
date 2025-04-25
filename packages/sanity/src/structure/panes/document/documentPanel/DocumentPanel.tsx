@@ -206,7 +206,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (activeView.type !== 'form' || isPermissionsLoading || !ready) return null
+    if (activeView.type !== 'form' || isPermissionsLoading) return null
 
     return (
       <>

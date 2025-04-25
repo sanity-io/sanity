@@ -6,6 +6,8 @@ import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
+import {useProjectStore} from '../../../store/_legacy/datastores'
+import {type ProjectStore} from '../../../store/_legacy/project/types'
 import {useSource} from '../../../studio/source'
 import {useWorkspace} from '../../../studio/workspace'
 
@@ -57,41 +59,34 @@ const getCanvasLinkUrl = ({
   documentType,
   applicationId,
   client,
+  projectStore,
 }: {
   documentId: string
   workspaceName: string
   documentType: string
   applicationId: string
   client: SanityClient
+  projectStore: ProjectStore
 }) => {
   const dataset = client.config().dataset || ''
   const projectId = client.config().projectId || ''
   // TODO: If comlink is available don't get the org id, use comlink to navigate to canvas
-  return client.observable
-    .request<{organizationId: string}>({
-      url: `projects/${projectId}`,
-      tag: 'sanity.canvas.get-org-id',
-      query: {
-        includeMembers: 'false',
-        includeFeatures: 'false',
-        includeOrganization: 'true',
-      },
-    })
-    .pipe(
-      map((response) => {
-        const queryParams = new URLSearchParams({
-          projectId,
-          dataset,
-          documentType,
-          documentId,
-          workspaceName,
-          applicationId,
-        })
-        const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
-        return `https://www.sanity.${isStaging ? 'work' : 'io'}/@${response.organizationId}/canvas/studio-import?${queryParams.toString()}`
-      }),
-    )
+  return projectStore.getOrganizationId().pipe(
+    map((organizationId) => {
+      const queryParams = new URLSearchParams({
+        projectId,
+        dataset,
+        documentType,
+        documentId,
+        workspaceName,
+        applicationId,
+      })
+      const isStaging = client.config().apiHost === 'https://api.sanity.work'
+
+      return `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/studio-import?${queryParams.toString()}`
+    }),
+  )
 }
 
 const localSettings = Intl.DateTimeFormat().resolvedOptions()
@@ -124,6 +119,8 @@ const canvasPreflight = ({
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
   const [appIdCache] = useState(() => createAppIdCache())
   const workspace = useWorkspace()
+  const projectStore = useProjectStore()
+
   const {beta} = useSource()
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
@@ -151,6 +148,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         documentType: document._type,
         applicationId: studioApp?.appId || '',
         client,
+        projectStore,
       }),
     ]).pipe(
       map(([preflight, canvasLinkUrl]) => {
@@ -182,7 +180,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         })
       }),
     )
-  }, [appIdLoading, client, document, schemaId, studioApp?.appId, workspace.name])
+  }, [appIdLoading, client, document, schemaId, studioApp?.appId, workspace.name, projectStore])
 
   return useObservable(linkToCanvas$, initialState)
 }

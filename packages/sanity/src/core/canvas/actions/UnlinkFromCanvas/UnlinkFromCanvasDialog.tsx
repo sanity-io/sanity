@@ -49,14 +49,14 @@ export const UnlinkFromCanvasDialog = ({
         cancelButton: {
           text: t('dialog.unlink-from-canvas.cancel'),
           onClick: onClose,
-          disabled: status == 'loading',
+          disabled: status != 'idle',
         },
         confirmButton: {
           text: t('dialog.unlink-from-canvas.unlink-action'),
           onClick: handleUnlink,
           tone: 'default',
-          loading: status == 'loading',
-          disabled: status == 'loading',
+          loading: status === 'loading',
+          disabled: status != 'idle',
         },
       }}
     >

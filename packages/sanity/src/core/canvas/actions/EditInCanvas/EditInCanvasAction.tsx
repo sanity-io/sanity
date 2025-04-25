@@ -1,5 +1,4 @@
 import {ComposeSparklesIcon} from '@sanity/icons'
-import {useCallback} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -7,20 +6,13 @@ import {
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
+import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
 import {useCompanionDoc} from '../useCompanionDoc'
 
 export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const {isLinked, companionDoc, loading} = useCompanionDoc(props.id)
-
-  const navigateToCanvas = useCallback(() => {
-    // TODO: get this dynamically
-    const organizationId = '@oF5P8QpKU'
-    window.open(
-      `https://www.sanity.work/${organizationId}/canvas/doc/${companionDoc?.canvasDocumentId}`,
-      '_blank',
-    )
-  }, [companionDoc])
+  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
 
   if (!isLinked || loading) return null
 
