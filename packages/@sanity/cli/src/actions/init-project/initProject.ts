@@ -750,9 +750,15 @@ export default async function initSanity(
 
     if (isAppTemplate) {
       const client = apiClient({requireUser: true, requireProject: false})
-      const organizations = await client.request({uri: '/organizations'})
+      const organizations = await client.request({
+        uri: '/organizations',
+        query: {
+          includeMembers: 'true',
+          includeImplicitMemberships: 'true',
+        },
+      })
 
-      const appOrganizationId = await getOrganizationId(organizations)
+      const appOrganizationId = await getOrganizationIdForAppTemplate(organizations)
 
       return {
         projectId: '',
@@ -1298,6 +1304,38 @@ export default async function initSanity(
     spinner.succeed()
 
     return organization
+  }
+
+  async function getOrganizationIdForAppTemplate(organizations: ProjectOrganization[]) {
+    // If the user is using an app template, we don't need to check for attach access
+    const organizationChoices = [
+      ...organizations.map((organization) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
+
+    // If the user only has a single organization, we'll default to that one.
+    const defaultOrganizationId =
+      organizations.length === 1
+        ? organizations[0].id
+        : organizations.find((org) => org.name === user?.name)?.id
+
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
+
+    if (chosenOrg === '-new-') {
+      return createOrganization().then((org) => org.id)
+    }
+
+    return chosenOrg || undefined
   }
 
   async function getOrganizationId(organizations: ProjectOrganization[]) {
