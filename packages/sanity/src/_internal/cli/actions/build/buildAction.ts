@@ -7,15 +7,16 @@ import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
-import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
+import {buildStaticFiles} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
-import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
 import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -71,7 +72,7 @@ export default async function buildSanityStudio(
 
     // Check the versions
     try {
-      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+      const result = await compareDependencyVersions(autoUpdatesImports, workDir)
 
       // If it is in unattended mode, we don't want to prompt
       if (result?.length && !unattendedMode) {
@@ -205,29 +206,4 @@ export default async function buildSanityStudio(
 // eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_STUDIO_'))
-}
-
-function sortModulesBySize(chunks: ChunkStats[]): ChunkModule[] {
-  return chunks
-    .flatMap((chunk) => chunk.modules)
-    .sort((modA, modB) => modB.renderedLength - modA.renderedLength)
-}
-
-function formatModuleSizes(modules: ChunkModule[]): string {
-  const lines: string[] = []
-  for (const mod of modules) {
-    lines.push(` - ${formatModuleName(mod.name)} (${formatSize(mod.renderedLength)})`)
-  }
-
-  return lines.join('\n')
-}
-
-function formatModuleName(modName: string): string {
-  const delimiter = '/node_modules/'
-  const nodeIndex = modName.lastIndexOf(delimiter)
-  return nodeIndex === -1 ? modName : modName.slice(nodeIndex + delimiter.length)
-}
-
-function formatSize(bytes: number): string {
-  return chalk.cyan(`${(bytes / 1024).toFixed()} kB`)
 }
