@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui'
 import {getTimeZones} from '@vvo/tzdb'
-import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {formatInTimeZone, fromZonedTime, toZonedTime} from 'date-fns-tz'
 import {useCallback, useEffect, useState} from 'react'
 
 import ToastDescription from '../components/toastDescription/ToastDescription'
@@ -98,7 +98,7 @@ const useTimeZone = () => {
   )
 
   const getCurrentZoneDate = useCallback(
-    () => utcToZonedTime(new Date(), timeZone.name),
+    () => toZonedTime(new Date(), timeZone.name),
     [timeZone.name],
   )
 
@@ -132,12 +132,12 @@ const useTimeZone = () => {
   )
 
   const utcToCurrentZoneDate = useCallback(
-    (date: Date) => utcToZonedTime(date, timeZone.name),
+    (date: Date) => toZonedTime(date, timeZone.name),
     [timeZone.name],
   )
 
   const zoneDateToUtc = useCallback(
-    (date: Date) => zonedTimeToUtc(date, timeZone.name),
+    (date: Date) => fromZonedTime(date, timeZone.name),
     [timeZone.name],
   )
 
