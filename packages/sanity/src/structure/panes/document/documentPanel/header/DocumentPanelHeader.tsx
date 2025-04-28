@@ -77,6 +77,7 @@ export const DocumentPanelHeader = memo(
       actions: allActions,
       editState,
       onMenuAction,
+      isInitialValueLoading,
       onPaneClose,
       onPaneSplit,
       menuItemGroups,
@@ -189,7 +190,7 @@ export const DocumentPanelHeader = memo(
           {editState && (
             <RenderActionCollectionState
               actions={actions}
-              actionProps={editState}
+              actionProps={{...editState, initialValueResolved: !isInitialValueLoading}}
               group="paneActions"
             >
               {renderPaneActions}
@@ -232,6 +233,7 @@ export const DocumentPanelHeader = memo(
         BackLink,
         actions,
         editState,
+        isInitialValueLoading,
         menuButtonNodes,
         onPaneClose,
         onPaneSplit,
