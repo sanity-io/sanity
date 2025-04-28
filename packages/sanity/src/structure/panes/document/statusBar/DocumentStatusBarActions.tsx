@@ -5,6 +5,7 @@ import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
+  type DocumentActionProps,
   Hotkeys,
   usePerspective,
   useSource,
@@ -95,7 +96,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
+  const {
+    actions: allActions,
+    connectionState,
+    documentId,
+    editState,
+    isInitialValueLoading,
+  } = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -106,6 +113,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   const actions = useMemo(
     () => (allActions ?? []).filter((action) => !isRestoreAction(action)),
     [allActions],
+  )
+  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
+    () => (editState ? {...editState, initialValueResolved: !isInitialValueLoading} : null),
+    [editState, isInitialValueLoading],
   )
 
   const renderDocumentStatusBarActions = useCallback<
@@ -126,7 +137,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
     [actions.length, connectionState, documentId],
   )
 
-  if (actions.length === 0 || !editState) {
+  if (actions.length === 0 || !actionProps) {
     return null
   }
 
@@ -135,7 +146,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
       // component={}
       // onActionComplete={handleActionComplete}
       actions={actions}
-      actionProps={editState}
+      actionProps={actionProps}
       group="default"
     >
       {renderDocumentStatusBarActions}
@@ -144,10 +155,26 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {actions, connectionState, editState, revisionId: revision} = useDocumentPane()
+  const {
+    actions,
+    connectionState,
+    editState,
+    revisionId: revision,
+    isInitialValueLoading,
+  } = useDocumentPane()
 
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
+  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
+    () =>
+      editState
+        ? {
+            ...editState,
+            revision: revision || undefined,
+            initialValueResolved: !isInitialValueLoading,
+          }
+        : null,
+    [editState, revision, isInitialValueLoading],
+  )
 
   // If multiple `restore` actions are defined, ensure only the final one is used.
   const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])
@@ -164,13 +191,11 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
     ),
     [connectionState, disabled],
   )
-
+  if (!actionProps) {
+    return null
+  }
   return (
-    <RenderActionCollectionState
-      actions={historyActions}
-      actionProps={actionProps as any}
-      group="default"
-    >
+    <RenderActionCollectionState actions={historyActions} actionProps={actionProps} group="default">
       {renderDocumentStatusBarActions}
     </RenderActionCollectionState>
   )
