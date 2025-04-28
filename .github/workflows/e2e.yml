@@ -4,8 +4,8 @@ permissions:
   pull-requests: write # for comment
 
 env:
-  CHROMIUM_DATASET: pr-chromium-${{ github.event.number }}
-  FIREFOX_DATASET: pr-firefox-${{ github.event.number }}
+  CHROMIUM_DATASET: pr-chromium-${{ github.event.number }}-${{ github.run_id }}
+  FIREFOX_DATASET: pr-firefox-${{ github.event.number }}-${{ github.run_id }}
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -86,7 +86,6 @@ jobs:
         run: pnpm build:cli --output-logs=full --log-order=grouped
 
       - name: dataset setup on PR (chromium)
-        if: ${{ github.event_name == 'pull_request' }}
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
@@ -96,7 +95,6 @@ jobs:
           pnpm e2e:setup
 
       - name: dataset setup on PR (firefox)
-        if: ${{ github.event_name == 'pull_request' }}
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
