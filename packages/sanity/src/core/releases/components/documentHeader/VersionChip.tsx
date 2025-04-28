@@ -52,8 +52,8 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
 
   const companionDocsStore = useCanvasCompanionDocsStore()
   const companionDocs$ = useMemo(
-    () => companionDocsStore.getCompanionDocs(versionId),
-    [versionId, companionDocsStore],
+    () => companionDocsStore.getCompanionDocs(documentId),
+    [documentId, companionDocsStore],
   )
   const companionDocs = useObservable(companionDocs$)
   return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
