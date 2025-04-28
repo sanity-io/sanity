@@ -2,6 +2,7 @@
 export interface HookCollectionActionHook<Args, State> {
   (args: Args): State | null
   displayName?: string | undefined
+  action?: string
 }
 
 /** @public */
