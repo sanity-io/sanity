@@ -73,34 +73,30 @@ export default async function buildSanityStudio(
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    try {
-      const result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
 
-      // If it is in unattended mode, we don't want to prompt
-      if (result?.length && !unattendedMode) {
-        const shouldUpgrade = await prompt.single({
-          type: 'confirm',
-          message: chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Do you want to upgrade local versions instead?`,
-          ),
-          default: false,
-        })
+    // If it is in unattended mode, we don't want to prompt
+    if (result?.length && !unattendedMode) {
+      const shouldUpgrade = await prompt.single({
+        type: 'confirm',
+        message: chalk.yellow(
+          `The following local package versions are different from the versions currently served at runtime.\n` +
+            `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+            `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+            `Do you want to upgrade local versions instead?`,
+        ),
+        default: false,
+      })
 
-        if (shouldUpgrade) {
-          await upgradePackages(
-            {
-              packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
-              packages: result.map((res) => [res.pkg, res.remote]),
-            },
-            context,
-          )
-        }
+      if (shouldUpgrade) {
+        await upgradePackages(
+          {
+            packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+            packages: result.map((res) => [res.pkg, res.remote]),
+          },
+          context,
+        )
       }
-    } catch (err) {
-      throw err
     }
   }
 
