@@ -56,12 +56,13 @@ export function resolveMenuNodes(params: {
     const item = menuItems[i]
 
     let group = item.group && groups.find((g) => g.key === item.group)
+    const disabled = typeof item.disabled === 'string' ? {reason: item.disabled} : item.disabled
 
     if (item.group && !group) {
       group = {
         type: 'group',
         key: item.group,
-
+        disabled,
         expanded: true,
         icon: item.icon,
         title: item.group,
@@ -79,7 +80,7 @@ export function resolveMenuNodes(params: {
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
-        disabled: item.isDisabled,
+        disabled,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
@@ -95,7 +96,7 @@ export function resolveMenuNodes(params: {
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
-        disabled: item.isDisabled,
+        disabled,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
