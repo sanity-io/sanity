@@ -59,7 +59,7 @@ export async function listSchemasAction(
   const {output, apiClient, jsonReader, manifestExtractor} = context
 
   // prettier-ignore
-  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
+  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output, telemetry: context.telemetry}))) {
     return 'failure'
   }
   const {client, projectId} = createSchemaApiClient(apiClient)

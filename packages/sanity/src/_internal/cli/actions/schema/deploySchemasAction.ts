@@ -8,6 +8,7 @@ import {
   SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
+import {SchemaDeploy} from './__telemetry__/schemaStore.telemetry'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {type CreateManifestReader, createManifestReader} from './utils/manifestReader'
@@ -59,14 +60,23 @@ export async function deploySchemasAction(
   const {workspaceName, verbose, idPrefix, manifestDir, extractManifest, schemaRequired} =
     parseDeploySchemasConfig(flags, context)
 
-  const {output, apiClient, jsonReader, manifestExtractor} = context
+  const {output, apiClient, jsonReader, manifestExtractor, telemetry} = context
 
   // prettier-ignore
-  if (!(await ensureManifestExtractSatisfied({schemaRequired, extractManifest, manifestDir, manifestExtractor, output,}))) {
+  if (!(await ensureManifestExtractSatisfied({schemaRequired, extractManifest, manifestDir, manifestExtractor, output, telemetry}))) {
     return 'failure'
   }
 
+  const trace = context.telemetry.trace(SchemaDeploy, {
+    manifestDir,
+    schemaRequired,
+    workspaceName,
+    idPrefix,
+    extractManifest,
+  })
+
   try {
+    trace.start()
     const {client, projectId} = createSchemaApiClient(apiClient)
     const manifestReader = createManifestReader({manifestDir, output, jsonReader})
     const manifest = await manifestReader.getManifest()
@@ -106,9 +116,11 @@ export async function deploySchemasAction(
       )
     }
 
+    trace.complete()
     output.success(`Deployed ${successes.length}/${targetWorkspaces.length} schemas`)
     return 'success'
   } catch (err) {
+    trace.error(err)
     if (schemaRequired || err instanceof FlagValidationError) {
       throw err
     } else {
@@ -116,7 +128,7 @@ export async function deploySchemasAction(
       return 'failure'
     }
   } finally {
-    output.print(
+    context.output.print(
       `${chalk.gray('↳ List deployed schemas with:')} ${chalk.cyan('sanity schema list')}`,
     )
   }
@@ -143,6 +155,7 @@ function createStoreWorkspaceSchema(args: {
       const storedWorkspaceSchema: StoredWorkspaceSchema = {
         _type: SANITY_WORKSPACE_SCHEMA_TYPE,
         _id: id,
+        version: 2,
         workspace,
         // we have to stringify the schema to save on attribute paths
         schema: JSON.stringify(schema),

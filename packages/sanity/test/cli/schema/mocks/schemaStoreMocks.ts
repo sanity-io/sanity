@@ -34,6 +34,11 @@ export function createMockSchemaStoreContext(
       }),
       jsonReader: mockJsonReader,
       workDir,
+      telemetry: {
+        updateUserProperties: vi.fn(),
+        log: vi.fn(),
+        trace: vi.fn(() => ({start: vi.fn(), error: vi.fn(), complete: vi.fn()}) as any),
+      },
       ...overrides,
     } satisfies SchemaStoreContext,
     outputLog,

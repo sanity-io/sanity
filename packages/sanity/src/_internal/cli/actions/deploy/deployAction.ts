@@ -8,8 +8,6 @@ import tar from 'tar-fs'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import storeManifestSchemas from '../schema/deploySchemasAction'
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
-import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {
   checkDir,
   createDeployment,
@@ -115,22 +113,15 @@ export default async function deployStudioAction(
     }
   }
 
-  if (SCHEMA_STORE_FEATURE_ENABLED) {
-    await storeManifestSchemas(
-      {
-        'extract-manifest': shouldBuild,
-        'manifest-dir': `${sourceDir}/static`,
-        'schema-required': flags['schema-required'],
-        'verbose': flags.verbose,
-      },
-      context,
-    )
-  } else if (shouldBuild) {
-    await createManifestExtractor({
-      ...context,
-      safe: true,
-    })(`${sourceDir}/static`)
-  }
+  await storeManifestSchemas(
+    {
+      'extract-manifest': shouldBuild,
+      'manifest-dir': `${sourceDir}/static`,
+      'schema-required': flags['schema-required'],
+      'verbose': flags.verbose,
+    },
+    context,
+  )
 
   // Ensure that the directory exists, is a directory and seems to have valid content
   spinner = output.spinner('Verifying local content').start()

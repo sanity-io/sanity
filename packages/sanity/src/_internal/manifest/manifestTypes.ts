@@ -110,6 +110,7 @@ export type WorkspaceSchemaId = DefaultWorkspaceSchemaId | PrefixedWorkspaceSche
 export interface StoredWorkspaceSchema extends SanityDocumentLike {
   _type: typeof SANITY_WORKSPACE_SCHEMA_TYPE
   _id: WorkspaceSchemaId
+  version: 2 | undefined
   workspace: ManifestWorkspaceFile
   /**
    * JSON.stringify version of ManifestSchemaType[] to save on attribute paths.

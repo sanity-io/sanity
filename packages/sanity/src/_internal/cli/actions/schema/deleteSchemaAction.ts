@@ -65,7 +65,7 @@ export async function deleteSchemaAction(
   const {output, apiClient, jsonReader, manifestExtractor} = context
 
   // prettier-ignore
-  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output,}))) {
+  if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output, telemetry: context.telemetry}))) {
     return 'failure'
   }
 
