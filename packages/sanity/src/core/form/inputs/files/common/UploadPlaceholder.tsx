@@ -85,7 +85,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
           <FileInputButton
             accept={accept}
             data-testid={`file-input-upload-button-${assetSourcesWithUpload[0].name}`}
-            disabled={readOnly || !directUploads}
+            disabled={readOnly || directUploads === false}
             icon={UploadIcon}
             mode="bleed"
             // eslint-disable-next-line react/jsx-no-bind

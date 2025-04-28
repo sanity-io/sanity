@@ -79,7 +79,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || !directUploads) {
+      if (rejectedFilesCount > 0 || directUploads === false) {
         return 'critical'
       }
     }
@@ -348,6 +348,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     return (
       <ImageInputAssetMenu
         assetSources={assetSources}
+        directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
         onSelectFiles={handleSelectFilesToUpload}
@@ -366,6 +367,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [
     assetSources,
+    directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
     handleSelectFilesToUpload,
@@ -378,6 +380,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     schemaType,
     value,
   ])
+
   const renderBrowser = useCallback(() => {
     return (
       <ImageInputBrowser

@@ -636,7 +636,7 @@ function resolveSource({
           config,
           context,
           initialValue: mediaLibraryAssetSources.fileSource
-            ? [defaultAssetSources.fileSource, mediaLibraryAssetSources.fileSource]
+            ? [mediaLibraryAssetSources.fileSource, defaultAssetSources.fileSource]
             : [defaultAssetSources.fileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
@@ -648,7 +648,7 @@ function resolveSource({
           config,
           context,
           initialValue: mediaLibraryAssetSources.imageSource
-            ? [defaultAssetSources.imageSource, mediaLibraryAssetSources.imageSource]
+            ? [mediaLibraryAssetSources.imageSource, defaultAssetSources.imageSource]
             : [defaultAssetSources.imageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
