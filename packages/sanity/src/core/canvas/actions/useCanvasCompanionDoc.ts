@@ -3,15 +3,15 @@ import {useObservable} from 'react-rx'
 
 import {usePerspective} from '../../perspective/usePerspective'
 import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
-import {useCompanionDocsStore} from '../store/useCompanionDocsStore'
+import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
  * Given a document id, returns whether it is linked to canvas and the companion doc if it exists.
  * @beta
  */
-export const useCompanionDoc = (documentId: string) => {
+export const useCanvasCompanionDoc = (documentId: string) => {
   const {selectedPerspectiveName} = usePerspective()
-  const companionDocsStore = useCompanionDocsStore()
+  const companionDocsStore = useCanvasCompanionDocsStore()
   const publishedId = getPublishedId(documentId)
   const companionDocs$ = useMemo(
     () => companionDocsStore.getCompanionDocs(publishedId),

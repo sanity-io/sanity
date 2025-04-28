@@ -1,7 +1,7 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {useCompanionDoc, useNavigateToCanvasDoc, useTranslation} from 'sanity'
+import {useCanvasCompanionDoc, useNavigateToCanvasDoc, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../ui-components'
@@ -94,7 +94,7 @@ const CanvasLinkedBannerContent = () => {
 export function CanvasLinkedBanner() {
   const {documentId} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const {companionDoc} = useCompanionDoc(documentId)
+  const {companionDoc} = useCanvasCompanionDoc(documentId)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
 
   if (!companionDoc) return null

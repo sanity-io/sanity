@@ -7,11 +7,11 @@ import {
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
-import {useCompanionDoc} from '../useCompanionDoc'
+import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 
 export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCompanionDoc(props.id)
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(props.id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
 
   if (!isLinked || loading) return null

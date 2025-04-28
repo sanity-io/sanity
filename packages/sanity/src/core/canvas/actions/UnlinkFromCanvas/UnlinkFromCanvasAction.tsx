@@ -9,12 +9,12 @@ import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {canvasLocaleNamespace} from '../../i18n'
-import {useCompanionDoc} from '../useCompanionDoc'
+import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
 
 export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCompanionDoc(props.id)
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(props.id)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
   const handleOpenDialog = useCallback(() => setIsDialogOpen(true), [])

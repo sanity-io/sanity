@@ -7,7 +7,7 @@ import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CompanionDoc} from '../types'
 
-export interface CompanionDocsStore {
+export interface CanvasCompanionDocsStore {
   getCompanionDocs: (documentId: string) => Observable<CompanionDocs>
 }
 interface CompanionDocs {
@@ -68,13 +68,13 @@ const getCompanionDocs = memoize(
   (publishedId, client) => `${publishedId}-${client.config().dataset}-${client.config().projectId}`,
 )
 
-export function createCompanionDocsStore({
+export function createCanvasCompanionDocsStore({
   client,
   previewStore,
 }: {
   client: SanityClient
   previewStore: DocumentPreviewStore
-}): CompanionDocsStore {
+}): CanvasCompanionDocsStore {
   return {
     getCompanionDocs: (documentId: string) =>
       getCompanionDocs(getPublishedId(documentId), client, previewStore),

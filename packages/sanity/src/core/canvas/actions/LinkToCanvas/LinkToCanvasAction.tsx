@@ -14,7 +14,7 @@ import {isReleaseDocument} from '../../../releases/store/types'
 import {useRenderingContext} from '../../../store/renderingContext/useIsInRenderContext'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
-import {useCompanionDoc} from '../useCompanionDoc'
+import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
 
 const useIsExcludedType = (type: string) => {
@@ -27,7 +27,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
-  const {isLinked, loading} = useCompanionDoc(props.id)
+  const {isLinked, loading} = useCanvasCompanionDoc(props.id)
 
   const isExcludedType = useIsExcludedType(props.type)
 

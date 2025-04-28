@@ -5,9 +5,12 @@ import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type CompanionDocsStore, createCompanionDocsStore} from './createCompanionDocsStore'
+import {
+  type CanvasCompanionDocsStore,
+  createCanvasCompanionDocsStore,
+} from './createCanvasCompanionDocsStore'
 
-export function useCompanionDocsStore(): CompanionDocsStore {
+export function useCanvasCompanionDocsStore(): CanvasCompanionDocsStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
   const previewStore = useDocumentPreviewStore()
@@ -15,11 +18,11 @@ export function useCompanionDocsStore(): CompanionDocsStore {
 
   return useMemo(() => {
     const releaseStore =
-      resourceCache.get<CompanionDocsStore>({
+      resourceCache.get<CanvasCompanionDocsStore>({
         dependencies: [workspace, previewStore],
         namespace: 'CompanionDocsStore',
       }) ||
-      createCompanionDocsStore({
+      createCanvasCompanionDocsStore({
         client: studioClient,
         previewStore,
       })

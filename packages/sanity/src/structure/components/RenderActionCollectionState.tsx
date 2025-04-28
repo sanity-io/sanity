@@ -5,7 +5,7 @@ import {
   type DocumentActionGroup,
   type DocumentActionProps,
   GetHookCollectionState,
-  useCompanionDoc,
+  useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
 
@@ -72,7 +72,8 @@ interface ActionsGuardWrapperProps {
 const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {
   const {states, children, documentId} = props
   const {t} = useTranslation(structureLocaleNamespace)
-  const {isLinked} = useCompanionDoc(documentId)
+  const {isLinked} = useCanvasCompanionDoc(documentId)
+
   const result = useMemo(() => {
     if (isLinked) {
       return children({

@@ -20,7 +20,7 @@ import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
-import {useCompanionDocsStore} from '../../../canvas/store/useCompanionDocsStore'
+import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
@@ -50,7 +50,7 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
     return getVersionId(documentId, fromRelease)
   }, [documentId, fromRelease])
 
-  const companionDocsStore = useCompanionDocsStore()
+  const companionDocsStore = useCanvasCompanionDocsStore()
   const companionDocs$ = useMemo(
     () => companionDocsStore.getCompanionDocs(versionId),
     [versionId, companionDocsStore],
