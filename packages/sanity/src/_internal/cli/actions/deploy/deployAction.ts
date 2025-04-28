@@ -7,7 +7,8 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
-import storeManifestSchemas from '../schema/deploySchemasAction'
+import {deploySchemasAction} from '../schema/deploySchemasAction'
+import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {
   checkDir,
   createDeployment,
@@ -113,14 +114,14 @@ export default async function deployStudioAction(
     }
   }
 
-  await storeManifestSchemas(
+  await deploySchemasAction(
     {
       'extract-manifest': shouldBuild,
       'manifest-dir': `${sourceDir}/static`,
       'schema-required': flags['schema-required'],
       'verbose': flags.verbose,
     },
-    context,
+    {...context, manifestExtractor: createManifestExtractor(context)},
   )
 
   // Ensure that the directory exists, is a directory and seems to have valid content
