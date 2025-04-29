@@ -17,7 +17,7 @@ export interface ResolvedStudioApp {
  */
 export function useStudioAppIdStore(
   cache: AppIdCache,
-  config?: {
+  config: {
     enabled: boolean
     fallbackStudioOrigin?: string
   },
@@ -30,15 +30,15 @@ export function useStudioAppIdStore(
       fetchCreateCompatibleAppId({
         projectId: pId,
         client,
-        fallbackOrigin: config?.fallbackStudioOrigin,
+        fallbackOrigin: config.fallbackStudioOrigin,
       })
-  }, [client, config?.fallbackStudioOrigin])
+  }, [client, config.fallbackStudioOrigin])
 
   return useStudioAppIdStoreInner({
     projectId,
     cache,
     appIdFetcher,
-    enabled: config?.enabled || false,
+    enabled: config.enabled,
   })
 }
 
