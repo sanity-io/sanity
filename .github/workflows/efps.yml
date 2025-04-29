@@ -23,18 +23,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  efps-test:
-    timeout-minutes: 30
+  setup:
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # Add more shards here if needed
-        shardIndex: [1, 2, 3]
-        shardTotal: [3]
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -44,6 +36,7 @@ jobs:
           node-version: lts/*
 
       - name: Install project dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Store Playwright's Version
@@ -63,6 +56,42 @@ jobs:
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
+
+      - name: Upload workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace
+          path: |
+            node_modules
+            .pnpm-store
+            ~/.cache/ms-playwright
+          retention-days: 1
+
+  efps-test:
+    needs: setup
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Download workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
+          path: .
 
       - name: Run eFPS tests
         env:
@@ -93,8 +122,11 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Install project dependencies
-        run: pnpm install
+      - name: Download workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
+          path: .
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v4
