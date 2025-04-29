@@ -29,6 +29,7 @@ import {
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {SDKAppProvider} from './StudioSDKAppProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
@@ -67,18 +68,20 @@ export function StudioProvider({
   const _children = useMemo(
     () => (
       <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
-        <StudioTelemetryProvider config={config}>
-          <LocaleProvider>
-            <PackageVersionStatusProvider>
-              <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>
-                <StudioAnnouncementsProvider>
-                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
-                </StudioAnnouncementsProvider>
-              </ResourceCacheProvider>
-            </PackageVersionStatusProvider>
-          </LocaleProvider>
-        </StudioTelemetryProvider>
+        <SDKAppProvider>
+          <StudioTelemetryProvider config={config}>
+            <LocaleProvider>
+              <PackageVersionStatusProvider>
+                <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                <ResourceCacheProvider>
+                  <StudioAnnouncementsProvider>
+                    <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                  </StudioAnnouncementsProvider>
+                </ResourceCacheProvider>
+              </PackageVersionStatusProvider>
+            </LocaleProvider>
+          </StudioTelemetryProvider>
+        </SDKAppProvider>
       </WorkspaceLoader>
     ),
     [children, config],
