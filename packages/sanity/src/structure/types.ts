@@ -10,6 +10,7 @@ import {
   type LocaleSource,
 } from 'sanity'
 
+import {type _PaneMenuItem} from './components/pane/types'
 import {
   type DefaultDocumentNodeResolver,
   type Intent,
@@ -249,7 +250,7 @@ export {type StructureToolMenuItem}
 export interface PaneMenuItem extends StructureToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
   // currently, they are only used in the `DocumentPaneProvider`
-  isDisabled?: boolean
+  disabled?: _PaneMenuItem['disabled']
   shortcut?: string
   selected?: boolean
   tone?: 'primary' | 'positive' | 'caution' | 'critical'
