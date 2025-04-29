@@ -47,9 +47,8 @@ const initialState: UseLinkToCanvasResponse = {
   status: 'validating',
 }
 
-// Canvas requires vX api version for now
 const CANVAS_CLIENT_CONFIG = {
-  apiVersion: 'vX',
+  apiVersion: 'v2025-04-29',
 }
 
 const getCanvasLinkUrl = ({
