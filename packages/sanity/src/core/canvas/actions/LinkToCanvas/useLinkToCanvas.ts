@@ -137,7 +137,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     if (!studioApp?.appId) {
       return of({
         status: 'error' as const,
-        error: 'Studio app not found, have you deployed it or set the fallbackStudioOrigin?',
+        error: 'Studio app not found, try deploying it or set the fallbackStudioOrigin',
       })
     }
     if (!document?._id) {
