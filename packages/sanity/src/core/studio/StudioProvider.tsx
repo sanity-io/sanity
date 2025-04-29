@@ -68,20 +68,20 @@ export function StudioProvider({
   const _children = useMemo(
     () => (
       <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
-        <SDKAppProvider>
-          <StudioTelemetryProvider config={config}>
-            <LocaleProvider>
-              <PackageVersionStatusProvider>
-                <MaybeEnableErrorReporting errorReporter={errorReporter} />
-                <ResourceCacheProvider>
+        <StudioTelemetryProvider config={config}>
+          <LocaleProvider>
+            <PackageVersionStatusProvider>
+              <MaybeEnableErrorReporting errorReporter={errorReporter} />
+              <ResourceCacheProvider>
+                <SDKAppProvider>
                   <StudioAnnouncementsProvider>
                     <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
                   </StudioAnnouncementsProvider>
-                </ResourceCacheProvider>
-              </PackageVersionStatusProvider>
-            </LocaleProvider>
-          </StudioTelemetryProvider>
-        </SDKAppProvider>
+                </SDKAppProvider>
+              </ResourceCacheProvider>
+            </PackageVersionStatusProvider>
+          </LocaleProvider>
+        </StudioTelemetryProvider>
       </WorkspaceLoader>
     ),
     [children, config],
