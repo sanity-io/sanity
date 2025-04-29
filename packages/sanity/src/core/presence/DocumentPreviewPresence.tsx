@@ -7,7 +7,9 @@ import {css, styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {getReleaseIdFromReleaseDocumentId, useActiveReleases} from '../releases'
+import {releasesLocaleNamespace} from '../releases/i18n'
 import {type DocumentPresence} from '../store'
 import {getVersionFromId, isNonNullable} from '../util'
 
@@ -31,6 +33,7 @@ const AvatarStackBox = styled.div((props) => {
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
+  const {t} = useTranslation(releasesLocaleNamespace)
 
   const {data: releases} = useActiveReleases()
 
@@ -54,15 +57,18 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
           )
         : undefined
       const releaseTitle = release?.metadata?.title
-      return `${firstPresence.user.displayName} is editing this document${releaseTitle ? ` in the release "${releaseTitle}" right now` : 'in an untitled release right now'}`
+      return t('presence.tooltip.one', {
+        displayName: firstPresence.user.displayName,
+        releaseTitle: releaseTitle || t('release-placeholder.title'),
+      })
     }
 
     if (uniquePresence.length > 1) {
-      return `${uniquePresence.length} people are editing this document right now`
+      return t('presence.tooltip.other', {count: uniquePresence.length})
     }
 
     return undefined
-  }, [uniquePresence, releases])
+  }, [releases, t, uniquePresence])
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
