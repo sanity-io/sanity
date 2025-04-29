@@ -20,7 +20,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.delete.running.label': 'Deleting…',
   /** Tooltip when action is disabled because the document is linked to Canvas */
   'action.disabled-by-canvas.tooltip':
-    'Custom document actions are disabled for documents linked to Canvas',
+    'Some document actions are disabled for documents linked to Canvas',
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
