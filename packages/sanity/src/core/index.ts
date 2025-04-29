@@ -1,5 +1,3 @@
-export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
-export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
 export * from './changeIndicators'
 export * from './comments'
 export * from './components'
@@ -72,3 +70,7 @@ export {
   type ValidateDocumentOptions,
 } from './validation'
 export * from './version'
+
+// Canvas exports
+export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
+export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
