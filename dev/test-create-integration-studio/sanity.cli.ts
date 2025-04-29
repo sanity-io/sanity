@@ -2,10 +2,10 @@ import {defineCliConfig} from 'sanity/cli'
 
 export default defineCliConfig({
   api: {
-    projectId: 'exx11uqh',
-    dataset: 'playground',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
   },
 
-  studioHost: 'canvas-integration-staging',
+  studioHost: 'create-integration-test',
   autoUpdates: false,
 })

@@ -20,16 +20,45 @@ const baseConfig = defineConfig({
 export default defineConfig([
   {
     ...baseConfig,
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    title: 'Playground',
-    name: 'playground',
-    basePath: '/playground',
-    apiHost: 'https://api.sanity.work',
+    title: 'Fallback origin',
+    name: 'fallback',
+    basePath: '/fallback',
+    beta: {
+      create: {
+        fallbackStudioOrigin: 'create-integration-test.sanity.studio',
+      },
+    },
+  },
+  {
+    ...baseConfig,
+    title: 'No fallback origin',
+    name: 'no-fallback',
+    basePath: '/no-fallback',
+  },
+  {
+    ...baseConfig,
+    title: 'Invalid fallback origin',
+    name: 'invalid-fallback',
+    basePath: '/invalid-fallback',
+    beta: {
+      create: {
+        fallbackStudioOrigin: 'does-not-exist',
+      },
+    },
+  },
+  {
+    ...baseConfig,
+    title: 'Opt out',
+    name: 'opt-out',
+    basePath: '/opt-out',
+    beta: {
+      create: {
+        startInCreateEnabled: false,
+      },
+    },
     apps: {
       canvas: {
-        enabled: true,
-        fallbackStudioOrigin: 'canvas-integration-staging.sanity.studio',
+        enabled: false,
       },
     },
   },
