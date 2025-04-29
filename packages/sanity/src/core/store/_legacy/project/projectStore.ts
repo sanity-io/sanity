@@ -1,9 +1,15 @@
 import {type SanityClient} from '@sanity/client'
-import {map, type Observable, shareReplay} from 'rxjs'
+import {map, type Observable, repeat, shareReplay} from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
 import {type ProjectData, type ProjectStore} from './types'
 
+const REFETCH_INTERVAL = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * This value will be cached for 5 minutes, after that internal the cache will be refreshed.
+ * If you need to be 100% sure the organizationId is up to date, you can call the `/projects/${projectId}` endpoint directly.
+ */
 const getOrganizationId = memoize(
   (client: SanityClient) => {
     return client.observable
@@ -18,6 +24,7 @@ const getOrganizationId = memoize(
       })
       .pipe(
         map((res) => res.organizationId),
+        repeat({delay: REFETCH_INTERVAL}),
         shareReplay(1),
       )
   },
