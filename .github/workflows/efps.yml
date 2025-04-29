@@ -25,8 +25,6 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    outputs:
-      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -34,6 +32,17 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
+
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            .pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: Install project dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
@@ -57,16 +66,6 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Upload workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: workspace
-          path: |
-            node_modules
-            .pnpm-store
-            ~/.cache/ms-playwright
-          retention-days: 1
-
   efps-test:
     needs: setup
     timeout-minutes: 30
@@ -87,11 +86,8 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Download workspace
-        uses: actions/download-artifact@v4
-        with:
-          name: workspace
-          path: .
+      - name: Install project dependencies
+        run: pnpm install
 
       - name: Run eFPS tests
         env:
@@ -122,11 +118,8 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Download workspace
-        uses: actions/download-artifact@v4
-        with:
-          name: workspace
-          path: .
+      - name: Install project dependencies
+        run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v4
