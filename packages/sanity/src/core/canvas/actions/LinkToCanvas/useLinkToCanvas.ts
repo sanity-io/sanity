@@ -1,4 +1,6 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type Bridge, SDK_CHANNEL_NAME, SDK_NODE_NAME} from '@sanity/message-protocol'
+import {type ComlinkStatus, useWindowConnection} from '@sanity/sdk-react'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
@@ -8,7 +10,7 @@ import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStor
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
 import {useProjectStore} from '../../../store/_legacy/datastores'
-import {type ProjectStore} from '../../../store/_legacy/project/types'
+import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useWorkspace} from '../../../studio/workspace'
 
 const localeSettings = Intl.DateTimeFormat().resolvedOptions()
@@ -36,12 +38,20 @@ type StudioToCanvasRequestBody = ({documentId: string} | {document: SanityDocume
   }
 }
 
-interface UseLinkToCanvasResponse {
-  status: 'validating' | 'redirecting' | 'error' | 'missing-document-id' | 'diff'
-  error?: string | null
-  redirectUrl?: string
-  response?: CanvasResponse
-}
+type UseLinkToCanvasResponse =
+  | {
+      status: 'validating' | 'error' | 'missing-document-id'
+      error?: string | null
+      navigateToCanvas?: undefined
+      response?: CanvasResponse
+    }
+  | {
+      status: 'redirecting' | 'diff'
+      error?: string | null
+      navigateToCanvas: () => void
+      response?: CanvasResponse
+    }
+
 const initialState: UseLinkToCanvasResponse = {
   status: 'validating',
 }
@@ -50,41 +60,7 @@ const CANVAS_CLIENT_CONFIG = {
   apiVersion: 'v2025-04-29',
 }
 
-const getCanvasLinkUrl = ({
-  documentId,
-  workspaceName,
-  documentType,
-  applicationId,
-  client,
-  projectStore,
-}: {
-  documentId: string
-  workspaceName: string
-  documentType: string
-  applicationId: string
-  client: SanityClient
-  projectStore: ProjectStore
-}) => {
-  const dataset = client.config().dataset || ''
-  const projectId = client.config().projectId || ''
-  // TODO: If comlink is available don't get the org id, use comlink to navigate to canvas
-
-  return projectStore.getOrganizationId().pipe(
-    map((organizationId) => {
-      const queryParams = new URLSearchParams({
-        projectId,
-        dataset,
-        documentType,
-        documentId,
-        workspaceName,
-        applicationId,
-      })
-      const isStaging = client.config().apiHost === 'https://api.sanity.work'
-
-      return `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/studio-import?${queryParams.toString()}`
-    }),
-  )
-}
+const localSettings = Intl.DateTimeFormat().resolvedOptions()
 
 const canvasPreflight = ({
   client,
@@ -115,6 +91,14 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const [appIdCache] = useState(() => createAppIdCache())
   const workspace = useWorkspace()
   const projectStore = useProjectStore()
+  const renderContext = useRenderingContext()
+  const [windowConnectionStatus, setWindowConnectionStatus] = useState<ComlinkStatus>('idle')
+
+  const {sendMessage} = useWindowConnection<Bridge.Navigation.NavigateToResourceMessage, never>({
+    name: SDK_NODE_NAME,
+    connectTo: SDK_CHANNEL_NAME,
+    onStatus: setWindowConnectionStatus,
+  })
 
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
@@ -126,38 +110,73 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
 
   const linkToCanvas$: Observable<UseLinkToCanvasResponse> = useMemo(() => {
     if (appIdLoading) {
-      return of({status: 'validating' as const})
+      return of({status: 'validating'})
+    }
+    if (renderContext?.name === 'coreUi' && windowConnectionStatus !== 'connected') {
+      return of({status: 'validating'})
     }
     if (!studioApp?.appId) {
       return of({
-        status: 'error' as const,
+        status: 'error',
         error: 'Studio app not found, try deploying it or set the fallbackStudioOrigin',
       })
     }
     if (!document?._id) {
       return of({
-        status: 'missing-document-id' as const,
+        status: 'missing-document-id',
         error: 'Missing document ID',
       })
     }
-    return combineLatest([
-      canvasPreflight({client, document, schemaId}),
-      getCanvasLinkUrl({
+
+    const getNavigateToCanvas = () => {
+      const dataset = client.config().dataset || ''
+      const projectId = client.config().projectId || ''
+
+      const queryParams = new URLSearchParams({
+        projectId,
+        dataset,
+        documentType: document._type,
         documentId: document._id,
         workspaceName: workspace.name,
-        documentType: document._type,
         applicationId: studioApp?.appId || '',
-        client,
-        projectStore,
-      }),
+      })
+
+      const path = `studio-import?${queryParams.toString()}`
+
+      if (windowConnectionStatus === 'connected') {
+        const message: Bridge.Navigation.NavigateToResourceMessage = {
+          type: 'dashboard/v1/bridge/navigate-to-resource',
+          data: {
+            resourceId: '',
+            resourceType: 'canvas',
+            path: path,
+          },
+        }
+
+        return of(() => sendMessage(message.type, message.data))
+      }
+
+      return projectStore.getOrganizationId().pipe(
+        map((organizationId) => {
+          const isStaging = client.config().apiHost === 'https://api.sanity.work'
+
+          const canvasLinkUrl = `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/${path}`
+          return () => window.open(canvasLinkUrl, '_blank')
+        }),
+      )
+    }
+
+    return combineLatest([
+      canvasPreflight({client, document, schemaId}),
+      getNavigateToCanvas(),
     ]).pipe(
-      map(([preflight, canvasLinkUrl]) => {
+      map(([preflight, navigateToCanvas]) => {
         if (!preflight.error) {
           return {
             status: preflight.diff?.length ? ('diff' as const) : ('redirecting' as const),
             error: null,
-            redirectUrl: canvasLinkUrl,
             response: preflight,
+            navigateToCanvas,
           }
         }
 
@@ -168,11 +187,11 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
           redirectUrl: undefined,
         }
       }),
-      tap(({status, redirectUrl}) => {
+      tap(({status, navigateToCanvas}) => {
         if (status === 'redirecting') {
           setTimeout(() => {
             // We want to give some time for the dialog to show the redirecting text before redirecting the user.
-            window.open(redirectUrl, '_blank')
+            navigateToCanvas()
           }, 1000)
         }
       }),
@@ -183,7 +202,18 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
         })
       }),
     )
-  }, [appIdLoading, client, document, schemaId, studioApp?.appId, workspace.name, projectStore])
+  }, [
+    appIdLoading,
+    renderContext?.name,
+    windowConnectionStatus,
+    studioApp?.appId,
+    document,
+    client,
+    schemaId,
+    workspace.name,
+    projectStore,
+    sendMessage,
+  ])
 
   return useObservable(linkToCanvas$, initialState)
 }

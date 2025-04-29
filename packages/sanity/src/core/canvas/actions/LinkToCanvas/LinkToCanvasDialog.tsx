@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons'
 import {Box, Card, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useCallback, useId} from 'react'
+import {useId} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -20,12 +20,7 @@ export const LinkToCanvasDialog = ({
 }) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const id = useId()
-  const {status, error, redirectUrl, response} = useLinkToCanvas({document})
-
-  const navigateToCanvas = useCallback(() => {
-    // TODO: Use comlink to navigate to canvas
-    window.open(redirectUrl, '_blank')
-  }, [redirectUrl])
+  const {status, error, navigateToCanvas, response} = useLinkToCanvas({document})
 
   return (
     <Dialog

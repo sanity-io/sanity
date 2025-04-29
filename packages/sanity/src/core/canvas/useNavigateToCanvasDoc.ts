@@ -15,7 +15,6 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
   const {value: organizationId} = useProjectOrganizationId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [status, setStatus] = useState<ComlinkStatus>('idle')
-  console.log('status', status)
 
   const {sendMessage} = useWindowConnection<Bridge.Navigation.NavigateToResourceMessage, never>({
     name: SDK_NODE_NAME,
@@ -32,9 +31,9 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
       const message: Bridge.Navigation.NavigateToResourceMessage = {
         type: 'dashboard/v1/bridge/navigate-to-resource',
         data: {
-          resourceId: companionDocId,
+          resourceId: '',
           resourceType: 'canvas',
-          path: `/`,
+          path: `doc/${companionDocId}`,
         },
       }
 
