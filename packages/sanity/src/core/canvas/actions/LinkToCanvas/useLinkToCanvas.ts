@@ -50,7 +50,6 @@ const initialState: UseLinkToCanvasResponse = {
 // Canvas requires vX api version for now
 const CANVAS_CLIENT_CONFIG = {
   apiVersion: 'vX',
-  dataset: 'playground',
 }
 
 const getCanvasLinkUrl = ({
@@ -127,12 +126,19 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     fallbackStudioOrigin:
       workspace.apps?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
   })
+
   const schemaId = useWorkspaceSchemaId()
   const client = useClient(CANVAS_CLIENT_CONFIG)
 
   const linkToCanvas$: Observable<UseLinkToCanvasResponse> = useMemo(() => {
     if (appIdLoading) {
       return of({status: 'validating' as const})
+    }
+    if (!studioApp?.appId) {
+      return of({
+        status: 'error' as const,
+        error: 'Studio app not found, have you deployed it or set the fallbackStudioOrigin?',
+      })
     }
     if (!document?._id) {
       return of({
