@@ -211,7 +211,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The previous document parameter is invalid.',
   /** The text for the tooltip when the "Compare versions" action for a document is disabled */
   'compare-versions.menu-item.disabled-reason':
-    'There is no difference between these versions of the document',
+    'There are no other versions of this document to compare.',
   /** The text for the "Compare versions" action for a document */
   'compare-versions.menu-item.title': 'Compare versions',
   /** The string used to label draft documents */
