@@ -23,9 +23,7 @@
   },
   "plugins": [
     {
-      "type": "node-workspace",
-      "merge": false,
-      "updateAllPackages": true
+      "type": "node-workspace"
     },
     {
       "type": "linked-versions",
