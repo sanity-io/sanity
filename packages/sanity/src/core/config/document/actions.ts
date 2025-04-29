@@ -19,6 +19,10 @@ export interface ActionComponent<ActionProps> {
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
   onComplete: () => void
+  /**
+   * Whether the initial value has been resolved.
+   */
+  initialValueResolved: boolean
 }
 
 /**

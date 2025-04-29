@@ -18,7 +18,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.delete.label': 'Delete',
   /** Label for the "Delete" document action while the document is being deleted */
   'action.delete.running.label': 'Deleting…',
-
+  /** Tooltip when action is disabled because the document is linked to Canvas */
+  'action.disabled-by-canvas.tooltip':
+    'Custom document actions are disabled for documents linked to Canvas',
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
@@ -209,6 +211,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The error message shown when the previous document for comparison could not be extracted from the URL */
   'compare-version.error.invalidPreviousDocumentParam':
     'The previous document parameter is invalid.',
+  /** The text for the tooltip when the "Compare versions" action for a document is disabled */
+  'compare-versions.menu-item.disabled-reason':
+    'There are no other versions of this document to compare.',
   /** The text for the "Compare versions" action for a document */
   'compare-versions.menu-item.title': 'Compare versions',
   /** The string used to label draft documents */

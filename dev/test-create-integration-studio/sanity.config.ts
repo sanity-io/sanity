@@ -3,10 +3,14 @@ import {codeInput} from '@sanity/code-input'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
+import {CustomAction} from './CustomAction'
 import {schemaTypes} from './schema'
 
 const baseConfig = defineConfig({
   plugins: [structureTool(), codeInput()],
+  document: {
+    actions: [CustomAction],
+  },
   projectId: 'ppsg7ml5',
   dataset: 'test',
   schema: {types: schemaTypes},

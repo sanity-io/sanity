@@ -290,6 +290,8 @@ export default async function initSanity(
     print('')
   }
 
+  const isNextJs = detectedFramework?.slug === 'nextjs'
+
   const flags = await prepareFlags()
 
   // We're authenticated, now lets select or create a project (for studios) or org (for core apps)
@@ -313,14 +315,16 @@ export default async function initSanity(
   }
 
   let initNext = false
-  const isNextJs = detectedFramework?.slug === 'nextjs'
   if (isNextJs) {
-    initNext = await prompt.single({
-      type: 'confirm',
-      message:
-        'Would you like to add configuration files for a Sanity project in this Next.js folder?',
-      default: true,
-    })
+    initNext =
+      unattended ||
+      (await prompt.single({
+        type: 'confirm',
+        message:
+          'Would you like to add configuration files for a Sanity project in this Next.js folder?',
+        default: true,
+      }))
+
     trace.log({
       step: 'useDetectedFramework',
       selectedOption: initNext ? 'yes' : 'no',
@@ -750,9 +754,15 @@ export default async function initSanity(
 
     if (isAppTemplate) {
       const client = apiClient({requireUser: true, requireProject: false})
-      const organizations = await client.request({uri: '/organizations'})
+      const organizations = await client.request({
+        uri: '/organizations',
+        query: {
+          includeMembers: 'true',
+          includeImplicitMemberships: 'true',
+        },
+      })
 
-      const appOrganizationId = await getOrganizationId(organizations)
+      const appOrganizationId = await getOrganizationIdForAppTemplate(organizations)
 
       return {
         projectId: '',
@@ -1223,12 +1233,15 @@ export default async function initSanity(
 
     if (unattended) {
       debug('Unattended mode, validating required options')
-      const requiredForUnattended = ['dataset', 'output-path'] as const
-      requiredForUnattended.forEach((flag) => {
-        if (!cliFlags[flag]) {
-          throw new Error(`\`--${flag}\` must be specified in unattended mode`)
-        }
-      })
+
+      if (!cliFlags['dataset' as const]) {
+        throw new Error(`\`--dataset\` must be specified in unattended mode`)
+      }
+
+      // output-path is not used in unattended mode within nextjs
+      if (!isNextJs && !cliFlags['output-path' as const]) {
+        throw new Error(`\`--output-path\` must be specified in unattended mode`)
+      }
 
       if (!cliFlags.project && !createProjectName) {
         throw new Error(
@@ -1298,6 +1311,38 @@ export default async function initSanity(
     spinner.succeed()
 
     return organization
+  }
+
+  async function getOrganizationIdForAppTemplate(organizations: ProjectOrganization[]) {
+    // If the user is using an app template, we don't need to check for attach access
+    const organizationChoices = [
+      ...organizations.map((organization) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
+
+    // If the user only has a single organization, we'll default to that one.
+    const defaultOrganizationId =
+      organizations.length === 1
+        ? organizations[0].id
+        : organizations.find((org) => org.name === user?.name)?.id
+
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
+
+    if (chosenOrg === '-new-') {
+      return createOrganization().then((org) => org.id)
+    }
+
+    return chosenOrg || undefined
   }
 
   async function getOrganizationId(organizations: ProjectOrganization[]) {

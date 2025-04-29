@@ -30,7 +30,7 @@ export function PlaceholderText(props: Props) {
       return <ReadOnlyIcon />
     }
 
-    if ((hoveringFiles && rejectedFilesCount > 0) || !directUploads) {
+    if ((hoveringFiles && rejectedFilesCount > 0) || directUploads === false) {
       return <AccessDeniedIcon />
     }
 
@@ -38,7 +38,7 @@ export function PlaceholderText(props: Props) {
   }, [directUploads, hoveringFiles, isFileType, readOnly, rejectedFilesCount])
 
   const messageText = useMemo(() => {
-    if (!directUploads) {
+    if (directUploads === false) {
       return t('inputs.files.common.placeholder.upload-not-supported')
     }
 

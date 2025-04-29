@@ -159,10 +159,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
-      const seeingHistoryDocument = revisionId !== null
+      const seeingHistoryDocument = Boolean(params.rev)
       return seeingHistoryDocument || isDeleting || isDeleted
     },
-    [getIsDeleted, isDeleting, revisionId],
+    [getIsDeleted, isDeleting, params.rev],
   )
 
   const getDisplayed = useCallback(

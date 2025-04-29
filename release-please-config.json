@@ -1,7 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "495035dad4e5391a180b0b0a02f9b5ba8fb2b728",
+  "release-type": "node",
+  "separate-pull-requests": false,
+  "draft-pull-request": true,
+  "always-update": true,
+  "include-component-in-tag": false,
   "packages": {
+    "packages/@repo/package.bundle": {"component": "package.bundle"},
     "packages/@sanity/cli": {"component": "cli"},
     "packages/@sanity/codegen": {"component": "codegen"},
     "packages/@sanity/diff": {"component": "diff"},
@@ -16,11 +22,16 @@
     "packages/sanity": {"component": "sanity"}
   },
   "plugins": [
-    "node-workspace",
+    {
+      "type": "node-workspace",
+      "merge": false,
+      "updateAllPackages": true
+    },
     {
       "type": "linked-versions",
-      "groupName": "studio",
+      "groupName": "Studio packages",
       "components": [
+        "package.bundle",
         "cli",
         "codegen",
         "diff",
@@ -35,6 +46,5 @@
         "sanity"
       ]
     }
-  ],
-  "separate-pull-requests": false
+  ]
 }

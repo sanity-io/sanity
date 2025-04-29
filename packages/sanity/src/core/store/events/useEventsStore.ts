@@ -43,7 +43,7 @@ export function useEventsStore({
 }: {
   documentId: string
   documentType: string
-  rev?: string | '@lastEdited'
+  rev?: string | '@lastEdited' | '@lastPublished'
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
@@ -101,6 +101,16 @@ export function useEventsStore({
       if (releaseEvent) return releaseEvent.id
       if (events.length > 0 && !loading) eventsStore.loadMoreEvents()
     }
+
+    if (!rev) {
+      const [lastEvent] = events
+
+      // if the most recent event was a publish, use that event as the revision
+      if (lastEvent && isPublishDocumentVersionEvent(lastEvent)) {
+        return lastEvent.id
+      }
+    }
+
     return rev
   }, [events, rev, eventsStore, loading])
 
@@ -185,7 +195,7 @@ export function useEventsStore({
   const findRangeForSince = useCallback(
     (nextSince: string): [string | null, string | null] => {
       if (!events) return [null, null]
-      if (!revisionId) return [nextSince, null]
+      if (!rev || !revisionId) return [nextSince, null]
       const revisionIndex = events.findIndex((event) => event.id === revisionId)
       const sinceIndex = events.findIndex((event) => event.id === nextSince)
       if (sinceIndex === -1 || revisionIndex === -1) return [nextSince, null]
@@ -193,7 +203,7 @@ export function useEventsStore({
       if (sinceIndex === revisionIndex) return [nextSince, null]
       return [nextSince, revisionId]
     },
-    [events, revisionId],
+    [events, rev, revisionId],
   )
 
   return {

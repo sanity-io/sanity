@@ -56,9 +56,6 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     process.exit(1)
   }
 
-  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand})
-  maybeFixMissingWindowsEnvVar()
-
   // Check if there are updates available for the CLI, and notify if there is
   await runUpdateCheck({pkg, cwd, workDir}).notify()
 
@@ -67,10 +64,19 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   // Try to figure out if we're in a v2 or v3 context by finding a config
   debug(`Reading CLI config from "${workDir}"`)
-  const cliConfig = await getCliConfig(workDir, {forked: true})
+  let cliConfig = await getCliConfig(workDir, {forked: true})
   if (!cliConfig) {
     debug('No CLI config found')
   }
+
+  // Figure out if the app is a studio or an app from the CLI config
+  const isApp = Boolean(cliConfig && 'app' in cliConfig)
+  // Load the environment variables from
+  loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand, isApp})
+  maybeFixMissingWindowsEnvVar()
+
+  // Reload the the cli config so env vars can work.
+  cliConfig = await getCliConfig(workDir, {forked: true})
 
   const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore<TelemetryUserProperties>({
     projectId: cliConfig?.config?.api?.projectId,
@@ -274,7 +280,15 @@ function warnOnNonProductionEnvironment(): void {
   )
 }
 
-function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: string}) {
+function loadAndSetEnvFromDotEnvFiles({
+  workDir,
+  cmd,
+  isApp,
+}: {
+  workDir: string
+  cmd: string
+  isApp: boolean
+}) {
   /* eslint-disable no-process-env */
 
   // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
@@ -309,7 +323,7 @@ function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: str
 
   debug('Loading environment files using %s mode', mode)
 
-  const studioEnv = loadEnv(mode, workDir, ['SANITY_STUDIO_'])
+  const studioEnv = loadEnv(mode, workDir, [isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
   /* eslint-disable no-process-env */
 }

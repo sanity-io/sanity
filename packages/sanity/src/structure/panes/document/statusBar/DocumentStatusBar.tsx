@@ -10,8 +10,10 @@ import {
   useSanityCreateConfig,
 } from 'sanity'
 
+import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'
 import {DocumentBadges} from './DocumentBadges'
@@ -31,13 +33,14 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, revisionId, onChange: onDocumentChange} = useDocumentPane()
+  const {editState, onChange: onDocumentChange} = useDocumentPane()
+  const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective} = usePerspective()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
-  const showingRevision = Boolean(revisionId)
+  const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 

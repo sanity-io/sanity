@@ -24,13 +24,13 @@ export function App() {
   }
 
   return (
-    <SanityApp config={sanityConfigs} fallback={<Loading />}>
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <SanityApp config={sanityConfigs} fallback={<Loading />}>
         {/* add your own components here! */}
         <ExampleComponent />
-      </ThemeProvider>
-    </SanityApp>
-  )
+      </SanityApp>
+    </ThemeProvider>
+  );
 }
 
 export default App
