@@ -18,10 +18,7 @@ export interface Action<Args, Description> {
 
 /** @internal */
 export interface RenderActionCollectionProps {
-  actions: Action<
-    DocumentActionProps,
-    DocumentActionDescription & {action: DocumentActionComponent['action']}
-  >[]
+  actions: Action<DocumentActionProps, DocumentActionDescription>[]
   actionProps: Omit<DocumentActionProps, 'onComplete'>
   children: (props: {states: DocumentActionDescription[]}) => ReactNode
   onActionComplete?: () => void
@@ -61,6 +58,9 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
   'duplicate',
   'publish',
   'unpublish',
+  'unlinkFromCanvas',
+  'editInCanvas',
+  'linkToCanvas',
 ]
 
 interface ActionsGuardWrapperProps {
@@ -90,7 +90,7 @@ const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {
       })
     }
     return children({states})
-  }, [children, states, t])
+  }, [children, states, t, isLinked])
 
   return result
 }

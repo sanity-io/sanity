@@ -6,6 +6,7 @@ import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/c
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
+  type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
   type PluginOptions,
   type SingleWorkspace,
@@ -22,7 +23,7 @@ const defaultPlugins = [
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
-  features: WorkspaceOptions['features']
+  apps: AppsOptions
 }
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
@@ -38,7 +39,7 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
       return options.releases.enabled
     }
     if (plugin.name === CANVAS_INTEGRATION_NAME) {
-      return options.features?.canvas?.enabled ?? false
+      return options.apps?.canvas?.enabled ?? false
     }
     return true
   })
@@ -64,10 +65,11 @@ export function getDefaultPluginsOptions(
       ...workspace.releases,
       enabled: workspace.releases?.enabled ?? true,
     },
-    features: {
+    apps: {
       canvas: {
-        ...workspace.features?.canvas,
-        enabled: workspace.features?.canvas?.enabled ?? false,
+        // By default canvas app is enabled
+        enabled: true,
+        ...workspace.apps?.canvas,
       },
     },
   }

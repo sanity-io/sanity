@@ -26,7 +26,7 @@ export default defineConfig([
     name: 'playground',
     basePath: '/playground',
     apiHost: 'https://api.sanity.work',
-    features: {
+    apps: {
       canvas: {
         enabled: true,
         fallbackStudioOrigin: 'canvas-integration-staging.sanity.studio',

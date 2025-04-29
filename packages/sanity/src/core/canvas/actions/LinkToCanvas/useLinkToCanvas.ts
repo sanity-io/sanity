@@ -125,7 +125,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
     fallbackStudioOrigin:
-      workspace.features?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
+      workspace.apps?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
   })
   const schemaId = useWorkspaceSchemaId()
   const client = useClient(CANVAS_CLIENT_CONFIG)
