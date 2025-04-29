@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.86.2](https://github.com/sanity-io/sanity/compare/v3.86.1...v3.86.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* **cli:** allow selecting orgs with implicit membership for new apps ([#9287](https://github.com/sanity-io/sanity/issues/9287)) ([fc1eb2f](https://github.com/sanity-io/sanity/commit/fc1eb2fcfcf434c72b9d945bcf8bbd2e031444a1))
+* **cli:** fixes app template for sanity ui ([#9286](https://github.com/sanity-io/sanity/issues/9286)) ([dcdc7c0](https://github.com/sanity-io/sanity/commit/dcdc7c0906fd8a7081a4051f9fe04ca684174f6f))
+* **deps:** update dependency @sanity/client to ^6.29.1 ([#9281](https://github.com/sanity-io/sanity/issues/9281)) ([6c5dc7f](https://github.com/sanity-io/sanity/commit/6c5dc7f353688e4413b5b4ff9e891d187ece1e69))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/util bumped to 3.86.2
+  * devDependencies
+    * @sanity/types bumped to 3.86.2
+
 ## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
 
 

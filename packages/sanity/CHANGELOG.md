@@ -1,5 +1,39 @@
 # Changelog
 
+## [3.87.0](https://github.com/sanity-io/sanity/compare/v3.86.1...v3.87.0) (2025-04-29)
+
+
+### Features
+
+* **cli:** add auto updates for app builds ([#9226](https://github.com/sanity-io/sanity/issues/9226)) ([8aaafb6](https://github.com/sanity-io/sanity/commit/8aaafb60a436f07a26141cee37d106a6677f5616))
+* **core:** add `useProjectOrganizationId` hook ([#9288](https://github.com/sanity-io/sanity/issues/9288)) ([6f4bb67](https://github.com/sanity-io/sanity/commit/6f4bb6705e6d04b8f4b0c37c5d6f76a6796c2e2e))
+* **structure:** add actions.action value to actions states ([#9290](https://github.com/sanity-io/sanity/issues/9290)) ([bab5a98](https://github.com/sanity-io/sanity/commit/bab5a98efbb930398a2523c20a52fcccabe90906))
+* **structure:** adds `initialValueResolved` to DocumentActionProps ([#9291](https://github.com/sanity-io/sanity/issues/9291)) ([eab858b](https://github.com/sanity-io/sanity/commit/eab858be48e971bd6f42d8cc08546b3385a9a92a))
+
+
+### Bug Fixes
+
+* **core:** remove `renderEditable` from PTE inputs again ([d349183](https://github.com/sanity-io/sanity/commit/d349183734fd56476fa33e7db169ee0e585830a5))
+* **deps:** update dependency @portabletext/block-tools to ^1.1.20 ([#9259](https://github.com/sanity-io/sanity/issues/9259)) ([95ae654](https://github.com/sanity-io/sanity/commit/95ae654f7f95ae59e115a6708be7f79d0bf36529))
+* **deps:** update dependency @portabletext/block-tools to ^1.1.21 ([#9278](https://github.com/sanity-io/sanity/issues/9278)) ([9557eef](https://github.com/sanity-io/sanity/commit/9557eef7a1aff47624eb7103cee5d5a21715f4fc))
+* **deps:** update dependency @portabletext/editor to ^1.47.15 ([#9279](https://github.com/sanity-io/sanity/issues/9279)) ([b0c9cc3](https://github.com/sanity-io/sanity/commit/b0c9cc369c04f8c5bc50b682860fa4f5ac05ebbd))
+* **deps:** update dependency @portabletext/editor to ^1.48.0 ([#9293](https://github.com/sanity-io/sanity/issues/9293)) ([bfbc7a1](https://github.com/sanity-io/sanity/commit/bfbc7a1c499bc8cef5211da86df70f09f21cc405))
+* **deps:** update dependency @sanity/client to ^6.29.1 ([#9281](https://github.com/sanity-io/sanity/issues/9281)) ([6c5dc7f](https://github.com/sanity-io/sanity/commit/6c5dc7f353688e4413b5b4ff9e891d187ece1e69))
+* unpublished references fail validation ([#9215](https://github.com/sanity-io/sanity/issues/9215)) ([2f5f6ed](https://github.com/sanity-io/sanity/commit/2f5f6edd26efe121174154ad9fc1d472e66e7e0f))
+* when no draft exists and last event was version pub, find the appropriate event ([#9277](https://github.com/sanity-io/sanity/issues/9277)) ([de1745e](https://github.com/sanity-io/sanity/commit/de1745ed74f93e3ea257a720602f9c828a1e4ce3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @sanity/cli bumped to 3.86.2
+    * @sanity/migrate bumped to 3.86.2
+    * @sanity/mutator bumped to 3.86.2
+    * @sanity/schema bumped to 3.86.2
+    * @sanity/types bumped to 3.86.2
+    * @sanity/util bumped to 3.86.2
+
 ## [3.86.1](https://github.com/sanity-io/sanity/compare/v3.86.0...v3.86.1) (2025-04-23)
 
 
