@@ -27,8 +27,12 @@ function isPackageManifest(item: unknown): item is PartialPackageManifest {
  * @param filePath - Path to package.json to read
  * @returns The parsed package.json
  */
-async function readPackageJson(filePath: string): Promise<PackageJson> {
-  return JSON.parse(await readFile(filePath, 'utf8'))
+export async function readPackageJson(filePath: string): Promise<PackageJson> {
+  try {
+    return JSON.parse(await readFile(filePath, 'utf8'))
+  } catch (err) {
+    throw new Error(`Failed to read "${filePath}": ${err.message}`)
+  }
 }
 /**
  * Read the `package.json` file at the given path and return an object that guarantees
