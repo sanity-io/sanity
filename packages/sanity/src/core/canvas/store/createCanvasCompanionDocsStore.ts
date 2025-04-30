@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, retry, shareReplay, startWith} from 'rxjs'
+import {catchError, map, type Observable, of, retry, shareReplay, startWith, timer} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
@@ -38,22 +38,30 @@ const getCompanionDocs = memoize(
 
     const getCompanionDoc$ = (id: string) =>
       client.observable
-        .fetch<CompanionDoc>(
+        .fetch<CompanionDoc | null>(
           `*[_id == $id][0]{ _id, canvasDocumentId, studioDocumentId}`,
           {id},
-          {tag: 'canvas-document-layout.companion-docs'},
+          {tag: 'canvas.companion-docs'},
         )
         .pipe(
           map((response) => {
-            if (!response._id) {
-              // This will be caught by the retry operator below
+            if (!response?._id) {
               // In some race scenarios we can get the response in the listener before the document is available to be fetched.
-              // this is a workaround to retry the request until the document is available, we know it should be available because the listener got it
+              // This will only retry "not ready" errors, other errors will be propagated immediately
               throw new Error('Companion doc not ready')
             }
             return response
           }),
-          retry({count: 2, delay: 1000}),
+          retry({
+            count: 2,
+            delay: (error) => {
+              if (error instanceof Error && error.message === 'Companion doc not ready') {
+                return timer(1000)
+              }
+
+              throw error
+            },
+          }),
         )
 
     return companionDocsIdsListener$(publishedId).pipe(
@@ -68,6 +76,15 @@ const getCompanionDocs = memoize(
   (publishedId, client) => `${publishedId}-${client.config().dataset}-${client.config().projectId}`,
 )
 
+/**
+ * This store is used to get the companion docs for a given document bundle.
+ * It uses the published id of the document and it sets up a listener `companionDocsIdsListener$` for document with type `sanity.canvas.link`
+ * that have a `studioDocumentId` in the published, draft or version path of the document.
+ *
+ * This listener doesn't get the full document, it gets only the ids, so the subsequent request `getCompanionDoc$` is the one that handles
+ * fetching the data for that companion doc obtained from the listener.
+ *
+ */
 export function createCanvasCompanionDocsStore({
   client,
   previewStore,
