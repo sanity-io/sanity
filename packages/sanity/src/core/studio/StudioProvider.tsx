@@ -29,7 +29,6 @@ import {
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
-import {SDKAppProvider} from './StudioSDKAppProvider'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
@@ -73,11 +72,9 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <SDKAppProvider>
-                  <StudioAnnouncementsProvider>
-                    <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
-                  </StudioAnnouncementsProvider>
-                </SDKAppProvider>
+                <StudioAnnouncementsProvider>
+                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                </StudioAnnouncementsProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>

@@ -59,8 +59,6 @@ const CANVAS_CLIENT_CONFIG = {
   apiVersion: 'v2025-04-29',
 }
 
-const localSettings = Intl.DateTimeFormat().resolvedOptions()
-
 const canvasPreflight = ({
   client,
   document,
