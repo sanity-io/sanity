@@ -8,7 +8,6 @@ import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStor
 import {useClient} from '../../../hooks/useClient'
 import {useProjectStore} from '../../../store/_legacy/datastores'
 import {type ProjectStore} from '../../../store/_legacy/project/types'
-import {useSource} from '../../../studio/source'
 import {useWorkspace} from '../../../studio/workspace'
 
 interface CanvasResponse {
@@ -119,11 +118,9 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const workspace = useWorkspace()
   const projectStore = useProjectStore()
 
-  const {beta} = useSource()
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
-    fallbackStudioOrigin:
-      workspace.apps?.canvas?.fallbackStudioOrigin || beta?.create?.fallbackStudioOrigin,
+    fallbackStudioOrigin: workspace.apps?.canvas?.fallbackStudioOrigin,
   })
 
   const schemaId = useWorkspaceSchemaId()

@@ -721,7 +721,7 @@ function resolveSource({
       },
       create: {
         startInCreateEnabled: false,
-        fallbackStudioOrigin: config.beta?.create?.fallbackStudioOrigin,
+        fallbackStudioOrigin: undefined,
       },
     },
     // eslint-disable-next-line camelcase
