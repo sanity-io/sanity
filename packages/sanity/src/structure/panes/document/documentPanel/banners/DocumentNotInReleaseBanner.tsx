@@ -23,14 +23,16 @@ type VersionCreateState = {
   lastUpdate: Date
 }
 
-export function AddToReleaseBanner({
+export function DocumentNotInReleaseBanner({
   documentId,
   currentRelease,
   value,
+  isScheduledRelease,
 }: {
   documentId: string
   currentRelease: ReleaseDocument
   value?: Record<string, unknown>
+  isScheduledRelease?: boolean
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -98,13 +100,18 @@ export function AddToReleaseBanner({
           />
         </Text>
       }
-      action={{
-        text: t('banners.release.action.add-to-release'),
-        tone: tone,
-        disabled: Boolean(versionCreateState),
-        onClick: handleAddToRelease,
-        mode: 'default',
-      }}
+      // Adding to a scheduled release is not allowed
+      action={
+        isScheduledRelease
+          ? undefined
+          : {
+              text: t('banners.release.action.add-to-release'),
+              tone: tone,
+              disabled: Boolean(versionCreateState),
+              onClick: handleAddToRelease,
+              mode: 'default',
+            }
+      }
     />
   )
 }
