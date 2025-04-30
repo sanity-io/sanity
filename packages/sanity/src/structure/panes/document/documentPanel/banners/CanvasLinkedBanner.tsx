@@ -1,6 +1,6 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useCallback, useRef, useState} from 'react'
 import {useCanvasCompanionDoc, useNavigateToCanvasDoc, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -21,10 +21,13 @@ const CANVAS_IMAGE_URL =
   'https://cdn.sanity.io/images/pyrmmpch/production/b47224e2f3a7d1747e43b9da1ac31739250e628b-632x376.png'
 
 const CANVAS_APP_NAME = 'Canvas'
-const CanvasPopoverContent = () => {
+const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
   const {t} = useTranslation(structureLocaleNamespace)
+  const ref = useRef<HTMLDivElement | null>(null)
+  useClickOutsideEvent(onClose, () => [ref.current])
+
   return (
-    <Card radius={3} overflow={'hidden'} width={0}>
+    <Card radius={3} overflow={'hidden'} width={0} ref={ref}>
       <Container width={0}>
         <Image src={CANVAS_IMAGE_URL} alt={'Canvas'} />
         <Flex paddingX={4} paddingBottom={4} paddingTop={3} direction={'column'}>
@@ -65,7 +68,7 @@ const CanvasLinkedBannerContent = () => {
   const [open, setOpen] = useState(false)
 
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
-
+  const onClose = useCallback(() => setOpen(false), [])
   return (
     <Flex align={'center'} gap={2}>
       <Text size={1} weight="medium">
@@ -77,7 +80,7 @@ const CanvasLinkedBannerContent = () => {
         tone="default"
         portal
         placement="bottom-start"
-        content={<CanvasPopoverContent />}
+        content={<CanvasPopoverContent onClose={onClose} />}
       >
         <Button
           tooltipProps={null}
