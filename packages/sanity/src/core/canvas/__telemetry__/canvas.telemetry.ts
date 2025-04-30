@@ -31,13 +31,13 @@ export const CanvasLinkDialogRejected = defineEvent<{
 }>({
   name: 'Canvas Link Dialog Rejected',
   version: 1,
-  description: 'The user rejects the diffs shown in the dialog',
+  description: 'User clicked "Cancel" in the "Link to Canvas" dialog after seeing the diffs',
 })
 
 export const CanvasUnlinkCtaClicked = defineEvent({
   name: 'Canvas Unlink CTA Clicked',
   version: 1,
-  description: 'The Unlink action was clicked',
+  description: 'User clicked "Unlink" action',
 })
 
 export const CanvasUnlinkApproved = defineEvent({
