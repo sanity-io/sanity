@@ -22,8 +22,9 @@ export default defineConfig([
     title: 'Fallback origin',
     name: 'fallback',
     basePath: '/fallback',
-    beta: {
-      create: {
+    apps: {
+      canvas: {
+        enabled: true,
         fallbackStudioOrigin: 'create-integration-test.sanity.studio',
       },
     },
@@ -39,8 +40,9 @@ export default defineConfig([
     title: 'Invalid fallback origin',
     name: 'invalid-fallback',
     basePath: '/invalid-fallback',
-    beta: {
-      create: {
+    apps: {
+      canvas: {
+        enabled: true,
         fallbackStudioOrigin: 'does-not-exist',
       },
     },
@@ -50,11 +52,6 @@ export default defineConfig([
     title: 'Opt out',
     name: 'opt-out',
     basePath: '/opt-out',
-    beta: {
-      create: {
-        startInCreateEnabled: false,
-      },
-    },
     apps: {
       canvas: {
         enabled: false,

@@ -33,6 +33,8 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
       setTimeout(() => {
         handleCloseDialog()
         setStatus('idle')
+        // This is an arbitrary delay to ensure the user sees the success state
+        // The motivation is to delay the dialog close to ensure the user sees the success state, given the unlink action is too fast.
       }, 1000)
     } catch (e) {
       console.error(e)

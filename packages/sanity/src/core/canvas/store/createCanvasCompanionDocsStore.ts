@@ -81,9 +81,10 @@ const getCompanionDocs = memoize(
  * It uses the published id of the document and it sets up a listener `companionDocsIdsListener$` for document with type `sanity.canvas.link`
  * that have a `studioDocumentId` in the published, draft or version path of the document.
  *
- * This listener doesn't get the full document, it gets only the ids, so the subsequent request `getCompanionDoc$` is the one that handles
+ * The mentioned listener doesn't get the full document, it gets only the ids, so the subsequent request `getCompanionDoc$` is the one that handles
  * fetching the data for that companion doc obtained from the listener.
  *
+ * The value is memoized based on the publishedId and the client config, ensuring that using the same publishedId and client config will return the same observable and won't start multiple listeners.
  */
 export function createCanvasCompanionDocsStore({
   client,

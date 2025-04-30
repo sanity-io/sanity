@@ -19,6 +19,7 @@ const buildDocumentForDiffInput = (document: Partial<SanityDocument>) => {
 /**
  * Compares two documents with the same schema type.
  * Showing the changes introduced by the document compared to the base document.
+ * Use with caution, this component is not optimized for performance if the document is live synced. Use it with snapshots of the document instead.
  */
 export function DocumentDiff({
   baseDocument,
