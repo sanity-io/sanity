@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useId} from 'react'
 
@@ -89,22 +89,6 @@ export const UnlinkFromCanvasDialog = ({
                 <Text size={1} weight="medium">
                   {error || t('dialog.unlink-from-canvas.error')}
                 </Text>
-              </Card>
-            </motion.div>
-          )}
-          {status === 'success' && (
-            <motion.div
-              key={'success'}
-              initial={{opacity: 0, scale: 0.9}}
-              animate={{opacity: 1, scale: 1}}
-              transition={{duration: 0.2, delay: 0.2}}
-            >
-              <Card tone="positive" padding={2} radius={3}>
-                <Flex padding={2} align={'center'}>
-                  <Text size={1} weight="medium">
-                    {t('dialog.unlink-from-canvas.success')}
-                  </Text>
-                </Flex>
               </Card>
             </motion.div>
           )}

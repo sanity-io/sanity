@@ -1,4 +1,5 @@
 import {UnlinkIcon} from '@sanity/icons'
+import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {
@@ -18,8 +19,8 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
   const handleOpenDialog = useCallback(() => setIsDialogOpen(true), [])
-  const [status, setStatus] = useState<'loading' | 'error' | 'success' | 'idle'>('idle')
-
+  const [status, setStatus] = useState<'loading' | 'error' | 'idle'>('idle')
+  const toast = useToast()
   const [error, setError] = useState<string | null>(null)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const handleUnlink = useCallback(async () => {
@@ -29,19 +30,18 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
         throw new Error('Companion doc not found')
       }
       await client.delete(companionDoc?._id)
-      setStatus('success')
-      setTimeout(() => {
-        handleCloseDialog()
-        setStatus('idle')
-        // This is an arbitrary delay to ensure the user sees the success state
-        // The motivation is to delay the dialog close to ensure the user sees the success state, given the unlink action is too fast.
-      }, 1000)
+      setStatus('idle')
+      handleCloseDialog()
+      toast.push({
+        status: 'success',
+        title: t('dialog.unlink-from-canvas.success'),
+      })
     } catch (e) {
       console.error(e)
       setError(e.message)
       setStatus('error')
     }
-  }, [client, companionDoc?._id, handleCloseDialog])
+  }, [client, companionDoc?._id, handleCloseDialog, t, toast])
 
   const document = props.version || props.draft || props.published
   if (!document) return null
