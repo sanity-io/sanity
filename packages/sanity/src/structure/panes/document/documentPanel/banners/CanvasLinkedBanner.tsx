@@ -1,7 +1,7 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
-import {useCanvasCompanionDoc, useNavigateToCanvasDoc, useTranslation} from 'sanity'
+import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCanvasCompanionDoc, useNavigateToCanvasDoc, usePerspective, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../ui-components'
@@ -67,12 +67,22 @@ const CanvasLinkedBannerContent = () => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
 
+  const {selectedPerspective} = usePerspective()
+
+  const isPublished = selectedPerspective === 'published'
+
+  const variantText = useMemo(() => {
+    if (isPublished) return t('canvas.banner.linked-text.published')
+    if (selectedPerspective === 'drafts') return t('canvas.banner.linked-text.draft')
+    return t('canvas.banner.linked-text.version')
+  }, [isPublished, selectedPerspective, t])
+
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
   const onClose = useCallback(() => setOpen(false), [])
   return (
     <Flex align={'center'} gap={2}>
       <Text size={1} weight="medium">
-        {t('canvas.banner.linked-text')}
+        {variantText}
       </Text>
       <Popover
         open={open}

@@ -39,13 +39,13 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const [formValue, setFormValue] = useState<SanityDocument | undefined>()
 
   const handleOpenDialog = useCallback(() => {
-    setIsDialogOpen(true)
     const value = getFormValue([]) as SanityDocument
     setFormValue({
       ...value,
-      _id: selectedPerspective === 'published' ? getPublishedId(value._id) : getDraftId(value._id),
+      _id: props.liveEditSchemaType ? getPublishedId(value._id) : getDraftId(value._id),
     })
-  }, [getFormValue, selectedPerspective])
+    setIsDialogOpen(true)
+  }, [getFormValue, props.liveEditSchemaType])
 
   const disabled = useMemo(() => {
     if (!isInDashboard) {
@@ -79,12 +79,13 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   return {
     disabled: disabled.disabled,
     icon: ComposeSparklesIcon,
-    dialog: isDialogOpen
-      ? {
-          type: 'custom',
-          component: <LinkToCanvasDialog onClose={handleCloseDialog} document={formValue} />,
-        }
-      : undefined,
+    dialog:
+      isDialogOpen && formValue
+        ? {
+            type: 'custom',
+            component: <LinkToCanvasDialog onClose={handleCloseDialog} document={formValue} />,
+          }
+        : undefined,
     label: t('action.link-document'),
     title: disabled.reason,
     onHandle: handleOpenDialog,

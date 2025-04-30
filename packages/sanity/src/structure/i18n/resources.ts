@@ -194,8 +194,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
-  /** The text for the canvas linked banner */
-  'canvas.banner.linked-text': 'This document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a draft */
+  'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a live document */
+  'canvas.banner.linked-text.published': 'This live document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a version document */
+  'canvas.banner.linked-text.version': 'This version document is linked to Canvas',
   /** The text for the canvas linked banner popover button */
   'canvas.banner.popover-button-text': 'Learn more',
   /** The description for the canvas linked banner popover */
