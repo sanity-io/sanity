@@ -155,7 +155,7 @@ function createStoreWorkspaceSchema(args: {
       const storedWorkspaceSchema: StoredWorkspaceSchema = {
         _type: SANITY_WORKSPACE_SCHEMA_TYPE,
         _id: id,
-        version: 2,
+        version: '2025-05-01',
         workspace,
         // we have to stringify the schema to save on attribute paths
         schema: JSON.stringify(schema),

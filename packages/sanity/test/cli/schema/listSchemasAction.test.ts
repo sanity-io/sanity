@@ -31,7 +31,7 @@ const workspace3 = testMultiWorkspaceManifest.workspaces[2]
 const validStoredSchema1: StoredWorkspaceSchema = {
   _id: getWorkspaceSchemaId({workspaceName: workspace1.name}).safeId,
   _type: 'sanity.workspace.schema',
-  version: 2,
+  version: '2025-05-01',
   workspace: workspace1,
   schema: JSON.stringify(testSchema),
   _createdAt: staticDate,
