@@ -11,6 +11,8 @@ import {useProjectStore} from '../../../store/_legacy/datastores'
 import {type ProjectStore} from '../../../store/_legacy/project/types'
 import {useWorkspace} from '../../../studio/workspace'
 
+const localeSettings = Intl.DateTimeFormat().resolvedOptions()
+
 interface CanvasResponse {
   error?: string
   originalDocument?: SanityDocument
@@ -84,8 +86,6 @@ const getCanvasLinkUrl = ({
   )
 }
 
-const localSettings = Intl.DateTimeFormat().resolvedOptions()
-
 const canvasPreflight = ({
   client,
   document,
@@ -104,8 +104,8 @@ const canvasPreflight = ({
       document,
       schemaId,
       localeSettings: {
-        locale: localSettings.locale,
-        timeZone: localSettings.timeZone,
+        locale: localeSettings.locale,
+        timeZone: localeSettings.timeZone,
       },
     } satisfies StudioToCanvasRequestBody,
   })
