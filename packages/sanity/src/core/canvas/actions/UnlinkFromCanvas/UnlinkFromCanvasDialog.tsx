@@ -36,6 +36,7 @@ export const UnlinkFromCanvasDialog = ({
   handleUnlink: () => void
 }) => {
   const {t} = useTranslation(canvasLocaleNamespace)
+  const {t: coreT} = useTranslation()
   const {title} = useDocumentTitle({document})
   const id = useId()
 
@@ -67,7 +68,7 @@ export const UnlinkFromCanvasDialog = ({
               <Translate
                 t={t}
                 i18nKey="dialog.unlink-from-canvas.unlinking"
-                values={{documentTitle: title || 'Untitled'}}
+                values={{documentTitle: title || coreT('preview.default.title-fallback')}}
               />
             </Text>
           </Box>
