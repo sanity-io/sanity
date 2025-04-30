@@ -170,7 +170,10 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
       }),
       tap(({status, redirectUrl}) => {
         if (status === 'redirecting') {
-          window.open(redirectUrl, '_blank')
+          setTimeout(() => {
+            // We want to give some time for the dialog to show the redirecting text before redirecting the user.
+            window.open(redirectUrl, '_blank')
+          }, 1000)
         }
       }),
       catchError((error) => {
