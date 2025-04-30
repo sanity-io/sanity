@@ -3,3 +3,10 @@ export interface CompanionDoc {
   canvasDocumentId: string
   studioDocumentId: string
 }
+
+export interface CanvasDiff {
+  indexedPath: string[]
+  prevValue: unknown
+  value: unknown
+  type: string
+}

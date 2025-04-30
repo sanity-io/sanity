@@ -27,9 +27,9 @@ export const LinkToCanvasDialog = ({
   const handleClose = useCallback(() => {
     onClose()
     if (status === 'diff') {
-      linkDialogRejected()
+      linkDialogRejected(response?.diff || [])
     }
-  }, [onClose, linkDialogRejected, status])
+  }, [onClose, linkDialogRejected, status, response?.diff])
 
   return (
     <Dialog

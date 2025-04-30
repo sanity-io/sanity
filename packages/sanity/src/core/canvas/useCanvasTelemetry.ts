@@ -6,18 +6,19 @@ import {
   CanvasLinkDialogDiffsShown,
   CanvasLinkDialogRejected,
   CanvasLinkRedirected,
-  type CanvasLinkRedirectOrigin,
+  type CanvasLinkRedirectOptions,
   CanvasOpened,
   CanvasUnlinkApproved,
   CanvasUnlinkCtaClicked,
   type OpenCanvasOrigin,
 } from './__telemetry__/canvas.telemetry'
+import {type CanvasDiff} from './types'
 
 interface CanvasTelemetryHookValue {
   linkCtaClicked: () => void
-  linkRedirected: (origin: CanvasLinkRedirectOrigin) => void
+  linkRedirected: (options: CanvasLinkRedirectOptions) => void
   linkDialogDiffsShown: () => void
-  linkDialogRejected: () => void
+  linkDialogRejected: (diffs: CanvasDiff[]) => void
   unlinkCtaClicked: () => void
   unlinkApproved: () => void
   canvasOpened: (origin: OpenCanvasOrigin) => void
@@ -30,9 +31,9 @@ export function useCanvasTelemetry(): CanvasTelemetryHookValue {
   return useMemo(
     (): CanvasTelemetryHookValue => ({
       linkCtaClicked: () => telemetry.log(CanvasLinkCtaClicked),
-      linkRedirected: (origin) => telemetry.log(CanvasLinkRedirected, {origin}),
+      linkRedirected: (options) => telemetry.log(CanvasLinkRedirected, options),
       linkDialogDiffsShown: () => telemetry.log(CanvasLinkDialogDiffsShown),
-      linkDialogRejected: () => telemetry.log(CanvasLinkDialogRejected),
+      linkDialogRejected: (diffs: CanvasDiff[]) => telemetry.log(CanvasLinkDialogRejected, {diffs}),
       unlinkCtaClicked: () => telemetry.log(CanvasUnlinkCtaClicked),
       unlinkApproved: () => telemetry.log(CanvasUnlinkApproved),
       canvasOpened: (origin) => telemetry.log(CanvasOpened, {origin}),

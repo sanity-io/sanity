@@ -11,6 +11,7 @@ import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
 import {useComlinkStore, useProjectStore} from '../../../store/_legacy/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useWorkspace} from '../../../studio/workspace'
+import {type CanvasDiff} from '../../types'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 
 const localeSettings = Intl.DateTimeFormat().resolvedOptions()
@@ -20,12 +21,7 @@ interface CanvasResponse {
   originalDocument?: SanityDocument
   mappedDocument?: SanityDocument
   canvasContent?: unknown
-  diff?: {
-    indexedPath: string[]
-    prevValue: unknown
-    value: unknown
-    type: string
-  }[]
+  diff?: CanvasDiff[]
 }
 
 type StudioToCanvasRequestBody = ({documentId: string} | {document: SanityDocument}) & {
@@ -169,7 +165,11 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
             error: null,
             response: preflight,
             navigateToCanvas: () => {
-              linkRedirected(status === 'diff' ? 'diff-dialog' : 'redirect')
+              linkRedirected(
+                status === 'diff'
+                  ? {origin: 'diff-dialog', diffs: preflight.diff || []}
+                  : {origin: 'redirect'},
+              )
               navigateToCanvas()
             },
           }
