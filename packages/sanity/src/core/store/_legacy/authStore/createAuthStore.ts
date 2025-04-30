@@ -30,6 +30,21 @@ const getStorageKey = (projectId: string) => {
   return `__studio_auth_token_${projectId}`
 }
 
+const getTokenFromHash = (projectId: string): string | null => {
+  if (typeof window === 'undefined' || typeof window.location !== 'object') {
+    return null
+  }
+
+  const tokenPattern = /token=([^&]{32,})&?/
+  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
+  if (!tokenParam) {
+    return null
+  }
+
+  saveToken({token: tokenParam, projectId})
+  return tokenParam
+}
+
 const getToken = (projectId: string): string | null => {
   try {
     const item = storage.getItem(getStorageKey(projectId))
@@ -42,7 +57,7 @@ const getToken = (projectId: string): string | null => {
   } catch (err) {
     console.error(err)
   }
-  return null
+  return getTokenFromHash(projectId) || null
 }
 
 const clearToken = (projectId: string): void => {
