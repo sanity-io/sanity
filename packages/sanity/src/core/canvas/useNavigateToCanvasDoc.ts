@@ -12,7 +12,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
  * @hidden
  * @internal
  */
-export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
+export const useNavigateToCanvasDoc = (canvasDocId: string | undefined) => {
   const {value: organizationId} = useProjectOrganizationId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {node} = useComlinkStore()
@@ -20,7 +20,7 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
   const isInDashboard = renderingContext?.name === 'coreUi'
 
   const navigateToCanvas = useCallback(() => {
-    if (!organizationId || !companionDocId) {
+    if (!organizationId || !canvasDocId) {
       return
     }
     // If comlink is connected send the message, otherwise open the url in a new tab
@@ -30,7 +30,7 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
         data: {
           resourceId: '',
           resourceType: 'canvas',
-          path: `doc/${companionDocId}`,
+          path: `doc/${canvasDocId}`,
         },
       }
 
@@ -39,11 +39,11 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
       const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
       window.open(
-        `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/doc/${companionDocId}`,
+        `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/doc/${canvasDocId}`,
         '_blank',
       )
     }
-  }, [organizationId, companionDocId, node, client, isInDashboard])
+  }, [organizationId, canvasDocId, node, client, isInDashboard])
 
   return navigateToCanvas
 }
