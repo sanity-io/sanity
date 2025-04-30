@@ -1,6 +1,6 @@
 import {defineEvent} from '@sanity/telemetry'
 
-import {type CanvasDiff} from '../types'
+export type DiffTypesCount = Record<string, number>
 
 export const CanvasLinkCtaClicked = defineEvent({
   name: 'Canvas Link CTA Clicked',
@@ -8,13 +8,12 @@ export const CanvasLinkCtaClicked = defineEvent({
   description: 'The "Link to Canvas" button is clicked.',
 })
 
-export type CanvasLinkRedirectOptions =
-  | {origin: 'redirect'}
-  | {
-      origin: 'diff-dialog'
-      diffs: CanvasDiff[]
-    }
-export const CanvasLinkRedirected = defineEvent<CanvasLinkRedirectOptions>({
+export type CanvasLinkOrigin = 'redirect' | 'diff-dialog'
+
+export const CanvasLinkRedirected = defineEvent<{
+  origin: CanvasLinkOrigin
+  diffs?: DiffTypesCount
+}>({
   name: 'Canvas Link Redirect',
   version: 1,
   description: 'The user is redirected to the canvas studio-import page',
@@ -27,7 +26,7 @@ export const CanvasLinkDialogDiffsShown = defineEvent({
 })
 
 export const CanvasLinkDialogRejected = defineEvent<{
-  diffs: CanvasDiff[]
+  diffs: DiffTypesCount
 }>({
   name: 'Canvas Link Dialog Rejected',
   version: 1,
