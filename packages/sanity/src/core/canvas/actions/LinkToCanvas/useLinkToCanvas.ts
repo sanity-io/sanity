@@ -6,6 +6,7 @@ import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
+import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
 import {useProjectStore} from '../../../store/_legacy/datastores'
 import {type ProjectStore} from '../../../store/_legacy/project/types'
 import {useWorkspace} from '../../../studio/workspace'
@@ -32,10 +33,7 @@ type StudioToCanvasRequestBody = ({documentId: string} | {document: SanityDocume
     locale: string
   }
 }
-const useWorkspaceSchemaId = () => {
-  const workspace = useWorkspace()
-  return `sanity.workspace.schema.${workspace.name || 'default'}`
-}
+
 interface UseLinkToCanvasResponse {
   status: 'validating' | 'redirecting' | 'error' | 'missing-document-id' | 'diff'
   error?: string | null

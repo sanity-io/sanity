@@ -614,6 +614,7 @@ exports[`exports snapshot 1`] = `
     "useVirtualizerScrollInstance": "function",
     "useWorkspace": "function",
     "useWorkspaceLoader": "function",
+    "useWorkspaceSchemaId": "function",
     "useWorkspaces": "function",
     "useZIndex": "function",
     "userHasRole": "function",
