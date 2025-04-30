@@ -11,7 +11,7 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
 
   /** The text for the "Link to Canvas" action when the document is not in the dashboard. */
   'action.link-document-disabled.not-in-dashboard':
-    'To use this action open this document in Dashboard',
+    'Open this document in Dashboard to link to Canvas',
   /** The text for the "Link to Canvas" action when the document is a version document. */
   'action.link-document-disabled.version-document':
     'Version documents are not yet supported in Canvas',
@@ -59,7 +59,7 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   'dialog.unlink-from-canvas.unlink-action': 'Unlink now',
   /** The text for the "Unlink from Canvas" dialog description. */
   'dialog.unlink-from-canvas.description':
-    'Once unlinked, it will be editable here with current changes and future edits made in Canvas will no longer be automatically mapped to this document.',
+    'Once unlinked, it will be editable here and future edits in Canvas will no longer automatically map to this document.',
   /** The text for the "Unlink from Canvas" dialog success message. */
   'dialog.unlink-from-canvas.success': 'Unlinked from Canvas',
   /** The text for the "Unlink from Canvas" dialog error message. */

@@ -52,7 +52,7 @@ const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
             text={t('canvas.banner.popover-button-text')}
             autoFocus
             tone="primary"
-            href="https://www.sanity.io/docs/canvas"
+            href="https://snty.link/canvas-docs"
             target="_blank"
             rel="noopener noreferrer"
             as="a"

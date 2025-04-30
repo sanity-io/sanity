@@ -44,6 +44,7 @@ export const LinkToCanvasDialog = ({
                 icon: ComposeSparklesIcon,
                 tone: 'default',
                 onClick: navigateToCanvas,
+                space: 2,
               },
               cancelButton: {
                 text: t('dialog.confirm-document-changes.cancel'),
