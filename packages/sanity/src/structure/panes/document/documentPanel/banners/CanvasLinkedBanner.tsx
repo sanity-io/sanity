@@ -110,7 +110,7 @@ export function CanvasLinkedBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
-  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
+  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
 
   if (!companionDoc) return null
 

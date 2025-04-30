@@ -2,12 +2,13 @@ import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons'
 import {Box, Card, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useId} from 'react'
+import {useCallback, useId} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
+import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {LinkToCanvasDiff} from './LinkToCanvasDiff'
 import {useLinkToCanvas} from './useLinkToCanvas'
 
@@ -21,12 +22,20 @@ export const LinkToCanvasDialog = ({
   const {t} = useTranslation(canvasLocaleNamespace)
   const id = useId()
   const {status, error, navigateToCanvas, response} = useLinkToCanvas({document})
+  const {linkDialogRejected} = useCanvasTelemetry()
+
+  const handleClose = useCallback(() => {
+    onClose()
+    if (status === 'diff') {
+      linkDialogRejected()
+    }
+  }, [onClose, linkDialogRejected, status])
 
   return (
     <Dialog
       id={`dialog-link-to-canvas-${id}`}
       header={t('dialog.link-to-canvas.title')}
-      onClose={onClose}
+      onClose={handleClose}
       width={1}
       bodyHeight="stretch"
       padding={false}
