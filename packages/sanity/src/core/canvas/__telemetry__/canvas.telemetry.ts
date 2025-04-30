@@ -14,7 +14,7 @@ export const CanvasLinkRedirected = defineEvent<{
   origin: CanvasLinkOrigin
   diffs?: DiffTypesCount
 }>({
-  name: 'Canvas Link Redirect',
+  name: 'Canvas Link Redirected',
   version: 1,
   description: 'The user is redirected to the canvas studio-import page',
 })
@@ -47,7 +47,7 @@ export const CanvasUnlinkApproved = defineEvent({
 
 export type OpenCanvasOrigin = 'action' | 'banner'
 export const CanvasOpened = defineEvent<{origin: OpenCanvasOrigin}>({
-  name: 'Canvas Opened',
+  name: 'Canvas Opened from studio',
   version: 1,
   description: 'User clicked "Edit in Canvas"',
 })
