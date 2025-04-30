@@ -1,9 +1,10 @@
-import {type Bridge, SDK_CHANNEL_NAME, SDK_NODE_NAME} from '@sanity/message-protocol'
-import {type ComlinkStatus, useWindowConnection} from '@sanity/sdk-react'
-import {useCallback, useState} from 'react'
+import {type Bridge} from '@sanity/message-protocol'
+import {useCallback} from 'react'
 
 import {useClient} from '../hooks/useClient'
+import {useComlinkStore} from '../store/_legacy/datastores'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
+import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 
 /**
@@ -14,20 +15,16 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
   const {value: organizationId} = useProjectOrganizationId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [status, setStatus] = useState<ComlinkStatus>('idle')
-  console.log('status', status)
-  const {sendMessage} = useWindowConnection<Bridge.Navigation.NavigateToResourceMessage, never>({
-    name: SDK_NODE_NAME,
-    connectTo: SDK_CHANNEL_NAME,
-    onStatus: setStatus,
-  })
+  const {node} = useComlinkStore()
+  const renderingContext = useRenderingContext()
+  const isInDashboard = renderingContext?.name === 'coreUi'
 
   const navigateToCanvas = useCallback(() => {
     if (!organizationId || !companionDocId) {
       return
     }
     // If comlink is connected send the message, otherwise open the url in a new tab
-    if (status === 'connected') {
+    if (isInDashboard && node) {
       const message: Bridge.Navigation.NavigateToResourceMessage = {
         type: 'dashboard/v1/bridge/navigate-to-resource',
         data: {
@@ -37,7 +34,7 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
         },
       }
 
-      sendMessage(message.type, message.data)
+      node.post(message.type, message.data)
     } else {
       const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
@@ -46,7 +43,7 @@ export const useNavigateToCanvasDoc = (companionDocId: string | undefined) => {
         '_blank',
       )
     }
-  }, [organizationId, companionDocId, status, sendMessage, client])
+  }, [organizationId, companionDocId, node, client, isInDashboard])
 
   return navigateToCanvas
 }

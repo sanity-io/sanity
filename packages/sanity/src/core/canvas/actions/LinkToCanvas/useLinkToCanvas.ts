@@ -1,6 +1,5 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
-import {type Bridge, SDK_CHANNEL_NAME, SDK_NODE_NAME} from '@sanity/message-protocol'
-import {type ComlinkStatus, useWindowConnection} from '@sanity/sdk-react'
+import {type Bridge} from '@sanity/message-protocol'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
@@ -9,7 +8,7 @@ import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
-import {useProjectStore} from '../../../store/_legacy/datastores'
+import {useComlinkStore, useProjectStore} from '../../../store/_legacy/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useWorkspace} from '../../../studio/workspace'
 
@@ -92,13 +91,8 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const workspace = useWorkspace()
   const projectStore = useProjectStore()
   const renderContext = useRenderingContext()
-  const [windowConnectionStatus, setWindowConnectionStatus] = useState<ComlinkStatus>('idle')
-
-  const {sendMessage} = useWindowConnection<Bridge.Navigation.NavigateToResourceMessage, never>({
-    name: SDK_NODE_NAME,
-    connectTo: SDK_CHANNEL_NAME,
-    onStatus: setWindowConnectionStatus,
-  })
+  const {node} = useComlinkStore()
+  const isInDashboard = renderContext?.name === 'coreUi'
 
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
@@ -110,9 +104,6 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
 
   const linkToCanvas$: Observable<UseLinkToCanvasResponse> = useMemo(() => {
     if (appIdLoading) {
-      return of({status: 'validating'})
-    }
-    if (renderContext?.name === 'coreUi' && windowConnectionStatus !== 'connected') {
       return of({status: 'validating'})
     }
     if (!studioApp?.appId) {
@@ -143,7 +134,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
 
       const path = `studio-import?${queryParams.toString()}`
 
-      if (windowConnectionStatus === 'connected') {
+      if (isInDashboard && node) {
         const message: Bridge.Navigation.NavigateToResourceMessage = {
           type: 'dashboard/v1/bridge/navigate-to-resource',
           data: {
@@ -153,7 +144,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
           },
         }
 
-        return of(() => sendMessage(message.type, message.data))
+        return of(() => node.post(message.type, message.data))
       }
 
       return projectStore.getOrganizationId().pipe(
@@ -204,15 +195,14 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     )
   }, [
     appIdLoading,
-    renderContext?.name,
-    windowConnectionStatus,
-    studioApp?.appId,
-    document,
     client,
-    schemaId,
-    workspace.name,
+    document,
+    isInDashboard,
+    node,
     projectStore,
-    sendMessage,
+    schemaId,
+    studioApp?.appId,
+    workspace.name,
   ])
 
   return useObservable(linkToCanvas$, initialState)
