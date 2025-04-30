@@ -1,7 +1,12 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {useCanvasCompanionDoc, useNavigateToCanvasDoc, usePerspective, useTranslation} from 'sanity'
+import {
+  getDocumentVariantType,
+  useCanvasCompanionDoc,
+  useNavigateToCanvasDoc,
+  useTranslation,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../ui-components'
@@ -63,19 +68,15 @@ const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
     </Card>
   )
 }
-const CanvasLinkedBannerContent = () => {
+const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
-
-  const {selectedPerspective} = usePerspective()
-
-  const isPublished = selectedPerspective === 'published'
-
+  const documentVariantType = getDocumentVariantType(documentId)
   const variantText = useMemo(() => {
-    if (isPublished) return t('canvas.banner.linked-text.published')
-    if (selectedPerspective === 'drafts') return t('canvas.banner.linked-text.draft')
+    if (documentVariantType === 'published') return t('canvas.banner.linked-text.published')
+    if (documentVariantType === 'draft') return t('canvas.banner.linked-text.draft')
     return t('canvas.banner.linked-text.version')
-  }, [isPublished, selectedPerspective, t])
+  }, [documentVariantType, t])
 
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
   const onClose = useCallback(() => setOpen(false), [])
@@ -105,9 +106,10 @@ const CanvasLinkedBannerContent = () => {
 }
 
 export function CanvasLinkedBanner() {
-  const {documentId} = useDocumentPane()
+  const {documentId, displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const {companionDoc} = useCanvasCompanionDoc(documentId)
+  const id = displayed?._id || documentId
+  const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
 
   if (!companionDoc) return null
@@ -117,7 +119,7 @@ export function CanvasLinkedBanner() {
       tone="neutral"
       data-test-id="canvas-linked-banner"
       paddingY={0}
-      content={<CanvasLinkedBannerContent />}
+      content={<CanvasLinkedBannerContent documentId={id} />}
       action={{
         mode: 'ghost',
         text: t('canvas.banner.edit-in-canvas-action'),

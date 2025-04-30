@@ -4,7 +4,9 @@ import {
   type DocumentActionDescription,
   type DocumentActionGroup,
   type DocumentActionProps,
+  getDraftId,
   GetHookCollectionState,
+  getPublishedId,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
@@ -40,7 +42,14 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
       group={group}
     >
       {({states}) => (
-        <ActionsGuardWrapper states={states} documentId={actionProps.id}>
+        <ActionsGuardWrapper
+          states={states}
+          documentId={
+            actionProps.liveEditSchemaType
+              ? getPublishedId(actionProps.id)
+              : getDraftId(actionProps.id)
+          }
+        >
           {children}
         </ActionsGuardWrapper>
       )}

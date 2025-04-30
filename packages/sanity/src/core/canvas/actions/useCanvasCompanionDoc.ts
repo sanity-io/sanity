@@ -1,8 +1,7 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {usePerspective} from '../../perspective/usePerspective'
-import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
+import {getPublishedId} from '../../util/draftUtils'
 import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
@@ -10,7 +9,6 @@ import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
  * @beta
  */
 export const useCanvasCompanionDoc = (documentId: string) => {
-  const {selectedPerspectiveName} = usePerspective()
   const companionDocsStore = useCanvasCompanionDocsStore()
   const publishedId = getPublishedId(documentId)
   const companionDocs$ = useMemo(
@@ -18,18 +16,10 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     [publishedId, companionDocsStore],
   )
   const companionDocs = useObservable(companionDocs$)
-  const perspectiveDocumentId = useMemo(() => {
-    if (!selectedPerspectiveName) return getDraftId(documentId)
-    if (selectedPerspectiveName === 'published') return getPublishedId(documentId)
-    return getVersionId(documentId, selectedPerspectiveName)
-  }, [documentId, selectedPerspectiveName])
 
   const companionDoc = useMemo(
-    () =>
-      companionDocs?.data.find(
-        (companion) => companion?.studioDocumentId === perspectiveDocumentId,
-      ),
-    [companionDocs, perspectiveDocumentId],
+    () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),
+    [companionDocs, documentId],
   )
   return {isLinked: Boolean(companionDoc), companionDoc, loading: companionDocs?.loading}
 }

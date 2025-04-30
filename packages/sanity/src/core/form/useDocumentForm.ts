@@ -287,7 +287,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         : false,
     [selectedPerspective],
   )
-  const {isLinked} = useCanvasCompanionDoc(documentId)
+  const {isLinked} = useCanvasCompanionDoc(value._id)
 
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted

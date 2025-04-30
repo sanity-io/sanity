@@ -27,7 +27,9 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
-  const {isLinked, loading} = useCanvasCompanionDoc(props.id)
+  const {isLinked, loading} = useCanvasCompanionDoc(
+    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
+  )
 
   const isExcludedType = useIsExcludedType(props.type)
 

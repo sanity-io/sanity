@@ -9,13 +9,16 @@ import {
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
 
 export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(props.id)
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
+    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
+  )
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), [])
   const handleOpenDialog = useCallback(() => setIsDialogOpen(true), [])
