@@ -57,6 +57,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
     | 'linkToCanvas'
     | 'editInCanvas'
     | 'unlinkFromCanvas'
+    | 'schedule'
   /**
    * For debugging purposes
    */
