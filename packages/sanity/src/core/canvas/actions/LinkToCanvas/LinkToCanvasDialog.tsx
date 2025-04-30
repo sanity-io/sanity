@@ -1,9 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {useCallback, useId} from 'react'
-import {styled} from 'styled-components'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -11,10 +10,6 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'
 import {LinkToCanvasDiff} from './LinkToCanvasDiff'
 import {useLinkToCanvas} from './useLinkToCanvas'
-
-const RedirectingBlock = styled(Flex)`
-  min-height: 75px; // Keeps it consistent with the loading block, to avoid CLS
-`
 
 export const LinkToCanvasDialog = ({
   document,
@@ -59,24 +54,17 @@ export const LinkToCanvasDialog = ({
       }
     >
       <Box padding={3}>
-        {status === 'validating' && (
+        {(status === 'validating' || status === 'redirecting') && (
           <Box paddingY={5}>
-            <LoadingBlock title={t('dialog.link-to-canvas.validating')} showText />
+            <LoadingBlock
+              title={
+                status === 'validating'
+                  ? t('dialog.link-to-canvas.validating')
+                  : t('dialog.link-to-canvas.redirecting')
+              }
+              showText
+            />
           </Box>
-        )}
-        {status === 'redirecting' && (
-          <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
-            transition={{duration: 0.3}}
-          >
-            <RedirectingBlock align="center" justify="center" flex={1}>
-              <Text size={1} weight="medium">
-                {t('dialog.link-to-canvas.redirecting')}
-              </Text>
-            </RedirectingBlock>
-          </motion.div>
         )}
         {(status === 'error' || status === 'missing-document-id') && (
           <motion.div
