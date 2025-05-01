@@ -196,7 +196,7 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
-      "eslint-plugin-react-hooks": "0.0.0",
+      "eslint-plugin-react-hooks": "0.0.0-experimental-d55cc79b-20250228",
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
