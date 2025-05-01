@@ -23,6 +23,10 @@ export default defineConfig({
         './node_modules/@portabletext/block-tools/src',
       ),
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
+      '@portabletext/plugin-markdown-shortcuts': path.join(
+        __dirname,
+        './node_modules/@portabletext/plugin-markdown-shortcuts/src',
+      ),
     },
     typecheck: {
       enabled: true,

@@ -1373,6 +1373,9 @@ importers:
       '@portabletext/editor':
         specifier: ^1.48.9
         version: 1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+      '@portabletext/plugin-markdown-shortcuts':
+        specifier: ^1.0.0
+        version: 1.0.0(@portabletext/editor@1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2))(@types/react@19.1.0)(react@18.3.1)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4417,6 +4420,18 @@ packages:
 
   '@portabletext/patches@1.1.3':
     resolution: {integrity: sha512-9olhOppydPR/UoMVf9w3SxHR3l9UJ66GoI/hnG34ESf6ccewI6cgLMXdcn9MPiFIve46hFMO/hP7g7exmN6RSg==}
+
+  '@portabletext/plugin-character-pair-decorator@1.0.1':
+    resolution: {integrity: sha512-xb6le5kL9TEcSoRIY4qE3HHZiHVwgDjL9qxrZcmkK89mnjMpqvWrC3NDewzk88K+QRdfo4jpInvbjMYkphRk4A==}
+    peerDependencies:
+      '@portabletext/editor': ^1.48.4
+      react: ^19.1.0
+
+  '@portabletext/plugin-markdown-shortcuts@1.0.0':
+    resolution: {integrity: sha512-N4FW3/8d05c++Cr8H7QZodz7nrucHDmUbNCCrw843+sERs8dE5PSzuGxsnLhs/4BwRNECgExAu+j13QWH/UHTw==}
+    peerDependencies:
+      '@portabletext/editor': ^1.48.4
+      react: ^19.1.0
 
   '@portabletext/react@3.2.1':
     resolution: {integrity: sha512-RyFLk6u2q6ZyABTdOk+xoNR2Tq/4fcQFEWayNk4Kbd3gHpUUTabqOrDMChcmG6C7YVLSpwIEBwHoBVcy4vK/hA==}
@@ -10565,6 +10580,9 @@ packages:
     resolution: {integrity: sha512-cnE+y8bz4NhMjISKbgeVJtqNbtf5QpjZP+Bslo+UqkIt9QPnX9q095eiRRASJG1/tz6dlNr6Z5NsBiWYokp6EQ==}
     hasBin: true
 
+  remeda@2.21.3:
+    resolution: {integrity: sha512-XXrZdLA10oEOQhLLzEJEiFFSKi21REGAkHdImIb4rt/XXy8ORGXh5HCcpUOsElfPNDb+X6TA/+wkh+p2KffYmg==}
+
   remove-trailing-separator@1.1.0:
     resolution: {integrity: sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw==}
 
@@ -11659,6 +11677,10 @@ packages:
 
   type-fest@4.37.0:
     resolution: {integrity: sha512-S/5/0kFftkq27FPNye0XM1e2NsnoD/3FS+pBmbjmmtLT6I+i344KoOf7pvXreaFsDamWeaJX55nczA1m5PsBDg==}
+    engines: {node: '>=16'}
+
+  type-fest@4.40.1:
+    resolution: {integrity: sha512-9YvLNnORDpI+vghLU/Nf+zSv0kL47KbVJ1o3sKgoTefl6i+zebxbiDQWoe/oWWqPhIgQdRZRT1KA9sCPL810SA==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -15018,6 +15040,24 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
       lodash: 4.17.21
+
+  '@portabletext/plugin-character-pair-decorator@1.0.1(@portabletext/editor@1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2))(@types/react@19.1.0)(react@18.3.1)':
+    dependencies:
+      '@portabletext/editor': 1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+      '@xstate/react': 5.0.3(@types/react@19.1.0)(react@18.3.1)(xstate@5.19.2)
+      react: 18.3.1
+      remeda: 2.21.3
+      xstate: 5.19.2
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@portabletext/plugin-markdown-shortcuts@1.0.0(@portabletext/editor@1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2))(@types/react@19.1.0)(react@18.3.1)':
+    dependencies:
+      '@portabletext/editor': 1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+      '@portabletext/plugin-character-pair-decorator': 1.0.1(@portabletext/editor@1.48.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2))(@types/react@19.1.0)(react@18.3.1)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@types/react'
 
   '@portabletext/react@3.2.1(react@18.3.1)':
     dependencies:
@@ -22691,6 +22731,10 @@ snapshots:
     dependencies:
       jsesc: 3.0.2
 
+  remeda@2.21.3:
+    dependencies:
+      type-fest: 4.40.1
+
   remove-trailing-separator@1.1.0: {}
 
   repeat-element@1.1.4: {}
@@ -24014,6 +24058,8 @@ snapshots:
   type-fest@0.8.1: {}
 
   type-fest@4.37.0: {}
+
+  type-fest@4.40.1: {}
 
   type-is@1.6.18:
     dependencies:
