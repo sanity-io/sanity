@@ -256,7 +256,7 @@
     "react-refractor": "^2.1.6",
     "react-rx": "^4.1.28",
     "read-pkg-up": "^7.0.1",
-    "refractor": "^3.6.0",
+    "refractor": "^4.9.0",
     "resolve-from": "^5.0.0",
     "resolve.exports": "^2.0.2",
     "rimraf": "^5.0.10",
