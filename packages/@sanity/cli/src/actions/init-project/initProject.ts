@@ -686,7 +686,7 @@ export default async function initSanity(
     )
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
-    print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
+    print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project's directory`)
     print(
       `Then: ${chalk.cyan(devCommand)} -to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
     )
@@ -1408,12 +1408,24 @@ export default async function initSanity(
       .clone()
       .config({apiVersion: 'v2021-06-07'})
 
-    const grants = await client.request({uri: `organizations/${orgId}/grants`})
-    const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
-    return group.some(
-      (resource) =>
-        resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
-    )
+    try {
+      const grants = await client.request({uri: `organizations/${orgId}/grants`})
+      const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
+      return group.some(
+        (resource) =>
+          resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
+      )
+    } catch (err) {
+      // If we get a 401, it means we don't have access to this organization
+      // probably because of implicit membership
+      if (err.statusCode === 401) {
+        debug('No access to organization %s (401)', orgId)
+        return false
+      }
+      // For other errors, log them but still return false
+      debug('Error checking grants for organization %s: %s', orgId, err.message)
+      return false
+    }
   }
 
   function getOrganizationsWithAttachGrantInfo(organizations: ProjectOrganization[]) {
