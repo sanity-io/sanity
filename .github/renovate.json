@@ -34,6 +34,7 @@
       "matchPackageNames": [
         "!@portabletext/block-tools",
         "!@portabletext/editor",
+        "!@portabletext/plugin-*",
         "!@sanity/client",
         "!@sanity/tsdoc",
         "!@sanity/ui"
@@ -44,6 +45,7 @@
       "matchPackageNames": [
         "@portabletext/block-tools",
         "@portabletext/editor",
+        "@portabletext/plugin-*",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/import",
@@ -74,6 +76,7 @@
       "matchPackageNames": [
         "@portabletext/block-tools",
         "@portabletext/editor",
+        "@portabletext/plugin-*",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/comlink",
