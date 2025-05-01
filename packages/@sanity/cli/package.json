@@ -67,7 +67,7 @@
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
-    "esbuild": "0.21.5",
+    "esbuild": "0.25.3",
     "esbuild-register": "^3.5.0",
     "get-it": "^8.6.7",
     "groq-js": "^1.16.1",
