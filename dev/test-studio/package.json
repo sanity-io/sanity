@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "run-s workshop:build sanity:build",
+    "build": "run-s workshop:build sanity:build ../.bin/sanity manifest extract",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
     "lint": "eslint --cache .",

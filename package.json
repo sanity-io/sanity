@@ -28,7 +28,7 @@
     "clean:deps": "rimraf packages/@repo/*/node_modules packages/@sanity/*/node_modules packages/*/node_modules dev/*/node_modules node_modules",
     "depcheck": "pnpm check:deps",
     "deploy:movies": "pnpm build && cd examples/movies-studio && sanity deploy",
-    "deploy:test": "pnpm build && cd dev/test-studio && sanity deploy && sanity manifest extract",
+    "deploy:test": "pnpm build && cd dev/test-studio && sanity deploy",
     "dev": "pnpm dev:test-studio",
     "dev:cli": "pnpm watch",
     "dev:design-studio": "pnpm --filter design-studio dev",
