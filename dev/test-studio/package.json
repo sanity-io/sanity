@@ -5,12 +5,13 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "run-s workshop:build sanity:build ../.bin/sanity manifest extract",
+    "build": "run-s workshop:build sanity:build sanity:manifest",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
     "lint": "eslint --cache .",
     "sanity:build": "../.bin/sanity build --source-maps",
     "sanity:dev": "../.bin/sanity dev",
+    "sanity:manifest": "../.bin/sanity manifest extract",
     "start": "../.bin/sanity start",
     "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
