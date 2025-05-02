@@ -76,7 +76,7 @@ export function getReleaseEvents({
     ? getReleaseActivityEvents({client, releaseId})
     : notEnabledActivityEvents
 
-  const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
+  const groqFilter = `sanity::partOfRelease(${getReleaseIdFromReleaseDocumentId(releaseId)})`
   // Turn off document counts listener if eventsAPI is not enabled.
   const documentsCount$ = eventsAPIEnabled
     ? of(0)
