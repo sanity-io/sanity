@@ -1,4 +1,4 @@
-import {CloseIcon, UnpublishIcon} from '@sanity/icons'
+import {CloseIcon, PublishIcon, UnpublishIcon} from '@sanity/icons'
 import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 
@@ -9,10 +9,13 @@ import {useTranslation} from '../../../../i18n'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {DiscardVersionDialog} from '../../../components'
+import {PublishVersionDocumentDialog} from '../../../components/dialog/PublishVersionDocumentDialog'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
+
+type ConfirmDialogType = 'discard' | 'publish' | 'unpublish' | null
 
 const DocumentActionsInner = memo(
   function DocumentActionsInner({
@@ -22,8 +25,7 @@ const DocumentActionsInner = memo(
     document: BundleDocumentRow
     releaseTitle: string
   }) {
-    const [showDiscardDialog, setShowDiscardDialog] = useState(false)
-    const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
+    const [showConfirmDialog, setShowConfirmDialog] = useState<ConfirmDialogType>(null)
     const {t: coreT} = useTranslation()
     const {t} = useTranslation(releasesLocaleNamespace)
     const isAlreadyUnpublished = isGoingToUnpublish(document.document)
@@ -69,6 +71,8 @@ const DocumentActionsInner = memo(
       t,
     ])
 
+    const hideConfirmDialog = () => setShowConfirmDialog(null)
+
     const isUnpublishActionDisabled =
       noPermissionToUnpublish || !document.document.publishedDocumentExists || isAlreadyUnpublished
 
@@ -83,13 +87,21 @@ const DocumentActionsInner = memo(
                 <MenuItem
                   text={coreT('release.action.discard-version')}
                   icon={CloseIcon}
-                  onClick={() => setShowDiscardDialog(true)}
+                  onClick={() => setShowConfirmDialog('discard')}
                   disabled={isDiscardVersionActionDisabled}
                   tooltipProps={{
                     disabled: !isDiscardVersionActionDisabled,
                     content: t('permissions.error.discard-version'),
                   }}
                 />
+                {!isAlreadyUnpublished && (
+                  <MenuItem
+                    text={t('action.publish-document-version')}
+                    disabled={document.validation.hasError || document.validation.isValidating}
+                    icon={PublishIcon}
+                    onClick={() => setShowConfirmDialog('publish')}
+                  />
+                )}
                 <MenuDivider />
                 <Box padding={3} paddingBottom={2}>
                   <Label size={1}>{t('menu.group.when-releasing')}</Label>
@@ -102,25 +114,32 @@ const DocumentActionsInner = memo(
                     disabled: !isUnpublishActionDisabled,
                     content: unPublishTooltipContent,
                   }}
-                  onClick={() => setShowUnpublishDialog(true)}
+                  onClick={() => setShowConfirmDialog('unpublish')}
                 />
               </Menu>
             }
           />
         </Card>
-        {showDiscardDialog && (
+        {showConfirmDialog === 'discard' && (
           <DiscardVersionDialog
-            onClose={() => setShowDiscardDialog(false)}
+            onClose={hideConfirmDialog}
             documentId={document.document._id}
             documentType={document.document._type}
             fromPerspective={releaseTitle}
           />
         )}
-        {showUnpublishDialog && (
+        {showConfirmDialog === 'unpublish' && (
           <UnpublishVersionDialog
-            onClose={() => setShowUnpublishDialog(false)}
+            onClose={hideConfirmDialog}
             documentVersionId={document.document._id}
             documentType={document.document._type}
+          />
+        )}
+        {showConfirmDialog === 'publish' && (
+          <PublishVersionDocumentDialog
+            onClose={hideConfirmDialog}
+            document={document.document}
+            releaseTitle={releaseTitle}
           />
         )}
       </>

@@ -30,6 +30,8 @@ const releasesLocaleStrings = {
   'action.unschedule': 'Unschedule release',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
+  /** Action text for publishing a single document version */
+  'action.publish-document-version': 'Publish version now',
   /** Text for the review changes button in release tool */
   'action.review': 'Review changes',
   /** Action text for reverting a release */
@@ -239,6 +241,12 @@ const releasesLocaleStrings = {
   'publish-dialog.validation.loading': 'Validating documents...',
   /** Label for when documents in release have validation errors */
   'publish-dialog.validation.error': 'Some documents have validation errors',
+
+  'publish-version-document-dialog.header': 'Publish version now?',
+  'publish-version-document-dialog.description':
+    'This will publish this document version immediately and remove it from the "<strong>{{releaseTitle}}</strong>" release.',
+  'publish-version-document-dialog.action.publish': 'Publish version now',
+  'publish-version-document-dialog.action.cancel': 'Cancel',
 
   /** Title for information card on a published release */
   'publish-info.title': 'This release is published',
