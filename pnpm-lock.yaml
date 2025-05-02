@@ -1774,8 +1774,8 @@ importers:
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@3.7.0(react@18.3.1))(@sanity/ui@2.15.14(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.13.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.38.2)(yaml@2.7.0)
       '@sanity/visual-editing-csm':
-        specifier: ^2.0.14
-        version: 2.0.14(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
+        specifier: ^2.0.16
+        version: 2.0.16(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
       '@sentry/types':
         specifier: ^8.12.0
         version: 8.54.0
@@ -4916,17 +4916,17 @@ packages:
   '@sanity/uuid@3.0.2':
     resolution: {integrity: sha512-vzdhqOrX7JGbMyK40KuIwwyXHm7GMLOGuYgn3xlC09e4ZVNofUO5mgezQqnRv0JAMthIRhofqs9f6ufUjMKOvw==}
 
-  '@sanity/visual-editing-csm@2.0.14':
-    resolution: {integrity: sha512-hyF+j2WaO+BZUeaIaivYlv/ucy4oglNfvlAZnEFA1wdtZgHrhKDAwMIt0+9HsqGwJvU52GQ35CJEr4SQbURITw==}
+  '@sanity/visual-editing-csm@2.0.16':
+    resolution: {integrity: sha512-1mcqFnvFimTzPd2iYIEWkizszoolWY5q2cllZTHJJvRTf5aMbzRzLAkZbgJ2n+RFvcBb8VEZIWuoaxVc20kkSA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.29.0
+      '@sanity/client': ^7.0.0
 
-  '@sanity/visual-editing-types@1.0.15':
-    resolution: {integrity: sha512-6IvdbwdBfyQJ51iIZ4pnbl6/6yDy3HpZQwk8z2TQrkw4fVYRI96Be5+jilTCj7IunzLM570zkHHnffXeHFP4Yg==}
+  '@sanity/visual-editing-types@1.0.17':
+    resolution: {integrity: sha512-nb8YyyPqeTIzf5mkxV/cbN/QdNpIKq32AUoaIj2pCfZYuQk2vUMZnhjmHQmWnCt8M+c7KFPsW7yTy2PRQeF/Nw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.29.0
+      '@sanity/client': ^7.0.0
       '@sanity/types': '*'
     peerDependenciesMeta:
       '@sanity/types':
@@ -15370,7 +15370,7 @@ snapshots:
       '@sanity/client': 6.29.1(debug@4.4.0)
       '@sanity/comlink': 3.0.2
       '@sanity/presentation-comlink': 1.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
-      '@sanity/visual-editing-csm': 2.0.14(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/visual-editing-csm': 2.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - debug
@@ -15782,7 +15782,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
       '@sanity/comlink': 3.0.2
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
 
@@ -15790,7 +15790,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
       '@sanity/comlink': 3.0.2
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
 
@@ -15798,7 +15798,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
       '@sanity/comlink': 3.0.2
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
 
@@ -15816,7 +15816,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
       '@sanity/core-loader': 1.8.0(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
-      '@sanity/visual-editing-csm': 2.0.14(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/visual-editing-csm': 2.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
       react: 19.1.0
     transitivePeerDependencies:
       - '@sanity/types'
@@ -16141,40 +16141,40 @@ snapshots:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  '@sanity/visual-editing-csm@2.0.14(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
+  '@sanity/visual-editing-csm@2.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
       valibot: 1.0.0(typescript@5.7.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@2.0.14(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)':
+  '@sanity/visual-editing-csm@2.0.16(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)':
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       valibot: 1.0.0(typescript@5.8.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@2.0.14(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
+  '@sanity/visual-editing-csm@2.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
-      '@sanity/visual-editing-types': 1.0.15(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.0.17(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       valibot: 1.0.0(typescript@5.7.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-types@1.0.15(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)':
+  '@sanity/visual-editing-types@1.0.17(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing-types@1.0.15(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
+  '@sanity/visual-editing-types@1.0.17(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
     optionalDependencies:
@@ -16189,7 +16189,7 @@ snapshots:
       '@sanity/presentation-comlink': 1.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 2.1.7(@sanity/client@7.0.0(debug@4.4.0))
       '@sanity/ui': 2.15.14(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
-      '@sanity/visual-editing-csm': 2.0.14(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/visual-editing-csm': 2.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
       react: 19.1.0
