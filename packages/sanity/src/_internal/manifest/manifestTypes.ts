@@ -1,6 +1,8 @@
 import {type SanityDocumentLike} from '@sanity/types'
 
-export const SANITY_WORKSPACE_SCHEMA_TYPE = 'sanity.workspace.schema'
+export const SANITY_WORKSPACE_SCHEMA_ID_PREFIX = '_.schemas'
+export const SANITY_WORKSPACE_SCHEMA_TYPE = 'system.schema'
+export const CURRENT_WORKSPACE_SCHEMA_VERSION = '2025-05-01'
 
 export type ManifestSerializable =
   | string
@@ -103,20 +105,23 @@ export interface ManifestTool {
   type: string | null
 }
 
-export type DefaultWorkspaceSchemaId = `${typeof SANITY_WORKSPACE_SCHEMA_TYPE}.${string}`
-export type PrefixedWorkspaceSchemaId = `${string}.${DefaultWorkspaceSchemaId}`
+export type DefaultWorkspaceSchemaId = `${typeof SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${string}`
+export type PrefixedWorkspaceSchemaId = `${DefaultWorkspaceSchemaId}.${string}`
 export type WorkspaceSchemaId = DefaultWorkspaceSchemaId | PrefixedWorkspaceSchemaId
 
 export interface StoredWorkspaceSchema extends SanityDocumentLike {
   _type: typeof SANITY_WORKSPACE_SCHEMA_TYPE
   _id: WorkspaceSchemaId
-  /* api-like version string, typically a date at which the format had a meaningful change: 2025-05-01 */
-  version: string | undefined
-  workspace: ManifestWorkspaceFile
+  /* api-like version string: date at which the format had a meaningful change */
+  version: typeof CURRENT_WORKSPACE_SCHEMA_VERSION | undefined
+  tag?: string
+  workspace: {
+    name: string
+    title?: string
+  }
   /**
-   * JSON.stringify version of ManifestSchemaType[] to save on attribute paths.
-   * Consumers must use JSON.parse on the value.
+   * The API expects JSON coming in, but will store a string to save on attribute paths.
+   * Consumers must use JSON.parse on the value, put we deploy to the API using ManifestSchemaType[]
    */
-  schema: string
-  //schema: ManifestSchemaType[]
+  schema: string | ManifestSchemaType[]
 }

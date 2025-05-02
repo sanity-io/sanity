@@ -1,7 +1,13 @@
-export function getDatasetsOutString(datasets: string[]) {
-  return datasets.length === 1
-    ? `dataset "${datasets[0]}"`
-    : `datasets ${getStringArrayOutString(datasets)}`
+export function getProjectIdDatasetsOutString(
+  projectIdDatasets: {projectId: string; dataset: string}[],
+) {
+  return projectIdDatasets.length === 1
+    ? `${projectIdDatasetPair(projectIdDatasets[0])}`
+    : `${getStringArrayOutString(projectIdDatasets.map(projectIdDatasetPair))}`
+}
+
+export function projectIdDatasetPair(pair: {projectId: string; dataset: string}) {
+  return JSON.stringify({projectId: pair.projectId, dataset: pair.dataset})
 }
 
 export function getStringArrayOutString(array: string[]) {
@@ -9,5 +15,5 @@ export function getStringArrayOutString(array: string[]) {
 }
 
 export function getStringList(array: string[]) {
-  return array.map((s) => `- "${s}"`).join('\n')
+  return array.map((s) => `- ${s}`).join('\n')
 }

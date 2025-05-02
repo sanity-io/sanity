@@ -4,8 +4,8 @@ import chalk from 'chalk'
 import partition from 'lodash/partition'
 
 import {
+  CURRENT_WORKSPACE_SCHEMA_VERSION,
   type ManifestWorkspaceFile,
-  SANITY_WORKSPACE_SCHEMA_TYPE,
   type StoredWorkspaceSchema,
 } from '../../../manifest/manifestTypes'
 import {SchemaDeploy} from './__telemetry__/schemaStore.telemetry'
@@ -16,14 +16,14 @@ import {createSchemaApiClient} from './utils/schemaApiClient'
 import {
   FlagValidationError,
   parseDeploySchemasConfig,
+  SCHEMA_PERMISSION_HELP_TEXT,
   type SchemaStoreCommonFlags,
-  throwWriteProjectIdMismatch,
 } from './utils/schemaStoreValidation'
 import {getWorkspaceSchemaId} from './utils/workspaceSchemaId'
 
 export interface DeploySchemasFlags extends SchemaStoreCommonFlags {
   'workspace'?: string
-  'id-prefix'?: string
+  'tag'?: string
   'schema-required'?: boolean
 }
 
@@ -57,7 +57,7 @@ export async function deploySchemasAction(
   flags: DeploySchemasFlags,
   context: SchemaStoreContext,
 ): Promise<SchemaStoreActionResult> {
-  const {workspaceName, verbose, idPrefix, manifestDir, extractManifest, schemaRequired} =
+  const {workspaceName, verbose, tag, manifestDir, extractManifest, schemaRequired} =
     parseDeploySchemasConfig(flags, context)
 
   const {output, apiClient, jsonReader, manifestExtractor, telemetry} = context
@@ -71,19 +71,18 @@ export async function deploySchemasAction(
     manifestDir,
     schemaRequired,
     workspaceName,
-    idPrefix,
+    tag,
     extractManifest,
   })
 
   try {
     trace.start()
-    const {client, projectId} = createSchemaApiClient(apiClient)
+    const {client} = createSchemaApiClient(apiClient)
     const manifestReader = createManifestReader({manifestDir, output, jsonReader})
     const manifest = await manifestReader.getManifest()
 
     const storeWorkspaceSchema = createStoreWorkspaceSchema({
-      idPrefix,
-      projectId,
+      tag,
       verbose,
       client,
       output,
@@ -135,45 +134,65 @@ export async function deploySchemasAction(
 }
 
 function createStoreWorkspaceSchema(args: {
-  idPrefix?: string
-  projectId: string
+  tag?: string
   verbose: boolean
   client: SanityClient
   output: CliOutputter
   manifestReader: CreateManifestReader
 }): (workspace: ManifestWorkspaceFile) => Promise<void> {
-  const {idPrefix, projectId, verbose, client, output, manifestReader} = args
+  const {tag, verbose, client, output, manifestReader} = args
 
   return async (workspace) => {
-    const {safeId: id, idWarning} = getWorkspaceSchemaId({workspaceName: workspace.name, idPrefix})
+    const {safeBaseId: id, idWarning} = getWorkspaceSchemaId({
+      workspaceName: workspace.name,
+      tag,
+    })
     if (idWarning) output.warn(idWarning)
 
     try {
-      throwWriteProjectIdMismatch(workspace, projectId)
       const schema = await manifestReader.getWorkspaceSchema(workspace.name)
 
-      const storedWorkspaceSchema: StoredWorkspaceSchema = {
-        _type: SANITY_WORKSPACE_SCHEMA_TYPE,
-        _id: id,
-        version: '2025-05-01',
-        workspace,
-        // we have to stringify the schema to save on attribute paths
-        schema: JSON.stringify(schema),
+      const storedWorkspaceSchema: Omit<StoredWorkspaceSchema, '_id' | '_type'> = {
+        version: CURRENT_WORKSPACE_SCHEMA_VERSION,
+        tag,
+        workspace: {
+          name: workspace.name,
+          title: workspace.title,
+        },
+        // the API will stringify the schema – we send as JSON
+        schema,
       }
 
       await client
         .withConfig({dataset: workspace.dataset, projectId: workspace.projectId})
-        .createOrReplace(storedWorkspaceSchema)
+        .request({
+          method: 'PUT',
+          url: `/projects/${workspace.projectId}/datasets/${workspace.dataset}/schemas`,
+          body: {
+            schemas: [storedWorkspaceSchema],
+          },
+        })
 
       if (verbose) {
         output.print(
-          chalk.gray(`↳ schemaId: ${id}, projectId: ${projectId}, dataset: ${workspace.dataset}`),
+          chalk.gray(
+            `↳ schemaId: ${id}, projectId: ${workspace.projectId}, dataset: ${workspace.dataset}`,
+          ),
         )
       }
     } catch (err) {
-      output.error(
-        `↳ Error deploying schema for workspace "${workspace.name}":\n  ${chalk.red(`${err.message}`)}`,
-      )
+      if ('statusCode' in err && err.cause?.statusCode === 401) {
+        output.error(
+          `↳ No permissions to write schema for workspace "${workspace.name}". ${
+            SCHEMA_PERMISSION_HELP_TEXT
+          }`,
+        )
+      } else {
+        output.error(
+          `↳ Error deploying schema for workspace "${workspace.name}":\n  ${chalk.red(`${err.message}`)}`,
+        )
+      }
+
       throw err
     }
   }

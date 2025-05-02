@@ -1,23 +1,20 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
 import sortBy from 'lodash/sortBy'
-import uniq from 'lodash/uniq'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
-import {
-  SANITY_WORKSPACE_SCHEMA_TYPE,
-  type StoredWorkspaceSchema,
-} from '../../../manifest/manifestTypes'
+import {type CreateManifest, type StoredWorkspaceSchema} from '../../../manifest/manifestTypes'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
-import {getDatasetsOutString} from './utils/schemaStoreOutStrings'
+import {getProjectIdDatasetsOutString, projectIdDatasetPair} from './utils/schemaStoreOutStrings'
 import {
-  filterLogReadProjectIdMismatch,
   parseListSchemasConfig,
+  SCHEMA_PERMISSION_HELP_TEXT,
   type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
+import {uniqueProjectIdDataset} from './utils/uniqueProjectIdDataset'
 
 export interface SchemaListFlags extends SchemaStoreCommonFlags {
   json?: boolean
@@ -25,9 +22,11 @@ export interface SchemaListFlags extends SchemaStoreCommonFlags {
 }
 
 class DatasetError extends Error {
+  public projectId: string
   public dataset: string
-  constructor(dataset: string, options?: ErrorOptions) {
+  constructor(projectId: string, dataset: string, options?: ErrorOptions) {
     super((options?.cause as {message?: string})?.message, options)
+    this.projectId = projectId
     this.dataset = dataset
     this.name = 'DatasetError'
   }
@@ -62,42 +61,58 @@ export async function listSchemasAction(
   if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output, telemetry: context.telemetry}))) {
     return 'failure'
   }
-  const {client, projectId} = createSchemaApiClient(apiClient)
+  const {client} = createSchemaApiClient(apiClient)
 
   const manifest = await createManifestReader({manifestDir, output, jsonReader}).getManifest()
-  const workspaces = manifest.workspaces.filter((workspace) =>
-    filterLogReadProjectIdMismatch(workspace, projectId, output),
-  )
-
-  const datasets = uniq(workspaces.map((w) => w.dataset))
+  const projectDatasets = uniqueProjectIdDataset(manifest.workspaces)
 
   const schemaResults = await Promise.allSettled(
-    datasets.map(async (dataset) => {
+    projectDatasets.map(async ({projectId, dataset}) => {
       try {
-        const datasetClient = client.withConfig({dataset})
+        const datasetClient = client.withConfig({projectId, dataset})
         return id
-          ? datasetClient.getDocument<StoredWorkspaceSchema>(id)
-          : datasetClient.fetch<StoredWorkspaceSchema[]>(`*[_type == $type]`, {
-              type: SANITY_WORKSPACE_SCHEMA_TYPE,
+          ? await datasetClient.request<StoredWorkspaceSchema | undefined>({
+              method: 'GET',
+              url: `/projects/${projectId}/datasets/${dataset}/schemas/${id}`,
+            })
+          : await datasetClient.request<StoredWorkspaceSchema[] | undefined>({
+              method: 'GET',
+              url: `/projects/${projectId}/datasets/${dataset}/schemas`,
             })
       } catch (error) {
-        throw new DatasetError(dataset, {cause: error})
+        throw new DatasetError(projectId, dataset, {cause: error})
       }
     }),
   )
 
   const schemas = schemaResults
-    .map((result, index) => {
+    .map((result) => {
       if (result.status === 'fulfilled') return result.value
 
-      if (result.reason instanceof DatasetError) {
+      const error = result.reason
+      if (error instanceof DatasetError) {
+        if (
+          'cause' in error &&
+          error.cause &&
+          typeof error.cause === 'object' &&
+          'statusCode' in error.cause &&
+          error.cause.statusCode === 401
+        ) {
+          output.warn(
+            `↳ No permissions to read schema from ${projectIdDatasetPair(error)}. ${
+              SCHEMA_PERMISSION_HELP_TEXT
+            }`,
+          )
+          return []
+        }
+
         const message = chalk.red(
-          `↳ Failed to fetch schema from dataset "${result.reason.dataset}":\n  ${result.reason.message}`,
+          `↳ Failed to fetch schema from ${projectIdDatasetPair(error)}:\n  ${error.message}`,
         )
         output.error(message)
       } else {
         //hubris inc: given the try-catch wrapping all the full promise "this should never happen"
-        throw result.reason
+        throw error
       }
       return []
     })
@@ -105,7 +120,7 @@ export async function listSchemasAction(
     .flat()
 
   if (schemas.length === 0) {
-    const datasetString = getDatasetsOutString(datasets)
+    const datasetString = getProjectIdDatasetsOutString(projectDatasets)
     output.error(
       id
         ? `Schema for id "${id}" not found in ${datasetString}`
@@ -117,7 +132,7 @@ export async function listSchemasAction(
   if (json) {
     output.print(`${JSON.stringify(id ? schemas[0] : schemas, null, 2)}`)
   } else {
-    printSchemaList({schemas, output})
+    printSchemaList({schemas, output, manifest})
   }
   return 'success'
 }
@@ -125,14 +140,22 @@ export async function listSchemasAction(
 function printSchemaList({
   schemas,
   output,
+  manifest,
 }: {
   schemas: StoredWorkspaceSchema[]
   output: CliOutputter
+  manifest: CreateManifest
 }) {
   const ordered = sortBy(
-    schemas.map(({_createdAt: createdAt, _id: id, workspace}) => {
-      return [id, workspace.name, workspace.dataset, workspace.projectId, createdAt].map(String)
-    }),
+    schemas
+      .map(({_createdAt: createdAt, _id: id, workspace}) => {
+        const workspaceData = manifest.workspaces.find((w) => w.name === workspace.name)
+        if (!workspaceData) return undefined
+        return [id, workspace.name, workspaceData.dataset, workspaceData.projectId, createdAt].map(
+          String,
+        )
+      })
+      .filter(isDefined),
     ['createdAt'],
   )
   const headings = ['Id', 'Workspace', 'Dataset', 'ProjectId', 'CreatedAt']
