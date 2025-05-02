@@ -20,7 +20,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.delete.running.label': 'Deleting…',
   /** Tooltip when action is disabled because the document is linked to Canvas */
   'action.disabled-by-canvas.tooltip':
-    'Custom document actions are disabled for documents linked to Canvas',
+    'Some document actions are disabled for documents linked to Canvas',
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
@@ -191,6 +191,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
+
+  /** The text for the canvas linked banner action button */
+  'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner when the document is a draft */
+  'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a live document */
+  'canvas.banner.linked-text.published': 'This live document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a version document */
+  'canvas.banner.linked-text.version': 'This version document is linked to Canvas',
+  /** The text for the canvas linked banner popover button */
+  'canvas.banner.popover-button-text': 'Learn more',
+  /** The description for the canvas linked banner popover */
+  'canvas.banner.popover-description':
+    'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
+  /** The heading for the canvas linked banner popover */
+  'canvas.banner.popover-heading': 'Idea first authoring',
 
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',

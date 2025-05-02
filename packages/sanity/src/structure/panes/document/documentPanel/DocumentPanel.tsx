@@ -28,6 +28,7 @@ import {
   ReferenceChangedBanner,
 } from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
+import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
@@ -214,7 +215,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (activeView.type !== 'form' || isPermissionsLoading || !ready) return null
+    if (activeView.type !== 'form' || isPermissionsLoading) return null
 
     return (
       <>
@@ -224,6 +225,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         )}
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
+        <CanvasLinkedBanner />
         <DeletedDocumentBanners />
         <UnpublishedDocumentBanner />
         <OpenReleaseToEditBanner

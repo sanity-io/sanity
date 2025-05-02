@@ -4,7 +4,10 @@ import {
   type DocumentActionDescription,
   type DocumentActionGroup,
   type DocumentActionProps,
+  getDraftId,
   GetHookCollectionState,
+  getPublishedId,
+  useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
 
@@ -39,7 +42,14 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
       group={group}
     >
       {({states}) => (
-        <ActionsGuardWrapper states={states} documentId={actionProps.id}>
+        <ActionsGuardWrapper
+          states={states}
+          documentId={
+            actionProps.liveEditSchemaType
+              ? getPublishedId(actionProps.id)
+              : getDraftId(actionProps.id)
+          }
+        >
           {children}
         </ActionsGuardWrapper>
       )}
@@ -57,14 +67,12 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
   'duplicate',
   'publish',
   'unpublish',
+  'unlinkFromCanvas',
+  'editInCanvas',
+  'linkToCanvas',
+  'schedule',
 ]
 
-/**
- * TODO: See PR https://github.com/sanity-io/sanity/pull/9289 for the removal of this
- * This will be `const {isLinked} = useCanvasCompanionDoc(documentId)`
- * Do not change this constant to true or all custom actions will be disabled.
- */
-const TEMP_DISABLED_BY_CANVAS = false
 interface ActionsGuardWrapperProps {
   states: Array<DocumentActionDescription & {action?: DocumentActionComponent['action']}>
   documentId: string
@@ -74,8 +82,10 @@ interface ActionsGuardWrapperProps {
 const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {
   const {states, children, documentId} = props
   const {t} = useTranslation(structureLocaleNamespace)
+  const {isLinked} = useCanvasCompanionDoc(documentId)
+
   const result = useMemo(() => {
-    if (TEMP_DISABLED_BY_CANVAS) {
+    if (isLinked) {
       return children({
         states: states.map((s) => {
           if (!s.action || !SUPPORTED_LINKED_TO_CANVAS_ACTIONS.includes(s.action)) {
@@ -90,7 +100,7 @@ const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {
       })
     }
     return children({states})
-  }, [children, states, t])
+  }, [children, states, t, isLinked])
 
   return result
 }
