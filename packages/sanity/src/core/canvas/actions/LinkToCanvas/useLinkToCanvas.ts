@@ -11,6 +11,8 @@ import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
 import {useComlinkStore, useProjectStore} from '../../../store/_legacy/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useWorkspace} from '../../../studio/workspace'
+import {type CanvasDiff} from '../../types'
+import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 
 const localeSettings = Intl.DateTimeFormat().resolvedOptions()
 
@@ -19,12 +21,7 @@ interface CanvasResponse {
   originalDocument?: SanityDocument
   mappedDocument?: SanityDocument
   canvasContent?: unknown
-  diff?: {
-    indexedPath: string[]
-    prevValue: unknown
-    value: unknown
-    type: string
-  }[]
+  diff?: CanvasDiff[]
 }
 
 type StudioToCanvasRequestBody = ({documentId: string} | {document: SanityDocument}) & {
@@ -91,6 +88,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const renderContext = useRenderingContext()
   const {node} = useComlinkStore()
   const isInDashboard = renderContext?.name === 'coreUi'
+  const {linkRedirected, linkDialogDiffsShown} = useCanvasTelemetry()
 
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
@@ -161,11 +159,16 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     ]).pipe(
       map(([preflight, navigateToCanvas]) => {
         if (!preflight.error) {
+          const status = preflight.diff?.length ? ('diff' as const) : ('redirecting' as const)
+
           return {
-            status: preflight.diff?.length ? ('diff' as const) : ('redirecting' as const),
+            status: status,
             error: null,
             response: preflight,
-            navigateToCanvas,
+            navigateToCanvas: () => {
+              linkRedirected(status === 'diff' ? 'diff-dialog' : 'redirect', preflight.diff)
+              navigateToCanvas()
+            },
           }
         }
 
@@ -183,6 +186,9 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
             navigateToCanvas()
           }, 1000)
         }
+        if (status === 'diff') {
+          linkDialogDiffsShown()
+        }
       }),
       catchError((error) => {
         return of({
@@ -196,6 +202,8 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     client,
     document,
     isInDashboard,
+    linkRedirected,
+    linkDialogDiffsShown,
     node,
     projectStore,
     schemaId,

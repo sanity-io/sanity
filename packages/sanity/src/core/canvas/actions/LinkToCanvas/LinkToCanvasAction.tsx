@@ -14,6 +14,7 @@ import {isReleaseDocument} from '../../../releases/store/types'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
+import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
 
@@ -30,6 +31,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {isLinked, loading} = useCanvasCompanionDoc(
     props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
   )
+  const {linkCtaClicked} = useCanvasTelemetry()
 
   const isExcludedType = useIsExcludedType(props.type)
 
@@ -41,13 +43,14 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const [formValue, setFormValue] = useState<SanityDocument | undefined>()
 
   const handleOpenDialog = useCallback(() => {
+    linkCtaClicked()
     const value = getFormValue([]) as SanityDocument
     setFormValue({
       ...value,
       _id: props.liveEditSchemaType ? getPublishedId(value._id) : getDraftId(value._id),
     })
     setIsDialogOpen(true)
-  }, [getFormValue, props.liveEditSchemaType])
+  }, [getFormValue, props.liveEditSchemaType, linkCtaClicked])
 
   const disabled = useMemo(() => {
     if (!isInDashboard) {

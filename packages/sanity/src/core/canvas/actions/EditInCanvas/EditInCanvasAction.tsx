@@ -15,7 +15,7 @@ export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
     props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
   )
-  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId)
+  const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'action')
 
   if (!isLinked || loading) return null
 
