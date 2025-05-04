@@ -6,5 +6,5 @@ import {useWorkspace} from '../studio/workspace'
  */
 export const useWorkspaceSchemaId = (): string => {
   const workspace = useWorkspace()
-  return `sanity.workspace.schema.${workspace.name || 'default'}`
+  return `_.schemas.${workspace.name || 'default'}`
 }
