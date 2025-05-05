@@ -12,7 +12,7 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-it('renders the child if the capability is not provided by the rendering context', async () => {
+it('renders the child if the capability is not provided by the rendering context and the condition is "unavailable"', async () => {
   const wrapper = await createTestProvider()
 
   vi.mocked(useRenderingContextStore).mockReturnValue({
@@ -24,7 +24,7 @@ it('renders the child if the capability is not provided by the rendering context
   })
 
   render(
-    <CapabilityGate capability="globalUserMenu">
+    <CapabilityGate capability="globalUserMenu" condition="unavailable">
       <div data-testid="user-menu">User</div>
     </CapabilityGate>,
     {wrapper},
@@ -33,7 +33,7 @@ it('renders the child if the capability is not provided by the rendering context
   expect(screen.getByTestId('user-menu')).toBeTruthy()
 })
 
-it('does not render the child if the capability is provided by the rendering context', async () => {
+it('does not render the child if the capability is provided by the rendering context and the condition is "unavailable"', async () => {
   const wrapper = await createTestProvider()
 
   vi.mocked(useRenderingContextStore).mockReturnValue({
@@ -49,7 +49,53 @@ it('does not render the child if the capability is provided by the rendering con
   })
 
   render(
-    <CapabilityGate capability="globalUserMenu">
+    <CapabilityGate capability="globalUserMenu" condition="unavailable">
+      <div data-testid="user-menu">User</div>
+    </CapabilityGate>,
+    {wrapper},
+  )
+
+  expect(screen.queryByTestId('user-menu')).toBeFalsy()
+})
+
+it('renders the child if the capability is provided by the rendering context and the condition is "available"', async () => {
+  const wrapper = await createTestProvider()
+
+  vi.mocked(useRenderingContextStore).mockReturnValue({
+    renderingContext: of({
+      name: 'coreUi',
+      metadata: {
+        environment: 'production',
+      },
+    } as const),
+    capabilities: of({
+      globalUserMenu: true,
+    }),
+  })
+
+  render(
+    <CapabilityGate capability="globalUserMenu" condition="available">
+      <div data-testid="user-menu">User</div>
+    </CapabilityGate>,
+    {wrapper},
+  )
+
+  expect(screen.getByTestId('user-menu')).toBeTruthy()
+})
+
+it('does not render the child if the capability is not provided by the rendering context and the condition is "available"', async () => {
+  const wrapper = await createTestProvider()
+
+  vi.mocked(useRenderingContextStore).mockReturnValue({
+    renderingContext: of({
+      name: 'default',
+      metadata: {},
+    } as const),
+    capabilities: of({}),
+  })
+
+  render(
+    <CapabilityGate capability="globalUserMenu" condition="available">
       <div data-testid="user-menu">User</div>
     </CapabilityGate>,
     {wrapper},
