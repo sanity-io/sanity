@@ -6,23 +6,6 @@ import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
 
-function DelayedDiv({children, show}: {show: boolean; children: ReactNode}) {
-  return (
-    <motion.div
-      key={show ? 'show' : 'wait'}
-      initial={{opacity: show ? 1 : 0}}
-      animate={{opacity: 1}}
-      transition={
-        show
-          ? {duration: 0.2}
-          : // We delay the showing the element to avoid flickering
-            {delay: 1, duration: 0.2}
-      }
-    >
-      {children}
-    </motion.div>
-  )
-}
 
 /**
  * This component will render the tabs for the document pane, following this rules:
@@ -37,15 +20,9 @@ function DelayedDiv({children, show}: {show: boolean; children: ReactNode}) {
 export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
 
-  const [tabList, setTabList] = useState<HTMLDivElement | null>(null)
-  const tabListSize = useElementSize(tabList)
-
-  const tabListWidth = tabListSize?.border?.width ?? 0
-
   const tabPanelId = `${paneKey}tabpanel`
 
   return (
-    <DelayedDiv show={Boolean(tabListWidth)}>
       <TabList space={1} ref={setTabList}>
         {views.map((view, index) => (
           <DocumentHeaderTab
@@ -59,7 +36,6 @@ export function DocumentHeaderTabs() {
           />
         ))}
       </TabList>
-    </DelayedDiv>
   )
 }
 
