@@ -1443,8 +1443,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^1.0.16
-        version: 1.0.16(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
+        specifier: ^1.0.18
+        version: 1.0.18(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.10
         version: 2.1.10(@sanity/client@7.0.0(debug@4.4.0))
@@ -4832,11 +4832,11 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation-comlink@1.0.16':
-    resolution: {integrity: sha512-ff5eb9TnMM7R+X66yZ8CL06e0u7KY5taBXt8TEgVsnE/Rx6jYoDnrN002b1TBQfVH11o3QszF1QMyzN9uXgMVw==}
+  '@sanity/presentation-comlink@1.0.18':
+    resolution: {integrity: sha512-VgPgVlt50CWOWcEV4Gk0E8UnIgTaX8VfATeXbaeC7Oy1l5c7cVRr5g5wFacTaEqdNusOggSK9LGRrZgmjiZ/7w==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.29.0
+      '@sanity/client': ^7.0.0
 
   '@sanity/prettier-config@1.0.3':
     resolution: {integrity: sha512-daeoWaW67I2t3yIV1s3PI2o8+A7jZnucFQzaIphpFDhHYM/mqjNvEROka300TcZ1Csm4VyPBSvx1IQQ/FkqA5Q==}
@@ -15364,7 +15364,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
       '@sanity/comlink': 3.0.2
-      '@sanity/presentation-comlink': 1.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 1.0.18(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 2.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -15773,7 +15773,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation-comlink@1.0.16(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.18(@sanity/client@6.29.1)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.0)
       '@sanity/comlink': 3.0.2
@@ -15781,7 +15781,7 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/presentation-comlink@1.0.16(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.18(@sanity/client@7.0.0(debug@4.4.0))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
       '@sanity/comlink': 3.0.2
@@ -15789,7 +15789,7 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/presentation-comlink@1.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.18(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.0.0(debug@4.4.0)
       '@sanity/comlink': 3.0.2
@@ -16181,7 +16181,7 @@ snapshots:
       '@sanity/icons': 3.7.0(react@19.1.0)
       '@sanity/insert-menu': 1.1.11(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.19.2)
-      '@sanity/presentation-comlink': 1.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 1.0.18(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 2.1.10(@sanity/client@7.0.0(debug@4.4.0))
       '@sanity/ui': 2.15.14(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@sanity/visual-editing-csm': 2.0.16(@sanity/client@7.0.0)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
