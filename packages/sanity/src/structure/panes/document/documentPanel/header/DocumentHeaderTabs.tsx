@@ -1,9 +1,8 @@
-import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
-import {Menu, TabList, useElementSize} from '@sanity/ui'
+import {TabList, useElementSize} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {type ComponentType, type ReactNode, useCallback, useState} from 'react'
 
-import {Button, MenuButton, MenuItem, Tab} from '../../../../../ui-components'
+import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
 
@@ -35,51 +34,16 @@ function DelayedDiv({children, show}: {show: boolean; children: ReactNode}) {
  * it will not change back to tabs, this is a limitation of the current implementation but an ok tradeoff to avoid mounting
  * ghost elements just to measure the width.
  */
-export function DocumentHeaderTabs({parentRef}: {parentRef: HTMLDivElement | null}) {
+export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
 
   const [tabList, setTabList] = useState<HTMLDivElement | null>(null)
-  const parentSize = useElementSize(parentRef)
   const tabListSize = useElementSize(tabList)
 
-  const parentWidth = parentSize?.border?.width ?? 0
   const tabListWidth = tabListSize?.border?.width ?? 0
 
   const tabPanelId = `${paneKey}tabpanel`
-  const activeTab = views.find((view) => view.id === activeViewId)
 
-  if (parentWidth < 480 || tabListWidth > 200) {
-    return (
-      <DelayedDiv
-        // We immediately show the dropdown if the elements have been calculated
-        show={Boolean(parentWidth + tabListWidth)}
-      >
-        <MenuButton
-          id={`${paneKey}tab-menu`}
-          popover={{
-            placement: 'bottom-end',
-            portal: true,
-          }}
-          button={<Button iconRight={ChevronDownIcon} mode="bleed" text={activeTab?.title ?? ''} />}
-          menu={
-            <Menu>
-              {views.map((view, index) => (
-                <DocumentHeaderMenuItem
-                  icon={view.icon}
-                  id={`${paneKey}tab-${view.id}`}
-                  isActive={activeViewId === view.id}
-                  key={view.id}
-                  label={view.title}
-                  tabPanelId={tabPanelId}
-                  viewId={index === 0 ? null : (view.id ?? null)}
-                />
-              ))}
-            </Menu>
-          }
-        />
-      </DelayedDiv>
-    )
-  }
   return (
     <DelayedDiv show={Boolean(tabListWidth)}>
       <TabList space={1} ref={setTabList}>
@@ -96,34 +60,6 @@ export function DocumentHeaderTabs({parentRef}: {parentRef: HTMLDivElement | nul
         ))}
       </TabList>
     </DelayedDiv>
-  )
-}
-
-function DocumentHeaderMenuItem(props: {
-  icon?: ComponentType | ReactNode
-  id: string
-  isActive: boolean
-  label: string
-  tabPanelId: string
-  viewId: string | null
-}) {
-  const {icon, id, isActive, label, tabPanelId, viewId} = props
-  const {ready, editState} = useDocumentPane()
-  const {setView} = usePaneRouter()
-  const handleClick = useCallback(() => setView(viewId), [setView, viewId])
-
-  return (
-    <MenuItem
-      aria-controls={tabPanelId}
-      disabled={!ready && !editState?.draft && !editState?.published}
-      icon={icon}
-      id={id}
-      text={label}
-      onClick={handleClick}
-      selected={isActive}
-      pressed={isActive}
-      iconRight={isActive ? CheckmarkIcon : undefined}
-    />
   )
 }
 
