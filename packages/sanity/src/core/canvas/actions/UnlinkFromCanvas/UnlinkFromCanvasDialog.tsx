@@ -7,14 +7,14 @@ import {Dialog} from '../../../../ui-components'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {unstable_useValuePreview} from '../../../preview/useValuePreview'
+import {unstable_useValuePreview as useValuePreview} from '../../../preview/useValuePreview'
 import {canvasLocaleNamespace} from '../../i18n'
 
 const useDocumentTitle = ({document}: {document: SanityDocument}) => {
   const schema = useSchema()
   const schemaType = schema.get(document._type)
 
-  const {error, value} = unstable_useValuePreview({
+  const {error, value} = useValuePreview({
     enabled: Boolean(document),
     schemaType,
     value: document,
