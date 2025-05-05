@@ -563,6 +563,7 @@ exports[`exports snapshot 1`] = `
     "useListFormat": "function",
     "useLoadable": "function",
     "useLocale": "function",
+    "useManageFavorite": "function",
     "useMiddlewareComponents": "function",
     "useNavigateToCanvasDoc": "function",
     "useNumberFormat": "function",
