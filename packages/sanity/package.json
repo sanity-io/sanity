@@ -169,7 +169,7 @@
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.38.2",
-    "@sanity/insert-menu": "^1.1.9",
+    "@sanity/insert-menu": "^1.1.11",
     "@sanity/logos": "^2.1.13",
     "@sanity/message-protocol": "^0.9.0",
     "@sanity/migrate": "workspace:*",
