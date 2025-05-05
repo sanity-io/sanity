@@ -1,11 +1,9 @@
-import {TabList, useElementSize} from '@sanity/ui'
-import {motion} from 'framer-motion'
-import {type ComponentType, type ReactNode, useCallback, useState} from 'react'
+import {TabList} from '@sanity/ui'
+import {type ComponentType, type ReactNode, useCallback} from 'react'
 
 import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
-
 
 /**
  * This component will render the tabs for the document pane, following this rules:
@@ -23,19 +21,19 @@ export function DocumentHeaderTabs() {
   const tabPanelId = `${paneKey}tabpanel`
 
   return (
-      <TabList space={1} ref={setTabList}>
-        {views.map((view, index) => (
-          <DocumentHeaderTab
-            icon={view.icon}
-            id={`${paneKey}tab-${view.id}`}
-            isActive={activeViewId === view.id}
-            key={view.id}
-            label={view.title}
-            tabPanelId={tabPanelId}
-            viewId={index === 0 ? null : (view.id ?? null)}
-          />
-        ))}
-      </TabList>
+    <TabList space={1}>
+      {views.map((view, index) => (
+        <DocumentHeaderTab
+          icon={view.icon}
+          id={`${paneKey}tab-${view.id}`}
+          isActive={activeViewId === view.id}
+          key={view.id}
+          label={view.title}
+          tabPanelId={tabPanelId}
+          viewId={index === 0 ? null : (view.id ?? null)}
+        />
+      ))}
+    </TabList>
   )
 }
 
