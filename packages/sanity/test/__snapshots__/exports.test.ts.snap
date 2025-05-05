@@ -25,6 +25,7 @@ exports[`exports snapshot 1`] = `
     "BooleanInput": "function",
     "COMMENTS_INSPECTOR_NAME": "string",
     "CONNECTING": "object",
+    "CapabilityGate": "function",
     "ChangeBreadcrumb": "function",
     "ChangeConnectorRoot": "function",
     "ChangeFieldWrapper": "function",

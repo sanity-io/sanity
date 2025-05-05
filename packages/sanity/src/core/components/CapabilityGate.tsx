@@ -16,6 +16,8 @@ type Props = PropsWithChildren<{
  * This allows consumers of the component to conveniently mark a portion of the React tree as
  * providing a capability that may be overriden by the Studio rendering context. If the rendering
  * context provides this capability, the local implementation will not be rendered.
+ *
+ * @internal
  */
 export const CapabilityGate: ComponentType<Props> = ({
   children,
