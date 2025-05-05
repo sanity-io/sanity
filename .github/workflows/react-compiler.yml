@@ -24,7 +24,7 @@ jobs:
           cache: pnpm
           node-version: lts/*
       - run: pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-compiler@rc
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: generate-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
