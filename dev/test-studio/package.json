@@ -16,7 +16,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.21",
+    "@portabletext/block-tools": "^1.1.23",
     "@portabletext/editor": "^1.48.0",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.2.2",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@million/lint": "1.0.14",
-    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
+    "babel-plugin-react-compiler": "19.1.0-rc.1",
     "chokidar": "^3.6.0",
     "vite": "^6.2.6"
   }
