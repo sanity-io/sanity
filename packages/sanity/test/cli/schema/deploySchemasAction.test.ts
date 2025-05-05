@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -8,6 +8,7 @@ import {
   type DeploySchemasFlags,
 } from '../../../src/_internal/cli/actions/schema/deploySchemasAction'
 import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
+import {SCHEMA_PERMISSION_HELP_TEXT} from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
 import {
   type DefaultWorkspaceSchemaId,
   SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
@@ -401,6 +402,77 @@ describe('deploySchemasAction', () => {
           print:
             '↳ Error when storing schemas:\n' +
             '  Failed to deploy 1/1 schemas. Successfully deployed 0/1 schemas.',
+        },
+        {print: '↳ List deployed schemas with: sanity schema list'},
+      ])
+      expect(status).toEqual('failure')
+    })
+
+    it('should log custom error when deploy 401', async () => {
+      const flags: DeploySchemasFlags = {}
+      //spagetti
+      const otherProject = 'otherProject'
+      let lastCreateClient: SanityClient = defaultContext.apiClient()
+      const clientOverrides: any = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        withConfig: (newConfig: any) => {
+          lastCreateClient = createMockSanityClient(
+            {...testWorkspace, ...newConfig, mockStores},
+            clientOverrides,
+          ).client
+          return lastCreateClient
+        },
+        request: async () => {
+          if (lastCreateClient.config().projectId === otherProject) {
+            throw new ClientError({
+              statusCode: 401,
+              headers: {},
+              body: {error: 'Cant touch this', message: 'Nope'},
+            })
+          }
+        },
+      }
+
+      const status = await deploySchemasAction(flags, {
+        ...defaultContext,
+        apiClient: () =>
+          createMockSanityClient({...testWorkspace, mockStores}, clientOverrides).client,
+        jsonReader: createMockJsonReader({
+          staticDate,
+          files: {
+            [`${workDir}/dist/static/${MANIFEST_FILENAME}`]: {
+              ...testManifest,
+              workspaces: [
+                {
+                  ...testWorkspace,
+                  basePath: '/workspace1',
+                },
+                {
+                  ...testWorkspace,
+                  projectId: otherProject,
+                  basePath: '/workspace2',
+                },
+              ],
+            },
+          },
+          fallbackReader: defaultContext.jsonReader,
+        }),
+      })
+
+      expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
+        {
+          print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
+        },
+        {
+          error: `↳ No permissions to write schema for workspace "testWorkspace" – {"projectId":"otherProject","dataset":"testDataset"}. ${
+            SCHEMA_PERMISSION_HELP_TEXT
+          }:\n  Cant touch this - Nope`,
+        },
+        {
+          print:
+            '↳ Error when storing schemas:\n' +
+            '  Failed to deploy 1/2 schemas. Successfully deployed 1/2 schemas.',
         },
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])

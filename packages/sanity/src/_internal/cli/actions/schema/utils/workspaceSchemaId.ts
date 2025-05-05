@@ -11,7 +11,7 @@ export function getWorkspaceSchemaId(args: {workspaceName: string; tag?: string}
   let workspaceName = rawWorkspaceName
   let idWarning: string | undefined
 
-  // API replaces periods with _ in the workspace name, so should the CLI to
+  // The HTTP API replaces periods with _ in the workspace name, so the CLI should too
   if (!workspaceName.match(validForNamesPattern)) {
     workspaceName = workspaceName.replace(new RegExp(`[^${validForNamesChars}]`, 'g'), '_')
     idWarning = [

@@ -13,6 +13,7 @@ import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaSto
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
 import {type CreateManifestReader, createManifestReader} from './utils/manifestReader'
 import {createSchemaApiClient} from './utils/schemaApiClient'
+import {projectIdDatasetPair} from './utils/schemaStoreOutStrings'
 import {
   FlagValidationError,
   parseDeploySchemasConfig,
@@ -181,11 +182,11 @@ function createStoreWorkspaceSchema(args: {
         )
       }
     } catch (err) {
-      if ('statusCode' in err && err.cause?.statusCode === 401) {
+      if ('statusCode' in err && err?.statusCode === 401) {
         output.error(
-          `↳ No permissions to write schema for workspace "${workspace.name}". ${
+          `↳ No permissions to write schema for workspace "${workspace.name}" – ${projectIdDatasetPair(workspace)}. ${
             SCHEMA_PERMISSION_HELP_TEXT
-          }`,
+          }:\n  ${chalk.red(`${err.message}`)}`,
         )
       } else {
         output.error(

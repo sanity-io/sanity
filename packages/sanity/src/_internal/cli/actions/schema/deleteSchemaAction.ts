@@ -28,15 +28,20 @@ interface DeleteResult {
 }
 
 class DeleteIdError extends Error {
-  public id: string
+  public schemaId: string
   public projectId: string
   public dataset: string
-  constructor(id: string, projectId: string, dataset: string, options?: ErrorOptions) {
-    super((options?.cause as {message?: string})?.message, options)
+  constructor(args: {
+    schemaId: string
+    projectId: string
+    dataset: string
+    options?: ErrorOptions
+  }) {
+    super((args.options?.cause as {message?: string})?.message, args.options)
     this.name = 'DeleteIdError'
-    this.id = id
-    this.projectId = projectId
-    this.dataset = dataset
+    this.schemaId = args.schemaId
+    this.projectId = args.projectId
+    this.dataset = args.dataset
   }
 }
 
@@ -85,11 +90,11 @@ export async function deleteSchemaAction(
   const results = await Promise.allSettled(
     projectDatasets.flatMap(({projectId: targetProjectId, dataset: targetDataset}) => {
       return ids.map(async ({schemaId}): Promise<DeleteResult> => {
+        const targetClient = client.withConfig({
+          projectId: targetProjectId,
+          dataset: targetDataset,
+        })
         try {
-          const targetClient = client.withConfig({
-            projectId: targetProjectId,
-            dataset: targetDataset,
-          })
           const existing = await targetClient.getDocument(schemaId)
           if (!existing) {
             return {
@@ -111,7 +116,12 @@ export async function deleteSchemaAction(
             deleted: !!deletedSchema?.deleted,
           }
         } catch (err) {
-          throw new DeleteIdError(schemaId, projectId, targetDataset, {cause: err})
+          throw new DeleteIdError({
+            schemaId,
+            projectId: targetProjectId,
+            dataset: targetDataset,
+            options: {cause: err},
+          })
         }
       })
     }),
@@ -130,13 +140,12 @@ export async function deleteSchemaAction(
         if (error instanceof DeleteIdError) {
           output.error(
             chalk.red(
-              `Failed to delete schema "${error.id}" in "${projectIdDatasetPair(error)}":\n${error.message}`,
+              `Failed to delete schema "${error.schemaId}" in "${projectIdDatasetPair(error)}":\n${error.message}`,
             ),
           )
           if (verbose) output.error(error)
-          return error.id
+          return error.schemaId
         }
-        //hubris inc: given the try-catch wrapping the full promise "this should never happen"
         throw error
       }),
   )

@@ -370,7 +370,11 @@ describe('deleteSchemasAction', () => {
       },
       request: async () => {
         if (lastCreateClient.config().projectId === otherProject) {
-          throw new ClientError({statusCode: 401, headers: {}, body: {}})
+          throw new ClientError({
+            statusCode: 401,
+            headers: {},
+            body: {error: 'Cant touch this', message: 'Nope'},
+          })
         }
         return Object.values(mockStores[getMockStoreKey(lastCreateClient.config())] ?? {})
       },
@@ -409,7 +413,7 @@ describe('deleteSchemasAction', () => {
       {
         warn: `↳ No permissions to read schema from {"projectId":"otherProject","dataset":"testDataset"}. ${
           SCHEMA_PERMISSION_HELP_TEXT
-        }`,
+        }:\n  Cant touch this - Nope`,
       },
       {
         print:

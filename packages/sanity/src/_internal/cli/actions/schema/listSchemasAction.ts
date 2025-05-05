@@ -24,10 +24,10 @@ export interface SchemaListFlags extends SchemaStoreCommonFlags {
 class DatasetError extends Error {
   public projectId: string
   public dataset: string
-  constructor(projectId: string, dataset: string, options?: ErrorOptions) {
-    super((options?.cause as {message?: string})?.message, options)
-    this.projectId = projectId
-    this.dataset = dataset
+  constructor(args: {projectId: string; dataset: string; options?: ErrorOptions}) {
+    super((args.options?.cause as {message?: string})?.message, args.options)
+    this.projectId = args.projectId
+    this.dataset = args.dataset
     this.name = 'DatasetError'
   }
 }
@@ -80,7 +80,7 @@ export async function listSchemasAction(
               url: `/projects/${projectId}/datasets/${dataset}/schemas`,
             })
       } catch (error) {
-        throw new DatasetError(projectId, dataset, {cause: error})
+        throw new DatasetError({projectId, dataset, options: {cause: error}})
       }
     }),
   )
@@ -101,7 +101,7 @@ export async function listSchemasAction(
           output.warn(
             `↳ No permissions to read schema from ${projectIdDatasetPair(error)}. ${
               SCHEMA_PERMISSION_HELP_TEXT
-            }`,
+            }:\n  ${chalk.red(`${error.message}`)}`,
           )
           return []
         }
