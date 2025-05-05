@@ -60,14 +60,45 @@ export function ErrorReportingTest() {
             onClick={handleShouldRenderWithError}
             tone="primary"
           />
+
+          <Button
+            text="Trigger Resize observer loop"
+            onClick={handleTriggerResizeObserveLoop}
+            tone="primary"
+          />
         </Stack>
       </Flex>
 
       {doRenderError && <WithRenderError />}
+      {triggerResizeObserverLoop && <ResizeObserverLoop />}
     </Card>
   )
 }
 
 function WithRenderError({text}: any) {
   return <div>{text.toUpperCase()}</div>
+}
+
+function ResizeObserverLoop() {
+  const elementRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentBoxSize) {
+          elementRef.current!.style.width = `${entry.contentRect.width + 1}px`
+        }
+      }
+    })
+
+    if (elementRef.current) {
+      resizeObserver.observe(elementRef.current)
+    }
+  }, [])
+
+  return (
+    <div ref={elementRef} style={{backgroundColor: 'red'}}>
+      err err
+    </div>
+  )
 }
