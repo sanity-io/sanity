@@ -63,6 +63,11 @@ describe('deployStudioAction', () => {
       },
       prompt: {single: vi.fn()},
       cliConfig: {},
+      telemetry: {
+        updateUserProperties: vi.fn(),
+        log: vi.fn(),
+        trace: vi.fn(() => ({start: vi.fn(), error: vi.fn(), complete: vi.fn()}) as any),
+      },
     } as unknown as CliCommandContext
   })
 

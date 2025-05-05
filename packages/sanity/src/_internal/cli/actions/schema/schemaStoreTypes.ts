@@ -1,4 +1,5 @@
-import {type CliApiClient, type CliOutputter} from '@sanity/cli'
+import {type CliApiClient, type CliOutputter, type TelemetryUserProperties} from '@sanity/cli'
+import {type TelemetryLogger} from '@sanity/telemetry'
 
 import {type ManifestExtractor} from './utils/mainfestExtractor'
 import {type ManifestJsonReader} from './utils/manifestReader'
@@ -9,6 +10,7 @@ export interface SchemaStoreContext {
   workDir: string
   jsonReader?: ManifestJsonReader
   manifestExtractor: ManifestExtractor
+  telemetry: TelemetryLogger<TelemetryUserProperties>
 }
 
 /**

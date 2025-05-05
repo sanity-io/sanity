@@ -1,8 +1,7 @@
-import {type CliOutputter} from '@sanity/cli'
 import uniqBy from 'lodash/uniqBy'
 
 import {isDefined} from '../../../../manifest/manifestTypeHelpers'
-import {SANITY_WORKSPACE_SCHEMA_TYPE} from '../../../../manifest/manifestTypes'
+import {SANITY_WORKSPACE_SCHEMA_ID_PREFIX} from '../../../../manifest/manifestTypes'
 import {type DeleteSchemaFlags} from '../deleteSchemaAction'
 import {type DeploySchemasFlags} from '../deploySchemasAction'
 import {type SchemaListFlags} from '../listSchemasAction'
@@ -11,10 +10,15 @@ import {resolveManifestDirectory} from './manifestReader'
 export const validForIdChars = 'a-zA-Z0-9._-'
 export const validForIdPattern = new RegExp(`^[${validForIdChars}]+$`, 'g')
 
-const requiredInId = SANITY_WORKSPACE_SCHEMA_TYPE.replace(/[.]/g, '\\.')
-const idPattern = new RegExp(
-  `^(?:[${validForIdChars}]+?\\.)?${requiredInId}\\.([${validForIdChars}]+)$`,
-)
+//no periods allowed in workspaceName or tag in ids
+export const validForNamesChars = 'a-zA-Z0-9_-'
+export const validForNamesPattern = new RegExp(`^[${validForNamesChars}]+$`, 'g')
+
+const requiredInId = SANITY_WORKSPACE_SCHEMA_ID_PREFIX.replace(/[.]/g, '\\.')
+
+const idIdPatternString = `^${requiredInId}\\.([${validForNamesChars}]+)`
+const baseIdPattern = new RegExp(`${idIdPatternString}$`)
+const taggedIdIdPattern = new RegExp(`${idIdPatternString}\\.tag\\.([${validForNamesChars}]+)$`)
 
 export class FlagValidationError extends Error {
   constructor(message: string) {
@@ -57,11 +61,11 @@ export function parseDeploySchemasConfig(flags: DeploySchemasFlags, context: {wo
 
   const commonFlags = parseCommonFlags(flags, context, errors)
   const workspaceName = parseWorkspace(flags, errors)
-  const idPrefix = parseIdPrefix(flags, errors)
+  const tag = parseTag(flags, errors)
   const schemaRequired = !!flags['schema-required']
 
   assertNoErrors(errors)
-  return {...commonFlags, workspaceName, idPrefix, schemaRequired}
+  return {...commonFlags, workspaceName, tag, schemaRequired}
 }
 
 export function parseListSchemasConfig(flags: SchemaListFlags, context: {workDir: string}) {
@@ -142,12 +146,15 @@ export function parseWorkspaceSchemaId(id: string, errors: string[]) {
     errors.push(`id cannot have consecutive . (period) characters, but found: "${trimmedId}"`)
     return undefined
   }
-
-  const match = trimmedId.match(idPattern)
-  const workspace = match?.[1] ?? ''
+  const [fullMatch, workspace, tag] =
+    trimmedId.match(taggedIdIdPattern) ?? trimmedId.match(baseIdPattern) ?? []
   if (!workspace) {
     errors.push(
-      `id must end with ${SANITY_WORKSPACE_SCHEMA_TYPE}.<workspaceName> but found: "${trimmedId}"`,
+      [
+        `id must either match ${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.<workspaceName> `,
+        `or ${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.<workspaceName>.tag.<tag> but found: "${trimmedId}". `,
+        `Note that workspace name characters not in [${validForNamesChars}] has to be replaced with _ for schema id.`,
+      ].join(''),
     )
     return undefined
   }
@@ -171,39 +178,32 @@ function parseManifestDir(flags: {'manifest-dir'?: unknown}, errors: string[]) {
     : parseNonEmptyString(flags, 'manifest-dir', errors)
 }
 
-export function parseIdPrefix(flags: {'id-prefix'?: unknown}, errors: string[]) {
-  if (flags['id-prefix'] === undefined) {
+export function parseTag(flags: {tag?: unknown}, errors: string[]) {
+  if (flags.tag === undefined) {
     return undefined
   }
 
-  const idPrefix = parseNonEmptyString(flags, 'id-prefix', errors)
+  const tag = parseNonEmptyString(flags, 'tag', errors)
   if (errors.length) {
     return undefined
   }
 
-  if (idPrefix.endsWith('.')) {
-    errors.push(`id-prefix argument cannot end with . (period), but was: "${idPrefix}"`)
+  if (tag.includes('.')) {
+    errors.push(`tag cannot contain . (period), but was: "${tag}"`)
     return undefined
   }
 
-  if (!idPrefix.match(validForIdPattern)) {
-    errors.push(
-      `id-prefix can only contain _id compatible characters [${validForIdChars}], but was: "${idPrefix}"`,
-    )
+  if (!tag.match(validForNamesPattern)) {
+    errors.push(`tag can only contain characters in [${validForNamesChars}], but was: "${tag}"`)
     return undefined
   }
 
-  if (idPrefix.startsWith('-')) {
-    errors.push(`id-prefix cannot start with - (dash) but was: "${idPrefix}"`)
+  if (tag.startsWith('-')) {
+    errors.push(`tag cannot start with - (dash) but was: "${tag}"`)
     return undefined
   }
 
-  if (idPrefix.match(/\.\./g)) {
-    errors.push(`id-prefix cannot have consecutive . (period) characters, but was: "${idPrefix}"`)
-    return undefined
-  }
-
-  return idPrefix
+  return tag
 }
 
 function parseNonEmptyString<
@@ -222,31 +222,5 @@ function isString(flag: unknown): flag is string {
   return typeof flag === 'string'
 }
 
-function getProjectIdMismatchMessage(
-  workspace: {name: string; projectId: string},
-  operation: 'read' | 'write',
-) {
-  return `No permissions to ${operation} schema for workspace "${workspace.name}" with projectId "${workspace.projectId}"`
-}
-
-/**
- * At the moment schema store commands does not support studios where workspaces have multiple projects
- */
-export function throwWriteProjectIdMismatch(
-  workspace: {name: string; projectId: string},
-  projectId: string,
-): void {
-  if (workspace.projectId !== projectId) {
-    throw new Error(getProjectIdMismatchMessage(workspace, 'write'))
-  }
-}
-
-export function filterLogReadProjectIdMismatch(
-  workspace: {name: string; projectId: string},
-  projectId: string,
-  output: CliOutputter,
-) {
-  const canRead = workspace.projectId === projectId
-  if (!canRead) output.warn(`${getProjectIdMismatchMessage(workspace, 'read')} – ignoring it.`)
-  return canRead
-}
+export const SCHEMA_PERMISSION_HELP_TEXT =
+  'For multi-project workspaces, set SANITY_AUTH_TOKEN environment variable to a token with access to the workspace projects.'

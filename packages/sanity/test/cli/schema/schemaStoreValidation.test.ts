@@ -2,76 +2,102 @@ import {describe, expect, test} from 'vitest'
 
 import {
   parseId,
-  parseIdPrefix,
   parseIds,
+  parseTag,
   parseWorkspaceSchemaId,
 } from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
 
 const workspaceIdCases = [
   {
-    input: 'sanity.workspace.schema.testWorkspace',
+    input: '_.schemas.testWorkspace',
     output: {
-      schemaId: 'sanity.workspace.schema.testWorkspace',
+      schemaId: '_.schemas.testWorkspace',
       workspace: 'testWorkspace',
     },
     expectedErrors: [],
   },
   {
-    input: 'prefixed.sanity.workspace.schema.testWorkspace',
+    input: '_.schemas.testWorkspace.tag.someTag',
     output: {
-      schemaId: 'prefixed.sanity.workspace.schema.testWorkspace',
+      schemaId: '_.schemas.testWorkspace.tag.someTag',
       workspace: 'testWorkspace',
     },
     expectedErrors: [],
   },
   {
-    input: 'sanity.workspace.schema.testWorkspace-.123',
+    input: '_.schemas.testWorkspace-.123',
+    output: undefined,
+    expectedErrors: [
+      'id must either match _.schemas.<workspaceName> or ' +
+        '_.schemas.<workspaceName>.tag.<tag> but found: "_.schemas.testWorkspace-.123". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
+    ],
+  },
+  {
+    input: '_.schemas.testWorkspace-_123',
     output: {
-      schemaId: 'sanity.workspace.schema.testWorkspace-.123',
-      workspace: 'testWorkspace-.123',
+      schemaId: '_.schemas.testWorkspace-_123',
+      workspace: 'testWorkspace-_123',
     },
     expectedErrors: [],
   },
   {
-    input: 'sanity.workspace.schema.abc%&/',
+    input: '_.schemas.abc%&/',
     output: undefined,
     expectedErrors: [
-      'id can only contain characters in [a-zA-Z0-9._-] but found: "sanity.workspace.schema.abc%&/"',
+      'id can only contain characters in [a-zA-Z0-9._-] but found: "_.schemas.abc%&/"',
     ],
   },
   {
-    input: 'prefixed.sanity.workspace.schema',
+    input: 'prefixed._.schemas',
     output: undefined,
     expectedErrors: [
-      'id must end with sanity.workspace.schema.<workspaceName> but found: "prefixed.sanity.workspace.schema"',
+      'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "prefixed._.schemas". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
     ],
   },
   {
-    input: 'sanity.workspace.schema',
+    input: '_.schemas',
     output: undefined,
     expectedErrors: [
-      'id must end with sanity.workspace.schema.<workspaceName> but found: "sanity.workspace.schema"',
+      'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "_.schemas". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
     ],
   },
   {
     input: 'prefixed.testWorkspace',
     output: undefined,
     expectedErrors: [
-      'id must end with sanity.workspace.schema.<workspaceName> but found: "prefixed.testWorkspace"',
+      'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "prefixed.testWorkspace". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
     ],
   },
   {
-    input: '-sanity.workspace.schema.testWorkspace',
+    input: '_.schemas.testWorkspace.tag',
     output: undefined,
     expectedErrors: [
-      'id cannot start with - (dash) but found: "-sanity.workspace.schema.testWorkspace"',
+      'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "_.schemas.testWorkspace.tag". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
     ],
   },
   {
-    input: 'sanity.workspace.schema..testWorkspace',
+    input: '_.schemas.testWorkspace.tag.tag.with.dot',
     output: undefined,
     expectedErrors: [
-      'id cannot have consecutive . (period) characters, but found: "sanity.workspace.schema..testWorkspace"',
+      'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "_.schemas.testWorkspace.tag.tag.with.dot". ' +
+        'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
+    ],
+  },
+  {
+    input: '-_.schemas.testWorkspace',
+    output: undefined,
+    expectedErrors: ['id cannot start with - (dash) but found: "-_.schemas.testWorkspace"'],
+  },
+  {
+    input: '_.schemas..testWorkspace',
+    output: undefined,
+    expectedErrors: [
+      'id cannot have consecutive . (period) characters, but found: "_.schemas..testWorkspace"',
     ],
   },
 ] as const
@@ -82,8 +108,8 @@ describe('schemaStoreValidation', () => {
       test(`${JSON.stringify(input)} -> ${JSON.stringify(output)}  (expectError: ${!!expectedErrors.length})`, () => {
         const errors: string[] = []
         const result = parseWorkspaceSchemaId(input, errors)
-        expect(result).toEqual(output)
         expect(errors).toEqual(expectedErrors)
+        expect(result).toEqual(output)
       })
     })
   })
@@ -126,58 +152,63 @@ describe('schemaStoreValidation', () => {
         expectedErrors: ['ids contains no valid id strings'],
       },
       {
-        input: 'sanity.workspace.schema.testWorkspace',
+        input: '_.schemas.testWorkspace',
         output: [
           {
-            schemaId: 'sanity.workspace.schema.testWorkspace',
+            schemaId: '_.schemas.testWorkspace',
             workspace: 'testWorkspace',
           },
         ],
         expectedErrors: [],
       },
       {
-        input: 'sanity.workspace.schema.a,sanity.workspace.schema.b',
+        input: '_.schemas.a,_.schemas.b',
         output: [
-          {schemaId: 'sanity.workspace.schema.a', workspace: 'a'},
-          {schemaId: 'sanity.workspace.schema.b', workspace: 'b'},
+          {schemaId: '_.schemas.a', workspace: 'a'},
+          {schemaId: '_.schemas.b', workspace: 'b'},
         ],
         expectedErrors: [],
       },
       {
-        input: '  sanity.workspace.schema.a ,       sanity.workspace.schema.b',
+        input: '  _.schemas.a ,       _.schemas.b',
         output: [
-          {schemaId: 'sanity.workspace.schema.a', workspace: 'a'},
-          {schemaId: 'sanity.workspace.schema.b', workspace: 'b'},
+          {schemaId: '_.schemas.a', workspace: 'a'},
+          {schemaId: '_.schemas.b', workspace: 'b'},
         ],
         expectedErrors: [],
       },
       {
-        input: 'sanity.workspace.schema.a, sanity.workspace.schema.abc%&/',
-        output: [{schemaId: 'sanity.workspace.schema.a', workspace: 'a'}],
+        input: '_.schemas.a, _.schemas.abc%&/',
+        output: [{schemaId: '_.schemas.a', workspace: 'a'}],
         expectedErrors: [
-          'id can only contain characters in [a-zA-Z0-9._-] but found: "sanity.workspace.schema.abc%&/"',
+          'id can only contain characters in [a-zA-Z0-9._-] but found: "_.schemas.abc%&/"',
         ],
       },
       {
         input:
-          'prefixed.sanity.workspace.schema,' +
-          '-sanity.workspace.schema.testWorkspace,' +
-          'sanity.workspace.schema..testWorkspace,' +
-          'sanity.workspace.schema.abc%&/',
+          'prefixed._.schemas,' +
+          '_.schemas.testWorkspace.tag,' +
+          '-_.schemas.testWorkspace,' +
+          '_.schemas..testWorkspace,' +
+          '_.schemas.abc%&/',
         output: [],
         expectedErrors: [
-          'id must end with sanity.workspace.schema.<workspaceName> but found: "prefixed.sanity.workspace.schema"',
-          'id cannot start with - (dash) but found: "-sanity.workspace.schema.testWorkspace"',
-          'id cannot have consecutive . (period) characters, but found: "sanity.workspace.schema..testWorkspace"',
-          'id can only contain characters in [a-zA-Z0-9._-] but found: "sanity.workspace.schema.abc%&/"',
+          'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "prefixed._.schemas". ' +
+            'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
+          'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "_.schemas.testWorkspace.tag". ' +
+            'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
+          'id cannot start with - (dash) but found: "-_.schemas.testWorkspace"',
+          'id cannot have consecutive . (period) characters, but found: "_.schemas..testWorkspace"',
+          'id can only contain characters in [a-zA-Z0-9._-] but found: "_.schemas.abc%&/"',
         ],
       },
       {
         //this test case checks that we dont get the "ids contains no valid id strings" if there is any other error
-        input: 'prefixed.sanity.workspace.schema,',
+        input: '_.schemas',
         output: [],
         expectedErrors: [
-          'id must end with sanity.workspace.schema.<workspaceName> but found: "prefixed.sanity.workspace.schema"',
+          'id must either match _.schemas.<workspaceName> or _.schemas.<workspaceName>.tag.<tag> but found: "_.schemas". ' +
+            'Note that workspace name characters not in [a-zA-Z0-9_-] has to be replaced with _ for schema id.',
         ],
       },
     ].forEach(({input, output, expectedErrors}) => {
@@ -190,42 +221,42 @@ describe('schemaStoreValidation', () => {
     })
   })
 
-  describe('parseIdPrefix', () => {
+  describe('parseTag', () => {
     ;[
       {input: 'prefix', output: 'prefix', expectedErrors: []},
-      {input: 'prefix.with.periods', output: 'prefix.with.periods', expectedErrors: []},
+      {
+        input: 'prefix.with.periods',
+        output: undefined,
+        expectedErrors: ['tag cannot contain . (period), but was: "prefix.with.periods"'],
+      },
       {input: undefined, output: undefined, expectedErrors: []},
-      {input: '', output: undefined, expectedErrors: ['id-prefix argument is empty']},
+      {input: '', output: undefined, expectedErrors: ['tag argument is empty']},
       {
         input: '-',
         output: undefined,
-        expectedErrors: ['id-prefix cannot start with - (dash) but was: "-"'],
+        expectedErrors: ['tag cannot start with - (dash) but was: "-"'],
       },
       {
         input: '.',
         output: undefined,
-        expectedErrors: ['id-prefix argument cannot end with . (period), but was: "."'],
+        expectedErrors: ['tag cannot contain . (period), but was: "."'],
       },
       {
         input: 'prefix..thing',
         output: undefined,
-        expectedErrors: [
-          'id-prefix cannot have consecutive . (period) characters, but was: "prefix..thing"',
-        ],
+        expectedErrors: ['tag cannot contain . (period), but was: "prefix..thing"'],
       },
       {
         input: 'prefix%',
         output: undefined,
-        expectedErrors: [
-          'id-prefix can only contain _id compatible characters [a-zA-Z0-9._-], but was: "prefix%"',
-        ],
+        expectedErrors: ['tag can only contain characters in [a-zA-Z0-9_-], but was: "prefix%"'],
       },
     ].forEach(({input, output, expectedErrors}) => {
       test(`${JSON.stringify(input)} -> ${JSON.stringify(output)} (expectError: ${!!expectedErrors.length})`, () => {
         const errors: string[] = []
-        const result = parseIdPrefix({'id-prefix': input}, errors)
-        expect(result).toEqual(output)
+        const result = parseTag({tag: input}, errors)
         expect(errors).toEqual(expectedErrors)
+        expect(result).toEqual(output)
       })
     })
   })
