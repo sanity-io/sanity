@@ -35,11 +35,11 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
 
   const handleUnlink = useCallback(async () => {
     try {
-      setStatus('loading')
-      unlinkApproved()
       if (!companionDoc?._id) {
         throw new Error('Companion doc not found')
       }
+      setStatus('loading')
+      unlinkApproved()
       await client.delete(companionDoc?._id)
       setStatus('idle')
       handleCloseDialog()
@@ -55,13 +55,7 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   }, [client, companionDoc?._id, handleCloseDialog, unlinkApproved, toast, t])
 
   const document = props.version || props.draft || props.published
-  if (!document) return null
-  if (
-    // If we are deleting the document in this action, we don't want to remove the dialog
-    // until we show to the users that the document has been deleted
-    !isDialogOpen &&
-    (!isLinked || loading)
-  ) {
+  if (!document || !isLinked || loading) {
     return null
   }
   return {
