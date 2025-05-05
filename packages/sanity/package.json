@@ -175,7 +175,7 @@
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^1.0.16",
-    "@sanity/preview-url-secret": "^2.1.7",
+    "@sanity/preview-url-secret": "^2.1.10",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "0.0.0-alpha.25",
     "@sanity/telemetry": "^0.8.0",
