@@ -46,7 +46,6 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
-  const hasLabelSuffix = deprecated || hasValidations || suffix
 
   return (
     <Stack space={3}>
@@ -61,16 +60,14 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           </Text>
         </Flex>
 
-        {/* Always render the LabelSuffix with flex layout when there's a suffix */}
         {suffix && (
           <Box marginLeft={2} data-testid="form-field-suffix">
             {suffix}
           </Box>
         )}
 
-        {/* Only render the validation and deprecated indicators in the LabelSuffix */}
         {(deprecated || hasValidations) && (
-          <LabelSuffix align="center" flex={1}>
+          <LabelSuffix align="center">
             {deprecated && (
               <Box marginLeft={2}>
                 <Badge data-testid={`deprecated-badge-${title}`} tone="caution">

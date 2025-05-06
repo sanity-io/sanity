@@ -279,7 +279,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
           </FormFieldStatus>
         </CenterAlignedBox>
         <ChangeIndicator hasFocus={Boolean(focused)} isChanged={changed} path={path}>
-          {input}
+          <div data-testid="change-bar-wrapper">
+            <div data-testid="change-bar__field-wrapper">{input}</div>
+          </div>
         </ChangeIndicator>
       </Flex>
     </Root>
