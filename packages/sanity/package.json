@@ -157,7 +157,7 @@
     "@sanity/asset-utils": "^2.0.6",
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.0.0",
+    "@sanity/client": "^7.1.0",
     "@sanity/color": "^3.0.0",
     "@sanity/comlink": "^3.0.2",
     "@sanity/diff": "workspace:*",
