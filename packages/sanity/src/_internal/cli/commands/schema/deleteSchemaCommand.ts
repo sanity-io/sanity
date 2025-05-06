@@ -16,14 +16,14 @@ Options
 
 Examples
   # Delete single schema
-  sanity schema delete --ids sanity.workspace.schema.workspaceName
+  sanity schema delete --ids _.schemas.workspaceName
 
   # Delete multiple schemas
-  sanity schema delete --ids sanity.workspace.schema.workspaceName,prefix.sanity.workspace.schema.otherWorkspace
+  sanity schema delete --ids _.schemas.workspaceName, _.schemas.otherWorkspace.tag.taggedSchema
 
   # Runs using a pre-existing manifest file
   # Config changes in sanity.config will not be picked up in this case
-  sanity schema delete --no-extract-manifest --ids sanity.workspace.schema.workspaceName
+  sanity schema delete --no-extract-manifest --ids _.schemas.workspaceName
 
 `
 

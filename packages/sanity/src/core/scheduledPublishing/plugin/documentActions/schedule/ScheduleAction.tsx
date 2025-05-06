@@ -4,7 +4,7 @@ import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
-  type DocumentActionDescription,
+  type DocumentActionComponent,
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
@@ -43,7 +43,7 @@ const debug = debugWithName('ScheduleAction')
 /**
  * @beta
  */
-export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
+export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {draft, id, liveEdit, onComplete, published, type} = props
   const timeZoneScope = {type: 'scheduledPublishing'} as const
 
@@ -169,3 +169,5 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
     ),
   }
 }
+
+ScheduleAction.action = 'schedule'

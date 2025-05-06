@@ -89,6 +89,7 @@ export const ReleasePublishAllButton = ({
               i18nKey="toast.publish.error"
               values={{
                 title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                error: publishingError.message,
               }}
             />
           </Text>

@@ -20,6 +20,7 @@ export interface PaneHeaderProps {
   tabIndex?: number
   tabs?: ReactNode
   title: ReactNode
+  appendTitle?: ReactNode
 }
 
 /**
@@ -31,8 +32,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {actions, backButton, border, contentAfter, loading, subActions, tabs, tabIndex, title} =
-    props
+  const {
+    actions,
+    backButton,
+    border,
+    contentAfter,
+    loading,
+    subActions,
+    tabs,
+    tabIndex,
+    title,
+    appendTitle,
+  } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -88,9 +99,12 @@ export const PaneHeader = forwardRef(function PaneHeader(
                   </Box>
                 )}
                 {!loading && (
-                  <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
+                  <Flex align="center" gap={1}>
+                    <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                      {title}
+                    </TitleText>
+                    {appendTitle}
+                  </Flex>
                 )}
               </TitleCard>
 

@@ -130,7 +130,8 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          # the id is based on the PR number and the workflow run id
+          SANITY_E2E_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-{1}-{2}', github.event.number, matrix.project, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
         run: pnpm e2e:setup && pnpm e2e:build
 
   playwright-test:
@@ -195,7 +196,8 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          # the id is based on the PR number and the workflow run id
+          SANITY_E2E_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-{1}-{2}', github.event.number, matrix.project, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 

@@ -70,3 +70,8 @@ export {
   type ValidateDocumentOptions,
 } from './validation'
 export * from './version'
+
+// If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
+// eslint-disable-next-line simple-import-sort/exports
+export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
+export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'

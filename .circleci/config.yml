@@ -40,5 +40,17 @@ jobs:
           name: Build bundle
           command: pnpm run build:bundle
       - run:
-          name: Copy to bucket
-          command: npm run bundle:upload
+          name: Copy to staging bucket
+          command: |
+            export GOOGLE_PROJECT_ID=$GCS_STAGING_PROJECT_ID
+            export GCLOUD_SERVICE_KEY=$GCS_STAGING_SERVICE_KEY
+            export GCLOUD_BUCKET=$GCS_STAGING_BUCKET
+            npm run bundle:upload
+
+      - run:
+          name: Copy to production bucket
+          command: |
+            export GOOGLE_PROJECT_ID=$GCS_PRODUCTION_PROJECT_ID
+            export GCLOUD_SERVICE_KEY=$GCS_PRODUCTION_SERVICE_KEY
+            export GCLOUD_BUCKET=$GCS_PRODUCTION_BUCKET
+            npm run bundle:upload

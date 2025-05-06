@@ -41,6 +41,22 @@ export interface SanityCreateOptions {
 }
 
 /**
+ * Options for configuring how Canvas app interfaces with the type or field.
+ *
+ * @public
+ */
+export interface CanvasAppOptions {
+  /** Set to true to exclude a type or field from appearing in Canvas */
+  exclude?: boolean
+
+  /**
+   * A short description of what the type or field is used for.
+   * Purpose can be used to improve how and when content mapping uses the field.
+   * */
+  purpose?: string
+}
+
+/**
  * `BaseOptions` applies to all type options.
  *
  *  It can be extended by interface declaration merging in plugins to provide generic options to all types and fields.
@@ -49,6 +65,7 @@ export interface SanityCreateOptions {
  *  */
 export interface BaseSchemaTypeOptions {
   sanityCreate?: SanityCreateOptions
+  canvasApp?: CanvasAppOptions
 }
 
 /** @public */

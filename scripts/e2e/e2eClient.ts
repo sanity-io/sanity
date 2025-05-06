@@ -7,6 +7,7 @@ export type KnownEnvVar =
   | 'SANITY_E2E_DATASET'
   | 'SANITY_E2E_PROJECT_ID'
   | 'SANITY_E2E_SESSION_TOKEN'
+  | 'PR_NUMBER'
 
 export function createE2EClient(dataset: string): SanityClient {
   return createClient({

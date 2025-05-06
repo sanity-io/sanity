@@ -23,8 +23,8 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
-      - run: pnpm -r up --ignore-scripts react-compiler-runtime@beta babel-plugin-react-compiler@beta eslint-plugin-react-compiler@beta
-      - uses: actions/create-github-app-token@v1
+      - run: pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-compiler@rc
+      - uses: actions/create-github-app-token@v2
         id: generate-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
@@ -39,7 +39,7 @@ jobs:
       - if: steps.check-changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
-          body: I ran `pnpm -r up react-compiler-runtime@beta babel-plugin-react-compiler@beta eslint-plugin-react-compiler@beta` 🧑‍💻
+          body: I ran `pnpm -r up react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-compiler@rc` 🧑‍💻
           branch: actions/react-compiler
           commit-message: "fix(deps): update react compiler dependencies 🤖 ✨"
           labels: 🤖 bot

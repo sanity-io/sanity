@@ -47,7 +47,17 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * })
    * ```
    */
-  action?: 'delete' | 'discardChanges' | 'duplicate' | 'restore' | 'publish' | 'unpublish'
+  action?:
+    | 'delete'
+    | 'discardChanges'
+    | 'duplicate'
+    | 'restore'
+    | 'publish'
+    | 'unpublish'
+    | 'linkToCanvas'
+    | 'editInCanvas'
+    | 'unlinkFromCanvas'
+    | 'schedule'
   /**
    * For debugging purposes
    */

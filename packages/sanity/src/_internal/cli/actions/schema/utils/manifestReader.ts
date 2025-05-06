@@ -82,7 +82,7 @@ export const createManifestReader: CreateManifestReaderFactory = ({
       throw Error(`No workspace named "${workspaceName}" found in manifest.`)
     }
 
-    const workspaceSchemaFile = path.join(manifestDir, workspaceManifest.schema)
+    const workspaceSchemaFile = path.join(manifestDir, workspaceManifest.schema ?? '')
     const result = await jsonReader<ManifestSchemaType[]>(workspaceSchemaFile)
     if (!result) {
       throw Error(`Workspace schema file at "${workspaceSchemaFile}" does not exist.`)

@@ -10,7 +10,7 @@ To re-use an existing manifest file, use --no-extract-manifest.
 
 Options:
   --workspace <workspace_name> deploy schema for a specific workspace
-  --id-prefix <prefix> add a prefix to the schema id
+  --tag <tag> add a tag suffix to the schema id
   --manifest-dir <directory> directory containing manifest file (default: ./dist/static)
   --no-extract-manifest disables manifest generation – the command will fail if no manifest exists
   --verbose print detailed information during deployment

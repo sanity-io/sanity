@@ -8,14 +8,14 @@ import {
 } from '@playwright/test'
 
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
-import {readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
+import {findEnv, readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
 
 loadEnvFiles()
 
 // Read environment variables
 const CI = readBoolEnv('CI', false)
 const HEADLESS = readBoolEnv('HEADLESS', true)
-const BASE_URL = readEnv('SANITY_E2E_BASE_URL') || 'http://localhost:3333'
+const BASE_URL = findEnv('SANITY_E2E_BASE_URL') || 'http://localhost:3339'
 const PROJECT_ID = readEnv('SANITY_E2E_PROJECT_ID')
 const TOKEN = readEnv('SANITY_E2E_SESSION_TOKEN')
 const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
