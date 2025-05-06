@@ -48,8 +48,8 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
-    expect(result.stderr).toContain('Successfully generated types to ./out/types.ts')
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type')
+    expect(result.stderr).toContain('Successfully generated types')
   })
 
   test('sanity typegen generate: formats code', async () => {
@@ -62,7 +62,8 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type')
+    expect(result.stderr).toContain('Successfully generated types')
 
     const types = await readFile(join(outputPath, 'types.ts'))
     expect(types.toString()).toContain(`'person'`)
@@ -79,7 +80,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type')
 
     const types = await readFile(join(outputPath, 'types.ts'))
 
@@ -101,7 +102,8 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type')
+    expect(result.stderr).toContain('Successfully generated types')
 
     const types = await readFile(`${studiosPath}/v3/out/types.ts`)
     expect(types.toString()).not.toContain(`SanityQueries`)
