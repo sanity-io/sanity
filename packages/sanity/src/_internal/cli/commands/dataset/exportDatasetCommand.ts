@@ -88,7 +88,10 @@ function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
   return flags
 }
 
-interface ProgressEvent {
+/**
+ * @internal
+ */
+export interface ProgressEvent {
   step: string
   update?: boolean
   current: number

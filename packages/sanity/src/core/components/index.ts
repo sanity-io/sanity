@@ -1,3 +1,5 @@
+/* eslint-disable simple-import-sort/exports */
+
 // NOTE: exporting these here causes error (esbuild):
 //   > Cannot create styled-component for component: undefined.
 //   > Cannot use before defined.
@@ -9,6 +11,9 @@ export * from './commandList'
 export * from './contextMenuButton'
 export * from './DefaultDocument'
 export * from './documentStatus'
+// Note: exporting `CapabilityGate` earlier causes runtime errors. `simple-import-sort/exports` has
+// been switched off for this file as a temporary solution.
+export * from './CapabilityGate'
 export * from './documentStatusIndicator'
 export * from './errorActions'
 export * from './globalErrorHandler'

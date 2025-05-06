@@ -366,6 +366,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
 
+  /** The description for the document favorite action */
+  'document.favorites.add-to-favorites': 'Add to favorites',
+  /** The description for the document unfavorite action */
+  'document.favorites.remove-from-favorites': 'Remove from favorites',
+
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
   'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/
