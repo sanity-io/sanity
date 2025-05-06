@@ -489,7 +489,7 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: FileOptions
 }
 
-/** @internal */
+/** @public */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
 }
