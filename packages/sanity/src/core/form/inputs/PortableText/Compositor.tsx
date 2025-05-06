@@ -17,11 +17,7 @@ import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
-import {
-  type ArrayOfObjectsInputProps,
-  type PortableTextInputProps,
-  type RenderCustomMarkers,
-} from '../../types'
+import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {ExpandedLayer, Root} from './Compositor.styles'
@@ -50,7 +46,6 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
-  renderEditable?: PortableTextInputProps['renderEditable']
 }
 
 /** @internal */
@@ -82,7 +77,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
-    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -432,7 +426,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderAnnotation={editorRenderAnnotation}
           renderBlock={editorRenderBlock}
           renderChild={editorRenderChild}
-          renderEditable={renderEditable}
           setPortalElement={setPortalElement}
           scrollElement={scrollElement}
           setScrollElement={setScrollElement}
@@ -462,7 +455,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       resolveUploader,
       rangeDecorations,
       readOnly,
-      renderEditable,
       scrollElement,
     ],
   )

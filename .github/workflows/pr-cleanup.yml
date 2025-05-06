@@ -34,9 +34,6 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    strategy:
-      matrix:
-        project: [chromium, firefox]
 
     steps:
       - uses: actions/checkout@v4
@@ -53,5 +50,5 @@ jobs:
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          PR_NUMBER: ${{ github.event.number }}
         run: pnpm e2e:cleanup

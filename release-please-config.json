@@ -7,24 +7,44 @@
   "always-update": true,
   "include-component-in-tag": false,
   "packages": {
-    "packages/@repo/package.bundle": {},
-    "packages/@sanity/cli": {},
-    "packages/@sanity/codegen": {},
-    "packages/@sanity/diff": {},
-    "packages/@sanity/migrate": {},
-    "packages/@sanity/mutator": {},
-    "packages/@sanity/schema": {},
-    "packages/@sanity/types": {},
-    "packages/@sanity/util": {},
-    "packages/@sanity/vision": {},
-    "packages/create-sanity": {},
-    "packages/groq": {},
-    "packages/sanity": {}
+    "packages/@repo/package.bundle": {"component": "package.bundle"},
+    "packages/@sanity/cli": {"component": "cli"},
+    "packages/@sanity/codegen": {"component": "codegen"},
+    "packages/@sanity/diff": {"component": "diff"},
+    "packages/@sanity/migrate": {"component": "migrate"},
+    "packages/@sanity/mutator": {"component": "mutator"},
+    "packages/@sanity/schema": {"component": "schema"},
+    "packages/@sanity/types": {"component": "types"},
+    "packages/@sanity/util": {"component": "util"},
+    "packages/@sanity/vision": {"component": "vision"},
+    "packages/create-sanity": {"component": "create-sanity"},
+    "packages/groq": {"component": "groq"},
+    "packages/sanity": {"component": "sanity"}
   },
   "plugins": [
     {
       "type": "node-workspace",
+      "merge": false,
       "updateAllPackages": true
+    },
+    {
+      "type": "linked-versions",
+      "groupName": "Studio packages",
+      "components": [
+        "package.bundle",
+        "cli",
+        "codegen",
+        "diff",
+        "migrate",
+        "mutator",
+        "schema",
+        "types",
+        "util",
+        "vision",
+        "create-sanity",
+        "groq",
+        "sanity"
+      ]
     }
   ]
 }

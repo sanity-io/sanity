@@ -1,5 +1,7 @@
 import {defineArrayMember, defineField, defineType, type FieldGroupDefinition} from 'sanity'
 
+import {Coloured, Custom} from './CustomStyle'
+
 export const mainGroup: FieldGroupDefinition = {
   name: 'main',
   title: 'Common fields',
@@ -49,6 +51,23 @@ export const schemaTypes = [
     ],
   }),
   defineType({
+    type: 'document',
+    liveEdit: true,
+    name: 'has-live-edit',
+    fields: [
+      defineField({
+        name: 'title',
+        type: 'string',
+        initialValue: 'Live edit',
+      }),
+      defineField({
+        name: 'description',
+        type: 'string',
+        initialValue: 'Live edit description',
+      }),
+    ],
+  }),
+  defineType({
     title: 'Documentation Article',
     name: 'create-test-article',
     type: 'document',
@@ -63,8 +82,15 @@ export const schemaTypes = [
         group: [mainGroup.name],
       }),
       defineField({
+        name: 'liveEditRef',
+        title: 'Live edit ref',
+        type: 'reference',
+        to: [{type: 'has-live-edit'}],
+        group: [mainGroup.name],
+      }),
+      defineField({
         name: 'description',
-        title: 'Description – with initial value – Create excluded',
+        title: 'Description',
         type: 'text',
         rows: 3,
         description: 'Lede and page summary.',
@@ -191,6 +217,7 @@ export const schemaTypes = [
       {
         title: 'Block',
         type: 'block',
+        of: [{name: 'liveEditRef', type: 'reference', to: [{type: 'has-live-edit'}]}],
         styles: [
           {title: 'Normal', value: 'normal'},
           {title: 'H1', value: 'h1'},
@@ -198,6 +225,8 @@ export const schemaTypes = [
           {title: 'H3', value: 'h3'},
           {title: 'H4', value: 'h4'},
           {title: 'Quote', value: 'blockquote'},
+          {title: 'Custom', value: 'custom', component: Custom},
+          {title: 'Coloured', value: 'coloured', component: Coloured},
         ],
         marks: {
           decorators: [

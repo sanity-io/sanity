@@ -6,10 +6,8 @@ import {
   type InvalidValue,
   type OnPasteFn,
   type Patch,
-  type PortableTextEditableProps,
   PortableTextEditor,
   type RangeDecoration,
-  type RenderEditableFunction,
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
@@ -87,10 +85,6 @@ export interface PortableTextMemberItem {
   node: ObjectFormNode
   input?: ReactNode
 }
-/** @public */
-export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
-  renderDefault: RenderEditableFunction
-}
 
 /**
  * Input component for editing block content
@@ -125,7 +119,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
-    renderEditable,
     schemaType,
     value,
     resolveUploader,
@@ -435,7 +428,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 readOnly={readOnly || !ready}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
-                renderEditable={renderEditable}
               />
             </EditorProvider>
           </PortableTextMemberItemsProvider>

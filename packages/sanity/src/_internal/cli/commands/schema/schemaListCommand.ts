@@ -19,13 +19,13 @@ Examples
   sanity schema list
 
   # Get a schema for a given id
-  sanity schema list --id sanity.workspace.schema.workspaceName
+  sanity schema list --id _.schemas.workspaceName
 
   # Get stored schemas as pretty-printed json-array
   sanity schema list --json
 
   # Get singular stored schema as pretty-printed json-object
-  sanity schema list --json --id sanity.workspace.schema.workspaceName
+  sanity schema list --json --id _.schemas.workspaceName
 
   # Runs using a pre-existing manifest file
   # Config changes in sanity.config will not be picked up in this case

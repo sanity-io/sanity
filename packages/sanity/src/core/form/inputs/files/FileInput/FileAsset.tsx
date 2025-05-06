@@ -79,7 +79,7 @@ export function FileAsset(props: FileAssetProps) {
       const rejectedFilesCount = fileInfo.length - acceptedFiles.length
 
       if (fileInfo.length > 0) {
-        if (rejectedFilesCount > 0 || !directUploads) {
+        if (rejectedFilesCount > 0 || directUploads === false) {
           canUpload = false
         }
       }
@@ -121,7 +121,7 @@ export function FileAsset(props: FileAssetProps) {
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || !directUploads) {
+      if (rejectedFilesCount > 0 || directUploads === false) {
         return 'critical'
       }
     }
@@ -162,7 +162,7 @@ export function FileAsset(props: FileAssetProps) {
       const acceptedFiles = files.filter((file) => resolveUploader?.(schemaType, file))
       const rejectedFilesCount = files.length - acceptedFiles.length
 
-      if (rejectedFilesCount > 0 || !directUploads) {
+      if (rejectedFilesCount > 0 || directUploads === false) {
         return
       }
 

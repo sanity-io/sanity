@@ -80,7 +80,7 @@ function RenderImageInputPreview(props: {
     <ImagePreview
       alt={t('inputs.image.preview-uploaded-image')}
       drag={!value?._upload && hoveringFiles.length > 0}
-      isRejected={rejectedFilesCount > 0 || !directUploads}
+      isRejected={rejectedFilesCount > 0 || directUploads === false}
       onDoubleClick={handleOpenDialog}
       readOnly={readOnly}
       src={url}

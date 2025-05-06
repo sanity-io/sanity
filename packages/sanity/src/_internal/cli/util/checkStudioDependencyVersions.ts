@@ -4,7 +4,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
-import {readPackageManifest} from './readPackageManifest'
+import {readPackageJson, readPackageManifest} from './readPackageManifest'
 
 interface PackageInfo {
   name: string
@@ -26,7 +26,7 @@ const PACKAGES = [
 ]
 
 export async function checkStudioDependencyVersions(workDir: string): Promise<void> {
-  const manifest = await readPackageManifest(path.join(workDir, 'package.json'))
+  const manifest = await readPackageJson(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
   const packageInfo = PACKAGES.map(async (pkg): Promise<PackageInfo | false> => {

@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
-import {Card} from '@sanity/ui'
 import {BlockEditor, defineType, type PortableTextInputProps} from 'sanity'
 
 export const ptCustomBlockEditors = defineType({
@@ -42,34 +40,6 @@ export const ptCustomBlockEditors = defineType({
       type: 'array',
       components: {
         input: (props: PortableTextInputProps) => <BlockEditor {...props} readOnly />,
-      },
-      of: [{type: 'block'}],
-    },
-    {
-      name: 'renderEditable',
-      title: 'Custom renderEditable',
-      description: 'Wrapped in card components with a custom placeholder',
-      type: 'array',
-      components: {
-        input: (props: PortableTextInputProps) => (
-          <BlockEditor
-            {...props}
-            renderEditable={(editableProps) => {
-              return (
-                <Card border padding={2} tone="critical">
-                  <Card border padding={2} tone="critical">
-                    {editableProps.renderDefault({
-                      ...editableProps,
-                      renderPlaceholder: () => (
-                        <span style={{opacity: 0.25}}>Nothing to see here</span>
-                      ),
-                    })}
-                  </Card>
-                </Card>
-              )
-            }}
-          />
-        ),
       },
       of: [{type: 'block'}],
     },
