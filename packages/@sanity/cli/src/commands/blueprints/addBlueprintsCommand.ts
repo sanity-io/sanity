@@ -4,77 +4,66 @@ const helpText = `
 Arguments
   [type]  Type of Resource to add (currently only 'function' is supported)
 
+Options
+  --name <name>  Name of the Resource
+  --fn-type <type>  Type of Function Resource to add (document-publish)
+  --fn-lang, --lang <ts|js>  Language of the Function Resource
+
 Examples
   # Add a Function Resource
   sanity blueprints add function
+  sanity blueprints add function --name my-function
+  sanity blueprints add function --name my-function --fn-type document-publish
+  sanity blueprints add function --name my-function --fn-type document-publish --lang js
 `
 
-const addBlueprintsCommand: CliCommandDefinition = {
+export interface BlueprintsAddFlags {
+  'name'?: string
+  'fn-type'?: string
+  'fn-lang'?: string
+  'language'?: string
+  'lang'?: string
+  'js'?: boolean
+  'javascript'?: boolean
+}
+
+const defaultFlags: BlueprintsAddFlags = {
+  //
+}
+
+const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   name: 'add',
   group: 'blueprints',
   helpText,
   signature: '<type>',
   description: 'Add a Resource to a Blueprint',
   hideFromHelp: true,
+
   async action(args, context) {
-    const {output, prompt} = context
-    const {print} = output
+    const {output} = context
+    const flags = {...defaultFlags, ...args.extOptions}
 
     const [resourceType] = args.argsWithoutOptions
 
     if (!resourceType) {
-      print('Resource type is required. Available types: function')
+      output.error('Resource type is required. Available types: function')
       return
     }
 
-    const {blueprint: blueprintAction, resources: resourcesAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
+    const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {success, error} = await blueprintAddCore({
+      bin: 'sanity',
+      log: (msg) => output.print(msg),
+      args: {type: resourceType},
+      flags: {
+        'name': flags.name,
+        'fn-type': flags['fn-type'],
+        'language': flags.language ?? flags.lang,
+        'javascript': flags.js || flags.javascript,
+      },
+    })
 
-    const existingBlueprint = blueprintAction.findBlueprintFile()
-    if (!existingBlueprint) {
-      print('No blueprint file found. Run `sanity blueprints init` first.')
-      return
-    }
-
-    if (resourceType === 'function') {
-      const functionName = await prompt.single({
-        type: 'input',
-        message: 'Enter function name:',
-        validate: (input: string) => input.length > 0 || 'Function name is required',
-      })
-
-      const functionType = await prompt.single({
-        type: 'list',
-        message: 'Choose function type:',
-        choices: [
-          {value: 'document-publish', name: 'Document Publish'},
-          {value: 'document-create', name: 'Document Create (Available soon)', disabled: true},
-          {value: 'document-delete', name: 'Document Delete (Available soon)', disabled: true},
-        ],
-      })
-
-      const {filePath, resourceAdded, resource} = resourcesAction.createFunctionResource({
-        name: functionName,
-        type: functionType,
-        displayName: functionName,
-      })
-
-      print(`\nCreated function: ${filePath}`)
-
-      if (resourceAdded) {
-        // added to blueprint.json
-        print('Function Resource added to Blueprint')
-      } else {
-        // print the resource JSON for manual addition
-        print('\nAdd this Function Resource to your Blueprint:')
-        print(JSON.stringify(resource, null, 2))
-      }
-
-      return
-    }
-
-    print(`Unsupported resource type: ${resourceType}. Available types: function`)
+    if (!success) throw new Error(error)
   },
 }
 

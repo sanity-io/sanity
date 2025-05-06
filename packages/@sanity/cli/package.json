@@ -60,7 +60,7 @@
     "@babel/traverse": "^7.23.5",
     "@sanity/client": "^7.0.0",
     "@sanity/codegen": "workspace:*",
-    "@sanity/runtime-cli": "^3.0.0",
+    "@sanity/runtime-cli": "^5.2.0",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "@sanity/util": "workspace:3.87.1",

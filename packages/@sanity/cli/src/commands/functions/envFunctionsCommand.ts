@@ -55,14 +55,13 @@ const envFunctionsCommand: CliCommandDefinition = {
     }
 
     const token = client.config().token
-    const {env} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
+
+    const {env: envAction} = await import('@sanity/runtime-cli/actions/functions')
+    const {blueprint, getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
     const {findFunction} = await import('@sanity/runtime-cli/utils')
 
-    const {deployedStack} = await blueprint.readBlueprintOnDisk({
-      getStack: true,
-      token,
-    })
+    const {deployedStack} = await getBlueprintAndStack({token})
 
     if (!deployedStack) {
       throw new Error('Stack not found')
@@ -79,7 +78,7 @@ const envFunctionsCommand: CliCommandDefinition = {
     if (token && projectId) {
       if (subCommand === 'add') {
         print(`Updating "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await env.update.update(externalId, flags.key, flags.value, {
+        const result = await envAction.update(externalId, flags.key, flags.value, {
           token,
           projectId,
         })
@@ -91,7 +90,7 @@ const envFunctionsCommand: CliCommandDefinition = {
         }
       } else if (subCommand === 'remove') {
         print(`Removing "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await env.remove.remove(externalId, flags.key, {
+        const result = await envAction.remove(externalId, flags.key, {
           token,
           projectId,
         })

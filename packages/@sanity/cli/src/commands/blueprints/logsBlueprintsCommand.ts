@@ -1,110 +1,72 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-${
-  /*Options
+Options
   --watch, -w  Watch for new logs (streaming mode)
-*/ ''
-}
 Examples
   # Show logs for the current Stack
   sanity blueprints logs
-${
-  /*
+
   # Watch for new logs
   sanity blueprints logs --watch
-*/ ''
-}
 `
 
-// const defaultFlags = {watch: false}
+export interface BlueprintsLogsFlags {
+  watch?: boolean
+  w?: boolean
+}
 
-const logsBlueprintsCommand: CliCommandDefinition = {
+const defaultFlags: BlueprintsLogsFlags = {
+  //
+}
+
+const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   name: 'logs',
   group: 'blueprints',
   helpText,
   signature: '[--watch]',
   description: 'Display logs for the current Blueprint Stack',
   hideFromHelp: true,
+
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
-    // const flags = {...defaultFlags, ...args.extOptions}
-    // const watchMode = Boolean(flags.watch)
+    const flags = {...defaultFlags, ...args.extOptions}
 
-    const client = apiClient({requireUser: true, requireProject: false})
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
     const {token} = client.config()
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    if (!token) {
-      print('No API token found. Please run `sanity login` first.')
-      return
-    }
-
-    const {blueprint: blueprintAction, logs: logsAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
+    const {blueprintLogsCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
     const {display} = await import('@sanity/runtime-cli/utils')
 
-    let blueprint = null
-    try {
-      blueprint = await blueprintAction.readBlueprintOnDisk({token})
-    } catch (error) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
+    const {localBlueprint, deployedStack, issues} = await getBlueprintAndStack({token})
+
+    if (issues) {
+      output.print(display.errors.presentBlueprintIssues(issues))
+      throw new Error('Unable to parse Blueprint file.')
     }
 
-    if (!blueprint) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
-
-    const {errors, deployedStack} = blueprint
-
-    if (errors && errors.length > 0) {
-      print(errors)
-      return
-    }
-
-    if (!deployedStack) {
-      print('Stack not found')
-      return
-    }
-
-    const {id: stackId, projectId, name} = deployedStack
+    const {projectId, stackId} = localBlueprint
     const auth = {token, projectId}
 
-    print(`Fetching logs for stack ${display.colors.yellow(`<${stackId}>`)}`)
+    const {success, streaming, error} = await blueprintLogsCore({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      auth,
+      stackId,
+      deployedStack,
+      flags: {
+        watch: flags.watch ?? flags.w,
+      },
+    })
 
-    // enable watch mode here
+    if (streaming) await streaming
 
-    try {
-      const {ok, logs, error} = await logsAction.getLogs(stackId, auth)
-
-      if (!ok) {
-        print(`${display.colors.red('Failed')} to retrieve logs`)
-        print(`Error: ${error || 'Unknown error'}`)
-        return
-      }
-
-      if (logs.length === 0) {
-        print(`No logs found for Stack ${stackId}`)
-        return
-      }
-
-      print(`${display.blueprintsFormatting.formatTitle('Blueprint', name)} Logs`)
-      print(
-        `Found ${display.colors.bold(logs.length.toString())} log entries for stack ${display.colors.yellow(stackId)}\n`,
-      )
-
-      // Organize and format logs by day
-      const logsByDay = display.logsFormatting.organizeLogsByDay(logs)
-      print(display.logsFormatting.formatLogsByDay(logsByDay))
-    } catch (err) {
-      print('Failed to retrieve logs')
-      if (err instanceof Error) {
-        print(`Error: ${err.message}`)
-      }
-    }
+    if (!success) throw new Error(error)
   },
 }
 

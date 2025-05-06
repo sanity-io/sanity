@@ -2,41 +2,36 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Examples
-  # Create a new Blueprint manifest file
-  sanity blueprints init
+  # Destroy the current deployment
+  sanity blueprints destroy
 `
 
-export interface BlueprintsInitFlags {
-  'dir'?: string
-  'blueprint-type'?: string
-  'type'?: string
+export interface BlueprintsDestroyFlags {
+  'force'?: boolean
+  'f'?: boolean
   'project-id'?: string
   'projectId'?: string
   'project'?: string
   'stack-id'?: string
   'stackId'?: string
   'stack'?: string
-  'stack-name'?: string
-  'name'?: string
+  'no-wait'?: boolean
 }
 
-const defaultFlags: BlueprintsInitFlags = {
+const defaultFlags: BlueprintsDestroyFlags = {
   //
 }
 
-const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
-  name: 'init',
+const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
+  name: 'destroy',
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Initialize a new Blueprint manifest file',
-  hideFromHelp: true,
+  description: 'Destroy a Blueprint deployment',
 
   async action(args, context) {
     const {apiClient, output} = context
     const flags = {...defaultFlags, ...args.extOptions}
-
-    const [dir] = args.argsWithoutOptions
 
     const client = apiClient({
       requireUser: true,
@@ -45,20 +40,21 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
     const {token} = client.config()
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {blueprintInitCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {blueprintDestroyCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
 
-    const {success, error} = await blueprintInitCore({
+    const {localBlueprint} = await getBlueprintAndStack({token})
+
+    const {success, error} = await blueprintDestroyCore({
       bin: 'sanity',
       log: (message) => output.print(message),
       token,
-      args: {
-        dir: dir ?? flags.dir,
-      },
+      blueprint: localBlueprint,
       flags: {
-        'blueprint-type': flags['blueprint-type'] ?? flags.type,
+        'no-wait': flags['no-wait'],
+        'force': flags.force ?? flags.f,
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
-        'stack-name': flags['stack-name'] ?? flags.name,
       },
     })
 
@@ -66,4 +62,4 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   },
 }
 
-export default initBlueprintsCommand
+export default destroyBlueprintsCommand

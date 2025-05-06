@@ -51,20 +51,18 @@ const logsFunctionsCommand: CliCommandDefinition = {
     }
 
     const token = client.config().token
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
+
+    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
     const {findFunction} = await import('@sanity/runtime-cli/utils')
 
-    const {deployedStack} = await blueprint.readBlueprintOnDisk({
-      getStack: true,
-      token,
-    })
+    const {deployedStack} = await getBlueprintAndStack({token})
 
     if (!deployedStack) {
       throw new Error('Stack not found')
     }
 
-    const blueprintConfig = blueprint.readConfigFile()
-    const projectId = blueprintConfig?.projectId
+    const {projectId} = deployedStack
 
     const {externalId} = findFunction.findFunctionByName(
       deployedStack,
