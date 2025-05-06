@@ -48,14 +48,15 @@ function ImageInputAssetSourceComponent(
   }
   return (
     <Component
+      accept={accept}
       action={isUploading ? 'upload' : 'select'}
       assetSource={selectedAssetSource}
-      selectedAssets={[]}
-      selectionType="single"
       assetType="image"
-      accept={accept}
       onClose={handleAssetSourceClosed}
       onSelect={handleSelectAssetFromSource}
+      schemaType={schemaType}
+      selectedAssets={[]}
+      selectionType="single"
     />
   )
 }
