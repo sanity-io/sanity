@@ -20,7 +20,6 @@ const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
   helpText,
   signature: '',
   description: 'Retrieve information about a Blueprint Stack',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

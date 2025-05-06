@@ -45,7 +45,6 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   signature:
     '<type> [--name <name>] [--fn-type <document-publish>] [--fn-lang <ts|js>] [--javascript]',
   description: 'Add a Resource to a Blueprint',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {output} = context

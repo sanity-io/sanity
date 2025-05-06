@@ -28,7 +28,6 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
   helpText,
   signature: '[--project-id <id>]',
   description: 'List all Blueprint Stacks for the current Project',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

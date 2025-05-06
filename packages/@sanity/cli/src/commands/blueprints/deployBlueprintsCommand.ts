@@ -26,7 +26,6 @@ const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
   helpText,
   signature: '[--no-wait]',
   description: 'Deploy a Blueprint to create or update a Stack',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

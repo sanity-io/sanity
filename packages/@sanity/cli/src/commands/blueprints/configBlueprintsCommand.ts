@@ -44,7 +44,6 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   helpText,
   signature: '[--edit] [-e] [--test] [-t] [--project-id <id>]',
   description: 'View or edit local Blueprints configuration',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

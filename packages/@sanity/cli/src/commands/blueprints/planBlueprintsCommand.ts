@@ -18,7 +18,6 @@ const planBlueprintsCommand: CliCommandDefinition<BlueprintsPlanFlags> = {
   helpText,
   signature: '',
   description: 'Enumerate Resources to be deployed',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

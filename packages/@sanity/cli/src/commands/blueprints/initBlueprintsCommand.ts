@@ -40,7 +40,6 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   helpText,
   signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
   description: 'Initialize a new Blueprint manifest file',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context

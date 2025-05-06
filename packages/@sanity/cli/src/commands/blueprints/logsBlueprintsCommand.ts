@@ -27,7 +27,6 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   helpText,
   signature: '[--watch] [-w]',
   description: 'Display logs for the current Blueprint Stack',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context
