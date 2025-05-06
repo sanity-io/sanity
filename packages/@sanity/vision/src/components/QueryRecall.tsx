@@ -15,7 +15,7 @@ import {
 import {type ReactElement, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
-import {type QueryConfig, useQueryDocument} from '../hooks/useQueryDocument'
+import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
 import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
 import {type ParsedUrlState} from './VisionGui'
@@ -35,7 +35,6 @@ const formatDate = (date: string) => {
 }
 
 // TODO
-// -cellar for storage
 // -saving behavior - be explicit that things have changed & need to be saved
 // -does it save duplicates?
 // -clean up title edit UI
@@ -55,12 +54,14 @@ export function QueryRecall({
   getStateFromUrl: (data: string) => ParsedUrlState | null
   setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
 }): ReactElement {
+  // const [storedQueries, setStoredQueries] = useSavedQueries()
+  // useEffect(() => {
+  //   setStoredQueries({queries: ["I'm a query"]})
+  // }, [])
   const toast = useToast()
-  const {saveQuery, updateQuery, document, deleteQuery, saving, deleting, saveQueryError} =
-    useQueryDocument()
+  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
+    useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
-
-  const queries = document?.queries
 
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
@@ -81,12 +82,14 @@ export function QueryRecall({
       })
       return
     }
-    await saveQuery({
-      url,
-      savedAt: new Date().toISOString(),
-      title: 'Untitled',
-    })
-
+    if (url) {
+      // @ts-expect-error why doesn't Omit work?
+      await saveQuery({
+        url,
+        savedAt: new Date().toISOString(),
+        title: 'Untitled',
+      })
+    }
     if (saveQueryError) {
       toast.push({
         closable: true,
