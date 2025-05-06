@@ -1,15 +1,9 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Options
-  --id, -i <stack-id> Stack ID
-
-Examples
+Examples:
   # Retrieve information about the current Stack
   sanity blueprints info
-
-  # Retrieve information about a specific Stack
-  sanity blueprints info --id <stack-id>
 `
 
 export interface BlueprintsInfoFlags {

@@ -3,8 +3,8 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Safe to run at any time. Will not modify any Resources.
 
-Examples
-  # Show deployment plan
+Examples:
+  # Show deployment plan for the current Blueprint
   sanity blueprints plan
 `
 

@@ -2,12 +2,13 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --watch, -w  Watch for new logs (streaming mode)
-Examples
+  --watch, -w    Watch for new logs (streaming mode)
+
+Examples:
   # Show logs for the current Stack
   sanity blueprints logs
 
-  # Watch for new logs
+  # Watch for new logs (streaming mode)
   sanity blueprints logs --watch
 `
 
@@ -24,7 +25,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   name: 'logs',
   group: 'blueprints',
   helpText,
-  signature: '[--watch]',
+  signature: '[--watch] [-w]',
   description: 'Display logs for the current Blueprint Stack',
   hideFromHelp: true,
 

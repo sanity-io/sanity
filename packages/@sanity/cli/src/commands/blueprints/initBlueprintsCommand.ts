@@ -1,9 +1,19 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Examples
-  # Create a new Blueprint manifest file
+Arguments
+  <dir>  Path to initialize the Blueprint in
+
+Options
+  --blueprint-type, --type <json|ts|js>    Type of Blueprint to create
+  --project-id <id>                        Project ID to use
+
+Examples:
+  # Create a new Blueprint manifest file in the current directory
   sanity blueprints init
+
+  # Create a new Blueprint manifest file in a specific directory
+  sanity blueprints init my-sanity-project --type json
 `
 
 export interface BlueprintsInitFlags {
@@ -28,7 +38,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   name: 'init',
   group: 'blueprints',
   helpText,
-  signature: '',
+  signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
   description: 'Initialize a new Blueprint manifest file',
   hideFromHelp: true,
 

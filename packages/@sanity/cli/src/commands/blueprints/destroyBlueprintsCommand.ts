@@ -1,9 +1,19 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Examples
+Options
+  --force, -f    Force destroy without confirmation
+  --no-wait      Do not wait for destroy to complete
+
+Examples:
   # Destroy the current deployment
   sanity blueprints destroy
+
+  # Force destroy without confirmation
+  sanity blueprints destroy --force
+
+  # Destroy without waiting for completion
+  sanity blueprints destroy --no-wait
 `
 
 export interface BlueprintsDestroyFlags {
@@ -26,7 +36,7 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
   name: 'destroy',
   group: 'blueprints',
   helpText,
-  signature: '',
+  signature: '[--force] [-f] [--no-wait]',
   description: 'Destroy a Blueprint deployment',
   hideFromHelp: true,
 

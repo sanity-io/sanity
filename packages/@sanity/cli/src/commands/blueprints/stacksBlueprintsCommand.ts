@@ -1,9 +1,15 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Examples
+Options
+  --project-id <id>    Project ID to use
+
+Examples:
   # List all Stacks for the current Project
   sanity blueprints stacks
+
+  # List Stacks for a specific project
+  sanity blueprints stacks --project-id abc123
 `
 
 export interface BlueprintsStacksFlags {
@@ -20,7 +26,7 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
   name: 'stacks',
   group: 'blueprints',
   helpText,
-  signature: '',
+  signature: '[--project-id <id>]',
   description: 'List all Blueprint Stacks for the current Project',
   hideFromHelp: true,
 

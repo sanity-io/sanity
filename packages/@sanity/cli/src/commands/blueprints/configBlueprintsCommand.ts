@@ -2,14 +2,22 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --edit  Edit the configuration
+  --edit, -e           Edit the configuration
+  --test, -t           Test the configuration
+  --project-id <id>    Project ID to use
 
-Examples
+Examples:
   # View current configuration
   sanity blueprints config
 
   # Edit configuration
   sanity blueprints config --edit
+
+  # Test configuration
+  sanity blueprints config --test
+
+  # Edit and test configuration
+  sanity blueprints config -et
 `
 
 export interface BlueprintsConfigFlags {
@@ -34,7 +42,7 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   name: 'config',
   group: 'blueprints',
   helpText,
-  signature: '[--edit]',
+  signature: '[--edit] [-e] [--test] [-t] [--project-id <id>]',
   description: 'View or edit local Blueprints configuration',
   hideFromHelp: true,
 
