@@ -5,6 +5,7 @@ import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
 import {type LocaleSource} from '../../../i18n'
+import {type PerspectiveContextValue} from '../../../perspective/types'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
@@ -108,6 +109,17 @@ export interface DocumentStoreOptions {
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
+  /**
+   * The perspective configuration for the structure context
+   */
+  perspective: {
+    /**
+     * The stacked array of perspectives ids ordered chronologically to represent the state of documents at the given point in time.
+     * It can be used as the perspective param in the client to get the correct view of the documents.
+     * @returns ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+     */
+    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  }
 }
 
 /** @internal */
@@ -120,6 +132,7 @@ export function createDocumentStore({
   i18n,
   serverActionsEnabled,
   extraOptions = {},
+  perspective,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -139,6 +152,7 @@ export function createDocumentStore({
     i18n,
     serverActionsEnabled,
     extraOptions,
+    perspective,
   }
 
   return {

@@ -8,6 +8,7 @@ import {
   type I18nTextRecord,
   type InitialValueTemplateItem,
   type LocaleSource,
+  type PerspectiveContextValue,
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
@@ -59,6 +60,18 @@ export interface StructureResolverContext extends ConfigContext {
 
   /** @alpha */
   i18n: LocaleSource
+
+  /**
+   * The perspective configuration for the structure context
+   */
+  perspective: {
+    /**
+     * The stacked array of perspectives ids ordered chronologically to represent the state of documents at the given point in time.
+     * It can be used as the perspective param in the client to get the correct view of the documents.
+     * @returns ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+     */
+    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  }
 }
 
 /**

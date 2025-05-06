@@ -34,13 +34,23 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
-export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {
+export const structure: StructureResolver = (S, {schema, documentStore, i18n, perspective}) => {
   const {t} = i18n
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
+      S.listItem()
+        .title('Sections by perspective')
+        .id('sections-by-perspective')
+        .child(() => {
+          // eslint-disable-next-line no-console
+          console.log(S.context.perspective)
+          // eslint-disable-next-line no-console
+          console.log({perspective})
 
+          return S.component(TranslateExample).id('boop1')
+        }),
       S.listItem()
         .id('translate')
         .title('Translate Test')
