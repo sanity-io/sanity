@@ -5,8 +5,8 @@ Arguments
   [dir]  Path to initialize the Blueprint in
 
 Options
-  --blueprint-type, --type <json|ts|js>    Type of Blueprint to create
-  --project-id <id>                        Project ID to use
+  --blueprint-type, --type <json>    Type of Blueprint to create
+  --project-id <id>                  Project ID to use
 
 Examples:
   # Create a new Blueprint manifest file in the current directory
