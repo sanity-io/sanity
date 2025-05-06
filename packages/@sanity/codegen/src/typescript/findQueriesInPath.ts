@@ -11,6 +11,10 @@ import {getResolver} from './moduleResolver'
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
+type ResultFiles = {
+  type: 'files'
+  fileCount: number
+}
 type ResultQueries = {
   type: 'queries'
   filename: string
@@ -22,13 +26,14 @@ type ResultError = {
   filename: string
 }
 
+export type QueryExtractionResult = ResultFiles | ResultQueries | ResultError
+
 /**
  * findQueriesInPath takes a path or array of paths and returns all GROQ queries in the files.
  * @param path - The path or array of paths to search for queries
  * @param babelOptions - The babel configuration to use when parsing the source
  * @param resolver - A resolver function to use when resolving module imports
  * @returns An async generator that yields the results of the search
- * @beta
  * @internal
  */
 export async function* findQueriesInPath({
@@ -39,7 +44,7 @@ export async function* findQueriesInPath({
   path: string | string[]
   babelOptions?: TransformOptions
   resolver?: NodeJS.RequireResolve
-}): AsyncGenerator<ResultQueries | ResultError> {
+}): AsyncGenerator<QueryExtractionResult> {
   const queryNames = new Set()
   // Holds all query names found in the source files
   debug(`Globing ${path}`)
@@ -51,6 +56,8 @@ export async function* findQueriesInPath({
       onlyFiles: true,
     })
     .sort()
+
+  yield {type: 'files', fileCount: files.length}
 
   for (const filename of files) {
     if (typeof filename !== 'string') {

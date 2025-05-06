@@ -1,5 +1,6 @@
 {
   "schema": "./working-schema.json",
   "generates": "./out/types.ts",
-  "overloadClientMethods": false
+  "overloadClientMethods": false,
+  "augmentGroqModule": false
 }

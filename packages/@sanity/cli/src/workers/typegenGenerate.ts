@@ -1,229 +1,227 @@
+/* eslint-disable max-statements */
+import {stat} from 'node:fs/promises'
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {
+  DEFAULT_CONFIG,
   findQueriesInPath,
   getResolver,
   readSchema,
   registerBabel,
-  safeParseQuery,
   TypeGenerator,
 } from '@sanity/codegen'
-import createDebug from 'debug'
-import {typeEvaluate, type TypeNode} from 'groq-js'
+import {type SchemaType} from 'groq-js'
 
-const $info = createDebug('sanity:codegen:generate:info')
-const $warn = createDebug('sanity:codegen:generate:warn')
+import {
+  createReporter,
+  type WorkerChannel,
+  type WorkerChannelEvent,
+  type WorkerChannelStream,
+} from '../util/workerChannel'
+
+const DEFAULT_SCHEMA_PATH = DEFAULT_CONFIG.schemas[0].schemaPath
 
 export interface TypegenGenerateTypesWorkerData {
   workDir: string
-  workspaceName?: string
-  schemaPath: string
+  schemas: {schemaPath: string; schemaId: string}[]
   searchPath: string | string[]
-  overloadClientMethods?: boolean
+  overloadClientMethods: boolean
+  augmentGroqModule: boolean
 }
 
-export type TypegenGenerateTypesWorkerMessage =
-  | {
-      type: 'error'
-      error: Error
-      fatal: boolean
-      query?: string
-      filename?: string
+interface QueryProgress {
+  queriesCount: number
+  projectionsCount: number
+  filesCount: number
+}
+
+/** @internal */
+export type TypegenWorkerChannel = WorkerChannel<{
+  loadedSchemas: WorkerChannelEvent
+  generatedSchemaDeclarations: WorkerChannelEvent<{
+    code: string
+    schemaStats: {
+      schemaTypesCount: number
+      schemaCount: number
     }
-  | {
-      type: 'types'
-      filename: string
-      types: {
-        queryName: string
-        query: string
-        type: string
-        unknownTypeNodesGenerated: number
-        typeNodesGenerated: number
-        emptyUnionTypeNodesGenerated: number
-      }[]
+  }>
+  fileCount: WorkerChannelEvent<{fileCount: number}>
+  generatedQueryResultDeclaration: WorkerChannelStream<
+    | {
+        type: 'progress'
+        progress: QueryProgress
+      }
+    | {
+        type: 'declaration'
+        code: string
+        progress: QueryProgress
+      }
+    | {
+        type: 'error'
+        message: string
+        progress: QueryProgress
+      }
+  >
+  generationComplete: WorkerChannelEvent<{
+    augmentedQueryResultDeclarations: {code: string}
+    queryStats: {
+      queriesCount: number
+      projectionsCount: number
+      totalScannedFilesCount: number
+      queryFilesCount: number
+      projectionFilesCount: number
+      filesWithErrors: number
+      errorCount: number
+      typeNodesGenerated: number
+      unknownTypeNodesGenerated: number
+      unknownTypeNodesRatio: number
+      emptyUnionTypeNodesGenerated: number
     }
-  | {
-      type: 'schema'
-      filename: string
-      schema: string
-      length: number
-    }
-  | {
-      type: 'typemap'
-      typeMap: string
-    }
-  | {
-      type: 'complete'
-    }
+  }>
+}>
 
 if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')
 }
 
+const report = createReporter<TypegenWorkerChannel>(parentPort)
 const opts = _workerData as TypegenGenerateTypesWorkerData
 
-registerBabel()
-
 async function main() {
-  const schema = await readSchema(opts.schemaPath)
+  const schemas: {schema: SchemaType; schemaId: string; filename: string}[] = []
 
-  const typeGenerator = new TypeGenerator(schema)
-  const schemaTypes = [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()]
-    .join('\n')
-    .trim()
-  const resolver = getResolver()
+  for (const {schemaId, schemaPath} of opts.schemas) {
+    try {
+      const schemaStats = await stat(schemaPath)
+      if (!schemaStats.isFile()) {
+        throw new Error(
+          `Failed to load schema "${schemaId}". Schema path is not a file: ${schemaPath}`,
+        )
+      }
 
-  parentPort?.postMessage({
-    type: 'schema',
-    schema: `${schemaTypes.trim()}\n`,
-    filename: 'schema.json',
-    length: schema.length,
-  } satisfies TypegenGenerateTypesWorkerMessage)
+      const schema = await readSchema(schemaPath)
+      schemas.push({schema, schemaId, filename: schemaPath})
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        // If the user has not provided a specific schema path (eg we're using the default), give some help
+        const hint =
+          schemaPath === DEFAULT_SCHEMA_PATH ? ` - did you run "sanity schema extract"?` : ''
+        throw new Error(`Schema file not found for schema "${schemaId}": ${schemaPath}${hint}`)
+      } else {
+        throw err
+      }
+    }
+  }
+  report.event.loadedSchemas()
 
-  const queries = findQueriesInPath({
-    path: opts.searchPath,
-    resolver,
+  const generator = new TypeGenerator({
+    schemas,
+    queriesByFile: findQueriesInPath({path: opts.searchPath, resolver: getResolver()}),
+    augmentGroqModule: opts.augmentGroqModule,
+    overloadClientMethods: opts.overloadClientMethods,
   })
 
-  const allQueries = []
+  report.event.generatedSchemaDeclarations({
+    code: [
+      generator.getKnownTypes().code,
+      ...generator.getSchemaTypeDeclarations().map((i) => i.code),
+      generator.getAllSanitySchemaTypesDeclaration().code,
+      ...generator.getSchemaDeclarations().map((i) => i.code),
+      generator.getAugmentedSchemasDeclarations().code,
+    ].join('\n'),
+    schemaStats: {
+      schemaTypesCount: generator.getSchemaTypeDeclarations().length,
+      schemaCount: schemas.length,
+    },
+  })
 
-  for await (const result of queries) {
-    if (result.type === 'error') {
-      parentPort?.postMessage({
-        type: 'error',
-        error: result.error,
-        fatal: false,
-        filename: result.filename,
-      } satisfies TypegenGenerateTypesWorkerMessage)
-      continue
-    }
-    $info(`Processing ${result.queries.length} queries in "${result.filename}"...`)
+  const allFilenames = new Set<string>()
+  const errorFilenames = new Set<string>()
+  const queryFilenames = new Set<string>()
+  const projectionFilenames = new Set<string>()
 
-    const fileQueryTypes: {
-      queryName: string
-      query: string
-      type: string
-      typeName: string
-      typeNode: TypeNode
-      unknownTypeNodesGenerated: number
-      typeNodesGenerated: number
-      emptyUnionTypeNodesGenerated: number
-    }[] = []
-    for (const {name: queryName, result: query} of result.queries) {
-      try {
-        const ast = safeParseQuery(query)
-        const queryTypes = typeEvaluate(ast, schema)
+  let errorCount = 0
+  let queriesCount = 0
+  let projectionsCount = 0
+  let typeNodesGenerated = 0
+  let unknownTypeNodesGenerated = 0
+  let emptyUnionTypeNodesGenerated = 0
 
-        const typeName = `${queryName}Result`
-        const type = typeGenerator.generateTypeNodeTypes(typeName, queryTypes)
+  const {fileCount} = await generator.getQueryFileCount()
+  report.event.fileCount({fileCount})
 
-        const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
-        fileQueryTypes.push({
-          queryName,
-          query,
-          typeName,
-          typeNode: queryTypes,
-          type: `${type.trim()}\n`,
-          unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
-          typeNodesGenerated: queryTypeStats.allTypes,
-          emptyUnionTypeNodesGenerated: queryTypeStats.emptyUnions,
-        })
-      } catch (err) {
-        parentPort?.postMessage({
-          type: 'error',
-          error: new Error(
-            `Error generating types for query "${queryName}" in "${result.filename}": ${err.message}`,
-            {cause: err},
-          ),
-          fatal: false,
-          query,
-        } satisfies TypegenGenerateTypesWorkerMessage)
-      }
+  for await (const {filename, ...result} of generator.getQueryResultDeclarations()) {
+    allFilenames.add(filename)
+    const progress = {
+      queriesCount,
+      projectionsCount,
+      filesCount: allFilenames.size,
     }
 
-    if (fileQueryTypes.length > 0) {
-      $info(`Generated types for ${fileQueryTypes.length} queries in "${result.filename}"\n`)
-      parentPort?.postMessage({
-        type: 'types',
-        types: fileQueryTypes,
-        filename: result.filename,
-      } satisfies TypegenGenerateTypesWorkerMessage)
-    }
+    switch (result.type) {
+      case 'error': {
+        errorCount += 1
+        errorFilenames.add(filename)
 
-    if (fileQueryTypes.length > 0) {
-      allQueries.push(...fileQueryTypes)
-    }
-  }
+        const errorMessage =
+          typeof result.error === 'object' && result.error !== null && 'message' in result.error
+            ? String(result.error.message)
+            : 'Unknown Error'
 
-  if (opts.overloadClientMethods && allQueries.length > 0) {
-    const typeMap = `${typeGenerator.generateQueryMap(allQueries).trim()}\n`
-    parentPort?.postMessage({
-      type: 'typemap',
-      typeMap,
-    } satisfies TypegenGenerateTypesWorkerMessage)
-  }
-
-  parentPort?.postMessage({
-    type: 'complete',
-  } satisfies TypegenGenerateTypesWorkerMessage)
-}
-
-function walkAndCountQueryTypeNodeStats(typeNode: TypeNode): {
-  allTypes: number
-  unknownTypes: number
-  emptyUnions: number
-} {
-  switch (typeNode.type) {
-    case 'unknown': {
-      return {allTypes: 1, unknownTypes: 1, emptyUnions: 0}
-    }
-    case 'array': {
-      const acc = walkAndCountQueryTypeNodeStats(typeNode.of)
-      acc.allTypes += 1 // count the array type itself
-      return acc
-    }
-    case 'object': {
-      // if the rest is unknown, we count it as one unknown type
-      if (typeNode.rest && typeNode.rest.type === 'unknown') {
-        return {allTypes: 2, unknownTypes: 1, emptyUnions: 0} // count the object type itself as well
+        const message = `Error generating types in "${filename}": ${errorMessage}`
+        report.stream.generatedQueryResultDeclaration.emit({type: 'error', message, progress})
+        continue
       }
 
-      const restStats = typeNode.rest
-        ? walkAndCountQueryTypeNodeStats(typeNode.rest)
-        : {allTypes: 1, unknownTypes: 0, emptyUnions: 0} // count the object type itself
-
-      return Object.values(typeNode.attributes).reduce((acc, attribute) => {
-        const {allTypes, unknownTypes, emptyUnions} = walkAndCountQueryTypeNodeStats(
-          attribute.value,
-        )
-        return {
-          allTypes: acc.allTypes + allTypes,
-          unknownTypes: acc.unknownTypes + unknownTypes,
-          emptyUnions: acc.emptyUnions + emptyUnions,
+      case 'queries': {
+        if (!result.queryResultDeclarations.length) {
+          report.stream.generatedQueryResultDeclaration.emit({type: 'progress', progress})
+          continue
         }
-      }, restStats)
-    }
-    case 'union': {
-      if (typeNode.of.length === 0) {
-        return {allTypes: 1, unknownTypes: 0, emptyUnions: 1}
+
+        for (const {code, type, stats} of result.queryResultDeclarations) {
+          queriesCount += type === 'query' ? 1 : 0
+          projectionsCount += type === 'projection' ? 1 : 0
+          typeNodesGenerated += stats.allTypes
+          unknownTypeNodesGenerated += stats.unknownTypes
+          emptyUnionTypeNodesGenerated += stats.emptyUnions
+
+          if (type === 'projection') {
+            projectionFilenames.add(filename)
+          } else {
+            queryFilenames.add(filename)
+          }
+
+          report.stream.generatedQueryResultDeclaration.emit({type: 'declaration', code, progress})
+        }
+        continue
       }
 
-      return typeNode.of.reduce(
-        (acc, type) => {
-          const {allTypes, unknownTypes, emptyUnions} = walkAndCountQueryTypeNodeStats(type)
-          return {
-            allTypes: acc.allTypes + allTypes,
-            unknownTypes: acc.unknownTypes + unknownTypes,
-            emptyUnions: acc.emptyUnions + emptyUnions,
-          }
-        },
-        {allTypes: 1, unknownTypes: 0, emptyUnions: 0}, // count the union type itself
-      )
-    }
-    default: {
-      return {allTypes: 1, unknownTypes: 0, emptyUnions: 0}
+      default: {
+        continue
+      }
     }
   }
+  report.stream.generatedQueryResultDeclaration.end()
+
+  report.event.generationComplete({
+    augmentedQueryResultDeclarations: await generator.getAugmentedQueryResultsDeclarations(),
+    queryStats: {
+      errorCount,
+      queriesCount,
+      projectionsCount,
+      typeNodesGenerated,
+      unknownTypeNodesGenerated,
+      emptyUnionTypeNodesGenerated,
+      totalScannedFilesCount: allFilenames.size,
+      filesWithErrors: errorFilenames.size,
+      queryFilesCount: queryFilenames.size,
+      projectionFilesCount: projectionFilenames.size,
+      unknownTypeNodesRatio:
+        typeNodesGenerated > 0 ? unknownTypeNodesGenerated / typeNodesGenerated : 0,
+    },
+  })
 }
 
+registerBabel()
 main()

@@ -20,9 +20,10 @@ export interface NamedQueryResult {
   name: string
   /** result is a groq query */
   result: resolveExpressionReturnType
-
+  /** type indicates whether this is a query or projection */
+  type: 'query' | 'projection'
   /** location is the location of the query in the source */
-  location: {
+  location?: {
     start?: {
       line: number
       column: number
@@ -37,7 +38,7 @@ export interface NamedQueryResult {
 }
 
 const TAGGED_TEMPLATE_ALLOW_LIST = ['groq']
-const FUNCTION_WRAPPER_ALLOW_LIST = ['defineQuery']
+const FUNCTION_WRAPPER_ALLOW_LIST = ['defineQuery', 'defineProjection']
 
 /**
  * resolveExpression takes a node and returns the resolved value of the expression.

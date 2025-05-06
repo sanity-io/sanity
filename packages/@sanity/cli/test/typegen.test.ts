@@ -1,9 +1,12 @@
 import {readFile, writeFile} from 'node:fs/promises'
+import {join} from 'node:path'
 
 import {expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand, studiosPath} from './shared/environment'
+
+const outputPath = join(studiosPath, 'v3', 'out')
 
 describeCliTest('CLI: `sanity typegen`', () => {
   test('sanity typegen generate: missing schema, default path', async () => {
@@ -45,14 +48,12 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain(
-      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-    )
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
+    expect(result.stderr).toContain('Successfully generated types to ./out/types.ts')
   })
 
   test('sanity typegen generate: formats code', async () => {
-    // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
-    await writeFile(`${studiosPath}/v3/out/.prettierrc`, '{\n  "singleQuote": true\n}\n')
+    await writeFile(join(outputPath, '.prettierrc'), '{\n  "singleQuote": true\n}\n')
     const result = await runSanityCmdCommand('v3', [
       'typegen',
       'generate',
@@ -61,17 +62,15 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain(
-      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-    )
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
 
-    const types = await readFile(`${studiosPath}/v3/out/types.ts`)
+    const types = await readFile(join(outputPath, 'types.ts'))
     expect(types.toString()).toContain(`'person'`)
     expect(types.toString()).toMatchSnapshot()
   })
 
   test('sanity typegen generate: generates query type map', async () => {
-    // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
+    // Write a prettier config to the output folder, with single quotes. The default is double quotes.
     const result = await runSanityCmdCommand('v3', [
       'typegen',
       'generate',
@@ -80,13 +79,15 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain(
-      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-    )
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
 
-    const types = await readFile(`${studiosPath}/v3/out/types.ts`)
+    const types = await readFile(join(outputPath, 'types.ts'))
+
     expect(types.toString()).toContain(
       `'*[_type == "page" && slug.current == $slug][0]': PAGE_QUERYResult;`,
+    )
+    expect(types.toString()).toContain(
+      `'{name, "slugValue": slug.current}': PERSON_PROJECTIONProjectionResult;`,
     )
   })
 
@@ -100,12 +101,10 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain(
-      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-    )
+    expect(result.stderr).toContain('Generated 1 query type and 1 projection type from 1 file')
 
     const types = await readFile(`${studiosPath}/v3/out/types.ts`)
-    expect(types.toString()).not.toContain(`Query TypeMap`)
+    expect(types.toString()).not.toContain(`SanityQueries`)
     expect(types.toString()).toMatchSnapshot()
   })
 })

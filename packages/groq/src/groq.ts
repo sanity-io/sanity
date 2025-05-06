@@ -8,7 +8,11 @@
  * @returns The same string as the input
  * @public
  */
-export function groq(strings: TemplateStringsArray, ...keys: any[]): string {
+export function groq(
+  strings: TemplateStringsArray,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...keys: any[]
+): string {
   const lastIndex = strings.length - 1
   return (
     strings.slice(0, lastIndex).reduce((acc, str, i) => {

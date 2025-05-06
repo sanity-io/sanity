@@ -12,6 +12,7 @@ const require = createRequire(__filename)
 
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'
+const defineProjectionFunctionName = 'defineProjection'
 const groqModuleName = 'groq'
 const nextSanityModuleName = 'next-sanity'
 
@@ -24,7 +25,6 @@ const ignoreValue = '@sanity-typegen-ignore'
  * @param babelConfig - The babel configuration to use when parsing the source
  * @param resolver - A resolver function to use when resolving module imports
  * @returns
- * @beta
  * @internal
  */
 export function findQueriesInSource(
@@ -50,13 +50,14 @@ export function findQueriesInSource(
         babelTypes.isIdentifier(init.tag) &&
         init.tag.name === groqTagName
 
-      // Look for strings wrapped in a defineQuery function call
-      const isDefineQueryCall =
+      // Look for strings wrapped in a defineQuery or defineProjection function call
+      const isDefineCall =
         babelTypes.isCallExpression(init) &&
         (isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee) ||
+          isImportFrom(groqModuleName, defineProjectionFunctionName, scope, init.callee) ||
           isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee))
 
-      if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineQueryCall)) {
+      if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineCall)) {
         // If we find a comment leading the decleration which macthes with ignoreValue we don't add
         // the query
         if (declarationLeadingCommentContains(path, ignoreValue)) {
@@ -64,8 +65,23 @@ export function findQueriesInSource(
         }
 
         const queryName = `${node.id.name}`
+
+        let resultType: 'query' | 'projection' = 'query'
+        let expressionToResolve: babelTypes.Expression = init
+
+        if (isDefineCall) {
+          // If it's a define call, resolve the first argument instead of the whole call
+          if (init.arguments.length > 0 && babelTypes.isExpression(init.arguments[0])) {
+            expressionToResolve = init.arguments[0]
+          }
+          // Check specifically if it's a defineProjection call from groq
+          if (isImportFrom(groqModuleName, defineProjectionFunctionName, scope, init.callee)) {
+            resultType = 'projection'
+          }
+        }
+
         const queryResult = resolveExpression({
-          node: init,
+          node: expressionToResolve,
           file,
           scope,
           babelConfig,
@@ -84,7 +100,7 @@ export function findQueriesInSource(
             }
           : {}
 
-        queries.push({name: queryName, result: queryResult, location})
+        queries.push({name: queryName, result: queryResult, type: resultType, location})
       }
     },
   })

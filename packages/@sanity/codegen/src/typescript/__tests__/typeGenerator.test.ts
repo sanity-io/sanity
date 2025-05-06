@@ -1,590 +1,760 @@
-import path from 'node:path'
+/* eslint-disable max-nested-callbacks */
+import {type DocumentSchemaType, type SchemaType} from 'groq-js'
+import {describe, expect, it} from 'vitest'
 
-import {
-  createReferenceTypeNode,
-  type DocumentSchemaType,
-  type ObjectAttribute,
-  type ObjectTypeNode,
-  type SchemaType,
-  type StringTypeNode,
-  type TypeNode,
-} from 'groq-js'
-import {describe, expect, test} from 'vitest'
-
-import {readSchema} from '../../readSchema'
+import {type QueryExtractionResult} from '../findQueriesInPath'
 import {TypeGenerator} from '../typeGenerator'
 
-describe('generateSchemaTypes', () => {
-  test('should generate TypeScript type declarations for a schema', async () => {
-    const schema = await readSchema(path.join(__dirname, 'fixtures', 'schema.json'))
+const post: DocumentSchemaType = {
+  type: 'document',
+  name: 'post',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+    _createdAt: {type: 'objectAttribute', value: {type: 'string'}},
+    _updatedAt: {type: 'objectAttribute', value: {type: 'string'}},
+    _rev: {type: 'objectAttribute', value: {type: 'string'}},
+    title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+    description: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+  },
+}
+const inBoth: DocumentSchemaType = {
+  type: 'document',
+  name: 'inBoth',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {type: 'objectAttribute', value: {type: 'string', value: 'inBoth'}},
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const justInA: DocumentSchemaType = {
+  type: 'document',
+  name: 'justInA',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {type: 'objectAttribute', value: {type: 'string', value: 'justInA'}},
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const justInB: DocumentSchemaType = {
+  type: 'document',
+  name: 'justInB',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {type: 'objectAttribute', value: {type: 'string', value: 'justInB'}},
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const collisionWithinSchemaFirst: DocumentSchemaType = {
+  type: 'document',
+  name: 'collision-within-schema',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {
+      type: 'objectAttribute',
+      value: {type: 'string', value: 'collision-within-schema'},
+    },
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const collisionWithinSchemaLast: DocumentSchemaType = {
+  type: 'document',
+  name: 'collision.within.schema',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {
+      type: 'objectAttribute',
+      value: {type: 'string', value: 'collision.within.schema'},
+    },
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const collisionAcrossSchemasFirst: DocumentSchemaType = {
+  type: 'document',
+  name: 'collision-across-schemas',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {
+      type: 'objectAttribute',
+      value: {type: 'string', value: 'collision-across-schemas'},
+    },
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
+const collisionAcrossSchemasLast: DocumentSchemaType = {
+  type: 'document',
+  name: 'collision.across.schemas',
+  attributes: {
+    _id: {type: 'objectAttribute', value: {type: 'string'}},
+    _type: {
+      type: 'objectAttribute',
+      value: {type: 'string', value: 'collision.across.schemas'},
+    },
+    foo: {type: 'objectAttribute', value: {type: 'string'}},
+  },
+}
 
-    const typeGenerator = new TypeGenerator(schema)
-    const typeDeclarations = typeGenerator.generateSchemaTypes()
+const schemaA: SchemaType = [
+  post,
+  inBoth,
+  justInA,
+  collisionWithinSchemaFirst,
+  collisionWithinSchemaLast,
+  collisionAcrossSchemasFirst,
+]
 
-    expect(typeDeclarations).toMatchSnapshot()
-  })
+const schemaB: SchemaType = [inBoth, justInB, collisionAcrossSchemasLast]
 
-  test('can generate well known types', async () => {
-    const typeDeclarations = TypeGenerator.generateKnownTypes()
+const queries1: QueryExtractionResult = {
+  type: 'queries',
+  filename: 'file1.ts',
+  queries: [
+    {
+      name: 'query1',
+      result: '*[_type == "inBoth"]',
+      type: 'query',
+    },
+    {
+      name: 'projection1',
+      result: '{title, description}',
+      type: 'projection',
+    },
+  ],
+}
 
-    expect(typeDeclarations).toMatchSnapshot()
-  })
+const queries2: QueryExtractionResult = {
+  type: 'queries',
+  filename: 'file2.ts',
+  queries: [
+    {
+      name: 'query2',
+      result: '*[_type == "justInA"][0]',
+      type: 'query',
+    },
+    // Duplicate query string from queries1
+    {
+      name: 'query1Again',
+      result: '*[_type == "inBoth"]',
+      type: 'query',
+    },
+    {
+      name: 'projection1Again',
+      result: '{title, description}',
+      type: 'projection',
+    },
+  ],
+}
 
-  test('should generate correct types for document schema with string fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'author',
-        attributes: {
-          _id: {
-            type: 'objectAttribute',
-            value: {type: 'string'},
-          },
-          name: {
-            type: 'objectAttribute',
-            value: {type: 'string'},
-            optional: true,
-          },
-        },
-      },
-    ]
+const mixedValidAndInvalidQueries: QueryExtractionResult = {
+  type: 'queries',
+  filename: 'mixedValidAndInvalidQueries.ts',
+  queries: [
+    {
+      name: 'invalidQuery',
+      result: 'not even a query',
+      type: 'query',
+    },
+    {
+      name: 'validQuery',
+      result: '*[_type == "post"]',
+      type: 'query',
+    },
+    {
+      name: 'invalidProjection',
+      result: 'not-a-valid-projection',
+      type: 'projection',
+    },
+  ],
+}
 
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
+const errorQuery: QueryExtractionResult = {
+  type: 'error',
+  filename: 'error.ts',
+  error: new Error('Test error'),
+}
 
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type Author = {
-  _id: string;
-  name?: string;
-};
+async function fromAsync<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+  const result: T[] = []
+  for await (const item of iterable) {
+    result.push(item)
+  }
+  return result
+}
 
-export type AllSanitySchemaTypes = Author;"
-`)
-  })
+async function* createAsyncIterable<T>(items: T[]): AsyncIterable<T> {
+  for (const item of items) {
+    // Yield control briefly to simulate async behavior
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    yield item
+  }
+}
 
-  test('should generate correct types for document schema with number fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'product',
-        attributes: {
-          price: {
-            type: 'objectAttribute',
-            value: {type: 'number'},
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type Product = {
-  price: number;
-};
-
-export type AllSanitySchemaTypes = Product;"
-`)
-  })
-
-  test('should generate correct types for document schema with boolean fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'task',
-        attributes: {
-          completed: {
-            type: 'objectAttribute',
-            value: {type: 'boolean'},
-          },
-        },
-      },
-    ]
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type Task = {
-  completed: boolean;
-};
-
-export type AllSanitySchemaTypes = Task;"
-`)
-  })
-
-  test('should generate correct types for document schema with object fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'user',
-        attributes: {
-          address: {
-            type: 'objectAttribute',
-            value: {
-              type: 'object',
-              attributes: {
-                street: {
-                  type: 'objectAttribute',
-                  value: {type: 'string'},
-                },
-                city: {
-                  type: 'objectAttribute',
-                  value: {type: 'string'},
-                },
-              },
-            },
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type User = {
-  address: {
-    street: string;
-    city: string;
-  };
-};
-
-export type AllSanitySchemaTypes = User;"
-`)
-  })
-
-  test('should generate correct types for document schema with array fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'blogPost',
-        attributes: {
-          tags: {
-            type: 'objectAttribute',
-            value: {
-              type: 'array',
-              of: {type: 'string'},
-            },
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type BlogPost = {
-  tags: Array<string>;
-};
-
-export type AllSanitySchemaTypes = BlogPost;"
-`)
-  })
-
-  test('should generate correct types for document schema with unknown fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'dynamicData',
-        attributes: {
-          metadata: {
-            type: 'objectAttribute',
-            value: {type: 'unknown'},
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type DynamicData = {
-  metadata: unknown;
-};
-
-export type AllSanitySchemaTypes = DynamicData;"
-`)
-  })
-
-  test('should generate correct types for document schema with never fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'impossible',
-        attributes: {
-          willNotHappen: {
-            type: 'objectAttribute',
-            value: {type: 'null'},
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type Impossible = {
-  willNotHappen: null;
-};
-
-export type AllSanitySchemaTypes = Impossible;"
-`)
-  })
-
-  test('should generate correct types for document schema with custom type references', () => {
-    const blogPost = {
-      type: 'document',
-      name: 'blogPost',
-      attributes: {
-        author: {
-          type: 'objectAttribute',
-          value: createReferenceTypeNode('author'),
-        } satisfies ObjectAttribute<ObjectTypeNode>,
-      },
-    } satisfies DocumentSchemaType
-    const author = {
-      type: 'document',
-      name: 'author',
-      attributes: {
-        name: {
-          type: 'objectAttribute',
-          value: {type: 'string'},
-        } satisfies ObjectAttribute<StringTypeNode>,
-      },
-    } satisfies DocumentSchemaType
-    const schema = [blogPost, author] satisfies SchemaType
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-      "export type BlogPost = {
-        author: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "author";
-        };
-      };
-
-      export type Author = {
-        name: string;
-      };
-
-      export type AllSanitySchemaTypes = BlogPost | Author;"
-    `)
-  })
-
-  test('should generate correct types for document schema with union fields', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'mixedContent',
-        attributes: {
-          content: {
-            type: 'objectAttribute',
-            value: {
-              type: 'union',
-              of: [{type: 'string'}, {type: 'number'}],
-            },
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type MixedContent = {
-  content: string | number;
-};
-
-export type AllSanitySchemaTypes = MixedContent;"
-`)
-  })
-
-  test('should generate correct types for document schema with nullable attribute', () => {
-    const schema: SchemaType = [
-      {
-        type: 'document',
-        name: 'optionalData',
-        attributes: {
-          obsoleteField: {
-            type: 'objectAttribute',
-            value: {type: 'null'},
-          },
-        },
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    const actualOutput = typeGenerator.generateSchemaTypes()
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-"export type OptionalData = {
-  obsoleteField: null;
-};
-
-export type AllSanitySchemaTypes = OptionalData;"
-`)
-  })
-
-  describe('generateTypeNodeTypes', () => {
-    const typeGenerator = new TypeGenerator([])
-    test.each(['string', 'boolean', 'number', 'unknown', 'null'] as const)(
-      'should be able to generate types for type nodes: %s',
-      (typeName) => {
-        const out = typeGenerator.generateTypeNodeTypes('test', {
-          type: typeName,
-        } satisfies TypeNode)
-
-        expect(out).toMatchSnapshot()
-      },
+describe('TypeGenerator', () => {
+  it('throws an error if a schema has a duplicate type name', () => {
+    expect(
+      () =>
+        new TypeGenerator({
+          schemas: [
+            {schema: [], schemaId: 'duplicate-schema-id'},
+            {schema: [], schemaId: 'duplicate-schema-id'},
+          ],
+        }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Duplicate schema ID "duplicate-schema-id". Schema IDs must be unique.]`,
     )
   })
 
-  test('should generate correct types for document schema with inline fields', () => {
-    const objectNode = {
-      type: 'object',
-      attributes: {
-        inlineField: {
-          type: 'objectAttribute',
-          value: {
-            type: 'object',
-            attributes: {
-              test: {
-                type: 'objectAttribute',
-                value: {type: 'string'},
-              },
-            },
-            rest: {
-              type: 'inline',
-              name: 'test',
-            },
-          },
-        },
-        unknownObject: {
-          type: 'objectAttribute',
-          value: {
-            type: 'object',
-            attributes: {
-              test: {
-                type: 'objectAttribute',
-                value: {type: 'string'},
-              },
-            },
-            rest: {
-              type: 'unknown',
-            },
-          },
-        },
-        arrayField: {
-          type: 'objectAttribute',
-          value: {
-            type: 'array',
-            of: {type: 'string'},
-          },
-        },
-        unionField: {
-          type: 'objectAttribute',
-          value: {
-            type: 'union',
-            of: [
+  describe('getKnownTypes', () => {
+    it('generates type helper imports and `internalGroqTypeReferenceTo`', () => {
+      const generator = new TypeGenerator({schemas: []})
+
+      expect(generator.getKnownTypes().code).toMatchInlineSnapshot(`
+        "import "@sanity/client";
+
+        import type { ProjectionBase } from "groq";
+
+        export declare const internalGroqTypeReferenceTo: unique symbol;
+
+        "
+      `)
+    })
+
+    it('generates type helper imports to PickSchema and SchemaOrigin if there are more than one schema', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      expect(generator.getKnownTypes().code).toMatchInlineSnapshot(`
+        "import "@sanity/client";
+
+        import type { ProjectionBase, PickSchema, SchemaOrigin } from "groq";
+
+        export declare const internalGroqTypeReferenceTo: unique symbol;
+
+        "
+      `)
+    })
+
+    it("does not generate a '@sanity/client' import if the flag is false", () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        overloadClientMethods: false, // <-- Disabled
+      })
+
+      const {code} = generator.getKnownTypes()
+      expect(code).not.toContain('import "@sanity/client"')
+
+      expect(code).toMatchInlineSnapshot(`
+        "import type { ProjectionBase, PickSchema, SchemaOrigin } from "groq";
+
+        export declare const internalGroqTypeReferenceTo: unique symbol;
+
+        "
+      `)
+    })
+  })
+
+  describe('getSchemaTypeDeclarations', () => {
+    it('generates all schema type declarations with a unique id', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      const schemaTypeDeclarations = generator.getSchemaTypeDeclarations()
+      const identifiers = schemaTypeDeclarations.map(({id, schemaIds}) => ({
+        name: id.name,
+        schemaIds,
+      }))
+
+      expect(identifiers).toEqual([
+        {name: 'Post', schemaIds: ['schemaA']},
+        {name: 'InBoth', schemaIds: ['schemaA', 'schemaB']},
+        {name: 'JustInA', schemaIds: ['schemaA']},
+        {name: 'CollisionWithinSchema', schemaIds: ['schemaA']},
+        {name: 'CollisionWithinSchema_2', schemaIds: ['schemaA']},
+        {name: 'CollisionAcrossSchemas', schemaIds: ['schemaA']},
+        {name: 'JustInB', schemaIds: ['schemaB']},
+        {name: 'CollisionAcrossSchemas_2', schemaIds: ['schemaB']},
+      ])
+
+      const code = schemaTypeDeclarations.map((i) => i.code).join('')
+      expect(code).toMatchInlineSnapshot(`
+        "export type Post = SchemaOrigin<{
+          _id: string;
+          _type: "post";
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          title?: string;
+          description?: string;
+        }, "schemaA">;
+
+        export type InBoth = SchemaOrigin<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }, "schemaA"> | SchemaOrigin<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }, "schemaB">;
+
+        export type JustInA = SchemaOrigin<{
+          _id: string;
+          _type: "justInA";
+          foo: string;
+        }, "schemaA">;
+
+        export type CollisionWithinSchema = SchemaOrigin<{
+          _id: string;
+          _type: "collision-within-schema";
+          foo: string;
+        }, "schemaA">;
+
+        export type CollisionWithinSchema_2 = SchemaOrigin<{
+          _id: string;
+          _type: "collision.within.schema";
+          foo: string;
+        }, "schemaA">;
+
+        export type CollisionAcrossSchemas = SchemaOrigin<{
+          _id: string;
+          _type: "collision-across-schemas";
+          foo: string;
+        }, "schemaA">;
+
+        export type JustInB = SchemaOrigin<{
+          _id: string;
+          _type: "justInB";
+          foo: string;
+        }, "schemaB">;
+
+        export type CollisionAcrossSchemas_2 = SchemaOrigin<{
+          _id: string;
+          _type: "collision.across.schemas";
+          foo: string;
+        }, "schemaB">;
+
+        "
+      `)
+    })
+
+    it('does not wrap with SchemaOrigin if there is only one schema', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {
+            schemaId: 'default',
+            schema: [
               {
-                type: 'object',
+                type: 'document',
+                name: 'post',
                 attributes: {
-                  test: {
-                    type: 'objectAttribute',
-                    value: {type: 'string'},
-                  },
+                  _id: {type: 'objectAttribute', value: {type: 'string'}},
+                  _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
                 },
-              },
-              {type: 'string'},
-              {
-                type: 'inline',
-                name: 'test',
               },
             ],
+            filename: 'schema.json',
           },
-        },
-      },
-    } satisfies TypeNode
+        ],
+      })
 
-    const typeGenerator = new TypeGenerator([
-      {
-        type: 'type',
-        name: 'test',
-        value: {
-          type: 'object',
-          attributes: {test: {type: 'objectAttribute', value: {type: 'string'}}},
-        },
-      },
-    ])
-    const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
-    expect(objectNodeOut).toMatchSnapshot()
+      const schemaTypeDeclarations = generator.getSchemaTypeDeclarations()
+      const code = schemaTypeDeclarations.map((i) => i.code).join('')
+      expect(code).toMatchInlineSnapshot(`
+        "export type Post = {
+          _id: string;
+          _type: "post";
+        };
 
-    const someOtherTypeOut = typeGenerator.generateTypeNodeTypes('SomeOtherType', {
-      type: 'inline',
-      name: 'myObject',
+        "
+      `)
     })
-    expect(someOtherTypeOut).toMatchSnapshot()
   })
 
-  test('Adds a comment when missing referenced inline type', () => {
-    const objectNode = {
-      type: 'object',
-      attributes: {
-        test: {
-          type: 'objectAttribute',
-          value: {type: 'string'},
+  describe('getAllSanitySchemaTypesDeclaration', () => {
+    it('generates the allSanitySchemaTypes declaration', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      const allSanitySchemaTypesDeclaration = generator.getAllSanitySchemaTypesDeclaration()
+      const code = allSanitySchemaTypesDeclaration.code
+      expect(code).toMatchInlineSnapshot(`
+        "export type AllSanitySchemaTypes = Post | InBoth | JustInA | CollisionWithinSchema | CollisionWithinSchema_2 | CollisionAcrossSchemas | JustInB | CollisionAcrossSchemas_2;
+
+        "
+      `)
+    })
+  })
+
+  describe('getSchemaDeclarations', () => {
+    it('generates the schema declarations', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      const schemaDeclarations = generator.getSchemaDeclarations()
+      const code = schemaDeclarations.map((i) => i.code).join('')
+      expect(code).toMatchInlineSnapshot(`
+        "// Source: schemaA.json
+        // Schema ID: schemaA
+        export type SchemaASchema = Post | PickSchema<InBoth, "schemaA"> | JustInA | CollisionWithinSchema | CollisionWithinSchema_2 | CollisionAcrossSchemas;
+
+        // Source: schemaB.json
+        // Schema ID: schemaB
+        export type SchemaBSchema = PickSchema<InBoth, "schemaB"> | JustInB | CollisionAcrossSchemas_2;
+
+        "
+      `)
+    })
+  })
+
+  describe('getAugmentedSchemasDeclarations', () => {
+    it('generates a SanitySchemas declaration augmented to the groq module', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      const augmentedSchemasDeclarations = generator.getAugmentedSchemasDeclarations()
+      const code = augmentedSchemasDeclarations.code
+      expect(code).toMatchInlineSnapshot(`
+        "declare module "groq" {
+          interface SanitySchemas {
+            "schemaA": SchemaASchema;
+            "schemaB": SchemaBSchema;
+          }
+        }
+
+        "
+      `)
+    })
+
+    it('does not generate augmentations if flags are false', () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        augmentGroqModule: false, // <-- Disabled
+        overloadClientMethods: false, // <-- Disabled
+      })
+
+      const augmentedCode = generator.getAugmentedSchemasDeclarations()
+      expect(augmentedCode.code).toBe('') // Should be empty
+    })
+  })
+
+  describe('getQueryFileCount', () => {
+    it('returns the number of files processed', async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([{type: 'files', fileCount: 2}, queries1, queries2]),
+      })
+
+      await expect(generator.getQueryFileCount()).resolves.toEqual({fileCount: 2})
+    })
+
+    it('returns 0 when no queries are provided', async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+      })
+
+      await expect(generator.getQueryFileCount()).resolves.toEqual({fileCount: 0})
+    })
+  })
+
+  describe('getQueryResultDeclarations', () => {
+    it('generates the query result declarations', async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([queries1, queries2]),
+      })
+
+      const results = await fromAsync(generator.getQueryResultDeclarations())
+
+      expect(results).toHaveLength(2)
+      const [first, second] = results
+
+      expect(first.filename).toBe('file1.ts')
+      if (first.type === 'error') expect.fail()
+      expect(first.queryResultDeclarations).toHaveLength(2)
+
+      expect(second.filename).toBe('file2.ts')
+      if (second.type === 'error') expect.fail()
+      expect(second.queryResultDeclarations).toHaveLength(3)
+
+      const code = results
+        .flatMap((fileResult) => {
+          if (fileResult.type === 'error') expect.fail()
+          return fileResult.queryResultDeclarations?.map((declaration) => declaration.code) ?? []
+        })
+        .join('\n')
+
+      // Snapshot the generated code for one of the results for simplicity
+      expect(code).toMatchInlineSnapshot(`
+        "// Source: file1.ts
+        // Variable: query1
+        // Query: *[_type == "inBoth"]
+        export type Query1Result = SchemaOrigin<Array<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }>, "schemaA"> | SchemaOrigin<Array<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }>, "schemaB">;
+
+
+        // Source: file1.ts
+        // Variable: projection1
+        // Projection: {title, description}
+        export type Projection1ProjectionResult = SchemaOrigin<ProjectionBase<{
+          title: string | null;
+          description: string | null;
+        }, "post">, "schemaA">;
+
+
+        // Source: file2.ts
+        // Variable: query2
+        // Query: *[_type == "justInA"][0]
+        export type Query2Result = SchemaOrigin<{
+          _id: string;
+          _type: "justInA";
+          foo: string;
+        } | null, "schemaA"> | SchemaOrigin<null, "schemaB">;
+
+
+        // Source: file2.ts
+        // Variable: query1Again
+        // Query: *[_type == "inBoth"]
+        export type Query1AgainResult = SchemaOrigin<Array<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }>, "schemaA"> | SchemaOrigin<Array<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }>, "schemaB">;
+
+
+        // Source: file2.ts
+        // Variable: projection1Again
+        // Projection: {title, description}
+        export type Projection1AgainProjectionResult = SchemaOrigin<ProjectionBase<{
+          title: string | null;
+          description: string | null;
+        }, "post">, "schemaA">;
+
+        "
+      `)
+    })
+
+    it('does not crash when an individual query or file throws an error', async () => {
+      const generator = new TypeGenerator({
+        schemas: [{schemaId: 'default', schema: [post], filename: 'schema.json'}], // Simpler schema for this test
+        queriesByFile: createAsyncIterable([mixedValidAndInvalidQueries, errorQuery]),
+      })
+
+      const results = await fromAsync(generator.getQueryResultDeclarations())
+
+      expect(results).toHaveLength(4)
+      const [invalidQueryResult, invalidProjectionResult, validQueryResult, testErrorResult] =
+        results
+
+      expect(invalidQueryResult).toMatchObject({
+        error: {message: 'Syntax error in GROQ query at position 3'},
+        filename: 'mixedValidAndInvalidQueries.ts',
+      })
+
+      expect(invalidProjectionResult).toMatchObject({
+        error: {
+          message:
+            'Invalid projection syntax: Projections must be enclosed in curly braces, (e.g., "{_id, title}"). Received: "not-a-valid-projection"',
         },
-      },
-      rest: {
-        type: 'inline',
-        name: 'test',
-      },
-    } satisfies TypeNode
+        filename: 'mixedValidAndInvalidQueries.ts',
+      })
 
-    const typeGenerator = new TypeGenerator([])
-    const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
-    expect(objectNodeOut).toMatchSnapshot()
+      expect(validQueryResult).toMatchObject({
+        filename: 'mixedValidAndInvalidQueries.ts',
+        queryResultDeclarations: [{code: expect.stringContaining('export type ValidQueryResult')}],
+      })
+
+      expect(testErrorResult).toMatchObject({
+        error: {message: 'Test error'},
+        filename: 'error.ts',
+      })
+    })
+
+    it('does not add SchemaOrigin if there is only one schema', async () => {
+      const generator = new TypeGenerator({
+        schemas: [{schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'}],
+        queriesByFile: createAsyncIterable([queries1]),
+      })
+
+      const [first] = await fromAsync(generator.getQueryResultDeclarations())
+      if (first.type === 'error') expect.fail()
+
+      const [query1, projection1] = first.queryResultDeclarations!
+      expect(query1.code).toMatchInlineSnapshot(`
+        "// Source: file1.ts
+        // Variable: query1
+        // Query: *[_type == "inBoth"]
+        export type Query1Result = Array<{
+          _id: string;
+          _type: "inBoth";
+          foo: string;
+        }>;
+
+        "
+      `)
+      expect(projection1.code).toMatchInlineSnapshot(`
+        "// Source: file1.ts
+        // Variable: projection1
+        // Projection: {title, description}
+        export type Projection1ProjectionResult = ProjectionBase<{
+          title: string | null;
+          description: string | null;
+        }, "post">;
+
+        "
+      `)
+    })
   })
-})
 
-describe('generateQueryMap', () => {
-  test('should generate a map of query results', () => {
-    const schema: SchemaType = []
+  describe('getAugmentedQueryResultsDeclarations', () => {
+    it('generates the augmented query results declarations', async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([queries1, queries2]),
+        augmentGroqModule: true,
+        overloadClientMethods: true,
+      })
 
-    const queries = [
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "author"]',
-      },
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "author"][0]',
-      },
-    ]
+      // Consume the query results first to populate internal state
+      await fromAsync(generator.getQueryResultDeclarations())
 
-    const typeGenerator = new TypeGenerator(schema)
-    typeGenerator.generateTypeNodeTypes('AuthorsResult', queries[0].typeNode)
-    typeGenerator.generateTypeNodeTypes('FirstAuthorResult', queries[1].typeNode)
-
-    const actualOutput = typeGenerator.generateQueryMap(queries)
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-      "import "@sanity/client";
-      declare module "@sanity/client" {
-        interface SanityQueries {
-          "*[_type == \\"author\\"]": AuthorsResult;
-          "*[_type == \\"author\\"][0]": FirstAuthorResult;
+      const augmentedCode = await generator.getAugmentedQueryResultsDeclarations()
+      expect(augmentedCode.code).toMatchInlineSnapshot(`
+        "declare module "@sanity/client" {
+          interface SanityQueries {
+            "*[_type == \\"inBoth\\"]": Query1Result | Query1AgainResult;
+            "*[_type == \\"justInA\\"][0]": Query2Result;
+          }
         }
-      }"
-    `)
-  })
 
-  test('should generate a map of query results with duplicate type names', () => {
-    const schema: SchemaType = []
-
-    const queries = [
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "foo"]',
-      },
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "bar"]',
-      },
-    ]
-
-    const typeGenerator = new TypeGenerator(schema)
-    typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
-    typeGenerator.generateTypeNodeTypes('Foo', queries[1].typeNode)
-
-    const actualOutput = typeGenerator.generateQueryMap(queries)
-
-    expect(actualOutput).toMatchInlineSnapshot(`
-      "import "@sanity/client";
-      declare module "@sanity/client" {
-        interface SanityQueries {
-          "*[_type == \\"foo\\"]": Foo;
-          "*[_type == \\"bar\\"]": Foo_2;
+        declare module "groq" {
+          interface SanityQueries {
+            "*[_type == \\"inBoth\\"]": Query1Result | Query1AgainResult;
+            "*[_type == \\"justInA\\"][0]": Query2Result;
+          }
+          interface SanityProjections {
+            "{title, description}": Projection1ProjectionResult | Projection1AgainProjectionResult;
+          }
         }
-      }"
-    `)
-  })
 
-  test('should generate a map of query results with duplicate query strings', () => {
-    const schema: SchemaType = []
+        "
+      `)
+    })
 
-    const queries = [
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "foo"]',
-      },
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "foo"]',
-      },
-      {
-        typeNode: {type: 'unknown'} satisfies TypeNode,
-        query: '*[_type == "foo"]',
-      },
-    ]
+    it('does not generate augmentations if flags are false', async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([queries1]),
+        augmentGroqModule: false, // <-- Disabled
+        overloadClientMethods: false, // <-- Disabled
+      })
 
-    const typeGenerator = new TypeGenerator(schema)
-    typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
-    typeGenerator.generateTypeNodeTypes('Bar', queries[1].typeNode)
-    typeGenerator.generateTypeNodeTypes('Foo', queries[2].typeNode)
+      const augmentedCode = await generator.getAugmentedQueryResultsDeclarations()
+      expect(augmentedCode.code).toBe('') // Should be empty
+    })
 
-    const actualOutput = typeGenerator.generateQueryMap(queries)
+    it("does not generate 'groq' module declaration if the flag is false", async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([queries1]),
+        augmentGroqModule: false, // <-- Disabled
+      })
 
-    expect(actualOutput).toMatchInlineSnapshot(`
-      "import "@sanity/client";
-      declare module "@sanity/client" {
-        interface SanityQueries {
-          "*[_type == \\"foo\\"]": Foo | Bar | Foo_2;
+      const {code} = await generator.getAugmentedQueryResultsDeclarations()
+
+      expect(code).not.toContain('declare module "groq"')
+
+      expect(code).toMatchInlineSnapshot(`
+        "declare module "@sanity/client" {
+          interface SanityQueries {
+            "*[_type == \\"inBoth\\"]": Query1Result;
+          }
         }
-      }"
-    `)
-  })
 
-  test('should handle duplicate type names', () => {
-    const typeGenerator = new TypeGenerator([
-      {
-        name: 'myType',
-        type: 'type',
-        value: {type: 'string'},
-      },
-      {
-        name: 'my.Type',
-        type: 'type',
-        value: {type: 'number'},
-      },
-    ])
+        "
+      `)
+    })
 
-    expect(typeGenerator.generateSchemaTypes()).toMatchInlineSnapshot(`
-      "export type MyType = string;
+    it("does not generate '@sanity/client' module declaration if the flag is false", async () => {
+      const generator = new TypeGenerator({
+        schemas: [
+          {schemaId: 'schemaA', schema: schemaA, filename: 'schemaA.json'},
+          {schemaId: 'schemaB', schema: schemaB, filename: 'schemaB.json'},
+        ],
+        queriesByFile: createAsyncIterable([queries1]),
+        overloadClientMethods: false, // <-- Disabled
+      })
 
-      export type MyType_2 = number;
+      const {code} = await generator.getAugmentedQueryResultsDeclarations()
 
-      export type AllSanitySchemaTypes = MyType | MyType_2;"
-    `)
+      expect(code).not.toContain('declare module "@sanity/client"')
 
-    // first one should be MyType_2, since it's the second type with the same name
-    expect(
-      typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'my.Type'}),
-    ).toEqual('export type Inline = MyType_2;')
+      expect(code).toMatchInlineSnapshot(`
+        "declare module "groq" {
+          interface SanityQueries {
+            "*[_type == \\"inBoth\\"]": Query1Result;
+          }
+          interface SanityProjections {
+            "{title, description}": Projection1ProjectionResult;
+          }
+        }
 
-    // second one should only be MyType, since it's the first type with the same name.
-    // However the generated name should be `Inline_2` since `Inline` is already generated
-    expect(typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'myType'})).toEqual(
-      'export type Inline_2 = MyType;',
-    )
+        "
+      `)
+    })
   })
 })

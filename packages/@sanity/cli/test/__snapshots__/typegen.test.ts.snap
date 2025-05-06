@@ -15,7 +15,12 @@ exports[`CLI: \`sanity typegen\` > sanity typegen generate: formats code 1`] = `
  * ---------------------------------------------------------------------------------
  */
 
-// Source: schema.json
+import '@sanity/client';
+
+import type { ProjectionBase } from 'groq';
+
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 export type Person = {
   _id: string;
   _type: 'person';
@@ -33,17 +38,45 @@ export type Slug = {
 };
 
 export type AllSanitySchemaTypes = Person | Slug;
-export declare const internalGroqTypeReferenceTo: unique symbol;
+
+// Source: ./working-schema.json
+// Schema ID: default
+export type DefaultSchema = Person | Slug;
+
+declare module 'groq' {
+  interface SanitySchemas {
+    default: DefaultSchema;
+  }
+}
+
 // Source: ./src/queries.ts
 // Variable: PAGE_QUERY
 // Query: *[_type == "page" && slug.current == $slug][0]
 export type PAGE_QUERYResult = null;
 
-// Query TypeMap
-import '@sanity/client';
+// Source: ./src/queries.ts
+// Variable: PERSON_PROJECTION
+// Projection: {name, "slugValue": slug.current}
+export type PERSON_PROJECTIONProjectionResult = ProjectionBase<
+  {
+    name: string | null;
+    slugValue: string | null;
+  },
+  'person'
+>;
+
 declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "page" && slug.current == $slug][0]': PAGE_QUERYResult;
+  }
+}
+
+declare module 'groq' {
+  interface SanityQueries {
+    '*[_type == "page" && slug.current == $slug][0]': PAGE_QUERYResult;
+  }
+  interface SanityProjections {
+    '{name, "slugValue": slug.current}': PERSON_PROJECTIONProjectionResult;
   }
 }
 "
@@ -64,7 +97,10 @@ exports[`CLI: \`sanity typegen\` > sanity typegen generate: with overloadClientM
  * ---------------------------------------------------------------------------------
  */
 
-// Source: schema.json
+import type { ProjectionBase } from 'groq';
+
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 export type Person = {
   _id: string;
   _type: 'person';
@@ -82,10 +118,25 @@ export type Slug = {
 };
 
 export type AllSanitySchemaTypes = Person | Slug;
-export declare const internalGroqTypeReferenceTo: unique symbol;
+
+// Source: ./working-schema.json
+// Schema ID: default
+export type DefaultSchema = Person | Slug;
+
 // Source: ./src/queries.ts
 // Variable: PAGE_QUERY
 // Query: *[_type == "page" && slug.current == $slug][0]
 export type PAGE_QUERYResult = null;
+
+// Source: ./src/queries.ts
+// Variable: PERSON_PROJECTION
+// Projection: {name, "slugValue": slug.current}
+export type PERSON_PROJECTIONProjectionResult = ProjectionBase<
+  {
+    name: string | null;
+    slugValue: string | null;
+  },
+  'person'
+>;
 "
 `;

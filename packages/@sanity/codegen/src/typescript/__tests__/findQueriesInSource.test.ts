@@ -423,4 +423,22 @@ describe('findQueries with defineQuery', () => {
     const queries = findQueriesInSource(source, 'test.ts')
     expect(queries.length).toBe(0)
   })
+
+  // Added test for defineProjection within the defineQuery block
+  test('should find projections with defineProjection', () => {
+    const source = `
+      import { defineProjection } from "groq";
+      const titleProjection = defineProjection("{title}");
+      // Usage doesn't matter for extraction
+      // const data = sanity.fetch(query, { projection: titleProjection });
+    `
+
+    const results = findQueriesInSource(source, 'test.ts')
+    expect(results.length).toBe(1)
+    const projectionResult = results[0]
+
+    expect(projectionResult?.name).toEqual('titleProjection')
+    expect(projectionResult?.result).toEqual('{title}')
+    expect(projectionResult?.type).toEqual('projection') // Check the type
+  })
 })
