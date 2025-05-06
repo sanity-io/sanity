@@ -1,48 +1,41 @@
-import {type types} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 
-type StackFunctionResource = types.StackFunctionResource
-
 const helpText = `
-Arguments
-  [add] Add or update an environment variable
-  [remove] Remove an environment variable
+Commands
+  add    Add or update an environment variable
+  list   List the environment variables
+  remove Remove an environment variable
 
-Options
-  --name <name> The name of the function
-  --key <key> The name of the environment variable
-  --value <value> The value of the environment variable
+Arguments
+  <name> The name of the function
+  <key> The name of the environment variable
+  <value> The value of the environment variable
 
 Examples
   # Add or update an environment variable
-  sanity functions env add --name echo --key API_URL --value https://api.example.com/
+  sanity functions env add echo API_URL https://api.example.com/
 
   # Remove an environment variable
-  sanity functions env remove --name echo --key API_URL
-`
+  sanity functions env remove echo API_URL
 
-const defaultFlags = {
-  name: '',
-  key: '',
-  value: '',
-}
+  # List environment variables
+  sanity functions env list echo
+`
 
 const envFunctionsCommand: CliCommandDefinition = {
   name: 'env',
   group: 'functions',
   helpText,
   signature: '',
-  description: 'Add or remove an environment variable for a Sanity function',
-  hideFromHelp: true,
+  description:
+    'Add or remove an environment variable or list environment variables for a Sanity function',
   async action(args, context) {
     const {apiClient, output} = context
     const {print} = output
-    const [subCommand] = args.argsWithoutOptions
-    const flags = {...defaultFlags, ...args.extOptions}
+    const [subCommand, name, key, value] = args.argsWithoutOptions
 
-    if (!subCommand || !['add', 'remove'].includes(subCommand)) {
-      throw new Error('You must specify if you wish to add or remove an environment variable')
+    if (!subCommand || !['add', 'list', 'remove'].includes(subCommand)) {
+      throw new Error('You must specify if you want to list, add or remove')
     }
 
     const client = apiClient({
@@ -50,7 +43,7 @@ const envFunctionsCommand: CliCommandDefinition = {
       requireProject: false,
     })
 
-    if (flags.name === '') {
+    if (name === '') {
       throw new Error('You must provide a function name via the --name flag')
     }
 
@@ -70,34 +63,45 @@ const envFunctionsCommand: CliCommandDefinition = {
     const blueprintConfig = blueprint.readConfigFile()
     const projectId = blueprintConfig?.projectId
 
-    const {externalId} = findFunction.findFunctionByName(
-      deployedStack,
-      flags.name,
-    ) as StackFunctionResource
+    const {externalId} = findFunction.findFunctionByName(deployedStack, name)
 
     if (token && projectId) {
       if (subCommand === 'add') {
-        print(`Updating "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await envAction.update(externalId, flags.key, flags.value, {
+        print(`Updating "${key}" environment variable in "${name}"`)
+        const result = await envAction.update(externalId, key, value, {
           token,
           projectId,
         })
         if (result.ok) {
-          print(`Update of ${flags.key} succeeded`)
+          print(`Update of "${key}" succeeded`)
         } else {
-          print(`Failed to update ${flags.key}`)
+          print(`Failed to update "${key}"`)
           print(`Error: ${result.error || 'Unknown error'}`)
         }
       } else if (subCommand === 'remove') {
-        print(`Removing "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await envAction.remove(externalId, flags.key, {
+        print(`Removing "${key}" environment variable in "${name}"`)
+        const result = await envAction.remove(externalId, key, {
           token,
           projectId,
         })
         if (result.ok) {
-          print(`Remove of ${flags.key} succeeded`)
+          print(`Removal of "${key}" succeeded`)
         } else {
-          print(`Failed to remove ${flags.key}`)
+          print(`Failed to remove "${key}"`)
+          print(`Error: ${result.error || 'Unknown error'}`)
+        }
+      } else if (subCommand === 'list') {
+        print(`Environment variables in "${name}"`)
+        const result = await envAction.list(externalId, {
+          token,
+          projectId,
+        })
+        if (result.ok && Array.isArray(result.envvars)) {
+          for (const envVarKey of result.envvars) {
+            print(envVarKey)
+          }
+        } else {
+          print(`Failed to list environment variables in "${key}"`)
           print(`Error: ${result.error || 'Unknown error'}`)
         }
       }
