@@ -15,6 +15,7 @@ jobs:
   build:
     docker:
       - image: cimg/node:20.12
+    resource_class: large
     steps:
       - checkout
       - restore_cache:

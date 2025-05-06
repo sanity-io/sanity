@@ -29,7 +29,7 @@ import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {type FileInfo} from '../common/styles'
 import {FileAsset as FileAssetComponent} from './FileAsset'
-import {FileAssetSource} from './FileAssetSource'
+import {FileAssetSource} from './FileInputAssetSource'
 
 /**
  * @hidden

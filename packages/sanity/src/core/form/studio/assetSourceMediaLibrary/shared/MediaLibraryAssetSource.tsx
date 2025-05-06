@@ -1,6 +1,8 @@
 import {
   type AssetFromSource,
   type AssetSourceComponentProps,
+  type ImageMetadataType,
+  isImageSchemaType,
   type SanityDocument,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -30,6 +32,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     onClose,
     onSelect,
     selectedAssets, // TODO: allow for pre-selected assets?
+    schemaType,
   } = props
 
   const {t} = useTranslation()
@@ -68,11 +71,16 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         return
       }
       const asset = selection[0]
+
+      // Metadata as configured in the schema
+      const metadataPropsFromSchema: ImageMetadataType[] | undefined =
+        schemaType && isImageSchemaType(schemaType) ? schemaType.options?.metadata : undefined
+
       // Link asset from media library to current dataset
       try {
         const result = await client.request({
           method: 'POST',
-          url: `/assets/media-library-link/${client.config().dataset}`,
+          url: `/assets/media-library-link/${client.config().dataset}?${metadataPropsFromSchema?.map((prop) => `meta[]=${prop}`).join('&') || ''}`,
           withCredentials: true,
           body: {
             mediaLibraryId: resolvedLibraryId,
@@ -104,7 +112,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         throw error
       }
     },
-    [client, onClose, onSelect, resolvedLibraryId, t, toast],
+    [client, onClose, onSelect, resolvedLibraryId, schemaType, t, toast],
   )
 
   const handleUploaded = useCallback(
