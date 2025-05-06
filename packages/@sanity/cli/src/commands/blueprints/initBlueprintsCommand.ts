@@ -2,7 +2,7 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Arguments
-  <dir>  Path to initialize the Blueprint in
+  [dir]  Path to initialize the Blueprint in
 
 Options
   --blueprint-type, --type <json|ts|js>    Type of Blueprint to create
