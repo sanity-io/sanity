@@ -26,13 +26,13 @@ const mockCores = {
 
 vi.mock('@sanity/runtime-cli/cores/blueprints', () => mockCores)
 
-// Mock display.errors.presentBlueprintIssues to return a string
-vi.mock('@sanity/runtime-cli/utils', () => ({
-  display: {
-    errors: {
-      presentBlueprintIssues: () => 'mocked blueprint issues',
-    },
-  },
+const localBlueprint = {
+  projectId: 'a1b2c3',
+  stackId: 'ST-d4e5f6',
+}
+// Mock getBlueprintAndStack to return a projectId and stackId without issues or deployedStack
+vi.mock('@sanity/runtime-cli/actions/blueprints', () => ({
+  getBlueprintAndStack: vi.fn().mockResolvedValue({localBlueprint}),
 }))
 
 describe('blueprints commands', () => {
@@ -83,6 +83,7 @@ describe('blueprints commands', () => {
         },
       }
 
+      // sanity blueprints add function --name test-function --fn-type document-publish --lang ts
       await addBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintAddCore).toHaveBeenCalledWith({
@@ -99,7 +100,9 @@ describe('blueprints commands', () => {
     })
 
     it('should error when no resource type provided', async () => {
+      // sanity blueprints add
       await addBlueprintsCommand.action(emptyArgs, mockContext)
+
       expect(mockContext.output.error).toHaveBeenCalledWith(
         'Resource type is required. Available types: function',
       )
@@ -118,6 +121,7 @@ describe('blueprints commands', () => {
         },
       }
 
+      // sanity blueprints init my-dir --blueprint-type studio --project-id proj123 --stack-name test-stack
       await initBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintInitCore).toHaveBeenCalledWith({
@@ -146,37 +150,16 @@ describe('blueprints commands', () => {
         },
       }
 
-      // Mock getBlueprintAndStack -- it's not under test, just need to return a value
-      vi.mock('@sanity/runtime-cli/actions/blueprints', () => ({
-        getBlueprintAndStack: vi.fn().mockResolvedValue({
-          localBlueprint: {
-            projectId: 'proj123',
-            stackId: 'stack123',
-          },
-          deployedStack: undefined,
-          issues: null,
-        }),
-      }))
-
+      // sanity blueprints deploy --no-wait
       await deployBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDeployCore).toHaveBeenCalledWith({
         bin: 'sanity',
         log: expect.any(Function),
-        auth: {
-          token: 'test-token',
-          projectId: 'proj123',
-        },
-        projectId: 'proj123',
-        stackId: 'stack123',
-        deployedStack: undefined,
-        blueprint: {
-          projectId: 'proj123',
-          stackId: 'stack123',
-        },
-        flags: {
-          'no-wait': true,
-        },
+        auth: {token: 'test-token', projectId: localBlueprint.projectId},
+        ...localBlueprint,
+        blueprint: localBlueprint,
+        flags: {'no-wait': true},
       })
     })
   })
@@ -191,29 +174,129 @@ describe('blueprints commands', () => {
         },
       }
 
-      // Mock getBlueprintAndStack
-      vi.mock('@sanity/runtime-cli/actions/blueprints', () => ({
-        getBlueprintAndStack: vi.fn().mockResolvedValue({
-          localBlueprint: {
-            projectId: 'proj123',
-            stackId: 'stack123',
-          },
-        }),
-      }))
-
+      // sanity blueprints destroy --force --no-wait
       await destroyBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDestroyCore).toHaveBeenCalledWith({
         bin: 'sanity',
         log: expect.any(Function),
         token: 'test-token',
-        blueprint: expect.any(Object),
+        blueprint: localBlueprint,
         flags: {
           'no-wait': true,
           'force': true,
           'project-id': undefined,
           'stack-id': undefined,
         },
+      })
+    })
+  })
+
+  describe('config command', () => {
+    it('should call blueprintConfigCore with flags', async () => {
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {
+          'edit': true,
+          'project-id': 'proj123',
+          'stack-id': 'stack123',
+        },
+      }
+
+      // sanity blueprints config --edit --project-id proj123 --stack-id stack123
+      await configBlueprintsCommand.action(args, mockContext)
+
+      expect(mockCores.blueprintConfigCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        blueprint: localBlueprint,
+        token: 'test-token',
+        flags: {
+          'project-id': 'proj123',
+          'stack-id': 'stack123',
+          'test-config': undefined,
+          'edit': true,
+        },
+      })
+    })
+  })
+
+  describe('info command', () => {
+    it('should call blueprintInfoCore with stack id', async () => {
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {
+          id: 'stack123',
+        },
+      }
+
+      // sanity blueprints info --id stack123
+      await infoBlueprintsCommand.action(args, mockContext)
+
+      expect(mockCores.blueprintInfoCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        auth: {token: 'test-token', projectId: localBlueprint.projectId},
+        stackId: localBlueprint.stackId,
+        deployedStack: undefined,
+        flags: {id: 'stack123'},
+      })
+    })
+  })
+
+  describe('logs command', () => {
+    it('should call blueprintLogsCore with watch flag', async () => {
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {
+          watch: true,
+        },
+      }
+
+      // sanity blueprints logs --watch
+      await logsBlueprintsCommand.action(args, mockContext)
+
+      expect(mockCores.blueprintLogsCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        auth: {token: 'test-token', projectId: localBlueprint.projectId},
+        stackId: localBlueprint.stackId,
+        flags: {watch: true},
+      })
+    })
+  })
+
+  describe('plan command', () => {
+    it('should call blueprintPlanCore with blueprint', async () => {
+      // sanity blueprints plan
+      await planBlueprintsCommand.action(emptyArgs, mockContext)
+
+      expect(mockCores.blueprintPlanCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        blueprint: localBlueprint,
+      })
+    })
+  })
+
+  describe('stacks command', () => {
+    it('should call blueprintStacksCore with project id', async () => {
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {
+          'project-id': 'proj123',
+        },
+      }
+
+      // sanity blueprints stacks --project-id proj123
+      await stacksBlueprintsCommand.action(args, mockContext)
+
+      expect(mockCores.blueprintStacksCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        token: 'test-token',
+        blueprint: localBlueprint,
+        flags: {projectId: 'proj123'},
       })
     })
   })
