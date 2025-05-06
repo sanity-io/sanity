@@ -1,5 +1,5 @@
 import {type ReactNode, useMemo, useState} from 'react'
-import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
+import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
@@ -27,12 +27,15 @@ export function StructureToolProvider({
   const configContext = useConfigContextFromSource(source)
   const documentStore = useDocumentStore()
 
+  const {perspectiveStack} = usePerspective()
+
   const S = useMemo(() => {
     return createStructureBuilder({
       defaultDocumentNode,
       source,
+      perspectiveStack,
     })
-  }, [defaultDocumentNode, source])
+  }, [defaultDocumentNode, source, perspectiveStack])
 
   const rootPaneNode = useMemo(() => {
     // TODO: unify types and remove cast
@@ -40,9 +43,12 @@ export function StructureToolProvider({
       return resolveStructure(S, {
         ...configContext,
         documentStore,
+        perspective: {
+          perspectiveStack,
+        },
       }) as UnresolvedPaneNode
     return S.defaults() as UnresolvedPaneNode
-  }, [S, resolveStructure, configContext, documentStore])
+  }, [resolveStructure, S, configContext, documentStore, perspectiveStack])
 
   const features: StructureToolContextValue['features'] = useMemo(
     () => ({

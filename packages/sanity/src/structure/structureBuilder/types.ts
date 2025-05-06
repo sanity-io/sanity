@@ -1,5 +1,10 @@
 import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
-import {type ConfigContext, type InitialValueTemplateItem, type Source} from 'sanity'
+import {
+  type ConfigContext,
+  type InitialValueTemplateItem,
+  type PerspectiveContextValue,
+  type Source,
+} from 'sanity'
 
 import {type ComponentBuilder, type ComponentInput} from './Component'
 import {type DocumentBuilder, type PartialDocumentNode} from './Document'
@@ -82,6 +87,18 @@ export interface StructureContext extends Source {
    * @returns a structure builder. See {@link StructureBuilder}
    */
   getStructureBuilder: () => StructureBuilder
+  /**
+   * The perspective configuration for the structure context
+   */
+  perspective: {
+    /**
+     * The stacked array of perspectives ids ordered chronologically to represent the state of documents at the given point in time.
+     * It can be used as the perspective param in the client to get the correct view of the documents.
+     * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+     * See {@link PerspectiveContextValue}
+     */
+    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  }
 }
 
 /**

@@ -6,6 +6,7 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
+import {usePerspective} from '../../perspective/usePerspective'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -146,6 +147,7 @@ export function useDocumentStore(): DocumentStore {
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
   const workspace = useWorkspace()
+  const {perspectiveStack} = usePerspective()
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
@@ -195,6 +197,9 @@ export function useDocumentStore(): DocumentStore {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
         },
+        perspective: {
+          perspectiveStack,
+        },
       })
 
     resourceCache.set({
@@ -216,6 +221,7 @@ export function useDocumentStore(): DocumentStore {
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
+    perspectiveStack,
   ])
 }
 

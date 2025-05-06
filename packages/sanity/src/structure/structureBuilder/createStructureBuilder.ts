@@ -1,7 +1,12 @@
 import {type SchemaType} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import {isValidElementType} from 'react-is'
-import {getConfigContextFromSource, getPublishedId, type Source} from 'sanity'
+import {
+  getConfigContextFromSource,
+  getPublishedId,
+  type PerspectiveContextValue,
+  type Source,
+} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
 import {ComponentBuilder, type ComponentInput} from './Component'
@@ -35,6 +40,7 @@ import * as views from './views'
 export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  perspectiveStack: PerspectiveContextValue['perspectiveStack']
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {
@@ -59,6 +65,7 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
 export function createStructureBuilder({
   defaultDocumentNode,
   source,
+  perspectiveStack,
 }: StructureBuilderOptions): StructureBuilder {
   const configContext = getConfigContextFromSource(source)
   const context: StructureContext = {
@@ -79,6 +86,7 @@ export function createStructureBuilder({
 
       return builder.schemaType(options.schemaType)
     },
+    perspective: {perspectiveStack},
   }
 
   const structureBuilder: StructureBuilder = {
