@@ -55,15 +55,16 @@ export function FileAssetSource(props: FileAssetProps) {
   }
   return (
     <Component
+      accept={accept}
       action={isUploading ? 'upload' : 'select'}
       assetSource={selectedAssetSource}
-      selectedAssets={[]}
-      selectionType="single"
       assetType="file"
-      accept={accept}
       dialogHeaderTitle={t('inputs.file.dialog.title')}
       onClose={handleAssetSourceClosed}
       onSelect={onSelectAssets}
+      schemaType={schemaType}
+      selectedAssets={[]}
+      selectionType="single"
     />
   )
 }
