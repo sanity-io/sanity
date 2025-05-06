@@ -58,7 +58,7 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       flags: {
         'name': flags.name,
         'fn-type': flags['fn-type'],
-        'language': flags.language ?? flags.lang,
+        'language': flags['fn-lang'] ?? flags.language ?? flags.lang,
         'javascript': flags.js || flags.javascript,
       },
     })
