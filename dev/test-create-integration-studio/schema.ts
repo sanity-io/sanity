@@ -24,6 +24,7 @@ export const schemaTypes = [
     ],
     options: {
       sanityCreate: {exclude: true},
+      canvasApp: {exclude: true},
     },
   }),
   defineType({
@@ -34,6 +35,7 @@ export const schemaTypes = [
         name: 'title',
         title: 'Documents with initial values are disabled for Create',
         type: 'string',
+        options: {canvasApp: {exclude: true}},
         initialValue: () =>
           new Promise<string>((resolve) => {
             setTimeout(() => {
