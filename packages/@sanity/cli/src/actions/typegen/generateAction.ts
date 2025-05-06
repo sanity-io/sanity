@@ -159,7 +159,7 @@ export default async function typegenGenerateAction(
 
     const queryTypesCount = count(queryStats.queriesCount, 'query types')
     const projectionTypesCount = count(queryStats.projectionsCount, 'projection types')
-    const scannedFilesCount = count(queryStats.totalScannedFilesCount, 'files')
+    const scannedFilesCount = count(queryStats.totalScannedFilesCount, 'scanned files')
     spinner.succeed(
       `Generated ${queryTypesCount} and ${projectionTypesCount} from ${scannedFilesCount}`,
     )
@@ -206,16 +206,6 @@ export default async function typegenGenerateAction(
     } else {
       spinner.succeed(`Successfully generated types to ${generates}`)
     }
-
-    output.print('')
-    output.print(`Scanned ${scannedFilesCount}. Generated:`)
-    output.print(`- ${schemaTypesCount}${schemas.length > 1 ? ` from ${schemaCount}` : ''}`)
-    output.print(
-      `- ${count(queryStats.queriesCount, 'query types')} from ${count(queryStats.queryFilesCount, 'files')}`,
-    )
-    output.print(
-      `- ${count(queryStats.projectionsCount, 'projection types')} from ${count(queryStats.projectionFilesCount, 'files')}`,
-    )
   } catch (err) {
     trace.error(err)
     throw err
