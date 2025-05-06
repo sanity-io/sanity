@@ -80,17 +80,8 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
       try {
         const result = await client.request({
           method: 'POST',
-          url: `/assets/media-library-link/${client.config().dataset}`,
+          url: `/assets/media-library-link/${client.config().dataset}?${metadataPropsFromSchema?.map((prop) => `meta[]=${prop}`).join('&') || ''}`,
           withCredentials: true,
-          // Allow metadata as configured in the schema
-          query: metadataPropsFromSchema
-            ? Object.fromEntries(
-                metadataPropsFromSchema.reduce((acc, meta) => {
-                  acc.append('meta', meta)
-                  return acc
-                }, new URLSearchParams()),
-              )
-            : undefined,
           body: {
             mediaLibraryId: resolvedLibraryId,
             assetInstanceId: asset.assetInstanceId,
