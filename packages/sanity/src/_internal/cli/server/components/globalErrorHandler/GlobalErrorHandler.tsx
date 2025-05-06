@@ -2,54 +2,47 @@ import {type JSX} from 'react'
 
 const errorHandlerScript = `
 ;(function () {
-  var _caughtErrors = []
-
+  // The error channel is provided so that error handling can be delegated to a view component.
+  // If there is a subscriber to the error channel at the time the error happens, the error will be pushed to the subscriber instead of handled here.
   var errorChannel = (function () {
-    var subscribers = []
-
-    function publish(msg) {
-      for (var i = 0; i < subscribers.length; i += 1) {
-        subscribers[i](msg)
+    var subscribers = Object.create(null)
+    var nextId = 0
+    function subscribe(subscriber) {
+      var id = nextId++
+      subscribers[id] = subscriber
+      return function unsubscribe() {
+        delete subscribers[id]
       }
     }
 
-    function subscribe(subscriber) {
-      subscribers.push(subscriber)
-
-      return function () {
-        var idx = subscribers.indexOf(subscriber)
-
-        if (idx > -1) {
-          subscribers.splice(idx, 1)
+    function publish(event) {
+      for (var id in subscribers) {
+        if (Object.hasOwn(subscribers, id)) {
+          subscribers[id](event)
         }
       }
     }
-
-    return {publish, subscribe, subscribers}
+    return {
+      subscribers,
+      publish,
+      subscribe
+    }
   })()
 
-  // NOTE: Store the error channel instance in the global scope so that the application can
+  // NOTE: Store the error channel instance in the global scope so that the Studio application can
   // access it and subscribe to errors.
   window.__sanityErrorChannel = {
-    subscribe: errorChannel.subscribe,
+    subscribe: errorChannel.subscribe
   }
 
-  function _nextTick(callback) {
-    setTimeout(callback, 0)
-  }
-
-  function _handleError(error, params) {
-    _nextTick(function () {
-      // - If there are error channel subscribers, then we notify them (no console error).
-      // - If there are no subscribers, then we log the error to the console and render the error overlay.
-      if (errorChannel.subscribers.length) {
-        errorChannel.publish({error, params})
-      } else {
-        console.error(error)
-
-        _renderErrorOverlay(error, params)
-      }
-    })
+  function _handleError(event) {
+    // If there are error channel subscribers, then we assume they will own error rendering,
+    // and we defer to them (no console error).
+    if (Object.keys(errorChannel.subscribers).length > 0) {
+      errorChannel.publish(event)
+    } else {
+      _renderErrorOverlay(event)
+    }
   }
 
   var ERROR_BOX_STYLE = [
@@ -76,11 +69,12 @@ const errorHandlerScript = `
     'margin: 0',
   ].join(';')
 
-  function _renderErrorOverlay(error, params) {
+  function _renderErrorOverlay(event) {
     var errorElement = document.querySelector('#__sanityError') || document.createElement('div')
-    var colno = params.event.colno
-    var lineno = params.event.lineno
-    var filename = params.event.filename
+    var error = event.error
+    var colno = event.colno
+    var lineno = event.lineno
+    var filename = event.filename
 
     errorElement.id = '__sanityError'
     errorElement.innerHTML = [
@@ -112,58 +106,23 @@ const errorHandlerScript = `
     document.body.appendChild(errorElement)
   }
 
-  // NOTE:
-  // Yes – we're attaching 2 error listeners below 👀
-  // This is because React makes the same error throw twice (in development mode).
-  // See: https://github.com/facebook/react/issues/10384
-
-  // Error listener #1
-  window.onerror = function (event, source, lineno, colno, error) {
-    _nextTick(function () {
-      if (_caughtErrors.indexOf(error) !== -1) return
-
-      _caughtErrors.push(error)
-
-      _handleError(error, {
-        event,
-        lineno,
-        colno,
-        source,
-      })
-
-      _nextTick(function () {
-        var idx = _caughtErrors.indexOf(error)
-
-        if (idx > -1) _caughtErrors.splice(idx, 1)
-      })
-    })
-
-    // IMPORTANT: this callback must return \`true\` to prevent the error from being rendered in
-    // the browser’s console.
-    return true
-  }
-
-  // Error listener #2
-  window.addEventListener('error', function (event) {
-    if (_caughtErrors.indexOf(event.error) !== -1) return true
-
-    _caughtErrors.push(event.error)
-
-    _handleError(event.error, {
-      event,
+  // Error listener
+  window.addEventListener('error', (event) => {
+    _handleError({
+      type: 'error',
+      error: event.error,
       lineno: event.lineno,
       colno: event.colno,
+      filename: event.filename
     })
+  })
 
-    _nextTick(function () {
-      _nextTick(function () {
-        var idx = _caughtErrors.indexOf(event.error)
-
-        if (idx > -1) _caughtErrors.splice(idx, 1)
-      })
+  // Error listener
+  window.addEventListener('unhandledrejection', (event) => {
+    _handleError({
+      type: 'rejection',
+      error: event.reason
     })
-
-    return true
   })
 })()
 `

@@ -9,14 +9,12 @@
 export * from './BetaBadge'
 export * from './commandList'
 export * from './contextMenuButton'
-export * from './DefaultDocument'
 export * from './documentStatus'
 // Note: exporting `CapabilityGate` earlier causes runtime errors. `simple-import-sort/exports` has
 // been switched off for this file as a temporary solution.
 export * from './CapabilityGate'
 export * from './documentStatusIndicator'
 export * from './errorActions'
-export * from './globalErrorHandler'
 export * from './hookCollection'
 export * from './Hotkeys'
 export * from './InsufficientPermissionsMessage'
