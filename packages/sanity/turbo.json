@@ -11,6 +11,11 @@
       "outputs": [
         "dist/**"
       ]
+    },
+    "build:typedoc": {
+      "outputs": [
+        "typedoc/**"
+      ]
     }
   }
 }
