@@ -35,7 +35,10 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
-export const structure: StructureResolver = (S, {schema, documentStore, i18n, perspective}) => {
+export const structure: StructureResolver = (
+  S,
+  {schema, documentStore, i18n, perspectiveStack},
+) => {
   const {t} = i18n
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
@@ -49,7 +52,7 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n, pe
             `*[_id == "validation"][0]`,
             {},
             {
-              perspective: perspective.perspectiveStack,
+              perspective: perspectiveStack,
             },
           )
 

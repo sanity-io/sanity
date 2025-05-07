@@ -86,7 +86,7 @@ export function createStructureBuilder({
 
       return builder.schemaType(options.schemaType)
     },
-    perspective: {perspectiveStack},
+    perspectiveStack,
   }
 
   const structureBuilder: StructureBuilder = {

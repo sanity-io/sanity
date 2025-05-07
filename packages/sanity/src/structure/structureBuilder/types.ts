@@ -88,17 +88,12 @@ export interface StructureContext extends Source {
    */
   getStructureBuilder: () => StructureBuilder
   /**
-   * The perspective configuration for the structure context
+   * The stacked array of perspective ids ordered chronologically to represent the state of documents at the given point in time.
+   * It can be used as the perspective param in the client to get the correct view of the documents.
+   * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+   * See {@link PerspectiveStack}
    */
-  perspective: {
-    /**
-     * The stacked array of perspectives ids ordered chronologically to represent the state of documents at the given point in time.
-     * It can be used as the perspective param in the client to get the correct view of the documents.
-     * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
-     * See {@link PerspectiveContextValue}
-     */
-    perspectiveStack: PerspectiveStack
-  }
+  perspectiveStack: PerspectiveStack
 }
 
 /**

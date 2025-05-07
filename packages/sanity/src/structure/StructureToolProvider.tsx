@@ -43,9 +43,8 @@ export function StructureToolProvider({
       return resolveStructure(S, {
         ...configContext,
         documentStore,
-        perspective: {
-          perspectiveStack,
-        },
+
+        perspectiveStack,
       }) as UnresolvedPaneNode
     return S.defaults() as UnresolvedPaneNode
   }, [resolveStructure, S, configContext, documentStore, perspectiveStack])
