@@ -1,0 +1,16 @@
+{
+  "name": "sanity",
+  "entryPoints": [
+    "./src/_exports/cli.ts",
+    "./src/_exports/index.ts",
+    "./src/_exports/migrate.ts",
+    "./src/_exports/presentation.ts",
+    "./src/_exports/router.ts",
+    "./src/_exports/structure.ts"
+  ],
+  "projectDocuments": ["guides/*.md"],
+  "defaultCategory": "none",
+  "readme": "README.md",
+  "excludeExternals": false,
+  "excludeInternal": true
+}

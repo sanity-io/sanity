@@ -32,3 +32,6 @@
 /migrate.js
 /_internal.js
 /cli.js
+
+# Typedoc
+/typedoc
