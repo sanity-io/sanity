@@ -3,6 +3,7 @@ import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
+  isGlobalDocumentReference,
 } from '@sanity/types'
 import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {
@@ -363,7 +364,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                     value={value}
                     referenceInfo={loadableReferenceInfo}
                     showStudioUrlIcon
-                    hasStudioUrl={!!studioUrl}
+                    hasStudioUrl
                     type={schemaType}
                   />
                 </PreviewCard>
@@ -383,7 +384,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   <PreviewReferenceValue
                     value={value}
                     referenceInfo={loadableReferenceInfo}
-                    showStudioUrlIcon
                     type={schemaType}
                   />
                 </PreviewCard>

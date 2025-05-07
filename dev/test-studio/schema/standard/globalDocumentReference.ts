@@ -44,11 +44,6 @@ export default function createGDRType(projectId: string) {
         resourceType: 'dataset',
         resourceId: `${projectId}.blog`,
         weak: true,
-        studioUrl: ({id, type}) => {
-          return type
-            ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
-            : null
-        },
         to: [
           {
             type: 'book',
