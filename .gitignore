@@ -77,6 +77,8 @@ etc
 blob-report
 /artifacts
 
+# Developer scratch
+**/scratch
 
 # Temporary files made when running canary releases
 .turbo
