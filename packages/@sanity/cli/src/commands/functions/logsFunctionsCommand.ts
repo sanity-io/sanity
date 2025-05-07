@@ -38,7 +38,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
   name: 'logs',
   group: 'functions',
   helpText,
-  signature: '<name>',
+  signature: '<name> [--limit <number>] [--json] [--utc] [--delete [--force]]',
   description: 'Retrieve or delete logs for a Sanity Function',
   async action(args, context) {
     const {apiClient, output} = context

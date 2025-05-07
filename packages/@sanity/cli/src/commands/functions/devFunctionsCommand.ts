@@ -22,7 +22,7 @@ const devFunctionsCommand: CliCommandDefinition = {
   name: 'dev',
   group: 'functions',
   helpText,
-  signature: '',
+  signature: '[--port <port>]',
   description: 'Start the Sanity Function emulator',
   async action(args, context) {
     const {output} = context

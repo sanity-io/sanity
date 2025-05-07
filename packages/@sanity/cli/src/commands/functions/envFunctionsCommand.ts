@@ -26,7 +26,7 @@ const envFunctionsCommand: CliCommandDefinition = {
   name: 'env',
   group: 'functions',
   helpText,
-  signature: '',
+  signature: '<add|list|remove> <name> [key] [value]',
   description:
     'Add or remove an environment variable or list environment variables for a Sanity function',
   async action(args, context) {

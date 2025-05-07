@@ -39,7 +39,8 @@ const testFunctionsCommand: CliCommandDefinition = {
   name: 'test',
   group: 'functions',
   helpText,
-  signature: '<name>',
+  signature:
+    '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
     const {output} = context
