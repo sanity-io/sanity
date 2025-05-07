@@ -4,7 +4,7 @@ import {isValidElementType} from 'react-is'
 import {
   getConfigContextFromSource,
   getPublishedId,
-  type PerspectiveContextValue,
+  type PerspectiveStack,
   type Source,
 } from 'sanity'
 
@@ -40,7 +40,7 @@ import * as views from './views'
 export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
-  perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  perspectiveStack: PerspectiveStack
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {

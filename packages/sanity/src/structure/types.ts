@@ -8,7 +8,7 @@ import {
   type I18nTextRecord,
   type InitialValueTemplateItem,
   type LocaleSource,
-  type PerspectiveContextValue,
+  type PerspectiveStack,
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
@@ -71,7 +71,7 @@ export interface StructureResolverContext extends ConfigContext {
      * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
      * See {@link PerspectiveContextValue}
      */
-    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+    perspectiveStack: PerspectiveStack
   }
 }
 

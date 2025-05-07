@@ -5,7 +5,7 @@ import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
 import {type LocaleSource} from '../../../i18n'
-import {type PerspectiveContextValue} from '../../../perspective/types'
+import {type PerspectiveStack} from '../../../perspective/types'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
@@ -119,7 +119,7 @@ export interface DocumentStoreOptions {
      * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
      * See {@link PerspectiveContextValue}
      */
-    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+    perspectiveStack: PerspectiveStack
   }
 }
 

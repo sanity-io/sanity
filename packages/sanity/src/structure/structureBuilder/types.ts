@@ -2,7 +2,7 @@ import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/t
 import {
   type ConfigContext,
   type InitialValueTemplateItem,
-  type PerspectiveContextValue,
+  type PerspectiveStack,
   type Source,
 } from 'sanity'
 
@@ -97,7 +97,7 @@ export interface StructureContext extends Source {
      * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
      * See {@link PerspectiveContextValue}
      */
-    perspectiveStack: PerspectiveContextValue['perspectiveStack']
+    perspectiveStack: PerspectiveStack
   }
 }
 
