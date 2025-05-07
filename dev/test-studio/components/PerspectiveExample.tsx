@@ -1,12 +1,13 @@
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useEffect, useState} from 'react'
+import {type Observable} from 'rxjs'
 
 interface Document {
   string?: string
   number?: number
 }
 
-export const PerspectiveExample = (props: {options: any}) => {
+export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}}) => {
   const {options} = props
   const doc$ = options.doc$
   const [doc, setDoc] = useState<Document | null>(null)
