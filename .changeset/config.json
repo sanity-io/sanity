@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "linked": [
+    [
+      "@repo/package.bundle",
+      "@sanity/cli",
+      "@sanity/codegen",
+      "@sanity/diff",
+      "@sanity/migrate",
+      "@sanity/mutator",
+      "@sanity/schema",
+      "@sanity/types",
+      "@sanity/util",
+      "@sanity/vision",
+      "create-sanity",
+      "groq",
+      "sanity"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
