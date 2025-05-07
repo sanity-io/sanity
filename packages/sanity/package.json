@@ -174,7 +174,7 @@
     "@sanity/message-protocol": "^0.13.0",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
-    "@sanity/presentation-comlink": "^1.0.18",
+    "@sanity/presentation-comlink": "^1.0.19",
     "@sanity/preview-url-secret": "^2.1.10",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "0.0.0-alpha.25",
