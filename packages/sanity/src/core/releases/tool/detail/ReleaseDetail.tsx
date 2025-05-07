@@ -35,6 +35,7 @@ export const ReleaseDetail = () => {
   const {
     loading: documentsLoading,
     results,
+    documentsCount,
     error: bundleDocumentsError,
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
@@ -80,6 +81,7 @@ export const ReleaseDetail = () => {
       <ReleaseSummary
         isLoading={documentsLoading}
         documents={results}
+        documentsCount={documentsCount ?? 0}
         release={releaseInDetail}
         documentsHistory={history.documentsHistory}
         scrollContainerRef={scrollContainerRef}
@@ -87,9 +89,10 @@ export const ReleaseDetail = () => {
     )
   }, [
     bundleDocumentsError,
-    documentsLoading,
     releaseInDetail,
+    documentsLoading,
     results,
+    documentsCount,
     history.documentsHistory,
     t,
   ])

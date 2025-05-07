@@ -1,7 +1,8 @@
+/* eslint-disable i18next/no-literal-string */
 import {type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Container, Flex, Text, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Spinner, Stack, Text, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -33,6 +34,7 @@ export interface ReleaseSummaryProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
+  documentsCount: number
 }
 
 const isBundleDocumentRow = (
@@ -47,7 +49,14 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {
+    documents,
+    documentsHistory,
+    isLoading = false,
+    release,
+    scrollContainerRef,
+    documentsCount,
+  } = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -174,39 +183,57 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
-      <Table<DocumentWithHistory>
-        loading={isLoading}
-        data={tableData}
-        emptyState={t('summary.no-documents')}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        rowId="document._id"
-        columnDefs={documentTableColumnDefs}
-        rowActions={renderRowActions}
-        searchFilter={filterRows}
-        scrollContainerRef={scrollContainerRef}
-        defaultSort={{column: 'validation', direction: 'desc'}}
-      />
+    <Stack>
+      <Flex justify="center" align="center" gap={2} padding={2}>
+        {isLoading ? (
+          <>
+            <Text size={1}>
+              <Spinner />
+            </Text>
+            <Text size={1}>
+              Loading {documents.length} / {documentsCount} documents
+            </Text>
+          </>
+        ) : (
+          <Text size={1}>
+            {documents.length} / {documentsCount} documents
+          </Text>
+        )}
+      </Flex>
+      <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
+        <Table<DocumentWithHistory>
+          loading={isLoading && !tableData.length}
+          data={tableData}
+          emptyState={t('summary.no-documents')}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="document._id"
+          columnDefs={documentTableColumnDefs}
+          rowActions={renderRowActions}
+          searchFilter={filterRows}
+          scrollContainerRef={scrollContainerRef}
+          defaultSort={{column: 'validation', direction: 'desc'}}
+        />
 
-      {release.state === 'active' && (
-        <Container width={3}>
-          <Card padding={3}>
-            <Button
-              icon={AddIcon}
-              disabled={isLoading}
-              mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
-              text={t('action.add-document')}
-            />
-          </Card>
-        </Container>
-      )}
-      <AddDocumentSearch
-        open={openAddDocumentDialog}
-        onClose={closeAddDialog}
-        releaseId={releaseId}
-        idsInRelease={aggregatedData.map(({document}) => document._id)}
-      />
-    </Card>
+        {release.state === 'active' && (
+          <Container width={3}>
+            <Card padding={3}>
+              <Button
+                icon={AddIcon}
+                disabled={isLoading}
+                mode="bleed"
+                onClick={() => setAddDocumentDialog(true)}
+                text={t('action.add-document')}
+              />
+            </Card>
+          </Container>
+        )}
+        <AddDocumentSearch
+          open={openAddDocumentDialog}
+          onClose={closeAddDialog}
+          releaseId={releaseId}
+          idsInRelease={aggregatedData.map(({document}) => document._id)}
+        />
+      </Card>
+    </Stack>
   )
 }

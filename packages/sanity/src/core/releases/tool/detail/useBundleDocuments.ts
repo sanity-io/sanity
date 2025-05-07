@@ -7,7 +7,7 @@ import {
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, type Observable, of} from 'rxjs'
+import {BehaviorSubject, combineLatest, type Observable, of} from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -145,13 +145,31 @@ const getActiveReleaseDocumentsObservable = ({
     )
   }
 
-  return documentPreviewStore
+  const subscription$ = new BehaviorSubject<{
+    loading: boolean
+    documentsCount: number
+    results: DocumentInRelease[]
+    error: Error | null
+  }>({
+    loading: true,
+    documentsCount: 0,
+    results: [],
+    error: null,
+  })
+
+  documentPreviewStore
     .unstable_observeDocumentIdSet(groqFilter, undefined, {
       apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
     })
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
       concatMap((documentIds) => {
+        subscription$.next({
+          loading: true,
+          documentsCount: documentIds.length,
+          results: [],
+          error: null,
+        })
         const batchSize = 25
 
         function processBatch(startIndex: number) {
@@ -168,22 +186,39 @@ const getActiveReleaseDocumentsObservable = ({
 
           return combineLatest(batch.map(documentWithValidationAndPreview$)).pipe(
             take(1),
-            map((batchResults) => ({
-              batchResults,
-              nextIndex: endIndex,
-              hasMore: endIndex < documentIds.length,
-            })),
+            map((batchResults) => {
+              return {
+                batchResults,
+                nextIndex: endIndex,
+                hasMore: endIndex < documentIds.length,
+              }
+            }),
           )
         }
 
         return processBatch(0).pipe(
           expand((result) => (result.hasMore ? processBatch(result.nextIndex) : of())),
           reduce((allResults, current) => {
-            return allResults.concat(current.batchResults)
+            const allDocs = allResults.concat(current.batchResults)
+            subscription$.next({
+              loading: true,
+              documentsCount: documentIds.length,
+              results: allDocs,
+              error: null,
+            })
+            return allDocs
           }, [] as DocumentInRelease[]),
         )
       }),
       map((results) => ({loading: false, results, error: null})),
+      tap(({results}) => {
+        subscription$.next({
+          loading: false,
+          results,
+          error: null,
+          documentsCount: results.length,
+        })
+      }),
       // map((results) => ({
       //   loading: false,
       //   // If it has validation errors sort to the top
@@ -205,9 +240,13 @@ const getActiveReleaseDocumentsObservable = ({
         )
       }),
       catchError((error) => {
+        subscription$.next({loading: false, results: [], error, documentsCount: 0})
         return of({loading: false, results: [], error})
       }),
     )
+    .subscribe()
+
+  return subscription$.asObservable()
 }
 
 const getPublishedArchivedReleaseDocumentsObservable = ({
@@ -341,6 +380,7 @@ export function useBundleDocuments(releaseId: string): {
   loading: boolean
   results: DocumentInRelease[]
   error: null | Error
+  documentsCount?: number
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n} = useSource()
