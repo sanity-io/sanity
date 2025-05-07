@@ -711,7 +711,7 @@ export default async function initSanity(
 
     const DISCORD_INVITE_LINK = 'https://snty.link/community'
 
-    print('\nJoin our community: ' + chalk.cyan(DISCORD_INVITE_LINK))
+    print(`\nJoin our community: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
     print('We look forward to seeing you there!\n')
   }
 
