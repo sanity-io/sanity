@@ -43,11 +43,7 @@ export default function createGDRType(projectId: string) {
         type: 'globalDocumentReference',
         resourceType: 'dataset',
         resourceId: `${projectId}.blog`,
-        studioUrl: ({id, type}) => {
-          return type
-            ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
-            : null
-        },
+        weak: true,
         to: [
           {
             type: 'book',
@@ -76,11 +72,7 @@ export default function createGDRType(projectId: string) {
         resourceType: 'dataset',
         resourceId: `${projectId}.blog`,
         weak: true,
-        studioUrl: ({id, type}) => {
-          return type
-            ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
-            : null
-        },
+        studioUrl: `${document.location.protocol}//${document.location.host}/staging`,
         to: [
           {
             type: 'book',
