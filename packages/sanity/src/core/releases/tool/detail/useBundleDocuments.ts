@@ -96,22 +96,10 @@ const getActiveReleaseDocumentsObservable = ({
           })
           .pipe(
             filter(Boolean),
-            switchMap((doc) =>
-              observableClient
-                .fetch(
-                  `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
-                  {},
-                  {tag: 'release-documents.check-existing'},
-                )
-                .pipe(
-                  switchMap((publishedDocumentExists) =>
-                    of({
-                      ...doc,
-                      publishedDocumentExists: !!publishedDocumentExists.length,
-                    }),
-                  ),
-                ),
-            ),
+            map((doc) => ({
+              ...doc,
+              publishedDocumentExists: true,
+            })),
           )
         const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
           map((validationStatus) => ({
