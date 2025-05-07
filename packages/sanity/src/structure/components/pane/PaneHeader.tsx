@@ -77,54 +77,58 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
+              direction="column"
               gap={3}
               onClick={handleLayoutClick}
               padding={3}
               sizing="border"
               style={layoutStyle}
             >
-              {backButton && <Box flex="none">{backButton}</Box>}
+              <Flex align="flex-start" gap={3}>
+                {backButton && <Box flex="none">{backButton}</Box>}
 
-              <TitleCard
-                __unstable_focusRing
-                flex={1}
-                onClick={handleTitleClick}
-                paddingLeft={backButton ? 1 : 2}
-                padding={2}
-                tabIndex={tabIndex}
-              >
-                {loading && (
-                  <Box>
-                    <TitleTextSkeleton animated radius={1} size={1} />
+                <TitleCard
+                  __unstable_focusRing
+                  flex={1}
+                  onClick={handleTitleClick}
+                  paddingLeft={backButton ? 1 : 2}
+                  padding={2}
+                  tabIndex={tabIndex}
+                >
+                  {loading && (
+                    <Box>
+                      <TitleTextSkeleton animated radius={1} size={1} />
+                    </Box>
+                  )}
+                  {!loading && (
+                    <Flex align="center" gap={1}>
+                      <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                        {title}
+                      </TitleText>
+                      {appendTitle}
+                    </Flex>
+                  )}
+                </TitleCard>
+
+                {actions && (
+                  <Box hidden={collapsed}>
+                    <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                   </Box>
                 )}
-                {!loading && (
-                  <Flex align="center" gap={1}>
-                    <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                      {title}
-                    </TitleText>
-                    {appendTitle}
-                  </Flex>
-                )}
-              </TitleCard>
+              </Flex>
 
-              {actions && (
-                <Box hidden={collapsed}>
-                  <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Box>
-              )}
               {showTabsOrSubActions && (
                 <Flex align="center" hidden={collapsed} overflow="auto">
                   <Box flex={1} marginRight={subActions ? 3 : 0}>
                     {tabs}
                   </Box>
 
-                  {subActions && subActions}
+                  {subActions}
                 </Flex>
               )}
             </Layout>
 
-            {!collapsed && contentAfter && contentAfter}
+            {!collapsed && contentAfter}
           </Card>
         </LegacyLayerProvider>
       </Root>

@@ -11,6 +11,7 @@ import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {isReleaseDocument} from '../../../releases/store/types'
+import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
@@ -31,6 +32,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {isLinked, loading} = useCanvasCompanionDoc(
     props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
   )
+  const {value: organizationId} = useProjectOrganizationId()
   const {linkCtaClicked} = useCanvasTelemetry()
 
   const isExcludedType = useIsExcludedType(props.type)
@@ -53,6 +55,9 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   }, [getFormValue, props.liveEditSchemaType, linkCtaClicked])
 
   const disabled = useMemo(() => {
+    if (!organizationId) {
+      return {disabled: true, reason: t('action.link-document-disabled.missing-permissions')}
+    }
     if (!isInDashboard) {
       return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
     }
@@ -64,7 +69,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
     }
 
     return {disabled: false, reason: undefined}
-  }, [isVersionDocument, t, props.initialValueResolved, isInDashboard])
+  }, [isVersionDocument, t, props.initialValueResolved, isInDashboard, organizationId])
 
   useEffect(() => {
     if (isLinked) {

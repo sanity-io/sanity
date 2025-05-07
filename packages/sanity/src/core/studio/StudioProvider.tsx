@@ -17,6 +17,7 @@ import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
+import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
@@ -72,6 +73,7 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
+                <ComlinkRouteHandler />
                 <StudioAnnouncementsProvider>
                   <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
                 </StudioAnnouncementsProvider>

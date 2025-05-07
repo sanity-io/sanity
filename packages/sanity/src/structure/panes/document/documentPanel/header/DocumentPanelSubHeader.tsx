@@ -1,5 +1,5 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import {memo, useMemo, useState} from 'react'
+import {memo, useMemo} from 'react'
 import {CapabilityGate, getPublishedId, useActiveWorkspace, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
@@ -19,9 +19,9 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   const {editState, connectionState, views, documentId, displayed} = useDocumentPane()
   const {features} = useStructureTool()
   const {index, BackLink} = usePaneRouter()
-  const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {activeWorkspace} = useActiveWorkspace()
   const publishedDocId = getPublishedId(documentId)
+
   const showTabs = views.length > 1
 
   const {collapsed, isLast} = usePane()
@@ -35,10 +35,7 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const title = useMemo(() => <DocumentHeaderTitle />, [])
-  const tabs = useMemo(
-    () => showTabs && <DocumentHeaderTabs parentRef={parentRef} />,
-    [showTabs, parentRef],
-  )
+  const tabs = useMemo(() => showTabs && <DocumentHeaderTabs />, [showTabs])
 
   const backButton = useMemo(
     () =>
@@ -75,7 +72,6 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
 
   return (
     <PaneHeader
-      ref={setParentRef}
       loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
       title={title}
       tabs={tabs}

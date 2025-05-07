@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Button, Card, Text} from '@sanity/ui'
+import {Box, Button, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {
   type ForwardedRef,
@@ -113,13 +113,13 @@ export function CurrentGlobalPerspectiveLabel({
       text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
-        <Card tone="inherit" padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
+        <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             {isPublishedPerspective(selectedPerspective)
               ? t('release.chip.published')
               : t('release.chip.global.drafts')}
           </Text>
-        </Card>
+        </Box>
       ) : (
         <ReleasesLink selectedPerspective={selectedPerspective} />
       )}
