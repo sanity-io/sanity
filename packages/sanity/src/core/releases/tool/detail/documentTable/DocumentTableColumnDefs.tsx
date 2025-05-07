@@ -134,13 +134,13 @@ export const getDocumentTableColumnDefs: (
       return 1
     },
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3} sizing="border" key={props.headerProps.id}>
         {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
         <Headers.SortHeaderButton text="Validation" {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps} justify={'center'}>
+      <Flex align="center" {...cellProps} justify={'center'} key={datum.document?._id}>
         <Box paddingX={2}>
           {datum.validation?.hasError ? (
             <Text size={2}>
