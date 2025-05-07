@@ -702,19 +702,17 @@ export default async function initSanity(
     (await prompt.single({
       type: 'confirm',
       message:
-        'We have an excellent developer community, would you like us to send you an invitation to join?',
+        'We have an excellent developer community, would you like to join our Discord server?',
       default: true,
     }))
 
   if (sendInvite) {
-    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
-    // Intentionally leave the promise "dangling" since we don't want to stall while waiting for this
-    apiClient({requireProject: false})
-      .request({
-        uri: '/invitations/community',
-        method: 'POST',
-      })
-      .catch(noop)
+    trace.log({step: 'showCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
+
+    const DISCORD_INVITE_LINK = 'https://snty.link/community'
+
+    print('\nJoin our community: ' + chalk.cyan(DISCORD_INVITE_LINK))
+    print('We look forward to seeing you there!\n')
   }
 
   trace.complete()
