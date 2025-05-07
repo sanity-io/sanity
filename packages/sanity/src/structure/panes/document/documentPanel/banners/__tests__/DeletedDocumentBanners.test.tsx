@@ -79,6 +79,7 @@ describe('DeletedDocumentBanners', () => {
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
       isDeleting: false,
+      ready: true,
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest()
