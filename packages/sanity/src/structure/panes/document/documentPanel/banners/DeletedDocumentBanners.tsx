@@ -17,9 +17,9 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 export function DeletedDocumentBanners() {
-  const {isDeleted, isDeleting} = useDocumentPane()
+  const {isDeleted, isDeleting, ready} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
-
+  if (!ready) return null
   if (
     !isPublishedPerspective(selectedPerspective) &&
     !isDraftPerspective(selectedPerspective) &&
