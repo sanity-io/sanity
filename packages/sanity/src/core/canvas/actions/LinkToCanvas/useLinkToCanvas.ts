@@ -145,6 +145,10 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
 
       return projectStore.getOrganizationId().pipe(
         map((organizationId) => {
+          if (!organizationId) {
+            // Users should not land at this stage, it is caught first in the action by disabling it
+            return () => {}
+          }
           const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
           const canvasLinkUrl = `https://www.sanity.${isStaging ? 'work' : 'io'}/@${organizationId}/canvas/${path}`

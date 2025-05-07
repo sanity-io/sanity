@@ -1,12 +1,15 @@
 import {type Bridge} from '@sanity/message-protocol'
+import {useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {useClient} from '../hooks/useClient'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {useComlinkStore} from '../store/_legacy/datastores'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type OpenCanvasOrigin} from './__telemetry__/canvas.telemetry'
+import {canvasLocaleNamespace} from './i18n'
 import {useCanvasTelemetry} from './useCanvasTelemetry'
 
 /**
@@ -24,9 +27,11 @@ export const useNavigateToCanvasDoc = (
   const renderingContext = useRenderingContext()
   const isInDashboard = renderingContext?.name === 'coreUi'
   const {canvasOpened} = useCanvasTelemetry()
+  const toast = useToast()
+  const {t} = useTranslation(canvasLocaleNamespace)
 
   const navigateToCanvas = useCallback(() => {
-    if (!organizationId || !canvasDocId) {
+    if (!canvasDocId) {
       return
     }
     canvasOpened(origin)
@@ -43,6 +48,13 @@ export const useNavigateToCanvasDoc = (
 
       node.post(message.type, message.data)
     } else {
+      if (!organizationId) {
+        toast.push({
+          status: 'error',
+          title: t('navigate-to-canvas-doc.error.missing-permissions'),
+        })
+        return
+      }
       const isStaging = client.config().apiHost === 'https://api.sanity.work'
 
       window.open(
@@ -50,7 +62,7 @@ export const useNavigateToCanvasDoc = (
         '_blank',
       )
     }
-  }, [organizationId, canvasDocId, node, client, isInDashboard, canvasOpened, origin])
+  }, [canvasDocId, canvasOpened, origin, isInDashboard, node, organizationId, client, toast, t])
 
   return navigateToCanvas
 }

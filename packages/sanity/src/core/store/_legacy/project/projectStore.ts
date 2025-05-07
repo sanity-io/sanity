@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {map, type Observable, repeat, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, repeat, shareReplay} from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
 import {type ProjectData, type ProjectStore} from './types'
@@ -26,6 +26,9 @@ const getOrganizationId = memoize(
         map((res) => res.organizationId),
         repeat({delay: REFETCH_INTERVAL}),
         shareReplay(1),
+        catchError(() => {
+          return of(null)
+        }),
       )
   },
   (client) => `${client.config().projectId}-${client.config().dataset}`,

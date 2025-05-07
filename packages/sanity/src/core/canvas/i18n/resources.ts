@@ -12,6 +12,9 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   /** The text for the "Link to Canvas" action when the document is not in the dashboard. */
   'action.link-document-disabled.not-in-dashboard':
     'Open this document in Dashboard to link to Canvas',
+  /** The text for the "Link to Canvas" action when the user doesn't have permissions to link the document to Canvas. */
+  'action.link-document-disabled.missing-permissions':
+    "You don't have permissions to link this document to Canvas",
   /** The text for the "Link to Canvas" action when the document is a version document. */
   'action.link-document-disabled.version-document':
     'Version documents are not yet supported in Canvas',
@@ -64,6 +67,8 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
   'dialog.unlink-from-canvas.success': 'Unlinked from Canvas',
   /** The text for the "Unlink from Canvas" dialog error message. */
   'dialog.unlink-from-canvas.error': 'Failed to unlink from Canvas',
+  /** The text for the "Navigate to Canvas" dialog error message. */
+  'navigate-to-canvas-doc.error.missing-permissions': 'Missing permissions to navigate to Canvas',
 })
 
 /**
