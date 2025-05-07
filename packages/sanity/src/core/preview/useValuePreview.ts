@@ -16,7 +16,16 @@ import {useDocumentPreviewStore} from '../store'
 import {getPublishedId} from '../util'
 import {type Previewable} from './types'
 
-export {useDocumentPreview as unstable_useValuePreview}
+export {useDocumentPreview as useUnstableValuePreview}
+
+/**
+ * @internal
+ * @deprecated use useValuePreview instead
+ */
+export function unstable_useValuePreview(args: Parameters<typeof useDocumentPreview>[0]) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useDocumentPreview(args)
+}
 
 interface State {
   isLoading: boolean
@@ -36,7 +45,6 @@ const IDLE_STATE: State = {
 }
 /**
  * @internal
- * @deprecated FOR INTERNAL USE.
  */
 function useDocumentPreview(props: {
   enabled?: boolean

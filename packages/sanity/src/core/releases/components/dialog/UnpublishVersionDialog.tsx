@@ -7,7 +7,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {unstable_useValuePreview as useValuePreview} from '../../../preview'
+import {useUnstableValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
@@ -43,7 +43,7 @@ export function UnpublishVersionDialog(props: {
   const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
-  const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
+  const preview = useUnstableValuePreview({schemaType, value: {_id: documentVersionId}})
 
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
