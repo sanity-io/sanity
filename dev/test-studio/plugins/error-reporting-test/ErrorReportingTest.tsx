@@ -52,7 +52,7 @@ export function ErrorReportingTest() {
       <Flex>
         <Stack space={4}>
           <Button
-            text="Trigger import error from react callback"
+            text="Trigger import error from React event handler"
             onClick={triggerImportError}
             tone="primary"
           />
