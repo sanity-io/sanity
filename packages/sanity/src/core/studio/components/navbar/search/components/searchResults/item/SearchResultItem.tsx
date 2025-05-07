@@ -8,7 +8,7 @@ import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
-import {useUnstableValuePreview} from '../../../../../../../preview/useValuePreview'
+import {useValuePreview} from '../../../../../../../preview/useValuePreview'
 import {
   type PermissionCheckResult,
   useDocumentPresence,
@@ -77,7 +77,7 @@ export function SearchResultItem({
     () => ({_id: documentId, _type: documentType}),
     [documentId, documentType],
   )
-  const preview = useUnstableValuePreview({
+  const preview = useValuePreview({
     enabled: true,
     schemaType: type,
     value: documentStub,

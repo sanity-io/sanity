@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {
   isPublishedPerspective,
   prepareForPreview,
-  useUnstableValuePreview,
+  useValuePreview,
   usePerspective,
   useTranslation,
 } from 'sanity'
@@ -63,7 +63,7 @@ export function useDocumentTitle(): UseDocumentTitle {
     return null
   }, [isDeleted, lastRevisionDocument, schemaType])
 
-  const {error, value} = useUnstableValuePreview({
+  const {error, value} = useValuePreview({
     // disable useValuePreview for deleted documents
     enabled: subscribed && !isDeleted,
     schemaType,
