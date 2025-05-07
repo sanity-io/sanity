@@ -21,6 +21,7 @@ import {
   switchAll,
   switchMap,
   take,
+  tap,
 } from 'rxjs/operators'
 
 import {useSchema} from '../../../hooks'
@@ -95,6 +96,8 @@ const getActiveReleaseDocumentsObservable = ({
         })),
       )
     const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
+      // Wait until validation is `{isValidating: false}`
+      filter((validationStatus) => !validationStatus.isValidating),
       map((validationStatus) => ({
         ...validationStatus,
         hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
@@ -181,6 +184,10 @@ const getActiveReleaseDocumentsObservable = ({
         )
       }),
       map((results) => ({loading: false, results, error: null})),
+      tap((results) => {
+        // eslint-disable-next-line no-console
+        console.log('results', results)
+      }),
       catchError((error) => {
         return of({loading: false, results: [], error})
       }),
