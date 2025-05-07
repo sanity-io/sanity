@@ -61,5 +61,5 @@ export interface ProjectDatasetData {
 export interface ProjectStore {
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>
-  getOrganizationId: () => Observable<string>
+  getOrganizationId: () => Observable<string | null>
 }
