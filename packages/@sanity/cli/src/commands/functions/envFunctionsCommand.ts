@@ -38,13 +38,19 @@ const envFunctionsCommand: CliCommandDefinition = {
       throw new Error('You must specify if you want to list, add or remove')
     }
 
+    if (subCommand === 'add' && (!key || !value)) {
+      throw new Error('You must specify the name, key and value arguments')
+    } else if (subCommand === 'remove' && !key) {
+      throw new Error('You must specify the name and key arguments')
+    }
+
     const client = apiClient({
       requireUser: true,
       requireProject: false,
     })
 
     if (name === '') {
-      throw new Error('You must provide a function name via the --name flag')
+      throw new Error('You must provide a function name as the first argument')
     }
 
     const token = client.config().token

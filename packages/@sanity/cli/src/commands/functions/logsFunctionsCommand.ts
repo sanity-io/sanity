@@ -74,7 +74,7 @@ const logsFunctionsCommand: CliCommandDefinition = {
     if (token && projectId) {
       const {logs: logsAction} = await import('@sanity/runtime-cli/actions/functions')
 
-      if (!externalId) printError('Unable to delete logs. Unable to determine function ID.')
+      if (!externalId) throw new Error('Unable to delete logs. Unable to determine function ID.')
 
       if (flags.delete) {
         if (!flags.force) {

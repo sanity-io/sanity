@@ -27,7 +27,7 @@ Examples
 const defaultFlags = {
   'data': undefined,
   'file': undefined,
-  'timeout': 5, // seconds
+  'timeout': 10, // seconds
   'api': undefined,
   'dataset': undefined,
   'project-id': undefined,
