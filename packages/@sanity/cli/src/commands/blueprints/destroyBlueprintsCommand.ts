@@ -38,7 +38,6 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
   helpText,
   signature: '[--force] [-f] [--no-wait]',
   description: 'Destroy a Blueprint deployment',
-  hideFromHelp: true,
 
   async action(args, context) {
     const {apiClient, output} = context
