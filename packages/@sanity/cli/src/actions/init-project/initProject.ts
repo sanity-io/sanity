@@ -707,7 +707,7 @@ export default async function initSanity(
     }))
 
   if (sendInvite) {
-    trace.log({step: 'showCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
+    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
 
     const DISCORD_INVITE_LINK = 'https://snty.link/community'
 
