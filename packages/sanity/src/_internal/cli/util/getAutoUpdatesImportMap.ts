@@ -4,8 +4,8 @@
 export interface StudioAutoUpdatesImportMap {
   'sanity': string
   'sanity/': string
-  '@sanity/vision': string
-  '@sanity/vision/': string
+  '@sanity/vision'?: string
+  '@sanity/vision/'?: string
 }
 
 export interface SanityAppAutoUpdatesImportMap extends Partial<StudioAutoUpdatesImportMap> {
@@ -27,14 +27,23 @@ function getTimestamp(): string {
 /**
  * @internal
  */
-export function getStudioAutoUpdateImportMap(version: string): StudioAutoUpdatesImportMap {
+export function getStudioAutoUpdateImportMap(
+  version: string,
+  includeVision = true,
+): StudioAutoUpdatesImportMap {
   const timestamp = getTimestamp()
 
   const autoUpdatesImports = {
     'sanity': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}`,
     'sanity/': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}/`,
-    '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}`,
-    '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}/`,
+  }
+
+  if (includeVision) {
+    return {
+      ...autoUpdatesImports,
+      '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}`,
+      '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}/`,
+    }
   }
 
   return autoUpdatesImports
@@ -63,8 +72,7 @@ export function getAppAutoUpdateImportMap(
   }
 
   if (sanityVersion) {
-    const sanityImportMap = getStudioAutoUpdateImportMap(sanityVersion)
-
+    const sanityImportMap = getStudioAutoUpdateImportMap(sanityVersion, false)
     return {...autoUpdatesImports, ...sanityImportMap}
   }
 

@@ -55,7 +55,7 @@ export interface GlobalDocumentReferenceSchemaType extends Omit<ObjectSchemaType
   to: GlobalDocumentReferenceType[]
   resourceType: string
   resourceId: string
-  studioUrl?: (document: {id: string; type?: string}) => string | null
+  studioUrl?: string | ((document: {id: string; type?: string}) => string | null)
   weak?: boolean
   options?: ReferenceFilterOptions
 }
