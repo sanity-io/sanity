@@ -1,12 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {
-  useEditState,
-  usePerspective,
-  useSchema,
-  useTranslation,
-  useUnstableValuePreview,
-} from 'sanity'
+import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
@@ -30,7 +24,7 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const documentValue = editState?.version || editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const {value, isLoading: previewValueIsLoading} = useUnstableValuePreview({
+  const {value, isLoading: previewValueIsLoading} = useValuePreview({
     enabled: true,
     schemaType,
     value: documentValue,

@@ -1,4 +1,4 @@
-import {useUnstableValuePreview, useTranslation} from 'sanity'
+import {useTranslation, useValuePreview} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
@@ -27,7 +27,7 @@ export function useDocumentTitle(): UseDocumentTitle {
   const {t} = useTranslation(structureLocaleNamespace)
   const subscribed = Boolean(displayed)
 
-  const {error, value} = useUnstableValuePreview({
+  const {error, value} = useValuePreview({
     enabled: subscribed,
     schemaType,
     value: displayed,

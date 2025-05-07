@@ -3,7 +3,7 @@ import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
 import {useTranslation} from '../../i18n'
-import {useUnstableValuePreview} from '../useValuePreview'
+import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
@@ -43,7 +43,7 @@ export function PreviewLoader(
     }) || skipVisibilityCheck
 
   // Subscribe document preview value
-  const preview = useUnstableValuePreview({
+  const preview = useValuePreview({
     enabled: skipVisibilityCheck || isVisible,
     schemaType,
     value,

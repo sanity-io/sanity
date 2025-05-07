@@ -8,15 +8,13 @@ import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentPreviewStore} from '../store'
 import {type Previewable} from './types'
 
-export {useDocumentPreview as useUnstableValuePreview}
-
 /**
  * @internal
  * @deprecated use useValuePreview instead
  */
-export function unstable_useValuePreview(args: Parameters<typeof useDocumentPreview>[0]) {
+export function unstable_useValuePreview(args: Parameters<typeof useValuePreview>[0]) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  return useDocumentPreview(args)
+  return useValuePreview(args)
 }
 
 interface State {
@@ -38,7 +36,7 @@ const IDLE_STATE: State = {
 /**
  * @internal
  */
-function useDocumentPreview(props: {
+export function useValuePreview(props: {
   enabled?: boolean
   ordering?: SortOrdering
   schemaType?: SchemaType

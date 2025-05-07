@@ -1,4 +1,4 @@
-import {useUnstableValuePreview, useTranslation} from 'sanity'
+import {useTranslation, useValuePreview} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -7,7 +7,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
   const subscribed = Boolean(documentValue)
 
-  const {error, value} = useUnstableValuePreview({
+  const {error, value} = useValuePreview({
     enabled: subscribed,
     schemaType,
     value: documentValue,
