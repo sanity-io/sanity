@@ -241,13 +241,29 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   const showWeakRefMismatch =
     !loadableReferenceInfo.isLoading && hasRef && actualStrength !== weakShouldBe
 
-  const studioUrl =
-    (value?._ref &&
-      schemaType.studioUrl?.({
-        id: value?._ref,
-        type: loadableReferenceInfo?.result?.type,
-      })) ||
-    null
+  const studioUrl: string | null = useMemo(() => {
+    if (!value?._ref) {
+      return null
+    }
+
+    if (!isGlobalDocumentReference(value)) {
+      return null
+    }
+    const [, , documentId] = value._ref.split(':')
+
+    if (!schemaType.studioUrl || !loadableReferenceInfo?.result?.type) {
+      return null
+    }
+
+    if (typeof schemaType.studioUrl === 'string') {
+      return `${schemaType.studioUrl}/desk/intent/edit/id=${documentId};type=${loadableReferenceInfo.result.type}/`
+    }
+
+    return schemaType.studioUrl({
+      id: documentId,
+      type: loadableReferenceInfo.result.type,
+    })
+  }, [value, schemaType, loadableReferenceInfo])
 
   const renderOption = useCallback(
     (option: FIXME) => {
