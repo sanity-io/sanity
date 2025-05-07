@@ -126,6 +126,32 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
+    id: 'validation',
+    width: 100,
+    sorting: true,
+    sortTransform(value) {
+      if (!value.validation?.hasError) return 0
+      return 1
+    },
+    header: (props) => (
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
+        <Headers.SortHeaderButton text="Validation" {...props} />
+      </Flex>
+    ),
+    cell: ({cellProps, datum}) => (
+      <Flex align="center" {...cellProps} justify={'center'}>
+        <Box paddingX={2}>
+          {datum.validation?.hasError ? (
+            <Text size={2}>
+              <ErrorOutlineIcon />
+            </Text>
+          ) : null}
+        </Box>
+      </Flex>
+    ),
+  },
+  {
     id: 'search',
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},

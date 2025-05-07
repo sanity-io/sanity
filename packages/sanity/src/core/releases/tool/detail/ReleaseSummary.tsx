@@ -34,7 +34,6 @@ export interface ReleaseSummaryProps {
   release: ReleaseDocument
   isLoading?: boolean
 }
-const PAGE_SIZE = 10
 
 const isBundleDocumentRow = (
   maybeBundleDocumentRow: unknown,
@@ -55,7 +54,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
-  const [page, setPage] = useState(1)
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
@@ -171,43 +169,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const tableData = useMemo(
     () =>
-      pendingAddedDocument.length
-        ? [
-            ...aggregatedData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
-            ...pendingAddedDocument,
-          ]
-        : aggregatedData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
-    [pendingAddedDocument, aggregatedData, page],
+      pendingAddedDocument.length ? [...aggregatedData, ...pendingAddedDocument] : aggregatedData,
+    [pendingAddedDocument, aggregatedData],
   )
 
-  const hasNextPage = useMemo(() => {
-    return page * PAGE_SIZE < aggregatedData.length
-  }, [aggregatedData, page])
-
-  const hasPreviousPage = useMemo(() => {
-    return page > 0
-  }, [page])
   return (
     <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
-      <Flex gap={2} align="flex-end" justify="center">
-        <Button
-          mode="bleed"
-          onClick={() => setPage(page - 1)}
-          text="Previous page"
-          disabled={!hasPreviousPage}
-        />
-        <Box padding={2}>
-          <Text muted size={1} weight="medium">
-            Page: {page} / {Math.ceil(aggregatedData.length / PAGE_SIZE)}
-          </Text>
-        </Box>
-        <Button
-          mode="bleed"
-          onClick={() => setPage(page + 1)}
-          text="Next page"
-          disabled={!hasNextPage}
-        />
-      </Flex>
       <Table<DocumentWithHistory>
         loading={isLoading}
         data={tableData}
@@ -218,7 +185,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         rowActions={renderRowActions}
         searchFilter={filterRows}
         scrollContainerRef={scrollContainerRef}
-        defaultSort={{column: 'search', direction: 'asc'}}
+        defaultSort={{column: 'validation', direction: 'desc'}}
       />
 
       {release.state === 'active' && (

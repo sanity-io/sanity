@@ -184,9 +184,25 @@ const getActiveReleaseDocumentsObservable = ({
         )
       }),
       map((results) => ({loading: false, results, error: null})),
-      tap((results) => {
+      // map((results) => ({
+      //   loading: false,
+      //   // If it has validation errors sort to the top
+      //   results: results.sort((a, b) => {
+      //     if (a.validation.hasError && !b.validation.hasError) return -1
+      //     if (!a.validation.hasError && b.validation.hasError) return 1
+      //     return 0
+      //   }),
+      //   error: null,
+      // })),
+
+      tap(({results}) => {
         // eslint-disable-next-line no-console
-        console.log('results', results)
+        const documentsWithValidationErrors = results.filter((result) => result.validation.hasError)
+        // eslint-disable-next-line no-console
+        console.log(
+          'documentsWithValidationErrors',
+          documentsWithValidationErrors.map((doc) => doc.document._id),
+        )
       }),
       catchError((error) => {
         return of({loading: false, results: [], error})
