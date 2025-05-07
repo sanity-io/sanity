@@ -2,11 +2,11 @@ import {render, waitFor} from '@testing-library/react'
 import {
   defineConfig,
   type SanityClient,
-  unstable_useValuePreview as useValuePreview,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
   useReleasesIds,
+  useUnstableValuePreview,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
@@ -48,7 +48,7 @@ vi.mock('../../../../useDocumentPane')
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
-    unstable_useValuePreview: vi.fn(),
+    useUnstableValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     usePerspective: vi.fn(() => ({perspective: undefined})),
   }
@@ -64,7 +64,9 @@ const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof use
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
-  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
+  const mockUseValuePreview = useUnstableValuePreview as MockedFunction<
+    typeof useUnstableValuePreview
+  >
   const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',

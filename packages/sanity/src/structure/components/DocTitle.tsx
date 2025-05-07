@@ -1,5 +1,5 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {unstable_useValuePreview as useValuePreview, useSchema, useTranslation} from 'sanity'
+import {useUnstableValuePreview, useSchema, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
 
@@ -13,7 +13,7 @@ export function DocTitle(props: DocTitleProps) {
   const schemaType = schema.get(documentValue._type)
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const {error, value} = useValuePreview({
+  const {error, value} = useUnstableValuePreview({
     schemaType: schemaType!,
     value: documentValue,
   })
