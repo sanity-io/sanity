@@ -3,7 +3,8 @@ name: Release
 on:
   push:
     branches:
-      - main
+      #todo: change to main
+      - changesets
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
