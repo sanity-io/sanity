@@ -31,7 +31,7 @@
     "@sanity/locale-nn-no": "^1.0.1",
     "@sanity/locale-pt-pt": "^1.0.1",
     "@sanity/locale-sv-se": "^1.0.1",
-    "@sanity/logos": "^2.1.2",
+    "@sanity/logos": "^2.2.0",
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.1.10",
     "@sanity/react-loader": "^1.10.35",

@@ -170,7 +170,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.38.2",
     "@sanity/insert-menu": "^1.1.11",
-    "@sanity/logos": "^2.1.13",
+    "@sanity/logos": "^2.2.0",
     "@sanity/message-protocol": "^0.13.0",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
