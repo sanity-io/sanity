@@ -1,8 +1,8 @@
 import {type PathChangeMessage} from '@sanity/message-protocol'
 import {useEffect} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {useComlinkStore} from '../../store/_legacy/datastores'
-import {useRouterHistory} from '../router/RouterHistoryContext'
 
 /**
  * Perform a navigation when a Comlink `dashboard/v1/history/change-path` event is emitted.
@@ -11,22 +11,25 @@ import {useRouterHistory} from '../router/RouterHistoryContext'
  */
 export function useComlinkRouteHandler(): void {
   const {node} = useComlinkStore()
-  const history = useRouterHistory()
+  const {navigateUrl} = useRouter()
 
   useEffect(() => {
     return node?.on<PathChangeMessage['type'], PathChangeMessage>(
       'dashboard/v1/history/change-path',
       ({path}) => {
-        history.push(relativePath(path))
+        navigateUrl({
+          path: sanitizePath(path),
+          replace: false,
+        })
         return undefined
       },
     )
-  }, [history, node])
+  }, [navigateUrl, node])
 }
 
 /**
- * Remove all `/` characters that occur at the beginning of the provided string.
+ * Ensure no more than one `/` character occurs at the beginning of the provided string.
  */
-function relativePath(path: string): string {
-  return path.replace(/^\/+/, '')
+function sanitizePath(path: string): string {
+  return path.replace(/^\/+/, '/')
 }
