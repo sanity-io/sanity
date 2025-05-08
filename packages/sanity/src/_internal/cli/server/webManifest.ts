@@ -9,6 +9,7 @@ export interface WebManifest {
 export function generateWebManifest(basePath: string): WebManifest {
   return {
     icons: [
+      {src: `${basePath}/favicon-96.png`, type: 'image/png', sizes: '96x96'},
       {src: `${basePath}/favicon-192.png`, type: 'image/png', sizes: '192x192'},
       {src: `${basePath}/favicon-512.png`, type: 'image/png', sizes: '512x512'},
     ],
