@@ -697,23 +697,14 @@ export default async function initSanity(
   print(`npx sanity manage - to open the project settings in a browser`)
   print(`npx sanity help - to explore the CLI manual`)
 
-  const sendInvite =
-    isFirstProject &&
-    (await prompt.single({
-      type: 'confirm',
-      message:
-        'We have an excellent developer community, would you like to join our Discord server?',
-      default: true,
-    }))
+  if (isFirstProject) {
+  trace.log({step: 'sendCommunityInvite', selectedOption: 'yes'})
 
-  if (sendInvite) {
-    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
+  const DISCORD_INVITE_LINK = 'https://snty.link/community'
 
-    const DISCORD_INVITE_LINK = 'https://snty.link/community'
-
-    print(`\nJoin our community: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
-    print('We look forward to seeing you there!\n')
-  }
+  print(`\nJoin our wonderful developer community as well: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
+  print('We look forward to seeing you there!\n')
+}
 
   trace.complete()
 
