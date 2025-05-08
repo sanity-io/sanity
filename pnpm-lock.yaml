@@ -479,8 +479,8 @@ importers:
         specifier: ^1.0.1
         version: 1.2.17(sanity@packages+sanity)
       '@sanity/logos':
-        specifier: ^2.1.2
-        version: 2.1.13(@sanity/color@3.0.6)(react@19.1.0)
+        specifier: ^2.2.0
+        version: 2.2.0(@sanity/color@3.0.6)(react@19.1.0)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -1431,8 +1431,8 @@ importers:
         specifier: ^1.1.11
         version: 1.1.11(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/logos':
-        specifier: ^2.1.13
-        version: 2.1.13(@sanity/color@3.0.6)(react@18.3.1)
+        specifier: ^2.2.0
+        version: 2.2.0(@sanity/color@3.0.6)(react@18.3.1)
       '@sanity/message-protocol':
         specifier: ^0.13.0
         version: 0.13.0
@@ -4827,8 +4827,8 @@ packages:
     peerDependencies:
       sanity: ^3.22.0
 
-  '@sanity/logos@2.1.13':
-    resolution: {integrity: sha512-PKAbPbM4zn+6wHYjCVwuhmlZnFqyZ9lT/O7OT3BVd2SGAqXoZTimfBOHrVPifytuazdoQ1T2M5eYJTtW/VXLyA==}
+  '@sanity/logos@2.2.0':
+    resolution: {integrity: sha512-Tg5WiUxF/xjjPgZXC5y6tdyBgUHZEvmlo8xaUbnzZX8Gz4aqk4QxD1od3p8kjVT1+wSbpigPSnSpmouVMP2xBQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
@@ -15659,12 +15659,12 @@ snapshots:
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/logos@2.1.13(@sanity/color@3.0.6)(react@18.3.1)':
+  '@sanity/logos@2.2.0(@sanity/color@3.0.6)(react@18.3.1)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 18.3.1
 
-  '@sanity/logos@2.1.13(@sanity/color@3.0.6)(react@19.1.0)':
+  '@sanity/logos@2.2.0(@sanity/color@3.0.6)(react@19.1.0)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 19.1.0
