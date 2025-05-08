@@ -1,4 +1,4 @@
-import {AddIcon, EditIcon, EllipsisVerticalIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, EllipsisVerticalIcon, SearchIcon, TrashIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
+import isEqual from 'lodash/isequal'
 import {type ReactElement, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
@@ -51,13 +52,9 @@ function normalizeUrl(url: string): string {
 
 // TODO
 // -saving behavior - be explicit that things have changed & need to be saved
-// -does it save duplicates?
-// -clean up title edit UI
 // -check typing for url parser and state setter
 // -show when the selected query has been edited but not saved
 
-// Path to publish
-// -Cellar storage
 // -save state
 // -get design approval in studio channel
 export function QueryRecall({
@@ -163,6 +160,7 @@ export function QueryRecall({
   //   }
   // }, [url])
   // console.log('url', url)
+  // useEffect(() => {}, [url])
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
@@ -191,7 +189,9 @@ export function QueryRecall({
         {filteredQueries?.map((q) => {
           // console.log('q', q.url === url)
           const queryObj = getStateFromUrl(q.url)
+          const queryStateObj = getStateFromUrl(url)
           const isSelected = selectedUrl === q.url
+          const isEdited = isSelected && !isEqual(queryStateObj, queryObj)
           return (
             <Card
               key={q._key}
@@ -223,27 +223,33 @@ export function QueryRecall({
                         }}
                         onBlur={() => handleTitleSave(q, editingTitle)}
                         autoFocus
-                        style={{maxWidth: '170px'}}
+                        style={{maxWidth: '170px', height: '24px'}}
                       />
                     ) : (
-                      <>
-                        <Text
-                          weight="bold"
-                          size={3}
-                          textOverflow="ellipsis"
-                          style={{maxWidth: '170px'}}
-                          // Doesn't do anything but would be nice!
-                          title={
-                            optimisticTitles[q._key] ||
-                            q.title ||
-                            q._key.slice(q._key.length - 5, q._key.length)
-                          }
-                        >
-                          {optimisticTitles[q._key] ||
-                            q.title ||
-                            q._key.slice(q._key.length - 5, q._key.length)}
-                        </Text>
-                      </>
+                      <Text
+                        weight="bold"
+                        size={3}
+                        textOverflow="ellipsis"
+                        style={{maxWidth: '170px', cursor: 'pointer', padding: '4px 0'}}
+                        title={
+                          optimisticTitles[q._key] ||
+                          q.title ||
+                          q._key.slice(q._key.length - 5, q._key.length)
+                        }
+                        onClick={() => {
+                          setEditingKey(q._key)
+                          setEditingTitle(q.title || q._key.slice(0, 5))
+                        }}
+                      >
+                        {optimisticTitles[q._key] ||
+                          q.title ||
+                          q._key.slice(q._key.length - 5, q._key.length)}
+                      </Text>
+                    )}
+                    {isEdited && (
+                      <Text size={1} muted>
+                        {t('label.edited')}
+                      </Text>
                     )}
                   </Flex>
                   <Flex gap={2} align="center">
@@ -260,7 +266,7 @@ export function QueryRecall({
                       id={`${q._key}-menu`}
                       menu={
                         <Menu>
-                          <Button
+                          {/* <Button
                             mode="bleed"
                             width="fill"
                             onClick={(event) => {
@@ -277,7 +283,7 @@ export function QueryRecall({
                               </Box>
                               <Text size={1}>{t('action.edit-title')}</Text>
                             </Flex>
-                          </Button>
+                          </Button> */}
                           <Button
                             mode="bleed"
                             tone="critical"

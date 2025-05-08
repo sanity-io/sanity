@@ -30,6 +30,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Label for actions user can take */
   'label.actions': 'Actions',
+  /** Label for saved queries that have been edited */
+  'label.edited': 'Edited',
+
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.
    * This defines what the text of that label is. Keep it short and sweet.
