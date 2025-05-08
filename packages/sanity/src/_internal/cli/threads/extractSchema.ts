@@ -67,12 +67,14 @@ function getWorkspace({
 
   if (workspaceName === undefined) {
     throw new Error(
-      `Multiple workspaces found. Please specify which workspace to use with '--workspace'.`,
+      `Multiple workspaces found. Please specify which workspace to use with '--workspace'. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
     )
   }
   const workspace = workspaces.find((w) => w.name === workspaceName)
   if (!workspace) {
-    throw new Error(`Could not find workspace "${workspaceName}"`)
+    throw new Error(
+      `Could not find "${workspaceName}" workspace. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
+    )
   }
   return workspace
 }
