@@ -34,6 +34,21 @@ const formatDate = (date: string) => {
     .replace(',', '')
 }
 
+// Utility to normalize URLs for comparison
+function normalizeUrl(url: string): string {
+  try {
+    const u = new URL(url, window.location.origin)
+    // Sort query params for consistent comparison
+    u.search = new URLSearchParams(Array.from(u.searchParams.entries()).sort()).toString()
+    // Remove trailing slash for consistency
+    u.pathname = u.pathname.replace(/\/$/, '')
+    return u.toString()
+  } catch (e) {
+    // If URL constructor fails, fallback to original
+    return url
+  }
+}
+
 // TODO
 // -saving behavior - be explicit that things have changed & need to be saved
 // -does it save duplicates?
@@ -54,10 +69,6 @@ export function QueryRecall({
   getStateFromUrl: (data: string) => ParsedUrlState | null
   setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
 }): ReactElement {
-  // const [storedQueries, setStoredQueries] = useSavedQueries()
-  // useEffect(() => {
-  //   setStoredQueries({queries: ["I'm a query"]})
-  // }, [])
   const toast = useToast()
   const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
     useSavedQueries()
@@ -71,13 +82,15 @@ export function QueryRecall({
   // const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
 
   const handleSave = useCallback(async () => {
-    if (url && queries?.map((q) => q.url).includes(url)) {
+    const normalizedUrl = url ? normalizeUrl(url) : undefined
+    const normalizedQueryUrls = queries?.map((q) => normalizeUrl(q.url)) || []
+    if (normalizedUrl && normalizedQueryUrls.includes(normalizedUrl)) {
       toast.push({
         closable: true,
         status: 'warning',
         title: t('save-query.already-saved'),
-        description: `${queries.find((q) => q.url === url)?.title} - ${formatDate(
-          queries.find((q) => q.url === url)?.savedAt || '',
+        description: `${queries.find((q) => normalizeUrl(q.url) === normalizedUrl)?.title} - ${formatDate(
+          queries.find((q) => normalizeUrl(q.url) === normalizedUrl)?.savedAt || '',
         )}`,
       })
       return
@@ -144,6 +157,11 @@ export function QueryRecall({
     return q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
+  // useEffect(() => {
+  //   if (url !== selectedUrl) {
+  //     setSelectedUrl(url)
+  //   }
+  // }, [url])
   // console.log('url', url)
   return (
     <ScrollContainer>
