@@ -1,5 +1,5 @@
 import {Box, Stack} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const FixedHeader = styled(Stack)`
   position: sticky;
