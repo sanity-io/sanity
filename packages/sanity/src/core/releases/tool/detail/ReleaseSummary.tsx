@@ -205,6 +205,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
         releaseId={releaseId}
+        idsInRelease={aggregatedData.map(({document}) => document._id)}
       />
     </Card>
   )
