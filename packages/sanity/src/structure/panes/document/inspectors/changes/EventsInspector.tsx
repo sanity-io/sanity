@@ -89,7 +89,10 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     if (!toEvent) return events.slice(1)
     return events.slice(events.indexOf(toEvent) + 1).map((event) => {
       // If the to event has a parent id, we need to remove the parent id from the since events or they won't be rendered, as they have no parent to expand.
-      if ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) {
+      if (
+        ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) ||
+        ('parentId' in event && toEvent.id === event.parentId)
+      ) {
         return {...event, parentId: undefined}
       }
       return event
