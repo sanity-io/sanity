@@ -33,11 +33,6 @@ describe('url types', () => {
         ],
         hidden: () => false,
         readOnly: () => false,
-        options: {
-          layout: 'radio',
-          direction: 'horizontal',
-          list: [{value: 'A', title: 'An entry'}],
-        },
       })
 
       const assignableToUrl: UrlDefinition = urlDef

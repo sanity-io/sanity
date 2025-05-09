@@ -697,24 +697,13 @@ export default async function initSanity(
   print(`npx sanity manage - to open the project settings in a browser`)
   print(`npx sanity help - to explore the CLI manual`)
 
-  const sendInvite =
-    isFirstProject &&
-    (await prompt.single({
-      type: 'confirm',
-      message:
-        'We have an excellent developer community, would you like us to send you an invitation to join?',
-      default: true,
-    }))
+  if (isFirstProject) {
+    trace.log({step: 'sendCommunityInvite', selectedOption: 'yes'})
 
-  if (sendInvite) {
-    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
-    // Intentionally leave the promise "dangling" since we don't want to stall while waiting for this
-    apiClient({requireProject: false})
-      .request({
-        uri: '/invitations/community',
-        method: 'POST',
-      })
-      .catch(noop)
+    const DISCORD_INVITE_LINK = 'https://snty.link/community'
+
+    print(`\nJoin our wonderful developer community as well: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
+    print('We look forward to seeing you there!\n')
   }
 
   trace.complete()

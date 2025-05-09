@@ -23,7 +23,7 @@ export function ExampleComponent() {
             </Text>
             <Text muted>
               Looking for more guidance? See the <a href="https://sanity.io/ui">Sanity UI docs</a>{' '}
-              and the <a href="https://sdk-docs.sanity.dev">Sanity App SDK docs</a>!
+              and the <a href="https://reference.sanity.io/_sanity/sdk-react/">Sanity App SDK docs</a>!
             </Text>
           </Stack>
         </Flex>

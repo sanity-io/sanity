@@ -36,7 +36,7 @@ jobs:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
       - run: "pnpm lint:fix -- --rule 'prettier/prettier: [off]'"
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         # Run even if `pnpm lint:fix` fails
         if: always()
         id: app-token

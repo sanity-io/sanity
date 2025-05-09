@@ -38,7 +38,7 @@ jobs:
       - run: pnpm chore:format:fix
       - name: GitHub blocks PRs from automation that alter workflows in any way
         run: git restore .github/workflows pnpm-lock.yaml
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}

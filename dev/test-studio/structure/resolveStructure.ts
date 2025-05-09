@@ -19,6 +19,7 @@ import {type ItemChild, type StructureBuilder, type StructureResolver} from 'san
 
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
+import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
 import {_buildTypeGroup} from './_buildTypeGroup'
 import {delayValue} from './_helpers'
@@ -34,13 +35,29 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
-export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {
+export const structure: StructureResolver = (
+  S,
+  {schema, documentStore, i18n, perspectiveStack},
+) => {
   const {t} = i18n
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
+      S.listItem()
+        .title('Sections by perspective')
+        .id('sections-by-perspective')
+        .child(() => {
+          const doc$ = documentStore.listenQuery(
+            `*[_id == "validation"][0]`,
+            {},
+            {
+              perspective: perspectiveStack,
+            },
+          )
 
+          return S.component(PerspectiveExample).id('sections-by-perspective').options({doc$})
+        }),
       S.listItem()
         .id('translate')
         .title('Translate Test')

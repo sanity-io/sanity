@@ -2,30 +2,51 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --edit  Edit the configuration
+  --edit, -e           Edit the configuration
+  --test, -t           Test the configuration
+  --project-id <id>    Project ID to use
 
-Examples
+Examples:
   # View current configuration
   sanity blueprints config
 
   # Edit configuration
   sanity blueprints config --edit
+
+  # Test configuration
+  sanity blueprints config --test
+
+  # Edit and test configuration
+  sanity blueprints config -et
 `
 
-const defaultFlags = {
-  edit: false,
+export interface BlueprintsConfigFlags {
+  'test-config'?: boolean
+  'test'?: boolean
+  't'?: boolean
+  'edit'?: boolean
+  'e'?: boolean
+  'project-id'?: string
+  'projectId'?: string
+  'project'?: string
+  'stack-id'?: string
+  'stackId'?: string
+  'stack'?: string
 }
 
-const configBlueprintsCommand: CliCommandDefinition = {
+const defaultFlags: BlueprintsConfigFlags = {
+  //
+}
+
+const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   name: 'config',
   group: 'blueprints',
   helpText,
-  signature: '[--edit]',
+  signature: '[--edit] [-e] [--test] [-t] [--project-id <id>]',
   description: 'View or edit local Blueprints configuration',
-  hideFromHelp: true,
+
   async action(args, context) {
-    const {apiClient, output, prompt} = context
-    const {print} = output
+    const {apiClient, output} = context
     const flags = {...defaultFlags, ...args.extOptions}
 
     const client = apiClient({
@@ -33,79 +54,34 @@ const configBlueprintsCommand: CliCommandDefinition = {
       requireProject: false,
     })
     const {token} = client.config()
-    const {
-      blueprint: blueprintAction,
-      projects: projectsAction,
-      stacks: stacksAction,
-    } = await import('@sanity/runtime-cli/actions/blueprints')
 
-    const config = blueprintAction.readConfigFile()
-    if (!config) {
-      print('No configuration found. Run `sanity blueprints init` first.')
-      return
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
+
+    const {blueprintConfigCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {display} = await import('@sanity/runtime-cli/utils')
+
+    const {localBlueprint, issues} = await getBlueprintAndStack({token})
+
+    if (issues) {
+      // print issues and continue
+      output.print(display.errors.presentBlueprintIssues(issues))
     }
 
-    print('\nCurrent configuration:')
-    print(JSON.stringify(config, null, 2))
-
-    if (!flags.edit) {
-      return
-    }
-
-    if (!token) {
-      print('No API token found. Please run `sanity login` first.')
-      return
-    }
-
-    const {ok, projects, error} = await projectsAction.listProjects({token})
-    if (!ok) {
-      print(error)
-      return
-    }
-
-    if (!projects || projects.length === 0) {
-      print('No Projects found. Please create a Project in Sanity.io first.')
-      return
-    }
-
-    const projectChoices = projects.map(({displayName, id}) => ({
-      value: id,
-      name: `${displayName} <${id}>`,
-    }))
-
-    const projectId = await prompt.single({
-      type: 'list',
-      message: 'Select your Sanity Project:',
-      choices: projectChoices,
-      default: config.projectId,
+    const {success, error} = await blueprintConfigCore({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      blueprint: localBlueprint,
+      token,
+      flags: {
+        'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
+        'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'test-config': flags['test-config'] ?? flags.test ?? flags.t,
+        'edit': flags.edit ?? flags.e,
+      },
     })
 
-    const auth = {token, projectId}
-
-    // get stacks for selected project
-    const {ok: stacksOk, stacks, error: stacksError} = await stacksAction.listStacks(auth)
-    if (!stacksOk) {
-      print(stacksError)
-      return
-    }
-
-    let stackId
-    if (stacks && stacks.length > 0) {
-      const stackChoices = stacks.map(({name, id}) => ({
-        value: id,
-        name: `${name} <${id}>`,
-      }))
-
-      stackId = await prompt.single({
-        type: 'list',
-        message: 'Select a Stack:',
-        choices: stackChoices,
-        default: config.stackId,
-      })
-    }
-
-    blueprintAction.writeConfigFile({projectId, stackId})
-    print('\nConfiguration updated successfully.')
+    if (!success) throw new Error(error)
   },
 }
 

@@ -5,7 +5,6 @@ const blueprintsGroup: CliCommandGroupDefinition = {
   signature: '[COMMAND]',
   isGroupRoot: true,
   description: 'Deploy and manage Sanity Blueprints and Stacks (IaC)',
-  hideFromHelp: true,
 }
 
 export default blueprintsGroup

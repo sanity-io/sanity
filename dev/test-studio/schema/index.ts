@@ -52,6 +52,7 @@ import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
 import manyFieldsTest from './debug/manyFieldsTest'
+import {manyViewsType} from './debug/manyViews'
 import notitle from './debug/notitle'
 import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
@@ -224,6 +225,7 @@ export function createSchemaTypes(projectId: string) {
     liveEdit,
     localeString,
     manyFieldsTest,
+    manyViewsType,
     myImage,
     myObject,
     namedDeprecatedObject,
