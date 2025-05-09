@@ -1,10 +1,10 @@
 import {type SchemaType} from '@sanity/types'
-import {uniqueId} from 'lodash'
 import {isValidElementType} from 'react-is'
 import {getConfigContextFromSource, getPublishedId, type Source} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
 import {ComponentBuilder, type ComponentInput} from './Component'
+import {DividerBuilder} from './Divider'
 import {DocumentBuilder, documentFromEditor, documentFromEditorWithInitialValue} from './Document'
 import {DocumentListBuilder} from './DocumentList'
 import {DocumentListItemBuilder} from './DocumentListItem'
@@ -126,7 +126,7 @@ export function createStructureBuilder({
         : new ComponentBuilder(spec as ComponentInput)
     },
 
-    divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'}),
+    divider: (spec?: Divider) => new DividerBuilder(spec),
 
     view: views,
     context,

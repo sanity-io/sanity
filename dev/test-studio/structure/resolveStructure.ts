@@ -15,7 +15,12 @@ import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
-import {type ItemChild, type StructureBuilder, type StructureResolver} from 'sanity/structure'
+import {
+  type ItemChild,
+  type StructureBuilder,
+  structureLocaleNamespace,
+  type StructureResolver,
+} from 'sanity/structure'
 
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
@@ -90,7 +95,9 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
         ],
       }),
 
-      S.divider(),
+      S.divider()
+        .title('Divider title')
+        .i18n({title: {key: 'text-divider-title', ns: structureLocaleNamespace}}),
 
       _buildTypeGroup(S, schema, {
         id: 'input-standard',

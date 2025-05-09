@@ -333,6 +333,14 @@ export interface PaneListItem<TParams = unknown> {
 /** @internal */
 export interface PaneListItemDivider {
   type: 'divider'
+  /**
+   * The title of the divider.
+   */
+  title?: string
+  /**
+   * The i18n key and namespace used to populate the localized title
+   */
+  i18n?: I18nTextRecord<'title'>
 }
 
 /** @internal */
