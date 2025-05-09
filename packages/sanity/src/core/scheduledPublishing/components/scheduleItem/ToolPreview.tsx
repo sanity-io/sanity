@@ -20,12 +20,16 @@ interface Props {
 
 const ToolPreview = (props: Props) => {
   const {previewState, schedule, schemaType} = props
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
 
   const visibleDocument = previewState.draft || previewState.published
   const isCompleted = schedule.state === 'succeeded'
   const isScheduled = schedule.state === 'scheduled'
 
-  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(schedule)
+  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(
+    schedule,
+    timeZoneScope,
+  )
 
   const publishedId = usePublishedId(visibleDocument?._id)
 

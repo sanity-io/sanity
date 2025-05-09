@@ -1,14 +1,25 @@
 import {type Path} from '@sanity/types'
-import {memo, type PropsWithChildren, useCallback, useMemo, useSyncExternalStore} from 'react'
+import {
+  memo,
+  type PropsWithChildren,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useSyncExternalStore,
+} from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
 import {type DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'
 import {supportsTouch} from '../../../util'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 import {useHoveredField} from '../useHoveredField'
 
 type FieldActionsProviderProps = PropsWithChildren<{
   actions: DocumentFieldActionNode[]
+  /** @internal @deprecated DO NOT USE */
+  __internal_comments?: FieldCommentsProps
+  __internal_slot?: ReactNode
   focused?: boolean
   path: Path
 }>
@@ -17,7 +28,9 @@ type FieldActionsProviderProps = PropsWithChildren<{
 export const FieldActionsProvider = memo(function FieldActionsProvider(
   props: FieldActionsProviderProps,
 ) {
-  const {actions, children, path, focused} = props
+  // by passing the comments and slot here, we can wrap this functionality around any custom field without needing to confirm the title and description
+  // eslint-disable-next-line camelcase
+  const {actions, children, path, focused, __internal_comments, __internal_slot} = props
   const {
     onMouseEnter: onFieldMouseEnter,
     onMouseLeave: onFieldMouseLeave,
@@ -45,10 +58,24 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
       actions,
       focused,
       hovered,
+      // eslint-disable-next-line camelcase
+      __internal_comments,
+      // eslint-disable-next-line camelcase
+      __internal_slot,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
     }),
-    [actions, focused, handleMouseEnter, handleMouseLeave, hovered],
+    [
+      actions,
+      focused,
+      handleMouseEnter,
+      handleMouseLeave,
+      hovered,
+      // eslint-disable-next-line camelcase
+      __internal_slot,
+      // eslint-disable-next-line camelcase
+      __internal_comments,
+    ],
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>
