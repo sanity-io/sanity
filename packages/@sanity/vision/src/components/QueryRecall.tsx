@@ -12,7 +12,7 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
-import isEqual from 'lodash/isequal'
+import {isEqual} from 'lodash'
 import {type ReactElement, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
