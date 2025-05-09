@@ -72,13 +72,16 @@ const getActiveReleaseDocumentsObservable = ({
   const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
 
-  // const groqFilter = `_id in path("versions.${releaseId}.**")`
-  const groqFilter = `sanity::partOfRelease(${releaseId})`
+  const groqFilter = `sanity::partOfRelease($releaseId)`
 
   return documentPreviewStore
-    .unstable_observeDocumentIdSet(groqFilter, undefined, {
-      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    })
+    .unstable_observeDocumentIdSet(
+      groqFilter,
+      {releaseId},
+      {
+        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      },
+    )
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
       mergeMapArray((id: string) => {

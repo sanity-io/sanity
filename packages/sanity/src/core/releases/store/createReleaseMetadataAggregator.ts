@@ -29,7 +29,7 @@ const getFetchQuery = (releaseIds: string[]) => {
       // get a version of the id that is safe to use as key in objects
       const safeId = getSafeKey(bundleId)
 
-      const subquery = `${accSubquery}"${safeId}": *[sanity::partOfRelease(${bundleId})]{_updatedAt, "docId": string::split(_id, ".")[2] } | order(_updatedAt desc),`
+      const subquery = `${accSubquery}"${safeId}": *[sanity::partOfRelease("${bundleId}")]{_updatedAt, "docId": string::split(_id, ".")[2] } | order(_updatedAt desc),`
 
       const projection = `${accProjection}"${releaseId}": {
               "updatedAt": ${safeId}[0]._updatedAt,
@@ -108,7 +108,7 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
       .listen(
         `*[(${releaseIds.reduce(
           (accQuery, releaseId, index) =>
-            `${accQuery}${index === 0 ? '' : ' ||'} sanity::partOfRelease(${releaseId})`,
+            `${accQuery}${index === 0 ? '' : ' ||'} sanity::partOfRelease("${releaseId}")`,
           '',
         )})]`,
         {},
