@@ -5,7 +5,7 @@ import {
   isImageSchemaType,
   type SanityDocument,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {Card, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
@@ -14,6 +14,7 @@ import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
+import { ErrorOutlineIcon } from '@sanity/icons'
 
 // Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
 const fetchedLibraryIdCache: Map<string, string> = new Map()
@@ -45,6 +46,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const [fetchedLibraryId, setFetchedLibraryId] = useState<string | null>(
     cachedFetchedLibraryId || null,
   )
+  const [failedToFetchLibraryError, setFailedToFetchLibraryError] = useState<'LIBRARY_NOT_FOUND' | null>(null)
 
   useEffect(() => {
     if (libraryIdProp || fetchedLibraryId) {
@@ -53,20 +55,16 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     if (!projectId) {
       throw new Error('projectId is required to fetch Media Library ID')
     }
-    client
-      .request({
-        uri: `/media-libraries`,
-        query: {projectId},
-        tag: 'media-library.availability-check',
-      })
-      .then((result) => {
-        const libraryIdFromResult = result.data[0]?.id
-        if (libraryIdFromResult) {
-          // Add to cache for this project (organization)
-          fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
-          setFetchedLibraryId(libraryIdFromResult)
-        }
-      })
+    client.request({uri: `/media-libraries`, query: {projectId}}).then((result) => {
+      const libraryIdFromResult = result.data[0]?.id
+      if (libraryIdFromResult) {
+        // Add to cache for this project (organization)
+        fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
+        setFetchedLibraryId(libraryIdFromResult)
+      } else {
+        setFailedToFetchLibraryError('LIBRARY_NOT_FOUND')
+      }
+    })
   }, [client, fetchedLibraryId, libraryIdProp, projectId])
 
   const resolvedLibraryId = libraryIdProp || fetchedLibraryId
@@ -129,6 +127,23 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     },
     [handleSelect, onClose],
   )
+
+  if (failedToFetchLibraryError === 'LIBRARY_NOT_FOUND') {
+    return (
+      <Card padding={4} radius={4} tone="critical">
+      <Flex gap={3}>
+        <Text size={1}>
+          <ErrorOutlineIcon />
+        </Text>
+        <Stack space={4}>
+          <Text size={1} weight="semibold">
+            {t('asset-sources.media-library.error.library-not-found')}
+          </Text>
+        </Stack>
+      </Flex>
+    </Card>
+    )
+  }
 
   if (!resolvedLibraryId) {
     return null
