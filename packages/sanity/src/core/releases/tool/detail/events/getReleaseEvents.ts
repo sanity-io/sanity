@@ -76,14 +76,19 @@ export function getReleaseEvents({
     ? getReleaseActivityEvents({client, releaseId})
     : notEnabledActivityEvents
 
-  const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
+  const groqFilter = `sanity::partOfRelease($releaseId)`
+
   // Turn off document counts listener if eventsAPI is not enabled.
   const documentsCount$ = eventsAPIEnabled
     ? of(0)
     : documentPreviewStore
-        .unstable_observeDocumentIdSet(groqFilter, undefined, {
-          apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-        })
+        .unstable_observeDocumentIdSet(
+          groqFilter,
+          {releaseId: getReleaseIdFromReleaseDocumentId(releaseId)},
+          {
+            apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+          },
+        )
         .pipe(
           filter(({status}) => status === 'connected'),
           map(({documentIds}) => documentIds.length),
