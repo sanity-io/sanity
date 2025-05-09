@@ -1,8 +1,7 @@
 import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map, startWith} from 'rxjs/operators'
-
-import {type KeyValueStoreValue, useKeyValueStore} from '../../../../sanity/src/core/store'
+import {type KeyValueStoreValue, useKeyValueStore} from 'sanity'
 
 const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
 
