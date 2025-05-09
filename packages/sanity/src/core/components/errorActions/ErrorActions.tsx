@@ -11,7 +11,7 @@ import {useCopyErrorDetails} from './useCopyErrorDetails'
  */
 export interface ErrorActionsProps extends Pick<ComponentProps<typeof Button>, 'size'> {
   error: unknown
-  eventId: string | null
+  eventId?: string | null
   onRetry?: () => void
 }
 

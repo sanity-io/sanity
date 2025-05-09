@@ -1,5 +1,14 @@
-import {type GlobalErrorChannel} from '../components/globalErrorHandler'
+interface GlobalErrorChannelEvent {
+  type: 'error' | 'rejection'
+  error?: unknown
+  lineno?: number
+  colno?: number
+  filename?: string
+}
 
+interface GlobalErrorChannel {
+  subscribe: (callback: (event: GlobalErrorChannelEvent) => void) => () => void
+}
 /**
  * Gets the global scope instance in a given environment.
  *
