@@ -180,11 +180,6 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode // we don't support cross-dataset references at the moment
     }
 
-    // Global document references are not supported
-    if (isGlobalDocumentReferenceType(schemaType)) {
-      return {type: 'unknown'} satisfies UnknownTypeNode // we don't support global document references at the moment
-    }
-
     if (isReferenceType(schemaType)) {
       return createReferenceTypeNodeDefintion(schemaType)
     }
