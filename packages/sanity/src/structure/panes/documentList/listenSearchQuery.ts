@@ -9,6 +9,7 @@ import {
   type Observable,
   of,
   partition,
+  retry,
   share,
   throttleTime,
   throwError,
@@ -88,17 +89,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   }).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
-      if (isFirst && ev.type !== 'welcome') {
-        // If the first event is not welcome, it is most likely a reconnect and
-        // if it's not a reconnect something is very wrong and we should throw.
-        return throwError(
-          () =>
-            new Error(
-              ev.type === 'reconnect'
-                ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`,
-            ),
-        )
+      if (isFirst && ev.type !== 'welcome' && ev.type !== 'reconnect') {
+        // If the first event is not welcome or reconnect, something is very wrong and we should throw.
+        return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
       }
       return of(ev)
     }),
@@ -187,6 +180,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
           }
           return doFetch()
         }),
+        retry({delay: 1000, count: 100}),
       )
     }),
     scan(

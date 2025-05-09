@@ -39,6 +39,7 @@ interface DocumentListPaneContentProps {
   error: {message: string} | null
   filterIsSimpleTypeConstraint: boolean
   hasMaxItems?: boolean
+  muted?: boolean
   hasSearchQuery: boolean
   isActive?: boolean
   isLazyLoading: boolean
@@ -76,6 +77,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     hasSearchQuery,
     isActive,
     isLazyLoading,
+    muted,
     isLoading,
     items,
     layout,
@@ -226,7 +228,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             activeItemDataAttr="data-hovered"
@@ -256,6 +258,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     items,
     layout,
     loadingVariant,
+    muted,
     noDocumentsContent,
     onRetry,
     paneTitle,

@@ -445,6 +445,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.no-documents.text': 'No results found',
   /** The text of the document list pane if no documents are found matching specified criteria */
   'panes.document-list-pane.no-matching-documents.text': 'No matching documents',
+  /** The search input for the search input on the document list pane */
+  'panes.document-list-pane.reconnecting': 'Trying to connect…',
   /** The aria-label for the search input on the document list pane */
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */

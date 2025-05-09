@@ -144,7 +144,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
               mergeMap(() =>
                 caught$.pipe(
                   retry({
-                    delay: (_: unknown, attempt) => of(Math.max(30000, attempt * 1000)),
+                    delay: (_: unknown, attempt) => timer(Math.min(30000, attempt * 1000)),
                     count: 3,
                   }),
                 ),

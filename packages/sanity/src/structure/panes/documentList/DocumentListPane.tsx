@@ -14,6 +14,7 @@ import {
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -183,32 +184,41 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return SearchIcon
   }, [loadingVariant, searchInputValue])
 
+  const textInput = (
+    <TextInput
+      aria-label={t('panes.document-list-pane.search-input.aria-label')}
+      autoComplete="off"
+      border={false}
+      clearButton={Boolean(searchQuery)}
+      readOnly={Boolean(error || !connected)}
+      fontSize={[2, 2, 1]}
+      icon={textInputIcon}
+      iconRight={
+        !connected || (loadingVariant === 'subtle' && !searchInputValue)
+          ? DelayedSubtleSpinnerIcon
+          : null
+      }
+      onChange={handleQueryChange}
+      onClear={handleClearSearch}
+      onKeyDown={handleSearchKeyDown}
+      padding={2}
+      placeholder={t('panes.document-list-pane.search-input.placeholder')}
+      radius={2}
+      ref={setSearchInputElement}
+      spellCheck={false}
+      value={searchInputValue}
+    />
+  )
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
-        <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
-          autoComplete="off"
-          border={false}
-          clearButton={Boolean(searchQuery)}
-          disabled={Boolean(error)}
-          fontSize={[2, 2, 1]}
-          icon={textInputIcon}
-          iconRight={
-            !connected || (loadingVariant === 'subtle' && !searchInputValue)
-              ? DelayedSubtleSpinnerIcon
-              : null
-          }
-          onChange={handleQueryChange}
-          onClear={handleClearSearch}
-          onKeyDown={handleSearchKeyDown}
-          padding={2}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
-          radius={2}
-          ref={setSearchInputElement}
-          spellCheck={false}
-          value={searchInputValue}
-        />
+        {connected ? (
+          textInput
+        ) : (
+          <Tooltip placement="bottom-end" content={t('panes.document-list-pane.reconnecting')}>
+            {textInput}
+          </Tooltip>
+        )}
       </Box>
       <DocumentListPaneContent
         childItemId={childItemId}
@@ -222,6 +232,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         items={items}
         key={paneKey}
         layout={layout}
+        muted={loadingVariant === 'subtle' || !connected}
         loadingVariant={loadingVariant}
         onEndReached={onLoadFullList}
         onRetry={onRetry}
