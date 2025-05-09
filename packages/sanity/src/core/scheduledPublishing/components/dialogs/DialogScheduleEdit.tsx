@@ -14,6 +14,7 @@ export interface DialogScheduleEditProps {
 
 const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
   const {onClose, schedule} = props
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
 
   const {updateSchedule} = useScheduleOperation()
   const {formData, isDirty, onFormChange} = useScheduleForm(schedule)
@@ -39,7 +40,7 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
           onClick: handleScheduleUpdate,
         },
       }}
-      header={<DialogHeader title="Edit schedule" />}
+      header={<DialogHeader timeZoneScope={timeZoneScope} title="Edit schedule" />}
       id="time-zone"
       onClose={onClose}
       width={1}

@@ -11,8 +11,8 @@ import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/cal
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../../i18n'
-import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../../index'
@@ -46,7 +46,9 @@ export const ReleaseScheduleButton = ({
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
-  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
+  // in the releases tool we want timezone to be saved for releases
+  const timeZoneScope = useMemo(() => ({type: 'contentReleases'}) as const, [])
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
   /**
@@ -57,7 +59,7 @@ export const ReleaseScheduleButton = ({
    */
   const [rerenderDialog, setRerenderDialog] = useState(0)
 
-  const timezoneAdjustedPublishAt = publishAt ? utcToCurrentZoneDate(publishAt) : undefined
+  const timeZoneAdjustedPublishAt = publishAt ? utcToCurrentZoneDate(publishAt) : undefined
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
@@ -241,13 +243,14 @@ export const ReleaseScheduleButton = ({
                 monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
                 onChange={handleBundlePublishAtCalendarChange}
                 onInputChange={handleBundleInputChange}
-                value={timezoneAdjustedPublishAt}
+                value={timeZoneAdjustedPublishAt}
                 calendarLabels={calendarLabels}
                 inputValue={
-                  timezoneAdjustedPublishAt ? format(timezoneAdjustedPublishAt, 'PP HH:mm') : ''
+                  timeZoneAdjustedPublishAt ? format(timeZoneAdjustedPublishAt, 'PP HH:mm') : ''
                 }
                 constrainSize={false}
                 isPastDisabled
+                timeZoneScope={timeZoneScope}
               />
             </Stack>
           </label>
@@ -274,8 +277,9 @@ export const ReleaseScheduleButton = ({
     handleConfirmSchedule,
     handleBundlePublishAtCalendarChange,
     handleBundleInputChange,
-    timezoneAdjustedPublishAt,
+    timeZoneAdjustedPublishAt,
     calendarLabels,
+    timeZoneScope,
     release.metadata.title,
     tCore,
   ])
