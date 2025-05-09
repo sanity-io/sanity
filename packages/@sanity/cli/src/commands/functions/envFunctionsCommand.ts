@@ -38,6 +38,10 @@ const envFunctionsCommand: CliCommandDefinition = {
       throw new Error('You must specify if you want to list, add or remove')
     }
 
+    if (!name) {
+      throw new Error('You must provide a function name as the first argument')
+    }
+
     if (subCommand === 'add' && (!key || !value)) {
       throw new Error('You must specify the name, key and value arguments')
     } else if (subCommand === 'remove' && !key) {
@@ -49,70 +53,52 @@ const envFunctionsCommand: CliCommandDefinition = {
       requireProject: false,
     })
 
-    if (name === '') {
-      throw new Error('You must provide a function name as the first argument')
-    }
-
     const token = client.config().token
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {env: envAction} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint, getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
-
-    const {deployedStack} = await getBlueprintAndStack({token})
-
-    if (!deployedStack) {
-      throw new Error('Stack not found')
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const cmdConfigResult = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (msg: string) => print(msg),
+      sanityToken: token,
+    })
+    if (!cmdConfigResult.ok) {
+      throw new Error(cmdConfigResult.error)
     }
+    const cmdConfig = cmdConfigResult.value
 
-    const blueprintConfig = blueprint.readConfigFile()
-    const projectId = blueprintConfig?.projectId
+    const {envAddCore, envListCore, envRemoveCore} = await import(
+      '@sanity/runtime-cli/cores/functions'
+    )
 
-    const {externalId} = findFunction.findFunctionByName(deployedStack, name)
+    if (subCommand === 'add') {
+      const addResult = await envAddCore({
+        ...cmdConfig,
+        args: {name, key, value},
+      })
 
-    if (token && projectId) {
-      if (subCommand === 'add') {
-        print(`Updating "${key}" environment variable in "${name}"`)
-        const result = await envAction.update(externalId, key, value, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Update of "${key}" succeeded`)
-        } else {
-          print(`Failed to update "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      } else if (subCommand === 'remove') {
-        print(`Removing "${key}" environment variable in "${name}"`)
-        const result = await envAction.remove(externalId, key, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Removal of "${key}" succeeded`)
-        } else {
-          print(`Failed to remove "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      } else if (subCommand === 'list') {
-        print(`Environment variables in "${name}"`)
-        const result = await envAction.list(externalId, {
-          token,
-          projectId,
-        })
-        if (result.ok && Array.isArray(result.envvars)) {
-          for (const envVarKey of result.envvars) {
-            print(envVarKey)
-          }
-        } else {
-          print(`Failed to list environment variables in "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
+      if (!addResult.success) {
+        throw new Error(addResult.error)
       }
-    } else {
-      print('You must run this command from a blueprints project')
+    }
+    if (subCommand === 'remove') {
+      const removeResult = await envRemoveCore({
+        ...cmdConfig,
+        args: {name, key},
+      })
+
+      if (!removeResult.success) {
+        throw new Error(removeResult.error)
+      }
+    } else if (subCommand === 'list') {
+      const removeResult = await envListCore({
+        ...cmdConfig,
+        args: {name},
+      })
+
+      if (!removeResult.success) {
+        throw new Error(removeResult.error)
+      }
     }
   },
 }
