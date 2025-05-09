@@ -213,7 +213,7 @@
     "fast-deep-equal": "3.1.3",
     "form-data": "^4.0.0",
     "framer-motion": "^12.6.3",
-    "get-it": "^8.6.7",
+    "get-it": "^8.6.8",
     "get-random-values-esm": "1.0.2",
     "groq-js": "^1.16.1",
     "gunzip-maybe": "^1.4.2",
