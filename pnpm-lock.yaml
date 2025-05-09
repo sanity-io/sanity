@@ -1288,6 +1288,9 @@ importers:
       react-fast-compare:
         specifier: ^3.2.2
         version: 3.2.2
+      rxjs:
+        specifier: ^7.8.0
+        version: 7.8.2
       use-effect-event:
         specifier: ^1.0.2
         version: 1.0.2(react@18.3.1)
