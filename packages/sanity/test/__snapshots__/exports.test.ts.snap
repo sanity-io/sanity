@@ -509,6 +509,7 @@ exports[`exports snapshot 1`] = `
     "useCommentsEnabled": "function",
     "useCommentsSelectedPath": "function",
     "useCommentsTelemetry": "function",
+    "useConditionalToast": "function",
     "useConfigContextFromSource": "function",
     "useConnectionState": "function",
     "useConnectionStatusStore": "function",

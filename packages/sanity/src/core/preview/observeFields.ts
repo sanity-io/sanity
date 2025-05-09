@@ -9,6 +9,7 @@ import {
   merge,
   type Observable,
   of,
+  retry,
   timer,
 } from 'rxjs'
 import {
@@ -93,7 +94,12 @@ export function createObserveFields(options: {
           {},
           {tag: 'preview.document-paths', perspective},
         )
-        .pipe(map((result: any) => reassemble(result, combinedSelections)))
+        .pipe(
+          retry({
+            delay: (_: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
+          }),
+          map((result: any) => reassemble(result, combinedSelections)),
+        )
     }
   }
   const batchFetchersCache = new Map()
