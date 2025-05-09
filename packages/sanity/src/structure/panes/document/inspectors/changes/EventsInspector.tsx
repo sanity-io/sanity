@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Box, Card, Flex, Spinner, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -11,6 +11,7 @@ import {
   NoChanges,
   type ObjectSchemaType,
   ScrollContainer,
+  Translate,
   useEvents,
   useTranslation,
 } from 'sanity'
@@ -144,6 +145,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                   error={timelineError || diffError}
                   loading={revision?.loading || sinceRevision?.loading || false}
                   schemaType={schemaType}
+                  sameRevisionSelected={sinceEvent?.id === toEvent?.id}
                 />
               )}
             </Box>
@@ -159,11 +161,13 @@ function Content({
   documentContext,
   loading,
   schemaType,
+  sameRevisionSelected,
 }: {
   error?: Error | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
   schemaType: ObjectSchemaType
+  sameRevisionSelected: boolean
 }) {
   if (error) {
     return <ChangesError />
@@ -171,6 +175,9 @@ function Content({
 
   if (loading) {
     return <LoadingBlock showText />
+  }
+  if (sameRevisionSelected) {
+    return <SameRevisionSelected />
   }
 
   if (!documentContext.rootDiff) {
@@ -189,5 +196,24 @@ function Content({
     <DocumentChangeContext.Provider value={documentContext}>
       <ChangeList diff={documentContext.rootDiff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
+  )
+}
+function SameRevisionSelected() {
+  const {t} = useTranslation('')
+  return (
+    <motion.div
+      animate={{opacity: 1}}
+      initial={{opacity: 0}}
+      transition={{delay: 0.2, duration: 0.2}}
+    >
+      <Stack space={3} paddingTop={2}>
+        <Text size={1} weight="medium" as="h3">
+          {t('changes.same-revision-selected-title')}
+        </Text>
+        <Text as="p" size={1} muted>
+          <Translate i18nKey="changes.same-revision-selected-description" t={t} />
+        </Text>
+      </Stack>
+    </motion.div>
   )
 }
