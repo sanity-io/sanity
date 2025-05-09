@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceType,
@@ -12,7 +13,6 @@ import {createSearchQuery} from '../../../../../search/groq2024/createSearchQuer
 import {getNextCursor} from '../../../../../search/groq2024/getNextCursor'
 import {type SearchParams} from '../../../../../search/weighted/createSearchQuery'
 import {collate} from '../../../../../util'
-import {type ReferenceClient} from './getReferenceClient'
 
 interface SearchHit {
   id: string
@@ -23,7 +23,7 @@ interface SearchHit {
 const limit = 10
 
 function doSearch(
-  client: ReferenceClient,
+  client: SanityClient,
   searchTerm: string,
   types: GlobalDocumentReferenceType[],
   searchOptions: ReferenceFilterSearchOptions,
@@ -34,7 +34,7 @@ function doSearch(
     searchOptions,
   )
 
-  return client.query<SanityDocumentLike[], SearchParams>(query, params).pipe(
+  return client.observable.fetch<SanityDocumentLike[], SearchParams>(query, params).pipe(
     map((hits) => {
       const hasNextPage = typeof limit !== 'undefined' && hits.length > limit
 
@@ -54,7 +54,7 @@ function doSearch(
 }
 
 export function search(
-  client: ReferenceClient,
+  client: SanityClient,
   textTerm: string,
   type: GlobalDocumentReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
