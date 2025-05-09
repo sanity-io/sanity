@@ -27,6 +27,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.query-execute': 'Fetch',
   /** Label for saving a query */
   'action.save-query': 'Save query',
+  /** Label for updating a query */
+  'action.update': 'Update',
 
   /** Label for actions user can take */
   'label.actions': 'Actions',

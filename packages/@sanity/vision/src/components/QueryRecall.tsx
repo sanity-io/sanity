@@ -53,10 +53,7 @@ function normalizeUrl(url: string): string {
 // TODO
 // -saving behavior - be explicit that things have changed & need to be saved
 // -check typing for url parser and state setter
-// -show when the selected query has been edited but not saved
 
-// -save state
-// -get design approval in studio channel
 export function QueryRecall({
   url,
   getStateFromUrl,
@@ -186,6 +183,67 @@ export function QueryRecall({
     [updateQuery, toast, t],
   )
 
+  const handleUpdate = useCallback(
+    async (query: QueryConfig) => {
+      const newUrl = generateUrl(currentQuery, currentParams)
+
+      // Check for duplicates by comparing query content and params
+      const isDuplicate = queries?.some((q) => {
+        // Skip the current query when checking for duplicates
+        if (q._key === query._key) return false
+        const savedQueryObj = getStateFromUrl(q.url)
+        return (
+          savedQueryObj &&
+          savedQueryObj.query === currentQuery &&
+          isEqual(savedQueryObj.params, currentParams)
+        )
+      })
+
+      if (isDuplicate) {
+        const duplicateQuery = queries?.find((q) => {
+          if (q._key === query._key) return false
+          const savedQueryObj = getStateFromUrl(q.url)
+          return (
+            savedQueryObj &&
+            savedQueryObj.query === currentQuery &&
+            isEqual(savedQueryObj.params, currentParams)
+          )
+        })
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('save-query.already-saved'),
+          description: `${duplicateQuery?.title} - ${formatDate(duplicateQuery?.savedAt || '')}`,
+        })
+        return
+      }
+
+      if (newUrl) {
+        try {
+          await updateQuery({
+            ...query,
+            url: newUrl,
+            savedAt: new Date().toISOString(),
+          })
+          setSelectedUrl(newUrl)
+          toast.push({
+            closable: true,
+            status: 'success',
+            title: t('save-query.success'),
+          })
+        } catch (err) {
+          toast.push({
+            closable: true,
+            status: 'error',
+            title: t('save-query.error'),
+            description: err.message,
+          })
+        }
+      }
+    },
+    [currentQuery, currentParams, generateUrl, updateQuery, toast, t, queries, getStateFromUrl],
+  )
+
   const filteredQueries = queries?.filter((q) => {
     return q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
   })
@@ -246,6 +304,7 @@ export function QueryRecall({
                   setStateFromParsedUrl(parsedUrl)
                 }
               }}
+              style={{position: 'relative'}}
             >
               <Stack space={3}>
                 <Flex justify="space-between" align={'center'}>
@@ -287,101 +346,75 @@ export function QueryRecall({
                       </Text>
                     )}
                     {isEdited && (
-                      <Text size={1} muted>
-                        {t('label.edited')}
-                      </Text>
+                      <Box
+                        style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--card-focus-ring-color)',
+                        }}
+                      />
                     )}
                   </Flex>
-                  <Flex gap={2} align="center">
-                    {/* <Badge
-                      tone={(optimisticShared[q._key] ?? q.shared) ? 'positive' : 'primary'}
-                      size={1}
-                      padding={2}
-                      radius={1}
-                    >
-                      {t((optimisticShared[q._key] ?? q.shared) ? 'label.team' : 'label.personal')}
-                    </Badge> */}
-                    <MenuButton
-                      button={<EllipsisVerticalIcon />}
-                      id={`${q._key}-menu`}
-                      menu={
-                        <Menu>
-                          {/* <Button
-                            mode="bleed"
-                            width="fill"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              setEditingKey(q._key)
-                              setEditingTitle(q.title || q._key.slice(0, 5))
-                            }}
-                          >
-                            <Flex align="center" gap={2} padding={1}>
-                              <Box
-                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
-                              >
-                                <EditIcon />
-                              </Box>
-                              <Text size={1}>{t('action.edit-title')}</Text>
-                            </Flex>
-                          </Button> */}
-                          <Button
-                            mode="bleed"
-                            tone="critical"
-                            width="fill"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              deleteQuery(q._key)
-                            }}
-                            disabled={deleting.includes(q._key)}
-                          >
-                            <Flex align="center" gap={2} padding={1}>
-                              <Box
-                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
-                              >
-                                <TrashIcon />
-                              </Box>
-                              <Text size={1}>{t('action.delete')}</Text>
-                            </Flex>
-                          </Button>
-                          {/* <MenuDivider />
-                          <Button
-                            mode="bleed"
-                            width="fill"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              handleShareToggle(q)
-                            }}
-                          >
-                            <Flex align="center" gap={2} padding={1}>
-                              <Box
-                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
-                              >
-                                <Switch
-                                  onChange={(event) => {
-                                    event.stopPropagation()
-                                    handleShareToggle(q)
-                                  }}
-                                  checked={optimisticShared[q._key] ?? q.shared}
-                                />
-                              </Box>
-                              <Text size={1}>{t('label.share')}</Text>
-                            </Flex>
-                          </Button> */}
-                        </Menu>
-                      }
-                      popover={{portal: true, placement: 'bottom-end'}}
-                    />
-                  </Flex>
+                  <MenuButton
+                    button={<EllipsisVerticalIcon />}
+                    id={`${q._key}-menu`}
+                    menu={
+                      <Menu>
+                        <Button
+                          mode="bleed"
+                          tone="critical"
+                          width="fill"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            deleteQuery(q._key)
+                          }}
+                          disabled={deleting.includes(q._key)}
+                        >
+                          <Flex align="center" gap={2} padding={1}>
+                            <Box
+                              style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
+                            >
+                              <TrashIcon />
+                            </Box>
+                            <Text size={1}>{t('action.delete')}</Text>
+                          </Flex>
+                        </Button>
+                      </Menu>
+                    }
+                    popover={{portal: true, placement: 'bottom-end'}}
+                  />
                 </Flex>
 
                 <Code muted>{queryObj?.query.split('{')[0]}</Code>
 
                 <Flex align="center" gap={1}>
-                  {/* <ClockIcon /> */}
                   <Text size={1} muted>
                     {formatDate(q.savedAt)}
                   </Text>
                 </Flex>
+
+                {isEdited && (
+                  <Button
+                    mode="ghost"
+                    tone="default"
+                    size={1}
+                    padding={2}
+                    style={{
+                      height: '24px',
+                      position: 'absolute',
+                      right: '16px',
+                      bottom: '16px',
+                      fontSize: '12px',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleUpdate(q)
+                    }}
+                  >
+                    {t('action.update')}
+                  </Button>
+                )}
               </Stack>
             </Card>
           )
