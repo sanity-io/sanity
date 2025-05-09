@@ -2,19 +2,13 @@
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
 import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
-import {
-  defaultRangeExtractor,
-  type Range,
-  useVirtualizer,
-  type VirtualItem,
-} from '@tanstack/react-virtual'
+import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
 import {get} from 'lodash'
 import {
   type CSSProperties,
   Fragment,
   type HTMLProps,
-  type MutableRefObject,
   type RefAttributes,
   type RefObject,
   useMemo,
@@ -66,33 +60,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
 
-/**
- * This function modifies the rangeExtractor to account for the offset of the virtualizer
- * in this case, the parent with overflow (the element over which the scroll happens) and the start of the virtualizer
- * don't match, because there are some elements rendered on top of the virtualizer.
- * This, will take care of adding more elements to the start of the virtualizer to account for the offset.
- */
-const withVirtualizerOffset = ({
-  scrollContainerRef,
-  virtualizerContainerRef,
-  range,
-}: {
-  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
-  virtualizerContainerRef: MutableRefObject<HTMLDivElement | null>
-  range: Range
-}) => {
-  const parentOffset = scrollContainerRef.current?.offsetTop ?? 0
-  const virtualizerOffset = virtualizerContainerRef.current?.offsetTop ?? 0
-  const virtualizerScrollMargin = virtualizerOffset - parentOffset
-  const topItemsOffset = Math.ceil(virtualizerScrollMargin / ITEM_HEIGHT)
-  const startIndexWithOffset = range.startIndex - topItemsOffset
-  const result = defaultRangeExtractor({
-    ...range,
-    // By modifying the startIndex, we are adding more elements to the start of the virtualizer
-    startIndex: startIndexWithOffset > 0 ? startIndexWithOffset : 0,
-  })
-  return result
-}
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
@@ -148,11 +115,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
-    getScrollElement: () => scrollContainerRef.current,
+    getScrollElement: () => virtualizerContainerRef.current,
     estimateSize: () => ITEM_HEIGHT,
-    overscan: 5,
-    rangeExtractor: (range) =>
-      withVirtualizerOffset({scrollContainerRef, virtualizerContainerRef, range}),
+    overscan: 1,
   })
 
   const rowActionColumnDef: Column = useMemo(
@@ -292,7 +257,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       })
     })
   }
-
+  console.log(rowVirtualizer.getVirtualItems())
   const tableContent = () => {
     if (loading) {
       return renderLoadingRows(renderRow)
@@ -315,24 +280,40 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <div ref={virtualizerContainerRef}>
+    <div
+      ref={virtualizerContainerRef}
+      style={{
+        height: 600,
+        width: '100%',
+        overflowY: 'auto',
+        contain: 'strict',
+      }}
+    >
       <div
-        style={
-          {
-            'width': '100%',
-            'position': 'relative',
-            '--maxInlineSize': rem(maxInlineSize),
-            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
-          } as CSSProperties
-        }
+        style={{
+          height: rowVirtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+        }}
       >
-        <Stack as="table">
-          <TableHeader
-            headers={headers}
-            searchDisabled={loading || (!searchTerm && !data.length)}
-          />
-          <Stack as="tbody">{tableContent()}</Stack>
-        </Stack>
+        <div
+          style={
+            {
+              'width': '100%',
+              'position': 'relative',
+              '--maxInlineSize': rem(maxInlineSize),
+              '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+            } as CSSProperties
+          }
+        >
+          <Stack as="table">
+            <TableHeader
+              headers={headers}
+              searchDisabled={loading || (!searchTerm && !data.length)}
+            />
+            <Stack as="tbody">{tableContent()}</Stack>
+          </Stack>
+        </div>
       </div>
     </div>
   )
