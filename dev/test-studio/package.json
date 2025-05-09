@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.87.1",
+  "version": "3.88.2",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -16,7 +16,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.23",
+    "@portabletext/block-tools": "^1.1.24",
     "@portabletext/editor": "^1.48.15",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.2.2",
@@ -31,13 +31,13 @@
     "@sanity/locale-nn-no": "^1.0.1",
     "@sanity/locale-pt-pt": "^1.0.1",
     "@sanity/locale-sv-se": "^1.0.1",
-    "@sanity/logos": "^2.1.2",
+    "@sanity/logos": "^2.2.0",
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.1.10",
     "@sanity/react-loader": "^1.10.35",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.15.16",
+    "@sanity/ui": "^2.15.17",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",

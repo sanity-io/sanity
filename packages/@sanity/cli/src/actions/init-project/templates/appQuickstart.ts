@@ -2,8 +2,8 @@ import {type ProjectTemplate} from '../initProject'
 
 const appTemplate: ProjectTemplate = {
   dependencies: {
-    '@sanity/sdk': '^0.0.0-rc',
-    '@sanity/sdk-react': '^0.0.0-rc',
+    '@sanity/sdk': '^1',
+    '@sanity/sdk-react': '^1',
     'react': '^19',
     'react-dom': '^19',
   },
