@@ -375,6 +375,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
+  /** Same Revision Selected description in the Review Changes pane */
+  'changes.same-revision-selected-description':
+    'You have selected the same <strong>from</strong> and <strong>to</strong> revision, please select different revisions to compare the changes between them.',
+  /** Same Revision Selected title in the Review Changes pane */
+  'changes.same-revision-selected-title': 'Same revision selected',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
   /**The title that will be shown in the badge inside the events when the item is a draft */
