@@ -1302,8 +1302,8 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^7.0.0
-        version: 7.0.0
+        specifier: ^7.1.0
+        version: 7.1.0(debug@4.4.0)
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../codegen
@@ -4713,10 +4713,6 @@ packages:
   '@sanity/client@6.29.0':
     resolution: {integrity: sha512-JybptwwKmuNpKhkA++WPXVpVKs94bcLUww2kIlaK84SBHtwkXlr10lLT/DqMj6+utj9mx8svby9dbAJ6u6YGBQ==}
     engines: {node: '>=14.18'}
-
-  '@sanity/client@7.0.0':
-    resolution: {integrity: sha512-Kr96rYNJpA/zSyYhio9tx3SvID1ew2Y4mICzHYe81xF1MdjZLdUf0BudRv+wSa1QxtQdBnY4hDZKA96BAYo5ng==}
-    engines: {node: '>=20'}
 
   '@sanity/client@7.1.0':
     resolution: {integrity: sha512-AQ9NV2iXSGKlWFywxT1bnLKUfyq6GnZvY0KJLZiob/12faOoWHXYOF/m1qevpahXaw0le2ytUfCbvwZMYZfH4g==}
@@ -15542,14 +15538,6 @@ snapshots:
   '@sanity/browserslist-config@1.0.5': {}
 
   '@sanity/client@6.29.0(debug@4.4.0)':
-    dependencies:
-      '@sanity/eventsource': 5.0.2
-      get-it: 8.6.7(debug@4.4.0)
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/client@7.0.0':
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.6.7(debug@4.4.0)
