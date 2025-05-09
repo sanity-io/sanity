@@ -753,8 +753,8 @@ importers:
         specifier: ^3.5.0
         version: 3.6.0(esbuild@0.21.5)
       get-it:
-        specifier: ^8.6.7
-        version: 8.6.7(debug@4.4.0)
+        specifier: ^8.6.8
+        version: 8.6.8(debug@4.4.0)
       groq-js:
         specifier: ^1.16.1
         version: 1.16.1
@@ -1560,8 +1560,8 @@ importers:
         specifier: ^12.6.3
         version: 12.9.7(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       get-it:
-        specifier: ^8.6.7
-        version: 8.6.7(debug@4.4.0)
+        specifier: ^8.6.8
+        version: 8.6.8(debug@4.4.0)
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -5377,9 +5377,6 @@ packages:
   '@types/prismjs@1.26.5':
     resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
 
-  '@types/progress-stream@2.0.5':
-    resolution: {integrity: sha512-5YNriuEZkHlFHHepLIaxzq3atGeav1qCTGzB74HKWpo66qjfostF+rHc785YYYHeBytve8ZG3ejg42jEIfXNiQ==}
-
   '@types/raf@3.4.3':
     resolution: {integrity: sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==}
 
@@ -7903,8 +7900,8 @@ packages:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
     engines: {node: '>= 0.4'}
 
-  get-it@8.6.7:
-    resolution: {integrity: sha512-AMEotvykAlcEPTPmYeZPqr9w3K53Ni8z1tplo1mwNS8T4i/gr5T7mSfvaLhhIQhF+0thIH901kLdDA5d5bvDGA==}
+  get-it@8.6.8:
+    resolution: {integrity: sha512-O2H5qFvFJ26XFnELV2/4y0YKpQVtlKisSrzmdL09L82ZuGoIGXGhtr1GWzt/BIrhxa38DWHNrSloU7dF/ZSQrQ==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@5.1.0:
@@ -10221,9 +10218,6 @@ packages:
     resolution: {integrity: sha512-69agxLtnI8xBs9gUGqEnK26UfiexpHy+KUpBQWabiytQjnn5wFY8rklAi7GRfABIuPNnQ/ik48+LGLkYYJcy4A==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  progress-stream@2.0.0:
-    resolution: {integrity: sha512-xJwOWR46jcXUq6EH9yYyqp+I52skPySOeHfkxOZ2IY1AiBi/sFJhbhAKHoV3OTw/omQ45KTio9215dRJ2Yxd3Q==}
-
   promise-all-reject-late@1.0.1:
     resolution: {integrity: sha512-vuf0Lf0lOxyQREH7GDIOUMLS7kz+gs8i6B+Yi8dC68a2sychGrHTJYghMBD6k7eUcH0H5P73EckCA48xijWqXw==}
 
@@ -11227,9 +11221,6 @@ packages:
     resolution: {integrity: sha512-1POYv7uv2gXoyGFpBCmpDVSNV74IfsWlDW216UPjbWufNf+bSU6GdbDsxdcxtfwb4xlI3yxzOTKClUosxARYrQ==}
     engines: {node: '>=0.10.0'}
 
-  speedometer@1.0.0:
-    resolution: {integrity: sha512-lgxErLl/7A5+vgIIXsh9MbeukOaCb2axgQ+bKCdIE+ibNT4XNYGNCR1qFEGq6F+YDASXK3Fh/c5FgtZchFolxw==}
-
   split-on-first@3.0.0:
     resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==}
     engines: {node: '>=12'}
@@ -11533,6 +11524,9 @@ packages:
 
   through2@3.0.2:
     resolution: {integrity: sha512-enaDQ4MUyP2W6ZyT6EsMzqBPZaM/avg8iuo+l2d3QCs0J+6RaqkHV/2/lOwDTueBHeJ/2LG9lrLW3d5rWPucuQ==}
+
+  through2@4.0.2:
+    resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -15366,7 +15360,7 @@ snapshots:
   '@sanity/client@6.29.1(debug@4.4.0)':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.7(debug@4.4.0)
+      get-it: 8.6.8(debug@4.4.0)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -15374,7 +15368,7 @@ snapshots:
   '@sanity/client@7.2.1(debug@4.4.0)':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.7(debug@4.4.0)
+      get-it: 8.6.8(debug@4.4.0)
       nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -15505,7 +15499,7 @@ snapshots:
       '@sanity/util': 3.68.3(@types/react@19.1.3)(debug@4.4.0)
       archiver: 7.0.1
       debug: 4.4.0(supports-color@9.4.0)
-      get-it: 8.6.7(debug@4.4.0)
+      get-it: 8.6.8(debug@4.4.0)
       json-stream-stringify: 2.0.4
       lodash: 4.17.21
       mississippi: 4.0.0
@@ -15570,7 +15564,7 @@ snapshots:
       '@sanity/uuid': 3.0.2
       debug: 4.4.0(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.6.7(debug@4.4.0)
+      get-it: 8.6.8(debug@4.4.0)
       get-uri: 2.0.4
       gunzip-maybe: 1.4.2
       is-tar: 1.0.0
@@ -16692,10 +16686,6 @@ snapshots:
   '@types/parse-path@7.0.3': {}
 
   '@types/prismjs@1.26.5': {}
-
-  '@types/progress-stream@2.0.5':
-    dependencies:
-      '@types/node': 22.13.1
 
   '@types/raf@3.4.3': {}
 
@@ -19740,21 +19730,20 @@ snapshots:
       hasown: 2.0.2
       math-intrinsics: 1.1.0
 
-  get-it@8.6.7(debug@4.4.0):
+  get-it@8.6.8(debug@4.4.0):
     dependencies:
       '@types/follow-redirects': 1.14.4
-      '@types/progress-stream': 2.0.5
       decompress-response: 7.0.0
       follow-redirects: 1.15.9(debug@4.4.0)
       is-retry-allowed: 2.2.0
-      progress-stream: 2.0.0
+      through2: 4.0.2
       tunnel-agent: 0.6.0
     transitivePeerDependencies:
       - debug
 
   get-latest-version@5.1.0(debug@4.4.0):
     dependencies:
-      get-it: 8.6.7(debug@4.4.0)
+      get-it: 8.6.8(debug@4.4.0)
       registry-auth-token: 5.1.0
       registry-url: 5.1.0
       semver: 7.7.1
@@ -22312,11 +22301,6 @@ snapshots:
 
   proggy@2.0.0: {}
 
-  progress-stream@2.0.0:
-    dependencies:
-      speedometer: 1.0.0
-      through2: 2.0.5
-
   promise-all-reject-late@1.0.1: {}
 
   promise-call-limit@3.0.2: {}
@@ -23592,8 +23576,6 @@ snapshots:
 
   speakingurl@14.0.1: {}
 
-  speedometer@1.0.0: {}
-
   split-on-first@3.0.0: {}
 
   split-string@3.1.0:
@@ -23995,6 +23977,10 @@ snapshots:
   through2@3.0.2:
     dependencies:
       inherits: 2.0.4
+      readable-stream: 3.6.2
+
+  through2@4.0.2:
+    dependencies:
       readable-stream: 3.6.2
 
   through@2.3.8: {}
