@@ -50,10 +50,6 @@ function normalizeUrl(url: string): string {
   }
 }
 
-// TODO
-// -saving behavior - be explicit that things have changed & need to be saved
-// -check typing for url parser and state setter
-
 export function QueryRecall({
   url,
   getStateFromUrl,
