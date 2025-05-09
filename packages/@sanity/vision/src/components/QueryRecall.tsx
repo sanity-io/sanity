@@ -61,10 +61,16 @@ export function QueryRecall({
   url,
   getStateFromUrl,
   setStateFromParsedUrl,
+  currentQuery,
+  currentParams,
+  generateUrl,
 }: {
   url?: string
   getStateFromUrl: (data: string) => ParsedUrlState | null
   setStateFromParsedUrl: (parsedUrlObj: ParsedUrlState) => void
+  currentQuery: string
+  currentParams: Record<string, unknown>
+  generateUrl: (query: string, params: Record<string, unknown>) => string
 }): ReactElement {
   const toast = useToast()
   const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
@@ -79,26 +85,46 @@ export function QueryRecall({
   // const [optimisticShared, setOptimisticShared] = useState<Record<string, boolean>>({})
 
   const handleSave = useCallback(async () => {
-    const normalizedUrl = url ? normalizeUrl(url) : undefined
-    const normalizedQueryUrls = queries?.map((q) => normalizeUrl(q.url)) || []
-    if (normalizedUrl && normalizedQueryUrls.includes(normalizedUrl)) {
+    // Generate the correct URL first
+    const newUrl = generateUrl(currentQuery, currentParams)
+
+    // Check for duplicates by comparing query content and params
+    const isDuplicate = queries?.some((q) => {
+      const savedQueryObj = getStateFromUrl(q.url)
+      return (
+        savedQueryObj &&
+        savedQueryObj.query === currentQuery &&
+        isEqual(savedQueryObj.params, currentParams)
+      )
+    })
+
+    if (isDuplicate) {
+      const duplicateQuery = queries?.find((q) => {
+        const savedQueryObj = getStateFromUrl(q.url)
+        return (
+          savedQueryObj &&
+          savedQueryObj.query === currentQuery &&
+          isEqual(savedQueryObj.params, currentParams)
+        )
+      })
       toast.push({
         closable: true,
         status: 'warning',
         title: t('save-query.already-saved'),
-        description: `${queries.find((q) => normalizeUrl(q.url) === normalizedUrl)?.title} - ${formatDate(
-          queries.find((q) => normalizeUrl(q.url) === normalizedUrl)?.savedAt || '',
-        )}`,
+        description: `${duplicateQuery?.title} - ${formatDate(duplicateQuery?.savedAt || '')}`,
       })
       return
     }
-    if (url) {
+
+    if (newUrl) {
       // @ts-expect-error why doesn't Omit work?
-      await saveQuery({
-        url,
+      const savedQuery = await saveQuery({
+        url: newUrl,
         savedAt: new Date().toISOString(),
         title: 'Untitled',
       })
+      // Set the selected URL to the newly saved query's URL
+      setSelectedUrl(newUrl)
     }
     if (saveQueryError) {
       toast.push({
@@ -114,7 +140,17 @@ export function QueryRecall({
         title: t('save-query.success'),
       })
     }
-  }, [queries, url, saveQuery, saveQueryError, toast, t])
+  }, [
+    queries,
+    saveQuery,
+    saveQueryError,
+    toast,
+    t,
+    currentQuery,
+    currentParams,
+    getStateFromUrl,
+    generateUrl,
+  ])
 
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
@@ -189,9 +225,13 @@ export function QueryRecall({
         {filteredQueries?.map((q) => {
           // console.log('q', q.url === url)
           const queryObj = getStateFromUrl(q.url)
-          const queryStateObj = getStateFromUrl(url)
           const isSelected = selectedUrl === q.url
-          const isEdited = isSelected && !isEqual(queryStateObj, queryObj)
+
+          // Compare against current live state
+          const areQueriesEqual =
+            queryObj && currentQuery === queryObj.query && isEqual(currentParams, queryObj.params)
+
+          const isEdited = isSelected && !areQueriesEqual
           return (
             <Card
               key={q._key}

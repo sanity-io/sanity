@@ -576,6 +576,19 @@ export function VisionGui(props: VisionGuiProps) {
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
+
+  const generateUrl = useCallback(
+    (queryString: string, queryParams: Record<string, unknown>) => {
+      const urlQueryOpts: Record<string, string | string[]> = {
+        perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}) ?? [],
+      }
+      return client.getUrl(
+        client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
+      )
+    },
+    [client, perspective, perspectiveStack],
+  )
+
   return (
     <Root
       direction="column"
@@ -606,6 +619,9 @@ export function VisionGui(props: VisionGuiProps) {
             url={url}
             getStateFromUrl={getStateFromUrl}
             setStateFromParsedUrl={setStateFromParsedUrl}
+            currentQuery={query}
+            currentParams={params.parsed || {}}
+            generateUrl={generateUrl}
           />
           {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
           <SplitPane split={isNarrowBreakpoint ? 'vertical' : 'horizontal'} minSize={300}>
