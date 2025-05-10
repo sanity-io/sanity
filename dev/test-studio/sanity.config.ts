@@ -45,6 +45,8 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
+import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
@@ -189,6 +191,8 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       tsdoc(),
       media(),
       markdownSchema(),
+      wave(),
+      autoCloseBrackets(),
     ],
   })()
 }
