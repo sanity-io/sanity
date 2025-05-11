@@ -7,6 +7,7 @@ import {
   Flex,
   Menu,
   MenuButton,
+  MenuItem,
   Stack,
   Text,
   TextInput,
@@ -356,26 +357,35 @@ export function QueryRecall({
                     button={<EllipsisVerticalIcon />}
                     id={`${q._key}-menu`}
                     menu={
-                      <Menu>
-                        <Button
-                          mode="bleed"
-                          tone="critical"
-                          width="fill"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            deleteQuery(q._key)
-                          }}
-                          disabled={deleting.includes(q._key)}
+                      <Menu
+                        style={{background: 'white', backgroundColor: 'white', borderRadius: '11%'}}
+                      >
+                        <MenuItem
+                          padding={0}
+                          radius={3}
+                          style={{background: 'transparent', backgroundColor: 'transparent'}}
                         >
-                          <Flex align="center" gap={2} padding={1}>
-                            <Box
-                              style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
-                            >
-                              <TrashIcon />
-                            </Box>
-                            <Text size={1}>{t('action.delete')}</Text>
-                          </Flex>
-                        </Button>
+                          <Button
+                            mode="bleed"
+                            style={{background: 'transparent', backgroundColor: 'transparent'}}
+                            tone="critical"
+                            width="fill"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              deleteQuery(q._key)
+                            }}
+                            disabled={deleting.includes(q._key)}
+                          >
+                            <Flex align="center" gap={2} padding={1}>
+                              <Box
+                                style={{fontSize: '1.25em', display: 'flex', alignItems: 'center'}}
+                              >
+                                <TrashIcon />
+                              </Box>
+                              <Text size={1}>{t('action.delete')}</Text>
+                            </Flex>
+                          </Button>
+                        </MenuItem>
                       </Menu>
                     }
                     popover={{portal: true, placement: 'bottom-end'}}
