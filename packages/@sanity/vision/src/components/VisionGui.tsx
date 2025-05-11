@@ -572,7 +572,7 @@ export function VisionGui(props: VisionGuiProps) {
       setPerspective('pinnedRelease')
     }
   })
-  // // Handle pinned perspective changes
+  // Handle pinned perspective changes
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
@@ -614,7 +614,77 @@ export function VisionGui(props: VisionGuiProps) {
       />
 
       <SplitpaneContainer flex="auto">
-        <SplitPane minSize={280} defaultSize={340} maxSize={-400}>
+        <SplitPane
+          minSize={800}
+          defaultSize={window.innerWidth - 275}
+          maxSize={-225}
+          primary="first"
+        >
+          <Box height="stretch" flex={1}>
+            <SplitPane
+              className="sidebarPanes"
+              /* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */
+              split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
+              minSize={300}
+            >
+              <Box height="stretch" flex={1}>
+                <SplitPane
+                  className="sidebarPanes"
+                  split="horizontal"
+                  defaultSize={
+                    isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+                  }
+                  size={paneSizeOptions.size}
+                  allowResize={paneSizeOptions.allowResize}
+                  minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
+                  maxSize={paneSizeOptions.maxSize}
+                  primary="first"
+                >
+                  <InputContainer display="flex" data-testid="vision-query-editor">
+                    <Box flex={1}>
+                      <InputBackgroundContainerLeft>
+                        <Flex>
+                          <StyledLabel muted>{t('query.label')}</StyledLabel>
+                        </Flex>
+                      </InputBackgroundContainerLeft>
+                      <VisionCodeMirror
+                        initialValue={query}
+                        onChange={setQuery}
+                        ref={editorQueryRef}
+                      />
+                    </Box>
+                  </InputContainer>
+                  <InputContainer display="flex">
+                    <ParamsEditor
+                      value={params.raw}
+                      onChange={handleParamsChange}
+                      paramsError={params.error}
+                      hasValidParams={params.valid}
+                      editorRef={editorParamsRef}
+                    />
+
+                    <VisionGuiControls
+                      hasValidParams={params.valid}
+                      queryInProgress={queryInProgress}
+                      listenInProgress={listenInProgress}
+                      onQueryExecution={handleQueryExecution}
+                      onListenExecution={handleListenExecution}
+                    />
+                  </InputContainer>
+                </SplitPane>
+              </Box>
+              <VisionGuiResult
+                error={error}
+                queryInProgress={queryInProgress}
+                queryResult={queryResult}
+                listenInProgress={listenInProgress}
+                listenMutations={listenMutations}
+                dataset={dataset}
+                queryTime={queryTime}
+                e2eTime={e2eTime}
+              />
+            </SplitPane>
+          </Box>
           <QueryRecall
             url={url}
             getStateFromUrl={getStateFromUrl}
@@ -623,65 +693,6 @@ export function VisionGui(props: VisionGuiProps) {
             currentParams={params.parsed || {}}
             generateUrl={generateUrl}
           />
-          {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */}
-          <SplitPane split={isNarrowBreakpoint ? 'vertical' : 'horizontal'} minSize={300}>
-            <Box height="stretch" flex={1}>
-              <SplitPane
-                className="sidebarPanes"
-                split="horizontal"
-                defaultSize={
-                  isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-                }
-                size={paneSizeOptions.size}
-                allowResize={paneSizeOptions.allowResize}
-                minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
-                maxSize={paneSizeOptions.maxSize}
-                primary="first"
-              >
-                <InputContainer display="flex" data-testid="vision-query-editor">
-                  <Box flex={1}>
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('query.label')}</StyledLabel>
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <VisionCodeMirror
-                      initialValue={query}
-                      onChange={setQuery}
-                      ref={editorQueryRef}
-                    />
-                  </Box>
-                </InputContainer>
-                <InputContainer display="flex">
-                  <ParamsEditor
-                    value={params.raw}
-                    onChange={handleParamsChange}
-                    paramsError={params.error}
-                    hasValidParams={params.valid}
-                    editorRef={editorParamsRef}
-                  />
-
-                  <VisionGuiControls
-                    hasValidParams={params.valid}
-                    queryInProgress={queryInProgress}
-                    listenInProgress={listenInProgress}
-                    onQueryExecution={handleQueryExecution}
-                    onListenExecution={handleListenExecution}
-                  />
-                </InputContainer>
-              </SplitPane>
-            </Box>
-            <VisionGuiResult
-              error={error}
-              queryInProgress={queryInProgress}
-              queryResult={queryResult}
-              listenInProgress={listenInProgress}
-              listenMutations={listenMutations}
-              dataset={dataset}
-              queryTime={queryTime}
-              e2eTime={e2eTime}
-            />
-          </SplitPane>
         </SplitPane>
       </SplitpaneContainer>
     </Root>

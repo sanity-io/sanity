@@ -403,13 +403,12 @@ export function QueryRecall({
                       bottom: '16px',
                       fontSize: '12px',
                     }}
+                    text={t('action.update')}
                     onClick={(e) => {
                       e.stopPropagation()
                       handleUpdate(q)
                     }}
-                  >
-                    {t('action.update')}
-                  </Button>
+                  />
                 )}
               </Stack>
             </Card>
