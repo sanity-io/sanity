@@ -87,6 +87,14 @@ export interface Divider {
    */
   id: string
   type: 'divider'
+  /**
+   * The divider's title
+   */
+  title?: string
+  /**
+   * The i18n key and namespace used to populate the localized title
+   */
+  i18n?: I18nTextRecord<'title'>
 }
 
 /**

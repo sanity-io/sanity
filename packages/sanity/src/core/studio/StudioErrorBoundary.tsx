@@ -1,26 +1,17 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-import {Box, Card, Code, Container, type ErrorBoundaryProps, Heading, Stack, Text} from '@sanity/ui'
-import {isObject} from 'lodash'
-import {
-  type ComponentType,
-  type ErrorInfo,
-  lazy,
-  type ReactNode,
-  useCallback,
-  useState,
-} from 'react'
-import {styled} from 'styled-components'
+import {type ErrorBoundaryProps} from '@sanity/ui'
+import {lazy, type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components'
-import {ErrorActions} from '../components/errorActions/ErrorActions'
 import {SchemaError} from '../config'
-import {isDev, isProd} from '../environment'
 import {errorReporter} from '../error/errorReporter'
+import {isImportError} from '../error/isImportError'
 import {CorsOriginError} from '../store'
-import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
+import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
+import {ImportErrorScreen} from './screens/ImportErrorScreen'
 
 /**
  * The DevServerStoppedErrorScreen will always have been lazy loaded to client
@@ -38,104 +29,76 @@ interface StudioErrorBoundaryProps {
   heading?: string
 }
 
-type ErrorBoundaryState =
-  | {
-      componentStack: null
-      error: null
-      eventId: null
-    }
-  | {
-      componentStack: ErrorInfo['componentStack']
-      error: Error
-      eventId: string | null
-    }
+type ErrorBoundaryState = {
+  componentStack?: string | null
+  error?: Error
+  eventId?: string
+}
 
-const INITIAL_STATE = {
-  componentStack: null,
-  error: null,
-  eventId: null,
-} satisfies ErrorBoundaryState
-
-const View = styled(Box)`
-  align-items: center;
-`
-
-export const StudioErrorBoundary: ComponentType<StudioErrorBoundaryProps> = ({
-  children,
-  heading = 'An error occurred',
-}) => {
-  const [{error, eventId}, setError] = useState<ErrorBoundaryState>(INITIAL_STATE)
-  const message = isRecord(error) && typeof error.message === 'string' && error.message
-  const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
-  const handleResetError = useCallback(() => setError(INITIAL_STATE), [])
+/**
+ * This is responsible for handling all errors that may happen in a React Subtree of a Studio application.
+ * Note: there might be several instances of this component mounted in the React tree, avoid writing code that
+ * assumes there's only one at any given time.
+ * This will only catch errors that happens in the React effect/render layer, and will not catch errors that happens outside React-land, including the following:
+ * - Errors happening in a React event handler (i.e. onClick)
+ * - Async errors/promise rejections (i.e. fetch(), setTimeout()) even if initially triggered by React
+ * @param props - {@link StudioErrorBoundaryProps}
+ */
+export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
+  const {children, heading = 'An error occurred'} = props
+  const [caughtError, setCaughtError] = useState<ErrorBoundaryState>()
+  const handleResetError = useCallback(() => setCaughtError(undefined), [])
   const handleCatchError: ErrorBoundaryProps['onCatch'] = useCallback((params) => {
-    const report = errorReporter.reportError(params.error, {
-      reactErrorInfo: params.info,
-      errorBoundary: 'StudioErrorBoundary',
-    })
-
-    setError({
+    let eventId: string | undefined
+    try {
+      eventId = errorReporter.reportError(params.error, {
+        reactErrorInfo: params.info,
+        errorBoundary: 'StudioErrorBoundary',
+      })?.eventId
+    } catch (e) {
+      e.message = `Encountered an additional error when reporting error: ${e.message}`
+      console.error(e)
+    }
+    setCaughtError({
       error: params.error,
       componentStack: params.info.componentStack,
-      eventId: report?.eventId || null,
+      eventId,
     })
   }, [])
 
   useHotModuleReload(handleResetError)
 
-  if (error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={error?.projectId} />
+  if (!caughtError?.error) {
+    return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
   }
 
-  if (error instanceof SchemaError) {
-    return <SchemaErrorsScreen schema={error.schema} />
+  if (caughtError.error instanceof CorsOriginError) {
+    return <CorsOriginErrorScreen projectId={caughtError.error.projectId} />
+  }
+
+  if (caughtError.error instanceof SchemaError) {
+    return <SchemaErrorsScreen schema={caughtError.error.schema} />
   }
 
   if (
-    error &&
-    isObject(error) &&
-    'ViteDevServerStoppedError' in error &&
-    error.ViteDevServerStoppedError
+    'ViteDevServerStoppedError' in caughtError.error &&
+    caughtError.error.ViteDevServerStoppedError
   ) {
     return <DevServerStoppedErrorScreen />
   }
 
-  if (!error) {
-    return <ErrorBoundary onCatch={handleCatchError}>{children}</ErrorBoundary>
+  if (isImportError(caughtError.error)) {
+    // We auto-reload here under the assumption that an import error is caused by React.lazy import failing
+    // is likely caused by a new deployment.
+    return <ImportErrorScreen error={caughtError.error} eventId={caughtError.eventId} autoReload />
   }
 
   return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
-      <View display="flex" height="fill">
-        <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
-              <Heading>{heading}</Heading>
-              <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
-              {isProd && (
-                <Text>
-                  <strong>To report this error,</strong> copy the error details and share them with
-                  your development team or Sanity Support.
-                </Text>
-              )}
-              {isDev && (
-                <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
-                    {message && (
-                      <Code weight={'bold'} size={1}>
-                        {message}
-                      </Code>
-                    )}
-                    {stack && <Code size={1}>{stack}</Code>}
-                    {eventId && <Code size={1}>Event ID: {eventId}</Code>}
-                  </Stack>
-                </Card>
-              )}
-            </Stack>
-            <ErrorActions error={error} eventId={eventId} onRetry={handleResetError} size="large" />
-          </Stack>
-        </Container>
-      </View>
-    </Card>
+    <FallbackErrorScreen
+      heading={heading}
+      error={caughtError.error}
+      eventId={caughtError.eventId}
+      onReset={handleResetError}
+    />
   )
 }
