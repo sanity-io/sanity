@@ -6,7 +6,8 @@ import {
   type MutationEvent,
   type StackablePerspective,
 } from '@sanity/client'
-import {Box, Flex, useToast} from '@sanity/ui'
+import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, usePerspective, useTranslation} from 'sanity'
@@ -153,6 +154,7 @@ export function VisionGui(props: VisionGuiProps) {
   const [e2eTime, setE2eTime] = useState<number | undefined>(undefined)
   const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
   const [listenInProgress, setListenInProgress] = useState<boolean>(false)
+  const [isQueryRecallCollapsed, setIsQueryRecallCollapsed] = useState(false)
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
@@ -617,13 +619,14 @@ export function VisionGui(props: VisionGuiProps) {
         <SplitPane
           minSize={800}
           defaultSize={window.innerWidth - 275}
+          size={isQueryRecallCollapsed ? window.innerWidth : window.innerWidth - 275}
           maxSize={-225}
           primary="first"
         >
           <Box height="stretch" flex={1}>
             <SplitPane
               className="sidebarPanes"
-              /* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals */
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >
@@ -685,14 +688,33 @@ export function VisionGui(props: VisionGuiProps) {
               />
             </SplitPane>
           </Box>
-          <QueryRecall
-            url={url}
-            getStateFromUrl={getStateFromUrl}
-            setStateFromParsedUrl={setStateFromParsedUrl}
-            currentQuery={query}
-            currentParams={params.parsed || {}}
-            generateUrl={generateUrl}
-          />
+          <Box style={{position: 'relative', height: '100%'}}>
+            <Button
+              mode="ghost"
+              padding={2}
+              style={{
+                position: 'absolute',
+                left: -32,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 100,
+                pointerEvents: 'auto',
+              }}
+              onClick={() => setIsQueryRecallCollapsed(!isQueryRecallCollapsed)}
+            >
+              <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
+                {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </div>
+            </Button>
+            <QueryRecall
+              url={url}
+              getStateFromUrl={getStateFromUrl}
+              setStateFromParsedUrl={setStateFromParsedUrl}
+              currentQuery={query}
+              currentParams={params.parsed || {}}
+              generateUrl={generateUrl}
+            />
+          </Box>
         </SplitPane>
       </SplitpaneContainer>
     </Root>
