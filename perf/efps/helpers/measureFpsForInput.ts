@@ -21,7 +21,7 @@ export async function measureFpsForInput({
   console.log(`Looking for field: ${fieldName}`)
   // eslint-disable-next-line no-console
   console.log(
-    `Selector: [data-testid="field-${fieldName}"] input[type="text"], [data-testid="field-${fieldName}"] textarea`,
+    `Selector: [data-testid="${fieldName}"] input[type="text"], [data-testid="${fieldName}"] textarea`,
   )
 
   // Log the page HTML to see what's actually rendered
@@ -31,8 +31,7 @@ export async function measureFpsForInput({
 
   const input = page
     .locator(
-      `[data-testid="field-${fieldName}"] input[type="text"], ` +
-        `[data-testid="field-${fieldName}"] textarea`,
+      `[data-testid="${fieldName}"] input[type="text"], [data-testid="${fieldName}"] textarea`,
     )
     .first()
 
