@@ -7,7 +7,6 @@ import {
 } from '@sanity/types'
 import {startCase} from 'lodash'
 
-import {sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 import {getSupportedFieldTypes, type SearchFilterDefinition} from './filters'
 
@@ -111,8 +110,8 @@ function getDocumentFieldDefinitions(
   }) {
     const continueRecursion = depth <= MAX_OBJECT_TRAVERSAL_DEPTH
     const isInternalField = defType.name.startsWith('_')
-    // Sanitize schema titles (which may either be a string or React element)
-    const title = defType?.title ? sanitizeFieldValue(defType.title) : startCase(defType.name)
+    // Fall back to the field name if a React component is used as its title.
+    const title = typeof defType?.title === 'string' ? defType.title : startCase(defType.name)
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
     const titlePath = prevTitlePath ? [...prevTitlePath, title] : [title]
 

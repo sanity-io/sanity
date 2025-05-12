@@ -1,9 +1,10 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
+import {InnerText, type TransformInnerText} from '../../../../../../../../components/InnerText'
 import {useSchema} from '../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../i18n'
 import {isNonNullable, truncateString} from '../../../../../../../../util'
@@ -11,7 +12,6 @@ import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {type SearchFieldDefinition} from '../../../../definitions/fields'
 import {type SearchFilterDefinition} from '../../../../definitions/filters'
 import {getSchemaField} from '../../../../utils/getSchemaField'
-import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
 
 interface FilterTooltipProps {
   children: React.JSX.Element
@@ -48,6 +48,11 @@ export function FilterTooltip({
     return []
   }, [fieldDefinition?.documentTypes, schema])
 
+  const truncateDescription = useCallback<TransformInnerText>(
+    (innerText) => truncateString(innerText ?? '', 256),
+    [],
+  )
+
   /**
    * Obtain the shared field description for the current field definition.
    * Return a description only if this field description is identical (and defined)
@@ -60,8 +65,12 @@ export function FilterTooltip({
           const defType = schema.get(d)
           if (defType) {
             const field = getSchemaField(defType, fieldDefinition.fieldPath)
-            // Sanitize schema descriptions (which may either be a string or React element)
-            return field?.type.description && sanitizeFieldValue(field?.type.description)
+            // Render a textual representation of the schema description (which may either be a string or React element)
+            return (
+              field?.type.description && (
+                <InnerText transform={truncateDescription}>{field?.type.description}</InnerText>
+              )
+            )
           }
           return null
         })
@@ -74,7 +83,7 @@ export function FilterTooltip({
       }
     }
     return undefined
-  }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema])
+  }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema, truncateDescription])
 
   return (
     <Tooltip
@@ -105,7 +114,7 @@ export function FilterTooltip({
                   {t('search.filter-field-tooltip-description')}
                 </Text>
                 <Text muted size={1}>
-                  {truncateString(fieldDefinitionDescription, 256)}
+                  {fieldDefinitionDescription}
                 </Text>
               </Stack>
             )}
