@@ -214,7 +214,7 @@ describe('createFieldDefinitions', () => {
     expect(fieldDefs[0].filterName).toEqual('arrayList')
   })
 
-  it('should correctly sanitize titles containing React components', () => {
+  it('should use the field name for titles containing React components', () => {
     const mockSchema = Schema.compile({
       name: 'default',
       types: [
@@ -241,7 +241,7 @@ describe('createFieldDefinitions', () => {
     })
 
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
-    expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
+    expect(fieldDefs[0].title).toEqual('Title')
   })
 })
 
