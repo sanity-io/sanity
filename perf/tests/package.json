@@ -29,7 +29,7 @@
     "@repo/test-config": "workspace:*",
     "@types/lodash": "^4.17.7",
     "@types/node": "^18.15.3",
-    "esbuild": "0.21.5",
+    "esbuild": "0.25.4",
     "ts-node": "^10.9.2",
     "typescript": "5.8.3",
     "vitest": "^3.1.1"
