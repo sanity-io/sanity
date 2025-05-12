@@ -42,14 +42,10 @@ export async function measureFpsForInput({
     console.error('Failed to find input element:', error)
     // Log all elements with data-testid attributes to see what's available
     const allTestIds = await page.$$('[data-testid]')
-
     // eslint-disable-next-line no-console
-    process.stdout.write(
-      JSON.stringify(
-        `All elements with data-testid:${await Promise.all(
-          allTestIds.map((el) => el.getAttribute('data-testid')),
-        )}`,
-      ),
+    console.log(
+      'All elements with data-testid:',
+      await Promise.all(allTestIds.map((el) => el.getAttribute('data-testid'))),
     )
 
     throw error
