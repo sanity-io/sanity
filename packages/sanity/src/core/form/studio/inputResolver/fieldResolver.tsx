@@ -114,28 +114,27 @@ function PrimitiveField(field: FieldProps) {
         focused={focused}
         path={field.path}
       >
-        <div data-testid={`field-${field.inputId}`}>
-          <FormField
-            __internal_slot={field.__internal_slot}
-            __internal_comments={field.__internal_comments}
-            __unstable_headerActions={fieldActionsNodes}
-            __unstable_presence={field.presence}
-            description={field.description}
-            inputId={field.inputId}
-            level={field.level}
-            title={field.title}
-            validation={field.validation}
-            deprecated={field.schemaType.deprecated}
+        <FormField
+          __internal_slot={field.__internal_slot}
+          __internal_comments={field.__internal_comments}
+          __unstable_headerActions={fieldActionsNodes}
+          __unstable_presence={field.presence}
+          description={field.description}
+          inputId={field.inputId}
+          level={field.level}
+          title={field.title}
+          validation={field.validation}
+          deprecated={field.schemaType.deprecated}
+          data-testid={`field-${field.inputId}`}
+        >
+          <ChangeIndicator
+            hasFocus={focused}
+            isChanged={field.inputProps.changed}
+            path={field.path}
           >
-            <ChangeIndicator
-              hasFocus={focused}
-              isChanged={field.inputProps.changed}
-              path={field.path}
-            >
-              {field.children}
-            </ChangeIndicator>
-          </FormField>
-        </div>
+            {field.children}
+          </ChangeIndicator>
+        </FormField>
       </FieldActionsProvider>
     </>
   )
