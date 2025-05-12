@@ -106,11 +106,6 @@
       "schedule": ["every weekday"]
     },
     {
-      "description": "ESBuild 0.23 drops support for Windows 7 and 8, for now we don't want renovate to open PRs to bump them",
-      "allowedVersions": "<=0.21",
-      "matchPackageNames": ["esbuild"]
-    },
-    {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
       "matchPackageNames": ["@sanity/pkg-utils", "@sanity/tsdoc", "typescript"]
