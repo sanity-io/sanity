@@ -16,11 +16,11 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.24",
+    "@portabletext/block-tools": "^1.1.25",
     "@portabletext/editor": "^1.48.15",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.2.2",
-    "@sanity/client": "^7.1.0",
+    "@sanity/client": "^7.2.1",
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
