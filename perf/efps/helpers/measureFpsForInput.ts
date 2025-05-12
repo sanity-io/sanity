@@ -17,13 +17,44 @@ export async function measureFpsForInput({
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
 
+  // eslint-disable-next-line no-console
+  console.log(`Looking for field: ${fieldName}`)
+  // eslint-disable-next-line no-console
+  console.log(
+    `Selector: [data-testid="${fieldName}"] input[type="text"], [data-testid="${fieldName}"] textarea`,
+  )
+
+  // Log the page HTML to see what's actually rendered
+  const pageContent = await page.content()
+  // eslint-disable-next-line no-console
+  console.log('Page HTML:', pageContent)
+
   const input = page
     .locator(
       `[data-testid="field-${fieldName}"] input[type="text"], ` +
         `[data-testid="field-${fieldName}"] textarea`,
     )
     .first()
-  await input.waitFor({state: 'visible'})
+
+  try {
+    await input.waitFor({state: 'visible', timeout: 60000})
+  } catch (error) {
+    console.error('Failed to find input element:', error)
+    // Log all elements with data-testid attributes to see what's available
+    const allTestIds = await page.$$('[data-testid]')
+
+    // eslint-disable-next-line no-console
+    process.stdout.write(
+      JSON.stringify(
+        `All elements with data-testid:${await Promise.all(
+          allTestIds.map((el) => el.getAttribute('data-testid')),
+        )}`,
+      ),
+    )
+
+    throw error
+  }
+
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()
