@@ -39,7 +39,7 @@ export function BasicDocument(props: BasicDocumentProps): JSX.Element {
         <meta name="referrer" content="same-origin" />
 
         <Favicons />
-        <title>Sanity CORE App</title>
+        <title>Sanity SDK App</title>
         <GlobalErrorHandler />
 
         {css.map((href) => (
