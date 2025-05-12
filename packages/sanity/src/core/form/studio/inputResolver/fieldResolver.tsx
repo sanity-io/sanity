@@ -94,6 +94,7 @@ function PrimitiveField(field: FieldProps) {
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
 
+  console.log('PrimitiveField')
   return (
     <>
       {documentId && field.actions && field.actions.length > 0 && (
