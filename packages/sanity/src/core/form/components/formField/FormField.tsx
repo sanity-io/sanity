@@ -72,6 +72,7 @@ export const FormField = memo(function FormField(
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       space={2}
+      data-testid={`field-${inputId}`}
     >
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
