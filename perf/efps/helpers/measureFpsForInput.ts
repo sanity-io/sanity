@@ -31,7 +31,8 @@ export async function measureFpsForInput({
 
   const input = page
     .locator(
-      `[data-testid="${fieldName}"] input[type="text"], [data-testid="${fieldName}"] textarea`,
+      `[data-testid="field-${fieldName}"] input[type="text"], ` +
+        `[data-testid="field-${fieldName}"] textarea`,
     )
     .first()
 
