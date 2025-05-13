@@ -6,27 +6,29 @@ Arguments
 
 Options
   --name, -n <name>              Name of the Resource
-  --fn-type <type>               Type of Function Resource to add (e.g. document-publish)
-  --fn-language, --lang <ts|js>  Language of the Function Resource
-  --js, --javascript             Use JavaScript for the Function Resource
-  --fn-installer, --installer    <npm|pnpm|yarn> to use for Function helpers
-  --install, -i                  Shortcut for --fn-installer npm
-  --no-fn-helpers                Do not add helpers to the Function Resource
+  --fn-type <type>               Type of Function to add (e.g. document-publish)
+  --fn-language, --lang <ts|js>  Language of the Function. Default: "ts"
+  --js, --javascript             Shortcut for --fn-language=js
+  --fn-helpers, --helpers        Add helpers to the Function
+  --no-fn-helpers                Do not add helpers to the Function
+  --fn-installer,                Package manager to use for Function helpers
+    --installer <npm|pnpm|yarn>    sets --fn-helpers to true
+  --install, -i                  Shortcut for --fn-installer=npm
 
 Examples:
-  # Add a Function Resource (TypeScript by default)
+  # Add a Function (TypeScript by default)
   sanity blueprints add function
 
-  # Add a Function Resource with a specific name
-  sanity blueprints add function --name my-function
+  # Add a Function with a specific name and install helpers with npm
+  sanity blueprints add function --name my-function -i
 
-  # Add a Function Resource with a specific type
-  sanity blueprints add function --name my-function --fn-type document-publish
+  # Add a Function with a specific type
+  sanity blueprints add function --fn-type document-publish
 
-  # Add a Function Resource in JavaScript
-  sanity blueprints add function --name my-function --fn-type document-publish --js
+  # Add a JavaScript Function
+  sanity blueprints add function --js
 
-  # Add a Function Resource without helpers
+  # Add a Function without helpers
   sanity blueprints add function --no-fn-helpers
 
   # Add a document-publish .js Function with helpers and install with npm
@@ -40,8 +42,6 @@ export interface BlueprintsAddFlags {
   'fn-type'?: string
 
   'fn-language'?: string
-  'fn-lang'?: string
-  'language'?: string
   'lang'?: string
 
   'js'?: boolean
@@ -49,6 +49,7 @@ export interface BlueprintsAddFlags {
 
   'fn-helpers'?: boolean
   'helpers'?: boolean
+  'no-fn-helpers'?: boolean
 
   'fn-installer'?: string
   'installer'?: string
@@ -92,11 +93,14 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const cmdConfig = await initBlueprintConfig('sanity', (msg: string) => output.print(msg), token)
+    const bin = 'sanity'
+    const log = (msg: string) => output.print(msg)
+    const cmdConfig = await initBlueprintConfig(bin, log, token)
 
-    if (!cmdConfig.ok) {
-      throw new Error(cmdConfig.error)
-    }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
+    if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
 
     const {success, error} = await blueprintAddCore({
       ...cmdConfig.value,
@@ -104,9 +108,9 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       flags: {
         'name': flags.n ?? flags.name,
         'fn-type': flags['fn-type'],
-        'language': flags.lang ?? flags.language ?? flags['fn-lang'] ?? flags['fn-language'],
+        'language': flags.lang ?? flags['fn-language'],
         'javascript': flags.js || flags.javascript,
-        'fn-helpers': flags.helpers || flags['fn-helpers'],
+        'fn-helpers': userWantsFnHelpers,
         'fn-installer': flags.installer ?? flags['fn-installer'],
         'install': flags.i || flags.install,
       },

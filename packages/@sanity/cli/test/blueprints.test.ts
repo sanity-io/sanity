@@ -34,6 +34,15 @@ const localBlueprint = {
 vi.mock('@sanity/runtime-cli/actions/blueprints', () => ({
   getBlueprintAndStack: vi.fn().mockResolvedValue({localBlueprint}),
 }))
+vi.mock('@sanity/runtime-cli/cores', () => ({
+  initBlueprintConfig: vi.fn().mockResolvedValue({
+    ok: true,
+    value: {
+      bin: 'sanity',
+      log: vi.fn(),
+    },
+  }),
+}))
 
 describe('blueprints commands', () => {
   it('should be a set of commands', async () => {
@@ -80,6 +89,7 @@ describe('blueprints commands', () => {
           'name': 'test-function',
           'fn-type': 'document-publish',
           'lang': 'ts',
+          'no-fn-helpers': true,
         },
       }
 
@@ -95,6 +105,7 @@ describe('blueprints commands', () => {
           'fn-type': 'document-publish',
           'language': 'ts',
           'javascript': undefined,
+          'fn-helpers': false,
         },
       })
     })

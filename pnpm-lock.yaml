@@ -726,8 +726,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^7.0.1
-        version: 7.0.1(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)
+        specifier: ^7.0.2
+        version: 7.0.2(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.0)
@@ -4747,8 +4747,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@7.0.1':
-    resolution: {integrity: sha512-W2c4Uum1eJedMtPXoNu+gfYMR7GLGPcFRDwZPj0cPyL4Gf4sXX54nQSIsItQrv6aEndWmArohwpNlZ2ExjtPsA==}
+  '@sanity/runtime-cli@7.0.2':
+    resolution: {integrity: sha512-7qGKqEk25RLyyZPqSRveMqQYkGPFD0//msQvxaB6mjCEH6OLx8D2EExZti88wtAISfJydKBl8N1O/2CBFDqkzw==}
     engines: {node: '>=18.20.0'}
     hasBin: true
 
@@ -7361,8 +7361,8 @@ packages:
     resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
     engines: {node: '>=12.0.0'}
 
-  eventsource@3.0.6:
-    resolution: {integrity: sha512-l19WpE2m9hSuyP06+FbuUUf1G+R0SFLrtQfbRb9PRr+oimOfxQhgGCbVaXg5IvZyyTThJsxh6L/srkMiCeBPDA==}
+  eventsource@3.0.7:
+    resolution: {integrity: sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==}
     engines: {node: '>=18.0.0'}
 
   execa@2.1.0:
@@ -15676,7 +15676,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@7.0.1(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)':
+  '@sanity/runtime-cli@7.0.2(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)':
     dependencies:
       '@oclif/core': 4.3.0
       '@oclif/plugin-help': 6.2.28
@@ -15684,7 +15684,7 @@ snapshots:
       array-treeify: 0.1.5
       chalk: 5.4.1
       color-json: 3.0.5
-      eventsource: 3.0.6
+      eventsource: 3.0.7
       find-up: 7.0.0
       inquirer: 12.6.1(@types/node@22.13.1)
       mime-types: 3.0.1
@@ -18979,7 +18979,7 @@ snapshots:
 
   eventsource@2.0.2: {}
 
-  eventsource@3.0.6:
+  eventsource@3.0.7:
     dependencies:
       eventsource-parser: 3.0.1
 
