@@ -1,3 +1,12 @@
+function isValidLocale(locale: string): boolean {
+  try {
+    const formatter = new Intl.DateTimeFormat(locale)
+    return formatter !== null
+  } catch {
+    return false
+  }
+}
+
 /**
  * Returns the long/short/narrow name of the month of `date`.
  */
@@ -6,8 +15,10 @@ function getMonthName(
   style: 'long' | 'short' | 'narrow' | undefined = 'long',
   locale = 'en-US',
 ): string {
+  // Validate locale and fallback to en-US if invalid
+  const validLocale = isValidLocale(locale) ? locale : 'en-US'
   // style can be "long", "short", or "narrow"
-  return new Intl.DateTimeFormat(locale, {month: style}).format(date)
+  return new Intl.DateTimeFormat(validLocale, {month: style}).format(date)
 }
 
 /**
@@ -19,7 +30,9 @@ function getDayName(
   locale = 'en-US',
 ): string {
   // style can be "long", "short", or "narrow"
-  return new Intl.DateTimeFormat(locale, {weekday: style}).format(date)
+  const validLocale = isValidLocale(locale) ? locale : 'en-US'
+
+  return new Intl.DateTimeFormat(validLocale, {weekday: style}).format(date)
 }
 
 /**
@@ -73,7 +86,7 @@ function getDayOfYear(date: Date): number {
   return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1
 }
 
-// “Locale” week-year => approximate with ISO logic here
+// "Locale" week-year => approximate with ISO logic here
 function getLocaleWeekYear(date: Date): number {
   return getISOWeekYear(date)
 }
@@ -95,7 +108,7 @@ function getFractionalSeconds(date: Date, length: number): string {
 }
 
 /**
- * Returns a time zone offset string for the system’s local offset
+ * Returns a time zone offset string for the system's local offset
  */
 function getTimeZoneOffsetString(date: Date, colon = true): string {
   const offsetMinutes = -date.getTimezoneOffset()
@@ -288,7 +301,7 @@ function formatMomentLike(date: Date, formatStr: string): string {
   for (const {key, value} of tokens) {
     // Escape special characters
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    // Match the token, but only if it’s not part of a larger word
+    // Match the token, but only if it's not part of a larger word
     const tokenRegex = new RegExp(`(^|[^A-Z0-9a-z])(${escapedKey})(?![A-Z0-9a-z])`, 'g')
     output = output.replace(tokenRegex, `$1${value}`)
   }
