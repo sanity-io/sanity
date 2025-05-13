@@ -71,11 +71,7 @@ function getValidLocale(preferredLocale: string): string {
     }
   }
 
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().locale
-  } catch {
-    return 'en'
-  }
+  return 'en'
 }
 
 function getCachedTimeZoneInfo(

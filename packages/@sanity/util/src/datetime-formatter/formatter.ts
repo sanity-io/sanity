@@ -19,13 +19,7 @@ function getValidLocale(preferredLocale: string): string {
       return fallback
     }
   }
-  // If all else fails, try the system's default locale
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().locale
-  } catch {
-    // Last resort: use 'en' without validation
-    return 'en'
-  }
+  return 'en'
 }
 
 function getMonthName(
