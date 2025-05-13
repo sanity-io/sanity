@@ -17,12 +17,27 @@ const manifestPropOrder = [
 ]
 
 export function createPackageManifest(
-  data: Omit<PackageJson, 'version'> & {gitRemote?: string},
+  data: Omit<PackageJson, 'version'> & {gitRemote?: string} & {isAppTemplate?: boolean},
 ): string {
+  const {isAppTemplate} = data
+
   const dependencies = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
+
   const devDependencies = data.devDependencies
     ? {devDependencies: sortObject(data.devDependencies)}
     : {}
+
+  // Don't write a prettier config for SDK apps; we want to allow developers to use their own
+  const prettierConfig = isAppTemplate
+    ? {}
+    : {
+        prettier: {
+          semi: false,
+          printWidth: 100,
+          bracketSpacing: false,
+          singleQuote: true,
+        },
+      }
 
   const pkg = {
     ...getCommonManifest(data),
@@ -39,13 +54,7 @@ export function createPackageManifest(
 
     ...dependencies,
     ...devDependencies,
-
-    prettier: {
-      semi: false,
-      printWidth: 100,
-      bracketSpacing: false,
-      singleQuote: true,
-    },
+    ...prettierConfig,
   }
 
   return serializeManifest(pkg)

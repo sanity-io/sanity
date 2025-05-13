@@ -132,6 +132,7 @@ export async function bootstrapLocalTemplate(
     dependencies,
     devDependencies,
     scripts: template.scripts,
+    isAppTemplate,
   })
 
   // ...and a studio config (`sanity.config.[ts|js]`)
@@ -163,10 +164,14 @@ export async function bootstrapLocalTemplate(
       ],
       writeFileIfNotExists(`sanity.cli.${codeExt}`, cliConfig),
       writeFileIfNotExists('package.json', packageManifest),
-      writeFileIfNotExists(
-        'eslint.config.mjs',
-        `import studio from '@sanity/eslint-config-studio'\n\nexport default [...studio]\n`,
-      ),
+      ...[
+        isAppTemplate
+          ? Promise.resolve(null)
+          : writeFileIfNotExists(
+              'eslint.config.mjs',
+              `import studio from '@sanity/eslint-config-studio'\n\nexport default [...studio]\n`,
+            ),
+      ],
     ].filter(Boolean),
   )
 
