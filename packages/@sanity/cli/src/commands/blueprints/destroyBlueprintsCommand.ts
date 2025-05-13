@@ -50,16 +50,19 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
     const {token} = client.config()
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintDestroyCore} = await import('@sanity/runtime-cli/cores/blueprints')
-    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
 
-    const {localBlueprint} = await getBlueprintAndStack({token})
-
-    const {success, error} = await blueprintDestroyCore({
+    const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
       log: (message) => output.print(message),
       token,
-      blueprint: localBlueprint,
+    })
+
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    const {success, error} = await blueprintDestroyCore({
+      ...cmdConfig.value,
       flags: {
         'no-wait': flags['no-wait'],
         'force': flags.force ?? flags.f,

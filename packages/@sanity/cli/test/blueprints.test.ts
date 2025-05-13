@@ -26,25 +26,34 @@ const mockCores = {
 
 vi.mock('@sanity/runtime-cli/cores/blueprints', () => mockCores)
 
+const token = 'test-token'
 const localBlueprint = {
   projectId: 'a1b2c3',
   stackId: 'ST-d4e5f6',
 }
-// Mock getBlueprintAndStack to return a projectId and stackId without issues or deployedStack
-vi.mock('@sanity/runtime-cli/actions/blueprints', () => ({
-  getBlueprintAndStack: vi.fn().mockResolvedValue({localBlueprint}),
-}))
+const config = {
+  bin: 'sanity',
+  log: (message: string) => message,
+  token,
+}
+
 vi.mock('@sanity/runtime-cli/cores', () => ({
   initBlueprintConfig: vi.fn().mockResolvedValue({
     ok: true,
     value: {
-      bin: 'sanity',
-      log: vi.fn(),
+      ...config,
+    },
+  }),
+  initDeployedBlueprintConfig: vi.fn().mockResolvedValue({
+    ok: true,
+    value: {
+      ...config,
+      blueprint: localBlueprint,
     },
   }),
 }))
 
-describe('blueprints commands', () => {
+describe('blueprints commands exports', () => {
   it('should be a set of commands', async () => {
     expect(addBlueprintsCommand).toBeDefined()
     expect(configBlueprintsCommand).toBeDefined()
@@ -58,7 +67,7 @@ describe('blueprints commands', () => {
   })
 })
 
-describe('blueprints commands', () => {
+describe('blueprints commands with mocked cores', () => {
   const emptyArgs: CliCommandArguments = {
     groupOrCommand: 'blueprints',
     argv: [],
@@ -69,7 +78,7 @@ describe('blueprints commands', () => {
 
   const mockContext: CliCommandContext = {
     apiClient: vi.fn().mockReturnValue({
-      config: () => ({token: 'test-token'}),
+      config: () => ({token}),
     }),
     output: {
       print: vi.fn(),
@@ -81,7 +90,7 @@ describe('blueprints commands', () => {
   } as unknown as CliCommandContext
 
   describe('add command', () => {
-    it('should call blueprintAddCore with function type', async () => {
+    it('should call blueprintAddCore with "function" argument', async () => {
       const args: CliCommandArguments = {
         ...emptyArgs,
         argsWithoutOptions: ['function'],
@@ -97,8 +106,7 @@ describe('blueprints commands', () => {
       await addBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintAddCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
+        ...config,
         args: {type: 'function'},
         flags: {
           'name': 'test-function',
@@ -106,6 +114,8 @@ describe('blueprints commands', () => {
           'language': 'ts',
           'javascript': undefined,
           'fn-helpers': false,
+          'fn-installer': undefined,
+          'install': undefined,
         },
       })
     })
@@ -138,7 +148,7 @@ describe('blueprints commands', () => {
       expect(mockCores.blueprintInitCore).toHaveBeenCalledWith({
         bin: 'sanity',
         log: expect.any(Function),
-        token: 'test-token',
+        token,
         args: {
           dir: 'my-dir',
         },
@@ -165,10 +175,7 @@ describe('blueprints commands', () => {
       await deployBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDeployCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        auth: {token: 'test-token', projectId: localBlueprint.projectId},
-        ...localBlueprint,
+        ...config,
         blueprint: localBlueprint,
         flags: {'no-wait': true},
       })
@@ -189,10 +196,7 @@ describe('blueprints commands', () => {
       await destroyBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDestroyCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        token: 'test-token',
-        blueprint: localBlueprint,
+        ...config,
         flags: {
           'no-wait': true,
           'force': true,
@@ -218,10 +222,7 @@ describe('blueprints commands', () => {
       await configBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintConfigCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        blueprint: localBlueprint,
-        token: 'test-token',
+        ...config,
         flags: {
           'project-id': 'proj123',
           'stack-id': 'stack123',
@@ -245,11 +246,8 @@ describe('blueprints commands', () => {
       await infoBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintInfoCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        auth: {token: 'test-token', projectId: localBlueprint.projectId},
-        stackId: localBlueprint.stackId,
-        deployedStack: undefined,
+        ...config,
+        blueprint: localBlueprint,
         flags: {id: 'stack123'},
       })
     })
@@ -268,10 +266,8 @@ describe('blueprints commands', () => {
       await logsBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintLogsCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        auth: {token: 'test-token', projectId: localBlueprint.projectId},
-        stackId: localBlueprint.stackId,
+        ...config,
+        blueprint: localBlueprint,
         flags: {watch: true},
       })
     })
@@ -283,9 +279,7 @@ describe('blueprints commands', () => {
       await planBlueprintsCommand.action(emptyArgs, mockContext)
 
       expect(mockCores.blueprintPlanCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        blueprint: localBlueprint,
+        ...config,
       })
     })
   })
@@ -303,10 +297,7 @@ describe('blueprints commands', () => {
       await stacksBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintStacksCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        token: 'test-token',
-        blueprint: localBlueprint,
+        ...config,
         flags: {projectId: 'proj123'},
       })
     })

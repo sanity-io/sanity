@@ -93,9 +93,11 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const bin = 'sanity'
-    const log = (msg: string) => output.print(msg)
-    const cmdConfig = await initBlueprintConfig(bin, log, token)
+    const cmdConfig = await initBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
     if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 

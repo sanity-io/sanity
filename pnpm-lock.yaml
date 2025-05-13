@@ -726,8 +726,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^7.0.2
-        version: 7.0.2(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)
+        specifier: ^7.0.3
+        version: 7.0.3(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.0)
@@ -4747,8 +4747,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@7.0.2':
-    resolution: {integrity: sha512-7qGKqEk25RLyyZPqSRveMqQYkGPFD0//msQvxaB6mjCEH6OLx8D2EExZti88wtAISfJydKBl8N1O/2CBFDqkzw==}
+  '@sanity/runtime-cli@7.0.3':
+    resolution: {integrity: sha512-YkBoO2FcTD9vR4f5zNvcynojSHpRuzlbtkhCg9VFWcByUzUr01pSQvUL5Mag/a+aexOtmbiNeeOl+2e+6vAMVQ==}
     engines: {node: '>=18.20.0'}
     hasBin: true
 
@@ -15676,7 +15676,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@7.0.2(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)':
+  '@sanity/runtime-cli@7.0.3(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.7.0)':
     dependencies:
       '@oclif/core': 4.3.0
       '@oclif/plugin-help': 6.2.28

@@ -57,21 +57,19 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
 
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintConfigCore} = await import('@sanity/runtime-cli/cores/blueprints')
-    const {getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {display} = await import('@sanity/runtime-cli/utils')
 
-    const {localBlueprint, issues} = await getBlueprintAndStack({token})
-
-    if (issues) {
-      // print issues and continue
-      output.print(display.errors.presentBlueprintIssues(issues))
-    }
-
-    const {success, error} = await blueprintConfigCore({
+    const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
       log: (message) => output.print(message),
-      blueprint: localBlueprint,
+      token,
+    })
+
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    const {success, error} = await blueprintConfigCore({
+      ...cmdConfig.value,
       token,
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
