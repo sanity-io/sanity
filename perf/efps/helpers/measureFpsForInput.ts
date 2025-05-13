@@ -17,7 +17,8 @@ export async function measureFpsForInput({
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
 
-  await page.getByTestId('document-panel-document-title').waitFor({state: 'visible'})
+  // await page.getByTestId('document-panel-document-title').waitFor({state: 'visible'})
+  await new Promise((resolve) => setTimeout(resolve, 10_000))
   console.log('[DEBUG]', await page.locator('body').innerHTML())
 
   const input = page
