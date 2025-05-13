@@ -225,7 +225,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.published?._id || editState?.id || '',
-          releases: filteredReleases.notCurrentReleases,
+          releases: filteredReleases,
           releasesLoading: loading,
           documentType,
           fromRelease: 'published',
@@ -269,7 +269,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         contextValues={{
           documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          releases: filteredReleases.notCurrentReleases,
+          releases: filteredReleases,
           releasesLoading: loading,
           documentType: documentType,
           fromRelease: 'draft',
@@ -291,7 +291,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             disabled: true, // disable the chip context menu, this one is in creation
             documentId: displayed?._id || '',
             menuReleaseId: filteredReleases.inCreation._id,
-            releases: filteredReleases.notCurrentReleases,
+            releases: filteredReleases,
             releasesLoading: loading,
             documentType,
             fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
@@ -314,7 +314,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,
-              releases: filteredReleases.notCurrentReleases,
+              releases: filteredReleases,
               releasesLoading: loading,
               documentType: documentType,
               fromRelease: getReleaseIdFromReleaseDocumentId(release._id),

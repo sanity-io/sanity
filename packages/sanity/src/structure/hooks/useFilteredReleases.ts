@@ -15,6 +15,7 @@ import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneConte
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
   currentReleases: ReleaseDocument[]
+  allReleases: ReleaseDocument[]
   inCreation: ReleaseDocument | null
 }
 
@@ -33,7 +34,8 @@ export function useFilteredReleases({
   const {params} = usePaneRouter()
 
   return useMemo(() => {
-    if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: null}
+    if (!documentVersions)
+      return {notCurrentReleases: [], currentReleases: [], allReleases: [], inCreation: null}
     // Gets the releases ids from the document versions, it means, the releases that the document belongs to
     const releasesIds = documentVersions.map((id) => getVersionFromId(id))
     const activeReleases = releases.reduce(
@@ -51,12 +53,14 @@ export function useFilteredReleases({
           acc.inCreation = release
         } else if (versionDocExists) {
           acc.currentReleases.push(release)
+          acc.allReleases.push(release)
         } else {
           acc.notCurrentReleases.push(release)
+          acc.allReleases.push(release)
         }
         return acc
       },
-      {notCurrentReleases: [], currentReleases: [], inCreation: null},
+      {notCurrentReleases: [], currentReleases: [], allReleases: [], inCreation: null},
     )
 
     // without historyVersion, version is not in an archived release
@@ -69,6 +73,7 @@ export function useFilteredReleases({
     // only for explicitly archived releases; published releases use published perspective
     if (archivedRelease?.state === 'archived') {
       activeReleases.currentReleases.push(archivedRelease)
+      activeReleases.allReleases.push(archivedRelease)
     }
 
     return activeReleases

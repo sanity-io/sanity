@@ -37,6 +37,7 @@ import {
 import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {SanityMonogram} from './Tester'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -394,6 +395,7 @@ export function ReleasesOverview() {
           <NoRelease />
         ) : (
           <>
+            <SanityMonogram scheme="default" />
             <Flex direction="column" flex={1} style={{position: 'relative'}}>
               <Card flex="none" padding={3}>
                 <Flex align="center" flex={1} gap={3}>

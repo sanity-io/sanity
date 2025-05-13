@@ -4,9 +4,25 @@ import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {type ReleaseDocument} from '../../../store/types'
+import {LATEST} from '../../../util/const'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
+
+export const DraftVersionContextMenuItem = memo(function DraftVersionContextMenuItem() {
+  const {t} = useTranslation()
+
+  return (
+    <Flex gap={3} justify="center" align="center">
+      <ReleaseAvatar padding={2} tone={getReleaseTone(LATEST)} />
+      <Stack flex={1} space={2}>
+        <Text size={1} weight="medium">
+          {t('release.chip.global.drafts')}
+        </Text>
+      </Stack>
+    </Flex>
+  )
+})
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: ReleaseDocument

@@ -19,17 +19,19 @@ import {
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
+import {type useFilteredReleases} from '../../../../structure/hooks/useFilteredReleases'
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
-import {type ReleaseDocument, type ReleaseState} from '../../store/types'
+import {type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
+import {ConfirmReplaceVersionDialog} from './dialog/ConfirmReplaceVersionDialog'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
 const ChipButtonContainer = styled.span`
@@ -59,6 +61,8 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 
+type DialogType = 'replace' | 'discard' | 'create' | null
+
 /**
  * @internal
  */
@@ -72,7 +76,7 @@ export const VersionChip = memo(function VersionChip(props: {
   locked?: boolean
   contextValues: {
     documentId: string
-    releases: ReleaseDocument[]
+    releases: ReturnType<typeof useFilteredReleases>
     releasesLoading: boolean
     documentType: string
     menuReleaseId: string
@@ -97,7 +101,6 @@ export const VersionChip = memo(function VersionChip(props: {
       documentType,
       menuReleaseId,
       fromRelease,
-      releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
     },
@@ -108,8 +111,8 @@ export const VersionChip = memo(function VersionChip(props: {
     undefined,
   )
   const popoverRef = useRef<HTMLDivElement | null>(null)
-  const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
-  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState<DialogType>(null)
+  const [targetRelease, setTargetRelease] = useState<ReleaseDocument | null>(null)
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
@@ -120,7 +123,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
-  const {createVersion} = useVersionOperations()
+  const {createVersion, replaceVersion} = useVersionOperations()
   const toast = useToast()
   const {t} = useTranslation()
 
@@ -153,31 +156,57 @@ export const VersionChip = memo(function VersionChip(props: {
   )
 
   const openDiscardDialog = useCallback(() => {
-    setIsDiscardDialogOpen(true)
-  }, [setIsDiscardDialogOpen])
+    setIsDialogOpen('discard')
+  }, [setIsDialogOpen])
 
   const openCreateReleaseDialog = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
+    () => guardWithReleaseLimitUpsell(() => setIsDialogOpen('create')),
     [guardWithReleaseLimitUpsell],
   )
 
-  const handleAddVersion = useCallback(
+  const handleCreateVersion = useCallback(
     async (targetRelease: string) => {
-      try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
-      } catch (err) {
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('release.action.create-version.failure'),
-          description: err.message,
-        })
-      }
+      const existingTargetRelease = releases.currentReleases.find(
+        (release) => release._id === targetRelease,
+      )
+      if (existingTargetRelease) {
+        setIsDialogOpen('replace')
+        setTargetRelease(existingTargetRelease)
+      } else {
+        try {
+          // await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+          console.log('creating version')
+        } catch (err) {
+          toast.push({
+            closable: true,
+            status: 'error',
+            title: t('release.action.create-version.failure'),
+            description: err.message,
+          })
+        }
 
-      close()
+        close()
+      }
     },
-    [close, createVersion, docId, t, toast],
+    [close, createVersion, docId, t, toast, releases.currentReleases],
   )
+
+  const handleReplaceVersion = useCallback(async () => {
+    try {
+      console.log('callibg replace version')
+      await replaceVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('release.action.replace-version.failure'),
+        description: err.message,
+      })
+    }
+
+    setTargetRelease(null)
+    close()
+  }, [close, replaceVersion, targetRelease, docId, toast, t])
 
   const referenceElement = useMemo(() => {
     if (!contextMenuPoint) {
@@ -239,7 +268,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
             disabled={contextMenuDisabled}
-            onCreateVersion={handleAddVersion}
+            onCreateVersion={handleCreateVersion}
             locked={locked}
             type={documentType}
           />
@@ -253,9 +282,9 @@ export const VersionChip = memo(function VersionChip(props: {
         zOffset={10}
       />
 
-      {isDiscardDialogOpen && (
+      {isDialogOpen === 'discard' && (
         <DiscardVersionDialog
-          onClose={() => setIsDiscardDialogOpen(false)}
+          onClose={() => setIsDialogOpen(null)}
           documentId={
             isVersion
               ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
@@ -266,10 +295,10 @@ export const VersionChip = memo(function VersionChip(props: {
         />
       )}
 
-      {isCreateReleaseDialogOpen && (
+      {isDialogOpen === 'create' && (
         <CopyToNewReleaseDialog
-          onClose={() => setIsCreateReleaseDialogOpen(false)}
-          onCreateVersion={handleAddVersion}
+          onClose={() => setIsDialogOpen(null)}
+          onCreateVersion={handleCreateVersion}
           documentId={
             isVersion
               ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
@@ -278,6 +307,15 @@ export const VersionChip = memo(function VersionChip(props: {
           documentType={documentType}
           tone={tone}
           title={text}
+        />
+      )}
+      {isDialogOpen === 'replace' && (
+        <ConfirmReplaceVersionDialog
+          onClose={() => setIsDialogOpen(null)}
+          documentId={documentId}
+          documentType={documentType}
+          targetRelease={targetRelease}
+          onReplaceVersion={handleReplaceVersion}
         />
       )}
     </>

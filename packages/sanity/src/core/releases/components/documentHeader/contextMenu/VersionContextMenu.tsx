@@ -4,17 +4,19 @@ import {memo, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {type useFilteredReleases} from '../../../../../structure/hooks/useFilteredReleases'
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
-import {type ReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {LATEST} from '../../../util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults, isReleaseScheduledOrScheduling} from '../../../util/util'
-import {VersionContextMenuItem} from './VersionContextMenuItem'
+import {DraftVersionContextMenuItem, VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
   max-width: 300px;
@@ -24,7 +26,7 @@ const ReleasesList = styled(Stack)`
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: {
   documentId: string
-  releases: ReleaseDocument[]
+  releases: ReturnType<typeof useFilteredReleases>
   releasesLoading: boolean
   fromRelease: string
   isVersion: boolean
@@ -51,7 +53,11 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   const {t} = useTranslation()
   const {mode} = useReleasesUpsell()
   const isPublished = isPublishedId(documentId) && !isVersion
-  const optionsReleaseList = releases.filter((release) => !isReleaseScheduledOrScheduling(release))
+  const optionsReleaseList = releases.allReleases.filter(
+    (release) =>
+      !isReleaseScheduledOrScheduling(release) &&
+      getReleaseIdFromReleaseDocumentId(release._id) !== fromRelease,
+  )
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
@@ -107,6 +113,15 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           }}
         >
           <ReleasesList key={fromRelease} space={1}>
+            <MenuItem
+              as="a"
+              onClick={() => onCreateVersion(LATEST)}
+              renderMenuItem={() => <DraftVersionContextMenuItem />}
+              disabled={disabled}
+              tooltipProps={{
+                content: t('release.tooltip.locked'),
+              }}
+            />
             {optionsReleaseList.map((release) => {
               return (
                 <MenuItem

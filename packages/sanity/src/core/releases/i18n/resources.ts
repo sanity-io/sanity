@@ -246,6 +246,18 @@ const releasesLocaleStrings = {
   /** Placeholder title for a release with no title */
   'release-placeholder.title': 'Untitled',
 
+  /** Title for the dialog confirming the replacement of a version */
+  'replace-version-dialog.header-draft': 'A draft version of this document already exists',
+  /** Title for the dialog confirming the replacement of a version */
+  'replace-version-dialog.header-release':
+    'Replace the version in the "<strong>{{targetRelease}}</strong>" release?',
+  /** Title for the dialog confirming the replacement of a version */
+  'replace-version-dialog.description-draft':
+    'This will replace the existing draft version of this document with the version from the "<strong>{{targetRelease}}</strong>" release.',
+  /** Title for the dialog confirming the replacement of a version */
+  'replace-version-dialog.description-release':
+    'This will replace the existing version of this document in the "<strong>{{targetRelease}}</strong>" release with the version from the "<strong>{{fromRelease}}</strong>" release.',
+
   /** Description for the review changes button in release tool */
   'review.description': 'Add documents to this release to review changes',
   /** Text for when a document is edited */
