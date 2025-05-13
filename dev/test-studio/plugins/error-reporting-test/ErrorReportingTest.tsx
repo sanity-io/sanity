@@ -7,7 +7,7 @@ function triggerCustomErrorOnEvent() {
 
 function triggerImportError() {
   const filename = '/does-not-exist.js'
-  import(filename)
+  import(/* @vite-ignore */ filename)
 }
 
 function triggerTypeErrorOnEvent(evt: any) {
@@ -116,7 +116,7 @@ export function ErrorReportingTest() {
 
 const ReactLazyError = lazy(() => {
   const name = '/does-not-exist.js'
-  return import(name)
+  return import(/* @vite-ignore */ name)
 })
 
 function WithRenderError({text}: any) {
