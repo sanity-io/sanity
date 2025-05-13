@@ -36,7 +36,6 @@ export {
   isReleaseScheduledOrScheduling,
   LATEST,
   ReleaseAvatar,
-  type ReleaseDocument,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   useActiveReleases,
@@ -70,6 +69,7 @@ export {
   type ValidateDocumentOptions,
 } from './validation'
 export * from './version'
+export {type ReleaseDocument} from '@sanity/client'
 
 // If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
 // eslint-disable-next-line simple-import-sort/exports

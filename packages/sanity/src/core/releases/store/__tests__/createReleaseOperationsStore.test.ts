@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type RevertDocument} from '../../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {createReleaseOperationsStore} from '../createReleaseOperationStore'
-import {type ReleaseDocument} from '../types'
 
 describe('createReleaseOperationsStore', () => {
   let mockClient: any

@@ -8,11 +8,11 @@ import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
-import {type EditableReleaseDocument} from '../../store/types'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
+import { EditableReleaseDocument } from '@sanity/client'
 
 interface CreateReleaseDialogProps {
   onCancel: () => void

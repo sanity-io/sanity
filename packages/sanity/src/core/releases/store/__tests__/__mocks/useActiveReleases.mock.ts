@@ -1,6 +1,6 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {type Mock, vi} from 'vitest'
 
-import {type ReleaseDocument} from '../../types'
 import {useActiveReleases} from '../../useActiveReleases'
 
 export const useActiveReleasesMockReturn = {

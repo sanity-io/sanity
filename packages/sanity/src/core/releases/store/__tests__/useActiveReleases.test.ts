@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {BehaviorSubject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -8,7 +9,6 @@ import {
   activeScheduledRelease,
   archivedScheduledRelease,
 } from '../../__fixtures__/release.fixture'
-import {type ReleaseDocument} from '../types'
 import {useActiveReleases} from '../useActiveReleases'
 
 interface ReleasesState {

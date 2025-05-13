@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {type ReleaseId} from '../../../perspective/types'
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
-import {type ReleaseDocument} from '../../store/types'
 import {createReleaseId} from '../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleasesPerspectiveStack, sortReleases} from '../utils'
@@ -18,6 +18,7 @@ function createReleaseMock(
   const name = getReleaseIdFromReleaseDocumentId(id)
   return {
     _id: id,
+    name: getReleaseIdFromReleaseDocumentId(id),
     _rev: 'rev',
     _type: RELEASE_DOCUMENT_TYPE,
     _createdAt: new Date().toISOString(),

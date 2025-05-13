@@ -1,9 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
-import {type ReleaseDocument} from '../../../index'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CreateReleaseDialog} from '../CreateReleaseDialog'
 

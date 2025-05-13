@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
 import {useState} from 'react'
@@ -48,7 +49,6 @@ import {
   mockUseReleasesMetadata,
   useReleasesMetadataMockReturn,
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
-import {type ReleaseDocument} from '../../../store/types'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'

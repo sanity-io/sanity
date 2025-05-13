@@ -1,6 +1,6 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {type ReleaseDocument} from '../../../store/types'
 import {RELEASE_STATE_CHANGE} from './__fixtures__/mock-translog-events'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 
