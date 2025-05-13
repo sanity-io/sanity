@@ -7,31 +7,42 @@ function isValidLocale(locale: string): boolean {
   }
 }
 
-/**
- * Returns the long/short/narrow name of the month of `date`.
- */
+function getValidLocale(preferredLocale: string): string {
+  // Try the preferred locale first
+  if (isValidLocale(preferredLocale)) {
+    return preferredLocale
+  }
+  // Try common fallbacks in order of preference
+  const fallbacks = ['en', 'en-GB', 'en-CA', 'en-AU']
+  for (const fallback of fallbacks) {
+    if (isValidLocale(fallback)) {
+      return fallback
+    }
+  }
+  // If all else fails, try the system's default locale
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().locale
+  } catch {
+    // Last resort: use 'en' without validation
+    return 'en'
+  }
+}
+
 function getMonthName(
   date: Date,
   style: 'long' | 'short' | 'narrow' | undefined = 'long',
   locale = 'en-US',
 ): string {
-  // Validate locale and fallback to en-US if invalid
-  const validLocale = isValidLocale(locale) ? locale : 'en-US'
-  // style can be "long", "short", or "narrow"
+  const validLocale = getValidLocale(locale)
   return new Intl.DateTimeFormat(validLocale, {month: style}).format(date)
 }
 
-/**
- * Returns the long/short/narrow name of the day of week of `date`.
- */
 function getDayName(
   date: Date,
   style: 'long' | 'short' | 'narrow' | undefined = 'long',
   locale = 'en-US',
 ): string {
-  // style can be "long", "short", or "narrow"
-  const validLocale = isValidLocale(locale) ? locale : 'en-US'
-
+  const validLocale = getValidLocale(locale)
   return new Intl.DateTimeFormat(validLocale, {weekday: style}).format(date)
 }
 
@@ -291,7 +302,8 @@ function formatMomentLike(date: Date, formatStr: string): string {
   const tzRegex2 = /(z{1,2})/g
   output = output.replace(tzRegex2, (match) => {
     // z => EST, zzz => Eastern Standard Time
-    return Intl.DateTimeFormat('en-US', {
+    const validLocale = getValidLocale('en-US')
+    return Intl.DateTimeFormat(validLocale, {
       timeZoneName: match.length === 1 ? 'short' : 'long',
     }).format(date)
   })
