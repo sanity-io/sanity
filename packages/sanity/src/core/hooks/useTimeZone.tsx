@@ -93,16 +93,29 @@ function getCachedTimeZoneInfo(
   return info
 }
 
+function isValidLocale(locale: string): boolean {
+  try {
+    const formatter = new Intl.DateTimeFormat(locale)
+    return formatter !== null
+  } catch {
+    return false
+  }
+}
+
 function computeAllTimeZones(locale: string, relativeDate?: Date): NormalizedTimeZone[] {
   const timeZones = Intl.supportedValuesOf('timeZone')
     .map((tzName): NormalizedTimeZone | null => {
       // Skip if timezone name doesn't contain a city (should have a '/')
       if (!tzName.includes('/')) return null
 
-      return null // xxx
+      const validLocale = isValidLocale(locale) ? locale : 'en-US'
+
+      if (isValidLocale(locale)) {
+        throw new Error(`Not supported locale: ${locale}`)
+      }
 
       const {alternativeName, abbreviation, offset} = getCachedTimeZoneInfo(
-        locale,
+        validLocale,
         tzName,
         relativeDate,
       )
