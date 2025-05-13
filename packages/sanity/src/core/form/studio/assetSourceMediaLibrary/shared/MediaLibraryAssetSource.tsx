@@ -53,14 +53,20 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     if (!projectId) {
       throw new Error('projectId is required to fetch Media Library ID')
     }
-    client.request({uri: `/media-libraries`, query: {projectId}}).then((result) => {
-      const libraryIdFromResult = result.data[0]?.id
-      if (libraryIdFromResult) {
-        // Add to cache for this project (organization)
-        fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
-        setFetchedLibraryId(libraryIdFromResult)
-      }
-    })
+    client
+      .request({
+        uri: `/media-libraries`,
+        query: {projectId},
+        tag: 'media-library.availability-check',
+      })
+      .then((result) => {
+        const libraryIdFromResult = result.data[0]?.id
+        if (libraryIdFromResult) {
+          // Add to cache for this project (organization)
+          fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
+          setFetchedLibraryId(libraryIdFromResult)
+        }
+      })
   }, [client, fetchedLibraryId, libraryIdProp, projectId])
 
   const resolvedLibraryId = libraryIdProp || fetchedLibraryId
@@ -87,6 +93,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
             assetInstanceId: asset.assetInstanceId,
             assetId: asset.asset._id,
           },
+          tag: 'media-library.link-asset',
         })
         const assetDocument: SanityDocument = result.document
         const assetsFromSource: AssetFromSource[] = [
