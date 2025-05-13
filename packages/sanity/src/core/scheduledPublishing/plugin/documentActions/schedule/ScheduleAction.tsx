@@ -45,6 +45,7 @@ const debug = debugWithName('ScheduleAction')
  */
 export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {draft, id, liveEdit, onComplete, published, type} = props
+  const timeZoneScope = {type: 'scheduledPublishing'} as const
 
   const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -149,7 +150,7 @@ export const ScheduleAction: DocumentActionComponent = (props: DocumentActionPro
         tone="primary"
       />
     ),
-    header: <DialogHeader title={title} />,
+    header: <DialogHeader timeZoneScope={timeZoneScope} title={title} />,
     onClose: onComplete,
     type: 'dialog',
   }

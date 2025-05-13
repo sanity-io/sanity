@@ -1,5 +1,6 @@
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 
@@ -12,8 +13,9 @@ export const DatePicker = forwardRef(function DatePicker(
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
     padding?: number
-    showTimezone?: boolean
+    showTimeZone?: boolean
     isPastDisabled?: boolean
+    timeZoneScope: TimeZoneScope
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
@@ -22,7 +24,8 @@ export const DatePicker = forwardRef(function DatePicker(
     onChange,
     calendarLabels,
     padding = 2,
-    showTimezone = false,
+    showTimeZone = false,
+    timeZoneScope,
     ...rest
   } = props
   const [focusedDate, setFocusedDay] = useState<Date>()
@@ -45,7 +48,8 @@ export const DatePicker = forwardRef(function DatePicker(
       focusedDate={focusedDate || value}
       onFocusedDateChange={setFocusedDay}
       padding={padding}
-      showTimezone={showTimezone}
+      showTimeZone={showTimeZone}
+      timeZoneScope={timeZoneScope}
     />
   )
 })

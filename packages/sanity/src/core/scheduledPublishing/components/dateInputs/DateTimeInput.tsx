@@ -2,8 +2,8 @@ import {getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
 import {formatInTimeZone} from 'date-fns-tz'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useWorkspace} from '../../../studio/workspace'
-import useTimeZone from '../../hooks/useTimeZone'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {type CommonProps, type ParseResult} from './types'
 import {isValidDate} from './utils'
@@ -22,6 +22,7 @@ type SchemaOptions = {
 }
 export type Props = CommonProps & {
   onChange: (date: string | null) => void
+  timeZoneScope: TimeZoneScope
   type: {
     name: string
     title: string
@@ -76,13 +77,13 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   props: Props,
   forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
-  const {type, onChange, ...rest} = props
+  const {type, onChange, timeZoneScope, ...rest} = props
   const {title, description, placeholder} = type
 
   const {scheduledPublishing} = useWorkspace()
   const inputDateTimeFormat = scheduledPublishing.inputDateTimeFormat
 
-  const {getCurrentZoneDate, timeZone} = useTimeZone()
+  const {getCurrentZoneDate, timeZone} = useTimeZone(timeZoneScope)
 
   const {customValidation, customValidationMessage, timeStep} = parseOptions(type.options)
 
@@ -147,6 +148,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       formatInputValue={formatInputValue}
       customValidation={customValidation}
       parseInputValue={parseInputValue}
+      timeZoneScope={timeZoneScope}
     />
   )
 })

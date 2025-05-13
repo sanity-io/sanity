@@ -1,7 +1,7 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 
-import useTimeZone from '../../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'
 import {WEEK_DAY_NAMES} from './constants'
 import {getWeeksOfMonth} from './utils'
@@ -13,11 +13,12 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
   hidden?: boolean
   customValidation?: (selectedDate: Date) => boolean
+  timeZoneScope: TimeZoneScope
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
-  const {getCurrentZoneDate} = useTimeZone()
-  const {customValidation} = props
+  const {customValidation, timeZoneScope} = props
+  const {getCurrentZoneDate} = useTimeZone(timeZoneScope)
   return (
     <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
       <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>

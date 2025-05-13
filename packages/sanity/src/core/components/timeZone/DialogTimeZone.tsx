@@ -3,15 +3,17 @@ import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../../ui-components'
-import useTimeZone, {allTimeZones, getLocalTimeZone} from '../../hooks/useTimeZone'
-import {type NormalizedTimeZone} from '../../types'
+import {Dialog} from '../../../ui-components'
+import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type NormalizedTimeZone} from '../../scheduledPublishing/types'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
+  timeZoneScope: TimeZoneScope
 }
 
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
     color: ${theme.sanity.color.base.fg};
     font-weight: 500;
@@ -19,28 +21,47 @@ const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-const TimeZoneMainCitiesSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
+  return css`
+    color: ${theme.sanity.color.muted.default.enabled.fg};
+    font-weight: 500;
+  `
+})
+
+const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
     color: ${theme.sanity.color.input.default.readOnly.fg};
-    margin-left: 1em;
+    float: right;
   `
 })
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
-  const {onClose} = props
-
-  const {setTimeZone, timeZone} = useTimeZone()
+  const {onClose, timeZoneScope} = props
+  const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} =
+    useTimeZone(timeZoneScope)
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
+  const {t} = useTranslation('studio')
+
+  // Differend text based on different scopes
+  const timeZoneScopeTypeToLabel = useMemo(
+    (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
+      scheduledPublishing: t('time-zone.dialog-info.scheduled-publishing'),
+      contentReleases: t('time-zone.dialog-info.content-releases'),
+      input: t('time-zone.dialog-info.input'),
+    }),
+    [t],
+  )
 
   // Callbacks
-  const handleTimeZoneChange = useCallback((value: string) => {
-    const tz = allTimeZones.find((v) => v.value === value)
-    setSelectedTz(tz)
-  }, [])
+  const handleTimeZoneChange = useCallback(
+    (value: string) => setSelectedTz(getTimeZone(value)),
+    [getTimeZone],
+  )
 
-  const handleTimeZoneSelectLocal = useCallback(() => {
-    setSelectedTz(getLocalTimeZone())
-  }, [])
+  const handleTimeZoneSelectLocal = useCallback(
+    () => setSelectedTz(getLocalTimeZone()),
+    [getLocalTimeZone],
+  )
 
   const handleTimeZoneUpdate = useCallback(() => {
     if (selectedTz) {
@@ -52,15 +73,20 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const isDirty = selectedTz?.name !== timeZone.name
   const isLocalTzSelected = useMemo(() => {
     return selectedTz?.name === getLocalTimeZone().name
-  }, [selectedTz])
+  }, [getLocalTimeZone, selectedTz?.name])
 
   const renderOption = useCallback((option: NormalizedTimeZone) => {
     return (
       <Card as="button" padding={3}>
         <Text size={1} textOverflow="ellipsis">
-          <span>GMT{option.offset}</span>
+          <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
+          <TimeZoneOffsetSpan>
+            {' '}
+            ({'GMT'}
+            {option.offset})
+          </TimeZoneOffsetSpan>
+
           <TimeZoneAlternativeNameSpan>{option.alternativeName}</TimeZoneAlternativeNameSpan>
-          <TimeZoneMainCitiesSpan>{option.mainCities}</TimeZoneMainCitiesSpan>
         </Text>
       </Card>
     )
@@ -86,26 +112,23 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       width={1}
     >
       <Stack padding={4} space={5}>
-        <Text size={1}>
-          The selected time zone will change how dates are represented in schedules.
-        </Text>
-
+        <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
         <Stack space={3}>
           <Flex align="center" justify="space-between">
             <Inline space={2}>
               <Text size={1} weight="semibold">
-                Time zone
+                {t('time-zone.time-zone')}
               </Text>
               {isLocalTzSelected && (
                 <Text muted size={1}>
-                  local time
+                  {t('time-zone.local-time')}
                 </Text>
               )}
             </Inline>
             {!isLocalTzSelected && (
               <Text size={1} weight="medium">
                 <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
-                  Select local time zone
+                  {t('time-zone.action.select-local-time-zone')}
                 </a>
               </Text>
             )}
@@ -119,9 +142,12 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             openButton
             options={allTimeZones}
             padding={4}
-            placeholder="Search for a city or time zone"
+            placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
-              boundaryElement: document.querySelector('body'),
+              boundaryElement:
+                timeZoneScope.type === 'input'
+                  ? (document.querySelector('#document-panel-scroller') as HTMLElement)
+                  : (document.querySelector('body') as HTMLElement),
               constrainSize: true,
               placement: 'bottom-start',
             }}

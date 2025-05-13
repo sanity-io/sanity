@@ -1,5 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`change the date should show the correct date in the input (save on enter) 1`] = `
+[
+  [
+    {
+      "patchType": Symbol(sanity.patch),
+      "path": [],
+      "type": "set",
+      "value": "2021-03-30",
+    },
+  ],
+]
+`;
+
 exports[`emits onChange on correct format if a valid value has been typed 1`] = `
 [
   [

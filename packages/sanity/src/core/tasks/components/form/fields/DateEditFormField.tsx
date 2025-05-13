@@ -83,6 +83,7 @@ export function DateEditFormField(props: {
               onKeyUp={handleKeyUp}
               value={deserializedValue.date}
               onChange={handleChange}
+              timeZoneScope={{type: 'scheduledPublishing'} as const}
             />
             {value && (
               <Flex justify={'flex-start'} padding={3} paddingTop={0}>

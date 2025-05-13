@@ -26,6 +26,24 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with switchable display time zone',
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: true,
+      },
+    },
+    {
+      name: 'aDateTimeWithFixedDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with fixed display time zone',
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: false,
+      },
+    },
+    {
       name: 'justARegularStringFieldInBetween',
       type: 'string',
       title: 'Some string',

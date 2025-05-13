@@ -15,7 +15,7 @@ import {type TableRelease} from '../../overview/ReleasesOverview'
 import {ReleaseTime} from '../ReleaseTime'
 
 vi.mock(
-  '../../../scheduledPublishing/hooks/useTimeZone',
+  '../../../hooks/useTimeZone',
   vi.fn(() => useTimeZoneMockReturn),
 )
 
