@@ -94,7 +94,8 @@
     "test:exports": "turbo run test --filter=@repo/test-exports",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
-    "watch": "lerna run --parallel --stream --scope '{@sanity/*,sanity}' watch"
+    "watch": "lerna run --parallel --stream --scope '{@sanity/*,sanity}' watch",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

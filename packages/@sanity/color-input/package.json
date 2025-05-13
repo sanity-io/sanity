@@ -1,0 +1,105 @@
+{
+  "name": "@sanity/color-input",
+  "version": "4.0.3",
+  "description": "Color input",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "color-input",
+    "sanity-plugin"
+  ],
+  "homepage": "https://github.com/sanity-io/color-input#readme",
+  "bugs": {
+    "url": "https://github.com/sanity-io/color-input/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/color-input.git"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib",
+    "sanity.json",
+    "src",
+    "v2-incompatible.js"
+  ],
+  "scripts": {
+    "build": "plugin-kit verify-package --silent && pkg-utils build --strict --check --clean",
+    "compile": "tsc --noEmit",
+    "format": "prettier --write --cache --ignore-unknown .",
+    "link-watch": "plugin-kit link-watch",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run build",
+    "watch": "pkg-utils watch --strict"
+  },
+  "browserslist": "extends @sanity/browserslist-config",
+  "prettier": "@sanity/prettier-config",
+  "overrides": {
+    "conventional-changelog-conventionalcommits": ">= 8.0.0"
+  },
+  "dependencies": {
+    "@sanity/icons": "^3.5.3",
+    "@sanity/incompatible-plugin": "^1.0.5",
+    "@sanity/ui": "^2.10.10",
+    "react-color": "^2.19.3",
+    "use-effect-event": "^1.0.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@sanity/pkg-utils": "^6.11.1",
+    "@sanity/plugin-kit": "^4.0.18",
+    "@sanity/prettier-config": "1.0.3",
+    "@sanity/semantic-release-preset": "^5.0.0",
+    "@types/react": "^18.3.5",
+    "@types/react-color": "^2.17.11",
+    "@types/tinycolor2": "^1.4.6",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-sanity": "^7.1.2",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.36.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "lint-staged": "^13.0.3",
+    "npm-run-all2": "^5.0.0",
+    "prettier": "^3.3.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "^3.67.1",
+    "semantic-release": "^24.1.1",
+    "styled-components": "^6.1",
+    "typescript": "^5.6.2"
+  },
+  "peerDependencies": {
+    "react": "^18.3 || ^19",
+    "sanity": "^3.23.0",
+    "styled-components": "^6.1"
+  },
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sanityExchangeUrl": "https://www.sanity.io/plugins/color-input"
+}

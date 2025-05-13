@@ -1,5 +1,5 @@
 import {BookIcon} from '@sanity/icons'
-import {type Rule} from '@sanity/types'
+import {defineField, type Rule} from '@sanity/types'
 
 function formatSubtitle(book: any) {
   return [
@@ -100,6 +100,26 @@ export default {
         ],
       },
     },
+
+    defineField({
+      name: 'content',
+      title: 'Content',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            annotations: [
+              {
+                name: 'color',
+                type: 'color',
+                title: 'Text Color',
+              },
+            ],
+          },
+        },
+      ],
+    }),
   ],
   orderings: [
     {
