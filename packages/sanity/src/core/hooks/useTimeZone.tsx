@@ -99,6 +99,8 @@ function computeAllTimeZones(locale: string, relativeDate?: Date): NormalizedTim
       // Skip if timezone name doesn't contain a city (should have a '/')
       if (!tzName.includes('/')) return null
 
+      return null // xxx
+
       const {alternativeName, abbreviation, offset} = getCachedTimeZoneInfo(
         locale,
         tzName,
