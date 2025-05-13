@@ -110,7 +110,7 @@ function computeAllTimeZones(locale: string, relativeDate?: Date): NormalizedTim
 
       const validLocale = isValidLocale(locale) ? locale : 'en-US'
 
-      if (isValidLocale(locale)) {
+      if (!isValidLocale(locale)) {
         throw new Error(`Not supported locale: ${locale}`)
       }
 
