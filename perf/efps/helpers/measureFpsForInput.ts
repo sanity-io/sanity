@@ -17,12 +17,29 @@ export async function measureFpsForInput({
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
 
+  // Check if browser is running in headless mode
+  const browser = page.context().browser()
+  const isHeadless = browser?.browserType().name() === 'chromium' && !browser?.isConnected()
+  // eslint-disable-next-line no-console
+  console.log('Browser running in headless mode:', isHeadless)
+
   // eslint-disable-next-line no-console
   console.log(`Looking for field: ${fieldName}`)
   // eslint-disable-next-line no-console
   console.log(
     `Selector: [data-testid="field-${fieldName}"] input[type="text"], [data-testid="field-${fieldName}"] textarea`,
   )
+
+  // Log all data-testid elements and their visibility state
+  const testIdInfo = await Promise.all(
+    (await page.$$('[data-testid]')).map(async (el) => {
+      const testId = await el.getAttribute('data-testid')
+      const isVisible = await el.isVisible()
+      const tagName = await el.evaluate((node) => node.tagName.toLowerCase())
+      return {testId, isVisible, tagName}
+    }),
+  )
+  console.log('All data-testid elements:', testIdInfo)
 
   // Log the page HTML to see what's actually rendered
   const pageContent = await page.content()
@@ -36,7 +53,7 @@ export async function measureFpsForInput({
     )
     .first()
 
-  console.log(input)
+  console.log('input:', input)
   try {
     await input.waitFor({state: 'visible', timeout: 60000})
   } catch (error) {
