@@ -19,6 +19,7 @@ export function FallbackErrorScreen(props: {
   const message = error?.message
 
   const stack = error?.stack === 'string' && error?.stack
+  const timeZones = Intl.supportedValuesOf('timeZone')
 
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
@@ -30,6 +31,8 @@ export function FallbackErrorScreen(props: {
               <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
               <pre>{error.toString()}</pre>
               <pre>{stack}</pre>
+              <h1>zones</h1>
+              <pre>{timeZones}</pre>
               {isProd && (
                 <Text>
                   <strong>To report this error,</strong> copy the error details and share them with
