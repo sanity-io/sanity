@@ -1,3 +1,4 @@
+import {type SingleActionResult} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 
 import {type ReleaseId} from '../../perspective/types'
@@ -12,8 +13,8 @@ export interface VersionOperationsValue {
     documentId: string,
     initialValue?: Record<string, unknown>,
   ) => Promise<void>
-  discardVersion: (releaseId: string, documentId: string) => Promise<void>
-  unpublishVersion: (documentId: string) => Promise<void>
+  discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
+  unpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
 
 /** @internal */
