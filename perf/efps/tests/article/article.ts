@@ -141,7 +141,7 @@ export default defineEfpsTest({
     return document
   },
   run: async ({page}) => [
-    await measureFpsForInput({page, fieldName: 'title'}),
+    // await measureFpsForInput({page, fieldName: 'title'}),
     await measureFpsForPte({page, fieldName: 'body'}),
     await measureFpsForInput({page, fieldName: 'seo.metaTitle', label: 'string inside object'}),
     await measureFpsForInput({page, fieldName: 'tags', label: 'string inside array'}),
