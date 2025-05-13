@@ -49,7 +49,15 @@ import {
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
-import {EMPTY_ARRAY, getDraftId, getPublishedId, getVersionFromId, useUnique} from '../util'
+import {
+  EMPTY_ARRAY,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  isDraftId,
+  isPublishedId,
+  useUnique,
+} from '../util'
 import {
   type FormState,
   getExpandOperations,
@@ -259,12 +267,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
+  const getDocumentId = useCallback(
+    (docId: string) => {
+      if (liveEdit || isPublishedId(docId)) {
+        return getPublishedId(docId)
+      }
+      return isDraftId(docId) ? getDraftId(docId) : docId
+    },
+    [liveEdit],
+  )
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
-      _id: liveEdit ? getPublishedId(documentId) : getDraftId(documentId),
+      _id: getDocumentId(value._id),
     }
-  }, [liveEdit, value, documentId])
+  }, [value, getDocumentId])
 
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,
