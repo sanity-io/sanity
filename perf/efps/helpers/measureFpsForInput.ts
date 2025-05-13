@@ -23,6 +23,15 @@ export async function measureFpsForInput({
   // eslint-disable-next-line no-console
   console.log('Browser running in headless mode:', isHeadless)
 
+  // Wait for loading state to complete
+  try {
+    await page.waitForSelector('[data-testid="loading-block"]', {state: 'hidden', timeout: 60000})
+    await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
+  } catch (error) {
+    console.error('Loading block did not disappear:', error)
+    throw error
+  }
+
   // eslint-disable-next-line no-console
   console.log(`Looking for field: ${fieldName}`)
   // eslint-disable-next-line no-console
