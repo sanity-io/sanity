@@ -15,9 +15,11 @@ import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {
   type DocumentLocation,
-  type DocumentLocationsState,
+  type DocumentLocationResolver,
+  type DocumentLocationResolvers,
   type PresentationPluginOptions,
 } from '../types'
+import {useDocumentLocations} from '../useDocumentLocations'
 import {useCurrentPresentationToolName} from './useCurrentPresentationToolName'
 
 const TONE_ICONS: Record<'positive' | 'caution' | 'critical', ComponentType> = {
@@ -28,15 +30,24 @@ const TONE_ICONS: Record<'positive' | 'caution' | 'critical', ComponentType> = {
 
 export function LocationsBanner(props: {
   documentId: string
-  isResolving: boolean
   options: PresentationPluginOptions
+  resolvers?: DocumentLocationResolver | DocumentLocationResolvers
   schemaType: ObjectSchemaType
   showPresentationTitle: boolean
-  state: DocumentLocationsState
+  version: string | undefined
 }): ReactNode {
-  const {documentId, isResolving, options, schemaType, showPresentationTitle} = props
-  const {locations, message, tone} = props.state
-  const len = locations?.length || 0
+  const {documentId, options, resolvers, schemaType, showPresentationTitle, version} = props
+
+  const {state, status} = useDocumentLocations({
+    id: documentId,
+    version,
+    resolvers,
+    type: schemaType,
+  })
+
+  const isResolving = status === 'resolving'
+
+  const len = state.locations?.length || 0
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const presentation = useContext(PresentationContext)
@@ -49,16 +60,17 @@ export function LocationsBanner(props: {
 
   const title = isResolving
     ? t('locations-banner.resolving.text')
-    : message || t('locations-banner.locations-count', {count: len})
+    : state.message || t('locations-banner.locations-count', {count: len})
 
-  const ToneIcon = tone ? TONE_ICONS[tone] : undefined
+  const ToneIcon = state.tone ? TONE_ICONS[state.tone] : undefined
 
+  if (!resolvers) return null
   return (
-    <Card padding={1} radius={2} border tone={tone}>
+    <Card padding={1} radius={2} border tone={state.tone}>
       <div style={{margin: -1}}>
-        {!locations && (
+        {!state.locations && (
           <Flex align="flex-start" gap={3} padding={3}>
-            {tone && ToneIcon && (
+            {state.tone && ToneIcon && (
               <Box flex="none">
                 <Text size={1}>
                   <ToneIcon />
@@ -73,7 +85,7 @@ export function LocationsBanner(props: {
             </Box>
           </Flex>
         )}
-        {locations && (
+        {state.locations && (
           <>
             <Card
               as={len ? 'button' : undefined}
@@ -110,7 +122,7 @@ export function LocationsBanner(props: {
               </Flex>
             </Card>
             <Stack hidden={!expanded} marginTop={1} space={1}>
-              {locations.map((l) => {
+              {state.locations.map((l) => {
                 let active = false
                 if (
                   (options.name || DEFAULT_TOOL_NAME) === presentationName &&
