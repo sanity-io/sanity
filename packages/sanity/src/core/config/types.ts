@@ -299,6 +299,18 @@ export interface DocumentPluginOptions {
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
+
+  drafts?: {
+    /**
+     * Whether the workspace provides the draft model for interacting with documents.
+     *
+     * When switched off, documents may only be edited:
+     *
+     *  - Inside a release.
+     *  - Outside a release if they support live-edit.
+     */
+    enabled?: boolean
+  }
 }
 
 /**
@@ -719,6 +731,18 @@ export interface Source {
      * @internal
      */
     components?: DocumentComponents
+
+    drafts: {
+      /**
+       * Whether the workspace provides the draft model for interacting with documents.
+       *
+       * When switched off, documents may only be edited:
+       *
+       *  - Inside a release.
+       *  - Outside a release if they support live-edit.
+       */
+      enabled: boolean
+    }
 
     /** @internal */
     unstable_fieldActions: (
