@@ -6,6 +6,7 @@ import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useSource} from '../../../../../core/studio'
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
@@ -28,9 +29,6 @@ interface UploadPlaceholderProps {
   type: string
 }
 
-// Date when the change from array to object in the data returned was introduced.
-const API_VERSION = '2024-04-19'
-
 function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const {
     accept,
@@ -51,7 +49,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   // Adjust the layout in narrow containers
   const collapsed = rect?.border && rect.border.width < 440
   const {t} = useTranslation()
-  const client = useClient({apiVersion: API_VERSION})
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const source = useSource()
 
   const assetSourcesWithUpload = useMemo(() => {
