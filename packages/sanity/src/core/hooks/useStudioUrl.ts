@@ -26,18 +26,21 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
   const isLoading = appIdLoading || organizationIdLoading
 
   const studioUrl = useMemo(() => {
+    console.log({
+      renderingContext,
+    })
     if (renderingContext?.name !== 'coreUi' || isLoading || !studioApp?.appId) {
       return defaultUrl || window.location.toString()
     }
 
-    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}/`
+    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}`
   }, [
     activeWorkspace.name,
     defaultUrl,
     isLoading,
     organizationId,
-    renderingContext?.name,
-    studioApp?.appId,
+    renderingContext,
+    studioApp.appId,
   ])
 
   return {

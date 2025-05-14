@@ -333,7 +333,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         // the document's edit intent link because
         // of bugs when resolving a document that has
         // multiple access paths within Structure
-        const copyUrl = `${studioUrl}${isCoreUi ? `intent/edit/id=${documentId};type=${documentType}` : ''}`
+        const copyUrl = `${studioUrl}${isCoreUi ? `/intent/edit/id=${documentId};type=${documentType}` : ''}`
         navigator.clipboard.writeText(copyUrl)
         pushToast({
           id: 'copy-document-url',
