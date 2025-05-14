@@ -26,9 +26,6 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
   const isLoading = appIdLoading || organizationIdLoading
 
   const studioUrl = useMemo(() => {
-    console.log({
-      renderingContext,
-    })
     if (renderingContext?.name !== 'coreUi' || isLoading || !studioApp?.appId) {
       return defaultUrl || window.location.toString()
     }

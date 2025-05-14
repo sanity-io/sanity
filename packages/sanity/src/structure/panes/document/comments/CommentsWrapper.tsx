@@ -61,12 +61,6 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         comment: commentId,
         inspect: COMMENTS_INSPECTOR_NAME,
       })
-      console.log({
-        path,
-        studioUrl,
-        base: window.location.origin,
-        fallback: window.location.toString(),
-      })
       return `${studioUrl}${path}`
     },
     [createPathWithParams, studioUrl],
