@@ -18,12 +18,12 @@ import {
   usePerspective,
   useSchema,
   useSource,
+  useStudioUrl,
   useTranslation,
   useUnique,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 
-import {useStudioUrl} from '../../../core/hooks/useStudioUrl'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'

@@ -12,6 +12,9 @@ interface UseStudioUrlReturn {
   studioUrl: string
 }
 
+/**
+ * @internal
+ */
 export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
   const renderingContextStore = useRenderingContextStore()
   const renderingContext = useObservable(renderingContextStore.renderingContext)

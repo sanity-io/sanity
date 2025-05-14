@@ -5,9 +5,9 @@ import {
   CommentsProvider,
   useCommentsEnabled,
   usePerspective,
+  useStudioUrl,
 } from 'sanity'
 
-import {useStudioUrl} from '../../../../core/hooks/useStudioUrl'
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 
