@@ -40,7 +40,7 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
     isLoading,
     organizationId,
     renderingContext,
-    studioApp.appId,
+    studioApp?.appId,
   ])
 
   return {
