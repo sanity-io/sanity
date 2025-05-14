@@ -12,7 +12,7 @@ interface UseStudioUrlReturn {
   studioUrl: string
 }
 
-export const useStudioUrl = (): UseStudioUrlReturn => {
+export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
   const renderingContextStore = useRenderingContextStore()
   const renderingContext = useObservable(renderingContextStore.renderingContext)
 
@@ -27,11 +27,18 @@ export const useStudioUrl = (): UseStudioUrlReturn => {
 
   const studioUrl = useMemo(() => {
     if (renderingContext?.name !== 'coreUi' || isLoading || !studioApp?.appId) {
-      return window.location.toString()
+      return defaultUrl || window.location.toString()
     }
 
-    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}`
-  }, [activeWorkspace.name, isLoading, organizationId, renderingContext?.name, studioApp?.appId])
+    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}/`
+  }, [
+    activeWorkspace.name,
+    defaultUrl,
+    isLoading,
+    organizationId,
+    renderingContext?.name,
+    studioApp?.appId,
+  ])
 
   return {
     isCoreUi: renderingContext?.name === 'coreUi',

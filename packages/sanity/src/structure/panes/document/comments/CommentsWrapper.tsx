@@ -7,6 +7,7 @@ import {
   usePerspective,
 } from 'sanity'
 
+import {useStudioUrl} from '../../../../core/hooks/useStudioUrl'
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 
@@ -40,6 +41,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const {params, setParams, createPathWithParams} = usePaneRouter()
+  const {studioUrl} = useStudioUrl(window.location.origin)
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -59,9 +61,15 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         comment: commentId,
         inspect: COMMENTS_INSPECTOR_NAME,
       })
-      return `${window.location.origin}${path}`
+      console.log({
+        path,
+        studioUrl,
+        base: window.location.origin,
+        fallback: window.location.toString(),
+      })
+      return `${studioUrl}${path}`
     },
-    [createPathWithParams],
+    [createPathWithParams, studioUrl],
   )
 
   const handleClearSelectedComment = useCallback(() => {
