@@ -13,7 +13,6 @@ import {
   getPublishedId,
   isVersionId,
   type PartialContext,
-  useActiveWorkspace,
   useCopyPaste,
   useDocumentForm,
   usePerspective,
@@ -21,12 +20,10 @@ import {
   useSource,
   useTranslation,
   useUnique,
-  useWorkspaceSchemaId,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {useStudioUrl} from '../../../core/hooks/useStudioUrl'
-import {useProjectOrganizationId} from '../../../core/store/_legacy/project/useProjectOrganizationId'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
@@ -315,10 +312,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
-
-  const {value: organizationId} = useProjectOrganizationId()
-  const schemaId = useWorkspaceSchemaId()
-  const {activeWorkspace} = useActiveWorkspace()
 
   const handleMenuAction = useCallback(
     (item: PaneMenuItem) => {
