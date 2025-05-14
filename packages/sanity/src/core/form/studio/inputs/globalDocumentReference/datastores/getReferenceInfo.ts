@@ -1,18 +1,13 @@
-import {type GlobalDocumentReferenceSchemaType, type SanityDocument} from '@sanity/types'
+import {type ListenEvent, type SanityClient, type SanityDocument} from '@sanity/client'
+import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import {keyBy} from 'lodash'
-import {combineLatest, EMPTY, type Observable, of, share} from 'rxjs'
+import {combineLatest, EMPTY, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {
-  type DocumentAvailability,
-  type FieldName,
-  getPreviewPaths,
-  prepareForPreview,
-} from '../../../../../preview'
+import {type DocumentAvailability, getPreviewPaths, prepareForPreview} from '../../../../../preview'
 import {createPathObserver} from '../../../../../preview/createPathObserver'
 import {isRecord} from '../../../../../util'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
-import {type ReferenceClient} from './getReferenceClient'
 
 const REQUEST_TAG_BASE = 'gdr'
 
@@ -34,7 +29,7 @@ const AVAILABILITY_NOT_FOUND = {
 /**
  * Takes a client instance and returns a function that can be called to retrieve reference information
  */
-export function createGetReferenceInfo(context: {client: ReferenceClient}) {
+export function createGetReferenceInfo(context: {client: SanityClient}) {
   const {client} = context
 
   /**
@@ -48,7 +43,7 @@ export function createGetReferenceInfo(context: {client: ReferenceClient}) {
     return (
       doc._type
         ? of(doc)
-        : client
+        : client.observable
             .getDocument<{_id: string; _type: string}>(doc._id)
             .pipe(map((res): {_id: string; _type?: string} => ({_id: doc._id, _type: res?._type})))
     ).pipe(
@@ -78,12 +73,26 @@ export function createGetReferenceInfo(context: {client: ReferenceClient}) {
         }
 
         const previewPaths = getPreviewPaths(refSchemaType?.preview) || []
-        const listener = client.listen('*', {}, {includeResult: true}).pipe(share())
+        const listener = client.observable.listen(
+          '*',
+          {},
+          {
+            includeResult: true,
+            tag: `${REQUEST_TAG_BASE}.preview`,
+            // by default listen only emits the "mutation" event, however we use the initial "welcome" event to trigger the initial state
+            events: ['mutation', 'welcome'],
+          },
+        )
         const observeFields = createObserveFields({client, listener})
         const observePaths = createPathObserver({observeFields})
 
         const publishedPreview$ = observePaths(doc, previewPaths).pipe(
-          map((result) => (result ? prepareForPreview(result, refSchemaType) : result)),
+          map((result) => {
+            if (!result) {
+              return null
+            }
+            return prepareForPreview(result, refSchemaType)
+          }),
         )
 
         return combineLatest([publishedPreview$]).pipe(
@@ -104,45 +113,63 @@ export function createGetReferenceInfo(context: {client: ReferenceClient}) {
 }
 
 function createObserveFields(context: {
-  client: ReferenceClient
-  listener: Observable<{type: 'welcome'} | {type: 'mutation'; data?: unknown}>
-}): (id: string, fields: FieldName[]) => Observable<Record<string, unknown> | null> {
+  client: SanityClient
+  listener: Observable<ListenEvent<Record<string, any>>>
+}) {
   const {client, listener} = context
-  return function observeFields(id: string, fields: string[]) {
+  return function observeFields(
+    id: string,
+    fields: string[],
+  ): Observable<SanityDocument<Record<string, any>> | null> {
     return listener.pipe(
       switchMap((event) => {
         if (event.type === 'welcome') {
-          return client.getDocument(id)
+          return client.observable
+            .getDocument(id, {
+              tag: `${REQUEST_TAG_BASE}.get-document`,
+            })
+            .pipe(
+              map((doc) => {
+                if (!doc) {
+                  return null
+                }
+                return doc
+              }),
+            )
         }
-        if (!event.data) {
+        if (event.type !== 'mutation') {
+          return EMPTY
+        }
+        const result = event.result
+        if (!result) {
           return EMPTY
         }
 
-        const data = event.data as {result: SanityDocument; documentId: string; transition: string}
-
-        if (data.documentId !== id) {
+        if (result.documentId !== id) {
           return EMPTY
         }
-        if (data.transition === 'disappear') {
+        if (result.transition === 'disappear') {
           return of(null)
         }
 
-        return of(data.result)
+        return of(result)
       }),
     )
   }
 }
 
 function fetchDocumentAvailability(
-  client: ReferenceClient,
+  client: SanityClient,
   id: string,
 ): Observable<DocumentAvailability | null> {
-  const queryParams = new URLSearchParams({
+  const requestOptions = {
+    uri: client.getDataUrl('doc', id),
+    json: true,
     excludeContent: 'true',
     tag: `${REQUEST_TAG_BASE}.availability`,
-  })
+  }
 
-  return client.getDocuments([id], queryParams).pipe(
+  return client.observable.request(requestOptions).pipe(
     map((response) => {
       const omitted = keyBy(response.omitted || [], (entry) => entry.id)
       const omittedEntry = omitted[id]

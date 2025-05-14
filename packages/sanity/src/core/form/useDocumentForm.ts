@@ -49,7 +49,14 @@ import {
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
-import {EMPTY_ARRAY, getDraftId, getPublishedId, getVersionFromId, useUnique} from '../util'
+import {
+  EMPTY_ARRAY,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  useUnique,
+} from '../util'
 import {
   type FormState,
   getExpandOperations,
@@ -146,6 +153,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     throw new Error(`Schema type for '${documentType}' not found`)
   }
   const liveEdit = Boolean(schemaType.liveEdit)
+  const publishedId = getPublishedId(documentId)
 
   const telemetry = useTelemetry()
 
@@ -259,12 +267,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
+  const targetDocumentId = useMemo(() => {
+    if (releaseId) {
+      return getVersionId(publishedId, releaseId)
+    }
+
+    // in cases where there is a draft in a live edit, we need to use it so that it can be published
+    // in case if the user has permissions to do so otherwise just use the published id
+    return liveEdit ? editState?.draft?._id || publishedId : getDraftId(documentId)
+  }, [documentId, editState?.draft?._id, liveEdit, publishedId, releaseId])
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
-      _id: liveEdit ? getPublishedId(documentId) : getDraftId(documentId),
+      _id: targetDocumentId,
     }
-  }, [liveEdit, value, documentId])
+  }, [value, targetDocumentId])
 
   const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
     document: docPermissionsInput,

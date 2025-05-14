@@ -1,17 +1,18 @@
 import {
   type Action,
+  type EditableReleaseDocument,
   type EditAction,
   type IdentifiedSanityDocumentStub,
+  type ReleaseDocument,
   type SanityClient,
 } from '@sanity/client'
 
 import {getPublishedId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
-import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
+import {getReleaseIdFromReleaseDocumentId} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
-import {type EditableReleaseDocument} from './types'
 
 interface operationsOptions {
   dryRun?: boolean

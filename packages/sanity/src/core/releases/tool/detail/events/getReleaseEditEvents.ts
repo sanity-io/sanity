@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {
   catchError,
@@ -18,7 +18,6 @@ import {
 } from 'rxjs'
 
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {type ReleaseDocument} from '../../../store/types'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
 import {type ReleaseEvent} from './types'
 

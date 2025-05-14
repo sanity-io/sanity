@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {
   isValidationErrorMarker,
   type PreviewValue,
@@ -30,7 +31,6 @@ import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
-import {type ReleaseDocument} from '../../store/types'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'

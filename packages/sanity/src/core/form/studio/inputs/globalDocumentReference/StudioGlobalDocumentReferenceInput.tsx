@@ -81,7 +81,7 @@ export function StudioGlobalDocumentReferenceInput(
   const {path, schemaType} = props
   const source = useSource()
   const client = source.getClient({
-    apiVersion: '2023-11-13',
+    apiVersion: '2025-02-19',
   })
   const getClient = source.getClient
   const {strategy: searchStrategy} = source.search

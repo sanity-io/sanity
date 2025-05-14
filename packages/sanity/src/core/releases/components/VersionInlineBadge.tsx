@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {type BadgeTone} from '@sanity/ui'
 import {type FC, type PropsWithChildren} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type ReleaseDocument} from '../store/types'
 import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 

@@ -5,37 +5,62 @@ Arguments
   <type>  Type of Resource to add (currently only 'function' is supported)
 
 Options
-  --name <name>                Name of the Resource
-  --fn-type <type>             Type of Function Resource to add (e.g. document-publish)
-  --fn-lang, --lang <ts|js>    Language of the Function Resource
-  --js, --javascript           Use JavaScript for the Function Resource
+  --name, -n <name>              Name of the Resource
+  --fn-type <type>               Type of Function to add (e.g. document-publish)
+  --fn-language, --lang <ts|js>  Language of the Function. Default: "ts"
+  --js, --javascript             Shortcut for --fn-language=js
+  --fn-helpers, --helpers        Add helpers to the Function
+  --no-fn-helpers                Do not add helpers to the Function
+  --fn-installer,                Package manager to use for Function helpers
+    --installer <npm|pnpm|yarn>    sets --fn-helpers to true
+  --install, -i                  Shortcut for --fn-installer=npm
 
 Examples:
-  # Add a Function Resource (TypeScript by default)
+  # Add a Function (TypeScript by default)
   sanity blueprints add function
 
-  # Add a Function Resource with a specific name
-  sanity blueprints add function --name my-function
+  # Add a Function with a specific name and install helpers with npm
+  sanity blueprints add function --name my-function -i
 
-  # Add a Function Resource with a specific type
-  sanity blueprints add function --name my-function --fn-type document-publish
+  # Add a Function with a specific type
+  sanity blueprints add function --fn-type document-publish
 
-  # Add a Function Resource in JavaScript
-  sanity blueprints add function --name my-function --fn-type document-publish --js
+  # Add a JavaScript Function
+  sanity blueprints add function --js
+
+  # Add a Function without helpers
+  sanity blueprints add function --no-fn-helpers
+
+  # Add a document-publish .js Function with helpers and install with npm
+  sanity blueprints add function -n roboto --fn-type document-publish --js -i
 `
 
 export interface BlueprintsAddFlags {
   'name'?: string
+  'n'?: string
+
   'fn-type'?: string
-  'fn-lang'?: string
-  'language'?: string
+
+  'fn-language'?: string
   'lang'?: string
+
   'js'?: boolean
   'javascript'?: boolean
+
+  'fn-helpers'?: boolean
+  'helpers'?: boolean
+  'no-fn-helpers'?: boolean
+
+  'fn-installer'?: string
+  'installer'?: string
+
+  'install'?: boolean
+  'i'?: boolean
 }
 
 const defaultFlags: BlueprintsAddFlags = {
-  //
+  'fn-language': 'ts',
+  // 'fn-helpers': true, // ask, for now
 }
 
 const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
@@ -47,8 +72,16 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   description: 'Add a Resource to a Blueprint',
 
   async action(args, context) {
-    const {output} = context
+    const {output, apiClient} = context
     const flags = {...defaultFlags, ...args.extOptions}
+
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
+    const {token} = client.config()
+
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
     const [resourceType] = args.argsWithoutOptions
 
@@ -57,16 +90,31 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       return
     }
 
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
-    const {success, error} = await blueprintAddCore({
+
+    const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (msg) => output.print(msg),
+      log: (message) => output.print(message),
+      token,
+    })
+
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
+    if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
+
+    const {success, error} = await blueprintAddCore({
+      ...cmdConfig.value,
       args: {type: resourceType},
       flags: {
-        'name': flags.name,
+        'name': flags.n ?? flags.name,
         'fn-type': flags['fn-type'],
-        'language': flags['fn-lang'] ?? flags.language ?? flags.lang,
+        'language': flags.lang ?? flags['fn-language'],
         'javascript': flags.js || flags.javascript,
+        'fn-helpers': userWantsFnHelpers,
+        'fn-installer': flags.installer ?? flags['fn-installer'],
+        'install': flags.i || flags.install,
       },
     })
 
