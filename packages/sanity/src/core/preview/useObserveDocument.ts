@@ -35,6 +35,8 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 
 /**
  * @deprecated Use `useUnstableObserveDocument` instead
+ * @internal
+ * @beta
  */
 export const unstable_useObserveDocument = (
   args: Parameters<typeof useUnstableObserveDocument>,
