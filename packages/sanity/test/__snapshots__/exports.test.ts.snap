@@ -589,6 +589,7 @@ exports[`exports snapshot 1`] = `
     "useSearchState": "function",
     "useSetPerspective": "function",
     "useSource": "function",
+    "useStudioUrl": "function",
     "useSyncState": "function",
     "useTemplatePermissions": "function",
     "useTemplatePermissionsFromHookFactory": "function",
