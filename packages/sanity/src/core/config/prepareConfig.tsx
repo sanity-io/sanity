@@ -33,6 +33,7 @@ import {
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -576,6 +577,15 @@ function resolveSource({
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
         }),
+      drafts: {
+        enabled: resolveConfigProperty({
+          config,
+          context,
+          reducer: draftsEnabledReducer,
+          propertyName: 'document.drafts.enabled',
+          initialValue: true,
+        }),
+      },
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,
