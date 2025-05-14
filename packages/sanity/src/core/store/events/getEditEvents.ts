@@ -5,6 +5,7 @@ import {
 } from '@sanity/types'
 
 import {getVersionFromId} from '../../util/draftUtils'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {
   type EditDocumentVersionEvent,
   isEditDocumentVersionEvent,
@@ -90,6 +91,7 @@ export function getEditEvents(
           documentId: documentId,
           revisionId: transaction.id,
           author: transaction.author,
+          documentVariantType: getDocumentVariantType(documentId),
         } satisfies UpdateLiveDocumentEvent)
       : ({
           type: 'editDocumentVersion',
@@ -101,6 +103,7 @@ export function getEditEvents(
           releaseId: getVersionFromId(documentId),
           revisionId: transaction.id,
           transactions: [getEditTransaction(transaction)],
+          documentVariantType: getDocumentVariantType(documentId),
         } satisfies EditDocumentVersionEvent)
     if (result.length === 0) {
       result.push(event)
