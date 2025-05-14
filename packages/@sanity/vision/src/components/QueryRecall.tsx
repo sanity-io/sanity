@@ -358,7 +358,7 @@ export function QueryRecall({
                     id={`${q._key}-menu`}
                     menu={
                       <Menu
-                        style={{background: 'white', backgroundColor: 'white', borderRadius: '11%'}}
+                      // style={{background: 'white', backgroundColor: 'white', borderRadius: '11%'}}
                       >
                         <MenuItem
                           padding={0}
