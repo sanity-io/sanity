@@ -21,13 +21,11 @@ import {
   useSource,
   useTranslation,
   useUnique,
-  useWorkspace,
   useWorkspaceSchemaId,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 
-import {createAppIdCache} from '../../../core/create/studio-app/appIdCache'
-import {useStudioAppIdStore} from '../../../core/create/studio-app/useStudioAppIdStore'
+import {useStudioUrl} from '../../../core/hooks/useStudioUrl'
 import {useProjectOrganizationId} from '../../../core/store/_legacy/project/useProjectOrganizationId'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
@@ -92,13 +90,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-
-  const [appIdCache] = useState(() => createAppIdCache())
-  const workspace = useWorkspace()
-  const e = useSource()
-  const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
-    enabled: true,
-  })
+  const {studioUrl, isCoreUi} = useStudioUrl()
 
   const perspective = usePerspective()
 
@@ -341,14 +333,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         // the document's edit intent link because
         // of bugs when resolving a document that has
         // multiple access paths within Structure
-
-        // https://www.sanity.io/@oSyH1iET5/studio/s6414xxopd34fx9vvgzkj49b/default/intent/edit/id=e1805d96-c43a-4b4a-9aac-2f2e64d748e6;type=apiChange
-        console.log(studioApp)
-        console.log({workspace})
-        console.log({organizationId, schemaId, activeWorkspace})
-        const constructedUrl = `https://www.sanity.io/@${organizationId}/studio/${studioApp?.appId}/${workspace.name}/intent/edit/id=${documentId};type=${documentType}`
-        console.log(constructedUrl)
-        navigator.clipboard.writeText(constructedUrl)
+        const copyUrl = `${studioUrl}${isCoreUi ? `/intent/edit/id=${documentId};type=${documentType}` : ''}`
+        navigator.clipboard.writeText(copyUrl)
         pushToast({
           id: 'copy-document-url',
           status: 'info',
@@ -390,11 +376,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       previousId,
       telemetry,
-      studioApp,
-      workspace,
-      organizationId,
-      schemaId,
-      activeWorkspace,
+      studioUrl,
+      isCoreUi,
       documentId,
       documentType,
       pushToast,
