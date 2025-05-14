@@ -1,7 +1,7 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
-import {type ReleaseDocument} from './types'
 import {useAllReleases} from './useAllReleases'
 
 /**

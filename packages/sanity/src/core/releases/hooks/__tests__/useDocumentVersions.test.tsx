@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {renderHook, waitFor} from '@testing-library/react'
 import {delay, of} from 'rxjs'
 import {describe, expect, it, type Mock, vi} from 'vitest'
@@ -6,7 +7,6 @@ import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {type ReleaseDocument} from '../../store'
 import {useDocumentVersions} from '../useDocumentVersions'
 
 vi.mock('../../store', () => ({

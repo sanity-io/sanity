@@ -1,7 +1,7 @@
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {getVersionFromId} from '../../util/draftUtils'
-import {type ReleaseDocument, type ReleaseType} from '../store/types'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {useDocumentVersions} from './useDocumentVersions'

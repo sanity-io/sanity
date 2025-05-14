@@ -1,4 +1,5 @@
-import {type ReleaseDocument} from '../../store/types'
+import {type ReleaseDocument} from '@sanity/client'
+
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {useBundleDocuments} from '../detail/useBundleDocuments'

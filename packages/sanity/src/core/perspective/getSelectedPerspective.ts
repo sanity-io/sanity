@@ -1,4 +1,5 @@
-import {type ReleaseDocument} from '../releases/store/types'
+import {type ReleaseDocument} from '@sanity/client'
+
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseId, type SelectedPerspective} from './types'
 

@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {
   combineLatest,
   distinctUntilChanged,
@@ -14,7 +14,6 @@ import {
 
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type ReleasesReducerState} from '../../../store/reducer'
-import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {getReleaseActivityEvents} from './getReleaseActivityEvents'

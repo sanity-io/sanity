@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -11,9 +12,7 @@ import {Preview} from '../../../preview'
 import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-
 /**
  * @internal
  */

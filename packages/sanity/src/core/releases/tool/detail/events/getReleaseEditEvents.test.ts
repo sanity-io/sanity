@@ -1,10 +1,9 @@
-import {type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {TestScheduler} from 'rxjs/testing'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {type ReleaseDocument} from '../../../store/types'
 import {
   type getReleaseEditEvents as getReleaseEditEventsFunction,
   INITIAL_VALUE,

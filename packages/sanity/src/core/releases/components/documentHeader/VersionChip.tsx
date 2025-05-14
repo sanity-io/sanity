@@ -1,3 +1,4 @@
+import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -25,7 +26,6 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
-import {type ReleaseDocument, type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
