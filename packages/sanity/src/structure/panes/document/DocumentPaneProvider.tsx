@@ -98,7 +98,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const e = useSource()
   const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
     enabled: true,
-    fallbackStudioOrigin: workspace.apps?.canvas?.fallbackStudioOrigin,
   })
 
   const perspective = usePerspective()
@@ -345,9 +344,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
         // https://www.sanity.io/@oSyH1iET5/studio/s6414xxopd34fx9vvgzkj49b/default/intent/edit/id=e1805d96-c43a-4b4a-9aac-2f2e64d748e6;type=apiChange
         console.log(studioApp)
-        console.log(workspace)
+        console.log({workspace})
         console.log({organizationId, schemaId, activeWorkspace})
-        const constructedUrl = `https://www.sanity.io/@${organizationId}/studio/s6414xxopd34fx9vvgzkj49b/${workspace.name}/intent/edit/id=${documentId};type=${documentType}`
+        const constructedUrl = `https://www.sanity.io/@${organizationId}/studio/${studioApp?.appId}/${workspace.name}/intent/edit/id=${documentId};type=${documentType}`
+        console.log(constructedUrl)
         navigator.clipboard.writeText(constructedUrl)
         pushToast({
           id: 'copy-document-url',
