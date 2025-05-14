@@ -6,6 +6,7 @@ import {getEditEvents} from './getEditEvents'
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
+  isDeleteDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
 
@@ -19,7 +20,10 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
     if (expandedEventsMap$.getValue().has(event.id)) {
       return // Already expanded
     }
-    if (isPublishDocumentVersionEvent(event) && event.versionRevisionId && event.creationEvent) {
+    if (
+      (isPublishDocumentVersionEvent(event) && event.versionRevisionId && event.creationEvent) ||
+      (isDeleteDocumentVersionEvent(event) && event.versionRevisionId && event.creationEvent)
+    ) {
       // This are the only events we can expand.
       // We need to get that creation event and use versionRevisionId and fetch the transactions that occurred
       // Since since the creation to the publish.

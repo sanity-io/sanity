@@ -7,6 +7,7 @@ import {
   type DocumentGroupEvent,
   getDocumentVariantType,
   isCreateDocumentVersionEvent,
+  isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
   LoadingBlock,
@@ -133,9 +134,10 @@ export const EventsTimeline = ({
         return <PublishedEventMenu event={event} />
       }
       if (
-        isPublishDocumentVersionEvent(event) &&
-        documentVariantType === 'draft' &&
-        event.creationEvent
+        (isPublishDocumentVersionEvent(event) &&
+          documentVariantType === 'draft' &&
+          event.creationEvent) ||
+        (isDeleteDocumentVersionEvent(event) && event.creationEvent)
       ) {
         return (
           <ExpandableTimelineItemButton
