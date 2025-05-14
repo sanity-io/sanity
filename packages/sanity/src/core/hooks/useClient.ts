@@ -43,7 +43,7 @@ export function useClient(): SanityClient
  * }
  * ```
  */
-export function useClient(clientOptions?: SourceClientOptions): SanityClient
+export function useClient(clientOptions: SourceClientOptions): SanityClient
 export function useClient(clientOptions?: SourceClientOptions): SanityClient {
   const source = useSource()
   if (!clientOptions) {
