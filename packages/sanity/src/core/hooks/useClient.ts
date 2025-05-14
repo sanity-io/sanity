@@ -5,7 +5,7 @@ import {useSource} from '../studio'
 
 /**
  *
- * @deprecated Calling `useClient()` without specifying an API version is deprecated and will stop working in the next major version - please specify a date, e.g. `useClient({apiVersion: "2025-02-07"})`.
+ * @deprecated Calling `useClient()` without specifying an API version is deprecated - specify a date to prevent breaking changes, e.g. `useClient({apiVersion: "2025-02-07"})`.
  *
  * React hook that returns a configured Sanity client instance based on the given configuration.
  * Automatically uses the correct project and dataset based on the current active workspace.
