@@ -1,16 +1,8 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
-import {
-  addDays,
-  addMonths,
-  format,
-  parse,
-  setDate,
-  setHours,
-  setMinutes,
-  setMonth,
-  setYear,
-} from 'date-fns'
+import {format} from '@sanity/util/legacyDateFormat'
+import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -26,8 +18,8 @@ import {
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import useDialogTimeZone from '../../../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {TimeInput} from '../TimeInput'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS} from './constants'
@@ -51,8 +43,9 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
-  showTimezone?: boolean
+  showTimeZone?: boolean
   isPastDisabled?: boolean
+  timeZoneScope: TimeZoneScope
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -90,12 +83,21 @@ export const Calendar = forwardRef(function Calendar(
     isPastDisabled,
     monthPickerVariant = 'select',
     padding = 2,
-    showTimezone = false,
+    showTimeZone = false,
+    timeZoneScope,
     ...restProps
   } = props
 
-  const {timeZone} = useTimeZone()
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
+  const {timeZone} = useTimeZone(timeZoneScope)
+
+  const getDisplayMonth = useCallback(() => {
+    return Number(format(focusedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
+  }, [focusedDate, timeZone.name])
+
+  const getDisplayYear = useCallback(() => {
+    return Number(format(focusedDate, 'YYYY', {timeZone: timeZone.name}))
+  }, [focusedDate, timeZone.name])
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -131,9 +133,16 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
-      onSelect(setHours(setMinutes(selectedDate, mins), hours))
+      if (!timeZone) {
+        onSelect(setHours(setMinutes(selectedDate, mins), hours))
+        return
+      }
+      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
+      const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
+      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
+      onSelect(utcDate)
     },
-    [onSelect, selectedDate],
+    [onSelect, selectedDate, timeZone],
   )
 
   const handleTimeChangeInputChange = useCallback(
@@ -259,7 +268,7 @@ export const Calendar = forwardRef(function Calendar(
           <CalendarMonthSelect
             onChange={handleFocusedMonthChange}
             monthNames={labels.monthNames}
-            value={focusedDate?.getMonth()}
+            value={getDisplayMonth()}
           />
         </Box>
         <Box marginLeft={2}>
@@ -270,13 +279,15 @@ export const Calendar = forwardRef(function Calendar(
               goToPreviousYear: labels.goToPreviousYear,
             }}
             onChange={setFocusedDateYear}
-            value={focusedDate.getFullYear()}
+            value={getDisplayYear()}
           />
         </Box>
       </Flex>
     )
   }, [
     focusedDate,
+    getDisplayMonth,
+    getDisplayYear,
     handleFocusedMonthChange,
     labels.goToNextYear,
     labels.goToPreviousYear,
@@ -332,7 +343,7 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(selectedDate, 'HH:mm')}
+                  value={format(selectedDate, 'HH:mm', {timeZone: timeZone.name})}
                   onChange={handleTimeChangeInputChange}
                 />
                 <Box marginLeft={2}>
@@ -340,7 +351,7 @@ export const Calendar = forwardRef(function Calendar(
                 </Box>
               </Flex>
 
-              {showTimezone && (
+              {showTimeZone && (
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"
@@ -370,7 +381,7 @@ export const Calendar = forwardRef(function Calendar(
             </>
           )}
 
-          {showTimezone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+          {showTimeZone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
         </Flex>
       </Box>
     </Box>

@@ -28,6 +28,8 @@ export function FallbackErrorScreen(props: {
             <Stack space={4}>
               <Heading>{heading}</Heading>
               <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
+              <pre>{error.toString()}</pre>
+              <pre>{stack}</pre>
               {isProd && (
                 <Text>
                   <strong>To report this error,</strong> copy the error details and share them with

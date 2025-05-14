@@ -3,20 +3,14 @@ import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {FormFieldBaseHeader} from '../components/formField/FormFieldBaseHeader'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
+import {useFieldActions} from '../field'
 import {type BooleanInputProps} from '../types'
-
-const Root = styled(Card)`
-  line-height: 1;
-`
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
-`
-
-const ZeroLineHeightBox = styled(Box)`
-  line-height: 0;
 `
 
 /**
@@ -26,7 +20,16 @@ const ZeroLineHeightBox = styled(Box)`
  */
 export function BooleanInput(props: BooleanInputProps) {
   const {t} = useTranslation()
-  const {id, value, schemaType, readOnly, elementProps, validation} = props
+  const {
+    focused,
+    __internal_comments: comments,
+    hovered,
+    onMouseEnter,
+    onMouseLeave,
+    actions,
+    __internal_slot: slot,
+  } = useFieldActions()
+  const {id, value, schemaType, readOnly, elementProps, validation, presence} = props
   const layout = schemaType.options?.layout || 'switch'
 
   const indeterminate = typeof value !== 'boolean'
@@ -37,7 +40,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   const input = (
-    <ZeroLineHeightBox padding={3}>
+    <Box padding={3}>
       <LayoutSpecificInput
         label={schemaType.title}
         {...elementProps}
@@ -46,20 +49,31 @@ export function BooleanInput(props: BooleanInputProps) {
         indeterminate={indeterminate}
         style={{margin: -4}}
       />
-    </ZeroLineHeightBox>
+    </Box>
   )
 
   return (
-    <Root border data-testid="boolean-input" radius={2} tone={tone}>
+    <Card border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex>
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
-        <Box flex={1} paddingY={2}>
-          <FormFieldHeaderText
-            deprecated={schemaType.deprecated}
-            description={schemaType.description}
+        <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
+          <FormFieldBaseHeader
+            __internal_comments={comments}
+            __internal_slot={slot}
+            actions={actions}
+            fieldFocused={Boolean(focused)}
+            fieldHovered={hovered}
+            presence={presence}
             inputId={id}
-            validation={validation}
-            title={schemaType.title}
+            content={
+              <FormFieldHeaderText
+                deprecated={schemaType.deprecated}
+                description={schemaType.description}
+                inputId={id}
+                validation={validation}
+                title={schemaType.title}
+              />
+            }
           />
         </Box>
         <CenterAlignedBox paddingX={3} paddingY={1}>
@@ -68,6 +82,6 @@ export function BooleanInput(props: BooleanInputProps) {
           </FormFieldStatus>
         </CenterAlignedBox>
       </Flex>
-    </Root>
+    </Card>
   )
 }

@@ -28,7 +28,7 @@ const getFormattedDate = (type = '', value: Date, options?: DateTimeOptions) => 
   return legacyDateFormat.format(
     value,
     type === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
-    type === 'date',
+    {useUTC: type === 'date'},
   )
 }
 

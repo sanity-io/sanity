@@ -17,8 +17,8 @@ import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
-import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -41,6 +41,7 @@ export interface DateTimeInputProps {
   padding?: number
   disableInput?: boolean
   isPastDisabled?: boolean
+  timeZoneScope: TimeZoneScope
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -61,13 +62,14 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     padding,
     disableInput,
     isPastDisabled,
+    timeZoneScope,
     ...rest
   } = props
   const {t} = useTranslation()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
-  const {zoneDateToUtc} = useTimeZone()
+  const {zoneDateToUtc} = useTimeZone(timeZoneScope)
 
   const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
 
@@ -160,6 +162,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       isPastDisabled={isPastDisabled}
                       onChange={onChange}
                       padding={padding}
+                      timeZoneScope={timeZoneScope}
                     />
                   </FocusLock>
                 </Box>
