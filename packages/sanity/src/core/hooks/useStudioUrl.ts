@@ -33,15 +33,9 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
       return defaultUrl || window.location.toString()
     }
 
-    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}`
-  }, [
-    activeWorkspace.name,
-    defaultUrl,
-    isLoading,
-    organizationId,
-    renderingContext,
-    studioApp?.appId,
-  ])
+    return window.parent.location.toString()
+    // return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}`
+  }, [defaultUrl, isLoading, renderingContext, studioApp?.appId])
 
   return {
     isCoreUi: renderingContext?.name === 'coreUi',
