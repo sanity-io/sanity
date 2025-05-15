@@ -82,9 +82,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     () => ({
       error: eventsStore.error,
       revisionId: eventsStore.revision?.revisionId || null,
-      onOlderRevision: Boolean(
-        rev && eventsStore.revision?.document && eventsStore.revision?.revisionId,
-      ),
+      onOlderRevision: Boolean(rev && !eventsStore.revision?.loading),
       revisionDocument: eventsStore.revision?.document || null,
       sinceDocument: eventsStore.sinceRevision?.document || null,
       ready: !eventsStore.loading,

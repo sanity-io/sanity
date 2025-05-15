@@ -387,6 +387,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
+  const revisionNotFound = onOlderRevision && !revisionDocument
+
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
@@ -447,6 +449,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         formState,
         unstable_languageFilter: languageFilter,
         revisionId,
+        revisionNotFound,
         lastNonDeletedRevId,
       }) satisfies DocumentPaneContextValue,
     [
@@ -506,6 +509,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       formState,
       languageFilter,
       revisionId,
+      revisionNotFound,
       lastNonDeletedRevId,
     ],
   )

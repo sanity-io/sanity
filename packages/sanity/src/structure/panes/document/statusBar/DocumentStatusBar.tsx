@@ -33,7 +33,7 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, onChange: onDocumentChange} = useDocumentPane()
+  const {editState, onChange: onDocumentChange, revisionNotFound} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective} = usePerspective()
   const {title} = useDocumentTitle()
@@ -77,6 +77,10 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     actions = <HistoryStatusBarActions />
   } else {
     actions = <DocumentStatusBarActions />
+  }
+
+  if (showingRevision && revisionNotFound) {
+    return null
   }
 
   return (
