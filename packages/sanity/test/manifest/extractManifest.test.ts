@@ -2,10 +2,37 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core'
+import {
+  extractCreateWorkspaceManifest,
+  extractManifestSchemaTypes,
+} from '../../src/_internal/manifest/extractWorkspaceManifest'
+import {createSchema, createWorkspaceFromConfig} from '../../src/core'
 
 describe('Extract studio manifest', () => {
+  describe('extract workspace config', () => {
+    test('should extract workspace config', async () => {
+      const projectId = 'ppsg7ml5'
+      const dataset = 'production'
+
+      const workspaceConfig = await createWorkspaceFromConfig({
+        projectId,
+        dataset,
+        name: 'default',
+        mediaLibrary: {
+          enabled: true,
+          libraryId: undefined,
+        },
+      })
+
+      const extracted = extractCreateWorkspaceManifest(workspaceConfig)
+      expect(extracted).toMatchObject({
+        name: 'default',
+        projectId,
+        dataset,
+        mediaLibrary: {enabled: true, libraryId: undefined},
+      })
+    })
+  })
   describe('serialize schema for manifest', () => {
     test('extracted schema should only include user defined types (and no built-in types)', () => {
       const documentType = 'basic'
@@ -81,6 +108,7 @@ describe('Extract studio manifest', () => {
               reason: 'old',
             },
             options: {
+              // @ts-expect-error - this is a test
               custom: 'value',
             },
             initialValue: {title: 'Default'},
