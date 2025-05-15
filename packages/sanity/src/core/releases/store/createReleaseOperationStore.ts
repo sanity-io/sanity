@@ -20,7 +20,10 @@ export interface ReleaseOperationsStore {
   unschedule: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   archive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   unarchive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
-  updateRelease: (release: EditableReleaseDocument, opts?: BaseActionOptions) => Promise<void>
+  updateRelease: (
+    release: EditableReleaseDocument,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
   createRelease: (
     release: EditableReleaseDocument,
     opts?: BaseActionOptions,
@@ -37,7 +40,7 @@ export interface ReleaseOperationsStore {
     documentId: string,
     initialValue?: Omit<EditableReleaseDocument, '_id' | '_type'>,
     opts?: BaseActionOptions,
-  ) => Promise<void>
+  ) => Promise<SingleActionResult>
   discardVersion: (
     releaseId: string,
     documentId: string,
@@ -86,7 +89,7 @@ export function createReleaseOperationsStore(options: {
       .filter(([_, value]) => value === undefined)
       .map(([key]) => `metadata.${key}`)
 
-    await handleReleaseLimitError(
+    return handleReleaseLimitError(
       client.releases.edit(
         {
           releaseId,
@@ -159,7 +162,7 @@ export function createReleaseOperationsStore(options: {
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
-    await client.createVersion(
+    return client.createVersion(
       {document: versionDocument, publishedId: getPublishedId(documentId), releaseId},
       opts,
     )

@@ -8,9 +8,7 @@ import {createReleasePermissionsStore} from './createReleasePermissionsStore'
 const RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE = 'ReleasePermissions'
 
 export interface useReleasePermissionsValue {
-  checkWithPermissionGuard: <
-    T extends (...args: any[]) => Promise<void | SingleActionResult> | void,
-  >(
+  checkWithPermissionGuard: <T extends (...args: any[]) => Promise<void | SingleActionResult>>(
     action: T,
     ...args: Parameters<T>
   ) => Promise<boolean>

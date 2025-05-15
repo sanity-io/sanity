@@ -37,7 +37,7 @@ export function createReleasePermissionsStore(
    * @returns true or false depending if the user can perform the action
    */
   const checkWithPermissionGuard = async <
-    T extends (...args: any[]) => Promise<void | SingleActionResult> | void,
+    T extends (...args: any[]) => Promise<void | SingleActionResult>,
   >(
     action: T,
     ...args: Parameters<T>
