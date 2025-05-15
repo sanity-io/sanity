@@ -1,5 +1,5 @@
 import {type ThrottleSettings} from 'lodash'
-import {useCallback, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
 import {postTask} from '../../templates/resolve'
@@ -30,10 +30,31 @@ export function useHookCollectionStates<Args, State>({
     mapHooksToStates(states, {hooks}),
   )
 
+  const abortControllerRef = useRef<AbortController | null>(null)
+
   const updateSnapshot = useCallback(() => {
-    postTask(() => {
-      setSnapshot(mapHooksToStates(states, {hooks}))
-    })
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    abortControllerRef.current = new AbortController()
+
+    const task = postTask(
+      () => {
+        setSnapshot(mapHooksToStates(states, {hooks}))
+      },
+      {signal: abortControllerRef.current.signal},
+    )
+
+    if (task instanceof Promise) {
+      task.catch((error) => {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        throw error
+      })
+    }
   }, [hooks, states])
 
   const requestUpdateSnapshot = useThrottledCallback(
