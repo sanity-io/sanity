@@ -48,6 +48,7 @@ Each test in the suite has its own build. This approach offers several advantage
 3. **Accurate Profiling**: Individual builds allow for more precise source maps, which leads to better profiling output and easier performance debugging.
 
 ## Debugging
+
 ### Locally
 
 Running the tests with the `HEADLESS` environment variable set to `false` will open Chrome and show you the tests as they are being executed.
@@ -57,10 +58,10 @@ HEADLESS=false pnpm run efps:test
 ```
 
 ### On CI
+
 The eFPS GitHub workflow has a manual dispatch where you can run it from a selected branch and enable “Record video”. This adds screen recordings for the failing tests as artifacts on the workflow run which can be useful when debugging issues that may only happen on CI.
 
 Run a manual dispatch here: https://github.com/sanity-io/sanity/actions/workflows/efps.yml
-
 
 ## Adding a New Test
 
