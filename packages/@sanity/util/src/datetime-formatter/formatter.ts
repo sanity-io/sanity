@@ -1,33 +1,11 @@
-function isValidLocale(locale: string): boolean {
-  try {
-    const formatter = new Intl.DateTimeFormat(locale)
-    return formatter !== null
-  } catch {
-    return false
-  }
-}
-
-function getValidLocale(preferredLocale: string): string {
-  // Try the preferred locale first
-  if (isValidLocale(preferredLocale)) {
-    return preferredLocale
-  }
-  // Try common fallbacks in order of preference
-  const fallbacks = ['en', 'en-GB', 'en-CA', 'en-AU']
-  for (const fallback of fallbacks) {
-    if (isValidLocale(fallback)) {
-      return fallback
-    }
-  }
-  return 'en'
-}
+import sanitizeLocale from './sanitizeLocale'
 
 function getMonthName(
   date: Date,
   style: 'long' | 'short' | 'narrow' | undefined = 'long',
   locale = 'en-US',
 ): string {
-  const validLocale = getValidLocale(locale)
+  const validLocale = sanitizeLocale(locale)
   return new Intl.DateTimeFormat(validLocale, {month: style}).format(date)
 }
 
@@ -36,7 +14,7 @@ function getDayName(
   style: 'long' | 'short' | 'narrow' | undefined = 'long',
   locale = 'en-US',
 ): string {
-  const validLocale = getValidLocale(locale)
+  const validLocale = sanitizeLocale(locale)
   return new Intl.DateTimeFormat(validLocale, {weekday: style}).format(date)
 }
 
@@ -296,7 +274,7 @@ function formatMomentLike(date: Date, formatStr: string): string {
   const tzRegex2 = /(z{1,2})/g
   output = output.replace(tzRegex2, (match) => {
     // z => EST, zzz => Eastern Standard Time
-    const validLocale = getValidLocale('en-US')
+    const validLocale = sanitizeLocale('en-US')
     return Intl.DateTimeFormat(validLocale, {
       timeZoneName: match.length === 1 ? 'short' : 'long',
     }).format(date)

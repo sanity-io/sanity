@@ -1,4 +1,5 @@
 import {useToast} from '@sanity/ui'
+import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
@@ -50,30 +51,6 @@ const offsetToMinutes = (offset: string): number => {
   return multiplier * (hours * 60 + minutes)
 }
 
-function isValidLocale(locale: string): boolean {
-  try {
-    const formatter = new Intl.DateTimeFormat(getValidLocale(locale))
-    return formatter !== null
-  } catch {
-    return false
-  }
-}
-
-function getValidLocale(preferredLocale: string): string {
-  if (isValidLocale(preferredLocale)) {
-    return preferredLocale
-  }
-
-  const fallbacks = ['en-US', 'en']
-  for (const fallback of fallbacks) {
-    if (isValidLocale(fallback)) {
-      return fallback
-    }
-  }
-
-  return 'en'
-}
-
 function getCachedTimeZoneInfo(
   locale: string,
   canonicalIdentifier: string,
@@ -86,12 +63,12 @@ function getCachedTimeZoneInfo(
     return offsetCache.get(cacheKey)!
   }
 
-  const formatter = new Intl.DateTimeFormat(getValidLocale(locale), {
+  const formatter = new Intl.DateTimeFormat(sanitizeLocale(locale), {
     timeZone: canonicalIdentifier,
     timeZoneName: 'long',
   })
 
-  const shortFormatter = new Intl.DateTimeFormat(getValidLocale(locale), {
+  const shortFormatter = new Intl.DateTimeFormat(sanitizeLocale(locale), {
     timeZone: canonicalIdentifier,
     timeZoneName: 'short',
   })
