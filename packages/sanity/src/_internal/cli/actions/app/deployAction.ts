@@ -38,7 +38,7 @@ export default async function deployAppAction(
 
   const client = apiClient({
     requireUser: true,
-    requireProject: false, // core apps are not project-specific
+    requireProject: false, // custom apps are not project-specific
   }).withConfig({apiVersion: 'v2024-08-01'})
 
   if (customSourceDir) {

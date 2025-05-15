@@ -294,7 +294,7 @@ export default async function initSanity(
 
   const flags = await prepareFlags()
 
-  // We're authenticated, now lets select or create a project (for studios) or org (for core apps)
+  // We're authenticated, now lets select or create a project (for studios) or org (for custom apps)
   const {projectId, displayName, isFirstProject, datasetName, schemaUrl, organizationId} =
     await getProjectDetails()
 
