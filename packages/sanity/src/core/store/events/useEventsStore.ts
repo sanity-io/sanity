@@ -120,13 +120,17 @@ export function useEventsStore({
     [client, documentId, revisionId],
   )
   const revision = useObservable(revision$, null)
+
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
     if (!events) return null
 
     if (since === '@lastPublished' || !since) {
-      // Skip the first published, the since and rev cannot be the same.
-      const lastPublishedId = events.slice(1).find(isPublishDocumentVersionEvent)?.id
+      const revisionIndex = events.findIndex((e) => e.id === revisionId)
+      // Skip the revision event and find the next published event
+      const lastPublishedId = events
+        .slice(revisionIndex + 1)
+        .find(isPublishDocumentVersionEvent)?.id
       if (lastPublishedId) return lastPublishedId
 
       // If it doesn't have a published event used the creation event as the since.
