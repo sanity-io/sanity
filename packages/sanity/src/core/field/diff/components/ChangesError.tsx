@@ -25,6 +25,7 @@ export function ChangesError({error}: {error?: Error | null}) {
                 i18nKey="changes.missing-since-document-error"
                 t={t}
                 values={{revisionId: error.revisionId}}
+                components={{Break: () => <br />}}
               />
             </Text>
           </Box>

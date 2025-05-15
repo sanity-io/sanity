@@ -329,7 +329,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.loading-changes': 'Loading changes…',
   /** Error message shown when the document revision could not be found */
   'changes.missing-since-document-error':
-    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. Please select a different <strong>From</strong> entry.",
+    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. <Break/> This is probably due to history retention settings of your plan. <Break/> Please select a different <strong>From</strong> entry.",
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
