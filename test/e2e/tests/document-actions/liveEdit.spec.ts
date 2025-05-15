@@ -14,7 +14,7 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
   await page.getByRole('button', {name: 'Published'}).click()
   // Wait a little bit for the document to load
   await page.waitForTimeout(2_000)
-
+  await expect(page.getByTestId('field-name')).not.toBeDisabled()
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
 
   // Wait a little bit for the document to start saving
