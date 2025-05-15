@@ -105,11 +105,11 @@ describeCliTest('CLI: `sanity dev`', () => {
         basePath: '/app-base-path',
         args: ['--port', `${port}`],
         cwd: path.join(fixturesPath, 'app'),
-        expectedTitle: 'Sanity CORE App',
+        expectedTitle: 'Sanity SDK App',
       })
 
       // Verify that the dashboard URL is printed
-      expect(stdout).toContain('View your app in the Sanity dashboard here:')
+      expect(stdout).toContain('View your app in the Sanity Dashboard here:')
       expect(stdout).toMatch(/https:\/\/(?:www\.)?(?:sanity\.io|sanity\.work)\/@/)
       expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
     })
