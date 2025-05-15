@@ -24,18 +24,20 @@ Examples
   sanity functions test echo --data '{ "id": 1 }' --timeout 60
 `
 
-const defaultFlags = {
-  'data': undefined,
-  'file': undefined,
-  'timeout': 10, // seconds
-  'api': undefined,
-  'dataset': undefined,
-  'project-id': undefined,
-  'project': undefined,
-  'projectId': undefined,
+export interface FunctionsTestFlags {
+  'data'?: string
+  'file'?: string
+  'timeout'?: number
+  'api'?: string
+  'dataset'?: string
+  'project-id'?: string
 }
 
-const testFunctionsCommand: CliCommandDefinition = {
+const defaultFlags: FunctionsTestFlags = {
+  timeout: 10, // seconds
+}
+
+const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   name: 'test',
   group: 'functions',
   helpText,
@@ -43,55 +45,47 @@ const testFunctionsCommand: CliCommandDefinition = {
     '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
-    const {output} = context
-    const {print, error: printError} = output
+    const {apiClient, output} = context
     const [name] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
+
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
+    const {token} = client.config()
+
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
     if (!name) {
       throw new Error('You must provide a function name as the first argument')
     }
 
-    const {test} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {functionTestCore} = await import('@sanity/runtime-cli/cores/functions')
 
-    const {parsedBlueprint} = await blueprint.readLocalBlueprint()
+    const cmdConfig = await initBlueprintConfig({
+      bin: 'sanity',
+      log: (message: string) => output.print(message),
+      token,
+    })
 
-    try {
-      const fn = findFunction.findFunctionByName(parsedBlueprint, name)
-      if (!fn) {
-        throw new Error(`Function ${name} has no source code`)
-      }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-      const projectId = flags['project-id'] ?? flags.projectId ?? flags.project
-      const {json, logs, error} = await test.testAction(
-        fn,
-        {
-          data: flags.data,
-          file: flags.file,
-          timeout: flags.timeout,
-        },
-        {
-          clientOptions: {
-            apiVersion: flags.api,
-            dataset: flags.dataset,
-            projectId: projectId,
-          },
-        },
-      )
+    const {success, error} = await functionTestCore({
+      ...cmdConfig.value,
+      args: {name},
+      flags: {
+        'data': flags.data,
+        'file': flags.file,
+        'timeout': flags.timeout,
+        'api': flags.api,
+        'dataset': flags.dataset,
+        'project-id': flags['project-id'],
+      },
+    })
 
-      if (error) {
-        print(error.toString())
-      } else {
-        print('Logs:')
-        print(logs)
-        print('Response:')
-        print(JSON.stringify(json, null, 2))
-      }
-    } catch (error) {
-      printError(`Error: ${error || 'Unknown error'}`)
-    }
+    if (!success) throw new Error(error)
   },
 }
 
