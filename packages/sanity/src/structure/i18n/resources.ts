@@ -169,6 +169,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
   /** Title of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.title': 'Adding document to release…',
+  /** The text for the revision not found banner */
+  'banners.revision-not-found.description':
+    "We couldn't find the document revision selected, please select another entry from the history list.",
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
