@@ -100,14 +100,16 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   }, [events, toEvent])
   if (!events.length) {
     return (
-      <Stack padding={3} space={3}>
-        <Text size={1} weight="medium">
-          {t('timeline.error.no-document-history-title')}
-        </Text>
-        <Text muted size={1}>
-          {t('timeline.error.no-document-history-description')}
-        </Text>
-      </Stack>
+      <Box paddingX={2}>
+        <Stack padding={3} space={3}>
+          <Text size={1} weight="medium">
+            {t('timeline.error.no-document-history-title')}
+          </Text>
+          <Text muted size={1}>
+            {t('timeline.error.no-document-history-description')}
+          </Text>
+        </Stack>
+      </Box>
     )
   }
   return (
