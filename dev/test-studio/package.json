@@ -11,7 +11,7 @@
     "lint": "eslint --cache .",
     "sanity:build": "sanity build --source-maps",
     "sanity:dev": "sanity dev",
-    "sanity:manifest": "cross-env SANITY_AUTH_TOKEN=${SANITY_API_DEPLOY_TOKEN:-true} sanity schema deploy",
+    "sanity:manifest": "cross-env SANITY_AUTH_TOKEN=${SANITY_API_DEPLOY_TOKEN:-true} ../.bin/sanity schema deploy",
     "start": "sanity start",
     "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
