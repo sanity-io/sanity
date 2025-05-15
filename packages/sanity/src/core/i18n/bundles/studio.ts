@@ -327,6 +327,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.loading-author': 'Loading…',
   /** Loading changes in Review Changes Pane */
   'changes.loading-changes': 'Loading changes…',
+  /** Error message shown when the document revision could not be found */
+  'changes.missing-since-document-error':
+    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. Please select a different <strong>From</strong> entry.",
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
