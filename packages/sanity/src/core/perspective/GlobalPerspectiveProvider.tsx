@@ -1,10 +1,10 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Text, useToast} from '@sanity/ui'
 import {type ReactNode, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
-import {type ReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {LATEST} from '../releases/util/const'

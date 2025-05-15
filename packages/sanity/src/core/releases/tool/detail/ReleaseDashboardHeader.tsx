@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
 import {
   Box,
@@ -12,7 +13,6 @@ import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../index'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 

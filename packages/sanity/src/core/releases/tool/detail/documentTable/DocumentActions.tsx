@@ -20,7 +20,7 @@ const DocumentActionsInner = memo(
     releaseTitle,
   }: {
     document: BundleDocumentRow
-    releaseTitle: string
+    releaseTitle: string | undefined
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
@@ -113,7 +113,7 @@ const DocumentActionsInner = memo(
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}
-            fromPerspective={releaseTitle}
+            fromPerspective={releaseTitle || t('release-placeholder.title')}
           />
         )}
         {showUnpublishDialog && (
@@ -131,7 +131,7 @@ const DocumentActionsInner = memo(
 
 export const DocumentActions = memo(function GuardedDocumentActions(props: {
   document: BundleDocumentRow
-  releaseTitle: string
+  releaseTitle: string | undefined
 }) {
   const schema = useSchema()
   const type = schema.get(props.document.document._type)

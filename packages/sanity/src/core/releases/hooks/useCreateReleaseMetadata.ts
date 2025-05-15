@@ -1,7 +1,7 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {useTimeZone} from '../../hooks/useTimeZone'
-import {type EditableReleaseDocument} from '../store'
 
 export const useCreateReleaseMetadata = () => {
   const {zoneDateToUtc} = useTimeZone({type: 'contentReleases'} as const)

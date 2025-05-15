@@ -1,6 +1,5 @@
+import {type ReleaseType} from '@sanity/client'
 import {type BadgeTone} from '@sanity/ui'
-
-import {type ReleaseType} from '../store/types'
 
 /**
  * @internal

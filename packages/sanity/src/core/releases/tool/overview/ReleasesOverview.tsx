@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {format, isSameDay} from 'date-fns'
@@ -15,7 +16,7 @@ import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZ
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
-import {isReleaseDocument, type ReleaseDocument} from '../../store/types'
+import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'

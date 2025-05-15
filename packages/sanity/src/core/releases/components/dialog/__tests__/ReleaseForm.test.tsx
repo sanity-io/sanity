@@ -1,9 +1,10 @@
+import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
-import {type EditableReleaseDocument, type ReleaseDocument, useActiveReleases} from '../../../store'
+import {useActiveReleases} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
 import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'

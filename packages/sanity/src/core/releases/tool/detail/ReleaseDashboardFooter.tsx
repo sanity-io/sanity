@@ -1,8 +1,9 @@
 /* eslint-disable no-nested-ternary */
+import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
+import {isReleaseScheduledOrScheduling} from '../../index'
 import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'

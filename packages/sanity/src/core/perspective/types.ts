@@ -1,6 +1,4 @@
-import {type ClientPerspective} from '@sanity/client'
-
-import {type ReleaseDocument} from '../releases/store/types'
+import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 
 /**
  * @beta

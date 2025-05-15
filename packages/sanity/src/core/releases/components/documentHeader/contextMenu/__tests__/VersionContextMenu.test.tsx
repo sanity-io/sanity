@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -8,7 +9,6 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
-import {type ReleaseDocument} from '../../../../store/types'
 import {VersionContextMenu} from '../VersionContextMenu'
 
 vi.mock('sanity/router', async (importOriginal) => ({

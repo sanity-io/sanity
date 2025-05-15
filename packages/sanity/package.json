@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "3.88.2",
+  "version": "3.88.3",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "sanity",
@@ -293,7 +293,7 @@
     "@sanity/pkg-utils": "6.13.4",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/ui-workshop": "^1.2.11",
-    "@sanity/visual-editing-csm": "^2.0.16",
+    "@sanity/visual-editing-csm": "^2.0.17",
     "@sentry/types": "^8.12.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
