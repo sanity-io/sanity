@@ -11,7 +11,7 @@
     "#config": "./placeholderConfig.ts"
   },
   "scripts": {
-    "start": "LC_ALL=en_US node --import @swc-node/register/esm-register ./index.ts",
+    "start": "  node --import @swc-node/register/esm-register ./index.ts",
     "test": "npm start",
     "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
   },
