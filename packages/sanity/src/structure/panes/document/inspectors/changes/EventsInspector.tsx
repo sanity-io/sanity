@@ -98,7 +98,18 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
       return event
     })
   }, [events, toEvent])
-
+  if (!events.length) {
+    return (
+      <Stack padding={3} space={3}>
+        <Text size={1} weight="medium">
+          {t('timeline.error.no-document-history-title')}
+        </Text>
+        <Text muted size={1}>
+          {t('timeline.error.no-document-history-description')}
+        </Text>
+      </Stack>
+    )
+  }
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3} style={{position: 'relative'}}>
@@ -173,7 +184,7 @@ function Content({
   sameRevisionSelected: boolean
 }) {
   if (error) {
-    return <ChangesError />
+    return <ChangesError error={error} />
   }
 
   if (loading) {
@@ -201,6 +212,7 @@ function Content({
     </DocumentChangeContext.Provider>
   )
 }
+
 function SameRevisionSelected() {
   const {t} = useTranslation('')
   return (
