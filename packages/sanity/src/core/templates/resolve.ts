@@ -11,6 +11,7 @@ import {
 } from '@sanity/types'
 import {isDeepEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
 
+import {postTask} from '../util/postTask'
 import {type Template} from './types'
 import deepAssign from './util/deepAssign'
 import {isRecord} from './util/isRecord'
@@ -306,18 +307,4 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   }
 
   return merged
-}
-
-/**
- * Schedule the provided callback using `scheduler.postTask`, if it's available.
- * Otherwise, call it immediately.
- */
-export function postTask<Result>(
-  callback: () => Result,
-  options: PostTaskOptions = {},
-): Result | Promise<Result> {
-  if ('scheduler' in window && typeof window.scheduler?.postTask === 'function') {
-    return window.scheduler.postTask(callback, options)
-  }
-  return callback()
 }
