@@ -1,10 +1,10 @@
 import {type ThrottleSettings} from 'lodash'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
+import {postTask} from '../../templates/resolve'
 import {isNonNullable, useThrottledCallback} from '../../util'
 import {getHookId} from './actionId'
-import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 import {type GetHookCollectionStateProps} from './types'
 
 const throttleOptions: ThrottleSettings = {trailing: true}
@@ -30,11 +30,8 @@ export function useHookCollectionStates<Args, State>({
     mapHooksToStates(states, {hooks}),
   )
 
-  const timeoutRef = useRef(0)
   const updateSnapshot = useCallback(() => {
-    cancelIdleCallback(timeoutRef.current)
-
-    timeoutRef.current = requestIdleCallback(() => {
+    postTask(() => {
       setSnapshot(mapHooksToStates(states, {hooks}))
     })
   }, [hooks, states])

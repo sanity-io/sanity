@@ -312,7 +312,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
  * Schedule the provided callback using `scheduler.postTask`, if it's available.
  * Otherwise, call it immediately.
  */
-function postTask<Result>(
+export function postTask<Result>(
   callback: () => Result,
   options: PostTaskOptions = {},
 ): Result | Promise<Result> {
