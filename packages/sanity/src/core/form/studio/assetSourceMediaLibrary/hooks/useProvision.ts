@@ -202,11 +202,5 @@ export function useProvision(
     [client, projectId, onLibraryId, onProvisionError],
   )
 
-  return (
-    useObservable(observable) ?? {
-      id: undefined,
-      organizationId: undefined,
-      status: 'loading',
-    }
-  )
+  return useObservable(observable, {status: 'loading'})
 }
