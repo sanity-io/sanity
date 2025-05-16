@@ -4,6 +4,7 @@ import {type ButtonTone} from '@sanity/ui'
 import {
   ArchivedRelease,
   DeletedRelease,
+  DuplicatedRelease,
   UnarchivedRelease,
   UnscheduledRelease,
 } from '../../../__telemetry__/releases.telemetry'
@@ -15,6 +16,7 @@ export type ReleaseAction =
   | 'unschedule'
   | 'publish'
   | 'schedule'
+  | 'duplicate'
 
 interface BaseReleaseActionsMap {
   toastSuccessI18nKey?: string
@@ -68,5 +70,10 @@ export const RELEASE_ACTION_MAP: Record<
     confirmDialog: false,
     toastFailureI18nKey: 'toast.unschedule.error',
     telemetry: UnscheduledRelease,
+  },
+  duplicate: {
+    confirmDialog: false,
+    toastFailureI18nKey: 'toast.duplicate.error',
+    telemetry: DuplicatedRelease,
   },
 }

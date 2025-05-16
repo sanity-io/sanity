@@ -14,12 +14,17 @@ import {
   type ReleaseOperationsStore,
 } from '../createReleaseOperationStore'
 
+vi.mock('../../util/createReleaseId', () => ({
+  createReleaseId: () => '_.releases.rDuplicate',
+}))
+
 describe('createReleaseOperationsStore', () => {
   let mockClient: any
 
   beforeEach(() => {
     mockClient = {
       config: vi.fn().mockReturnValue({dataset: 'test-dataset'}),
+      action: vi.fn().mockResolvedValue(undefined),
       releases: {
         create: vi.fn().mockResolvedValue(undefined),
         edit: vi.fn().mockResolvedValue(undefined),
@@ -172,16 +177,24 @@ describe('createReleaseOperationsStore', () => {
         undefined,
       )
 
-      expect(mockClient.createVersion).toHaveBeenCalledWith(
+      expect(mockClient.action).toHaveBeenCalledWith([
         {
+          actionType: 'sanity.action.document.version.create',
           document: {
+            ...releaseDocuments[0],
             _id: 'versions.revert-release-id.doc1',
           },
           publishedId: 'doc1',
-          releaseId: 'revert-release-id',
         },
-        undefined,
-      )
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[1],
+            _id: 'versions.revert-release-id.doc2',
+          },
+          publishedId: 'doc2',
+        },
+      ])
 
       expect(mockClient.releases.publish).toHaveBeenCalledWith(
         {
@@ -207,7 +220,25 @@ describe('createReleaseOperationsStore', () => {
         undefined,
       )
 
-      expect(mockClient.createVersion).toHaveBeenCalledTimes(2)
+      expect(mockClient.action).toHaveBeenCalledWith([
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[0],
+            _id: 'versions.revert-release-id.doc1',
+          },
+          publishedId: 'doc1',
+        },
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[1],
+            _id: 'versions.revert-release-id.doc2',
+          },
+          publishedId: 'doc2',
+        },
+      ])
+
       expect(mockClient.releases.publish).not.toHaveBeenCalled()
     })
 
@@ -225,18 +256,13 @@ describe('createReleaseOperationsStore', () => {
     })
 
     it('should handle partial failure gracefully when creating versions', async () => {
-      mockClient.createVersion.mockRejectedValueOnce(new Error('Failed to create version'))
+      mockClient.action.mockRejectedValueOnce(new Error('Failed to create version'))
 
-      const result = await store.revertRelease(
-        revertReleaseDocumentId,
-        releaseDocuments,
-        releaseMetadata,
-        'staged',
-      )
+      await expect(
+        store.revertRelease(revertReleaseDocumentId, releaseDocuments, releaseMetadata, 'staged'),
+      ).rejects.toThrow('Failed to create version')
 
-      expect(result).toBeUndefined()
       expect(mockClient.releases.create).toHaveBeenCalledTimes(1)
-      expect(mockClient.createVersion).toHaveBeenCalledTimes(2)
     })
 
     it('should throw an error if creating the release fails', async () => {
@@ -504,6 +530,76 @@ describe('createReleaseOperationsStore', () => {
       },
       opts,
     )
+  })
+
+  describe('duplicateRelease', () => {
+    let store: ReturnType<typeof createStore>
+
+    beforeEach(() => {
+      store = createStore()
+    })
+
+    it('should create a new release with copied metadata and a modified title', async () => {
+      await store.duplicateRelease(activeASAPRelease.metadata)
+
+      expect(mockClient.releases.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            title: `${activeASAPRelease.metadata.title} (Copy)`,
+          }),
+        }),
+        undefined,
+      )
+    })
+
+    it('should duplicate release documents when provided', async () => {
+      const releaseDocuments = [
+        {_id: 'doc1', _type: 'document', title: 'Document 1'},
+        {_id: 'doc2', _type: 'document', title: 'Document 2'},
+      ]
+
+      await store.duplicateRelease(publishedASAPRelease.metadata, releaseDocuments)
+
+      expect(mockClient.releases.create).toHaveBeenCalled()
+      expect(mockClient.action).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            actionType: 'sanity.action.document.version.create',
+            document: expect.objectContaining({
+              _id: expect.stringMatching(/doc1$/),
+              title: 'Document 1',
+            }),
+            publishedId: 'doc1',
+          }),
+          expect.objectContaining({
+            actionType: 'sanity.action.document.version.create',
+            document: expect.objectContaining({
+              _id: expect.stringMatching(/doc2$/),
+              title: 'Document 2',
+            }),
+            publishedId: 'doc2',
+          }),
+        ]),
+      )
+    })
+
+    it('should handle errors when creating the release', async () => {
+      mockClient.releases.create.mockRejectedValueOnce(new Error('Failed to create release'))
+
+      await expect(store.duplicateRelease(activeScheduledRelease.metadata)).rejects.toThrow(
+        'Failed to create release',
+      )
+    })
+
+    it('should handle errors when creating versions', async () => {
+      const releaseDocuments = [{_id: 'doc1', _type: 'document', title: 'Document 1'}]
+      mockClient.action.mockRejectedValueOnce(new Error('Failed to create versions'))
+
+      await expect(
+        store.duplicateRelease(archivedScheduledRelease.metadata, releaseDocuments),
+      ).rejects.toThrow('Failed to create versions')
+      expect(mockClient.releases.create).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('handleReleaseLimitError', () => {

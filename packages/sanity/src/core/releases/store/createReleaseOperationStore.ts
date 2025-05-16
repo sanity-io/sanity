@@ -1,5 +1,6 @@
 import {
   type BaseActionOptions,
+  type CreateVersionAction,
   type EditableReleaseDocument,
   type IdentifiedSanityDocumentStub,
   type ReleaseDocument,
@@ -9,7 +10,7 @@ import {
 
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
-import {getReleaseIdFromReleaseDocumentId} from '../index'
+import {createReleaseId, getReleaseIdFromReleaseDocumentId} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
@@ -34,6 +35,10 @@ export interface ReleaseOperationsStore {
     documents: RevertDocument[],
     releaseMetadata: ReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
+  ) => Promise<void>
+  duplicateRelease: (
+    releaseMetadata: ReleaseDocument['metadata'],
+    releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => Promise<void>
   createVersion: (
     releaseId: string,
@@ -197,18 +202,45 @@ export function createReleaseOperationsStore(options: {
         releaseType: 'asap',
       },
     })
-    await Promise.allSettled(
-      releaseDocuments.map((document) =>
-        handleCreateVersion(
-          getReleaseIdFromReleaseDocumentId(revertReleaseId),
-          document._id,
-          document,
-        ),
-      ),
+    const versionId = getReleaseIdFromReleaseDocumentId(revertReleaseId)
+    const newVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
+      (releaseDocument) => ({
+        actionType: 'sanity.action.document.version.create',
+        document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+        publishedId: getPublishedId(releaseDocument._id),
+      }),
     )
+    await client.action(newVersionDocumentActions)
 
     if (revertType === 'immediate') {
       await handlePublishRelease(revertReleaseId)
+    }
+  }
+
+  const handleDuplicateRelease = async (
+    releaseMetadata: ReleaseDocument['metadata'],
+    releaseDocuments?: IdentifiedSanityDocumentStub[],
+  ) => {
+    const duplicateReleaseId = createReleaseId()
+
+    await handleCreateRelease({
+      _id: duplicateReleaseId,
+      metadata: {
+        ...releaseMetadata,
+        title: `${releaseMetadata.title} (Copy)`,
+      },
+    })
+
+    if (releaseDocuments) {
+      const versionId = getReleaseIdFromReleaseDocumentId(duplicateReleaseId)
+      const duplicateVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
+        (releaseDocument) => ({
+          actionType: 'sanity.action.document.version.create',
+          document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+          publishedId: getPublishedId(releaseDocument._id),
+        }),
+      )
+      await client.action(duplicateVersionDocumentActions)
     }
   }
 
@@ -222,6 +254,7 @@ export function createReleaseOperationsStore(options: {
     publishRelease: handlePublishRelease,
     deleteRelease: handleDeleteRelease,
     revertRelease: handleRevertRelease,
+    duplicateRelease: handleDuplicateRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
