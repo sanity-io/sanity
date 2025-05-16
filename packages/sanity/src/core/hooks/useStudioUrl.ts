@@ -32,7 +32,7 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
   const isCoreUi = renderingContext?.name === 'coreUi'
 
   const studioUrl = useMemo(() => {
-    if (isCoreUi || isLoading || !studioApp?.appId || !organizationId) {
+    if (!isCoreUi || isLoading || !studioApp?.appId || !organizationId) {
       return defaultUrl || window.location.toString()
     }
 
