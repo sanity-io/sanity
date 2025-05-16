@@ -33,28 +33,21 @@ export function useHookCollectionStates<Args, State>({
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const updateSnapshot = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-    }
-
+    abortControllerRef.current?.abort()
     abortControllerRef.current = new AbortController()
 
-    const task = postTask(
+    postTask(
       () => {
         setSnapshot(mapHooksToStates(states, {hooks}))
       },
       {signal: abortControllerRef.current.signal},
-    )
+    )?.catch((error) => {
+      if (error.name === 'AbortError') {
+        return
+      }
 
-    if (task instanceof Promise) {
-      task.catch((error) => {
-        if (error.name === 'AbortError') {
-          return
-        }
-
-        throw error
-      })
-    }
+      throw error
+    })
   }, [hooks, states])
 
   const requestUpdateSnapshot = useThrottledCallback(
