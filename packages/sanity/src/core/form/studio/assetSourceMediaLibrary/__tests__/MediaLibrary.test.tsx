@@ -99,29 +99,28 @@ describe('provisioning', () => {
   })
 
   test('renders error catch by the ErrorBoundary if something unexpected happens', async () => {
-    const client = createMockSanityClient(
-      {
-        requests: {
-          '/projects/mock-project-id': {
-            organizationId,
-          },
-          '/media-libraries?organizationId=mock-organization-id': {
-            data: [],
-          },
-        },
-      },
-      {
-        requestError: (path) => {
-          if (path === '/media-libraries') {
+    const client = createMockSanityClient({
+      requestCallback: (request) => {
+        switch (request.uri) {
+          case '/projects/mock-project-id':
             return {
-              statusCode: 500,
-              response: 'Unexpected error',
+              statusCode: 200,
+              data: {
+                organizationId,
+              },
             }
-          }
-          return undefined
-        },
+          case '/media-libraries?organizationId=mock-organization-id':
+            return {
+              statusCode: 400,
+              data: {
+                error: 'Unexpected error',
+              },
+            }
+          default:
+            return undefined
+        }
       },
-    )
+    })
     const TestProvider = await createWrapperComponent(client as any)
     const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
 

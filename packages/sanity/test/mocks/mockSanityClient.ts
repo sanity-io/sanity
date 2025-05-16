@@ -1,5 +1,6 @@
-import {type ErrorProps, ServerError} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
+
+type HTTPMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH'
 
 export interface MockClientTransactionLog {
   id: number
@@ -27,10 +28,17 @@ export interface MockClientLog {
 }
 
 export function createMockSanityClient(
-  data: {requests?: Record<string, any>} = {},
+  data: {
+    requests?: Record<string, any>
+    requestCallback?: (request: {uri: string; method: HTTPMethod}) =>
+      | {
+          statusCode: number
+          data: any
+        }
+      | undefined
+  } = {},
   options: {
     apiVersion?: string
-    requestError?: (path: string) => Error | ErrorProps | undefined
   } = {},
 ) {
   const requests: Record<string, any> = {
@@ -108,23 +116,16 @@ export function createMockSanityClient(
 
     withConfig: () => mockClient,
 
-    request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
+    request: (opts: {uri: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
       $log.request.push(opts)
 
-      // Throw error if the request is returning something from the requestError callback
-      if (options.requestError) {
-        const error = options.requestError(opts.uri)
-        if (error instanceof Error) {
-          return Promise.reject(error)
-        } else if (error) {
-          return Promise.reject(
-            new ServerError({
-              response: error.response,
-              statusCode: error.statusCode,
-              statusText: 'error',
-            }),
-          )
-        }
+      const requestCallbackValue =
+        data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
+
+      if (requestCallbackValue) {
+        return requestCallbackValue.statusCode >= 400
+          ? Promise.reject(requestCallbackValue)
+          : Promise.resolve(requestCallbackValue)
       }
 
       if (opts.uri.startsWith(requestUriPrefix)) {
@@ -168,23 +169,22 @@ export function createMockSanityClient(
         return of({type: 'welcome'})
       },
 
-      request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
+      request: (opts: {
+        uri: string
+        tag?: string
+        withCredentials?: boolean
+        method: HTTPMethod
+      }) => {
         // console.log('mockSanityClient.observable.request', opts)
 
         $log.observable.request.push(opts)
+        const requestCallbackValue =
+          data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
 
-        // Throw error if the request is returning something from the requestError callback
-        if (options.requestError) {
-          const error = options.requestError(opts.uri)
-          if (error instanceof Error) {
-            throw error
-          } else if (error) {
-            throw new ServerError({
-              response: error.response,
-              statusCode: error.statusCode,
-              statusText: 'error',
-            })
-          }
+        if (requestCallbackValue) {
+          return requestCallbackValue.statusCode >= 400
+            ? new Error(requestCallbackValue.data)
+            : of(requestCallbackValue.data)
         }
 
         if (opts.uri?.startsWith(requestUriPrefix)) {
