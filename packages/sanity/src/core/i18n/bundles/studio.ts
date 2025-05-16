@@ -168,12 +168,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
 
+  /** Error messages for the Media Library Asset Source  */
+  'asset-sources.media-library.error.library-not-found':
+    'No available Media Library was found for this project.',
+
   /** Menu Items for Media Library Asset Source */
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
 
-  /** Error messages for the Media Library Asset Source  */
-  'asset-sources.media-library.error.library-not-found': 'No available Media Library was found for this project.',
+  /** Info messages for the Media Library Asset Source  */
+  'asset-sources.media-library.info.provisioning':
+    'Please wait while we prepare your Media Library',
 
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
