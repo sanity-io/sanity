@@ -1,3 +1,4 @@
+import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {type ReactElement, useMemo, useState} from 'react'
@@ -7,15 +8,20 @@ import {
   ChangeList,
   ChangesError,
   type DocumentChangeContextInstance,
+  type DocumentGroupEvent,
+  isReleaseDocument,
   LoadingBlock,
   NoChanges,
+  type ObjectDiff,
   type ObjectSchemaType,
   ScrollContainer,
   Translate,
   useEvents,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
+import {structureLocaleNamespace} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
@@ -47,6 +53,67 @@ const DIFF_INITIAL_VALUE = {
   diff: null,
   loading: true,
   error: null,
+}
+
+const CompareWithPublishedView = () => {
+  const {documentId, schemaType, editState, displayed} = useDocumentPane()
+  const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
+  const {t} = useTranslation(structureLocaleNamespace)
+  const rootDiff = useMemo(() => {
+    const diff = diffInput(
+      wrap(editState?.published ?? {}, {author: ''}),
+      wrap(displayed ?? {}, {author: ''}),
+    ) as ObjectDiff
+
+    return diff
+  }, [editState?.published, displayed])
+
+  if (selectedReleaseId && !editState?.version) {
+    return null
+  }
+  if (selectedPerspective === 'drafts' && !editState?.draft) {
+    return null
+  }
+  if (selectedPerspectiveName === 'published' || !displayed?._rev) {
+    return null
+  }
+  return (
+    <Stack space={2} marginBottom={3}>
+      <Card borderBottom paddingBottom={3}>
+        <Stack space={3} paddingTop={1}>
+          <Text size={1} weight="medium">
+            {t('events.compare-with-published.title')}
+          </Text>
+          <Text size={1} muted>
+            <Translate
+              i18nKey="events.compare-with-published.description"
+              t={t}
+              values={{
+                version: isReleaseDocument(selectedPerspective)
+                  ? selectedPerspective.metadata?.title
+                  : 'draft',
+              }}
+            />
+          </Text>
+        </Stack>
+      </Card>
+      <DocumentChangeContext.Provider
+        value={{
+          documentId,
+          schemaType,
+          rootDiff,
+          isComparingCurrent: true,
+          FieldWrapper: (props) => props.children,
+          value: displayed,
+          showFromValue: true,
+        }}
+      >
+        <Box paddingY={1}>
+          <ChangeList diff={rootDiff} schemaType={schemaType} />
+        </Box>
+      </DocumentChangeContext.Provider>
+    </Stack>
+  )
 }
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
@@ -98,6 +165,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
       return event
     })
   }, [events, toEvent])
+
   if (!events.length) {
     return (
       <Box paddingX={2}>
@@ -112,6 +180,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
       </Box>
     )
   }
+
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3} style={{position: 'relative'}}>
@@ -162,6 +231,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                   loading={revision?.loading || sinceRevision?.loading || false}
                   schemaType={schemaType}
                   sameRevisionSelected={sinceEvent?.id === toEvent?.id}
+                  sinceEvent={sinceEvent}
                 />
               )}
             </Box>
@@ -178,15 +248,22 @@ function Content({
   loading,
   schemaType,
   sameRevisionSelected,
+  sinceEvent,
 }: {
   error?: Error | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
   schemaType: ObjectSchemaType
   sameRevisionSelected: boolean
+  sinceEvent: DocumentGroupEvent | null
 }) {
   if (error) {
-    return <ChangesError error={error} />
+    return (
+      <>
+        <CompareWithPublishedView />
+        {sinceEvent?.type !== 'historyCleared' && <ChangesError error={error} />}
+      </>
+    )
   }
 
   if (loading) {

@@ -1,7 +1,8 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
-import {type Observable} from 'rxjs'
+import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
+import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 import {type EventsStoreRevision} from './types'
 
 const documentRevisionCache: Record<string, Observable<EventsStoreRevision>> = Object.create(null)
@@ -15,6 +16,10 @@ export function getDocumentAtRevision({
   documentId: string
   revisionId: string
 }): Observable<EventsStoreRevision | null> {
+  if (revisionId === HISTORY_CLEARED_EVENT_ID) {
+    // return calculateInitialDocument({client, documentId})
+    return of({document: null, loading: false, revisionId: revisionId})
+  }
   const cacheKey = `${documentId}@${revisionId}`
   const dataset = client.config().dataset
   if (!documentRevisionCache[cacheKey]) {

@@ -93,12 +93,16 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
               borderRadius: 'calc(23px / 2)',
             }}
           >
-            <UserAvatar user={author} />
-            <Inline paddingLeft={2}>
-              <Text muted size={1} style={{color: color.text}}>
-                {user ? user.displayName : t('changes.loading-author')}
-              </Text>
-            </Inline>
+            {author && (
+              <>
+                <UserAvatar user={author} />
+                <Inline paddingLeft={2}>
+                  <Text muted size={1} style={{color: color.text}}>
+                    {user ? user.displayName : t('changes.loading-author')}
+                  </Text>
+                </Inline>
+              </>
+            )}
           </Flex>
           <Text as="time" muted size={1} dateTime={timestamp}>
             {timeAgo}

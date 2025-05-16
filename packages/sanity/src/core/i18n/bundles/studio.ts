@@ -321,7 +321,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.loading-changes': 'Loading changes…',
   /** Error message shown when the document revision could not be found */
   'changes.missing-since-document-error':
-    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. <Break/> This is probably due to history retention settings of your plan. <Break/> Please select a different <strong>From</strong> entry.",
+    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. <Break/> This is probably due to history retention policy of your plan. <Break/> Please select a different <strong>From</strong> entry.",
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
@@ -1866,6 +1866,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.edited-live': 'Live edited',
   /** Label shown in review changes timeline when a document has been edited live, with a timestamp */
   'timeline.operation.edited-live_timestamp': 'Live edited: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document has been created */
+  'timeline.operation.history-cleared': 'Deleted by retention policy',
   /** Label shown in review changes timeline when a document was published */
   'timeline.operation.published': 'Published',
   /** Label shown in review changes timeline when a document was published, with a timestamp */

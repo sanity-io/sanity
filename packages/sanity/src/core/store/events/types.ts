@@ -155,6 +155,7 @@ export type DocumentGroupEvent =
   | CreateLiveDocumentEvent
   | UpdateLiveDocumentEvent
   | EditDocumentVersionEvent
+  | HistoryClearedEvent
 
 /**
  * @hidden
@@ -272,6 +273,15 @@ export interface CreateDocumentVersionEvent extends BaseEvent {
    * This is present when this creation event is already published.
    */
   parentId?: string
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface HistoryClearedEvent extends BaseEvent {
+  type: 'historyCleared'
+  documentId: string
 }
 
 /**
