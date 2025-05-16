@@ -14,6 +14,10 @@ import {
   type ReleaseOperationsStore,
 } from '../createReleaseOperationStore'
 
+vi.mock('../../util/createReleaseId', () => ({
+  createReleaseId: () => '_.releases.rDuplicate',
+}))
+
 describe('createReleaseOperationsStore', () => {
   let mockClient: any
 
@@ -526,6 +530,76 @@ describe('createReleaseOperationsStore', () => {
       },
       opts,
     )
+  })
+
+  describe('duplicateRelease', () => {
+    let store: ReturnType<typeof createStore>
+
+    beforeEach(() => {
+      store = createStore()
+    })
+
+    it('should create a new release with copied metadata and a modified title', async () => {
+      await store.duplicateRelease(activeASAPRelease.metadata)
+
+      expect(mockClient.releases.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            title: `${activeASAPRelease.metadata.title} (Copy)`,
+          }),
+        }),
+        undefined,
+      )
+    })
+
+    it('should duplicate release documents when provided', async () => {
+      const releaseDocuments = [
+        {_id: 'doc1', _type: 'document', title: 'Document 1'},
+        {_id: 'doc2', _type: 'document', title: 'Document 2'},
+      ]
+
+      await store.duplicateRelease(publishedASAPRelease.metadata, releaseDocuments)
+
+      expect(mockClient.releases.create).toHaveBeenCalled()
+      expect(mockClient.action).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            actionType: 'sanity.action.document.version.create',
+            document: expect.objectContaining({
+              _id: expect.stringMatching(/doc1$/),
+              title: 'Document 1',
+            }),
+            publishedId: 'doc1',
+          }),
+          expect.objectContaining({
+            actionType: 'sanity.action.document.version.create',
+            document: expect.objectContaining({
+              _id: expect.stringMatching(/doc2$/),
+              title: 'Document 2',
+            }),
+            publishedId: 'doc2',
+          }),
+        ]),
+      )
+    })
+
+    it('should handle errors when creating the release', async () => {
+      mockClient.releases.create.mockRejectedValueOnce(new Error('Failed to create release'))
+
+      await expect(store.duplicateRelease(activeScheduledRelease.metadata)).rejects.toThrow(
+        'Failed to create release',
+      )
+    })
+
+    it('should handle errors when creating versions', async () => {
+      const releaseDocuments = [{_id: 'doc1', _type: 'document', title: 'Document 1'}]
+      mockClient.action.mockRejectedValueOnce(new Error('Failed to create versions'))
+
+      await expect(
+        store.duplicateRelease(archivedScheduledRelease.metadata, releaseDocuments),
+      ).rejects.toThrow('Failed to create versions')
+      expect(mockClient.releases.create).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('handleReleaseLimitError', () => {
