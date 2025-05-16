@@ -38,7 +38,7 @@ export const ReleaseMenuButton = ({
 }: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
-  const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease, unschedule, duplicateRelease} = useReleaseOperations()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
@@ -68,6 +68,15 @@ export const ReleaseMenuButton = ({
     return guardWithReleaseLimitUpsell(() => unarchive(release._id), true)
   }, [guardWithReleaseLimitUpsell, release._id, unarchive])
 
+  const handleDuplicate = useCallback(
+    async () =>
+      guardWithReleaseLimitUpsell(() => {
+        const releaseDocuments = documents?.map((document) => document.document)
+        duplicateRelease(release.metadata, releaseDocuments)
+      }, true),
+    [guardWithReleaseLimitUpsell, duplicateRelease, documents, release.metadata],
+  )
+
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
       if (action === 'publish' || action === 'schedule') return
@@ -78,6 +87,7 @@ export const ReleaseMenuButton = ({
         archive,
         unarchive: handleUnarchive,
         unschedule,
+        duplicate: handleDuplicate,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
@@ -139,13 +149,14 @@ export const ReleaseMenuButton = ({
       archive,
       handleUnarchive,
       unschedule,
+      handleDuplicate,
+      selectedReleaseId,
+      release._id,
       telemetry,
+      setPerspective,
       toast,
       t,
       releaseTitle,
-      selectedReleaseId,
-      setPerspective,
-      release._id,
     ],
   )
 
