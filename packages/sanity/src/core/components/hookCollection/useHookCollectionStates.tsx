@@ -3,8 +3,8 @@ import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
 import {isNonNullable, useThrottledCallback} from '../../util'
+import {postTask} from '../../util/postTask'
 import {getHookId} from './actionId'
-import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 import {type GetHookCollectionStateProps} from './types'
 
 const throttleOptions: ThrottleSettings = {trailing: true}
@@ -30,12 +30,23 @@ export function useHookCollectionStates<Args, State>({
     mapHooksToStates(states, {hooks}),
   )
 
-  const timeoutRef = useRef(0)
-  const updateSnapshot = useCallback(() => {
-    cancelIdleCallback(timeoutRef.current)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-    timeoutRef.current = requestIdleCallback(() => {
-      setSnapshot(mapHooksToStates(states, {hooks}))
+  const updateSnapshot = useCallback(() => {
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+
+    postTask(
+      () => {
+        setSnapshot(mapHooksToStates(states, {hooks}))
+      },
+      {signal: abortControllerRef.current.signal},
+    )?.catch((error) => {
+      if (error.name === 'AbortError') {
+        return
+      }
+
+      throw error
     })
   }, [hooks, states])
 
