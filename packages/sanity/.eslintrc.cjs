@@ -22,7 +22,7 @@ module.exports = {
           },
           {
             from: 'sanity/_internal__contents',
-            allow: ['sanity', 'sanity/_internal__contents'],
+            allow: ['sanity', 'sanity/_internal__contents', 'sanity__contents'],
           },
           {
             // export
