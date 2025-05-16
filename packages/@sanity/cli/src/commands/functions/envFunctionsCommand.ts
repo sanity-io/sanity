@@ -22,7 +22,11 @@ Examples
   sanity functions env list echo
 `
 
-const envFunctionsCommand: CliCommandDefinition = {
+export interface FunctionsEnvFlags {
+  //
+}
+
+const envFunctionsCommand: CliCommandDefinition<FunctionsEnvFlags> = {
   name: 'env',
   group: 'functions',
   helpText,
@@ -31,7 +35,6 @@ const envFunctionsCommand: CliCommandDefinition = {
     'Add or remove an environment variable or list environment variables for a Sanity function',
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
     const [subCommand, name, key, value] = args.argsWithoutOptions
 
     if (!subCommand || !['add', 'list', 'remove'].includes(subCommand)) {
@@ -49,71 +52,53 @@ const envFunctionsCommand: CliCommandDefinition = {
       requireProject: false,
     })
 
-    if (name === '') {
+    if (!name) {
       throw new Error('You must provide a function name as the first argument')
     }
 
     const token = client.config().token
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {env: envAction} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint, getBlueprintAndStack} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {functionEnvAddCore, functionEnvListCore, functionEnvRemoveCore} = await import(
+      '@sanity/runtime-cli/cores/functions'
+    )
 
-    const {deployedStack} = await getBlueprintAndStack({token})
+    const cmdConfig = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
-    if (!deployedStack) {
-      throw new Error('Stack not found')
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    let response
+    switch (subCommand) {
+      case 'add':
+        response = await functionEnvAddCore({
+          ...cmdConfig.value,
+          args: {name, key, value},
+        })
+        break
+      case 'list':
+        response = await functionEnvListCore({
+          ...cmdConfig.value,
+          args: {name},
+        })
+        break
+      case 'remove':
+        response = await functionEnvRemoveCore({
+          ...cmdConfig.value,
+          args: {name, key},
+        })
+        break
+      default:
+        throw new Error(`Unknown subcommand: ${subCommand}`)
     }
 
-    const blueprintConfig = blueprint.readConfigFile()
-    const projectId = blueprintConfig?.projectId
+    const {success, error} = response
 
-    const {externalId} = findFunction.findFunctionByName(deployedStack, name)
-
-    if (token && projectId) {
-      if (subCommand === 'add') {
-        print(`Updating "${key}" environment variable in "${name}"`)
-        const result = await envAction.update(externalId, key, value, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Update of "${key}" succeeded`)
-        } else {
-          print(`Failed to update "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      } else if (subCommand === 'remove') {
-        print(`Removing "${key}" environment variable in "${name}"`)
-        const result = await envAction.remove(externalId, key, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Removal of "${key}" succeeded`)
-        } else {
-          print(`Failed to remove "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      } else if (subCommand === 'list') {
-        print(`Environment variables in "${name}"`)
-        const result = await envAction.list(externalId, {
-          token,
-          projectId,
-        })
-        if (result.ok && Array.isArray(result.envvars)) {
-          for (const envVarKey of result.envvars) {
-            print(envVarKey)
-          }
-        } else {
-          print(`Failed to list environment variables in "${key}"`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      }
-    } else {
-      print('You must run this command from a blueprints project')
-    }
+    if (!success) throw new Error(error)
   },
 }
 
