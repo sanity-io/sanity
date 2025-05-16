@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {map, of} from 'rxjs'
+import {map, type Observable, of, shareReplay} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../../store'
@@ -18,12 +18,39 @@ export interface DocumentPerspectiveState {
   loading: boolean
 }
 
+// Create a singleton cache for observables
+export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
+
 const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
+
 const INITIAL_VALUE = {
   data: [],
   error: null,
   loading: true,
 }
+
+function createObservable(
+  documentPreviewStore: any,
+  publishedId: string,
+): Observable<DocumentPerspectiveState> {
+  return documentPreviewStore
+    .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`, undefined, {
+      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+    })
+    .pipe(
+      swr(`${publishedId}`),
+      map(({value}) => ({
+        data: value.documentIds,
+        loading: false,
+        error: null,
+      })),
+      catchError((error) => {
+        return of({error, data: [] as string[], loading: false})
+      }),
+      shareReplay({refCount: true, bufferSize: 1}),
+    )
+}
+
 /**
  * Fetches the document versions for a given document
  * @param props - document Id of the document (might include release id)
@@ -33,27 +60,18 @@ const INITIAL_VALUE = {
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
-
   const publishedId = getPublishedId(documentId)
-
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(() => {
-    return documentPreviewStore
-      .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`, undefined, {
-        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-      })
-      .pipe(
-        swr(`${publishedId}`),
-        map(({value}) => ({
-          data: value.documentIds,
-          loading: false,
-          error: null,
-        })),
-        catchError((error) => {
-          return of({error, data: [] as string[], loading: false})
-        }),
-      )
+    const cachedObservable = observableCache.get(publishedId)
+    if (cachedObservable) {
+      return cachedObservable
+    }
+
+    const newObservable = createObservable(documentPreviewStore, publishedId)
+    observableCache.set(publishedId, newObservable)
+    return newObservable
   }, [documentPreviewStore, publishedId])
 
   const result = useObservable(observable, INITIAL_VALUE)
