@@ -189,6 +189,7 @@
       ]
     },
     "overrides": {
+      "styled-components": "npm:@sanity/styled-components@6.1.18-2",
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
       "@types/node": "$@types/node",
