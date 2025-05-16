@@ -130,7 +130,7 @@ export function useProvision(projectId: string): ProvisionResponse {
   if (!projectId) {
     throw new Error('projectId is required to fetch organizationId')
   }
-  const client = useClient({apiVersion: 'vX'}).observable
+  const client = useClient({apiVersion: 'v2025-02-19'}).observable
   const observable = useMemo(
     () =>
       getOrganizationIdFromProjectId(client, projectId).pipe(
