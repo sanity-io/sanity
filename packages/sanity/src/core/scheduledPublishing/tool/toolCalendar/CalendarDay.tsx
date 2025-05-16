@@ -4,8 +4,8 @@ import {format, isWeekend} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SCHEDULE_ACTION_DICTIONARY, SCHEDULE_STATE_DICTIONARY} from '../../constants'
-import useTimeZone from '../../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
@@ -120,7 +120,7 @@ type SchedulesByState = Record<ScheduleState, Schedule[]>
 
 function TooltipContent(props: TooltipContentProps) {
   const {date, schedules = []} = props
-  const {formatDateTz} = useTimeZone()
+  const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
 
   const schedulesByState = schedules.reduce<SchedulesByState>(
     (acc, val) => {
