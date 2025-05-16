@@ -158,6 +158,7 @@ const config = {
     'no-shadow': 'off',
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
+    'no-nested-ternary': 'off',
     'no-async-promise-executor': 'warn',
     'unicorn/prefer-string-slice': 'error',
     'unicorn/prefer-node-protocol': 'error',
