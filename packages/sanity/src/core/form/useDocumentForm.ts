@@ -23,13 +23,12 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
-import {useConditionalToast} from '../hooks/useConditionalToast'
+import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
-import {useTranslation} from '../i18n/hooks/useTranslation'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
@@ -191,7 +190,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
-  useConnectionToast(connectionState)
+  useReconnectingToast(connectionState === 'reconnecting')
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -568,16 +567,4 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
   }
-}
-
-const useConnectionToast = (connectionState: ConnectionState) => {
-  const {t} = useTranslation('studio')
-
-  useConditionalToast({
-    enabled: connectionState === 'reconnecting',
-    delay: 2000,
-    id: 'sanity/reconnecting',
-    status: 'warning',
-    title: t('form.reconnecting.toast.title'),
-  })
 }

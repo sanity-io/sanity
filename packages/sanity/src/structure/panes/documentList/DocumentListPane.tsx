@@ -8,6 +8,7 @@ import {
   useActiveReleases,
   useI18nText,
   usePerspective,
+  useReconnectingToast,
   useSchema,
   useTranslation,
   useUnique,
@@ -181,6 +182,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     }
     return SearchIcon
   }, [loadingVariant, searchInputValue])
+
+  useReconnectingToast(!connected)
 
   return (
     <>
