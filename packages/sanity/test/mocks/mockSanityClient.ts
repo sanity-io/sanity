@@ -1,3 +1,4 @@
+import {type ErrorProps, ServerError} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 
 export interface MockClientTransactionLog {
@@ -27,7 +28,10 @@ export interface MockClientLog {
 
 export function createMockSanityClient(
   data: {requests?: Record<string, any>} = {},
-  options: {apiVersion?: string; requestErrors?: Record<string, Error>} = {},
+  options: {
+    apiVersion?: string
+    requestError?: (path: string) => Error | ErrorProps | undefined
+  } = {},
 ) {
   const requests: Record<string, any> = {
     '/auth/providers': {
@@ -107,9 +111,20 @@ export function createMockSanityClient(
     request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
       $log.request.push(opts)
 
-      // Throw error if the request is in the requestErrors map
-      if (options.requestErrors?.[opts.uri]) {
-        throw options.requestErrors[opts.uri]
+      // Throw error if the request is returning something from the requestError callback
+      if (options.requestError) {
+        const error = options.requestError(opts.uri)
+        if (error instanceof Error) {
+          return Promise.reject(error)
+        } else if (error) {
+          return Promise.reject(
+            new ServerError({
+              response: error.response,
+              statusCode: error.statusCode,
+              statusText: 'error',
+            }),
+          )
+        }
       }
 
       if (opts.uri.startsWith(requestUriPrefix)) {
@@ -158,9 +173,18 @@ export function createMockSanityClient(
 
         $log.observable.request.push(opts)
 
-        // Throw error if the request is in the requestErrors map
-        if (options.requestErrors?.[opts.uri]) {
-          throw options.requestErrors[opts.uri]
+        // Throw error if the request is returning something from the requestError callback
+        if (options.requestError) {
+          const error = options.requestError(opts.uri)
+          if (error instanceof Error) {
+            throw error
+          } else if (error) {
+            throw new ServerError({
+              response: error.response,
+              statusCode: error.statusCode,
+              statusText: 'error',
+            })
+          }
         }
 
         if (opts.uri?.startsWith(requestUriPrefix)) {

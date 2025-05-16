@@ -111,8 +111,14 @@ describe('provisioning', () => {
         },
       },
       {
-        requestErrors: {
-          '/media-libraries': new Error('Unexpected error'),
+        requestError: (path) => {
+          if (path === '/media-libraries') {
+            return {
+              statusCode: 500,
+              response: 'Unexpected error',
+            }
+          }
+          return undefined
         },
       },
     )
