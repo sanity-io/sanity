@@ -210,7 +210,9 @@ function Content({
 
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <ChangeList diff={documentContext.rootDiff} schemaType={schemaType} />
+      <Box paddingY={1}>
+        <ChangeList diff={documentContext.rootDiff} schemaType={schemaType} />
+      </Box>
     </DocumentChangeContext.Provider>
   )
 }
