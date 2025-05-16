@@ -8,6 +8,8 @@ Options
   --limit <limit> The number of log entries to retrieve [default 50]
   --json If set return json
   --utc Use UTC dates in logs
+  --delete Delete all logs for the Function
+  --force Force delete all logs for the Function
 
 Examples
   # Retrieve logs for Sanity Function
@@ -78,9 +80,7 @@ const logsFunctionsCommand: CliCommandDefinition<FunctionsLogsFlags> = {
     const {success, error} = await functionLogsCore({
       ...cmdConfig.value,
       args: {name},
-      flags: {
-        limit: flags.limit,
-      },
+      flags,
     })
 
     if (!success) throw new Error(error)
