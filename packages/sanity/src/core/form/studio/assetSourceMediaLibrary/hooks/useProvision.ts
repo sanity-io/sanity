@@ -38,7 +38,8 @@ export class ProvisionError extends Error {
 type ProvisionResponse = {
   id?: string
   organizationId?: string
-  status: 'provisioning' | 'active' | 'loading'
+  status: 'provisioning' | 'active' | 'loading' | 'error'
+  error?: ProvisionError
 }
 
 function getMediaLibrariesForOrganization(
@@ -125,11 +126,7 @@ function createMediaLibrary(
   })
 }
 
-export function useProvision(
-  projectId: string,
-  onProvisionError?: (error: ProvisionError) => Observable<ProvisionResponse>,
-  onLibraryId?: (libraryId: string) => void,
-): ProvisionResponse {
+export function useProvision(projectId: string): ProvisionResponse {
   if (!projectId) {
     throw new Error('projectId is required to fetch organizationId')
   }
@@ -138,15 +135,14 @@ export function useProvision(
     () =>
       getOrganizationIdFromProjectId(client, projectId).pipe(
         switchMap((organizationId) => {
-          // console.log('Fetched Organization ID:', organizationId)
           return getMediaLibrariesForOrganization(client, organizationId).pipe(
             concatMap((mediaLibraryData) => {
               if (mediaLibraryData.length > 0) {
-                const id = mediaLibraryData[0].id
-                if (onLibraryId) {
-                  onLibraryId(id)
-                }
-                return of({id, organizationId, status: 'active'} satisfies ProvisionResponse)
+                return of({
+                  id: mediaLibraryData[0].id,
+                  organizationId,
+                  status: 'active',
+                } satisfies ProvisionResponse)
               }
               return createMediaLibrary(client, organizationId).pipe(
                 // eslint-disable-next-line max-nested-callbacks
@@ -173,12 +169,7 @@ export function useProvision(
                         if (libraryData.id) {
                           return requestMediaLibraryStatus(client, libraryData.id).pipe(
                             concatMap((statusData) => {
-                              if (statusData.status === 'active') {
-                                if (onLibraryId) {
-                                  onLibraryId(statusData.id ?? '')
-                                }
-                              }
-                              return of(libraryData)
+                              return of(statusData)
                             }),
                           )
                         }
@@ -193,13 +184,18 @@ export function useProvision(
           )
         }),
         catchError((err) => {
-          if (err instanceof ProvisionError && onProvisionError !== undefined) {
-            return onProvisionError(err)
+          if (err instanceof ProvisionError) {
+            return of({
+              id: undefined,
+              organizationId: undefined,
+              status: 'error' as const,
+              error: err,
+            } satisfies ProvisionResponse)
           }
           throw err
         }),
       ),
-    [client, projectId, onLibraryId, onProvisionError],
+    [client, projectId],
   )
 
   return useObservable(observable, {status: 'loading'})
