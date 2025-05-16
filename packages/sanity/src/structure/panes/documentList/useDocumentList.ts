@@ -168,12 +168,12 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     ).pipe(
       catchWithCount((lastError, retryCount, caught$) => {
         const error = safeError(lastError)
-        const canRetry = isRetriableError(lastError)
+        const isOnline = window.navigator.onLine
+        const canRetry = isOnline && isRetriableError(lastError)
         const autoRetry = retryCount < 10
         const retries = merge(
-          onRetry$,
-          fromEvent(window, 'online'),
-          autoRetry ? timer(retryCount * 1_000) : NEVER,
+          isOnline ? onRetry$ : fromEvent(window, 'online'),
+          isOnline && autoRetry ? timer(retryCount * 1_000) : NEVER,
         ).pipe(
           take(1),
           switchMap(() =>
@@ -199,7 +199,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
             canRetry,
             retryCount,
           }),
-          canRetry ? retries : NEVER,
+          retries,
         )
       }),
       scan((prev, event) => {
@@ -232,7 +232,8 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
             isLoadingFullList: true,
           }
         }
-        throw new Error('Unexpected')
+        // @ts-expect-error - all cases should be covered
+        throw new Error(`Unexpected event type: ${event.type}`)
       }, INITIAL_QUERY_STATE),
     )
   }, [

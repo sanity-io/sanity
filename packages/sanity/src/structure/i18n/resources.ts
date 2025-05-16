@@ -435,11 +435,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.untitled.text': 'Untitled',
   /** The help text saying that we have given up on automatic retry */
   'panes.document-list-pane.error.max-retries-attempted':
-    'Gave up after {{count}} unsuccessful attempts.',
+    'Not automatically retrying after {{count}} unsuccessful attempts.',
   /** The help text saying that we'll retry fetching the document list */
   'panes.document-list-pane.error.retrying': 'Retrying…',
   /** The error text on the document list pane */
-  'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
+  'panes.document-list-pane.error.text': 'Encountered an error while fetching documents.',
+  /** The error text on the document list pane */
+  'panes.document-list-pane.error.text.dev': 'Error: <Code>{{error}}</Code>',
+  /** The error text on the document list pane if the browser appears to be offlline */
+  'panes.document-list-pane.error.text.offline': 'The Internet connection appears to be offline.',
   /** The error title on the document list pane */
   'panes.document-list-pane.error.title': 'Could not fetch list items',
   /** The help text saying that we'll retry fetching the document list */

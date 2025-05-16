@@ -7,6 +7,7 @@ import {
   ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
+  isDev,
   LoadingBlock,
   SanityDefaultPreview,
   Translate,
@@ -197,6 +198,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return null
     }
 
+    const isOnline = window.navigator.onLine
     if (error) {
       return (
         <Flex align="center" direction="column" height="fill" justify="center">
@@ -204,17 +206,23 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             <Stack paddingX={4} paddingY={5} space={4}>
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
               <Text as="p">
-                <Translate
-                  t={t}
-                  i18nKey="panes.document-list-pane.error.text"
-                  values={{error: error.message}}
-                  components={{Code: ({children}) => <code>{children}</code>}}
-                />
+                {isDev ? (
+                  <Translate
+                    t={t}
+                    i18nKey="panes.document-list-pane.error.text.dev"
+                    values={{error: error.message}}
+                    components={{Code: ({children}) => <code>{children}</code>}}
+                  />
+                ) : isOnline ? (
+                  t('panes.document-list-pane.error.text')
+                ) : (
+                  t('panes.document-list-pane.error.text.offline')
+                )}
               </Text>
               <ErrorActions
                 error={error}
                 eventId={null}
-                onRetry={canRetry ? onRetry : undefined}
+                onRetry={isOnline && canRetry ? onRetry : undefined}
                 isRetrying={isRetrying}
               />
               {canRetry ? (
