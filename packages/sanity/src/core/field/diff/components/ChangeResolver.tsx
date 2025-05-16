@@ -1,7 +1,7 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
 
-import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
+import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
 import {useDocumentChange} from '../hooks'
 import {FieldChange} from './FieldChange'
