@@ -1,10 +1,10 @@
-import {type ReactNode, useMemo, useState} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
 import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
-import {createAppIdCache} from '../studio-app/appIdCache'
+import {useAppIdCache} from '../studio-app/AppIdCacheProvider'
 import {type SanityCreateConfigContextValue} from './useSanityCreateConfig'
 
 interface SanityCreateConfigProviderProps {
@@ -20,7 +20,7 @@ export function SanityCreateConfigProvider(
   const {children} = props
   const {beta} = useSource()
 
-  const [appIdCache] = useState(() => createAppIdCache())
+  const appIdCache = useAppIdCache()
 
   const value = useMemo((): SanityCreateConfigContextValue => {
     return {

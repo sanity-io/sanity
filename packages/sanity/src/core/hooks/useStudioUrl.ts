@@ -1,50 +1,59 @@
-import {useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useCallback, useMemo} from 'react'
 
-import {createAppIdCache} from '../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../create/studio-app/useStudioAppIdStore'
-import {useRenderingContextStore} from '../store/_legacy/datastores'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
+import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {useActiveWorkspace} from '../studio'
+import {getDashboardPath} from '../util/dashboardPath'
 
-interface UseStudioUrlReturn {
-  isCoreUi: boolean
+type StudioUrlBuilder = (url: string) => string
+type StudioUrlModifier = {coreUi?: StudioUrlBuilder; studio?: StudioUrlBuilder} & (
+  | {coreUi: StudioUrlBuilder}
+  | {studio: StudioUrlBuilder}
+)
+
+interface UseStudioUrlReturnType {
   studioUrl: string
+  buildStudioUrl: (modifiers: StudioUrlModifier) => string
 }
 
 /**
  * @internal
  */
-export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturn => {
-  const renderingContextStore = useRenderingContextStore()
-  const renderingContext = useObservable(renderingContextStore.renderingContext)
-
-  const [appIdCache] = useState(() => createAppIdCache())
-  const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
+export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
+  const renderingContext = useRenderingContext()
+  const {studioApp, loading: appIdLoading} = useStudioAppIdStore({
     enabled: true,
   })
   const {activeWorkspace} = useActiveWorkspace()
   const {value: organizationId, loading: organizationIdLoading} = useProjectOrganizationId()
 
   const isLoading = appIdLoading || organizationIdLoading
+  const isCoreUi = renderingContext?.name === 'coreUi'
 
   const studioUrl = useMemo(() => {
-    if (renderingContext?.name !== 'coreUi' || isLoading || !studioApp?.appId) {
+    if (isCoreUi || isLoading || !studioApp?.appId || !organizationId) {
       return defaultUrl || window.location.toString()
     }
 
-    return `https://www.sanity.io/@${organizationId}/studio/${studioApp.appId}/${activeWorkspace.name}`
-  }, [
-    activeWorkspace.name,
-    defaultUrl,
-    isLoading,
-    organizationId,
-    renderingContext,
-    studioApp?.appId,
-  ])
+    return getDashboardPath({
+      organizationId,
+      appId: studioApp.appId,
+      workspaceName: activeWorkspace.name,
+    })
+  }, [activeWorkspace.name, defaultUrl, isCoreUi, isLoading, organizationId, studioApp?.appId])
+
+  const buildStudioUrl = useCallback(
+    ({coreUi, studio}: StudioUrlModifier) => {
+      const urlModifier = isCoreUi ? coreUi : studio
+
+      return urlModifier?.(studioUrl) || studioUrl
+    },
+    [isCoreUi, studioUrl],
+  )
 
   return {
-    isCoreUi: renderingContext?.name === 'coreUi',
+    buildStudioUrl,
     studioUrl,
   }
 }
