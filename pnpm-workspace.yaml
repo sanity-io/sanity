@@ -43,7 +43,7 @@ catalog:
   jsdom: ^26.1.0
   vite: ^7.2.7
   vitest: ^3.2.4
-  styled-components: npm:@sanity/styled-components@^6.1.24
+  styled-components: npm:@sanity/css-in-js@^6.1.26
   typescript: 5.9.3
 
 overrides:

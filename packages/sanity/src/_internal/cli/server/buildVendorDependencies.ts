@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import * as resolve from 'resolve.exports'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
+import styledComponentsPackageJson from 'styled-components/package.json'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
 
@@ -83,7 +85,16 @@ const VENDOR_IMPORTS: VendorImports = {
   },
   'styled-components': {
     '^6.1.0': {
-      '.': './dist/styled-components.browser.esm.js',
+      '.':
+        'exports' in styledComponentsPackageJson
+          ? resolve.exports(styledComponentsPackageJson, '.', {
+              browser: true,
+              conditions: ['import', 'browser', 'default'],
+            })?.[0]
+          : // @ts-expect-error - fix before merge
+            resolve.legacy(styledComponentsPackageJson, {browser: true})[
+              './dist/styled-components.esm.js:'
+            ] || './dist/styled-components.browser.esm.js',
       './package.json': './package.json',
     },
   },
