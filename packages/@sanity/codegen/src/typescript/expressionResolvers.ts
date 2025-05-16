@@ -224,6 +224,19 @@ export function resolveExpression({
     })
   }
 
+  if (babelTypes.isMemberExpression(node)) {
+    return resolveMemberExpression({
+      node,
+      file,
+      scope,
+      filename,
+      resolver,
+      babelConfig,
+      params,
+      fnArguments,
+    })
+  }
+
   throw new Error(
     `Unsupported expression type: ${node.type} in ${filename}:${node.loc?.start.line}:${node.loc?.start.column}`,
   )
@@ -510,4 +523,150 @@ function resolveExportSpecifier({
   throw new Error(`Could not find binding for export "${importName}" in ${importFileName}`, {
     cause: `noBinding:${importName}`,
   })
+}
+
+function resolveMemberExpression({
+  node,
+  file,
+  scope,
+  filename,
+  resolver,
+  babelConfig,
+  params,
+  fnArguments,
+}: {
+  node: babelTypes.MemberExpression
+  file: babelTypes.File
+  scope: Scope
+  filename: string
+  resolver: NodeJS.RequireResolve
+  babelConfig: TransformOptions
+  params: babelTypes.Node[]
+  fnArguments: babelTypes.Node[]
+}): string {
+  /* 1. Gather the dotted path */
+  const pathParts = collectPathParts(node)
+  const [rootName, ...tail] = pathParts
+  const fullPath = pathParts.join('.')
+
+  /* 2. Find the root identifier’s binding */
+  const binding = scope.getBinding(rootName)
+  if (!binding) {
+    throw new Error(`Could not find binding for "${rootName}"`)
+  }
+
+  /* -------- Same-file constant ----------------------------------- */
+  if (babelTypes.isVariableDeclarator(binding.path.node) && binding.path.node.init) {
+    const initExpr = unwrapTSAs(binding.path.node.init as babelTypes.Expression)
+
+    if (!babelTypes.isObjectExpression(initExpr)) {
+      throw new Error(`"${rootName}" is not an object literal – cannot read members`)
+    }
+
+    const finalExpr = drillObjectExpression(initExpr, tail, fullPath)
+
+    /* Delegate final literal folding back to the main resolver */
+    return resolveExpression({
+      node: finalExpr,
+      file,
+      scope,
+      filename,
+      resolver,
+      babelConfig,
+      params,
+      fnArguments,
+    }) as string
+  }
+
+  /* -------- Imported constant ------------------------------------ */
+  if (
+    babelTypes.isImportSpecifier(binding.path.node) ||
+    babelTypes.isImportDefaultSpecifier(binding.path.node) ||
+    babelTypes.isImportNamespaceSpecifier(binding.path.node)
+  ) {
+    const importDecl = binding.path.parentPath?.node as babelTypes.ImportDeclaration
+    const src = importDecl.source.value as string
+    const resolved = resolver(src, {paths: [path.dirname(filename)]})
+    // eslint-disable-next-line import/no-dynamic-require
+    const mod = require(resolved)
+
+    let importedValue: unknown
+    if (babelTypes.isImportDefaultSpecifier(binding.path.node)) {
+      importedValue = mod?.default
+    } else if (babelTypes.isImportNamespaceSpecifier(binding.path.node)) {
+      importedValue = mod
+    } else {
+      const importedName = (binding.path.node.imported as babelTypes.Identifier).name
+      importedValue = mod?.[importedName]
+    }
+
+    let current: unknown = importedValue
+    for (const key of tail) {
+      if (current && typeof current === 'object' && key in (current as Record<string, unknown>)) {
+        current = (current as Record<string, unknown>)[key]
+      } else {
+        throw new Error(`Property "${key}" not found while resolving "${fullPath}"`)
+      }
+    }
+
+    if (typeof current !== 'string') {
+      throw new Error(`Final value of "${fullPath}" is not a string literal`)
+    }
+    return current
+  }
+
+  /* -------- Unsupported binding type ----------------------------- */
+  throw new Error(
+    `Unsupported MemberExpression target in ${filename}:${node.loc?.start.line}:${node.loc?.start.column}`,
+  )
+}
+
+function unwrapTSAs(expr: babelTypes.Expression): babelTypes.Expression {
+  return babelTypes.isTSAsExpression(expr) ? (expr.expression as babelTypes.Expression) : expr
+}
+
+/** Step through an ObjectExpression along a dotted path and return the final value */
+function drillObjectExpression(
+  obj: babelTypes.ObjectExpression,
+  keys: string[],
+  fullPath: string,
+): babelTypes.Expression {
+  let current: babelTypes.Expression = obj
+  for (const key of keys) {
+    if (!babelTypes.isObjectExpression(current)) {
+      throw new Error(`Expected object while resolving "${fullPath}"`)
+    }
+    const prop = current.properties.find(
+      (p): p is babelTypes.ObjectProperty =>
+        babelTypes.isObjectProperty(p) &&
+        !p.computed &&
+        babelTypes.isIdentifier(p.key) &&
+        p.key.name === key,
+    )
+    if (!prop) {
+      throw new Error(`Property "${key}" not found while resolving "${fullPath}"`)
+    }
+    current = unwrapTSAs(prop.value as babelTypes.Expression)
+  }
+  return current
+}
+
+/** Collect every identifier in a static chain like `A.B.C` → ['A','B','C'] */
+function collectPathParts(expr: babelTypes.MemberExpression | babelTypes.Identifier): string[] {
+  const parts: string[] = []
+  let cursor: typeof expr = expr
+
+  while (babelTypes.isMemberExpression(cursor)) {
+    if (cursor.computed || !babelTypes.isIdentifier(cursor.property)) {
+      throw new Error('Only non-computed member expressions are supported')
+    }
+    parts.unshift(cursor.property.name)
+    cursor = cursor.object as typeof cursor
+  }
+
+  if (!babelTypes.isIdentifier(cursor)) {
+    throw new Error('Unsupported member-expression root')
+  }
+  parts.unshift(cursor.name)
+  return parts
 }
