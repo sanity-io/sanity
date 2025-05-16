@@ -1,5 +1,7 @@
 import {type SanityDocumentLike} from '@sanity/types'
 
+import {type MediaLibraryConfig} from '../../core/config/types'
+
 export const SANITY_WORKSPACE_SCHEMA_ID_PREFIX = '_.schemas'
 export const SANITY_WORKSPACE_SCHEMA_TYPE = 'system.schema'
 export const CURRENT_WORKSPACE_SCHEMA_VERSION = '2025-05-01'
@@ -29,6 +31,7 @@ export interface CreateWorkspaceManifest {
   basePath: string
   dataset: string
   projectId: string
+  mediaLibrary?: MediaLibraryConfig
   schema: ManifestSchemaType[]
   tools: ManifestTool[]
   /**
