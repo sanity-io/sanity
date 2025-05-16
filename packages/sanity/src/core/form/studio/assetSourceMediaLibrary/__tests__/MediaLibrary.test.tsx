@@ -78,7 +78,7 @@ describe('provisioning', () => {
     })
   })
 
-  test('provisions', async () => {
+  test('renders error if creating a new Media Library fails', async () => {
     const client = createMockSanityClient({
       requests: {
         '/projects/mock-project-id': {
@@ -87,8 +87,6 @@ describe('provisioning', () => {
         '/media-libraries?organizationId=mock-organization-id': {
           data: [],
         },
-        // POST request response to provision a Media Library with invalid response
-        '/media-libraries': {foo: 'bar'},
       },
     })
     const TestProvider = await createWrapperComponent(client as any)
@@ -100,7 +98,34 @@ describe('provisioning', () => {
     })
   })
 
-  test('provisions', async () => {
+  test('renders error catch by the ErrorBoundary if something unexpected happens', async () => {
+    const client = createMockSanityClient(
+      {
+        requests: {
+          '/projects/mock-project-id': {
+            organizationId,
+          },
+          '/media-libraries?organizationId=mock-organization-id': {
+            data: [],
+          },
+        },
+      },
+      {
+        requestErrors: {
+          '/media-libraries': new Error('Unexpected error'),
+        },
+      },
+    )
+    const TestProvider = await createWrapperComponent(client as any)
+    const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
+
+    await waitFor(() => {
+      expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
+      expect(getByTestId('ERROR_UNEXPECTED')).toBeInTheDocument()
+    })
+  })
+
+  test('provisions a media library successfully', async () => {
     const client = createMockSanityClient({
       requests: {
         '/projects/mock-project-id': {
