@@ -20,7 +20,6 @@ import {type SanityClient} from '@sanity/client'
 import {act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
-import {ServerStyleSheet} from 'styled-components'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
@@ -40,12 +39,7 @@ vi.mock('./components/navbar/presence/PresenceMenu')
 describe('Studio', () => {
   it(`SSR to static markup doesn't throw or warn`, () => {
     const spy = vi.spyOn(console, 'error')
-    const sheet = new ServerStyleSheet()
-    try {
-      renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
-    } finally {
-      sheet.seal()
-    }
+    renderToStaticMarkup(<Studio config={config} />)
 
     expect(console.error).not.toHaveBeenCalled()
 
@@ -57,17 +51,11 @@ describe('Studio', () => {
     const node = document.createElement('div')
     document.body.appendChild(node)
 
-    const sheet = new ServerStyleSheet()
-    try {
-      const html = renderToString(sheet.collectStyles(<Studio config={config} />))
-      node.innerHTML = html
+    const html = renderToString(<Studio config={config} />)
+    node.innerHTML = html
 
-      document.head.innerHTML += sheet.getStyleTags()
-      const root = await act(() => hydrateRoot(node, <Studio config={config} />))
-      await act(() => root.unmount())
-    } finally {
-      sheet.seal()
-    }
+    const root = await act(() => hydrateRoot(node, <Studio config={config} />))
+    await act(() => root.unmount())
 
     expect(console.error).not.toHaveBeenCalled()
 
