@@ -8,6 +8,7 @@ import jsx from 'refractor/lang/jsx.js'
 import typescript from 'refractor/lang/typescript.js'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
@@ -73,10 +74,12 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <ComlinkRouteHandler />
-                <StudioAnnouncementsProvider>
-                  <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
-                </StudioAnnouncementsProvider>
+                <AppIdCacheProvider>
+                  <ComlinkRouteHandler />
+                  <StudioAnnouncementsProvider>
+                    <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                  </StudioAnnouncementsProvider>
+                </AppIdCacheProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>

@@ -1,5 +1,6 @@
 export * from './context/ActiveWorkspaceMatcherContext'
 export * from './context/AddonDatasetContext'
+export * from './context/AppIdCacheContext'
 export * from './context/CalendarContext'
 export * from './context/ChangeIndicatorTrackerContexts'
 export * from './context/ColorSchemeSetValueContext'

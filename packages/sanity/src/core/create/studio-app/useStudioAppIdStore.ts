@@ -3,6 +3,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
+import {useAppIdCache} from './AppIdCacheProvider'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
 
 export interface ResolvedStudioApp {
@@ -15,14 +16,12 @@ export interface ResolvedStudioApp {
  *
  * @internal
  */
-export function useStudioAppIdStore(
-  cache: AppIdCache,
-  config: {
-    enabled: boolean
-    fallbackStudioOrigin?: string
-  },
-): ResolvedStudioApp {
+export function useStudioAppIdStore(config: {
+  enabled: boolean
+  fallbackStudioOrigin?: string
+}): ResolvedStudioApp {
   const client = useClient({apiVersion: '2024-09-01'})
+  const cache = useAppIdCache()
   const {projectId} = useSource()
 
   const appIdFetcher: AppIdFetcher = useMemo(() => {

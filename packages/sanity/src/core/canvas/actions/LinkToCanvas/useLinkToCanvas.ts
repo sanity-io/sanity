@@ -1,10 +1,9 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {type Bridge} from '@sanity/message-protocol'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
-import {createAppIdCache} from '../../../create/studio-app/appIdCache'
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
@@ -82,7 +81,6 @@ const canvasPreflight = ({
 }
 
 export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
-  const [appIdCache] = useState(() => createAppIdCache())
   const workspace = useWorkspace()
   const projectStore = useProjectStore()
   const renderContext = useRenderingContext()
@@ -90,7 +88,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
   const isInDashboard = renderContext?.name === 'coreUi'
   const {linkRedirected, linkDialogDiffsShown} = useCanvasTelemetry()
 
-  const {studioApp, loading: appIdLoading} = useStudioAppIdStore(appIdCache, {
+  const {studioApp, loading: appIdLoading} = useStudioAppIdStore({
     enabled: true,
     fallbackStudioOrigin: workspace.apps?.canvas?.fallbackStudioOrigin,
   })

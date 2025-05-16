@@ -18,6 +18,7 @@ import {
   usePerspective,
   useSchema,
   useSource,
+  useStudioUrl,
   useTranslation,
   useUnique,
 } from 'sanity'
@@ -86,6 +87,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
+  const {buildStudioUrl} = useStudioUrl()
 
   const perspective = usePerspective()
 
@@ -312,7 +314,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
   const handleMenuAction = useCallback(
-    (item: PaneMenuItem) => {
+    async (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
         window.open(previewUrl)
         return true
@@ -324,7 +326,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         // the document's edit intent link because
         // of bugs when resolving a document that has
         // multiple access paths within Structure
-        navigator.clipboard.writeText(window.location.toString())
+        const copyUrl = buildStudioUrl({
+          coreUi: (url) => `${url}/intent/edit/id=${documentId};type=${documentType}`,
+        })
+        await navigator.clipboard.writeText(copyUrl)
         pushToast({
           id: 'copy-document-url',
           status: 'info',
@@ -366,12 +371,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       previousId,
       telemetry,
+      buildStudioUrl,
       pushToast,
       t,
+      documentId,
+      documentType,
       handleHistoryOpen,
       handleInspectorAction,
       diffViewRouter,
-      documentType,
       value._id,
     ],
   )
