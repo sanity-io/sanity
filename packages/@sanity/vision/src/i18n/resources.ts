@@ -9,20 +9,49 @@ import {defineLocalesResources} from 'sanity'
 const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
+  /** Label for deleting a query */
+  'action.delete': 'Delete',
+  /** Label for editing a query's title */
+  'action.edit-title': 'Edit title',
   /** Label for stopping an ongoing listen operation */
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
   'action.listen-execute': 'Listen',
+  /** Label for query loading table */
+  'action.load-queries': 'Load queries',
+  /** Label for loading a query */
+  'action.load-query': 'Load query',
   /** Label for cancelling an ongoing query */
   'action.query-cancel': 'Cancel',
   /** Label for executing the query, eg doing a fetch */
   'action.query-execute': 'Fetch',
+  /** Label for saving a query */
+  'action.save-query': 'Save query',
+  /** Label for updating a query */
+  'action.update': 'Update',
+
+  /** Label for actions user can take */
+  'label.actions': 'Actions',
+  /** Label for saved queries that have been edited */
+  'label.edited': 'Edited',
 
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.
    * This defines what the text of that label is. Keep it short and sweet.
    */
   'label.new': 'New',
+  /** Label for query type "personal" */
+  'label.personal': 'Personal',
+  /** Label for savedAt date */
+  'label.saved-at': 'Saved at',
+  /** Saved queries */
+  'label.saved-queries': 'Saved queries',
+  /** Search queries */
+  'label.search-queries': 'Search queries',
+  /** Share query */
+  'label.share': 'Share',
+  /** Label for saved query type "team" */
+  'label.team': 'Team',
 
   /** Error message for when the "Params" input are not a valid json */
   'params.error.params-invalid-json': 'Parameters are not valid JSON',
@@ -53,6 +82,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    * available for the query (eg when the query has not been executed, or errored)
    */
   'result.timing-not-applicable': 'n/a',
+
+  /** Query already saved error label */
+  'save-query.already-saved': 'Query already saved',
+  /** Save error label */
+  'save-query.error': 'Error saving query',
+  /** Save success label */
+  'save-query.success': 'Query saved',
 
   /** Label for the "API version" dropdown in settings */
   'settings.api-version-label': 'API version',

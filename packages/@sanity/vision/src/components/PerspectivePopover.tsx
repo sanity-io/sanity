@@ -18,6 +18,7 @@ import {styled} from 'styled-components'
 import {visionLocaleNamespace} from '../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
+// Passing 'tone' to a <div> throws a styled-components warning in the console
 const Dot = styled.div<{tone: CardTone}>`
   width: 4px;
   height: 4px;
