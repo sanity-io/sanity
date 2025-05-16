@@ -7,12 +7,12 @@ import {
   LATEST,
   type ReleaseDocument,
   Translate,
+  useConditionalToast,
   useTranslation,
   useVersionOperations,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useConditionalToast} from '../documentViews/useConditionalToast'
 import {Banner} from './Banner'
 
 // How long to wait after user hit the "Add to release"-button before displaying the "waiting…" toast

@@ -13,18 +13,27 @@ export interface ErrorActionsProps extends Pick<ComponentProps<typeof Button>, '
   error: unknown
   eventId?: string | null
   onRetry?: () => void
+  isRetrying?: boolean
 }
 
 /**
  * @internal
  */
-export const ErrorActions: ComponentType<ErrorActionsProps> = ({error, eventId, onRetry, size}) => {
+export const ErrorActions: ComponentType<ErrorActionsProps> = ({
+  error,
+  eventId,
+  onRetry,
+  isRetrying,
+  size,
+}) => {
   const copyErrorDetails = useCopyErrorDetails(error, eventId)
 
   return (
     <Inline space={3}>
       {onRetry && (
         <Button
+          disabled={isRetrying}
+          loading={isRetrying}
           onClick={onRetry}
           text={strings['retry.title']}
           tone="primary"

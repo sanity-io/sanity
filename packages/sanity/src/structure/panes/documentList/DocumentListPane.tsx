@@ -8,12 +8,14 @@ import {
   useActiveReleases,
   useI18nText,
   usePerspective,
+  useReconnectingToast,
   useSchema,
   useTranslation,
   useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -108,6 +110,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     isLoading: documentListIsLoading,
     items,
     fromCache,
+    isRetrying,
+    autoRetry,
+    canRetry,
+    retryCount,
+    connected,
     onLoadFullList,
     onRetry,
   } = useDocumentList({
@@ -162,15 +169,15 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   }, [paneKey, handleClearSearch])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
-    if (isLoading && enableSearchSpinner === paneKey) {
+    if (connected && isLoading && enableSearchSpinner === paneKey) {
       return 'spinner'
     }
-    if (fromCache) {
+    if (connected && fromCache) {
       return 'subtle'
     }
 
     return 'initial'
-  }, [enableSearchSpinner, fromCache, isLoading, paneKey])
+  }, [connected, enableSearchSpinner, fromCache, isLoading, paneKey])
 
   const textInputIcon = useMemo(() => {
     if (loadingVariant === 'spinner') {
@@ -182,30 +189,40 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return SearchIcon
   }, [loadingVariant, searchInputValue])
 
+  useReconnectingToast(!connected)
+
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
-        <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
-          autoComplete="off"
-          border={false}
-          clearButton={Boolean(searchQuery)}
-          disabled={Boolean(error)}
-          fontSize={[2, 2, 1]}
-          icon={textInputIcon}
-          iconRight={
-            loadingVariant === 'subtle' && !searchInputValue ? DelayedSubtleSpinnerIcon : null
-          }
-          onChange={handleQueryChange}
-          onClear={handleClearSearch}
-          onKeyDown={handleSearchKeyDown}
-          padding={2}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
-          radius={2}
-          ref={setSearchInputElement}
-          spellCheck={false}
-          value={searchInputValue}
-        />
+        <Tooltip
+          disabled={connected}
+          placement="bottom-end"
+          content={t('panes.document-list-pane.reconnecting')}
+        >
+          <TextInput
+            aria-label={t('panes.document-list-pane.search-input.aria-label')}
+            autoComplete="off"
+            border={false}
+            clearButton={Boolean(searchQuery)}
+            readOnly={Boolean(error || !connected)}
+            fontSize={[2, 2, 1]}
+            icon={textInputIcon}
+            iconRight={
+              !connected || (loadingVariant === 'subtle' && !searchInputValue)
+                ? DelayedSubtleSpinnerIcon
+                : null
+            }
+            onChange={handleQueryChange}
+            onClear={handleClearSearch}
+            onKeyDown={handleSearchKeyDown}
+            padding={2}
+            placeholder={t('panes.document-list-pane.search-input.placeholder')}
+            radius={2}
+            ref={setSearchInputElement}
+            spellCheck={false}
+            value={searchInputValue}
+          />
+        </Tooltip>
       </Box>
       <DocumentListPaneContent
         childItemId={childItemId}
@@ -216,9 +233,15 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         isActive={isActive}
         isLazyLoading={isLoadingFullList}
         isLoading={isLoading}
+        autoRetry={autoRetry}
+        canRetry={canRetry}
+        retryCount={retryCount}
+        isRetrying={isRetrying}
+        isConnected={connected}
         items={items}
         key={paneKey}
         layout={layout}
+        muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}
         onEndReached={onLoadFullList}
         onRetry={onRetry}
