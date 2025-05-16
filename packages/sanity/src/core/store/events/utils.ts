@@ -87,7 +87,7 @@ export function addEventId(
 export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
   const eventsWithParent = JSON.parse(JSON.stringify(events)) as DocumentGroupEvent[]
   eventsWithParent.forEach((event, index) => {
-    if (isPublishDocumentVersionEvent(event)) {
+    if (isPublishDocumentVersionEvent(event) || isDeleteDocumentVersionEvent(event)) {
       event.documentId = event.versionId
       // Find the creation event and edit events for this published event
       for (let i = index; i < eventsWithParent.length; i++) {

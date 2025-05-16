@@ -100,5 +100,6 @@ export interface DocumentPaneContextValue {
 
   // History specific values
   revisionId: string | null
+  revisionNotFound: boolean
   lastNonDeletedRevId: string | null
 }
