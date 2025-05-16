@@ -82,10 +82,11 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     <AppDialog
       animate
       header={dialogHeaderTitle}
-      id="sanity-media-library-plugin-dialog-select-assets"
+      id="media-library-plugin-dialog-select-assets"
       onClose={handleClose}
       open
       ref={ref}
+      data-testid="media-library-plugin-dialog-select-assets"
       width={3}
       footer={
         <Flex width="full" gap={3} justify="flex-end" padding={2}>

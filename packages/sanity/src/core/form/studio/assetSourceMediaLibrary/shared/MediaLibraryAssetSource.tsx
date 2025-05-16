@@ -6,17 +6,18 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
+import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
 // Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
-const fetchedLibraryIdCache: Map<string, string> = new Map()
+const fetchedLibraryIdCache = new Map<string, string>()
 
 const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
   props: AssetSourceComponentProps & {libraryId: string | null},
@@ -40,40 +41,25 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
 
   const projectId = client.config().projectId
-
-  const cachedFetchedLibraryId = (projectId && fetchedLibraryIdCache.get(projectId)) || undefined
-  const [fetchedLibraryId, setFetchedLibraryId] = useState<string | null>(
-    cachedFetchedLibraryId || null,
+  const cachedLibraryId = (projectId && fetchedLibraryIdCache.get(projectId)) || undefined
+  const [mediaLibraryId, setMediaLibraryId] = useState<string | null>(
+    libraryIdProp || cachedLibraryId || null,
   )
 
-  useEffect(() => {
-    if (libraryIdProp || fetchedLibraryId) {
-      return
-    }
-    if (!projectId) {
-      throw new Error('projectId is required to fetch Media Library ID')
-    }
-    client
-      .request({
-        uri: `/media-libraries`,
-        query: {projectId},
-        tag: 'media-library.availability-check',
-      })
-      .then((result) => {
-        const libraryIdFromResult = result.data[0]?.id
-        if (libraryIdFromResult) {
-          // Add to cache for this project (organization)
-          fetchedLibraryIdCache.set(projectId, libraryIdFromResult)
-          setFetchedLibraryId(libraryIdFromResult)
-        }
-      })
-  }, [client, fetchedLibraryId, libraryIdProp, projectId])
-
-  const resolvedLibraryId = libraryIdProp || fetchedLibraryId
+  const handleSetMediaLibraryId = useCallback(
+    (libraryId: string) => {
+      setMediaLibraryId(libraryId)
+      if (projectId) {
+        // Write to cache
+        fetchedLibraryIdCache.set(projectId, libraryId)
+      }
+    },
+    [projectId],
+  )
 
   const handleSelect: SelectAssetsDialogProps['onSelect'] = useCallback(
     async (selection) => {
-      if (!resolvedLibraryId) {
+      if (!mediaLibraryId) {
         return
       }
       const asset = selection[0]
@@ -89,7 +75,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
           url: `/assets/media-library-link/${client.config().dataset}?${metadataPropsFromSchema?.map((prop) => `meta[]=${prop}`).join('&') || ''}`,
           withCredentials: true,
           body: {
-            mediaLibraryId: resolvedLibraryId,
+            mediaLibraryId: mediaLibraryId,
             assetInstanceId: asset.assetInstanceId,
             assetId: asset.asset._id,
           },
@@ -101,7 +87,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
             kind: 'assetDocumentId',
             value: assetDocument._id,
             mediaLibraryProps: {
-              mediaLibraryId: resolvedLibraryId,
+              mediaLibraryId: mediaLibraryId,
               assetId: asset.asset._id,
               assetInstanceId: asset.assetInstanceId,
             },
@@ -119,7 +105,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         throw error
       }
     },
-    [client, onClose, onSelect, resolvedLibraryId, schemaType, t, toast],
+    [client, onClose, onSelect, mediaLibraryId, schemaType, t, toast],
   )
 
   const handleUploaded = useCallback(
@@ -130,7 +116,14 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     [handleSelect, onClose],
   )
 
-  if (!resolvedLibraryId) {
+  /* Ensure a Media Library exists (provision if not) */
+  if (projectId && !mediaLibraryId) {
+    return (
+      <EnsureMediaLibrary projectId={projectId} onSetMediaLibraryId={handleSetMediaLibraryId} />
+    )
+  }
+
+  if (!mediaLibraryId) {
     return null
   }
 
@@ -138,7 +131,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     <>
       <UploadAssetsDialog
         open={action === 'upload'}
-        libraryId={resolvedLibraryId}
+        libraryId={mediaLibraryId}
         onUploaded={handleUploaded}
         uploader={assetSource.uploader}
       />
@@ -155,7 +148,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         onClose={onClose}
         onSelect={handleSelect}
         selection={[]}
-        libraryId={resolvedLibraryId}
+        libraryId={mediaLibraryId}
         selectAssetType={assetType}
       />
     </>
