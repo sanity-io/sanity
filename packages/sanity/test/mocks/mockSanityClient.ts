@@ -27,7 +27,7 @@ export interface MockClientLog {
 
 export function createMockSanityClient(
   data: {requests?: Record<string, any>} = {},
-  options: {apiVersion?: string} = {},
+  options: {apiVersion?: string; requestErrors?: Record<string, Error>} = {},
 ) {
   const requests: Record<string, any> = {
     '/auth/providers': {
@@ -107,6 +107,11 @@ export function createMockSanityClient(
     request: (opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
       $log.request.push(opts)
 
+      // Throw error if the request is in the requestErrors map
+      if (options.requestErrors?.[opts.uri]) {
+        throw options.requestErrors[opts.uri]
+      }
+
       if (opts.uri.startsWith(requestUriPrefix)) {
         const path = opts.uri.slice(requestUriPrefix.length)
 
@@ -152,6 +157,11 @@ export function createMockSanityClient(
         // console.log('mockSanityClient.observable.request', opts)
 
         $log.observable.request.push(opts)
+
+        // Throw error if the request is in the requestErrors map
+        if (options.requestErrors?.[opts.uri]) {
+          throw options.requestErrors[opts.uri]
+        }
 
         if (opts.uri?.startsWith(requestUriPrefix)) {
           const path = opts.uri.slice(requestUriPrefix.length)
