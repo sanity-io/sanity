@@ -12,7 +12,7 @@ import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
-import {Provisioning} from './Provisioning'
+import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 import {SelectAssetsDialog, type SelectAssetsDialogProps} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
@@ -116,9 +116,11 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     [handleSelect, onClose],
   )
 
-  /* Provision a Media Library if one is not found */
+  /* Ensure a Media Library exists (provision if not) */
   if (projectId && !mediaLibraryId) {
-    return <Provisioning projectId={projectId} onSetMediaLibraryId={handleSetMediaLibraryId} />
+    return (
+      <EnsureMediaLibrary projectId={projectId} onSetMediaLibraryId={handleSetMediaLibraryId} />
+    )
   }
 
   if (!mediaLibraryId) {

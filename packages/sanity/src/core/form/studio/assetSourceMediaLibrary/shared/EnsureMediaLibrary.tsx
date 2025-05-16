@@ -56,7 +56,7 @@ const Provision = function Provision(props: {
   return null
 }
 
-export const Provisioning = function Provisioning(props: {
+export function EnsureMediaLibrary(props: {
   projectId: string
   onSetMediaLibraryId: (id: string) => void
 }) {
