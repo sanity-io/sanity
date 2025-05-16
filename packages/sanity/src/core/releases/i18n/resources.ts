@@ -16,6 +16,8 @@ const releasesLocaleStrings = {
   'action.create-revert-release': 'Stage in new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
+  /** Action text for duplicating a release */
+  'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
@@ -92,6 +94,8 @@ const releasesLocaleStrings = {
   'changes-published-docs.title': 'Changes to published documents',
   /** Text for when a release / document was created */
   'created': 'Created <RelativeTime/>',
+  /** Suffix for when a release is a copy of another release */
+  'copy-suffix': 'Copy',
 
   /** Text for the releases detail screen when a release was published ASAP */
   'dashboard.details.published-asap': 'Published',
@@ -213,6 +217,8 @@ const releasesLocaleStrings = {
   'permissions.error.archive': 'You do not have permission to archive this release',
   /** Tooltip label when the user doesn't have permission to delete release */
   'permissions.error.delete': 'You do not have permission to delete this release',
+  /** Tooltip label when the user doesn't have permission to duplicate release */
+  'permissions.error.duplicate': 'You do not have permission to duplicate this release',
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
 
@@ -357,6 +363,10 @@ const releasesLocaleStrings = {
   'toast.delete.error': "Failed to delete '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release is successfully deleted */
   'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
+  /** Description for toast when release duplication failed */
+  'toast.duplicate.error': "Failed to duplicate '<strong>{{title}}</strong>': {{error}}",
+  /** Description for toast when release is successfully duplicated */
+  'toast.duplicate.success': "The '<strong>{{title}}</strong>' release was duplicated",
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to schedule */
