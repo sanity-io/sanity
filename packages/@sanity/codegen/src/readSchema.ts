@@ -7,7 +7,6 @@ import {type SchemaType} from 'groq-js'
  * @param path - The path to the schema
  * @returns The schema
  * @internal
- * @beta
  **/
 export async function readSchema(path: string): Promise<SchemaType> {
   const content = await readFile(path, 'utf-8')

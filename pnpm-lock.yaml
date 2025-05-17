@@ -755,6 +755,9 @@ importers:
       get-it:
         specifier: ^8.6.8
         version: 8.6.8(debug@4.4.0)
+      groq:
+        specifier: workspace:*
+        version: link:../../groq
       groq-js:
         specifier: ^1.16.1
         version: 1.16.1

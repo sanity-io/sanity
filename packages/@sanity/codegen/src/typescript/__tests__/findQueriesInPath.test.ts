@@ -17,24 +17,28 @@ describe('findQueriesInPath', () => {
     for await (const result of stream) {
       res.push(result)
     }
-    expect(res.length).toBe(1)
-    expect(res[0].type).toBe('queries')
-    assert(res[0].type === 'queries') // workaround for TS
-    expect(res[0].queries.length).toBe(1)
-    // filename can be either of these two
-    // depending on whether the test is run from the monorepo root or from the package root
+    expect(res.length).toBe(2)
+    assert(res[0].type === 'files')
+    expect(res[0].fileCount).toBe(1)
+    assert(res[1].type == 'queries')
+    expect(res[1].queries.length).toBe(1)
+    // filename check updated to res[1]
     expect(
-      res[0].filename === 'src/typescript/__tests__/fixtures/source1.ts' ||
-        res[0].filename === 'packages/@sanity/codegen/src/typescript/__tests__/fixtures/source1.ts',
+      res[1].filename === 'src/typescript/__tests__/fixtures/source1.ts' ||
+        res[1].filename === 'packages/@sanity/codegen/src/typescript/__tests__/fixtures/source1.ts',
     ).toBe(true)
-    expect(res[0].queries[0].name).toBe('postQuery')
-    expect(res[0].queries[0].result).toBe('*[_type == "author"]')
+    expect(res[1].queries[0].name).toBe('postQuery')
+    expect(res[1].queries[0].result).toBe('*[_type == "author"]')
   })
   test('should throw an error if the query name already exists', async () => {
     const stream = findQueriesInPath({
       path: path.join('**', 'fixtures', '{source1,source2}.ts'),
     })
+    // Skip files result
     await stream.next()
+    // Skip source1.ts result
+    await stream.next()
+    // Get source2.ts error
     const result = await stream.next()
     if (!result.value) {
       throw new Error('Expected to yield a result')
@@ -52,10 +56,12 @@ describe('findQueriesInPath', () => {
     for await (const result of stream) {
       res.push(result)
     }
-    expect(res.length).toBe(1)
-    expect(res[0].type).toBe('queries')
-    assert(res[0].type === 'queries') // workaround for TS
-    expect(res[0].queries.length).toBe(1)
+    expect(res.length).toBe(2)
+    assert(res[0].type === 'files')
+    expect(res[0].fileCount).toBe(1)
+    expect(res[1].type).toBe('queries')
+    assert(res[1].type === 'queries') // workaround for TS
+    expect(res[1].queries.length).toBe(1)
   })
 
   // This test is skipped by default because it's very slow, but it's useful to have it around for testing deterministic behavior
@@ -90,7 +96,9 @@ describe('findQueriesInPath', () => {
           if (result.type === 'error') {
             throw new Error(result.error.message)
           }
-          base.push(...result.queries)
+          if (result.type === 'queries') {
+            base.push(...result.queries)
+          }
         }
         expect(base.length).toBe(100_000)
       }, 300_000)
@@ -115,8 +123,9 @@ describe('findQueriesInPath', () => {
             if (result.type === 'error') {
               throw new Error(result.error.message)
             }
-
-            compare.push(...result.queries)
+            if (result.type === 'queries') {
+              compare.push(...result.queries)
+            }
           }
           expect(compare).toStrictEqual(base)
         })
