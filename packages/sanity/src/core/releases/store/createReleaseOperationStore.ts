@@ -1,5 +1,6 @@
 import {
   type BaseActionOptions,
+  type CreateVersionAction,
   type EditableReleaseDocument,
   type IdentifiedSanityDocumentStub,
   type ReleaseDocument,
@@ -197,15 +198,15 @@ export function createReleaseOperationsStore(options: {
         releaseType: 'asap',
       },
     })
-    await Promise.allSettled(
-      releaseDocuments.map((document) =>
-        handleCreateVersion(
-          getReleaseIdFromReleaseDocumentId(revertReleaseId),
-          document._id,
-          document,
-        ),
-      ),
+    const versionId = getReleaseIdFromReleaseDocumentId(revertReleaseId)
+    const newVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
+      (releaseDocument) => ({
+        actionType: 'sanity.action.document.version.create',
+        document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+        publishedId: getPublishedId(releaseDocument._id),
+      }),
     )
+    await client.action(newVersionDocumentActions)
 
     if (revertType === 'immediate') {
       await handlePublishRelease(revertReleaseId)
