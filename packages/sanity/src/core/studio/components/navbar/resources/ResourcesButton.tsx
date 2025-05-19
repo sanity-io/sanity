@@ -6,9 +6,9 @@ import {styled} from 'styled-components'
 import {Button, MenuButton} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
-import {AboutDialog} from './AboutDialog'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
+import {StudioInfoDialog} from './StudioInfoDialog'
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
@@ -31,7 +31,7 @@ export function ResourcesButton() {
   return (
     <>
       {aboutDialogOpen && (
-        <AboutDialog
+        <StudioInfoDialog
           currentVersion={SANITY_VERSION}
           latestVersion={value?.latestVersion || 'unknown'}
           onClose={handleAboutDialogClose}

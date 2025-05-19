@@ -11,7 +11,7 @@ interface AboutDialogProps {
   currentVersion?: string
   onClose: () => void
 }
-export function AboutDialog(props: AboutDialogProps) {
+export function StudioInfoDialog(props: AboutDialogProps) {
   const {t} = useTranslation()
 
   const {latestVersion, onClose, currentVersion} = props
@@ -57,13 +57,7 @@ ${navigator.userAgent}
   }, [copySuccess])
 
   return (
-    <Dialog
-      header={'About'}
-      width={1}
-      onClickOutside={onClose}
-      onClose={onClose}
-      id={aboutDialogId}
-    >
+    <Dialog width={1} onClickOutside={onClose} onClose={onClose} id={aboutDialogId}>
       <Stack space={4}>
         <Stack space={3}>
           <Text as="h2" size={1} weight="medium">
