@@ -1,8 +1,8 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {useToast} from '@sanity/ui'
 import {useEffect, useState} from 'react'
-import {useConditionalToast} from 'sanity'
 
+import {useConditionalToast} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {isUsingModernHttp} from '../../network/isUsingModernHttp'
