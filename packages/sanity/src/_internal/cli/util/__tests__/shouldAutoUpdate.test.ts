@@ -47,8 +47,10 @@ describe('shouldAutoUpdate', () => {
         'The --auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
       ),
     )
+  })
 
-    mockOutput.warn.mockReset()
+  it('should show a deprecation warning when flags["auto-updates"] is false', () => {
+    const mockOutput = {warn: vi.fn()}
 
     shouldAutoUpdate({flags: {'auto-updates': false}, output: mockOutput})
     expect(mockOutput.warn).toHaveBeenCalledWith(
