@@ -31,6 +31,7 @@ export function useNetworkProtocolCheck(): undefined {
   useConditionalToast({
     id: 'network-protocol-check',
     status: 'warning',
+    closable: true,
     enabled: isOnModernHttp === false,
     title,
     description: <WarningDescription />,
