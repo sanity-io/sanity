@@ -1,6 +1,15 @@
 import {type SanityDocument} from '@sanity/types'
 
 /**
+ * @alpha
+ */
+export type MediaLibrary = {
+  id: string
+  organizationId: string
+  status: 'active' | 'provisioning'
+}
+
+/**
  * Config for the Media Library Asset Source
  * @alpha
  */
