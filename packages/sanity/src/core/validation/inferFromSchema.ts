@@ -4,7 +4,7 @@ import {inferFromSchemaType} from './inferFromSchemaType'
 
 // Note: Mutates schema. Refactor when @sanity/schema supports middlewares
 export function inferFromSchema(schema: Schema): Schema {
-  const typeNames = schema.getTypeNames()
+  const typeNames = schema.getLocalTypeNames()
 
   typeNames.forEach((typeName) => {
     const schemaType = schema.get(typeName)
