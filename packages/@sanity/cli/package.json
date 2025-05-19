@@ -69,7 +69,7 @@
     "decompress": "^4.2.0",
     "esbuild": "0.25.4",
     "esbuild-register": "^3.5.0",
-    "get-it": "^8.6.8",
+    "get-it": "^8.6.9",
     "groq-js": "^1.16.1",
     "pkg-dir": "^5.0.0",
     "prettier": "^3.3.0",
