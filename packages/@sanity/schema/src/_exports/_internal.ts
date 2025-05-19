@@ -19,3 +19,4 @@ export {
 } from '../sanity/typedefs'
 export {validateMediaLibraryAssetAspect} from '../sanity/validateMediaLibraryAssetAspect'
 export {validateSchema} from '../sanity/validateSchema'
+export {getDescriptorSynchronization} from '../descriptors/get'

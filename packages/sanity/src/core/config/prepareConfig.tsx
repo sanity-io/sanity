@@ -7,6 +7,7 @@ import {startCase} from 'lodash'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
+import debugit from 'debug'
 
 import {
   createDatasetFileAssetSource,
@@ -72,8 +73,11 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
+import {getDescriptorSynchronization} from '@sanity/schema/_internal'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
+
+const debug = debugit('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -216,6 +220,11 @@ export function prepareConfig(
         name: source.name,
         types: schemaTypes,
       })
+
+      if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+        const sync = getDescriptorSynchronization(schema)
+        debug('Built schema for synchronization', {sync})
+      }
 
       const schemaValidationProblemGroups = schema._validation
       const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
