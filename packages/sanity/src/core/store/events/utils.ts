@@ -181,8 +181,12 @@ export function updatePublishedEvents(
     if (isPublishDocumentVersionEvent(event)) {
       const releaseId = getVersionFromId(event.versionId)
       if (releaseId) {
-        const release = releases.releases.get(getReleaseDocumentIdFromReleaseId(releaseId))
-        return {...event, release: release}
+        const releaseDocumentId = getReleaseDocumentIdFromReleaseId(releaseId)
+        const release = releases.releases.get(releaseDocumentId)
+        return {
+          ...event,
+          release: release || {_id: releaseDocumentId},
+        }
       }
       return event
     }

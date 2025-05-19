@@ -10,6 +10,7 @@ import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
   type DocumentGroupEvent,
@@ -160,8 +161,12 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
               <>
                 {' '}
                 {event.release ? (
-                  <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                    {event.release.metadata.title || t('release.placeholder-untitled-release')}
+                  <VersionInlineBadge
+                    $tone={
+                      isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
+                    }
+                  >
+                    {event.release.metadata?.title || t('release.placeholder-untitled-release')}
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">

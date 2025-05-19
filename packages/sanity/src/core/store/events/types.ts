@@ -133,6 +133,7 @@
  *    - `UpdateLiveDocumentEvent`: Raw Update mutation - "Published document exists"
  */
 
+import {type ReleaseDocument} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
@@ -314,9 +315,8 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
 
   /**
    * This is added client side to enhance the UI.
-   * TODO: should be ReleaseDocument, but it's @internal and this is @beta
    */
-  release?: any
+  release?: ReleaseDocument | {_id: string; metadata?: undefined}
 
   /**
    * This is added client side to enhance the UI.

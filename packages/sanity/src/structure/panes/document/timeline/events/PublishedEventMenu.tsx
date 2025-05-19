@@ -12,6 +12,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isReleaseDocument,
   type PublishDocumentVersionEvent,
   RELEASES_INTENT,
   Translate,
@@ -28,6 +29,7 @@ import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
   const setPerspective = useSetPerspective()
@@ -58,18 +60,36 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (
-      <VersionInlineBadge $tone={event.release ? getReleaseTone(event.release) : undefined}>
+      <VersionInlineBadge
+        $tone={
+          event.release
+            ? isReleaseDocument(event.release)
+              ? getReleaseTone(event.release)
+              : 'default'
+            : undefined
+        }
+      >
         {children}
       </VersionInlineBadge>
     )
   }
+  const isMenuDisabled = event.release && !isReleaseDocument(event.release)
   return (
     <MenuButton
       id={`timeline-item-menu-button-${event.versionId}`}
       button={
         <ContextMenuButton
           aria-label={t('timeline-item.menu-button.aria-label')}
-          tooltipProps={{content: t('timeline-item.menu-button.tooltip')}}
+          tooltipProps={{
+            content: isMenuDisabled
+              ? t('timeline-item.not-found-release.tooltip', {
+                  releaseId: event.release?._id
+                    ? getReleaseIdFromReleaseDocumentId(event.release._id)
+                    : undefined,
+                })
+              : t('timeline-item.menu-button.tooltip'),
+          }}
+          disabled={isMenuDisabled}
         />
       }
       menu={
@@ -91,8 +111,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                         i18nKey="events.open.release"
                         values={{
                           releaseTitle:
-                            event.release.metadata.title ||
-                            t('release.placeholder-untitled-release'),
+                            event.release.metadata?.title ||
+                            tCore('release.placeholder-untitled-release'),
                         }}
                         t={t}
                       />
@@ -110,7 +130,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                       i18nKey="events.inspect.release"
                       values={{
                         releaseTitle:
-                          event.release.metadata.title || t('release.placeholder-untitled-release'),
+                          event.release.metadata?.title ||
+                          tCore('release.placeholder-untitled-release'),
                       }}
                       t={t}
                     />
