@@ -90,6 +90,7 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
       title: workspace.title,
       subtitle: workspace.subtitle,
     }),
+    mediaLibrary: workspace.mediaLibrary,
     schema: serializedSchema,
     tools: serializedTools,
   }
