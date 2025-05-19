@@ -54,7 +54,7 @@ export {
   VersionInlineBadge,
 } from './releases'
 export * from './scheduledPublishing'
-export * from './schema'
+export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
 export * from './store'

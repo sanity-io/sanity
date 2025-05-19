@@ -2,6 +2,7 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
+import debugit from 'debug'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
@@ -18,7 +19,7 @@ import {
 } from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
+import {createSchema, DESCRIPTOR_CONVERTER} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -74,6 +75,8 @@ import {
 } from './types'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
+
+const debug = debugit('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -216,6 +219,11 @@ export function prepareConfig(
         name: source.name,
         types: schemaTypes,
       })
+
+      if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+        const sync = DESCRIPTOR_CONVERTER.get(schema)
+        debug('Built schema for synchronization', {sync})
+      }
 
       const schemaValidationProblemGroups = schema._validation
       const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
