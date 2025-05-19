@@ -35,7 +35,7 @@ export default async function deployStudioAction(
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
-  const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
+  const isAutoUpdating = shouldAutoUpdate({flags, cliConfig, output})
 
   const installedSanityVersion = await getInstalledSanityVersion()
   const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost

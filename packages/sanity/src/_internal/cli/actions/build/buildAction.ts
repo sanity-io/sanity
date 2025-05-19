@@ -59,7 +59,7 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig, output})
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version

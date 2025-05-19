@@ -10,7 +10,6 @@ import {determineIsApp} from '../../util/determineIsApp'
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
-  --auto-updates / --no-auto-updates Enable/disable auto updates of studio versions
   --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the studio prior to deploy, instead deploying the version currently in \`dist/\`
   --schema-required Fail-fast deployment if schema store fails

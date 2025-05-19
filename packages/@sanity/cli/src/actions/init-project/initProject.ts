@@ -598,6 +598,11 @@ export default async function initSanity(
   let autoUpdates = true
   if (typeof cliFlags['auto-updates'] === 'boolean') {
     autoUpdates = cliFlags['auto-updates']
+    output.warn(
+      chalk.yellow(
+        'The --auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
+      ),
+    )
   }
 
   // If the template has a sample dataset, prompt the user whether or not we should import it
