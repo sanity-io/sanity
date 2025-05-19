@@ -47,30 +47,31 @@ export function LocationsBanner(props: {
 
   const isResolving = status === 'resolving'
 
-  const len = state.locations?.length || 0
+  const {locations, message, tone} = state
+  const locationsCount = locations?.length || 0
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const presentation = useContext(PresentationContext)
   const presentationName = presentation?.name
   const [expanded, setExpanded] = useState(false)
   const toggle = useCallback(() => {
-    if (!len) return
+    if (!locationsCount) return
     setExpanded((v) => !v)
-  }, [len])
+  }, [locationsCount])
 
   const title = isResolving
     ? t('locations-banner.resolving.text')
-    : state.message || t('locations-banner.locations-count', {count: len})
+    : message || t('locations-banner.locations-count', {count: locationsCount})
 
-  const ToneIcon = state.tone ? TONE_ICONS[state.tone] : undefined
+  const ToneIcon = tone ? TONE_ICONS[tone] : undefined
 
   if (!resolvers) return null
   return (
-    <Card padding={1} radius={2} border tone={state.tone}>
+    <Card padding={1} radius={2} border tone={tone}>
       <div style={{margin: -1}}>
-        {!state.locations && (
+        {!locations && (
           <Flex align="flex-start" gap={3} padding={3}>
-            {state.tone && ToneIcon && (
+            {tone && ToneIcon && (
               <Box flex="none">
                 <Text size={1}>
                   <ToneIcon />
@@ -85,10 +86,10 @@ export function LocationsBanner(props: {
             </Box>
           </Flex>
         )}
-        {state.locations && (
+        {locations && (
           <>
             <Card
-              as={len ? 'button' : undefined}
+              as={locationsCount ? 'button' : undefined}
               onClick={toggle}
               padding={3}
               radius={1}
@@ -100,7 +101,7 @@ export function LocationsBanner(props: {
                     <Spinner size={1} />
                   ) : (
                     <Text size={1}>
-                      {len === 0 ? (
+                      {locationsCount === 0 ? (
                         <InfoOutlineIcon />
                       ) : (
                         <ChevronRightIcon
@@ -122,7 +123,7 @@ export function LocationsBanner(props: {
               </Flex>
             </Card>
             <Stack hidden={!expanded} marginTop={1} space={1}>
-              {state.locations.map((l) => {
+              {locations.map((l) => {
                 let active = false
                 if (
                   (options.name || DEFAULT_TOOL_NAME) === presentationName &&
