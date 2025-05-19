@@ -447,9 +447,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The error title on the document list pane */
   'panes.document-list-pane.error.title': 'Could not fetch list items',
   /** The help text saying that we'll retry fetching the document list */
-  'panes.document-list-pane.error.will-retry-automatically_one': "We'll try again shortly.",
-  'panes.document-list-pane.error.will-retry-automatically_other':
-    "We'll try again shortly (#{{count}}).",
+  'panes.document-list-pane.error.will-retry-automatically_one': 'Retrying…',
+  'panes.document-list-pane.error.will-retry-automatically_other': 'Retrying… (#{{count}}).',
   /** The text of the document list pane if more than a maximum number of documents are returned */
   'panes.document-list-pane.max-items.text': 'Displaying a maximum of {{limit}} documents',
   /** The text of the document list pane if no documents are found for a specified type */
