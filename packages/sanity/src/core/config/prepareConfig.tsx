@@ -25,6 +25,7 @@ import {filterDefinitions} from '../studio/components/navbar/search/definitions/
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {sanityInternal} from '../util/sanityInternal'
 import {
   announcementsEnabledReducer,
   directUploadsReducer,
@@ -396,10 +397,30 @@ function resolveSource({
             title: schemaType.title || schemaType.name,
             icon: schemaType.icon,
             value: schemaType.initialValue || {_type: schemaType.name},
+            [sanityInternal]: {
+              liveEdit: schemaType.liveEdit,
+            },
           }
 
           return template
         }),
+    }).map((template) => {
+      if (typeof template?.[sanityInternal]?.liveEdit === 'boolean') {
+        return template
+      }
+
+      const schemaType = schema
+        .getTypeNames()
+        .filter((typeName) => typeName === template.schemaType)
+        .map((typeName) => schema.get(typeName))[0]
+
+      return {
+        ...template,
+        [sanityInternal]: {
+          ...template[sanityInternal],
+          liveEdit: schemaType?.liveEdit,
+        },
+      }
     })
     // TODO: validate templates
     // TODO: validate that each one has a unique template ID
@@ -443,6 +464,7 @@ function resolveSource({
         description: template.description,
         icon: template.icon,
         title: template.title,
+        liveEdit: template[sanityInternal]?.liveEdit,
       }),
     )
 
@@ -511,6 +533,7 @@ function resolveSource({
             initialDocumentId: response.initialDocumentId,
             parameters: response.parameters,
             schemaType: template.schemaType,
+            liveEdit: template[sanityInternal]?.liveEdit,
           }
         })
         .filter((item) => {
