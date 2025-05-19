@@ -215,7 +215,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the history for the <strong>{{perspective}}</strong> version of this document.',
   /** The tooltip for the changes banner */
   'changes.banner.tooltip':
-    'This view shows the changes that occurred in a specific version of this document, to see the changes for other versions update the perspective',
+    'This view shows the changes that occurred in a specific version of this document. Select a different version to see its changes',
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/

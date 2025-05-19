@@ -56,8 +56,8 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const perspectiveName = isReleaseDocument(selectedPerspective)
     ? selectedPerspective.metadata.title
     : selectedPerspective === 'drafts'
-      ? 'Draft'
-      : 'Published'
+      ? t('compare-versions.status.draft')
+      : t('compare-versions.status.published')
 
   return (
     <FadeInFlex
@@ -103,13 +103,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             content={
               <Box flex={1} padding={1}>
                 <Text size={1}>
-                  <Translate
-                    t={t}
-                    values={{
-                      perspective: perspectiveName,
-                    }}
-                    i18nKey="changes.banner.tooltip"
-                  />
+                  <Translate t={t} i18nKey="changes.banner.tooltip" />
                 </Text>
               </Box>
             }
