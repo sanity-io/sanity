@@ -21,8 +21,9 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
       return // Already expanded
     }
     if (
-      (isPublishDocumentVersionEvent(event) && event.versionRevisionId && event.creationEvent) ||
-      (isDeleteDocumentVersionEvent(event) && event.versionRevisionId && event.creationEvent)
+      (isPublishDocumentVersionEvent(event) || isDeleteDocumentVersionEvent(event)) &&
+      event.versionRevisionId &&
+      event.creationEvent
     ) {
       // This are the only events we can expand.
       // We need to get that creation event and use versionRevisionId and fetch the transactions that occurred
