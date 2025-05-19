@@ -29,7 +29,8 @@ export function EnsureMediaLibrary(props: {
           </Text>
           <Stack space={4} data-testid={errorCodeTestId}>
             <Text size={1} weight="semibold">
-              {error.message || t('asset-sources.media-library.error.library-not-found')}
+              {error.message ||
+                t('asset-sources.media-library.error.library-could-not-be-resolved')}
             </Text>
           </Stack>
         </Flex>

@@ -68,7 +68,8 @@ export function MediaLibraryProvider({
           </Text>
           <Stack space={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
             <Text size={1} weight="semibold">
-              {unexpectedError.message || t('asset-sources.media-library.error.library-not-found')}
+              {unexpectedError.message ||
+                t('asset-sources.media-library.error.library-could-not-be-resolved')}
             </Text>
           </Stack>
         </Flex>
