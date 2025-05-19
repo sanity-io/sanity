@@ -126,7 +126,7 @@ describe('provisioning', () => {
 
     await waitFor(() => {
       expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
-      expect(getByTestId('ERROR_UNEXPECTED')).toBeInTheDocument()
+      expect(getByTestId('MEDIA_LIBRARY_ERROR_UNEXPECTED')).toBeInTheDocument()
     })
   })
 

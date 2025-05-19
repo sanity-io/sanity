@@ -35,7 +35,7 @@ export class ProvisionError extends Error {
   }
 }
 
-type ProvisionResponse = {
+type EnsureMediaLibraryResponse = {
   id?: string
   organizationId?: string
   status: 'provisioning' | 'active' | 'loading' | 'error'
@@ -91,7 +91,7 @@ function getOrganizationIdFromProjectId(
 function requestMediaLibraryStatus(
   client: ObservableSanityClient,
   libraryId: string,
-): Observable<ProvisionResponse> {
+): Observable<EnsureMediaLibraryResponse> {
   return client
     .request({
       uri: `/media-libraries/${libraryId}`,
@@ -104,7 +104,7 @@ function requestMediaLibraryStatus(
             id: data.id,
             organizationId: data.organizationId,
             status: data.status,
-          } satisfies ProvisionResponse)
+          } satisfies EnsureMediaLibraryResponse)
         }
         throw new ProvisionError(
           'Media library not found',
@@ -118,7 +118,7 @@ function requestMediaLibraryStatus(
 function createMediaLibrary(
   client: ObservableSanityClient,
   organizationId: string,
-): Observable<ProvisionResponse> {
+): Observable<EnsureMediaLibraryResponse> {
   return client.request({
     uri: `/media-libraries`,
     method: 'POST',
@@ -126,7 +126,7 @@ function createMediaLibrary(
   })
 }
 
-export function useProvision(projectId: string): ProvisionResponse {
+export function useEnsureMediaLibrary(projectId: string): EnsureMediaLibraryResponse {
   if (!projectId) {
     throw new Error('projectId is required to fetch organizationId')
   }
@@ -142,7 +142,7 @@ export function useProvision(projectId: string): ProvisionResponse {
                   id: mediaLibraryData[0].id,
                   organizationId,
                   status: 'active',
-                } satisfies ProvisionResponse)
+                } satisfies EnsureMediaLibraryResponse)
               }
               return createMediaLibrary(client, organizationId).pipe(
                 // eslint-disable-next-line max-nested-callbacks
@@ -152,7 +152,7 @@ export function useProvision(projectId: string): ProvisionResponse {
                       id: createdData.id,
                       organizationId,
                       status: 'provisioning',
-                    } satisfies ProvisionResponse)
+                    } satisfies EnsureMediaLibraryResponse)
                   }
                   throw new ProvisionError(
                     'Failed to create Media Library',
@@ -190,7 +190,7 @@ export function useProvision(projectId: string): ProvisionResponse {
               organizationId: undefined,
               status: 'error' as const,
               error: err,
-            } satisfies ProvisionResponse)
+            } satisfies EnsureMediaLibraryResponse)
           }
           throw err
         }),
