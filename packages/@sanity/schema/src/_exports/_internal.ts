@@ -1,3 +1,4 @@
+export {DescriptorConverter} from '../descriptors/convert'
 export {isActionEnabled} from '../legacy/actionUtils'
 export {
   DEFAULT_MAX_FIELD_DEPTH,
