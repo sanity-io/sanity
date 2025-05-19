@@ -41,33 +41,34 @@ export const internal = Symbol('internal')
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
   if (typeName === 'crossDatasetReference') {
     return Schema.compile({
-      types: (baseSchema._original?.types || []).concat([
+      types: [
         {
           name: `__placeholder__`,
           type: 'crossDatasetReference',
           // Just needs _something_ to refer to, doesn't matter what
           to: [{type: 'sanity.imageAsset'}],
         },
-      ]),
+      ],
+      parent: baseSchema,
     }).get('__placeholder__')
   }
   if (typeName === 'globalDocumentReference') {
     return Schema.compile({
-      types: (baseSchema._original?.types || []).concat([
+      types: [
         {
           name: `__placeholder__`,
           type: 'globalDocumentReference',
           // Just needs _something_ to refer to, doesn't matter what
           to: [{type: 'sanity.imageAsset'}],
         },
-      ]),
+      ],
+      parent: baseSchema,
     }).get('__placeholder__')
   }
 
   return Schema.compile({
-    types: (baseSchema._original?.types || []).concat([
-      {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
-    ]),
+    types: [{name: `__placeholder__`, type: typeName, options: {hotspot: true}}],
+    parent: baseSchema,
   }).get('__placeholder__')
 }
 

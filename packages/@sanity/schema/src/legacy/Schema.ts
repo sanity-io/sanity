@@ -1,7 +1,17 @@
 import * as types from './types'
 
 function compileRegistry(schemaDef: any) {
-  const registry = Object.assign(Object.create(null), types)
+  const registry = Object.create(null)
+  let localTypeNames: string[]
+
+  if (schemaDef.parent) {
+    Object.assign(registry, schemaDef.parent._registry)
+    localTypeNames = []
+  } else {
+    // For the root schema we inherit from the core types and also register these as the "local" ones.
+    Object.assign(registry, types)
+    localTypeNames = Object.keys(types)
+  }
 
   const defsByName = schemaDef.types.reduce((acc: any, def: any) => {
     if (acc[def.name]) {
@@ -13,7 +23,10 @@ function compileRegistry(schemaDef: any) {
 
   schemaDef.types.forEach(add)
 
-  return registry
+  return {
+    registry,
+    localTypeNames,
+  }
 
   function ensure(typeName: any) {
     if (!registry[typeName]) {
@@ -34,6 +47,7 @@ function compileRegistry(schemaDef: any) {
     if (registry[typeDef.name]) {
       return
     }
+    localTypeNames.push(typeDef.name)
     registry[typeDef.name] = registry[typeDef.type].extend(typeDef, extendMember)
   }
 }
@@ -42,8 +56,9 @@ function compileRegistry(schemaDef: any) {
  * @beta
  */
 export class Schema {
-  _original: {name: string; types: any[]}
+  _original: {name: string; types: any[]; parent?: Schema}
   _registry: {[typeName: string]: any}
+  _localTypeNames: string[]
 
   static compile(schemaDef: any): Schema {
     return new Schema(schemaDef)
@@ -51,11 +66,21 @@ export class Schema {
 
   constructor(schemaDef: any) {
     this._original = schemaDef
-    this._registry = compileRegistry(schemaDef)
+
+    const {registry, localTypeNames} = compileRegistry(schemaDef)
+    this._registry = registry
+    this._localTypeNames = localTypeNames
   }
 
   get name(): string {
     return this._original.name
+  }
+
+  /**
+   * Returns the parent schema.
+   */
+  get parent(): Schema | undefined {
+    return this._original.parent
   }
 
   get(name: string): any {
@@ -68,6 +93,10 @@ export class Schema {
 
   getTypeNames(): string[] {
     return Object.keys(this._registry)
+  }
+
+  getLocalTypeNames(): string[] {
+    return this._localTypeNames
   }
 }
 
