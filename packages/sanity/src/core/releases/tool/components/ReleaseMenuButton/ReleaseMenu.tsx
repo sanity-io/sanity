@@ -228,7 +228,7 @@ export const ReleaseMenu = ({
         key="publish"
         release={release}
         documents={documents}
-        disabled={releaseMenuDisabled}
+        disabled={releaseMenuDisabled || !hasPublishPermission}
         isMenuItem
         onConfirmDialogClose={() => setSelectedAction(undefined)}
         onConfirmDialogOpen={() => setSelectedAction('publish')}
