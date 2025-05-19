@@ -3,6 +3,7 @@ import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
 import {useEffect} from 'react'
 import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
+import {Text} from '@sanity/ui'
 
 /**
  * This Studio Plugin shows how to:
@@ -52,7 +53,7 @@ function WaveBehaviorPlugin() {
     }
   }, [editor])
 
-  return null
+  return <Text size={0}>Wave plugin</Text>
 }
 
 /**
@@ -72,7 +73,7 @@ export const wave = definePlugin({
           renderPlugins: (pluginProps) => {
             return (
               <>
-                {pluginProps.renderDefault(pluginProps)}
+                {props.renderPlugins?.(pluginProps)}
                 <WaveBehaviorPlugin />
               </>
             )

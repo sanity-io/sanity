@@ -3,7 +3,7 @@ import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
 import {useEffect} from 'react'
 import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
-
+import {Text} from '@sanity/ui'
 /**
  * This Studio Plugin shows how to:
  *
@@ -76,7 +76,7 @@ function AutoCloseBracketsBehaviorPlugin() {
     }
   }, [editor])
 
-  return null
+  return <Text size={0}>Auto close brackets</Text>
 }
 
 /**
@@ -97,7 +97,7 @@ export const autoCloseBrackets = definePlugin({
           renderPlugins: (pluginProps) => {
             return (
               <>
-                {pluginProps.renderDefault(pluginProps)}
+                {props.renderPlugins?.(pluginProps)}
                 <AutoCloseBracketsBehaviorPlugin />
               </>
             )
