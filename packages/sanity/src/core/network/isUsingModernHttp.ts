@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {from, Observable, of, race, timer} from 'rxjs'
-import {map, take} from 'rxjs/operators'
+import {defer, firstValueFrom, Observable, of, take, timeout} from 'rxjs'
+import {filter, map, mergeMap} from 'rxjs/operators'
 
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
@@ -70,13 +70,11 @@ function getProtocolForApi(client?: SanityClient): Observable<string | undefined
     return of(undefined)
   }
 
-  const checkUrl = client ? client.getUrl(checkPath) : `${fallbackApiUrl}${checkPath}`
+  const checkUrl = client
+    ? `${client.getUrl(checkPath)}?tag=sanity.studio.${checkRequestTag}`
+    : fallbackApiUrl
 
-  // Race the actual timing detection against a 2.5s timer.
-  // If the timer wins, we emit undefined to indicate we couldn’t detect the protocol.
-  return race(detectProtocol(checkUrl, client), timer(2500).pipe(map(() => undefined))).pipe(
-    take(1),
-  )
+  return detectProtocol(checkUrl)
 }
 
 /**
@@ -86,43 +84,38 @@ function getProtocolForApi(client?: SanityClient): Observable<string | undefined
  *
  * @internal
  */
-function detectProtocol(checkUrl: string, client?: SanityClient): Observable<string | undefined> {
-  return new Observable<string | undefined>((subscriber) => {
-    const observer = new PerformanceObserver((list, obs) => {
-      for (const entry of list.getEntries()) {
-        if (
-          !(entry instanceof PerformanceResourceTiming) ||
-          !entry.name.includes(checkRequestTag) ||
-          !entry.name.includes(checkPath)
-        ) {
-          return
-        }
+function detectProtocol(checkUrl: string): Observable<string | undefined> {
+  const timingEntry = firstValueFrom(
+    listenBufferedPerformanceEntries().pipe(
+      filter(
+        (entry): entry is PerformanceResourceTiming =>
+          entry instanceof PerformanceResourceTiming && entry.name === checkUrl,
+      ),
+      take(1),
+      map((entry) => localStorage._sanity_debugProtocol ?? entry.nextHopProtocol),
+    ),
+  )
 
-        obs.disconnect()
-        subscriber.next(entry.nextHopProtocol)
-        subscriber.complete()
+  return defer(() => fetch(checkUrl)).pipe(
+    // when the request is over, we map it to the corresponding timing entry
+    mergeMap(() => timingEntry),
+    // Race the actual timing detection against a 2.5s timer.
+    // If the timer wins, we emit undefined to indicate we couldn’t detect the protocol.
+    timeout({first: 2500, with: () => of(undefined)}),
+  )
+}
+
+function listenBufferedPerformanceEntries() {
+  return new Observable<PerformanceEntry>((subscriber) => {
+    const perfObserver = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        subscriber.next(entry)
       }
     })
-
-    observer.observe({
+    perfObserver.observe({
       type: 'resource',
       buffered: true,
     })
-
-    const request$ = client
-      ? client.observable.request({uri: checkPath, withCredentials: false, tag: checkRequestTag})
-      : from(fetch(checkUrl))
-
-    const requestSub = request$.subscribe({
-      error: (err) => {
-        observer.disconnect()
-        subscriber.error(err)
-      },
-    })
-
-    return () => {
-      requestSub.unsubscribe()
-      observer.disconnect()
-    }
+    return () => perfObserver.disconnect()
   })
 }

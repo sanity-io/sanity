@@ -1,7 +1,7 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {useToast} from '@sanity/ui'
-import {useEffect} from 'react'
-import {filter} from 'rxjs'
+import {useEffect, useState} from 'react'
+import {useConditionalToast} from 'sanity'
 
 import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -21,22 +21,20 @@ export function useNetworkProtocolCheck(): undefined {
   const client = useClient({apiVersion: '2025-03-01'})
   const title = t('network-check.slow-protocol-warning.title')
 
+  const [isOnModernHttp, setIsOnModernHttp] = useState<boolean | undefined>()
+
   useEffect(() => {
-    const sub = isUsingModernHttp(client)
-      .pipe(filter((isOnModernHttp) => isOnModernHttp === false))
-      .subscribe(() =>
-        pushToast({
-          id: 'network-protocol-check',
-          status: 'warning',
-          closable: true,
-          // Do not auto-close this one
-          duration: +Infinity,
-          title,
-          description: <WarningDescription />,
-        }),
-      )
+    const sub = isUsingModernHttp(client).subscribe((result) => setIsOnModernHttp(result))
     return () => sub.unsubscribe()
   }, [client, pushToast, title])
+
+  useConditionalToast({
+    id: 'network-protocol-check',
+    status: 'warning',
+    enabled: isOnModernHttp === false,
+    title,
+    description: <WarningDescription />,
+  })
 }
 
 function WarningDescription() {
@@ -45,7 +43,7 @@ function WarningDescription() {
   const readMore = t('network-check.slow-protocol-warning.learn-more')
   return (
     <>
-      {description}
+      {description}{' '}
       <a href={HTTP_HELP_URL} target="_blank" rel="noreferrer">
         {readMore}
       </a>
