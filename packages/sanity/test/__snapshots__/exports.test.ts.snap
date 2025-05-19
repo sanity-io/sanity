@@ -433,6 +433,7 @@ exports[`exports snapshot 1`] = `
     "isUnpublishDocumentEvent": "function",
     "isUnscheduleDocumentVersionEvent": "function",
     "isUpdateLiveDocumentEvent": "function",
+    "isUsingModernHttp": "function",
     "isValidAnnouncementAudience": "function",
     "isValidAnnouncementRole": "function",
     "isValidationError": "function",
