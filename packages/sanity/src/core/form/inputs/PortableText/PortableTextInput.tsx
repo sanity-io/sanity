@@ -11,11 +11,7 @@ import {
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
-import {
-  EventListenerPlugin,
-  MarkdownPlugin,
-  type MarkdownPluginConfig,
-} from '@portabletext/editor/plugins'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
@@ -56,6 +52,7 @@ import {
 } from './presence-cursors'
 import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
+import {PTEPlugins} from './object/Plugins'
 
 interface UploadTask {
   file: File
@@ -91,19 +88,6 @@ export interface PortableTextMemberItem {
 }
 
 /**
- * @beta
- */
-export interface RenderPortableTextInputPluginsProps {
-  renderMarkdownPlugin: (props: {config: MarkdownPluginConfig}) => ReactNode
-  renderDefault: (props: {
-    renderMarkdownPlugin: (props: {
-      config: MarkdownPluginConfig
-      renderDefault: (props: {config: MarkdownPluginConfig}) => ReactNode
-    }) => ReactNode
-  }) => ReactNode
-}
-
-/**
  * Input component for editing block content
  * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
  *
@@ -136,7 +120,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
-    renderPlugins,
     schemaType,
     value,
     resolveUploader,
@@ -406,7 +389,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
               <UpdateValuePlugin value={value} />
-              <RenderPlugins renderPlugins={renderPlugins} />
+              <PTEPlugins schemaType={schemaType} />
               <Compositor
                 {...props}
                 elementRef={elementRef}
@@ -431,41 +414,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       )}
     </Box>
   )
-}
-
-const markdownConfig: MarkdownPluginConfig = {
-  boldDecorator: ({schema}) =>
-    schema.decorators.find((decorator) => decorator.name === 'strong')?.name,
-  codeDecorator: ({schema}) =>
-    schema.decorators.find((decorator) => decorator.name === 'code')?.name,
-  italicDecorator: ({schema}) =>
-    schema.decorators.find((decorator) => decorator.name === 'em')?.name,
-  strikeThroughDecorator: ({schema}) =>
-    schema.decorators.find((decorator) => decorator.name === 'strike-through')?.name,
-  defaultStyle: ({schema}) => schema.styles.find((style) => style.name === 'normal')?.name,
-  blockquoteStyle: ({schema}) => schema.styles.find((style) => style.name === 'blockquote')?.name,
-  headingStyle: ({schema, level}) =>
-    schema.styles.find((style) => style.name === `h${level}`)?.name,
-  orderedListStyle: ({schema}) => schema.lists.find((list) => list.name === 'number')?.name,
-  unorderedListStyle: ({schema}) => schema.lists.find((list) => list.name === 'bullet')?.name,
-}
-
-function RenderPlugins(props: {renderPlugins?: PortableTextInputProps['renderPlugins']}) {
-  if (!props.renderPlugins) {
-    return <MarkdownPlugin config={markdownConfig} />
-  }
-
-  return props.renderPlugins({
-    renderMarkdownPlugin: (markdownPluginProps) => <MarkdownPlugin {...markdownPluginProps} />,
-    renderDefault: (defaultProps) => (
-      <>
-        {defaultProps.renderMarkdownPlugin({
-          config: markdownConfig,
-          renderDefault: (markdownPluginProps) => <MarkdownPlugin {...markdownPluginProps} />,
-        })}
-      </>
-    ),
-  })
 }
 
 /**

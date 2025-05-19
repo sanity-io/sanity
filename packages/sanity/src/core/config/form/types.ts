@@ -2,6 +2,7 @@ import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components'
 import {
+  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockProps,
   type FieldProps,
@@ -20,4 +21,5 @@ export interface FormComponents {
   input?: ComponentType<InputProps>
   item?: ComponentType<ItemProps>
   preview?: ComponentType<PreviewProps>
+  ptePlugins?: ComponentType<PtePluginsProps>
 }

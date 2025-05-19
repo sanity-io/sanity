@@ -3,6 +3,7 @@ import {type ComponentType} from 'react'
 import {type PreviewProps} from '../../components/previews'
 import {type PluginOptions} from '../../config'
 import {
+  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockProps,
   type FieldProps,
@@ -51,5 +52,13 @@ export function pickAnnotationComponent(
 ): ComponentType<Omit<BlockAnnotationProps, 'renderDefault'>> {
   return plugin.form?.components?.annotation as ComponentType<
     Omit<BlockAnnotationProps, 'renderDefault'>
+  >
+}
+
+export function pickPTEPluginsComponent(
+  plugin: PluginOptions,
+): ComponentType<Omit<PtePluginsProps, 'renderDefault'>> {
+  return plugin.form?.components?.ptePlugins as ComponentType<
+    Omit<PtePluginsProps, 'renderDefault'>
   >
 }

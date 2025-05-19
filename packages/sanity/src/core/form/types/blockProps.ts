@@ -23,6 +23,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from './renderCallback'
+import {MarkdownPluginConfig} from '@portabletext/editor/plugins'
 
 /**
  * Props for rendering text decorations in Portable Text blocks.
@@ -434,4 +435,13 @@ export interface BlockProps {
    * Value of the block.
    */
   value: PortableTextBlock
+}
+
+export interface PtePluginsProps {
+  renderDefault: (props: PtePluginsProps) => React.JSX.Element
+  /**
+   * The schema type for the annotation object.
+   */
+  schemaType: ArraySchemaType<PortableTextBlock>
+  markdownPluginProps: {config: MarkdownPluginConfig}
 }

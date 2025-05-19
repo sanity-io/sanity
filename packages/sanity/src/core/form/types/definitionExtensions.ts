@@ -11,6 +11,7 @@ import {type ComponentType} from 'react'
 import {type PreviewProps} from '../../components'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
+  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockDecoratorProps,
   type BlockListItemProps,
@@ -51,6 +52,7 @@ declare module '@sanity/types' {
     input?: ComponentType<ArrayOfObjectsInputProps>
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
+    ptePlugins?: ComponentType<PtePluginsProps>
   }
 
   /**
