@@ -12,7 +12,7 @@ import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {resolveSearchConfig} from '../searchConfig/resolve'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
@@ -36,8 +36,9 @@ export const ObjectType = {
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
     const options = {...(subTypeDef.options || {})}
-    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
-      type: this.get(),
+
+    const ownProps = {
+      ...subTypeDef,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
@@ -57,6 +58,10 @@ export const ObjectType = {
           })
         })
       }),
+    }
+
+    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), ownProps, {
+      type: this.get(),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
@@ -68,6 +73,18 @@ export const ObjectType = {
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        fieldsets: parsed.fieldsets,
+        groups: parsed.groups,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
 
     lazyGetter(
       parsed,
