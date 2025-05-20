@@ -72,6 +72,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       badges: documentBadges,
       unstable_fieldActions: fieldActionsResolver,
       unstable_languageFilter: languageFilterResolver,
+      drafts: {enabled: draftsEnabled},
     },
   } = useSource()
   const telemetry = useTelemetry()
@@ -249,12 +250,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       case selectedPerspectiveName === 'published':
         version = 'published'
         break
-      default:
+      case draftsEnabled:
         version = 'draft'
+        break
+      default:
+        version = 'published'
     }
 
     return version
-  }, [selectedPerspectiveName, selectedReleaseId, params, value._id])
+  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled])
 
   const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 
