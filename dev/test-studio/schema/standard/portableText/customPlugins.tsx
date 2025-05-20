@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, DecoratorShortcutPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
-import {defineType, type PortableTextInputProps} from 'sanity'
+import {defineType} from 'sanity'
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -29,11 +29,6 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        annotation: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-          })
-        },
         pte: {
           plugins: (props) => {
             return (

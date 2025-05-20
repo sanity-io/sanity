@@ -1,7 +1,6 @@
 /* eslint-disable no-negated-condition */
 import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
-import {Text} from '@sanity/ui'
 import {useEffect} from 'react'
 import {definePlugin} from 'sanity'
 
@@ -53,7 +52,7 @@ function WaveBehaviorPlugin() {
     }
   }, [editor])
 
-  return <Text size={0}>Wave plugin</Text>
+  return null
 }
 
 /**
