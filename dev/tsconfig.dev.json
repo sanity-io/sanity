@@ -16,7 +16,7 @@
       "@sanity/util/*": ["./packages/@sanity/util/src/_exports/*"],
       "@sanity/util": ["./packages/@sanity/util/src/_exports/index.ts"],
       "@sanity/vision": ["./packages/@sanity/vision/src/index.ts"],
-      "groq": ["./packages/groq/src/groq.ts"],
+      "groq": ["./packages/groq/src/_exports.mts.ts"],
       "sanity/_internal": ["./packages/sanity/src/_exports/_internal.ts"],
       "sanity/_singletons": ["./packages/sanity/src/_exports/_singletons.ts"],
       "sanity/_createContext": ["./packages/sanity/src/_exports/_createContext.ts"],
