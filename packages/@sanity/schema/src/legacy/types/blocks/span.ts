@@ -1,7 +1,8 @@
 import {pick} from 'lodash'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
-import {lazyGetter} from '../utils'
+import {OWN_PROPS_NAME} from '../constants'
+import {hiddenGetter, lazyGetter} from '../utils'
 
 const INHERITED_FIELDS = [
   'type',
@@ -48,9 +49,10 @@ export const SpanType = {
     // NOTE: if you update this please also update `SpanSchemaType` in`@sanity/types`
     const fields = [MARKS_FIELD, TEXT_FIELD]
 
-    const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
+    const ownProps = {...subTypeDef, options}
+
+    const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), ownProps, {
       type: SPAN_CORE,
-      options: options,
     })
 
     lazyGetter(parsed, 'fields', () => {
@@ -68,6 +70,19 @@ export const SpanType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        fields: parsed.fields,
+        annotations: parsed.annotations,
+        marks: parsed.marks,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
+
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -79,9 +94,11 @@ export const SpanType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "span"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
+          const subOwnProps = pick(extensionDef, INHERITED_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }

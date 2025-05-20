@@ -1,9 +1,9 @@
 import {pick, startCase} from 'lodash'
 
 import createPreviewGetter from '../preview/createPreviewGetter'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'
-import {lazyGetter} from './utils'
+import {hiddenGetter, lazyGetter} from './utils'
 
 export const ASSET_FIELD = {
   name: 'asset',
@@ -70,6 +70,20 @@ export const FileType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(Object.assign({}, subTypeDef, {fields})))
 
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...subTypeDef,
+        options,
+        fields: parsed.fields,
+        title: parsed.title,
+        fieldsets: parsed.fieldsets,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
+
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -81,9 +95,11 @@ export const FileType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "file"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const ownProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, ownProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, ownProps)
           return subtype(current)
         },
       }
