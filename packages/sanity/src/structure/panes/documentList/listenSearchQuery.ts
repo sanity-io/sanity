@@ -2,6 +2,7 @@ import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
+  filter,
   map,
   merge,
   mergeMap,
@@ -9,11 +10,11 @@ import {
   of,
   partition,
   share,
-  take,
   throttleTime,
   throwError,
   timer,
 } from 'rxjs'
+import {scan} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   createSearch,
@@ -42,14 +43,21 @@ interface ListenQueryOptions {
   searchStrategy?: SearchStrategy
 }
 
-export interface SearchQueryResult {
+export type SearchQueryEvent =
+  | {
+      type: 'reconnect'
+    }
+  | {type: 'result'; documents: SanityDocumentLike[]}
+
+export interface SearchQueryState {
+  connected: boolean
   fromCache: boolean
   documents: SanityDocumentLike[]
 }
 
-const swr = createSWR<SanityDocumentLike[]>({maxSize: 100})
+const swr = createSWR<{connected: boolean; documents: SanityDocumentLike[]}>({maxSize: 100})
 
-export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryResult> {
+export function listenSearchQuery(options: ListenQueryOptions): Observable<SearchQueryState> {
   const {
     client,
     schema,
@@ -57,7 +65,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     perspective,
     limit,
     params,
-    filter,
+    filter: groqFilter,
     searchQuery,
     staticTypeNames,
     maxFieldDepth,
@@ -70,7 +78,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   // re-fetch the documents that match the search query (see below).
   // We use a separate listener since the search query is too large to use in a listen query.
   const events$ = defer(() => {
-    return client.listen(`*[${filter}]`, params, {
+    return client.listen(`*[${groqFilter}]`, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeAllVersions: true,
       includeResult: false,
@@ -80,17 +88,16 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   }).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
+      // If we can't establish a connection to the /listen endpoint, the first event we receive will be 'reconnect'
+      // So if we get "reconnect" as the first event actually means "Connection can't be established"
+      if (isFirst && ev.type === 'reconnect') {
+        // if it's neither welcome nor reconnect, something unexpected has happened.
+        return throwError(() => new Error(`Failed to establish EventSource connection`))
+      }
+      // When a connection is successfully established, the first event will be 'welcome'
       if (isFirst && ev.type !== 'welcome') {
-        // If the first event is not welcome, it is most likely a reconnect and
-        // if it's not a reconnect something is very wrong and we should throw.
-        return throwError(
-          () =>
-            new Error(
-              ev.type === 'reconnect'
-                ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`,
-            ),
-        )
+        // if it's neither welcome nor reconnect, something unexpected has happened.
+        return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
       }
       return of(ev)
     }),
@@ -100,7 +107,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
   const swrKey = JSON.stringify({
-    filter,
+    fiilter: groqFilter,
     limit,
     params,
     searchQuery,
@@ -110,15 +117,15 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   })
 
   return merge(
-    welcome$.pipe(take(1)),
+    welcome$,
     mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
   ).pipe(
-    exhaustMapWithTrailing((event) => {
+    exhaustMapWithTrailing((event): Observable<SearchQueryEvent> => {
       // Get the types names to use for searching.
       // If we have a static list of types, we can skip fetching the types and use the static list.
       const typeNames$ = staticTypeNames
         ? of(staticTypeNames)
-        : client.observable.fetch(`array::unique(*[${filter}][]._type)`, params)
+        : client.observable.fetch(`array::unique(*[${groqFilter}][]._type)`, params)
 
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
@@ -135,7 +142,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
           })
 
           const search = createSearch(types, client, {
-            filter,
+            filter: groqFilter,
             params,
             strategy: searchStrategy,
             maxDepth: maxFieldDepth,
@@ -161,6 +168,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
                 // eslint-disable-next-line max-nested-callbacks
                 result.hits.map(({hit}) => hit),
               ),
+              map((hits) => ({type: 'result' as const, documents: hits})),
             )
           }
 
@@ -170,11 +178,25 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
             return timer(1200).pipe(mergeMap(doFetch))
           }
+          if (event.type === 'reconnect') {
+            return of(event)
+          }
           return doFetch()
         }),
       )
     }),
+    scan(
+      (
+        acc: null | {connected: boolean; documents: SanityDocumentLike[]},
+        event: SearchQueryEvent,
+      ) => ({
+        connected: event.type !== 'reconnect',
+        documents: event.type === 'result' ? event.documents : acc?.documents || [],
+      }),
+      null as null | {connected: boolean; documents: SanityDocumentLike[]},
+    ),
+    filter((v) => v !== null),
     swr(swrKey),
-    map(({fromCache, value}) => ({fromCache, documents: value})),
+    map(({fromCache, value}): SearchQueryState => ({fromCache, ...value})),
   )
 }
