@@ -108,13 +108,17 @@ function ensureNormalStyle(styles: any) {
     : [BLOCK_STYLES.normal, ...styles]
 }
 
+function filterHiddenStyles(styles: any) {
+  return styles.filter((style: any) => !style.hidden)
+}
+
 function createStyleField(styles: any) {
   return {
     name: 'style',
     title: 'Style',
     type: 'string',
     options: {
-      list: ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES),
+      list: filterHiddenStyles(ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES)),
     },
   }
 }
