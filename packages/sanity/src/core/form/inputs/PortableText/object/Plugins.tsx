@@ -26,11 +26,10 @@ const markdownConfig: MarkdownPluginConfig = {
 export const PTEPlugins = (props: {schemaType: ArraySchemaType<PortableTextBlock>}) => {
   const componentProps = useMemo(
     (): PtePluginsProps => ({
-      ...props,
       markdownPluginProps: {config: markdownConfig},
       renderDefault: RenderDefault,
     }),
-    [props],
+    [],
   )
 
   const CustomComponent = props.schemaType.components?.ptePlugins as
