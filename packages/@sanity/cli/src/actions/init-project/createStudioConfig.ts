@@ -18,6 +18,19 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
+
+  mediaLibrary: {
+    enabled: true
+  },
+
+  form: {
+    image: {
+      assetSources: (sources) => sources.filter((source) => source.name !== 'sanity-default')
+    },
+    file: {
+      assetSources: (sources) => sources.filter((source) => source.name !== 'sanity-default')
+    }
+  },
 })
 `
 
