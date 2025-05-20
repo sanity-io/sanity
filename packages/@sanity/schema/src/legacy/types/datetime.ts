@@ -1,7 +1,8 @@
 import {pick} from 'lodash'
 
 import primitivePreview from '../preview/primitivePreview'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -17,10 +18,14 @@ export const DateTimeType = {
     return DATETIME_CORE
   },
   extend(subTypeDef: any) {
-    const parsed = Object.assign(pick(DATETIME_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: DATETIME_CORE,
+    const ownProps = {
+      ...subTypeDef,
       preview: primitivePreview,
+    }
+    const parsed = Object.assign(pick(DATETIME_CORE, OVERRIDABLE_FIELDS), ownProps, {
+      type: DATETIME_CORE,
     })
+    hiddenGetter(parsed, OWN_PROPS_NAME, ownProps)
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -29,9 +34,11 @@ export const DateTimeType = {
           return parent
         },
         extend: (extensionDef: any) => {
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const subOwnProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }

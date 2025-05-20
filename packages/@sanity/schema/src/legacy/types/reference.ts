@@ -1,9 +1,9 @@
 import arrify from 'arrify'
 import {pick} from 'lodash'
 
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'
-import {lazyGetter} from './utils'
+import {hiddenGetter, lazyGetter} from './utils'
 
 export const REF_FIELD = {
   name: '_ref',
@@ -82,6 +82,19 @@ export const ReferenceType = {
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
 
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...subTypeDef,
+        fields: parsed.fields,
+        fieldsets: parsed.fieldsets,
+        to: parsed.to,
+        title: parsed.title,
+      }),
+      {enumerable: false, writable: false},
+    )
+
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -93,9 +106,11 @@ export const ReferenceType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` of subtypes of "reference"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const ownProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, ownProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, ownProps)
           return subtype(current)
         },
       }
