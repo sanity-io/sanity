@@ -92,7 +92,7 @@ const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, Works
 // Create media library sources with configuration
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
-  const enabled = mediaLibraryEnabledReducer({config, initialValue: true})
+  const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
 
   // Only create sources if media library is enabled
   if (!enabled) {
