@@ -601,7 +601,7 @@ export default async function initSanity(
     const flagUsed = autoUpdates ? '--auto-updates' : '--no-auto-updates'
     output.warn(
       chalk.yellow(
-        `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in \`sanity.cli.ts\` or \`sanity.config.js\` instead.`,
+        `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in \`sanity.cli.ts\` or \`sanity.cli.js\` instead.`,
       ),
     )
   }

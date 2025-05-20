@@ -65,7 +65,7 @@ export interface InitFlags {
   'visibility'?: string
   'typescript'?: boolean
   /**
-   * @deprecated The auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.
+   * @deprecated The auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.
    */
   'auto-updates'?: boolean
   /**

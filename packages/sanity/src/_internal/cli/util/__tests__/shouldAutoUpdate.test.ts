@@ -44,7 +44,7 @@ describe('shouldAutoUpdate', () => {
     shouldAutoUpdate({flags: {'auto-updates': true}, output: mockOutput})
     expect(mockOutput.warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        'The --auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.config.js` instead.',
+        'The --auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.',
       ),
     )
   })
@@ -55,7 +55,7 @@ describe('shouldAutoUpdate', () => {
     shouldAutoUpdate({flags: {'auto-updates': false}, output: mockOutput})
     expect(mockOutput.warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        'The --no-auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.config.js` instead.',
+        'The --no-auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.',
       ),
     )
   })
