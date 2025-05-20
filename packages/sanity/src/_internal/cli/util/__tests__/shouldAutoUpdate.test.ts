@@ -38,7 +38,7 @@ describe('shouldAutoUpdate', () => {
     expect(shouldAutoUpdate({flags, cliConfig})).toBe(false)
   })
 
-  it('should show a deprecation warning when flags["auto-updates"] is used', () => {
+  it('should show a deprecation warning with the correct flag name when --auto-updates is used', () => {
     const mockOutput = {warn: vi.fn()}
 
     shouldAutoUpdate({flags: {'auto-updates': true}, output: mockOutput})
@@ -49,13 +49,13 @@ describe('shouldAutoUpdate', () => {
     )
   })
 
-  it('should show a deprecation warning when flags["auto-updates"] is false', () => {
+  it('should show a deprecation warning with the correct flag name when --no-auto-updates is used', () => {
     const mockOutput = {warn: vi.fn()}
 
     shouldAutoUpdate({flags: {'auto-updates': false}, output: mockOutput})
     expect(mockOutput.warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        'The --auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
+        'The --no-auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
       ),
     )
   })

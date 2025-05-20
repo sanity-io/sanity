@@ -17,9 +17,10 @@ export function shouldAutoUpdate({flags, cliConfig, output}: AutoUpdateSources):
   // cli flags (for example, '--no-auto-updates') should take precedence
   if ('auto-updates' in flags) {
     if (output) {
+      const flagUsed = flags['auto-updates'] ? '--auto-updates' : '--no-auto-updates'
       output.warn(
         chalk.yellow(
-          'The --auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
+          `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in the \`sanity.cli\` instead.`,
         ),
       )
     }

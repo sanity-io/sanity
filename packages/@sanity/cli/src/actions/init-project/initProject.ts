@@ -598,9 +598,10 @@ export default async function initSanity(
   let autoUpdates = true
   if (typeof cliFlags['auto-updates'] === 'boolean') {
     autoUpdates = cliFlags['auto-updates']
+    const flagUsed = autoUpdates ? '--auto-updates' : '--no-auto-updates'
     output.warn(
       chalk.yellow(
-        'The --auto-updates flag is deprecated. Set the `autoUpdates` option in the `sanity.cli` instead.',
+        `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in the \`sanity.cli\` instead.`,
       ),
     )
   }
