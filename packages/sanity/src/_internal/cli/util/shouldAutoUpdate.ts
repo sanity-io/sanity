@@ -20,7 +20,7 @@ export function shouldAutoUpdate({flags, cliConfig, output}: AutoUpdateSources):
       const flagUsed = flags['auto-updates'] ? '--auto-updates' : '--no-auto-updates'
       output.warn(
         chalk.yellow(
-          `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in the \`sanity.cli\` instead.`,
+          `The ${flagUsed} flag is deprecated. Set the \`autoUpdates\` option in \`sanity.cli.ts\` or \`sanity.config.js\` instead.`,
         ),
       )
     }
