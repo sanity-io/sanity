@@ -1,9 +1,9 @@
 /* eslint-disable no-negated-condition */
 import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
-import {useEffect} from 'react'
-import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
 import {Text} from '@sanity/ui'
+import {useEffect} from 'react'
+import {definePlugin} from 'sanity'
 /**
  * This Studio Plugin shows how to:
  *
@@ -87,22 +87,15 @@ export const autoCloseBrackets = definePlugin({
   name: 'auto-close brackets',
   form: {
     components: {
-      input: (props) => {
-        if (!isArrayOfBlocksSchemaType(props.schemaType)) {
-          return props.renderDefault(props)
-        }
-
-        return props.renderDefault({
-          ...props,
-          renderPlugins: (pluginProps) => {
-            return (
-              <>
-                {props.renderPlugins?.(pluginProps)}
-                <AutoCloseBracketsBehaviorPlugin />
-              </>
-            )
-          },
-        })
+      pte: {
+        plugins: (props) => {
+          return (
+            <>
+              {props.renderDefault(props)}
+              <AutoCloseBracketsBehaviorPlugin />
+            </>
+          )
+        },
       },
     },
   },

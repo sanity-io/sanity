@@ -34,13 +34,15 @@ export const customPlugins = defineType({
             ...props,
           })
         },
-        ptePlugins: (props) => {
-          return (
-            <>
-              {props.renderDefault(props)}
-              <OneLinePlugin />
-            </>
-          )
+        pte: {
+          plugins: (props) => {
+            return (
+              <>
+                {props.renderDefault(props)}
+                <OneLinePlugin />
+              </>
+            )
+          },
         },
       },
     },
@@ -71,16 +73,18 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        ptePlugins: (props) => {
-          return props.renderDefault({
-            ...props,
-            markdownPluginProps: {
-              config: {
-                boldDecorator: ({schema}) =>
-                  schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+        pte: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              markdownPluginProps: {
+                config: {
+                  boldDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+                },
               },
-            },
-          })
+            })
+          },
         },
       },
     },
@@ -102,57 +106,59 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        ptePlugins: (props) => {
-          return (
-            <>
-              {props.renderDefault({
-                ...props,
-                markdownPluginProps: {
-                  config: {
-                    ...props.markdownPluginProps.config,
-                    boldDecorator: undefined,
-                    italicDecorator: undefined,
+        pte: {
+          plugins: (props) => {
+            return (
+              <>
+                {props.renderDefault({
+                  ...props,
+                  markdownPluginProps: {
+                    config: {
+                      ...props.markdownPluginProps.config,
+                      boldDecorator: undefined,
+                      italicDecorator: undefined,
+                    },
                   },
-                },
-              })}
-              <DecoratorShortcutPlugin
-                decorator={({schema}) =>
-                  schema.decorators.find((decorator) => decorator.name === 'strong')?.name
-                }
-                pair={{
-                  char: '👻',
-                  amount: 2,
-                }}
-              />
-              <DecoratorShortcutPlugin
-                decorator={({schema}) =>
-                  schema.decorators.find((decorator) => decorator.name === 'strong')?.name
-                }
-                pair={{
-                  char: '🕹️',
-                  amount: 2,
-                }}
-              />
-              <DecoratorShortcutPlugin
-                decorator={({schema}) =>
-                  schema.decorators.find((decorator) => decorator.name === 'em')?.name
-                }
-                pair={{
-                  char: '👻',
-                  amount: 1,
-                }}
-              />
-              <DecoratorShortcutPlugin
-                decorator={({schema}) =>
-                  schema.decorators.find((decorator) => decorator.name === 'em')?.name
-                }
-                pair={{
-                  char: '🕹️',
-                  amount: 1,
-                }}
-              />
-            </>
-          )
+                })}
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 1,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 1,
+                  }}
+                />
+              </>
+            )
+          },
         },
       },
     },
@@ -173,8 +179,10 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        ptePlugins: (props) => {
-          return null
+        pte: {
+          plugins: (props) => {
+            return null
+          },
         },
       },
     },
@@ -196,28 +204,30 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        ptePlugins: (props) => {
-          return (
-            <>
-              {props.renderDefault(props)}
-              <BehaviorPlugin
-                behaviors={[
-                  defineBehavior({
-                    on: 'insert.text',
-                    actions: [
-                      ({event}) => [
-                        effect(() => {
-                          // eslint-disable-next-line no-console
-                          console.log(event)
-                        }),
-                        forward(event),
+        pte: {
+          plugins: (props) => {
+            return (
+              <>
+                {props.renderDefault(props)}
+                <BehaviorPlugin
+                  behaviors={[
+                    defineBehavior({
+                      on: 'insert.text',
+                      actions: [
+                        ({event}) => [
+                          effect(() => {
+                            // eslint-disable-next-line no-console
+                            console.log(event)
+                          }),
+                          forward(event),
+                        ],
                       ],
-                    ],
-                  }),
-                ]}
-              />
-            </>
-          )
+                    }),
+                  ]}
+                />
+              </>
+            )
+          },
         },
       },
     },

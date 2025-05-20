@@ -46,13 +46,13 @@ import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {PTEPlugins} from './object/Plugins'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
 } from './presence-cursors'
 import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
-import {PTEPlugins} from './object/Plugins'
 
 interface UploadTask {
   file: File

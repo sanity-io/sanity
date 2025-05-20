@@ -11,12 +11,12 @@ import {type ComponentType} from 'react'
 import {type PreviewProps} from '../../components'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
-  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockDecoratorProps,
   type BlockListItemProps,
   type BlockProps,
   type BlockStyleProps,
+  type PtePluginsProps,
 } from './blockProps'
 import {
   type ArrayFieldProps,
@@ -52,7 +52,7 @@ declare module '@sanity/types' {
     input?: ComponentType<ArrayOfObjectsInputProps>
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
-    ptePlugins?: ComponentType<PtePluginsProps>
+    pte?: {plugins: ComponentType<PtePluginsProps>}
   }
 
   /**

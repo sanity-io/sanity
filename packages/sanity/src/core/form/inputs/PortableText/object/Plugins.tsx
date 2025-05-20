@@ -1,10 +1,10 @@
-import {MarkdownPlugin, MarkdownPluginConfig} from '@portabletext/editor/plugins'
-import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
-import {ComponentType, useMemo} from 'react'
-import {PtePluginsProps} from '../../../types/blockProps'
-import {Stack, Text} from '@sanity/ui'
+import {MarkdownPlugin, type MarkdownPluginConfig} from '@portabletext/editor/plugins'
+import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
+import {type ComponentType, useMemo} from 'react'
+
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPTEPluginsComponent} from '../../../form-components-hooks/picks'
+import {type PtePluginsProps} from '../../../types/blockProps'
 
 const markdownConfig: MarkdownPluginConfig = {
   boldDecorator: ({schema}) =>
@@ -45,20 +45,7 @@ export const PTEPlugins = (props: {schemaType: ArraySchemaType<PortableTextBlock
 }
 
 export const DefaultPTEPlugins = (props: Omit<PtePluginsProps, 'renderDefault'>) => {
-  return (
-    <>
-      <Text size={0}>Markdown plugin</Text>
-      <Text size={0}>Supported markdown:</Text>
-      <Text size={0}>
-        {JSON.stringify(
-          Object.entries(props.markdownPluginProps.config)
-            .filter(([key, value]) => value)
-            .map(([key]) => key),
-        )}
-      </Text>
-      <MarkdownPlugin config={props.markdownPluginProps.config} />
-    </>
-  )
+  return <MarkdownPlugin config={props.markdownPluginProps.config} />
 }
 
 export const RenderDefault = (props: Omit<PtePluginsProps, 'renderDefault'>) => {
@@ -66,12 +53,5 @@ export const RenderDefault = (props: Omit<PtePluginsProps, 'renderDefault'>) => 
     defaultComponent: DefaultPTEPlugins,
     pick: pickPTEPluginsComponent,
   })
-  return (
-    <Stack space={3} paddingBottom={3} style={{border: '1px solid red'}}>
-      <Text size={1} weight="medium">
-        Render default PTE plugins
-      </Text>
-      <RenderPlugins {...props} />
-    </Stack>
-  )
+  return <RenderPlugins {...props} />
 }

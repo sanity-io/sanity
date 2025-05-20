@@ -2,12 +2,12 @@ import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components'
 import {
-  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockProps,
   type FieldProps,
   type InputProps,
   type ItemProps,
+  type PtePluginsProps,
 } from '../../form'
 
 /**
@@ -21,5 +21,7 @@ export interface FormComponents {
   input?: ComponentType<InputProps>
   item?: ComponentType<ItemProps>
   preview?: ComponentType<PreviewProps>
-  ptePlugins?: ComponentType<PtePluginsProps>
+  pte?: {
+    plugins?: ComponentType<PtePluginsProps>
+  }
 }

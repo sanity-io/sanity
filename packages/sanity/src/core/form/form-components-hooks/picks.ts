@@ -3,12 +3,12 @@ import {type ComponentType} from 'react'
 import {type PreviewProps} from '../../components/previews'
 import {type PluginOptions} from '../../config'
 import {
-  PtePluginsProps,
   type BlockAnnotationProps,
   type BlockProps,
   type FieldProps,
   type InputProps,
   type ItemProps,
+  type PtePluginsProps,
 } from '../types'
 
 export function pickInputComponent(
@@ -58,7 +58,7 @@ export function pickAnnotationComponent(
 export function pickPTEPluginsComponent(
   plugin: PluginOptions,
 ): ComponentType<Omit<PtePluginsProps, 'renderDefault'>> {
-  return plugin.form?.components?.ptePlugins as ComponentType<
+  return plugin.form?.components?.pte?.plugins as ComponentType<
     Omit<PtePluginsProps, 'renderDefault'>
   >
 }
