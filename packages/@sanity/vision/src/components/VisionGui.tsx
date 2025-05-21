@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
@@ -5,7 +6,8 @@ import {
   type MutationEvent,
   type StackablePerspective,
 } from '@sanity/client'
-import {Box, Flex, useToast} from '@sanity/ui'
+import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, usePerspective, useTranslation} from 'sanity'
@@ -27,6 +29,7 @@ import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQu
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
+import {QueryRecall} from './QueryRecall'
 import {usePaneSize} from './usePaneSize'
 import {
   InputBackgroundContainerLeft,
@@ -76,6 +79,17 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
+}
+
+export interface ParsedUrlState {
+  query: string
+  params: Record<string, unknown>
+  rawParams: string
+  dataset: string
+  apiVersion: string
+  customApiVersion: string | false | undefined
+  perspective: SupportedPerspective
+  url: string
 }
 
 export function VisionGui(props: VisionGuiProps) {
@@ -140,6 +154,7 @@ export function VisionGui(props: VisionGuiProps) {
   const [e2eTime, setE2eTime] = useState<number | undefined>(undefined)
   const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
   const [listenInProgress, setListenInProgress] = useState<boolean>(false)
+  const [isQueryRecallCollapsed, setIsQueryRecallCollapsed] = useState(false)
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
@@ -407,42 +422,19 @@ export function VisionGui(props: VisionGuiProps) {
     [localStorage],
   )
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const isWithinRoot =
-        visionRootRef.current && nodeContains(visionRootRef.current, event.target)
-      if (isRunHotkey(event) && isWithinRoot && params.valid) {
-        handleQueryExecution()
-        event.preventDefault()
-        event.stopPropagation()
-      }
-    },
-    [params.valid, handleQueryExecution],
-  )
-
-  const handlePaste = useCallback(
-    (evt: ClipboardEvent) => {
-      if (!evt.clipboardData) {
-        return
-      }
-
-      const data = evt.clipboardData.getData('text/plain')
+  // Get object of state values from provided URL
+  const getStateFromUrl = useCallback(
+    (data: string): ParsedUrlState | null => {
       const match = data.match(sanityUrl)
       if (!match) {
-        return
+        return null
       }
 
       const [, usedApiVersion, usedDataset, urlQuery] = match
-      let parts: ParsedApiQueryString
 
-      try {
-        const qs = new URLSearchParams(urlQuery)
-        parts = parseApiQueryString(qs)
-      } catch (err) {
-        console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
-        return // Give up on error
-      }
-
+      const qs = new URLSearchParams(urlQuery)
+      const parts: ParsedApiQueryString = parseApiQueryString(qs)
+      if (!parts) return null
       let newApiVersion: string | undefined
       let newCustomApiVersion: string | false | undefined
 
@@ -474,7 +466,7 @@ export function VisionGui(props: VisionGuiProps) {
         })
       }
 
-      const finalState = {
+      return {
         query: parts.query,
         params: parts.params,
         rawParams: JSON.stringify(parts.params, null, 2),
@@ -482,50 +474,82 @@ export function VisionGui(props: VisionGuiProps) {
         apiVersion: newApiVersion || apiVersion,
         customApiVersion: newCustomApiVersion,
         perspective: newPerspective || perspective,
+        url: data,
       }
+    },
+    [datasets, dataset, apiVersion, perspective, toast],
+  )
 
-      evt.preventDefault()
-
+  // Use state object from parsed URL to update state
+  const setStateFromParsedUrl = useCallback(
+    (parsedUrlObj: ParsedUrlState) => {
       // Update state with pasted values
-
-      setDataset(finalState.dataset)
-      setQuery(finalState.query)
+      setDataset(parsedUrlObj.dataset)
+      setQuery(parsedUrlObj.query)
       setParams({
-        parsed: finalState.params,
-        raw: finalState.rawParams,
+        parsed: parsedUrlObj.params,
+        raw: parsedUrlObj.rawParams,
         valid: true,
         error: undefined,
       })
-      setApiVersion(finalState.apiVersion)
-      if (finalState.customApiVersion) {
-        setCustomApiVersion(finalState.customApiVersion)
+      setApiVersion(parsedUrlObj.apiVersion)
+      if (parsedUrlObj.customApiVersion) {
+        setCustomApiVersion(parsedUrlObj.customApiVersion)
       }
-      setPerspectiveState(finalState.perspective)
-
+      setPerspectiveState(parsedUrlObj.perspective)
+      setUrl(parsedUrlObj.url)
       // Update the codemirror editor content
-      editorQueryRef.current?.resetEditorContent(finalState.query)
-      editorParamsRef.current?.resetEditorContent(finalState.rawParams)
+      editorQueryRef.current?.resetEditorContent(parsedUrlObj.query)
+      editorParamsRef.current?.resetEditorContent(parsedUrlObj.rawParams)
 
       // Update localStorage and client config
       localStorage.merge({
-        query: finalState.query,
-        params: finalState.rawParams,
-        dataset: finalState.dataset,
-        apiVersion: finalState.customApiVersion || finalState.apiVersion,
-        perspective: finalState.perspective,
+        query: parsedUrlObj.query,
+        params: parsedUrlObj.rawParams,
+        dataset: parsedUrlObj.dataset,
+        apiVersion: parsedUrlObj.customApiVersion || parsedUrlObj.apiVersion,
+        perspective: parsedUrlObj.perspective,
       })
 
       // Execute query with new values
-      handleQueryExecution(finalState)
-
-      toast.push({
-        closable: true,
-        id: 'vision-paste',
-        status: 'info',
-        title: 'Parsed URL to query',
-      })
+      handleQueryExecution(parsedUrlObj)
     },
-    [datasets, dataset, apiVersion, perspective, localStorage, toast, handleQueryExecution],
+    [localStorage, handleQueryExecution],
+  )
+
+  const handlePaste = useCallback(
+    (evt: ClipboardEvent) => {
+      if (!evt.clipboardData) {
+        return
+      }
+
+      const data = evt.clipboardData.getData('text/plain')
+      evt.preventDefault()
+      const urlState = getStateFromUrl(data)
+      if (urlState) {
+        setStateFromParsedUrl(urlState)
+        toast.push({
+          closable: true,
+          id: 'vision-paste',
+          status: 'info',
+          title: 'Parsed URL to query',
+        })
+      }
+    },
+    [getStateFromUrl, setStateFromParsedUrl, toast],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const isWithinRoot =
+        visionRootRef.current && nodeContains(visionRootRef.current, event.target)
+      if (isRunHotkey(event) && isWithinRoot && params.valid) {
+        handleQueryExecution()
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    },
+    [params.valid, handleQueryExecution],
   )
 
   useEffect(() => {
@@ -550,10 +574,22 @@ export function VisionGui(props: VisionGuiProps) {
       setPerspective('pinnedRelease')
     }
   })
-  // // Handle pinned perspective changes
+  // Handle pinned perspective changes
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
+
+  const generateUrl = useCallback(
+    (queryString: string, queryParams: Record<string, unknown>) => {
+      const urlQueryOpts: Record<string, string | string[]> = {
+        perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}) ?? [],
+      }
+      return client.getUrl(
+        client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
+      )
+    },
+    [client, perspective, perspectiveStack],
+  )
 
   return (
     <Root
@@ -578,76 +614,107 @@ export function VisionGui(props: VisionGuiProps) {
         url={url}
         perspective={perspective}
       />
+
       <SplitpaneContainer flex="auto">
         <SplitPane
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
-          minSize={280}
-          defaultSize={400}
-          maxSize={-400}
+          minSize={800}
+          defaultSize={window.innerWidth - 275}
+          size={isQueryRecallCollapsed ? window.innerWidth : window.innerWidth - 275}
+          maxSize={-225}
+          primary="first"
         >
           <Box height="stretch" flex={1}>
-            {/*
-                    The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
-                    - It sets the initial size of the panes to 1/2 of the total available height of the container
-                    - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
-                    - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
-                    - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
-                    - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
-                    - Disables resize if the container height is less then 500px
-                    This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
-                  */}
             <SplitPane
               className="sidebarPanes"
-              split="horizontal"
-              defaultSize={
-                isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-              }
-              size={paneSizeOptions.size}
-              allowResize={paneSizeOptions.allowResize}
-              minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
-              maxSize={paneSizeOptions.maxSize}
-              primary="first"
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
+              minSize={300}
             >
-              <InputContainer display="flex" data-testid="vision-query-editor">
-                <Box flex={1}>
-                  <InputBackgroundContainerLeft>
-                    <Flex>
-                      <StyledLabel muted>{t('query.label')}</StyledLabel>
-                    </Flex>
-                  </InputBackgroundContainerLeft>
-                  <VisionCodeMirror initialValue={query} onChange={setQuery} ref={editorQueryRef} />
-                </Box>
-              </InputContainer>
-              <InputContainer display="flex">
-                <ParamsEditor
-                  value={params.raw}
-                  onChange={handleParamsChange}
-                  paramsError={params.error}
-                  hasValidParams={params.valid}
-                  editorRef={editorParamsRef}
-                />
+              <Box height="stretch" flex={1}>
+                <SplitPane
+                  className="sidebarPanes"
+                  split="horizontal"
+                  defaultSize={
+                    isNarrowBreakpoint ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+                  }
+                  size={paneSizeOptions.size}
+                  allowResize={paneSizeOptions.allowResize}
+                  minSize={isNarrowBreakpoint ? paneSizeOptions.minSize : 100}
+                  maxSize={paneSizeOptions.maxSize}
+                  primary="first"
+                >
+                  <InputContainer display="flex" data-testid="vision-query-editor">
+                    <Box flex={1}>
+                      <InputBackgroundContainerLeft>
+                        <Flex>
+                          <StyledLabel muted>{t('query.label')}</StyledLabel>
+                        </Flex>
+                      </InputBackgroundContainerLeft>
+                      <VisionCodeMirror
+                        initialValue={query}
+                        onChange={setQuery}
+                        ref={editorQueryRef}
+                      />
+                    </Box>
+                  </InputContainer>
+                  <InputContainer display="flex">
+                    <ParamsEditor
+                      value={params.raw}
+                      onChange={handleParamsChange}
+                      paramsError={params.error}
+                      hasValidParams={params.valid}
+                      editorRef={editorParamsRef}
+                    />
 
-                <VisionGuiControls
-                  hasValidParams={params.valid}
-                  queryInProgress={queryInProgress}
-                  listenInProgress={listenInProgress}
-                  onQueryExecution={handleQueryExecution}
-                  onListenExecution={handleListenExecution}
-                />
-              </InputContainer>
+                    <VisionGuiControls
+                      hasValidParams={params.valid}
+                      queryInProgress={queryInProgress}
+                      listenInProgress={listenInProgress}
+                      onQueryExecution={handleQueryExecution}
+                      onListenExecution={handleListenExecution}
+                    />
+                  </InputContainer>
+                </SplitPane>
+              </Box>
+              <VisionGuiResult
+                error={error}
+                queryInProgress={queryInProgress}
+                queryResult={queryResult}
+                listenInProgress={listenInProgress}
+                listenMutations={listenMutations}
+                dataset={dataset}
+                queryTime={queryTime}
+                e2eTime={e2eTime}
+              />
             </SplitPane>
           </Box>
-          <VisionGuiResult
-            error={error}
-            queryInProgress={queryInProgress}
-            queryResult={queryResult}
-            listenInProgress={listenInProgress}
-            listenMutations={listenMutations}
-            dataset={dataset}
-            queryTime={queryTime}
-            e2eTime={e2eTime}
-          />
+          <Box style={{position: 'relative', height: '100%'}}>
+            <Button
+              mode="ghost"
+              padding={2}
+              style={{
+                position: 'absolute',
+                left: -32,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 100,
+                pointerEvents: 'auto',
+              }}
+              onClick={() => setIsQueryRecallCollapsed(!isQueryRecallCollapsed)}
+            >
+              <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
+                {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </div>
+            </Button>
+            <QueryRecall
+              url={url}
+              getStateFromUrl={getStateFromUrl}
+              setStateFromParsedUrl={setStateFromParsedUrl}
+              currentQuery={query}
+              currentParams={params.parsed || {}}
+              generateUrl={generateUrl}
+            />
+          </Box>
         </SplitPane>
       </SplitpaneContainer>
     </Root>
