@@ -343,7 +343,7 @@ export function ReleasesOverview() {
             renderCalendarDay={ReleaseCalendarFilterDay}
             selectedDate={releaseFilterDate}
             onSelect={handleSelectFilterDate}
-            timeZoneScope={{type: 'contentReleases'} as const}
+            timeZoneScope={{type: 'contentReleases'}}
           />
         </Card>
       </Flex>

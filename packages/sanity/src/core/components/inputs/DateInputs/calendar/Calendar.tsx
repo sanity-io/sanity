@@ -218,6 +218,9 @@ export const Calendar = forwardRef(function Calendar(
     [handleDateChange],
   )
 
+  const displayMonth = getDisplayMonth()
+  const displayYear = getDisplayYear()
+
   const monthPicker = useMemo(() => {
     if (monthPickerVariant === 'carousel') {
       return (
@@ -268,7 +271,7 @@ export const Calendar = forwardRef(function Calendar(
           <CalendarMonthSelect
             onChange={handleFocusedMonthChange}
             monthNames={labels.monthNames}
-            value={getDisplayMonth()}
+            value={displayMonth}
           />
         </Box>
         <Box marginLeft={2}>
@@ -279,15 +282,15 @@ export const Calendar = forwardRef(function Calendar(
               goToPreviousYear: labels.goToPreviousYear,
             }}
             onChange={setFocusedDateYear}
-            value={getDisplayYear()}
+            value={displayYear}
           />
         </Box>
       </Flex>
     )
   }, [
     focusedDate,
-    getDisplayMonth,
-    getDisplayYear,
+    displayMonth,
+    displayYear,
     handleFocusedMonthChange,
     labels.goToNextYear,
     labels.goToPreviousYear,

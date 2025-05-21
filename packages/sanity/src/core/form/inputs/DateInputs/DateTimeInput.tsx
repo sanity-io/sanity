@@ -216,11 +216,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
     ],
   )
 
-  const input = (
-    <>
-      <CommonDateTimeInput {...commonProps} />
-    </>
-  )
   return (
     <Root
       onMouseEnter={onMouseEnter}
@@ -280,7 +275,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
         </CenterAlignedBox>
         <ChangeIndicator hasFocus={Boolean(focused)} isChanged={changed} path={path}>
           <div data-testid="change-bar-wrapper">
-            <div data-testid="change-bar__field-wrapper">{input}</div>
+            <div data-testid="change-bar__field-wrapper">
+              <CommonDateTimeInput {...commonProps} />
+            </div>
           </div>
         </ChangeIndicator>
       </Flex>

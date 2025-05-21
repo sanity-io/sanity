@@ -24,7 +24,14 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
       {/* Dialog */}
       {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
 
-      <Tooltip content={tooltipContent} portal>
+      <Tooltip
+        content={
+          <Box flex={1} padding={1}>
+            {tooltipContent}
+          </Box>
+        }
+        portal
+      >
         <div>
           {/*
           If `useElementQueries` is enabled, dates will be conditionally toggled at different element
@@ -53,6 +60,15 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
               </Box>
               <Box className="button-large">
                 {allowTimeZoneSwitch ? (
+                  <Button
+                    data-testid="timezone-button"
+                    icon={EarthAmericasIcon}
+                    mode="bleed"
+                    readOnly={!allowTimeZoneSwitch}
+                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                    text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
+                  />
+                ) : (
                   <Inline space={2} padding={2}>
                     <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
@@ -62,15 +78,6 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
                       size={1}
                     >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
                   </Inline>
-                ) : (
-                  <Button
-                    data-testid="timezone-button"
-                    icon={EarthAmericasIcon}
-                    mode="bleed"
-                    readOnly={!allowTimeZoneSwitch}
-                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
-                    text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
-                  />
                 )}
               </Box>
             </>

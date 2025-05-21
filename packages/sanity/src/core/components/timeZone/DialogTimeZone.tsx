@@ -42,7 +42,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
   const {t} = useTranslation('studio')
 
-  // Differend text based on different scopes
+  // Different text based on different scopes
   const timeZoneScopeTypeToLabel = useMemo(
     (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
       scheduledPublishing: t('time-zone.dialog-info.scheduled-publishing'),

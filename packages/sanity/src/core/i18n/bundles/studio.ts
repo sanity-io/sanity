@@ -1803,19 +1803,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /* Time zone handling */
   'time-zone.action.search-for-timezone-placeholder': 'Search for a city or time zone',
+  /* Label for the local time zone button */
   'time-zone.action.select-local-time-zone': 'Select local time zone',
+  /* Dialog info for the time zone dialog */
   'time-zone.dialog-info.content-releases':
     'The selected time zone will change how dates are represented in content releases.',
+  /* Dialog info for the time zone dialog */
   'time-zone.dialog-info.input':
     'The selected time zone will change how dates are represented only for this input in this document.',
+  /* Dialog info for the time zone dialog */
   'time-zone.dialog-info.scheduled-publishing':
     'The selected time zone will change how dates are represented in schedules.',
+  /* Label for the local time zone button */
   'time-zone.local-time': 'local time',
+  /* Label for the time zone button */
   'time-zone.time-zone': 'Time zone',
+  /* Tooltip content for the time zone dialog */
   'time-zone.time-zone-tooltip-content-releases':
     'Displaying releases in {{alternativeName}} GMT{{offset}}',
+  /* Tooltip content for the time zone dialog */
   'time-zone.time-zone-tooltip-input':
     'Displaying <em>{{title}}</em> in {{alternativeName}} GMT{{offset}}',
+  /* Tooltip content for the time zone dialog */
   'time-zone.time-zone-tooltip-scheduled-publishing':
     'Displaying schedules in {{alternativeName}} GMT{{offset}}',
 
