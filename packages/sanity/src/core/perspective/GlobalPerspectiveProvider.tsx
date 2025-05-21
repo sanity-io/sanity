@@ -7,9 +7,10 @@ import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useArchivedReleases} from '../releases/store/useArchivedReleases'
-import {LATEST} from '../releases/util/const'
+import {LATEST, PUBLISHED} from '../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../releases/util/util'
+import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {type ReleaseId} from './types'
@@ -102,10 +103,20 @@ const ResetPerspectiveHandler = () => {
 export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   const router = useRouter()
 
-  const selectedPerspectiveName = router.stickyParams.perspective as
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
+  let selectedPerspectiveName = router.stickyParams.perspective as
     | 'published'
     | ReleaseId
     | undefined
+
+  if (!isDraftModelEnabled && typeof selectedPerspectiveName === 'undefined') {
+    selectedPerspectiveName = PUBLISHED
+  }
 
   const excludedPerspectives = useMemo(
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
