@@ -9,6 +9,14 @@ import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {observableCache, useDocumentVersions} from '../useDocumentVersions'
 
+vi.mock('../../../hooks/useDataset', () => ({
+  useDataset: vi.fn().mockReturnValue('test'),
+}))
+
+vi.mock('../../../hooks/useProjectId', () => ({
+  useProjectId: vi.fn().mockReturnValue('test-project'),
+}))
+
 vi.mock('../../store', () => ({
   useReleasesMetadata: vi.fn(),
   useActiveReleases: vi.fn(),

@@ -2,6 +2,8 @@ import {useEffect, useMemo, useState} from 'react'
 import {map, type Observable, of, shareReplay} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
+import {useDataset} from '../../hooks/useDataset'
+import {useProjectId} from '../../hooks/useProjectId'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
@@ -60,19 +62,23 @@ function createObservable(
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const {documentId} = props
   const publishedId = getPublishedId(documentId)
+
+  const dataset = useDataset()
+  const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
   const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
+  const cacheId = `${projectId}-${dataset}-${publishedId}`
 
   const observable = useMemo(() => {
-    const cachedObservable = observableCache.get(publishedId)
+    const cachedObservable = observableCache.get(cacheId)
     if (cachedObservable) {
       return cachedObservable
     }
 
-    const newObservable = createObservable(documentPreviewStore, publishedId)
-    observableCache.set(publishedId, newObservable)
+    const newObservable = createObservable(documentPreviewStore, cacheId)
+    observableCache.set(cacheId, newObservable)
     return newObservable
-  }, [documentPreviewStore, publishedId])
+  }, [cacheId, documentPreviewStore])
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
