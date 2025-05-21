@@ -1,13 +1,10 @@
 import {useEffect, useMemo, useState} from 'react'
-import {map, type Observable, of, shareReplay} from 'rxjs'
-import {catchError} from 'rxjs/operators'
 
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
-import {createSWR} from '../../util/rxSwr'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
+import {getOrCreateObservable} from '../../util/getOrCreateObservable'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -19,37 +16,10 @@ export interface DocumentPerspectiveState {
   loading: boolean
 }
 
-// Create a singleton cache for observables
-export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
-
-const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
-
 const INITIAL_VALUE = {
   data: [],
   error: null,
   loading: true,
-}
-
-function createObservable(
-  documentPreviewStore: any,
-  publishedId: string,
-): Observable<DocumentPerspectiveState> {
-  return documentPreviewStore
-    .unstable_observeDocumentIdSet(`sanity::versionOf("${publishedId}")`, undefined, {
-      apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-    })
-    .pipe(
-      swr(`${publishedId}`),
-      map(({value}) => ({
-        data: value.documentIds,
-        loading: false,
-        error: null,
-      })),
-      catchError((error) => {
-        return of({error, data: [] as string[], loading: false})
-      }),
-      shareReplay({refCount: true, bufferSize: 1}),
-    )
 }
 
 /**
@@ -67,18 +37,10 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
   const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
-  const cacheId = `${projectId}-${dataset}-${publishedId}`
 
   const observable = useMemo(() => {
-    const cachedObservable = observableCache.get(cacheId)
-    if (cachedObservable) {
-      return cachedObservable
-    }
-
-    const newObservable = createObservable(documentPreviewStore, publishedId)
-    observableCache.set(cacheId, newObservable)
-    return newObservable
-  }, [cacheId, documentPreviewStore, publishedId])
+    return getOrCreateObservable({documentPreviewStore, publishedId, projectId, dataset})
+  }, [dataset, documentPreviewStore, projectId, publishedId])
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
