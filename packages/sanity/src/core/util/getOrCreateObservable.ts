@@ -9,6 +9,19 @@ import {createSWR} from './rxSwr'
 export const observableCache = new Map<string, Observable<DocumentPerspectiveState>>()
 const swr = createSWR<{documentIds: string[]}>({maxSize: 100})
 
+/**
+ * Retrieves an observable for the specified document or creates a new one if it doesn't exist in the cache
+ *
+ * @param options - The options for creating or retrieving the observable.
+ * options.documentPreviewStore - The store used to observe document IDs.
+ * options.publishedId - The ID of the published document.
+ * options.projectId - The project ID.
+ * options.dataset - The dataset name.
+ * @returns An observable that emits the document perspective state.
+ *
+ * @hidden
+ * @internal
+ */
 export function getOrCreateObservable(options: {
   documentPreviewStore: DocumentPreviewStore
   publishedId: string
