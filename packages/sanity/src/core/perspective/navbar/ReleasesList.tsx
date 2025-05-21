@@ -14,6 +14,7 @@ import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../releases/util/util'
+import {useWorkspace} from '../../studio/workspace'
 import {usePerspective} from '../usePerspective'
 import {
   getRangePosition,
@@ -68,10 +69,16 @@ export function ReleasesList({
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {selectedPerspectiveName} = usePerspective()
-
   const {t} = useTranslation()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const isMounted = useRef(false)
+
   useEffect(() => {
     isMounted.current = true
 
@@ -107,7 +114,7 @@ export function ReleasesList({
     const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
     let lastIndex = isDraftsPerspective ? 1 : 0
 
-    const systemStack = [PUBLISHED, LATEST]
+    const systemStack = [PUBLISHED, isDraftModelEnabled ? LATEST : []].flat()
     const {asap, scheduled} = sortedReleaseTypeReleases
 
     const offsets = {
@@ -135,7 +142,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
+  }, [isDraftModelEnabled, selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
@@ -156,10 +163,12 @@ export function ReleasesList({
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
           />
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
-            release={LATEST}
-          />
+          {isDraftModelEnabled && (
+            <GlobalPerspectiveMenuItem
+              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
+              release={LATEST}
+            />
+          )}
         </StyledPublishedBox>
         {areReleasesEnabled && (
           <>
