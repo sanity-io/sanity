@@ -105,7 +105,7 @@ describeCliTest('CLI: `sanity dev`', () => {
         basePath: '/app-base-path',
         args: ['--port', `${port}`],
         cwd: path.join(fixturesPath, 'app'),
-        expectedTitle: 'Sanity CORE App',
+        expectedTitle: 'Sanity Custom App',
       })
 
       // Verify that the dashboard URL is printed

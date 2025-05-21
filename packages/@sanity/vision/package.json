@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.88.3",
+  "version": "3.89.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -72,7 +72,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.1.0-rc.1",
+    "react-compiler-runtime": "19.1.0-rc.2",
     "react-fast-compare": "^3.2.2",
     "rxjs": "^7.8.0",
     "use-effect-event": "^1.0.2"
@@ -80,7 +80,7 @@
   "devDependencies": {
     "@repo/package.config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.2.1",
+    "@sanity/client": "^7.3.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
@@ -89,10 +89,10 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.1.0-rc.1",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.16"
+    "styled-components": "^6.1.18"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

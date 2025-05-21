@@ -1,6 +1,6 @@
 {
   "name": "clean-studio",
-  "version": "3.88.3",
+  "version": "3.89.0",
   "private": true,
   "description": "Content studio running with schema from the clean template",
   "keywords": [
@@ -31,6 +31,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.18"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-studio",
-  "version": "3.88.3",
+  "version": "3.89.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -12,9 +12,9 @@
     "start": "../.bin/sanity start --port 3337"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "19.1.0-rc.1",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "react": "^18.3.1",
-    "react-compiler-runtime": "19.1.0-rc.1",
+    "react-compiler-runtime": "19.1.0-rc.2",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
     "styled-components": "^6.1.15"

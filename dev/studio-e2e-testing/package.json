@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.88.3",
+  "version": "3.89.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -20,7 +20,7 @@
     "@sanity/icons": "^3.7.0",
     "@sanity/ui": "^2.15.17",
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.1",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",

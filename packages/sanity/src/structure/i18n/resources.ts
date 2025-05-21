@@ -433,10 +433,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.new.text': 'New {{schemaType}}',
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
+  /** The help text saying that we have given up on automatic retry */
+  'panes.document-list-pane.error.max-retries-attempted':
+    'Not automatically retrying after {{count}} unsuccessful attempts.',
+  /** The help text saying that we'll retry fetching the document list */
+  'panes.document-list-pane.error.retrying': 'Retrying…',
   /** The error text on the document list pane */
-  'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
+  'panes.document-list-pane.error.text': 'Encountered an error while fetching documents.',
+  /** The error text on the document list pane */
+  'panes.document-list-pane.error.text.dev': 'Error: <Code>{{error}}</Code>',
+  /** The error text on the document list pane if the browser appears to be offlline */
+  'panes.document-list-pane.error.text.offline': 'The Internet connection appears to be offline.',
   /** The error title on the document list pane */
   'panes.document-list-pane.error.title': 'Could not fetch list items',
+  /** The help text saying that we'll retry fetching the document list */
+  'panes.document-list-pane.error.will-retry-automatically_one': 'Retrying…',
+  'panes.document-list-pane.error.will-retry-automatically_other': 'Retrying… (#{{count}}).',
   /** The text of the document list pane if more than a maximum number of documents are returned */
   'panes.document-list-pane.max-items.text': 'Displaying a maximum of {{limit}} documents',
   /** The text of the document list pane if no documents are found for a specified type */
@@ -445,6 +457,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.no-documents.text': 'No results found',
   /** The text of the document list pane if no documents are found matching specified criteria */
   'panes.document-list-pane.no-matching-documents.text': 'No matching documents',
+  /** The search input for the search input on the document list pane */
+  'panes.document-list-pane.reconnecting': 'Trying to connect…',
   /** The aria-label for the search input on the document list pane */
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */

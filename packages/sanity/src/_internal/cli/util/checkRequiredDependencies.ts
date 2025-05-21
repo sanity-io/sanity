@@ -32,7 +32,7 @@ interface CheckResult {
  * Additionally, returns the version of the 'sanity' dependency from the package.json.
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
-  // currently there's no check needed for core apps,
+  // currently there's no check needed for custom apps,
   // but this should be removed once they are more mature
   const isApp = determineIsApp(context.cliConfig)
   if (isApp) {
