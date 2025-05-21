@@ -3,7 +3,6 @@ import {SanityApp} from '@sanity/sdk-react'
 import {Flex, Spinner} from '@sanity/ui'
 import {ExampleComponent} from './ExampleComponent'
 import {SanityUI} from './SanityUI'
-import './App.css'
 
 function App() {
   // apps can access many different projects or other sources of data
