@@ -23,7 +23,7 @@ const defaultValue = {
 
 export function useSavedQueries(): {
   queries: QueryConfig[]
-  saveQuery: (query: QueryConfig) => void
+  saveQuery: (query: Omit<QueryConfig, '_key'>) => void
   updateQuery: (query: QueryConfig) => void
   deleteQuery: (key: string) => void
   saving: boolean
