@@ -32,7 +32,7 @@ export const PTEPlugins = (props: {schemaType: ArraySchemaType<PortableTextBlock
     [],
   )
 
-  const CustomComponent = props.schemaType.components?.ptePlugins as
+  const CustomComponent = props.schemaType.components?.pte?.plugins as
     | ComponentType<PtePluginsProps>
     | undefined
 
