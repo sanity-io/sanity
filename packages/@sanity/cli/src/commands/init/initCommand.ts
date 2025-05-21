@@ -26,6 +26,7 @@ Options
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
+  --no-auto-updates Disable auto updates of studio versions
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -64,9 +65,6 @@ export interface InitFlags {
 
   'visibility'?: string
   'typescript'?: boolean
-  /**
-   * @deprecated The auto-updates flag is deprecated. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.
-   */
   'auto-updates'?: boolean
   /**
    * Used for initializing a project from a server schema that is saved in the Journey API
