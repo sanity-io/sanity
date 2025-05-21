@@ -110,13 +110,11 @@ export function ReleasesList({
     let lastIndex = isDraftsPerspective ? 1 : 0
 
     const {asap, scheduled} = sortedReleaseTypeReleases
-    const countAsapReleases = asap.length
-    const countScheduledReleases = scheduled.length
 
     const offsets = {
-      asap: ASAP_RANGE_OFFSET,
-      scheduled: ASAP_RANGE_OFFSET + countAsapReleases,
-      undecided: ASAP_RANGE_OFFSET + countAsapReleases + countScheduledReleases,
+      asap: systemStack.length,
+      scheduled: systemStack.length + asap.length,
+      undecided: systemStack.length + asap.length + scheduled.length,
     }
 
     const adjustIndexForReleaseType = (type: ReleaseType) => {
