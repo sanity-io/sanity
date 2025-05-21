@@ -1,13 +1,21 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {renderHook, waitFor} from '@testing-library/react'
 import {delay, of} from 'rxjs'
-import {describe, expect, it, type Mock, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {useDocumentVersions} from '../useDocumentVersions'
+import {observableCache, useDocumentVersions} from '../useDocumentVersions'
+
+vi.mock('../../../hooks/useDataset', () => ({
+  useDataset: vi.fn().mockReturnValue('test'),
+}))
+
+vi.mock('../../../hooks/useProjectId', () => ({
+  useProjectId: vi.fn().mockReturnValue('test-project'),
+}))
 
 vi.mock('../../store', () => ({
   useReleasesMetadata: vi.fn(),
@@ -21,6 +29,10 @@ vi.mock('../../store/useReleasesIds', () => ({
 vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
+
+beforeEach(() => {
+  observableCache.clear()
+})
 
 async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds: string[]}) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
