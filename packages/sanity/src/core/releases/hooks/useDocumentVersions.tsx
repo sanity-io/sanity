@@ -1,5 +1,4 @@
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useEffect, useMemo, useState} from 'react'
 import {map, type Observable, of, shareReplay} from 'rxjs'
 import {catchError} from 'rxjs/operators'
 
@@ -62,6 +61,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const {documentId} = props
   const publishedId = getPublishedId(documentId)
   const documentPreviewStore = useDocumentPreviewStore()
+  const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
 
   const observable = useMemo(() => {
     const cachedObservable = observableCache.get(publishedId)
@@ -74,7 +74,12 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
     return newObservable
   }, [documentPreviewStore, publishedId])
 
-  const result = useObservable(observable, INITIAL_VALUE)
+  useEffect(() => {
+    const subscription = observable.subscribe((result) => {
+      setResults(result)
+    })
+    return () => subscription.unsubscribe()
+  }, [observable])
 
-  return result
+  return results
 }
