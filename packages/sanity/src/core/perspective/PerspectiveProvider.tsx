@@ -3,6 +3,7 @@ import {PerspectiveContext} from 'sanity/_singletons'
 
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getSelectedPerspective} from './getSelectedPerspective'
@@ -22,6 +23,12 @@ export function PerspectiveProvider({
 }) {
   const {data: releases} = useActiveReleases()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const selectedPerspective: SelectedPerspective = useMemo(
     () => getSelectedPerspective(selectedPerspectiveName, releases),
     [selectedPerspectiveName, releases],
@@ -33,8 +40,9 @@ export function PerspectiveProvider({
         releases,
         selectedPerspectiveName,
         excludedPerspectives,
+        isDraftModelEnabled,
       }),
-    [releases, selectedPerspectiveName, excludedPerspectives],
+    [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
   const value: PerspectiveContextValue = useMemo(
