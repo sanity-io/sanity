@@ -4,7 +4,6 @@ import {dirname, join, resolve} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import chalk from 'chalk'
 import {minutesToMilliseconds} from 'date-fns'
 import readPkgUp from 'read-pkg-up'
 
@@ -15,7 +14,6 @@ import {
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {getTimer} from '../../util/timing'
-import {SCHEMA_STORE_FEATURE_ENABLED} from '../schema/schemaStoreConstants'
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
@@ -54,15 +52,6 @@ export async function extractManifestSafe(
     await extractManifest(args, context)
     return undefined
   } catch (err) {
-    if (!SCHEMA_STORE_FEATURE_ENABLED) {
-      // preserves current behavior while schema store is disabled
-      context.output.print(
-        chalk.gray(
-          "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
-            `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`,
-        ),
-      )
-    }
     if (EXTRACT_MANIFEST_LOG_ERRORS) {
       context.output.error(err)
     }

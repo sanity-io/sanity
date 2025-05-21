@@ -1,6 +1,6 @@
 {
   "name": "ecommerce-studio",
-  "version": "0.0.0",
+  "version": "3.89.0",
   "private": true,
   "description": "",
   "keywords": [
@@ -30,11 +30,11 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
-    "@sanity/ui": "^2.15.13",
+    "@sanity/ui": "^2.15.17",
     "react": "^18.3.1",
     "react-barcode": "^1.4.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.18"
   }
 }

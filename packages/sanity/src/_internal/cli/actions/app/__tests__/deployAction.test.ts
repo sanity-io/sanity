@@ -93,7 +93,7 @@ describe('deployAppAction', () => {
       mockContext,
     )
 
-    // Check that buildSanityStudio was called
+    // Check that buildSanityApp was called
     expect(buildSanityAppMock).toHaveBeenCalledWith(
       expect.objectContaining({
         extOptions: {build: true},

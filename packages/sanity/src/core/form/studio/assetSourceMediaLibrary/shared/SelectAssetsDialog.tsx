@@ -1,9 +1,12 @@
-import {Flex, Stack, useTheme} from '@sanity/ui'
+import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
+import {useLinkAssets} from '../hooks/useLinkAssets'
+import {useMediaLibrary} from '../hooks/useMediaLibrary'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
@@ -12,11 +15,11 @@ import {Iframe} from './Iframe'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
-  libraryId: string
   open: boolean
   onClose: () => void
-  onSelect: (selection: AssetSelectionItem[]) => Promise<void>
+  onSelect: (assetFromSource: AssetFromSource[]) => void
   ref: React.Ref<HTMLDivElement>
+  schemaType?: ImageSchemaType | FileSchemaType
   selectAssetType?: AssetType
   selection: AssetSelectionItem[]
   selectionType?: 'single' | 'multiple'
@@ -26,6 +29,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
+  const {mediaLibraryId: libraryId} = useMediaLibrary()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
 
@@ -35,14 +39,16 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   const {
     dialogHeaderTitle,
-    libraryId,
     onClose,
     open,
     onSelect,
     selectionType = 'single',
     ref,
     selectAssetType,
+    schemaType,
   } = props
+
+  const toast = useToast()
 
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
@@ -52,20 +58,29 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
     `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
-
-  const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
+  const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
     try {
       setDidSelect(true)
-      await onSelect(assetSelection)
+      // Note: for now we only support selecting a single asset
+      const assets = await onLinkAssets([assetSelection[0]])
+      onSelect(assets)
+      onClose()
     } catch (error) {
-      console.error('Error selecting assets:', error)
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: t('asset-source.dialog.insert-asset-error'),
+      })
+      console.error(error)
       setDidSelect(false)
     }
-  }, [onSelect, assetSelection])
+  }, [assetSelection, onClose, onSelect, onLinkAssets, t, toast])
+
+  const handleClose = useCallback(() => {
+    onClose()
+  }, [onClose])
 
   const handlePluginMessage = useCallback((message: PluginPostMessage) => {
     if (message.type === 'assetSelection') {
@@ -82,10 +97,11 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     <AppDialog
       animate
       header={dialogHeaderTitle}
-      id="sanity-media-library-plugin-dialog-select-assets"
+      id="media-library-plugin-dialog-select-assets"
       onClose={handleClose}
       open
       ref={ref}
+      data-testid="media-library-plugin-dialog-select-assets"
       width={3}
       footer={
         <Flex width="full" gap={3} justify="flex-end" padding={2}>

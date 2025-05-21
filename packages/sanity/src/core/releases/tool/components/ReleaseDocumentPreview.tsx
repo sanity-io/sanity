@@ -1,3 +1,4 @@
+import {type ReleaseState} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
@@ -8,7 +9,6 @@ import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
 import {getPublishedId} from '../../../util/draftUtils'
-import {type ReleaseState} from '../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 interface ReleaseDocumentPreviewProps {

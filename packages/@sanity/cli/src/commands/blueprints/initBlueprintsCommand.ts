@@ -1,95 +1,77 @@
-import {join} from 'node:path'
-import {cwd} from 'node:process'
-
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Examples
-  # Create a new Blueprint manifest file
+Arguments
+  [dir]  Path to initialize the Blueprint in
+
+Options
+  --blueprint-type, --type <json>    Type of Blueprint to create
+  --project-id <id>                  Project ID to use
+
+Examples:
+  # Create a new Blueprint manifest file in the current directory
   sanity blueprints init
+
+  # Create a new Blueprint manifest file in a specific directory
+  sanity blueprints init my-sanity-project --type json
 `
 
-const initBlueprintsCommand: CliCommandDefinition = {
+export interface BlueprintsInitFlags {
+  'dir'?: string
+  'blueprint-type'?: string
+  'type'?: string
+  'project-id'?: string
+  'projectId'?: string
+  'project'?: string
+  'stack-id'?: string
+  'stackId'?: string
+  'stack'?: string
+  'stack-name'?: string
+  'name'?: string
+}
+
+const defaultFlags: BlueprintsInitFlags = {
+  //
+}
+
+const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   name: 'init',
   group: 'blueprints',
   helpText,
-  signature: '',
+  signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
   description: 'Initialize a new Blueprint manifest file',
-  hideFromHelp: true,
+
   async action(args, context) {
-    const {apiClient, output, prompt} = context
-    const {print} = output
+    const {apiClient, output} = context
+    const flags = {...defaultFlags, ...args.extOptions}
+
+    const [dir] = args.argsWithoutOptions
 
     const client = apiClient({
       requireUser: true,
       requireProject: false,
     })
     const {token} = client.config()
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    if (!token) {
-      print('No API token found. Please run `sanity login` first.')
-      return
-    }
+    const {blueprintInitCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const {blueprint: blueprintAction, projects: projectsAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
-
-    const existingBlueprint = blueprintAction.findBlueprintFile()
-
-    if (existingBlueprint) {
-      print(`A blueprint file already exists: ${existingBlueprint.fileName}`)
-      return
-    }
-
-    const blueprintExtension = await prompt.single({
-      type: 'list',
-      message: 'Choose a Blueprint manifest file type:',
-      choices: [
-        {value: 'json', name: 'JSON (Recommended)'},
-        {value: 'js', name: 'JavaScript (Available soon)', disabled: true},
-        {value: 'ts', name: 'TypeScript (Available soon)', disabled: true},
-      ],
+    const {success, error} = await blueprintInitCore({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+      args: {
+        dir: dir ?? flags.dir,
+      },
+      flags: {
+        'blueprint-type': flags['blueprint-type'] ?? flags.type,
+        'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
+        'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'stack-name': flags['stack-name'] ?? flags.name,
+      },
     })
 
-    const {ok, projects, error} = await projectsAction.listProjects({token})
-
-    if (!ok) {
-      print(error)
-      return
-    }
-
-    if (!projects || projects.length === 0) {
-      print('No Projects found. Please create a Project in Sanity.io first.')
-      return
-    }
-
-    const projectChoices = projects.map(({displayName, id}) => ({
-      value: id,
-      name: `${displayName} <${id}>`,
-    }))
-
-    const projectId = await prompt.single({
-      type: 'list',
-      message: 'Select your Sanity Project:',
-      choices: projectChoices,
-    })
-
-    const fileName = `blueprint.${blueprintExtension}`
-    const filePath = join(cwd(), fileName)
-
-    blueprintAction.writeBlueprintToDisk({
-      path: filePath,
-      fileType: blueprintExtension as 'json' | 'js' | 'ts',
-    })
-
-    blueprintAction.writeConfigFile({projectId})
-
-    print(`Created new blueprint: ./${fileName}`)
-
-    if (blueprintExtension === 'ts') {
-      print('\nNote: TypeScript support requires "tsx" to be installed. Run: npm install -D tsx')
-    }
+    if (!success) throw new Error(error)
   },
 }
 

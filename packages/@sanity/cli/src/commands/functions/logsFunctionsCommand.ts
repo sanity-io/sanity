@@ -1,44 +1,57 @@
-import {type types} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 
-type StackFunctionResource = types.StackFunctionResource
-
 const helpText = `
+Arguments
+  <name> The name of the Function to retrieve logs for
+
 Options
-  --name <name> The name of the function to retrieve logs for
   --limit <limit> The number of log entries to retrieve [default 50]
   --json If set return json
   --utc Use UTC dates in logs
+  --delete Delete all logs for the Function
+  --force Force delete all logs for the Function
 
 Examples
-  # Retrieve logs for Sanity Function abcd1234
-  sanity functions logs --name echo
+  # Retrieve logs for Sanity Function
+  sanity functions logs echo
 
-  # Retrieve the last two log entries for Sanity Function abcd1234
-  sanity functions logs --name echo --limit 2
+  # Retrieve the last two log entries for Sanity Function
+  sanity functions logs echo --limit 2
 
-  # Retrieve logs for Sanity Function abcd1234 in json format
+  # Retrieve logs for Sanity Function in json format
   sanity functions logs --name echo --json
+
+  # Delete all logs for Sanity Function
+  sanity functions logs --name echo --delete
 `
 
+export interface FunctionsLogsFlags {
+  limit?: number
+  json?: boolean
+  utc?: boolean
+  delete?: boolean
+  force?: boolean
+  watch?: boolean // undocumented for now
+}
+
 const defaultFlags = {
-  name: '',
   limit: 50,
   json: false,
   utc: false,
+  delete: false,
+  force: false,
+  watch: false,
 }
 
-const logsFunctionsCommand: CliCommandDefinition = {
+const logsFunctionsCommand: CliCommandDefinition<FunctionsLogsFlags> = {
   name: 'logs',
   group: 'functions',
   helpText,
-  signature: '',
-  description: 'Retrieve logs for a Sanity Function',
-  hideFromHelp: true,
+  signature: '<name> [--limit <number>] [--json] [--utc] [--delete [--force]] [--watch]',
+  description: 'Retrieve or delete logs for a Sanity Function',
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
+    const [name] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
 
     const client = apiClient({
@@ -46,74 +59,31 @@ const logsFunctionsCommand: CliCommandDefinition = {
       requireProject: false,
     })
 
-    if (flags.name === '') {
-      throw new Error('You must provide a function name via the --name flag')
+    if (!name) {
+      throw new Error('You must provide a function name as the first argument')
     }
 
     const token = client.config().token
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {deployedStack} = await blueprint.readBlueprintOnDisk({
-      getStack: true,
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {functionLogsCore} = await import('@sanity/runtime-cli/cores/functions')
+
+    const cmdConfig = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
       token,
     })
 
-    if (!deployedStack) {
-      throw new Error('Stack not found')
-    }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-    const blueprintConfig = blueprint.readConfigFile()
-    const projectId = blueprintConfig?.projectId
+    const {success, error} = await functionLogsCore({
+      ...cmdConfig.value,
+      args: {name},
+      flags,
+    })
 
-    const {externalId} = findFunction.findFunctionByName(
-      deployedStack,
-      flags.name,
-    ) as StackFunctionResource
-
-    if (token && projectId) {
-      const {logs: logsAction} = await import('@sanity/runtime-cli/actions/functions')
-      const {ok, error, logs, total} = await logsAction.logs(
-        externalId,
-        {limit: flags.limit},
-        {token, projectId},
-      )
-
-      if (!ok) {
-        print(`Error: ${error || 'Unknown error'}`)
-        return
-      }
-
-      const filteredLogs = logs.filter(
-        (entry: {level: string; message: string}) => entry.level && entry.message,
-      )
-
-      if (filteredLogs.length === 0) {
-        print(`No logs found for function ${flags.name}`)
-        return
-      }
-
-      if (flags.json) {
-        print(JSON.stringify(filteredLogs, null, 2))
-      } else {
-        print(`Found ${total} log entries for function ${flags.name}`)
-        if (logs.length < total) {
-          print(`Here are the last ${filteredLogs.length} entries`)
-        }
-        print('\n')
-
-        for (const log of filteredLogs) {
-          const {time, level, message} = log
-          const date = new Date(time)
-          const dateString = flags.utc
-            ? date.toISOString().slice(0, 19).split('T').join(' ')
-            : `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-          print(`${dateString} ${level} ${message}`)
-        }
-      }
-    } else {
-      print('You must run this command from a blueprints project')
-    }
+    if (!success) throw new Error(error)
   },
 }
 

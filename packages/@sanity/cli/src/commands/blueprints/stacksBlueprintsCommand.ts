@@ -1,75 +1,65 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Examples
+Options
+  --project-id <id>    Project ID to use
+
+Examples:
   # List all Stacks for the current Project
   sanity blueprints stacks
+
+  # List Stacks for a specific project
+  sanity blueprints stacks --project-id abc123
 `
 
-const stacksBlueprintsCommand: CliCommandDefinition = {
+export interface BlueprintsStacksFlags {
+  'project-id'?: string
+  'projectId'?: string
+  'project'?: string
+}
+
+const defaultFlags: BlueprintsStacksFlags = {
+  //
+}
+
+const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
   name: 'stacks',
   group: 'blueprints',
   helpText,
-  signature: '',
+  signature: '[--project-id <id>]',
   description: 'List all Blueprint Stacks for the current Project',
   hideFromHelp: true,
+
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
-    const client = apiClient({requireUser: true, requireProject: false})
+    const flags = {...defaultFlags, ...args.extOptions}
+
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
     const {token} = client.config()
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    if (!token) {
-      print('No API token found. Please run `sanity login` first.')
-      return
-    }
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {blueprintStacksCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const {blueprint: blueprintAction, stacks: stacksAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
-    const {display} = await import('@sanity/runtime-cli/utils')
+    const cmdConfig = await initBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
-    let blueprint = null
-    try {
-      blueprint = await blueprintAction.readBlueprintOnDisk({token})
-    } catch (error) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-    if (!blueprint) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    const {success, error} = await blueprintStacksCore({
+      ...cmdConfig.value,
+      flags: {
+        projectId: flags['project-id'] ?? flags.projectId ?? flags.project,
+      },
+    })
 
-    const {errors, projectId, stackId} = blueprint
-
-    if (errors && errors.length > 0) {
-      print(errors)
-      return
-    }
-
-    if (!projectId) {
-      print('Blueprint is not configured for a Project. Run `sanity blueprints config`')
-      return
-    }
-
-    const auth = {token, projectId}
-    const {ok, stacks, error} = await stacksAction.listStacks(auth)
-
-    if (!ok) {
-      print(error || 'Failed to list Stacks')
-      return
-    }
-
-    if (!stacks || stacks.length === 0) {
-      print('No Stacks found')
-      return
-    }
-
-    const {bold, yellow} = display.colors
-    print(`${bold('Project')} <${yellow(projectId)}> ${bold('Stacks')}:\n`)
-    print(display.blueprintsFormatting.formatStacksListing(stacks, stackId))
+    if (!success) throw new Error(error)
   },
 }
 

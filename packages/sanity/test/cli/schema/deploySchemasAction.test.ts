@@ -1,4 +1,5 @@
-import {type SanityClient} from '@sanity/client'
+import {ClientError, type SanityClient} from '@sanity/client'
+import {type SanityDocumentLike} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {MANIFEST_FILENAME} from '../../../src/_internal/cli/actions/manifest/extractManifestAction'
@@ -7,6 +8,11 @@ import {
   type DeploySchemasFlags,
 } from '../../../src/_internal/cli/actions/schema/deploySchemasAction'
 import {type SchemaStoreContext} from '../../../src/_internal/cli/actions/schema/schemaStoreTypes'
+import {SCHEMA_PERMISSION_HELP_TEXT} from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
+import {
+  type DefaultWorkspaceSchemaId,
+  SANITY_WORKSPACE_SCHEMA_ID_PREFIX,
+} from '../../../src/_internal/manifest/manifestTypes'
 import {createSchemaStoreFixture} from './mocks/schemaStoreFixture'
 import {
   createMockJsonReader,
@@ -15,11 +21,13 @@ import {
 } from './mocks/schemaStoreMocks'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
-const {testManifest, testWorkspace, testMultiWorkspaceManifest, staticDate, workDir} = fixture
+const {testManifest, testSchema, testWorkspace, testMultiWorkspaceManifest, staticDate, workDir} =
+  fixture
 
 describe('deploySchemasAction', () => {
   let defaultContext: SchemaStoreContext
   let mockSanityClient: SanityClient
+  let mockStores: Record<string, Record<string, SanityDocumentLike | undefined>>
   let log: any[]
 
   afterEach(() => {
@@ -27,10 +35,11 @@ describe('deploySchemasAction', () => {
   })
 
   beforeEach(async () => {
-    const {context, outputLog, apiClient} = createMockSchemaStoreContext(fixture)
+    const {context, outputLog, apiClient, mockStores: store} = createMockSchemaStoreContext(fixture)
     defaultContext = context
     log = outputLog
     mockSanityClient = apiClient
+    mockStores = store
   })
 
   describe('basic functionality', () => {
@@ -46,7 +55,17 @@ describe('deploySchemasAction', () => {
         {success: 'Deployed 1/1 schemas'},
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])
-      expect(mockSanityClient.createOrReplace).toHaveBeenCalled()
+      const storedSchema = await mockSanityClient.getDocument(
+        `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${testWorkspace.name}` satisfies DefaultWorkspaceSchemaId,
+      )
+      expect(storedSchema).toEqual({
+        _id: '_.schemas.testWorkspace',
+        _type: 'system.schema',
+        //this will be stringified by the api
+        schema: testSchema,
+        version: '2025-05-01',
+        workspace: {name: testWorkspace.name},
+      })
       expect(status).toEqual('success')
     })
 
@@ -71,12 +90,50 @@ describe('deploySchemasAction', () => {
         {success: 'Deployed 3/3 schemas'},
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])
-      expect(mockSanityClient.createOrReplace).toHaveBeenCalledTimes(3)
+
+      const docs = await Promise.all(
+        testMultiWorkspaceManifest.workspaces.map((workspace) => {
+          return mockSanityClient
+            .withConfig({
+              dataset: workspace.dataset,
+            })
+            .getDocument(
+              `${SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${workspace.name}` satisfies DefaultWorkspaceSchemaId,
+            )
+        }),
+      )
+      expect(docs).toEqual([
+        {
+          _id: '_.schemas.testWorkspace',
+          _type: 'system.schema',
+          //this will be stringified by the api
+          schema: testSchema,
+          version: '2025-05-01',
+          workspace: {name: 'testWorkspace'},
+        },
+        {
+          _id: '_.schemas.testWorkspace2',
+          _type: 'system.schema',
+          //this will be stringified by the api
+          schema: testSchema,
+          version: '2025-05-01',
+          workspace: {name: 'testWorkspace2'},
+        },
+        {
+          _id: '_.schemas.testWorkspace3',
+          _type: 'system.schema',
+          //this will be stringified by the api
+          schema: testSchema,
+          version: '2025-05-01',
+          workspace: {name: 'testWorkspace3'},
+        },
+      ])
       expect(status).toEqual('success')
     })
 
     it('should replace _id-incompatible characters in deployed schema id, and warn', async () => {
       const flags: DeploySchemasFlags = {}
+      const workspaceName = 'workspace .%&/'
       const context: SchemaStoreContext = {
         ...defaultContext,
         jsonReader: createMockJsonReader({
@@ -84,7 +141,7 @@ describe('deploySchemasAction', () => {
           files: {
             [`${workDir}/dist/static/${MANIFEST_FILENAME}`]: {
               ...testManifest,
-              workspaces: [{...testWorkspace, name: 'workspace%&/'}],
+              workspaces: [{...testWorkspace, name: workspaceName}],
             },
           },
           fallbackReader: defaultContext.jsonReader,
@@ -98,54 +155,68 @@ describe('deploySchemasAction', () => {
         {
           print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
         },
-
         {
           // if this happens – rename your workspaces, folks
           warn: [
-            'Workspace "workspace%&/" contains characters unsupported by schema _id [a-zA-Z0-9._-], they will be replaced with _.',
+            `Workspace "${workspaceName}" contains characters unsupported by schema _id [a-zA-Z0-9_-], they will be replaced with _.`,
             'This could lead duplicate schema ids: consider renaming your workspace.',
           ].join('\n'),
         },
         {success: 'Deployed 1/1 schemas'},
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])
-      expect(mockSanityClient.createOrReplace).toHaveBeenCalledWith(
-        // Known caveat: this can lead to schemas with identical ids
 
-        expect.objectContaining({_id: 'sanity.workspace.schema.workspace___'}),
+      const storedSchema = await mockSanityClient.getDocument(
+        '_.schemas.workspace_____' satisfies DefaultWorkspaceSchemaId,
       )
+      expect(storedSchema).toEqual({
+        _id: '_.schemas.workspace_____',
+        _type: 'system.schema',
+        //this will be stringified by the api
+        schema: testSchema,
+        version: '2025-05-01',
+        workspace: {name: workspaceName},
+      })
       expect(status).toEqual('success')
     })
   })
 
   describe('flag handling', () => {
-    it('should require non-empty id-prefix when specified', async () => {
-      await expect(() =>
-        deploySchemasAction({'id-prefix': ''}, defaultContext),
-      ).rejects.toThrowError('Invalid arguments:\n  - id-prefix argument is empty')
+    it('should require non-empty tag when specified', async () => {
+      await expect(() => deploySchemasAction({tag: ''}, defaultContext)).rejects.toThrowError(
+        'Invalid arguments:\n  - tag argument is empty',
+      )
     })
 
-    it('should require id-prefix without . suffix', async () => {
+    it('should require tag without .', async () => {
       await expect(() =>
-        deploySchemasAction({'id-prefix': 'invalid.'}, defaultContext),
+        deploySchemasAction({tag: 'invalid.'}, defaultContext),
       ).rejects.toThrowError(
-        'Invalid arguments:\n  - id-prefix argument cannot end with . (period), but was: "invalid."',
+        'Invalid arguments:\n  - tag cannot contain . (period), but was: "invalid."',
       )
     })
 
-    it('should require id-prefix with only id compatible characters', async () => {
-      await expect(() =>
-        deploySchemasAction({'id-prefix': '%/()#'}, defaultContext),
-      ).rejects.toThrowError(
-        'Invalid arguments:\n  - id-prefix can only contain _id compatible characters [a-zA-Z0-9._-], but was: "%/()#"',
+    it('should require tag with only id compatible characters', async () => {
+      await expect(() => deploySchemasAction({tag: '%/()#'}, defaultContext)).rejects.toThrowError(
+        'Invalid arguments:\n  - tag can only contain characters in [a-zA-Z0-9_-], but was: "%/()#',
       )
     })
 
-    it('should add id-prefix when specified', async () => {
-      const status = await deploySchemasAction({'id-prefix': 'test-prefix'}, defaultContext)
-      expect(mockSanityClient.createOrReplace).toHaveBeenCalledWith(
-        expect.objectContaining({_id: 'test-prefix.sanity.workspace.schema.testWorkspace'}),
+    it('should add tag when specified', async () => {
+      const status = await deploySchemasAction({tag: 'test-tag'}, defaultContext)
+      const storedSchema = await mockSanityClient.getDocument(
+        '_.schemas.testWorkspace.tag.test-tag',
       )
+      expect(storedSchema).toEqual({
+        _id: '_.schemas.testWorkspace.tag.test-tag',
+        _type: 'system.schema',
+        schema: testSchema,
+        tag: 'test-tag',
+        version: '2025-05-01',
+        workspace: {
+          name: 'testWorkspace',
+        },
+      })
       expect(status).toEqual('success')
     })
 
@@ -170,7 +241,7 @@ describe('deploySchemasAction', () => {
         },
         {
           print:
-            '↳ schemaId: sanity.workspace.schema.testWorkspace, projectId: testProjectId, dataset: testDataset',
+            '↳ schemaId: _.schemas.testWorkspace, projectId: testProjectId, dataset: testDataset',
         },
         {success: 'Deployed 1/1 schemas'},
         {print: '↳ List deployed schemas with: sanity schema list'},
@@ -325,12 +396,83 @@ describe('deploySchemasAction', () => {
         {
           error:
             '↳ Error deploying schema for workspace "testWorkspace":\n' +
-            '  No permissions to write schema for workspace "testWorkspace" with projectId "undefined"',
+            '  Workspace schema file at "/path/to/workdir/dist/static" does not exist.',
         },
         {
           print:
             '↳ Error when storing schemas:\n' +
             '  Failed to deploy 1/1 schemas. Successfully deployed 0/1 schemas.',
+        },
+        {print: '↳ List deployed schemas with: sanity schema list'},
+      ])
+      expect(status).toEqual('failure')
+    })
+
+    it('should log custom error when deploy 401', async () => {
+      const flags: DeploySchemasFlags = {}
+      //spagetti
+      const otherProject = 'otherProject'
+      let lastCreateClient: SanityClient = defaultContext.apiClient()
+      const clientOverrides: any = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        withConfig: (newConfig: any) => {
+          lastCreateClient = createMockSanityClient(
+            {...testWorkspace, ...newConfig, mockStores},
+            clientOverrides,
+          ).client
+          return lastCreateClient
+        },
+        request: async () => {
+          if (lastCreateClient.config().projectId === otherProject) {
+            throw new ClientError({
+              statusCode: 401,
+              headers: {},
+              body: {error: 'Cant touch this', message: 'Nope'},
+            })
+          }
+        },
+      }
+
+      const status = await deploySchemasAction(flags, {
+        ...defaultContext,
+        apiClient: () =>
+          createMockSanityClient({...testWorkspace, mockStores}, clientOverrides).client,
+        jsonReader: createMockJsonReader({
+          staticDate,
+          files: {
+            [`${workDir}/dist/static/${MANIFEST_FILENAME}`]: {
+              ...testManifest,
+              workspaces: [
+                {
+                  ...testWorkspace,
+                  basePath: '/workspace1',
+                },
+                {
+                  ...testWorkspace,
+                  projectId: otherProject,
+                  basePath: '/workspace2',
+                },
+              ],
+            },
+          },
+          fallbackReader: defaultContext.jsonReader,
+        }),
+      })
+
+      expect(log).toEqual([
+        {print: 'Logging mock: generate manifest to "/path/to/workdir/dist/static"'},
+        {
+          print: `↳ Read manifest from /path/to/workdir/dist/static/create-manifest.json (last modified: ${staticDate})`,
+        },
+        {
+          error: `↳ No permissions to write schema for workspace "testWorkspace" – {"projectId":"otherProject","dataset":"testDataset"}. ${
+            SCHEMA_PERMISSION_HELP_TEXT
+          }:\n  Cant touch this - Nope`,
+        },
+        {
+          print:
+            '↳ Error when storing schemas:\n' +
+            '  Failed to deploy 1/2 schemas. Successfully deployed 1/2 schemas.',
         },
         {print: '↳ List deployed schemas with: sanity schema list'},
       ])

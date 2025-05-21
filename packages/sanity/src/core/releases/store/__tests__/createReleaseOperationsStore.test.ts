@@ -1,8 +1,18 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+  scheduledRelease,
+} from '../../__fixtures__/release.fixture'
 import {type RevertDocument} from '../../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
-import {createReleaseOperationsStore} from '../createReleaseOperationStore'
-import {type ReleaseDocument} from '../types'
+import {
+  createReleaseOperationsStore,
+  type ReleaseOperationsStore,
+} from '../createReleaseOperationStore'
 
 describe('createReleaseOperationsStore', () => {
   let mockClient: any
@@ -10,9 +20,21 @@ describe('createReleaseOperationsStore', () => {
   beforeEach(() => {
     mockClient = {
       config: vi.fn().mockReturnValue({dataset: 'test-dataset'}),
-      request: vi.fn().mockResolvedValue(undefined),
-      create: vi.fn().mockResolvedValue(undefined),
+      action: vi.fn().mockResolvedValue(undefined),
+      releases: {
+        create: vi.fn().mockResolvedValue(undefined),
+        edit: vi.fn().mockResolvedValue(undefined),
+        publish: vi.fn().mockResolvedValue(undefined),
+        schedule: vi.fn().mockResolvedValue(undefined),
+        unschedule: vi.fn().mockResolvedValue(undefined),
+        archive: vi.fn().mockResolvedValue(undefined),
+        unarchive: vi.fn().mockResolvedValue(undefined),
+        delete: vi.fn().mockResolvedValue(undefined),
+      },
       getDocument: vi.fn(),
+      createVersion: vi.fn().mockResolvedValue(undefined),
+      discardVersion: vi.fn().mockResolvedValue(undefined),
+      unpublishVersion: vi.fn().mockResolvedValue(undefined),
     }
   })
 
@@ -24,147 +46,99 @@ describe('createReleaseOperationsStore', () => {
 
   it('should create a release', async () => {
     const store = createStore()
-    const release = {_id: '_.releases.release-id', metadata: {title: 'Test Release'}}
+    const release = activeASAPRelease
     await store.createRelease(release)
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.create',
-            releaseId: 'release-id',
-            metadata: release.metadata,
-          },
-        ],
+    expect(mockClient.releases.create).toHaveBeenCalledWith(
+      {
+        releaseId: 'rASAP',
+        metadata: release.metadata,
       },
-    })
+      undefined,
+    )
   })
 
   it('should update a release', async () => {
     const store = createStore()
-    const release = {_id: '_.releases.release-id', metadata: {title: 'Updated Title'}}
+    const release = activeScheduledRelease
     await store.updateRelease(release)
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.edit',
-            releaseId: 'release-id',
-            patch: {
-              set: {metadata: release.metadata},
-              unset: [],
-            },
-          },
-        ],
+    expect(mockClient.releases.edit).toHaveBeenCalledWith(
+      {
+        releaseId: 'rActive',
+        patch: {
+          set: {metadata: release.metadata},
+          unset: [],
+        },
       },
-    })
+      undefined,
+    )
   })
 
   it('should publish a release using stable publish', async () => {
     const store = createStore()
-    await store.publishRelease('_.releases.release-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.publish',
-            releaseId: 'release-id',
-          },
-        ],
+    await store.publishRelease(activeASAPRelease._id)
+    expect(mockClient.releases.publish).toHaveBeenCalledWith(
+      {
+        releaseId: 'rASAP',
       },
-    })
+      undefined,
+    )
   })
 
   it('should schedule a release', async () => {
     const store = createStore()
     const date = new Date('2024-01-01T00:00:00Z')
-    await store.schedule('_.releases.release-id', date)
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.schedule',
-            releaseId: 'release-id',
-            publishAt: date.toISOString(),
-          },
-        ],
+    await store.schedule(scheduledRelease._id, date)
+    expect(mockClient.releases.schedule).toHaveBeenCalledWith(
+      {
+        releaseId: 'rScheduled',
+        publishAt: date.toISOString(),
       },
-    })
+      undefined,
+    )
   })
 
   it('should unschedule a release', async () => {
     const store = createStore()
-    await store.unschedule('_.releases.release-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.unschedule',
-            releaseId: 'release-id',
-          },
-        ],
+    await store.unschedule(scheduledRelease._id)
+    expect(mockClient.releases.unschedule).toHaveBeenCalledWith(
+      {
+        releaseId: 'rScheduled',
       },
-    })
+      undefined,
+    )
   })
 
   it('should archive a release', async () => {
     const store = createStore()
-    await store.archive('_.releases.release-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.archive',
-            releaseId: 'release-id',
-          },
-        ],
+    await store.archive(activeScheduledRelease._id)
+    expect(mockClient.releases.archive).toHaveBeenCalledWith(
+      {
+        releaseId: 'rActive',
       },
-    })
+      undefined,
+    )
   })
 
   it('should unarchive a release', async () => {
     const store = createStore()
-    await store.unarchive('_.releases.release-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.unarchive',
-            releaseId: 'release-id',
-          },
-        ],
+    await store.unarchive(archivedScheduledRelease._id)
+    expect(mockClient.releases.unarchive).toHaveBeenCalledWith(
+      {
+        releaseId: 'rArchived',
       },
-    })
+      undefined,
+    )
   })
 
   it('should delete a release', async () => {
     const store = createStore()
-    await store.deleteRelease('_.releases.release-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.release.delete',
-            releaseId: 'release-id',
-          },
-        ],
+    await store.deleteRelease(publishedASAPRelease._id)
+    expect(mockClient.releases.delete).toHaveBeenCalledWith(
+      {
+        releaseId: 'rPublished',
       },
-    })
+      undefined,
+    )
   })
 
   describe('revertRelease', () => {
@@ -191,65 +165,39 @@ describe('createReleaseOperationsStore', () => {
         'immediate',
       )
 
-      expect(mockClient.request).toHaveBeenCalledWith({
-        uri: '/data/actions/test-dataset',
-        method: 'POST',
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.release.create',
-              releaseId: revertReleaseId,
-              metadata: {...releaseMetadata, releaseType: 'asap'},
-            },
-          ],
+      expect(mockClient.releases.create).toHaveBeenCalledWith(
+        {
+          releaseId: revertReleaseId,
+          metadata: {...releaseMetadata, releaseType: 'asap'},
         },
-      })
+        undefined,
+      )
 
-      expect(mockClient.request).toHaveBeenNthCalledWith(1, {
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.release.create',
-              metadata: {
-                description: 'A reverted release',
-                releaseType: 'asap',
-                title: 'Revert Release',
-              },
-              releaseId: 'revert-release-id',
-            },
-          ],
+      expect(mockClient.action).toHaveBeenCalledWith([
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[0],
+            _id: 'versions.revert-release-id.doc1',
+          },
+          publishedId: 'doc1',
         },
-        method: 'POST',
-        uri: '/data/actions/test-dataset',
-      })
-      expect(mockClient.request).toHaveBeenNthCalledWith(2, {
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.document.version.create',
-              document: {
-                _id: 'versions.revert-release-id.doc1',
-              },
-              publishedId: 'doc1',
-            },
-          ],
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[1],
+            _id: 'versions.revert-release-id.doc2',
+          },
+          publishedId: 'doc2',
         },
-        method: 'POST',
-        uri: '/data/actions/test-dataset',
-      })
+      ])
 
-      expect(mockClient.request).toHaveBeenCalledWith({
-        uri: '/data/actions/test-dataset',
-        method: 'POST',
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.release.publish',
-              releaseId: 'revert-release-id',
-            },
-          ],
+      expect(mockClient.releases.publish).toHaveBeenCalledWith(
+        {
+          releaseId: 'revert-release-id',
         },
-      })
+        undefined,
+      )
     })
 
     it('should create a new release without publishing when revertType is "staged"', async () => {
@@ -260,25 +208,38 @@ describe('createReleaseOperationsStore', () => {
         'staged',
       )
 
-      expect(mockClient.request).toHaveBeenCalledWith({
-        uri: '/data/actions/test-dataset',
-        method: 'POST',
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.release.create',
-              releaseId: revertReleaseId,
-              metadata: {...releaseMetadata, releaseType: 'asap'},
-            },
-          ],
+      expect(mockClient.releases.create).toHaveBeenCalledWith(
+        {
+          releaseId: revertReleaseId,
+          metadata: {...releaseMetadata, releaseType: 'asap'},
         },
-      })
+        undefined,
+      )
 
-      expect(mockClient.request).toHaveBeenCalledTimes(3)
+      expect(mockClient.action).toHaveBeenCalledWith([
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[0],
+            _id: 'versions.revert-release-id.doc1',
+          },
+          publishedId: 'doc1',
+        },
+        {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            ...releaseDocuments[1],
+            _id: 'versions.revert-release-id.doc2',
+          },
+          publishedId: 'doc2',
+        },
+      ])
+
+      expect(mockClient.releases.publish).not.toHaveBeenCalled()
     })
 
     it('should fail if a document does not exist and no initial value is provided', async () => {
-      mockClient.getDocument.mockResolvedValueOnce(null) // Simulate a missing document
+      mockClient.getDocument.mockResolvedValueOnce(null)
 
       await expect(
         store.revertRelease(
@@ -291,69 +252,17 @@ describe('createReleaseOperationsStore', () => {
     })
 
     it('should handle partial failure gracefully when creating versions', async () => {
-      mockClient.create.mockRejectedValueOnce(new Error('Failed to create version'))
+      mockClient.action.mockRejectedValueOnce(new Error('Failed to create version'))
 
-      const result = await store.revertRelease(
-        revertReleaseDocumentId,
-        releaseDocuments,
-        releaseMetadata,
-        'staged',
-      )
+      await expect(
+        store.revertRelease(revertReleaseDocumentId, releaseDocuments, releaseMetadata, 'staged'),
+      ).rejects.toThrow('Failed to create version')
 
-      expect(result).toBeUndefined()
-      expect(mockClient.request).toHaveBeenCalledTimes(3)
-      expect(mockClient.request).toHaveBeenNthCalledWith(1, {
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.release.create',
-              metadata: {
-                description: 'A reverted release',
-                releaseType: 'asap',
-                title: 'Revert Release',
-              },
-              releaseId: 'revert-release-id',
-            },
-          ],
-        },
-        method: 'POST',
-        uri: '/data/actions/test-dataset',
-      })
-
-      expect(mockClient.request).toHaveBeenNthCalledWith(2, {
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.document.version.create',
-              document: {
-                _id: 'versions.revert-release-id.doc1',
-              },
-              publishedId: 'doc1',
-            },
-          ],
-        },
-        method: 'POST',
-        uri: '/data/actions/test-dataset',
-      })
-      expect(mockClient.request).toHaveBeenNthCalledWith(3, {
-        body: {
-          actions: [
-            {
-              actionType: 'sanity.action.document.version.create',
-              document: {
-                _id: 'versions.revert-release-id.doc2',
-              },
-              publishedId: 'doc2',
-            },
-          ],
-        },
-        method: 'POST',
-        uri: '/data/actions/test-dataset',
-      })
+      expect(mockClient.releases.create).toHaveBeenCalledTimes(1)
     })
 
     it('should throw an error if creating the release fails', async () => {
-      mockClient.request.mockRejectedValueOnce(new Error('Failed to create release'))
+      mockClient.releases.create.mockRejectedValueOnce(new Error('Failed to create release'))
 
       await expect(
         store.revertRelease(revertReleaseDocumentId, releaseDocuments, releaseMetadata, 'staged'),
@@ -365,23 +274,18 @@ describe('createReleaseOperationsStore', () => {
     const store = createStore()
     mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
     await store.createVersion('release-id', 'doc-id', {newData: 'value'})
-    expect(mockClient.request).toHaveBeenCalledWith({
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.document.version.create',
-            document: {
-              _id: `versions.release-id.doc-id`,
-              data: 'example',
-              newData: 'value',
-            },
-            publishedId: 'doc-id',
-          },
-        ],
+    expect(mockClient.createVersion).toHaveBeenCalledWith(
+      {
+        document: {
+          _id: `versions.release-id.doc-id`,
+          data: 'example',
+          newData: 'value',
+        },
+        publishedId: 'doc-id',
+        releaseId: 'release-id',
       },
-      method: 'POST',
-      uri: '/data/actions/test-dataset',
-    })
+      undefined,
+    )
   })
 
   it('should omit _weak from reference fields if _strengthenOnPublish is present when it creates a version of a document', async () => {
@@ -471,129 +375,211 @@ describe('createReleaseOperationsStore', () => {
 
     await store.createVersion('release-id', 'doc-id')
 
-    expect(mockClient.request).toHaveBeenCalledWith({
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.document.version.create',
-            document: {
-              _id: `versions.release-id.doc-id`,
-              artist: {
-                _ref: 'some-artist-id',
-                _strengthenOnPublish: {
-                  template: {
-                    id: 'artist',
-                  },
-                  type: 'artist',
-                },
-                _type: 'reference',
+    expect(mockClient.createVersion).toHaveBeenCalledWith(
+      {
+        document: {
+          _id: `versions.release-id.doc-id`,
+          artist: {
+            _ref: 'some-artist-id',
+            _strengthenOnPublish: {
+              template: {
+                id: 'artist',
               },
-              expectedWeakReference: {
-                _ref: 'expected-weak-reference',
-                _type: 'reference',
-                _weak: true,
-                _strengthenOnPublish: {
-                  template: {
-                    id: 'some-document',
-                  },
-                  type: 'some-document',
-                  weak: true,
-                },
-              },
-              plants: [
-                {
-                  _ref: 'some-plant-id',
-                  _strengthenOnPublish: {
-                    template: {
-                      id: 'plant',
-                    },
-                    type: 'plant',
-                  },
-                  _type: 'reference',
-                },
-                {
-                  _ref: 'some-plant-id',
-                  _strengthenOnPublish: {
-                    template: {
-                      id: 'plant',
-                    },
-                    type: 'plant',
-                  },
-                  _type: 'reference',
-                },
-              ],
-              stores: [
-                {
-                  name: 'some-store',
-                  inventory: {
-                    products: [
-                      {
-                        _ref: 'some-product-id',
-                        _strengthenOnPublish: {
-                          template: {
-                            id: 'product',
-                          },
-                          type: 'product',
-                        },
-                        _type: 'reference',
-                      },
-                      {
-                        _ref: 'some-product-id',
-                        _strengthenOnPublish: {
-                          template: {
-                            id: 'product',
-                          },
-                          type: 'product',
-                        },
-                        _type: 'reference',
-                      },
-                    ],
-                  },
-                },
-              ],
+              type: 'artist',
             },
-            publishedId: 'doc-id',
+            _type: 'reference',
           },
-        ],
+          expectedWeakReference: {
+            _ref: 'expected-weak-reference',
+            _type: 'reference',
+            _weak: true,
+            _strengthenOnPublish: {
+              template: {
+                id: 'some-document',
+              },
+              type: 'some-document',
+              weak: true,
+            },
+          },
+          plants: [
+            {
+              _ref: 'some-plant-id',
+              _strengthenOnPublish: {
+                template: {
+                  id: 'plant',
+                },
+                type: 'plant',
+              },
+              _type: 'reference',
+            },
+            {
+              _ref: 'some-plant-id',
+              _strengthenOnPublish: {
+                template: {
+                  id: 'plant',
+                },
+                type: 'plant',
+              },
+              _type: 'reference',
+            },
+          ],
+          stores: [
+            {
+              name: 'some-store',
+              inventory: {
+                products: [
+                  {
+                    _ref: 'some-product-id',
+                    _strengthenOnPublish: {
+                      template: {
+                        id: 'product',
+                      },
+                      type: 'product',
+                    },
+                    _type: 'reference',
+                  },
+                  {
+                    _ref: 'some-product-id',
+                    _strengthenOnPublish: {
+                      template: {
+                        id: 'product',
+                      },
+                      type: 'product',
+                    },
+                    _type: 'reference',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        publishedId: 'doc-id',
+        releaseId: 'release-id',
       },
-      method: 'POST',
-      uri: '/data/actions/test-dataset',
-    })
+      undefined,
+    )
   })
 
   it('should discard a version of a document', async () => {
     const store = createStore()
     await store.discardVersion('release-id', 'doc-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.document.version.discard',
-            versionId: 'versions.release-id.doc-id',
-            purge: false,
-          },
-        ],
+    expect(mockClient.discardVersion).toHaveBeenCalledWith(
+      {
+        releaseId: 'release-id',
+        publishedId: 'doc-id',
       },
-    })
+      false,
+      undefined,
+    )
   })
 
   it('should unpublish a version of a document', async () => {
     const store = createStore()
     await store.unpublishVersion('versions.release-id.doc-id')
-    expect(mockClient.request).toHaveBeenCalledWith({
-      uri: '/data/actions/test-dataset',
-      method: 'POST',
-      body: {
-        actions: [
-          {
-            actionType: 'sanity.action.document.version.unpublish',
-            versionId: 'versions.release-id.doc-id',
-            publishedId: `doc-id`,
-          },
-        ],
+    expect(mockClient.unpublishVersion).toHaveBeenCalledWith(
+      {
+        releaseId: 'release-id',
+        publishedId: 'doc-id',
       },
+      undefined,
+    )
+  })
+
+  it('should create a release with options', async () => {
+    const store = createStore()
+    const release = activeASAPRelease
+    const opts = {dryRun: true}
+    await store.createRelease(release, opts)
+    expect(mockClient.releases.create).toHaveBeenCalledWith(
+      {
+        releaseId: 'rASAP',
+        metadata: release.metadata,
+      },
+      opts,
+    )
+  })
+
+  it('should update a release with options', async () => {
+    const store = createStore()
+    const release = activeScheduledRelease
+    const opts = {dryRun: true}
+    await store.updateRelease(release, opts)
+    expect(mockClient.releases.edit).toHaveBeenCalledWith(
+      {
+        releaseId: 'rActive',
+        patch: {
+          set: {metadata: release.metadata},
+          unset: [],
+        },
+      },
+      opts,
+    )
+  })
+
+  it('should publish a release with dryRun', async () => {
+    const store = createStore()
+    const opts = {dryRun: true}
+    await store.publishRelease(activeASAPRelease._id, opts)
+    expect(mockClient.releases.publish).toHaveBeenCalledWith(
+      {
+        releaseId: 'rASAP',
+      },
+      opts,
+    )
+  })
+
+  describe('handleReleaseLimitError', () => {
+    type MethodTestCase<K extends keyof ReleaseOperationsStore> = {
+      name: K
+      method: string
+      runTest: (store: ReleaseOperationsStore) => Promise<unknown>
+    }
+
+    const methods: MethodTestCase<keyof ReleaseOperationsStore>[] = [
+      {
+        name: 'createRelease',
+        method: 'create',
+        runTest: (store) => store.createRelease(activeASAPRelease),
+      },
+      {
+        name: 'updateRelease',
+        method: 'edit',
+        runTest: (store) => store.updateRelease(activeScheduledRelease),
+      },
+      {
+        name: 'publishRelease',
+        method: 'publish',
+        runTest: (store) => store.publishRelease(activeASAPRelease._id),
+      },
+      {
+        name: 'schedule',
+        method: 'schedule',
+        runTest: (store) => store.schedule(scheduledRelease._id, new Date('2024-01-01T00:00:00Z')),
+      },
+      {
+        name: 'unarchive',
+        method: 'unarchive',
+        runTest: (store) => store.unarchive(archivedScheduledRelease._id),
+      },
+    ]
+
+    describe.each(methods)('$name', ({method, runTest}) => {
+      it('should call onReleaseLimitReached when release limit is reached', async () => {
+        const error = new Error('Release limit reached') as Error & {
+          details: {type: 'releaseLimitExceededError'; limit: number}
+        }
+        error.details = {type: 'releaseLimitExceededError', limit: 5}
+        mockClient.releases[method].mockRejectedValueOnce(error)
+
+        const onReleaseLimitReached = vi.fn()
+        const store = createReleaseOperationsStore({
+          client: mockClient,
+          onReleaseLimitReached,
+        })
+
+        await expect(runTest(store)).rejects.toThrow('Release limit reached')
+        expect(onReleaseLimitReached).toHaveBeenCalledWith(5)
+      })
     })
   })
 })

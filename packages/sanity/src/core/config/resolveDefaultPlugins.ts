@@ -1,3 +1,4 @@
+import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
@@ -5,18 +6,27 @@ import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/c
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
+  type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
   type PluginOptions,
   type SingleWorkspace,
   type WorkspaceOptions,
 } from './types'
 
-const defaultPlugins = [comments(), tasks(), scheduledPublishing(), createIntegration(), releases()]
+const defaultPlugins = [
+  comments(),
+  tasks(),
+  scheduledPublishing(),
+  createIntegration(),
+  releases(),
+  canvasIntegration(),
+]
 
-export function getDefaultPlugins(
-  options: DefaultPluginsWorkspaceOptions,
-  plugins?: PluginOptions[],
-) {
+type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
+  apps: AppsOptions
+}
+
+export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
   return defaultPlugins.filter((plugin) => {
     if (plugin.name === SCHEDULED_PUBLISHING_NAME) {
       // The scheduled publishing plugin is only included if other plugin is included by the user.
@@ -28,13 +38,16 @@ export function getDefaultPlugins(
     if (plugin.name === RELEASES_NAME) {
       return options.releases.enabled
     }
+    if (plugin.name === CANVAS_INTEGRATION_NAME) {
+      return options.apps?.canvas?.enabled ?? false
+    }
     return true
   })
 }
 
 export function getDefaultPluginsOptions(
   workspace: WorkspaceOptions | SingleWorkspace,
-): DefaultPluginsWorkspaceOptions {
+): DefaultPluginsOptions {
   return {
     tasks: {
       enabled: true,
@@ -51,6 +64,13 @@ export function getDefaultPluginsOptions(
     releases: {
       ...workspace.releases,
       enabled: workspace.releases?.enabled ?? true,
+    },
+    apps: {
+      canvas: {
+        // By default canvas app is enabled
+        enabled: true,
+        ...workspace.apps?.canvas,
+      },
     },
   }
 }

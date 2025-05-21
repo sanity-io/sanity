@@ -216,6 +216,12 @@ const releasesLocaleStrings = {
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
 
+  /** Tooltip text for when one user is editing a document in a release */
+  'presence.tooltip.one':
+    '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
+  /** Tooltip text for when multiple users are editing a document in a release */
+  'presence.tooltip.other': '{{count}} people are editing this document right now',
+
   /** Tooltip text for publish release action when there are no documents */
   'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */

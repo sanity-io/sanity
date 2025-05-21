@@ -426,7 +426,7 @@ async function getOrCreateAppFromConfig({
     }
   }
 
-  // core apps cannot arbitrarily create ids or hosts, so send them to create option
+  // custom apps cannot arbitrarily create ids or hosts, so send them to create option
   output.print('The id provided in your configuration is not recognized.')
   output.print('Checking existing applications...')
   return getOrCreateApplication({client, context, spinner})

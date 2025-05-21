@@ -20,7 +20,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.delete.running.label': 'Deleting…',
   /** Tooltip when action is disabled because the document is linked to Canvas */
   'action.disabled-by-canvas.tooltip':
-    'Custom document actions are disabled for documents linked to Canvas',
+    'Some document actions are disabled for documents linked to Canvas',
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
@@ -192,6 +192,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
 
+  /** The text for the canvas linked banner action button */
+  'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner when the document is a draft */
+  'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a live document */
+  'canvas.banner.linked-text.published': 'This live document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a version document */
+  'canvas.banner.linked-text.version': 'This version document is linked to Canvas',
+  /** The text for the canvas linked banner popover button */
+  'canvas.banner.popover-button-text': 'Learn more',
+  /** The description for the canvas linked banner popover */
+  'canvas.banner.popover-description':
+    'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
+  /** The heading for the canvas linked banner popover */
+  'canvas.banner.popover-heading': 'Idea first authoring',
+
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/
@@ -211,6 +227,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The error message shown when the previous document for comparison could not be extracted from the URL */
   'compare-version.error.invalidPreviousDocumentParam':
     'The previous document parameter is invalid.',
+  /** The text for the tooltip when the "Compare versions" action for a document is disabled */
+  'compare-versions.menu-item.disabled-reason':
+    'There are no other versions of this document to compare.',
   /** The text for the "Compare versions" action for a document */
   'compare-versions.menu-item.title': 'Compare versions',
   /** The string used to label draft documents */
@@ -347,6 +366,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
 
+  /** The description for the document favorite action */
+  'document.favorites.add-to-favorites': 'Add to favorites',
+  /** The description for the document unfavorite action */
+  'document.favorites.remove-from-favorites': 'Remove from favorites',
+
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
   'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/
@@ -409,10 +433,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-header-title.new.text': 'New {{schemaType}}',
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
+  /** The help text saying that we have given up on automatic retry */
+  'panes.document-list-pane.error.max-retries-attempted':
+    'Not automatically retrying after {{count}} unsuccessful attempts.',
+  /** The help text saying that we'll retry fetching the document list */
+  'panes.document-list-pane.error.retrying': 'Retrying…',
   /** The error text on the document list pane */
-  'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
+  'panes.document-list-pane.error.text': 'Encountered an error while fetching documents.',
+  /** The error text on the document list pane */
+  'panes.document-list-pane.error.text.dev': 'Error: <Code>{{error}}</Code>',
+  /** The error text on the document list pane if the browser appears to be offlline */
+  'panes.document-list-pane.error.text.offline': 'The Internet connection appears to be offline.',
   /** The error title on the document list pane */
   'panes.document-list-pane.error.title': 'Could not fetch list items',
+  /** The help text saying that we'll retry fetching the document list */
+  'panes.document-list-pane.error.will-retry-automatically_one': 'Retrying…',
+  'panes.document-list-pane.error.will-retry-automatically_other': 'Retrying… (#{{count}}).',
   /** The text of the document list pane if more than a maximum number of documents are returned */
   'panes.document-list-pane.max-items.text': 'Displaying a maximum of {{limit}} documents',
   /** The text of the document list pane if no documents are found for a specified type */
@@ -421,6 +457,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'panes.document-list-pane.no-documents.text': 'No results found',
   /** The text of the document list pane if no documents are found matching specified criteria */
   'panes.document-list-pane.no-matching-documents.text': 'No matching documents',
+  /** The search input for the search input on the document list pane */
+  'panes.document-list-pane.reconnecting': 'Trying to connect…',
   /** The aria-label for the search input on the document list pane */
   'panes.document-list-pane.search-input.aria-label': 'Search list',
   /** The search input for the search input on the document list pane */

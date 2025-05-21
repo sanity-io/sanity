@@ -1,48 +1,50 @@
-import {type types} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 
-type StackFunctionResource = types.StackFunctionResource
-
 const helpText = `
-Arguments
-  [add] Add or update an environment variable
-  [remove] Remove an environment variable
+Commands
+  add    Add or update an environment variable
+  list   List the environment variables
+  remove Remove an environment variable
 
-Options
-  --name <name> The name of the function
-  --key <key> The name of the environment variable
-  --value <value> The value of the environment variable
+Arguments
+  <name> The name of the function
+  <key> The name of the environment variable
+  <value> The value of the environment variable
 
 Examples
   # Add or update an environment variable
-  sanity functions env add --name echo --key API_URL --value https://api.example.com/
+  sanity functions env add echo API_URL https://api.example.com/
 
   # Remove an environment variable
-  sanity functions env remove --name echo --key API_URL
+  sanity functions env remove echo API_URL
+
+  # List environment variables
+  sanity functions env list echo
 `
 
-const defaultFlags = {
-  name: '',
-  key: '',
-  value: '',
+export interface FunctionsEnvFlags {
+  //
 }
 
-const envFunctionsCommand: CliCommandDefinition = {
+const envFunctionsCommand: CliCommandDefinition<FunctionsEnvFlags> = {
   name: 'env',
   group: 'functions',
   helpText,
-  signature: '',
-  description: 'Add or remove an environment variable for a Sanity function',
-  hideFromHelp: true,
+  signature: '<add|list|remove> <name> [key] [value]',
+  description:
+    'Add or remove an environment variable or list environment variables for a Sanity function',
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
-    const [subCommand] = args.argsWithoutOptions
-    const flags = {...defaultFlags, ...args.extOptions}
+    const [subCommand, name, key, value] = args.argsWithoutOptions
 
-    if (!subCommand || !['add', 'remove'].includes(subCommand)) {
-      throw new Error('You must specify if you wish to add or remove an environment variable')
+    if (!subCommand || !['add', 'list', 'remove'].includes(subCommand)) {
+      throw new Error('You must specify if you want to list, add or remove')
+    }
+
+    if (subCommand === 'add' && (!key || !value)) {
+      throw new Error('You must specify the name, key and value arguments')
+    } else if (subCommand === 'remove' && !key) {
+      throw new Error('You must specify the name and key arguments')
     }
 
     const client = apiClient({
@@ -50,61 +52,53 @@ const envFunctionsCommand: CliCommandDefinition = {
       requireProject: false,
     })
 
-    if (flags.name === '') {
-      throw new Error('You must provide a function name via the --name flag')
+    if (!name) {
+      throw new Error('You must provide a function name as the first argument')
     }
 
     const token = client.config().token
-    const {env} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {deployedStack} = await blueprint.readBlueprintOnDisk({
-      getStack: true,
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {functionEnvAddCore, functionEnvListCore, functionEnvRemoveCore} = await import(
+      '@sanity/runtime-cli/cores/functions'
+    )
+
+    const cmdConfig = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
       token,
     })
 
-    if (!deployedStack) {
-      throw new Error('Stack not found')
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
+
+    let response
+    switch (subCommand) {
+      case 'add':
+        response = await functionEnvAddCore({
+          ...cmdConfig.value,
+          args: {name, key, value},
+        })
+        break
+      case 'list':
+        response = await functionEnvListCore({
+          ...cmdConfig.value,
+          args: {name},
+        })
+        break
+      case 'remove':
+        response = await functionEnvRemoveCore({
+          ...cmdConfig.value,
+          args: {name, key},
+        })
+        break
+      default:
+        throw new Error(`Unknown subcommand: ${subCommand}`)
     }
 
-    const blueprintConfig = blueprint.readConfigFile()
-    const projectId = blueprintConfig?.projectId
+    const {success, error} = response
 
-    const {externalId} = findFunction.findFunctionByName(
-      deployedStack,
-      flags.name,
-    ) as StackFunctionResource
-
-    if (token && projectId) {
-      if (subCommand === 'add') {
-        print(`Updating "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await env.update.update(externalId, flags.key, flags.value, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Update of ${flags.key} succeeded`)
-        } else {
-          print(`Failed to update ${flags.key}`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      } else if (subCommand === 'remove') {
-        print(`Removing "${flags.key}" environment variable in "${flags.name}"`)
-        const result = await env.remove.remove(externalId, flags.key, {
-          token,
-          projectId,
-        })
-        if (result.ok) {
-          print(`Remove of ${flags.key} succeeded`)
-        } else {
-          print(`Failed to remove ${flags.key}`)
-          print(`Error: ${result.error || 'Unknown error'}`)
-        }
-      }
-    } else {
-      print('You must run this command from a blueprints project')
-    }
+    if (!success) throw new Error(error)
   },
 }
 

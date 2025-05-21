@@ -4,8 +4,7 @@ const functionsGroup: CliCommandGroupDefinition = {
   name: 'functions',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Test Sanity Functions locally and retrieve logs',
-  hideFromHelp: true,
+  description: 'Manage, test, and observe Sanity Functions',
 }
 
 export default functionsGroup

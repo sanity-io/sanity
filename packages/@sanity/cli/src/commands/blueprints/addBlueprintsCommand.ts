@@ -2,79 +2,123 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Arguments
-  [type]  Type of Resource to add (currently only 'function' is supported)
+  <type>  Type of Resource to add (currently only 'function' is supported)
 
-Examples
-  # Add a Function Resource
+Options
+  --name, -n <name>              Name of the Resource
+  --fn-type <type>               Type of Function to add (e.g. document-publish)
+  --fn-language, --lang <ts|js>  Language of the Function. Default: "ts"
+  --js, --javascript             Shortcut for --fn-language=js
+  --fn-helpers, --helpers        Add helpers to the Function
+  --no-fn-helpers                Do not add helpers to the Function
+  --fn-installer,                Package manager to use for Function helpers
+    --installer <npm|pnpm|yarn>    sets --fn-helpers to true
+  --install, -i                  Shortcut for --fn-installer=npm
+
+Examples:
+  # Add a Function (TypeScript by default)
   sanity blueprints add function
+
+  # Add a Function with a specific name and install helpers with npm
+  sanity blueprints add function --name my-function -i
+
+  # Add a Function with a specific type
+  sanity blueprints add function --fn-type document-publish
+
+  # Add a JavaScript Function
+  sanity blueprints add function --js
+
+  # Add a Function without helpers
+  sanity blueprints add function --no-fn-helpers
+
+  # Add a document-publish .js Function with helpers and install with npm
+  sanity blueprints add function -n roboto --fn-type document-publish --js -i
 `
 
-const addBlueprintsCommand: CliCommandDefinition = {
+export interface BlueprintsAddFlags {
+  'name'?: string
+  'n'?: string
+
+  'fn-type'?: string
+
+  'fn-language'?: string
+  'lang'?: string
+
+  'js'?: boolean
+  'javascript'?: boolean
+
+  'fn-helpers'?: boolean
+  'helpers'?: boolean
+  'no-fn-helpers'?: boolean
+
+  'fn-installer'?: string
+  'installer'?: string
+
+  'install'?: boolean
+  'i'?: boolean
+}
+
+const defaultFlags: BlueprintsAddFlags = {
+  'fn-language': 'ts',
+  // 'fn-helpers': true, // ask, for now
+}
+
+const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   name: 'add',
   group: 'blueprints',
   helpText,
-  signature: '<type>',
+  signature:
+    '<type> [--name <name>] [--fn-type <document-publish>] [--fn-lang <ts|js>] [--javascript]',
   description: 'Add a Resource to a Blueprint',
-  hideFromHelp: true,
+
   async action(args, context) {
-    const {output, prompt} = context
-    const {print} = output
+    const {output, apiClient} = context
+    const flags = {...defaultFlags, ...args.extOptions}
+
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
+    const {token} = client.config()
+
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
     const [resourceType] = args.argsWithoutOptions
 
     if (!resourceType) {
-      print('Resource type is required. Available types: function')
+      output.error('Resource type is required. Available types: function')
       return
     }
 
-    const {blueprint: blueprintAction, resources: resourcesAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const existingBlueprint = blueprintAction.findBlueprintFile()
-    if (!existingBlueprint) {
-      print('No blueprint file found. Run `sanity blueprints init` first.')
-      return
-    }
+    const cmdConfig = await initBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
-    if (resourceType === 'function') {
-      const functionName = await prompt.single({
-        type: 'input',
-        message: 'Enter function name:',
-        validate: (input: string) => input.length > 0 || 'Function name is required',
-      })
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-      const functionType = await prompt.single({
-        type: 'list',
-        message: 'Choose function type:',
-        choices: [
-          {value: 'document-publish', name: 'Document Publish'},
-          {value: 'document-create', name: 'Document Create (Available soon)', disabled: true},
-          {value: 'document-delete', name: 'Document Delete (Available soon)', disabled: true},
-        ],
-      })
+    let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
+    if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
 
-      const {filePath, resourceAdded, resource} = resourcesAction.createFunctionResource({
-        name: functionName,
-        type: functionType,
-        displayName: functionName,
-      })
+    const {success, error} = await blueprintAddCore({
+      ...cmdConfig.value,
+      args: {type: resourceType},
+      flags: {
+        'name': flags.n ?? flags.name,
+        'fn-type': flags['fn-type'],
+        'language': flags.lang ?? flags['fn-language'],
+        'javascript': flags.js || flags.javascript,
+        'fn-helpers': userWantsFnHelpers,
+        'fn-installer': flags.installer ?? flags['fn-installer'],
+        'install': flags.i || flags.install,
+      },
+    })
 
-      print(`\nCreated function: ${filePath}`)
-
-      if (resourceAdded) {
-        // added to blueprint.json
-        print('Function Resource added to Blueprint')
-      } else {
-        // print the resource JSON for manual addition
-        print('\nAdd this Function Resource to your Blueprint:')
-        print(JSON.stringify(resource, null, 2))
-      }
-
-      return
-    }
-
-    print(`Unsupported resource type: ${resourceType}. Available types: function`)
+    if (!success) throw new Error(error)
   },
 }
 

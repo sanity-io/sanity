@@ -27,9 +27,10 @@ import {
   InsufficientPermissionBanner,
   ReferenceChangedBanner,
 } from './banners'
-import {AddToReleaseBanner} from './banners/AddToReleaseBanner'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
+import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
+import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -167,9 +168,17 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (params?.historyVersion) {
       return <ArchivedReleaseDocumentBanner />
     }
+
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
-    if (isScheduledRelease) {
+
+    const documentInScheduledRelease = Boolean(
+      isScheduledRelease &&
+        displayed?._id &&
+        getVersionFromId(displayed?._id) === selectedReleaseId,
+    )
+
+    if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -181,10 +190,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       !isPinnedDraftOrPublish
     ) {
       return (
-        <AddToReleaseBanner
+        <DocumentNotInReleaseBanner
           documentId={value._id}
           currentRelease={selectedPerspective as ReleaseDocument}
           value={displayed || undefined}
+          isScheduledRelease={isScheduledRelease}
         />
       )
     }
@@ -205,7 +215,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (activeView.type !== 'form' || isPermissionsLoading || !ready) return null
+    if (activeView.type !== 'form' || isPermissionsLoading) return null
 
     return (
       <>
@@ -215,6 +225,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         )}
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
+        <CanvasLinkedBanner />
         <DeletedDocumentBanners />
         <UnpublishedDocumentBanner />
         <OpenReleaseToEditBanner

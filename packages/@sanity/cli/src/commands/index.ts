@@ -3,6 +3,7 @@ import addBlueprintsCommand from './blueprints/addBlueprintsCommand'
 import blueprintsGroup from './blueprints/blueprintsGroup'
 import configBlueprintsCommand from './blueprints/configBlueprintsCommand'
 import deployBlueprintsCommand from './blueprints/deployBlueprintsCommand'
+import destroyBlueprintsCommand from './blueprints/destroyBlueprintsCommand'
 import infoBlueprintsCommand from './blueprints/infoBlueprintsCommand'
 import initBlueprintsCommand from './blueprints/initBlueprintsCommand'
 import logsBlueprintsCommand from './blueprints/logsBlueprintsCommand'
@@ -59,12 +60,13 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   testfunctionsCommand,
   envFunctionsCommand,
   blueprintsGroup,
-  infoBlueprintsCommand,
-  listBlueprintsCommand,
-  initBlueprintsCommand,
-  deployBlueprintsCommand,
-  logsBlueprintsCommand,
   addBlueprintsCommand,
   configBlueprintsCommand,
+  deployBlueprintsCommand,
+  destroyBlueprintsCommand,
+  infoBlueprintsCommand,
+  initBlueprintsCommand,
+  listBlueprintsCommand,
+  logsBlueprintsCommand,
   planBlueprintsCommand,
 ]

@@ -15,10 +15,16 @@ import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
-import {type ItemChild, type StructureBuilder, type StructureResolver} from 'sanity/structure'
+import {
+  type ItemChild,
+  type StructureBuilder,
+  structureLocaleNamespace,
+  type StructureResolver,
+} from 'sanity/structure'
 
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
+import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
 import {_buildTypeGroup} from './_buildTypeGroup'
 import {delayValue} from './_helpers'
@@ -34,13 +40,29 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
-export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {
+export const structure: StructureResolver = (
+  S,
+  {schema, documentStore, i18n, perspectiveStack},
+) => {
   const {t} = i18n
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
+      S.listItem()
+        .title('Sections by perspective')
+        .id('sections-by-perspective')
+        .child(() => {
+          const doc$ = documentStore.listenQuery(
+            `*[_id == "validation"][0]`,
+            {},
+            {
+              perspective: perspectiveStack,
+            },
+          )
 
+          return S.component(PerspectiveExample).id('sections-by-perspective').options({doc$})
+        }),
       S.listItem()
         .id('translate')
         .title('Translate Test')
@@ -90,7 +112,9 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
         ],
       }),
 
-      S.divider(),
+      S.divider()
+        .title('Divider title')
+        .i18n({title: {key: 'text-divider-title', ns: structureLocaleNamespace}}),
 
       _buildTypeGroup(S, schema, {
         id: 'input-standard',

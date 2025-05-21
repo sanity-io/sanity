@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument} from '../../../index'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,

@@ -1,29 +1,28 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-Options
-  --id, -i  Stack ID
-
-Examples
+Examples:
   # Retrieve information about the current Stack
   sanity blueprints info
-
-  # Retrieve information about a specific Stack
-  sanity blueprints info --id <stack-id>
 `
 
-const defaultFlags = {id: undefined}
+export interface BlueprintsInfoFlags {
+  id?: string
+}
 
-const infoBlueprintsCommand: CliCommandDefinition = {
+const defaultFlags: BlueprintsInfoFlags = {
+  //
+}
+
+const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
   name: 'info',
   group: 'blueprints',
   helpText,
   signature: '',
   description: 'Retrieve information about a Blueprint Stack',
-  hideFromHelp: true,
+
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
     const flags = {...defaultFlags, ...args.extOptions}
 
     const client = apiClient({
@@ -31,53 +30,25 @@ const infoBlueprintsCommand: CliCommandDefinition = {
       requireProject: false,
     })
     const {token} = client.config()
-    const {blueprint: blueprintAction, stacks: stacksAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
-    const {display} = await import('@sanity/runtime-cli/utils')
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    let blueprint = null
-    try {
-      blueprint = await blueprintAction.readBlueprintOnDisk({token})
-    } catch (error) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {blueprintInfoCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    if (!blueprint) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    const cmdConfig = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
-    const {errors, deployedStack, projectId} = blueprint
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-    if (errors && errors.length > 0) {
-      print(errors)
-      return
-    }
+    const {success, error} = await blueprintInfoCore({
+      ...cmdConfig.value,
+      flags,
+    })
 
-    if (token && projectId) {
-      const auth = {token, projectId}
-      let result
-      if (flags.id) {
-        const {stack, error, ok} = await stacksAction.getStack({stackId: flags.id, auth})
-        if (ok) {
-          result = stack
-        } else {
-          print(error)
-        }
-      } else {
-        result = deployedStack
-      }
-
-      if (result) {
-        print(display.blueprintsFormatting.formatStackInfo(result))
-      } else {
-        print('No Stack found')
-      }
-    } else {
-      print('Cannot retrieve information for Blueprint: missing API token or Project ID')
-    }
+    if (!success) throw new Error(error)
   },
 }
 

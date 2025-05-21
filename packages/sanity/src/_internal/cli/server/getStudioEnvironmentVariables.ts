@@ -2,6 +2,7 @@
 import {loadEnv} from '@sanity/cli'
 
 const envPrefix = 'SANITY_STUDIO_'
+const appEnvPrefix = 'SANITY_APP_'
 
 /**
  * The params for the `getStudioEnvironmentVariables` function that gets Studio focused environment variables.
@@ -59,4 +60,32 @@ export function getStudioEnvironmentVariables(
     }
   }
   return studioEnv
+}
+
+/**
+ * Get environment variables prefixed with SANITY_APP_, as an object.
+ *
+ * @param options - Options for the environment variable loading
+ *  {@link StudioEnvVariablesOptions}
+ * @returns Object of app environment variables
+ *
+ * @internal
+ */
+export function getAppEnvironmentVariables(
+  options: StudioEnvVariablesOptions = {},
+): Record<string, string> {
+  const {prefix = '', envFile = false, jsonEncode = false} = options
+  const fullEnv = envFile
+    ? {...process.env, ...loadEnv(envFile.mode, envFile.envDir || process.cwd(), [envPrefix])}
+    : process.env
+
+  const appEnv: Record<string, string> = {}
+  for (const key in fullEnv) {
+    if (key.startsWith(appEnvPrefix)) {
+      appEnv[`${prefix}${key}`] = jsonEncode
+        ? JSON.stringify(fullEnv[key] || '')
+        : fullEnv[key] || ''
+    }
+  }
+  return appEnv
 }

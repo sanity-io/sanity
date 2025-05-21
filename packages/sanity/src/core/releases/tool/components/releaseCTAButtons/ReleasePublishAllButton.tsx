@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text, useToast} from '@sanity/ui'
@@ -10,7 +11,7 @@ import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {isReleaseDocument, type ReleaseDocument} from '../../../index'
+import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
@@ -89,6 +90,7 @@ export const ReleasePublishAllButton = ({
               i18nKey="toast.publish.error"
               values={{
                 title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                error: publishingError.message,
               }}
             />
           </Text>

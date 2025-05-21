@@ -1,110 +1,65 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
-${
-  /*Options
-  --watch, -w  Watch for new logs (streaming mode)
-*/ ''
-}
-Examples
+Options
+  --watch, -w    Watch for new logs (streaming mode)
+
+Examples:
   # Show logs for the current Stack
   sanity blueprints logs
-${
-  /*
-  # Watch for new logs
+
+  # Watch for new logs (streaming mode)
   sanity blueprints logs --watch
-*/ ''
-}
 `
 
-// const defaultFlags = {watch: false}
+export interface BlueprintsLogsFlags {
+  watch?: boolean
+  w?: boolean
+}
 
-const logsBlueprintsCommand: CliCommandDefinition = {
+const defaultFlags: BlueprintsLogsFlags = {
+  //
+}
+
+const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   name: 'logs',
   group: 'blueprints',
   helpText,
-  signature: '[--watch]',
+  signature: '[--watch] [-w]',
   description: 'Display logs for the current Blueprint Stack',
-  hideFromHelp: true,
+
   async action(args, context) {
     const {apiClient, output} = context
-    const {print} = output
-    // const flags = {...defaultFlags, ...args.extOptions}
-    // const watchMode = Boolean(flags.watch)
+    const flags = {...defaultFlags, ...args.extOptions}
 
-    const client = apiClient({requireUser: true, requireProject: false})
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
     const {token} = client.config()
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    if (!token) {
-      print('No API token found. Please run `sanity login` first.')
-      return
-    }
+    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {blueprintLogsCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const {blueprint: blueprintAction, logs: logsAction} = await import(
-      '@sanity/runtime-cli/actions/blueprints'
-    )
-    const {display} = await import('@sanity/runtime-cli/utils')
+    const cmdConfig = await initDeployedBlueprintConfig({
+      bin: 'sanity',
+      log: (message) => output.print(message),
+      token,
+    })
 
-    let blueprint = null
-    try {
-      blueprint = await blueprintAction.readBlueprintOnDisk({token})
-    } catch (error) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-    if (!blueprint) {
-      print('Unable to read Blueprint manifest file. Run `sanity blueprints init`')
-      return
-    }
+    const {success, streaming, error} = await blueprintLogsCore({
+      ...cmdConfig.value,
+      flags: {
+        watch: flags.watch ?? flags.w,
+      },
+    })
 
-    const {errors, deployedStack} = blueprint
+    if (streaming) await streaming
 
-    if (errors && errors.length > 0) {
-      print(errors)
-      return
-    }
-
-    if (!deployedStack) {
-      print('Stack not found')
-      return
-    }
-
-    const {id: stackId, projectId, name} = deployedStack
-    const auth = {token, projectId}
-
-    print(`Fetching logs for stack ${display.colors.yellow(`<${stackId}>`)}`)
-
-    // enable watch mode here
-
-    try {
-      const {ok, logs, error} = await logsAction.getLogs(stackId, auth)
-
-      if (!ok) {
-        print(`${display.colors.red('Failed')} to retrieve logs`)
-        print(`Error: ${error || 'Unknown error'}`)
-        return
-      }
-
-      if (logs.length === 0) {
-        print(`No logs found for Stack ${stackId}`)
-        return
-      }
-
-      print(`${display.blueprintsFormatting.formatTitle('Blueprint', name)} Logs`)
-      print(
-        `Found ${display.colors.bold(logs.length.toString())} log entries for stack ${display.colors.yellow(stackId)}\n`,
-      )
-
-      // Organize and format logs by day
-      const logsByDay = display.logsFormatting.organizeLogsByDay(logs)
-      print(display.logsFormatting.formatLogsByDay(logsByDay))
-    } catch (err) {
-      print('Failed to retrieve logs')
-      if (err instanceof Error) {
-        print(`Error: ${err.message}`)
-      }
-    }
+    if (!success) throw new Error(error)
   },
 }
 

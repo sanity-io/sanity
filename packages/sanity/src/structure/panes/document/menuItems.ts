@@ -32,7 +32,7 @@ function getInspectorItems({
         action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
         group: menuItem.showAsAction ? undefined : 'inspectors',
         icon: menuItem.icon,
-        isDisabled: !hasValue,
+        disabled: !hasValue,
         selected: currentInspector?.name === inspector.name,
         shortcut: menuItem.hotkeys?.join('+'),
         showAsAction: menuItem.showAsAction,
@@ -49,19 +49,14 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
     group: 'inspectors',
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
-    isDisabled: !hasValue,
+    disabled: !hasValue,
     shortcut: 'Ctrl+Alt+I',
   }
 }
 
 function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
-  const isDisabled = typeof documentIdStack?.previousId === 'undefined'
-
-  // TODO: It would be preferable to display the option in an inert state, but the `isDisabled`
-  // property does not appear to have any impact. Instead, we simply exclude the option when
-  // there is no version to compare.
-  if (isDisabled) {
-    return null
+  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
+    reason: t('compare-versions.menu-item.disabled-reason'),
   }
 
   return {
@@ -69,7 +64,7 @@ function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneM
     group: 'inspectors',
     title: t('compare-versions.menu-item.title'),
     icon: TransferIcon,
-    isDisabled,
+    disabled,
   }
 }
 

@@ -33,14 +33,15 @@ function ImageInputAssetSourceComponent(
       <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
         {(imageAsset) => (
           <Component
+            accept={accept}
             action={isUploading ? 'upload' : 'select'}
             assetSource={selectedAssetSource}
-            selectedAssets={[imageAsset]}
             assetType="image"
-            accept={accept}
-            selectionType="single"
             onClose={handleAssetSourceClosed}
             onSelect={handleSelectAssetFromSource}
+            schemaType={schemaType}
+            selectedAssets={[imageAsset]}
+            selectionType="single"
           />
         )}
       </WithReferencedAsset>
@@ -48,14 +49,15 @@ function ImageInputAssetSourceComponent(
   }
   return (
     <Component
+      accept={accept}
       action={isUploading ? 'upload' : 'select'}
       assetSource={selectedAssetSource}
-      selectedAssets={[]}
-      selectionType="single"
       assetType="image"
-      accept={accept}
       onClose={handleAssetSourceClosed}
       onSelect={handleSelectAssetFromSource}
+      schemaType={schemaType}
+      selectedAssets={[]}
+      selectionType="single"
     />
   )
 }

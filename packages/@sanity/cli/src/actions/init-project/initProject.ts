@@ -290,9 +290,11 @@ export default async function initSanity(
     print('')
   }
 
+  const isNextJs = detectedFramework?.slug === 'nextjs'
+
   const flags = await prepareFlags()
 
-  // We're authenticated, now lets select or create a project (for studios) or org (for core apps)
+  // We're authenticated, now lets select or create a project (for studios) or org (for custom apps)
   const {projectId, displayName, isFirstProject, datasetName, schemaUrl, organizationId} =
     await getProjectDetails()
 
@@ -313,14 +315,16 @@ export default async function initSanity(
   }
 
   let initNext = false
-  const isNextJs = detectedFramework?.slug === 'nextjs'
   if (isNextJs) {
-    initNext = await prompt.single({
-      type: 'confirm',
-      message:
-        'Would you like to add configuration files for a Sanity project in this Next.js folder?',
-      default: true,
-    })
+    initNext =
+      unattended ||
+      (await prompt.single({
+        type: 'confirm',
+        message:
+          'Would you like to add configuration files for a Sanity project in this Next.js folder?',
+        default: true,
+      }))
+
     trace.log({
       step: 'useDetectedFramework',
       selectedOption: initNext ? 'yes' : 'no',
@@ -682,7 +686,7 @@ export default async function initSanity(
     )
   } else {
     print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
-    print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project’s directory`)
+    print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project's directory`)
     print(
       `Then: ${chalk.cyan(devCommand)} -to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
     )
@@ -693,24 +697,13 @@ export default async function initSanity(
   print(`npx sanity manage - to open the project settings in a browser`)
   print(`npx sanity help - to explore the CLI manual`)
 
-  const sendInvite =
-    isFirstProject &&
-    (await prompt.single({
-      type: 'confirm',
-      message:
-        'We have an excellent developer community, would you like us to send you an invitation to join?',
-      default: true,
-    }))
+  if (isFirstProject) {
+    trace.log({step: 'sendCommunityInvite', selectedOption: 'yes'})
 
-  if (sendInvite) {
-    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
-    // Intentionally leave the promise "dangling" since we don't want to stall while waiting for this
-    apiClient({requireProject: false})
-      .request({
-        uri: '/invitations/community',
-        method: 'POST',
-      })
-      .catch(noop)
+    const DISCORD_INVITE_LINK = 'https://snty.link/community'
+
+    print(`\nJoin our wonderful developer community as well: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
+    print('We look forward to seeing you there!\n')
   }
 
   trace.complete()
@@ -750,9 +743,15 @@ export default async function initSanity(
 
     if (isAppTemplate) {
       const client = apiClient({requireUser: true, requireProject: false})
-      const organizations = await client.request({uri: '/organizations'})
+      const organizations = await client.request({
+        uri: '/organizations',
+        query: {
+          includeMembers: 'true',
+          includeImplicitMemberships: 'true',
+        },
+      })
 
-      const appOrganizationId = await getOrganizationId(organizations)
+      const appOrganizationId = await getOrganizationIdForAppTemplate(organizations)
 
       return {
         projectId: '',
@@ -1223,12 +1222,15 @@ export default async function initSanity(
 
     if (unattended) {
       debug('Unattended mode, validating required options')
-      const requiredForUnattended = ['dataset', 'output-path'] as const
-      requiredForUnattended.forEach((flag) => {
-        if (!cliFlags[flag]) {
-          throw new Error(`\`--${flag}\` must be specified in unattended mode`)
-        }
-      })
+
+      if (!cliFlags['dataset' as const]) {
+        throw new Error(`\`--dataset\` must be specified in unattended mode`)
+      }
+
+      // output-path is not used in unattended mode within nextjs
+      if (!isNextJs && !cliFlags['output-path' as const]) {
+        throw new Error(`\`--output-path\` must be specified in unattended mode`)
+      }
 
       if (!cliFlags.project && !createProjectName) {
         throw new Error(
@@ -1300,6 +1302,38 @@ export default async function initSanity(
     return organization
   }
 
+  async function getOrganizationIdForAppTemplate(organizations: ProjectOrganization[]) {
+    // If the user is using an app template, we don't need to check for attach access
+    const organizationChoices = [
+      ...organizations.map((organization) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
+
+    // If the user only has a single organization, we'll default to that one.
+    const defaultOrganizationId =
+      organizations.length === 1
+        ? organizations[0].id
+        : organizations.find((org) => org.name === user?.name)?.id
+
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
+
+    if (chosenOrg === '-new-') {
+      return createOrganization().then((org) => org.id)
+    }
+
+    return chosenOrg || undefined
+  }
+
   async function getOrganizationId(organizations: ProjectOrganization[]) {
     // In unattended mode, if the user hasn't specified an organization, sending null as
     // organization ID to the API will create a new organization for the user with their
@@ -1363,12 +1397,24 @@ export default async function initSanity(
       .clone()
       .config({apiVersion: 'v2021-06-07'})
 
-    const grants = await client.request({uri: `organizations/${orgId}/grants`})
-    const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
-    return group.some(
-      (resource) =>
-        resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
-    )
+    try {
+      const grants = await client.request({uri: `organizations/${orgId}/grants`})
+      const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
+      return group.some(
+        (resource) =>
+          resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
+      )
+    } catch (err) {
+      // If we get a 401, it means we don't have access to this organization
+      // probably because of implicit membership
+      if (err.statusCode === 401) {
+        debug('No access to organization %s (401)', orgId)
+        return false
+      }
+      // For other errors, log them but still return false
+      debug('Error checking grants for organization %s: %s', orgId, err.message)
+      return false
+    }
   }
 
   function getOrganizationsWithAttachGrantInfo(organizations: ProjectOrganization[]) {

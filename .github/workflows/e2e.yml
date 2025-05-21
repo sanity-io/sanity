@@ -4,8 +4,8 @@ permissions:
   pull-requests: write # for comment
 
 env:
-  CHROMIUM_DATASET: pr-chromium-${{ github.event.number }}
-  FIREFOX_DATASET: pr-firefox-${{ github.event.number }}
+  CHROMIUM_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-chromium-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
+  FIREFOX_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-firefox-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
 
 on:
   # Build on pushes branches that have a PR (including drafts)

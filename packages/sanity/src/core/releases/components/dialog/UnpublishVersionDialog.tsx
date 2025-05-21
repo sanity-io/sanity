@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text, useToast} from '@sanity/ui'
 import {type CSSProperties, useCallback, useState} from 'react'
 
@@ -11,7 +12,6 @@ import {Preview} from '../../../preview/components/Preview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'

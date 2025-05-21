@@ -63,6 +63,7 @@ export const DEBUG_INPUT_TYPES = [
   'invalidPreviews',
   'languageFilterDebug',
   'manyFieldsTest',
+  'manyViews',
   'noTitleField',
   'objectsDebug',
   'poppers',

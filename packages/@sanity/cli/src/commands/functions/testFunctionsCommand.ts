@@ -1,77 +1,91 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
+Arguments
+  <name> The name of the Sanity Function
+
 Options
   --data <data> Data to send to the function
   --file <file> Read data from file and send to the function
-  --name <name> The name of your Sanity Function
   --timeout <timeout> Execution timeout value in seconds
+  --api <version> Sanity API Version to use
+  --dataset <dataset> The Sanity dataset to use
+  --project-id <id> Sanity Project ID to use
+
 
 Examples
   # Test function passing event data on command line
-  sanity functions test --name echo --data '{ "id": 1 }'
+  sanity functions test echo --data '{ "id": 1 }'
 
   # Test function passing event data via a file
-  sanity functions test -name echo --file 'payload.json'
+  sanity functions test echo --file 'payload.json'
 
   # Test function passing event data on command line and cap execution time to 60 seconds
-  sanity functions test -name echo --data '{ "id": 1 }' --timeout 60
+  sanity functions test echo --data '{ "id": 1 }' --timeout 60
 `
 
-const defaultFlags = {
-  data: undefined,
-  file: undefined,
-  name: '',
-  timeout: 5, // seconds
+export interface FunctionsTestFlags {
+  'data'?: string
+  'file'?: string
+  'timeout'?: number
+  'api'?: string
+  'dataset'?: string
+  'project-id'?: string
 }
 
-const testFunctionsCommand: CliCommandDefinition = {
+const defaultFlags: FunctionsTestFlags = {
+  timeout: 10, // seconds
+}
+
+const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   name: 'test',
   group: 'functions',
   helpText,
-  signature: '',
+  signature:
+    '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>]',
   description: 'Invoke a local Sanity Function',
-  hideFromHelp: true,
   async action(args, context) {
-    const {output} = context
-    const {print} = output
+    const {apiClient, output} = context
+    const [name] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
 
-    if (flags.name === '') {
-      throw new Error('You must provide a function name via the --name flag')
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    })
+    const {token} = client.config()
+
+    if (!token) throw new Error('No API token found. Please run `sanity login`.')
+
+    if (!name) {
+      throw new Error('You must provide a function name as the first argument')
     }
 
-    const {test} = await import('@sanity/runtime-cli/actions/functions')
-    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {findFunction} = await import('@sanity/runtime-cli/utils')
+    const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
+    const {functionTestCore} = await import('@sanity/runtime-cli/cores/functions')
 
-    const {parsedBlueprint} = await blueprint.readBlueprintOnDisk({
-      getStack: false,
+    const cmdConfig = await initBlueprintConfig({
+      bin: 'sanity',
+      log: (message: string) => output.print(message),
+      token,
     })
 
-    const src = findFunction.getFunctionSource(parsedBlueprint, flags.name)
-    if (!src) {
-      throw new Error(`Error: Function ${flags.name} has no source code`)
-    }
+    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
-    const {json, logs, error} = await test.testAction(
-      src,
-      {
-        data: flags.data,
-        file: flags.file,
-        timeout: flags.timeout,
+    const {success, error} = await functionTestCore({
+      ...cmdConfig.value,
+      args: {name},
+      flags: {
+        'data': flags.data,
+        'file': flags.file,
+        'timeout': flags.timeout,
+        'api': flags.api,
+        'dataset': flags.dataset,
+        'project-id': flags['project-id'],
       },
-      {}, // @TODO: Add context
-    )
+    })
 
-    if (error) {
-      print(error.toString())
-    } else {
-      print('Logs:')
-      print(logs)
-      print('Response:')
-      print(JSON.stringify(json, null, 2))
-    }
+    if (!success) throw new Error(error)
   },
 }
 

@@ -1,8 +1,15 @@
-import {type ReleaseDocument} from '../store/types'
+import {type ReleaseDocument} from '@sanity/client'
 
-export const activeScheduledRelease: ReleaseDocument = {
+type ReleaseDocumentWithTitle = ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
+    title: string
+  }
+}
+
+export const activeScheduledRelease: ReleaseDocumentWithTitle = {
   _rev: 'activeRev',
   _id: '_.releases.rActive',
+  name: 'rActive',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
@@ -15,9 +22,10 @@ export const activeScheduledRelease: ReleaseDocument = {
   },
 }
 
-export const scheduledRelease: ReleaseDocument = {
+export const scheduledRelease: ReleaseDocumentWithTitle = {
   _rev: 'scheduledRev',
   _id: '_.releases.rScheduled',
+  name: 'rScheduled',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
@@ -31,9 +39,10 @@ export const scheduledRelease: ReleaseDocument = {
   },
 }
 
-export const activeASAPRelease: ReleaseDocument = {
+export const activeASAPRelease: ReleaseDocumentWithTitle = {
   _rev: 'activeASAPRev',
   _id: '_.releases.rASAP',
+  name: 'rASAP',
   _type: 'system.release',
   _createdAt: '2023-10-01T08:00:00Z',
   _updatedAt: '2023-10-01T09:00:00Z',
@@ -45,9 +54,10 @@ export const activeASAPRelease: ReleaseDocument = {
   },
 }
 
-export const activeASAPErrorRelease: ReleaseDocument = {
+export const activeASAPErrorRelease: ReleaseDocumentWithTitle = {
   _rev: 'activeASAPErrorRev',
   _id: '_.releases.rASAPError',
+  name: 'rASAPError',
   _type: 'system.release',
   _createdAt: '2023-10-01T08:00:00Z',
   _updatedAt: '2023-10-01T09:00:00Z',
@@ -62,9 +72,10 @@ export const activeASAPErrorRelease: ReleaseDocument = {
   },
 }
 
-export const archivedScheduledRelease: ReleaseDocument = {
+export const archivedScheduledRelease: ReleaseDocumentWithTitle = {
   _rev: 'archivedRev',
   _id: '_.releases.rArchived',
+  name: 'rArchived',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
@@ -77,9 +88,10 @@ export const archivedScheduledRelease: ReleaseDocument = {
   },
 }
 
-export const publishedASAPRelease: ReleaseDocument = {
+export const publishedASAPRelease: ReleaseDocumentWithTitle = {
   _rev: 'publishedRev',
   _id: '_.releases.rPublished',
+  name: 'rPublished',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
@@ -92,9 +104,10 @@ export const publishedASAPRelease: ReleaseDocument = {
   },
 }
 
-export const activeUndecidedRelease: ReleaseDocument = {
+export const activeUndecidedRelease: ReleaseDocumentWithTitle = {
   _rev: 'undecidedRev',
   _id: '_.releases.rUndecided',
+  name: 'rUndecided',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',
@@ -106,9 +119,10 @@ export const activeUndecidedRelease: ReleaseDocument = {
   },
 }
 
-export const activeUndecidedErrorRelease: ReleaseDocument = {
+export const activeUndecidedErrorRelease: ReleaseDocumentWithTitle = {
   _rev: 'undecidedErrorRev',
   _id: '_.releases.rUndecidedError',
+  name: 'rUndecidedError',
   _type: 'system.release',
   _createdAt: '2023-10-10T08:00:00Z',
   _updatedAt: '2023-10-10T09:00:00Z',

@@ -3,12 +3,12 @@ import {SanityApp} from '@sanity/sdk-react'
 import {ExampleComponent} from './ExampleComponent'
 import './App.css'
 
-export function App() {
+function App() {
   // apps can access many different projects or other sources of data
   const sanityConfigs: SanityConfig[] = [
     {
-      projectId: 'project-id',
-      dataset: 'dataset-name',
+      projectId: '',
+      dataset: '',
     }
   ]
 
