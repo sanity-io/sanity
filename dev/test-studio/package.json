@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.88.3",
+  "version": "3.89.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,10 +17,10 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^1.1.25",
-    "@portabletext/editor": "^1.48.15",
+    "@portabletext/editor": "^1.50.2",
     "@portabletext/react": "^3.0.0",
     "@sanity/assist": "^3.2.2",
-    "@sanity/client": "^7.2.1",
+    "@sanity/client": "^7.3.0",
     "@sanity/color": "^3.0.0",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",

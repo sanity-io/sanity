@@ -2,6 +2,7 @@
 // `StudioErrorBoundary`, which is rendered outside of `LocaleProvider`.
 export const strings = {
   'retry.title': 'Retry',
+  'retrying.title': 'Retrying…',
   'copy-error-details.description': 'These technical details may be useful for developers.',
   'copy-error-details.title': 'Copy error details',
   'copy-error-details.toast.get-failed': 'Failed to get error details',
