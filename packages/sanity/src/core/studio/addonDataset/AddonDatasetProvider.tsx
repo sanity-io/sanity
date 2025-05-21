@@ -3,11 +3,9 @@ import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_HEADERS, DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {useWorkspace} from '../workspace'
 import {type AddonDatasetContextValue} from './types'
-
-const API_VERSION = 'v2023-11-13'
 
 interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
@@ -16,13 +14,16 @@ interface AddonDatasetSetupProviderProps {
 function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
-  const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const originalClient = useClient({
+    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
+    headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+  })
   const [addonDatasetClient, setAddonDatasetClient] = useState<SanityClient | null>(null)
   const [isCreatingDataset, setIsCreatingDataset] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
-    const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
+    const res = await originalClient.request({
       uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
       tag: 'sanity.studio',
     })
@@ -36,11 +37,11 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const handleCreateClient = useCallback(
     (addonDatasetName: string) => {
       const client = originalClient.withConfig({
-        apiVersion: API_VERSION,
         dataset: addonDatasetName,
         projectId,
         requestTagPrefix: 'sanity.studio',
         useCdn: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       })
 
       return client
@@ -71,7 +72,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 
     try {
       // 1. Create the addon dataset
-      const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
+      const res = await originalClient.request({
         uri: `/comments/${dataset}/setup`,
         method: 'POST',
       })
