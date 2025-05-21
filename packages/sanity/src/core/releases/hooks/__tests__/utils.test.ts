@@ -212,34 +212,90 @@ describe('getReleasesPerspectiveStack()', () => {
   const testCases: {
     selectedPerspectiveName: ReleaseId | 'published' | undefined
     excludedPerspectives: string[]
+    isDraftModelEnabled: boolean
     expected: string[]
   }[] = [
-    {selectedPerspectiveName: 'rasap1', excludedPerspectives: [], expected: ['rasap1', 'drafts']},
+    {
+      selectedPerspectiveName: 'rasap1',
+      isDraftModelEnabled: true,
+      excludedPerspectives: [],
+      expected: ['rasap1', 'drafts'],
+    },
+    {
+      selectedPerspectiveName: 'rasap1',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['rasap1', 'published'],
+    },
     {
       selectedPerspectiveName: 'rasap2',
+      isDraftModelEnabled: true,
       excludedPerspectives: [],
       expected: ['rasap2', 'rasap1', 'drafts'],
     },
     {
+      selectedPerspectiveName: 'rasap2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['rasap2', 'rasap1', 'published'],
+    },
+    {
       selectedPerspectiveName: 'rundecided2',
+      isDraftModelEnabled: true,
       excludedPerspectives: [],
       expected: ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1', 'drafts'],
     },
     {
       selectedPerspectiveName: 'rundecided2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1', 'published'],
+    },
+    {
+      selectedPerspectiveName: 'rundecided2',
+      isDraftModelEnabled: true,
       excludedPerspectives: ['rfuture1', 'drafts'],
       expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
     },
-    {selectedPerspectiveName: 'published', excludedPerspectives: [], expected: ['published']},
-    {selectedPerspectiveName: undefined, excludedPerspectives: [], expected: ['drafts']},
+    {
+      selectedPerspectiveName: 'rundecided2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: ['rfuture1', 'published'],
+      expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
+    },
+    {
+      selectedPerspectiveName: 'published',
+      isDraftModelEnabled: true,
+      excludedPerspectives: [],
+      expected: ['published'],
+    },
+    {
+      selectedPerspectiveName: 'published',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['published'],
+    },
+    {
+      selectedPerspectiveName: undefined,
+      isDraftModelEnabled: true,
+      excludedPerspectives: [],
+      expected: ['drafts'],
+    },
+    {
+      selectedPerspectiveName: undefined,
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['published'],
+    },
   ]
   it.each(testCases)(
     'should return the correct release stack for %s',
-    ({selectedPerspectiveName, excludedPerspectives, expected}) => {
+    ({selectedPerspectiveName, isDraftModelEnabled, excludedPerspectives, expected}) => {
       const result = getReleasesPerspectiveStack({
         releases,
         selectedPerspectiveName,
         excludedPerspectives,
+        isDraftModelEnabled,
       })
       expect(result).toEqual(expected)
     },
