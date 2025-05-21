@@ -75,10 +75,10 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
       return cachedObservable
     }
 
-    const newObservable = createObservable(documentPreviewStore, cacheId)
+    const newObservable = createObservable(documentPreviewStore, publishedId)
     observableCache.set(cacheId, newObservable)
     return newObservable
-  }, [cacheId, documentPreviewStore])
+  }, [cacheId, documentPreviewStore, publishedId])
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
