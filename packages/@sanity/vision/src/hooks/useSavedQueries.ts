@@ -20,6 +20,7 @@ export interface StoredQueries {
 const defaultValue = {
   queries: [],
 }
+const keyValueStoreKey = STORED_QUERIES_NAMESPACE
 
 export function useSavedQueries(): {
   queries: QueryConfig[]
@@ -33,7 +34,6 @@ export function useSavedQueries(): {
   error: Error | undefined
 } {
   const keyValueStore = useKeyValueStore()
-  const keyValueStoreKey = STORED_QUERIES_NAMESPACE
 
   const [value, setValue] = useState<StoredQueries>(defaultValue)
   const [saving, setSaving] = useState(false)
@@ -44,7 +44,7 @@ export function useSavedQueries(): {
 
   const queries = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
-  }, [keyValueStore, keyValueStoreKey])
+  }, [keyValueStore])
 
   useEffect(() => {
     const sub = queries
@@ -63,7 +63,7 @@ export function useSavedQueries(): {
       })
 
     return () => sub?.unsubscribe()
-  }, [queries, keyValueStore, keyValueStoreKey])
+  }, [queries, keyValueStore])
 
   const saveQuery = useCallback(
     (query: Omit<QueryConfig, '_key'>) => {
@@ -82,7 +82,7 @@ export function useSavedQueries(): {
         setSaving(false)
       }
     },
-    [keyValueStore, keyValueStoreKey, value.queries],
+    [keyValueStore, value.queries],
   )
 
   const updateQuery = useCallback(
@@ -103,7 +103,7 @@ export function useSavedQueries(): {
         setSaving(false)
       }
     },
-    [keyValueStore, keyValueStoreKey, value.queries],
+    [keyValueStore, value.queries],
   )
 
   const deleteQuery = useCallback(
@@ -122,7 +122,7 @@ export function useSavedQueries(): {
         setDeleting((prev) => prev.filter((k) => k !== key))
       }
     },
-    [keyValueStore, keyValueStoreKey, value.queries],
+    [keyValueStore, value.queries],
   )
 
   return {
