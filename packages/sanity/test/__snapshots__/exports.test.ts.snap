@@ -592,6 +592,7 @@ exports[`exports snapshot 1`] = `
     "useSearchState": "function",
     "useSetPerspective": "function",
     "useSource": "function",
+    "useStudioUrl": "function",
     "useSyncState": "function",
     "useTemplatePermissions": "function",
     "useTemplatePermissionsFromHookFactory": "function",
@@ -634,6 +635,7 @@ exports[`exports snapshot 1`] = `
   "./_singletons": {
     "ActiveWorkspaceMatcherContext": "object",
     "AddonDatasetContext": "object",
+    "AppIdCacheContext": "object",
     "CalendarContext": "object",
     "ChangeIndicatorTrackerContextGetSnapshot": "object",
     "ChangeIndicatorTrackerContextStore": "object",
