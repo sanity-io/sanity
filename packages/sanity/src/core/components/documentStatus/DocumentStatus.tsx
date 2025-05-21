@@ -11,6 +11,7 @@ import {
   useActiveReleases,
   type VersionInfoDocumentStub,
 } from '../../releases'
+import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
@@ -34,6 +35,12 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
   const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
   const {t} = useTranslation()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
@@ -49,7 +56,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           tone={'positive'}
         />
       )}
-      {draft && (
+      {isDraftModelEnabled && draft && (
         <VersionStatus
           title={t('release.chip.draft')}
           mode="draft"
