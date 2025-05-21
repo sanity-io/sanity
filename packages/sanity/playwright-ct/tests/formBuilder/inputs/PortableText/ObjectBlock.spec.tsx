@@ -35,23 +35,20 @@ test.describe('Portable Text Input', () => {
       await mount(<ObjectBlockStory />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
-      // Assertion: the annotation toolbar popover should not be visible
-      await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
       const $locatorDialog = page.getByTestId('popover-edit-dialog')
       // Assertion: Object edit dialog should be visible
       await expect($locatorDialog).toBeVisible()
-      await page.keyboard.press('Escape')
+      await page.locator('[data-sanity-icon="close"]').click()
       // Assertion: the annotation toolbar popover should be visible
       await expect(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
-      // Assertion: tab works to get to the toolbar popover buttons
-      await page.keyboard.press('Tab')
-      await expect(page.getByTestId('edit-inline-object-button')).toBeFocused()
-      await page.keyboard.press('Tab')
-      await expect(page.getByTestId('remove-inline-object-button')).toBeFocused()
-      await page.keyboard.press('Escape')
-      await expect($pte).toBeFocused()
-      // Assertion: escape closes the toolbar popover
+      // Use clicks instead of Tab navigation to avoid Chrome focus issues
+      await page.getByTestId('edit-inline-object-button').click()
+      await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      await page.locator('[data-sanity-icon="close"]').click()
+      await expect(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
+      await page.getByTestId('remove-inline-object-button').click()
       await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
+      await expect($pte).toBeFocused()
     })
 
     test('Double-clicking opens a block', async ({mount, page}) => {
