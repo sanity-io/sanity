@@ -16,17 +16,20 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
-    headers: DEFAULT_STUDIO_CLIENT_HEADERS,
   })
   const [addonDatasetClient, setAddonDatasetClient] = useState<SanityClient | null>(null)
   const [isCreatingDataset, setIsCreatingDataset] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
-    const res = await originalClient.request({
-      uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
-      tag: 'sanity.studio',
-    })
+    const res = await originalClient
+      .withConfig({
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+      })
+      .request({
+        uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
+        tag: 'sanity.studio',
+      })
 
     // The response is an array containing the addon dataset. We only expect
     // one addon dataset to be returned, so we return the name of the first
@@ -72,10 +75,14 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 
     try {
       // 1. Create the addon dataset
-      const res = await originalClient.request({
-        uri: `/comments/${dataset}/setup`,
-        method: 'POST',
-      })
+      const res = await originalClient
+        .withConfig({
+          headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+        })
+        .request({
+          uri: `/comments/${dataset}/setup`,
+          method: 'POST',
+        })
 
       const datasetName = res?.datasetName
 
