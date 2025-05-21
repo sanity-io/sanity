@@ -88,6 +88,11 @@ export function QueryRecall({
     }
 
     if (newUrl) {
+      await saveQuery({
+        url: newUrl,
+        savedAt: new Date().toISOString(),
+        title: 'Untitled',
+      })
       // Set the selected URL to the newly saved query's URL
       setSelectedUrl(newUrl)
     }
@@ -115,6 +120,7 @@ export function QueryRecall({
     getStateFromUrl,
     generateUrl,
     formatDate,
+    saveQuery,
   ])
 
   const handleTitleSave = useCallback(
