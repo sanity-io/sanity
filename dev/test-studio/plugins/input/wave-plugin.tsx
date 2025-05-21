@@ -2,7 +2,7 @@
 import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
 import {useEffect} from 'react'
-import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
+import {definePlugin} from 'sanity'
 
 /**
  * This Studio Plugin shows how to:
@@ -62,22 +62,15 @@ export const wave = definePlugin({
   name: 'wave',
   form: {
     components: {
-      input: (props) => {
-        if (!isArrayOfBlocksSchemaType(props.schemaType)) {
-          return props.renderDefault(props)
-        }
-
-        return props.renderDefault({
-          ...props,
-          renderPlugins: (pluginProps) => {
-            return (
-              <>
-                {pluginProps.renderDefault(pluginProps)}
-                <WaveBehaviorPlugin />
-              </>
-            )
-          },
-        })
+      pte: {
+        plugins: (props) => {
+          return (
+            <>
+              {props.renderDefault(props)}
+              <WaveBehaviorPlugin />
+            </>
+          )
+        },
       },
     },
   },

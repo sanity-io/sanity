@@ -8,6 +8,7 @@ import {
   type FieldProps,
   type InputProps,
   type ItemProps,
+  type PtePluginsProps,
 } from '../types'
 
 export function pickInputComponent(
@@ -51,5 +52,13 @@ export function pickAnnotationComponent(
 ): ComponentType<Omit<BlockAnnotationProps, 'renderDefault'>> {
   return plugin.form?.components?.annotation as ComponentType<
     Omit<BlockAnnotationProps, 'renderDefault'>
+  >
+}
+
+export function pickPTEPluginsComponent(
+  plugin: PluginOptions,
+): ComponentType<Omit<PtePluginsProps, 'renderDefault'>> {
+  return plugin.form?.components?.pte?.plugins as ComponentType<
+    Omit<PtePluginsProps, 'renderDefault'>
   >
 }

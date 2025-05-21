@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, DecoratorShortcutPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
-import {defineType, type PortableTextInputProps} from 'sanity'
+import {defineType} from 'sanity'
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -29,18 +29,15 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        input: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-            renderPlugins: (pluginProps) => {
-              return (
-                <>
-                  {pluginProps.renderDefault(pluginProps)}
-                  <OneLinePlugin />
-                </>
-              )
-            },
-          })
+        pte: {
+          plugins: (props) => {
+            return (
+              <>
+                {props.renderDefault(props)}
+                <OneLinePlugin />
+              </>
+            )
+          },
         },
       },
     },
@@ -71,26 +68,18 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        input: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-            renderPlugins: (pluginProps) => (
-              <>
-                {pluginProps.renderDefault({
-                  ...pluginProps,
-                  renderMarkdownPlugin: (markdownPluginProps) => {
-                    return markdownPluginProps.renderDefault({
-                      config: {
-                        ...markdownPluginProps.config,
-                        boldDecorator: ({schema}) =>
-                          schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
-                      },
-                    })
-                  },
-                })}
-              </>
-            ),
-          })
+        pte: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              markdownPluginProps: {
+                config: {
+                  boldDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+                },
+              },
+            })
+          },
         },
       },
     },
@@ -112,62 +101,59 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        input: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-            renderPlugins: (pluginProps) => (
+        pte: {
+          plugins: (props) => {
+            return (
               <>
-                <DecoratorShortcutPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
-                  }
-                  pair={{
-                    char: '👻',
-                    amount: 2,
-                  }}
-                />
-                <DecoratorShortcutPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
-                  }
-                  pair={{
-                    char: '🕹️',
-                    amount: 2,
-                  }}
-                />
-                <DecoratorShortcutPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
-                  }
-                  pair={{
-                    char: '👻',
-                    amount: 1,
-                  }}
-                />
-                <DecoratorShortcutPlugin
-                  decorator={({schema}) =>
-                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
-                  }
-                  pair={{
-                    char: '🕹️',
-                    amount: 1,
-                  }}
-                />
-                {pluginProps.renderDefault({
-                  ...pluginProps,
-                  renderMarkdownPlugin: (markdownPluginProps) => {
-                    return markdownPluginProps.renderDefault({
-                      config: {
-                        ...markdownPluginProps.config,
-                        boldDecorator: undefined,
-                        italicDecorator: undefined,
-                      },
-                    })
+                {props.renderDefault({
+                  ...props,
+                  markdownPluginProps: {
+                    config: {
+                      ...props.markdownPluginProps.config,
+                      boldDecorator: undefined,
+                      italicDecorator: undefined,
+                    },
                   },
                 })}
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'strong')?.name
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 2,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  }
+                  pair={{
+                    char: '👻',
+                    amount: 1,
+                  }}
+                />
+                <DecoratorShortcutPlugin
+                  decorator={({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'em')?.name
+                  }
+                  pair={{
+                    char: '🕹️',
+                    amount: 1,
+                  }}
+                />
               </>
-            ),
-          })
+            )
+          },
         },
       },
     },
@@ -188,11 +174,10 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        input: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-            renderPlugins: () => <></>,
-          })
+        pte: {
+          plugins: (props) => {
+            return null
+          },
         },
       },
     },
@@ -214,11 +199,11 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        input: (props: PortableTextInputProps) => {
-          return props.renderDefault({
-            ...props,
-            renderPlugins: (pluginProps) => (
+        pte: {
+          plugins: (props) => {
+            return (
               <>
+                {props.renderDefault(props)}
                 <BehaviorPlugin
                   behaviors={[
                     defineBehavior({
@@ -235,10 +220,9 @@ export const customPlugins = defineType({
                     }),
                   ]}
                 />
-                {pluginProps.renderDefault(pluginProps)}
               </>
-            ),
-          })
+            )
+          },
         },
       },
     },
