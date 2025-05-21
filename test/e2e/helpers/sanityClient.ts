@@ -1,6 +1,7 @@
 import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
+import {SANITY_VERSION} from '../../../packages/sanity/src/core/version'
 import {readEnv} from './envVars'
 
 export class TestContext {
@@ -33,6 +34,9 @@ const testSanityClient = createClient({
   useCdn: false,
   apiVersion: '2021-08-31',
   apiHost: 'https://api.sanity.work',
+  headers: {
+    'x-sanity-studio-version': SANITY_VERSION,
+  },
 })
 
 /* eslint-disable callback-return*/
