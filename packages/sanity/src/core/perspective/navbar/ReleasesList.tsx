@@ -11,7 +11,7 @@ import {useCreateReleaseMetadata} from '../../releases/hooks/useCreateReleaseMet
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {LATEST} from '../../releases/util/const'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../releases/util/util'
 import {usePerspective} from '../usePerspective'
@@ -24,8 +24,6 @@ import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
-
-const ASAP_RANGE_OFFSET = 2
 
 const StyledBox = styled(Box)`
   overflow: auto;
@@ -109,14 +107,13 @@ export function ReleasesList({
     const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
     let lastIndex = isDraftsPerspective ? 1 : 0
 
+    const systemStack = [PUBLISHED, LATEST]
     const {asap, scheduled} = sortedReleaseTypeReleases
-    const countAsapReleases = asap.length
-    const countScheduledReleases = scheduled.length
 
     const offsets = {
-      asap: ASAP_RANGE_OFFSET,
-      scheduled: ASAP_RANGE_OFFSET + countAsapReleases,
-      undecided: ASAP_RANGE_OFFSET + countAsapReleases + countScheduledReleases,
+      asap: systemStack.length,
+      scheduled: systemStack.length + asap.length,
+      undecided: systemStack.length + asap.length + scheduled.length,
     }
 
     const adjustIndexForReleaseType = (type: ReleaseType) => {
