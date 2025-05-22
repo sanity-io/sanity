@@ -93,7 +93,9 @@ function getFractionalSeconds(date: Date, length: number): string {
 }
 
 function getTimeZoneAbbreviation(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-US', {timeZoneName: 'short'}).formatToParts(date)
+  const parts = new Intl.DateTimeFormat(sanitizeLocale('en-US'), {
+    timeZoneName: 'short',
+  }).formatToParts(date)
   const tz = parts.find((part) => part.type === 'timeZoneName')
   return tz ? tz.value : ''
 }
