@@ -290,6 +290,16 @@ export default async function initSanity(
     print('')
   }
 
+  // Returns true if not unattended and the flag was not explicitly set
+  function shouldPromptFor(setting: keyof InitFlags) {
+    return !unattended && cliFlags[setting] === undefined
+  }
+
+  // Returns the flag value if it's a boolean, otherwise returns the defaultValue
+  function flagOrDefault(flag: keyof InitFlags, defaultValue: boolean) {
+    return typeof cliFlags[flag] === 'boolean' ? cliFlags[flag] : defaultValue
+  }
+
   const isNextJs = detectedFramework?.slug === 'nextjs'
 
   const flags = await prepareFlags()
@@ -314,16 +324,16 @@ export default async function initSanity(
     return
   }
 
-  let initNext = false
+  let initNext = flagOrDefault('nextjs-add-config-files', false)
   if (isNextJs) {
-    initNext =
-      unattended ||
-      (await prompt.single({
+    if (shouldPromptFor('nextjs-add-config-files')) {
+      initNext = await prompt.single({
         type: 'confirm',
         message:
           'Would you like to add configuration files for a Sanity project in this Next.js folder?',
         default: true,
-      }))
+      })
+    }
 
     trace.log({
       step: 'useDetectedFramework',
@@ -367,11 +377,7 @@ export default async function initSanity(
     }
   }
 
-  function shouldPromptFor(setting: keyof InitFlags) {
-    return !unattended && typeof cliFlags[setting] !== 'boolean'
-  }
-
-  let useTypeScript = typeof cliFlags.typescript === 'boolean' ? cliFlags.typescript : true
+  let useTypeScript = flagOrDefault('typescript', true)
   if (initNext) {
     if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
@@ -379,7 +385,10 @@ export default async function initSanity(
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
-    const embeddedStudio = unattended ? true : await promptForEmbeddedStudio(prompt)
+    let embeddedStudio = flagOrDefault('nextjs-embed-studio', true)
+    if (shouldPromptFor('nextjs-embed-studio')) {
+      embeddedStudio = await promptForEmbeddedStudio(prompt)
+    }
     let hasSrcFolder = false
 
     if (embeddedStudio) {
@@ -462,11 +471,25 @@ export default async function initSanity(
     }
 
     // ask what kind of schema setup the user wants
-    const templateToUse = unattended ? 'clean' : await promptForNextTemplate(prompt)
+    let templateToUse = flags.template ?? 'clean'
+    if (shouldPromptFor('template')) {
+      templateToUse = await promptForNextTemplate(prompt)
+    }
 
-    await writeSourceFiles(sanityFolder(useTypeScript, templateToUse), undefined, hasSrcFolder)
+    if (['clean', 'blog'].includes(templateToUse)) {
+      await writeSourceFiles(
+        sanityFolder(useTypeScript, templateToUse as 'clean' | 'blog'),
+        undefined,
+        hasSrcFolder,
+      )
+    } else {
+      throw new Error(`Invalid template for nextjs: '${templateToUse}'. Pick 'clean' or 'blog'.`)
+    }
 
-    const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
+    let appendEnv = flagOrDefault('nextjs-append-env', true)
+    if (shouldPromptFor('nextjs-append-env')) {
+      appendEnv = await promptForAppendEnv(prompt, envFilename)
+    }
 
     if (appendEnv) {
       await createOrAppendEnvVars(envFilename, detectedFramework, {log: true})
@@ -550,13 +573,16 @@ export default async function initSanity(
 
   async function writeOrOverwrite(filePath: string, content: string) {
     if (existsSync(filePath)) {
-      const overwrite = await prompt.single({
-        type: 'confirm',
-        message: `File ${chalk.yellow(
-          filePath.replace(workDir, ''),
-        )} already exists. Do you want to overwrite it?`,
-        default: false,
-      })
+      let overwrite = flagOrDefault('overwrite-files', false)
+      if (shouldPromptFor('overwrite-files')) {
+        overwrite = await prompt.single({
+          type: 'confirm',
+          message: `File ${chalk.yellow(
+            filePath.replace(workDir, ''),
+          )} already exists. Do you want to overwrite it?`,
+          default: false,
+        })
+      }
 
       if (!overwrite) {
         return
