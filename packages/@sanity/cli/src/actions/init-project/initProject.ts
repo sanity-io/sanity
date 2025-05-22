@@ -367,8 +367,15 @@ export default async function initSanity(
     }
   }
 
+  function shouldPromptFor(setting: keyof InitFlags) {
+    return !unattended && typeof cliFlags[setting] !== 'boolean'
+  }
+
+  let useTypeScript = typeof cliFlags.typescript === 'boolean' ? cliFlags.typescript : true
   if (initNext) {
-    const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
+    if (shouldPromptFor('typescript')) {
+      useTypeScript = await promptForTypeScript(prompt)
+    }
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
@@ -583,12 +590,11 @@ export default async function initSanity(
   }
 
   // Use typescript?
-  let useTypeScript = true
   if (!remoteTemplateInfo && template) {
     const typescriptOnly = template.typescriptOnly === true
-    if (!typescriptOnly && typeof cliFlags.typescript === 'boolean') {
-      useTypeScript = cliFlags.typescript
-    } else if (!typescriptOnly && !unattended) {
+    if (typescriptOnly) {
+      useTypeScript = true
+    } else if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
       trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     }
