@@ -134,9 +134,8 @@ test('Make sure we are respecting the saved timezone in localStorage when displa
   const documentId = 'testDoc123'
   const fieldName = 'test'
   const localStorageKey = `${timeZoneLocalStorageNamespace}input.${documentId}.${fieldName}`
-  const initialUtcValue = '2021-06-15T12:00:00.000Z' // 12:00 UTC
+  const initialUtcValue = '2021-06-15T12:00:00.000Z'
 
-  // Set a timezone in localStorage (Tokyo: UTC+9)
   localStorage.setItem(localStorageKey, 'Asia/Tokyo')
 
   try {
@@ -145,8 +144,8 @@ test('Make sure we are respecting the saved timezone in localStorage when displa
         type: 'datetime',
         name: fieldName,
         options: {
-          displayTimeZone: 'Europe/Oslo', // Oslo: UTC+2 in summer, UTC+1 in winter
-          allowTimeZoneSwitch: true, // Default, but explicit for clarity
+          displayTimeZone: 'Europe/Oslo',
+          allowTimeZoneSwitch: true,
         },
       }),
       props: {
@@ -164,15 +163,11 @@ test('Make sure we are respecting the saved timezone in localStorage when displa
 
     const input = result.container.querySelector('input')!
 
-    // Assert: The displayed time should be based on the localStorage timezone (Tokyo UTC+9), not Oslo (UTC+2)
-    // 12:00 UTC = 21:00 Tokyo time on June 15th
     expect(input.value).toBe('2021-06-15 21:00')
 
-    // Optional: Check that the timezone button also reflects Tokyo
-    const timeZoneButton = result.getByTestId('timezone-button')
+    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
     expect(timeZoneButton).toHaveTextContent('Tokyo')
   } finally {
-    // Clean up localStorage
     localStorage.removeItem(localStorageKey)
   }
 })
@@ -209,4 +204,88 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   userEvent.click(timeZoneButton)
   // ensure the dialog shows
   expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
+})
+// utc timestamp
+const TEST_DATE_ISO = '2021-03-28T17:23:00.000Z'
+
+const expected = {
+  YYYY: '2021',
+  YY: '21',
+  Y: '2021',
+  YYYYY: '02021',
+  Q: '1',
+  Qo: '1st',
+  MMMM: 'March',
+  MMM: 'Mar',
+  MM: '03',
+  M: '3',
+  Mo: '3rd',
+  DD: '28',
+  D: '28',
+  Do: '28th',
+  dddd: 'Sunday',
+  ddd: 'Sun',
+  dd: 'Su',
+  d: '0',
+  E: '7',
+  w: '13',
+  wo: '13th',
+  ww: '13',
+  WW: '13',
+  W: '13',
+  Wo: '13th',
+  gggg: '2021',
+  gg: '21',
+  GGGG: '2021',
+  GG: '21',
+  DDD: '87', // 87th day of year
+  DDDD: '087',
+  DDDo: '87th',
+  HH: '10',
+  H: '10',
+  hh: '10',
+  h: '10',
+  k: '10',
+  kk: '10',
+  mm: '23',
+  m: '23',
+  ss: '00',
+  s: '0',
+  A: 'AM',
+  a: 'am',
+  X: '1616952180',
+  x: '1616952180000',
+  N: 'AD',
+  NN: 'AD',
+  NNN: 'AD',
+  NNNN: 'Anno Domini',
+  NNNNN: 'AD',
+  Z: '-07:00',
+  ZZ: '-0700',
+  z: 'PDT',
+  zz: 'PDT',
+  S: '0',
+  SS: '00',
+  SSS: '000',
+  SSSS: '0000',
+}
+
+Object.entries(expected).forEach(([format, expectedValue]) => {
+  test(`renders date in format token "${format}"`, async () => {
+    const {result} = await renderStringInput({
+      fieldDefinition: defineField({
+        type: 'datetime',
+        name: 'test',
+        options: {dateFormat: format},
+      }),
+      props: {documentValue: {test: TEST_DATE_ISO}},
+      render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
+    })
+    const input = result.container.querySelector('input')!
+    if (expectedValue instanceof RegExp) {
+      expect(input.value).toMatch(expectedValue)
+    } else {
+      expect(input.value).toContain(expectedValue)
+    }
+  })
 })

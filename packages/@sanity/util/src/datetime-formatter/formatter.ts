@@ -1,3 +1,5 @@
+import {format} from 'date-fns'
+
 import sanitizeLocale from './sanitizeLocale'
 
 function getMonthName(
@@ -90,16 +92,10 @@ function getFractionalSeconds(date: Date, length: number): string {
   return `${ms}0`
 }
 
-/**
- * Returns a time zone offset string for the system's local offset
- */
-function getTimeZoneOffsetString(date: Date, colon = true): string {
-  const offsetMinutes = -date.getTimezoneOffset()
-  const sign = offsetMinutes >= 0 ? '+' : '-'
-  const absMinutes = Math.abs(offsetMinutes)
-  const hh = zeroPad(Math.floor(absMinutes / 60), 2)
-  const mm = zeroPad(absMinutes % 60, 2)
-  return colon ? `${sign}${hh}:${mm}` : `${sign}${hh}${mm}`
+function getTimeZoneAbbreviation(date: Date) {
+  const parts = new Intl.DateTimeFormat('en-US', {timeZoneName: 'short'}).formatToParts(date)
+  const tz = parts.find((part) => part.type === 'timeZoneName')
+  return tz ? tz.value : ''
 }
 
 /**
@@ -251,6 +247,12 @@ function formatMomentLike(date: Date, formatStr: string): string {
     // Before Christ, Anno Domini
     {key: 'NNNN', value: year < 0 ? 'Before Christ' : 'Anno Domini'},
     {key: 'NNNNN', value: year < 0 ? 'BC' : 'AD'},
+
+    // Time zone offset
+    {key: 'z', value: getTimeZoneAbbreviation(date)},
+    {key: 'zz', value: getTimeZoneAbbreviation(date)},
+    {key: 'Z', value: format(date, 'xxx')},
+    {key: 'ZZ', value: format(date, 'xx')},
   ]
 
   // Sort tokens by descending length to avoid partial collisions
@@ -260,24 +262,6 @@ function formatMomentLike(date: Date, formatStr: string): string {
   const fracSecRegex = /(S{1,4})/g
   let output = processedFormat.replace(fracSecRegex, (match) => {
     return getFractionalSeconds(date, match.length)
-  })
-
-  // 2) Time zone offset (Z, ZZ)
-  const tzRegex = /(Z{1,2})/g
-  output = output.replace(tzRegex, (match) => {
-    // Z => +HH:mm, ZZ => +HHmm
-    const useColon = match === 'Z'
-    return getTimeZoneOffsetString(date, useColon)
-  })
-
-  // Time zone EST CST ...MST PST
-  const tzRegex2 = /(z{1,2})/g
-  output = output.replace(tzRegex2, (match) => {
-    // z => EST, zzz => Eastern Standard Time
-    const validLocale = sanitizeLocale('en-US')
-    return Intl.DateTimeFormat(validLocale, {
-      timeZoneName: match.length === 1 ? 'short' : 'long',
-    }).format(date)
   })
 
   // Find each token and replace it, make sure not to replace overlapping tokens
