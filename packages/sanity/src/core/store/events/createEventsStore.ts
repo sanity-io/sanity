@@ -14,7 +14,6 @@ interface EventsStoreOptions {
   documentId: string
   documentType: string
   releases$: ReturnType<typeof useReleasesStore>['state$']
-  serverActionsEnabled: Observable<boolean>
   isLiveEdit: boolean
 }
 
@@ -29,7 +28,6 @@ export function createEventsStore({
   documentId,
   documentType,
   releases$,
-  serverActionsEnabled,
   isLiveEdit,
 }: EventsStoreOptions) {
   const initialEvents = getInitialFetchEvents({client, documentId})
@@ -39,7 +37,6 @@ export function createEventsStore({
     documentId,
     documentType,
     isLiveEdit,
-    serverActionsEnabled,
     onRefetch: initialEvents.reloadEvents,
   })
   const eventsObservable$ = createEventsObservable({

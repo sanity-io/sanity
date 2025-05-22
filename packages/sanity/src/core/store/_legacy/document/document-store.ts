@@ -106,7 +106,6 @@ export interface DocumentStoreOptions {
   schema: Schema
   initialValueTemplates: Template[]
   i18n: LocaleSource
-  serverActionsEnabled: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
 }
 
@@ -118,7 +117,6 @@ export function createDocumentStore({
   initialValueTemplates,
   schema,
   i18n,
-  serverActionsEnabled,
   extraOptions = {},
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
@@ -137,14 +135,13 @@ export function createDocumentStore({
     historyStore,
     schema,
     i18n,
-    serverActionsEnabled,
     extraOptions,
   }
 
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled, {
+      return checkoutPair(client, idPair, {
         onSyncErrorRecovery,
         onReportLatency,
       })
@@ -170,7 +167,6 @@ export function createDocumentStore({
           ctx.client,
           getIdPairFromPublished(publishedId, version),
           type,
-          serverActionsEnabled,
           extraOptions,
         )
       },
@@ -179,7 +175,6 @@ export function createDocumentStore({
           ctx.client,
           getIdPairFromPublished(publishedId, version),
           type,
-          serverActionsEnabled,
           extraOptions,
         )
       },
@@ -197,7 +192,6 @@ export function createDocumentStore({
           client,
           historyStore,
           schema,
-          serverActionsEnabled,
           extraOptions,
         }).pipe(
           filter(

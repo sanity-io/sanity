@@ -19,7 +19,6 @@ export const editOperations = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
-      serverActionsEnabled: Observable<boolean>
       pairListenerOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,

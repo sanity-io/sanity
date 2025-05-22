@@ -31,7 +31,6 @@ export const validation = memoize(
       observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
       schema: Schema
       i18n: LocaleSource
-      serverActionsEnabled: Observable<boolean>
       pairListenerOptions?: DocumentStoreExtraOptions
     },
     {draftId, publishedId, versionId}: IdPair,
