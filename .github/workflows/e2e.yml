@@ -138,6 +138,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
@@ -149,6 +150,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
           # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]

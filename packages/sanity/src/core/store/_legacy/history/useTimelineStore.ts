@@ -22,7 +22,6 @@ import {
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
-import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 
 interface UseTimelineControllerOpts {
   documentId: string
@@ -161,9 +160,8 @@ export function useTimelineStore({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   /**
    * Fetch document snapshots and update the mutable controller.
