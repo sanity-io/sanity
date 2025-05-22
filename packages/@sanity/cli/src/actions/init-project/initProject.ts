@@ -300,6 +300,34 @@ export default async function initSanity(
     return typeof cliFlags[flag] === 'boolean' ? cliFlags[flag] : defaultValue
   }
 
+  // Resolves the package manager to use, respecting CLI flags and falling back to detection
+  async function resolvePackageManager(targetDir: string): Promise<PackageManager> {
+    // If the user has specified a package manager, and it's allowed use that
+    if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
+      return packageManager
+    }
+
+    // Otherwise, try to find the most optimal package manager to use
+    const chosen = (
+      await getPackageManagerChoice(targetDir, {
+        prompt,
+        interactive: unattended ? false : isInteractive,
+      })
+    ).chosen
+
+    // only log warning if a package manager flag is passed
+    if (packageManager) {
+      output.warn(
+        chalk.yellow(
+          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
+        ),
+      )
+      output.print(`Using ${chosen} as package manager`)
+    }
+
+    return chosen
+  }
+
   const isNextJs = detectedFramework?.slug === 'nextjs'
 
   const flags = await prepareFlags()
@@ -492,7 +520,7 @@ export default async function initSanity(
     }
 
     if (appendEnv) {
-      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true})
+      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true, targetDir: workDir})
     }
 
     if (embeddedStudio) {
@@ -525,7 +553,7 @@ export default async function initSanity(
       }
     }
 
-    const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
+    const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
     const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
     if (templateToUse === 'blog') {
@@ -647,30 +675,7 @@ export default async function initSanity(
     throw bootstrapPromise.reason
   }
 
-  let pkgManager: PackageManager
-
-  // If the user has specified a package manager, and it's allowed use that
-  if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
-    pkgManager = packageManager
-  } else {
-    // Otherwise, try to find the most optimal package manager to use
-    pkgManager = (
-      await getPackageManagerChoice(outputPath, {
-        prompt,
-        interactive: unattended ? false : isInteractive,
-      })
-    ).chosen
-
-    // only log warning if a package manager flag is passed
-    if (packageManager) {
-      output.warn(
-        chalk.yellow(
-          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
-        ),
-      )
-      output.print(`Using ${pkgManager} as package manager`)
-    }
-  }
+  const pkgManager = await resolvePackageManager(outputPath)
 
   trace.log({step: 'selectPackageManager', selectedOption: pkgManager})
 
@@ -1185,6 +1190,7 @@ export default async function initSanity(
         schemaUrl,
         useTypeScript,
         variables: bootstrapVariables,
+        overwriteFiles: flagOrDefault('overwrite-files', false),
       },
       context,
     )
@@ -1463,7 +1469,7 @@ export default async function initSanity(
   async function createOrAppendEnvVars(
     filename: string,
     framework: Framework | null,
-    options?: {log?: boolean},
+    options?: {log?: boolean; targetDir?: string},
   ) {
     // we will prepend SANITY_ to these variables later, together with the prefix
     const envVars = {
@@ -1482,7 +1488,7 @@ export default async function initSanity(
 
       await writeEnvVarsToFile(filename, envVars, {
         framework,
-        outputPath,
+        outputPath: options?.targetDir || outputPath,
         log: options?.log,
       })
     } catch (err) {
