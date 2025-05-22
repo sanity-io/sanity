@@ -8,7 +8,6 @@ import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {
@@ -52,9 +51,8 @@ export function useEventsStore({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
   const schema = useSchema()
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const isLiveEdit = Boolean(schemaType?.liveEdit)

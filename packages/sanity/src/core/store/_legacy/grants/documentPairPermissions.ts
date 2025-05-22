@@ -16,7 +16,6 @@ import {
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
-import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -322,9 +321,8 @@ export function useDocumentPairPermissions({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
