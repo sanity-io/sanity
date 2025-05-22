@@ -22,7 +22,6 @@ import {
 import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
-import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
@@ -149,11 +148,8 @@ export function useDocumentStore(): DocumentStore {
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean'
-      ? of(configFlag as boolean)
-      : fetchFeatureToggle(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS))
-  }, [getClient, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
 
