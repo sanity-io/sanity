@@ -5,6 +5,7 @@ import {useProjectId} from '../../hooks/useProjectId'
 import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
 import {getOrCreateObservable} from '../../util/getOrCreateObservable'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -37,10 +38,24 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
   const projectId = useProjectId()
   const documentPreviewStore = useDocumentPreviewStore()
   const [results, setResults] = useState<DocumentPerspectiveState>(INITIAL_VALUE)
+  const filter = `sanity::versionOf("${publishedId}")`
+  const apiVersion = RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
 
   const observable = useMemo(() => {
-    return getOrCreateObservable({documentPreviewStore, publishedId, projectId, dataset})
-  }, [dataset, documentPreviewStore, projectId, publishedId])
+    return getOrCreateObservable<DocumentPerspectiveState>({
+      documentPreviewStore,
+      publishedId,
+      projectId,
+      dataset,
+      filter,
+      apiVersion,
+      mapValue: (value) => ({
+        data: value.documentIds,
+        error: null,
+        loading: false,
+      }),
+    })
+  }, [dataset, documentPreviewStore, projectId, publishedId, filter, apiVersion])
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
