@@ -1,5 +1,3 @@
-import builtinTypes from '../sanity/builtinTypes'
-
 export {isActionEnabled} from '../legacy/actionUtils'
 export {
   DEFAULT_MAX_FIELD_DEPTH,
@@ -20,4 +18,4 @@ export {
 } from '../sanity/typedefs'
 export {validateMediaLibraryAssetAspect} from '../sanity/validateMediaLibraryAssetAspect'
 export {validateSchema} from '../sanity/validateSchema'
-export {builtinTypes}
+export {builtinTypes} from '../sanity/builtinTypes'
