@@ -526,6 +526,9 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   __internal_serverDocumentActions?: {
+    /**
+     * @deprecated The Mutations API integration will be removed in a future release.
+     */
     enabled?: boolean
   }
 
