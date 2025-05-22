@@ -1,6 +1,8 @@
 name: "Cleanup: PR Merge/Closed"
 
 on:
+  # allow this workflow to be run manually
+  workflow_dispatch:
   # Build on closed or merged PRs
   pull_request:
     types: [closed]
