@@ -68,8 +68,8 @@ export default defineType({
       type: 'datetime',
       title: 'A datetime field with a custom date AND time format',
       options: {
-        dateFormat: '',
-        timeFormat: 'zz',
+        dateFormat: 'Do. MMMM YYYY',
+        timeFormat: 'hh:mm',
       },
     },
     {
