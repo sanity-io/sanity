@@ -50,5 +50,4 @@ jobs:
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
-          PR_NUMBER: ${{ github.event.number }}
         run: pnpm e2e:cleanup
