@@ -10,7 +10,7 @@ import imagePalette from './imagePalette'
 import imagePaletteSwatch from './imagePaletteSwatch'
 import slug from './slug'
 
-export default [
+export const builtinTypes = [
   assetSourceData,
   slug,
   geopoint,
