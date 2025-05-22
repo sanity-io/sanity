@@ -1,5 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
-
 export default {
   name: 'sanity.fileAsset',
   title: 'File',
@@ -109,7 +107,7 @@ export default {
       mimeType: 'mimeType',
       size: 'size',
     },
-    prepare(doc: Partial<SanityDocument>) {
+    prepare(doc: Record<string, any>) {
       return {
         title: doc.title || doc.path.split('/').slice(-1)[0],
         subtitle: `${doc.mimeType} (${(doc.size / 1024 / 1024).toFixed(2)} MB)`,
