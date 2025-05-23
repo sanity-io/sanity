@@ -143,7 +143,13 @@ jobs:
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: |
+          echo "Starting Vercel build..."
+          if ! vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}; then
+            echo "::error::Vercel build failed. Check the logs above for details."
+            exit 1
+          fi
+          echo "Vercel build completed successfully"
 
       - name: Build Project Artifacts on main
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -156,7 +162,14 @@ jobs:
           # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
           # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: |
+          echo "Starting Vercel build..."
+          if ! vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}; then
+            echo "::error::Vercel build failed. Check the logs above for details."
+            exit 1
+          fi
+          echo "Vercel build completed successfully"
+
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
