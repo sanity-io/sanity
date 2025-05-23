@@ -1,3 +1,4 @@
+import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import DOMPurify from 'isomorphic-dompurify'
 import startCase from 'lodash/startCase'
 import {renderToString} from 'react-dom/server'
@@ -31,6 +32,7 @@ import {
   isCrossDatasetReference,
   isCustomized,
   isDefined,
+  isGlobalDocumentReference,
   isPrimitive,
   isRecord,
   isReference,
@@ -125,6 +127,9 @@ function transformCommonTypeFields(
   const crossDatasetRefProps = isCrossDatasetReference(type)
     ? transformCrossDatasetReference(type)
     : {}
+  const globalDocumentRefProps = isGlobalDocumentReference(type)
+    ? transformGlobalDocumentReference(type)
+    : {}
 
   const objectFields: ObjectFields =
     type.jsonType === 'object' && type.type && INLINE_TYPES.includes(typeName) && isCustomized(type)
@@ -141,6 +146,7 @@ function transformCommonTypeFields(
     ...arrayProps,
     ...referenceProps,
     ...crossDatasetRefProps,
+    ...globalDocumentRefProps,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
     ...transformFieldsets(type),
@@ -324,6 +330,23 @@ function transformCrossDatasetReference(
       return {
         type: crossDataset.type,
         ...ensureCustomTitle(crossDataset.type, crossDataset.title),
+        ...preview,
+      }
+    }),
+  }
+}
+
+function transformGlobalDocumentReference(
+  reference: GlobalDocumentReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'preview'> {
+  return {
+    to: (reference.to ?? []).map((globalDocument) => {
+      const preview = globalDocument.preview?.select
+        ? {preview: {select: globalDocument.preview.select}}
+        : {}
+      return {
+        type: globalDocument.type,
+        ...ensureCustomTitle(globalDocument.type, globalDocument.title),
         ...preview,
       }
     }),
