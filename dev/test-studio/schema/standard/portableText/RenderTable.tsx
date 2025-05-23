@@ -1,19 +1,11 @@
 /* eslint-disable react/jsx-no-bind */
-import {Text, Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons'
+import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {
-  ArrayOfObjectsInputMember,
-  ArrayOfObjectsInputMembers,
-  ContextMenuButton,
-  FormInput,
-  insert,
-  MemberField,
-  ObjectInputMember,
-  set,
-  type ArrayOfObjectsInputProps,
-} from 'sanity'
-import {createTypeName} from './rowedTable'
 import {useState} from 'react'
+import {type ArrayOfObjectsInputProps, FormInput, insert} from 'sanity'
+
+import {createTypeName} from './rowedTable'
 
 interface HeaderRow {
   _key: string
@@ -52,7 +44,7 @@ export function RenderTable(
   const headerRow = props.value?.find((row) => row._type === 'headerRow')
   const dataKeys = headerRow?.columns?.map((column) => column.dataKey)
   const dataRows = props.value?.filter((row) => row._type === 'dataRow')
-
+  console.log('data rows', dataRows)
   return (
     <>
       {mode === 'array' ? (
@@ -98,6 +90,13 @@ export function RenderTable(
             }
             popover={{portal: true, placement: 'bottom-start', tone: 'default'}}
           />
+          <Button
+            text="Add row"
+            mode="ghost"
+            onClick={() => {
+              onChange(insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', [-1]))
+            }}
+          />
 
           <table
             style={{
@@ -109,24 +108,38 @@ export function RenderTable(
           >
             <thead>
               <tr>
-                {headerRow?.columns?.map((column) => (
-                  <th
-                    key={column._key}
-                    style={{
-                      padding: '12px',
-                      textAlign: 'left',
-                      backgroundColor: '#f8fafc',
-                      borderBottom: '2px solid #e2e8f0',
-                      borderRight: '1px solid #e2e8f0',
-                      fontWeight: '600',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <Text size={1} weight="medium">
+                {headerRow?.columns?.map((column) => {
+                  const inputProps = {
+                    ...props,
+                    includeField: true,
+                    absolutePath: [
+                      'rows',
+                      {_key: headerRow?._key},
+                      'columns',
+                      {_key: column._key},
+                      'title',
+                    ],
+                  }
+                  return (
+                    <th
+                      key={column._key}
+                      style={{
+                        padding: '12px',
+                        textAlign: 'left',
+                        backgroundColor: '#f8fafc',
+                        borderBottom: '2px solid #e2e8f0',
+                        borderRight: '1px solid #e2e8f0',
+                        fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {/* <Text size={1} weight="medium">
                       {column.title}
-                    </Text>
-                  </th>
-                ))}
+                    </Text> */}
+                      <FormInput {...inputProps} />
+                    </th>
+                  )
+                })}
               </tr>
             </thead>
             <tbody>
@@ -140,29 +153,24 @@ export function RenderTable(
                   {dataKeys?.map((dataKey) => {
                     const cell = row.cells?.find((c) => c.dataKey === dataKey)
                     const cellValue = cell?.value
-                    const members = props.members
-                      .find((m) => m.key === row._key)
-                      ?.item.members.find((i) => i.name === 'cells')
-                      ?.field.members.find((j) => j.key === cell?._key)?.item.members
+                    console.log('dataKey', dataKey)
+                    const column = headerRow?.columns?.find((c) => c.dataKey === dataKey)
+                    if (!column) return null
+                    const cellType = props.supportedTypes.find(
+                      (t) => createTypeName(t) === column.dataType,
+                    )
 
-                    const member = props.members
-                      .find((m) => m.key === row._key)
-                      ?.item.members.find((i) => i.name === 'cells')
-                      ?.field.members.find((j) => j.key === cell?._key)
-                      ?.item.members.find((k) => k.name === 'value')
-
-                    console.log('member', member)
+                    console.log('column', column)
                     const inputProps = {
-                      relativePath: ['rows', row._key, 'cells', cell?._key],
-                      path: ['value'],
-                      renderInput: props.renderInput,
-                      renderItem: props.renderItem,
-                      renderPreview: props.renderPreview,
-                      renderField: props.renderField,
-                      renderAnnotation: props.renderAnnotation,
-                      renderBlock: props.renderBlock,
-                      members: members,
-                      schemaType: props.schemaType,
+                      ...props,
+                      includeField: true,
+                      absolutePath: [
+                        'rows',
+                        {_key: row._key},
+                        'cells',
+                        {_key: cell?._key},
+                        'value',
+                      ],
                     }
                     return (
                       <td
@@ -173,23 +181,39 @@ export function RenderTable(
                           borderRight: '1px solid #e2e8f0',
                         }}
                       >
-                        {cellValue && member ? (
-                          <>
-                            <ObjectInputMember
-                              member={member}
-                              renderInput={props.renderInput}
-                              renderItem={props.renderItem}
-                              renderPreview={props.renderPreview}
-                              renderField={props.renderField}
-                              renderAnnotation={props.renderAnnotation}
-                              renderBlock={props.renderBlock}
-                            />
-                            {/* <FormInput {...inputProps} /> */}
-                          </>
+                        {cell ? (
+                          <FormInput {...inputProps} />
                         ) : (
-                          <Text size={1} muted>
-                            ---
-                          </Text>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              height: '100%',
+                            }}
+                          >
+                            <Button
+                              icon={AddIcon}
+                              mode="bleed"
+                              padding={2}
+                              onClick={() => {
+                                onChange(
+                                  insert(
+                                    [
+                                      {
+                                        _key: uuid(),
+                                        // TODO: Move to a helper function for creating cell types
+                                        _type: `${createTypeName(cellType)}Cell`,
+                                        dataKey: dataKey,
+                                      },
+                                    ],
+                                    'after',
+                                    [{_key: row._key}, 'cells[-1]'],
+                                  ),
+                                )
+                              }}
+                            />
+                          </div>
                         )}
                       </td>
                     )

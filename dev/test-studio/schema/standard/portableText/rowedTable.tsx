@@ -20,21 +20,21 @@ const supportedTypes = [
   {type: 'slug'},
   {type: 'date'},
   {type: 'reference', to: [{type: 'author'}]},
-  {
-    type: 'object',
-    fields: [
-      {
-        type: 'string',
-        name: 'firstName',
-        title: 'First Name',
-      },
-      {
-        type: 'string',
-        name: 'lastName',
-        title: 'Last Name',
-      },
-    ],
-  },
+  // {
+  //   type: 'object',
+  //   fields: [
+  //     {
+  //       type: 'string',
+  //       name: 'firstName',
+  //       title: 'First Name',
+  //     },
+  //     {
+  //       type: 'string',
+  //       name: 'lastName',
+  //       title: 'Last Name',
+  //     },
+  //   ],
+  // },
 ]
 
 export default defineType({
@@ -99,6 +99,11 @@ export default defineType({
                       name: 'title',
                       title: 'Title',
                       type: 'string',
+                      components: {
+                        field: (props) => (
+                          <TableFieldWrapper>{props.renderDefault(props)}</TableFieldWrapper>
+                        ),
+                      },
                     },
                     {
                       type: 'string',
