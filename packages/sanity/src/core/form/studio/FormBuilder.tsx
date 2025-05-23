@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -181,7 +181,9 @@ export function FormBuilder(props: FormBuilderProps) {
     ),
     [Annotation],
   )
-
+  useEffect(() => {
+    console.log('members', members)
+  }, [])
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
     return {
       focusPath,
