@@ -15,10 +15,14 @@ import ReactFocusLock from 'react-focus-lock'
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
+import {
+  LIVE_EDIT_SCHEMA_TYPES,
+  useDocumentCreationPolicy,
+} from '../../../../hooks/useDocumentCreationPolicy'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useIsReleaseActive} from '../../../../releases/hooks/useIsReleaseActive'
-import {isPublishedPerspective} from '../../../../releases/util/util'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../releases/util/util'
 import {useCurrentUser} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {filterOptions} from './filter'
@@ -65,10 +69,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const schema = useSchema()
 
   const hasNewDocumentOptions = options.length > 0
-  const disabled = !canCreateDocument || !hasNewDocumentOptions || !isReleaseActive
+  const disabled = !canCreateDocument || !hasNewDocumentOptions
   const placeholder = t('new-document.filter-placeholder')
   const title = t('new-document.title')
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
+  const {documentCreationPolicy} = useDocumentCreationPolicy()
 
   const validOptions = useMemo(
     () =>
@@ -179,18 +184,25 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
-    if (!isReleaseActive) {
-      const tooltipText = isPublishedPerspective(selectedPerspective)
-        ? t('new-document.disabled-published.tooltip')
-        : t('new-document.disabled-release.tooltip')
-
-      return <Text size={1}>{tooltipText}</Text>
+    if (documentCreationPolicy === LIVE_EDIT_SCHEMA_TYPES && validOptions.length === 0) {
+      if (isPublishedPerspective(selectedPerspective)) {
+        return <Text size={1}>{t('new-document.disabled-published.tooltip')}</Text>
+      }
+      if (isDraftPerspective(selectedPerspective)) {
+        return <Text size={1}>{t('new-document.disabled-draft.tooltip')}</Text>
+      }
+    }
+    if (!isReleaseActive && !isPublishedPerspective(selectedPerspective)) {
+      return <Text size={1}>{t('new-document.disabled-release.tooltip')}</Text>
     }
     if (!hasNewDocumentOptions) {
       return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
     }
 
     if (canCreateDocument) {
+      if (documentCreationPolicy === LIVE_EDIT_SCHEMA_TYPES) {
+        return <Text size={1}>{t('new-document.create-new-live-edit-document-label')}</Text>
+      }
       return <Text size={1}>{t('new-document.create-new-document-label')}</Text>
     }
 
@@ -200,10 +212,12 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   }, [
     canCreateDocument,
     currentUser,
+    documentCreationPolicy,
     hasNewDocumentOptions,
     isReleaseActive,
     selectedPerspective,
     t,
+    validOptions.length,
   ])
 
   // Shared tooltip props for the popover and dialog

@@ -1,5 +1,7 @@
 import {type I18nTextRecord, type InitialValueProperty, type SchemaType} from '@sanity/types'
 
+import {type sanityInternal} from '../util/sanityInternal'
+
 /**
  * An initial value template is a template that can be used to create a new documents.
  *
@@ -29,6 +31,13 @@ export interface Template<Params = any, Value = any> {
   title: string
 
   i18n?: I18nTextRecord<'title'>
+
+  [sanityInternal]?: {
+    /**
+     * Whether the schema supports live-edit.
+     */
+    liveEdit?: boolean
+  }
 
   /**
    * Schema type name the template belongs to. For the automatically generated templates,
@@ -140,6 +149,9 @@ export interface InitialValueTemplateItem extends TemplateItem {
   /** ID for this template item */
   id: string
 
+  /** Whether the schema supports live-edit */
+  liveEdit?: boolean
+
   /** Initial value template schema type */
   schemaType: string
 }
@@ -168,6 +180,11 @@ export interface TemplateItem {
   title?: string
 
   i18n?: I18nTextRecord<'title'>
+
+  /**
+   * Whether the schema supports live-edit.
+   */
+  liveEdit?: boolean
 
   /**
    * Parameters for the template - an object of any JSON-serializable values

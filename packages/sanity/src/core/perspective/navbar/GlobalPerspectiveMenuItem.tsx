@@ -13,7 +13,7 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../releases/store/types'
-import {type LATEST} from '../../releases/util/const'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
@@ -22,6 +22,7 @@ import {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
+import {useWorkspace} from '../../studio/workspace'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -89,6 +90,14 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   }
 >((props, ref) => {
   const {release, rangePosition} = props
+
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
+  const defaultPerspective = isDraftModelEnabled ? LATEST : PUBLISHED
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
@@ -98,7 +107,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName
-    : isDraftPerspective(release)
+    : release === defaultPerspective
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
@@ -133,7 +142,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   return (
     <GlobalPerspectiveMenuItemIndicator
-      $isDraft={isDraftPerspective(release)}
+      $isDefaultPerspective={release === defaultPerspective}
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
       $inRange={Boolean(rangePosition)}

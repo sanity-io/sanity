@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 
+import {useDocumentCreationPolicy} from '../../../../hooks/useDocumentCreationPolicy'
 import {useTemplatePermissions} from '../../../../store'
 import {useSource} from '../../../source'
 import {type NewDocumentOption} from './types'
@@ -15,8 +16,15 @@ interface NewDocumentOptionsValue {
  */
 export function useNewDocumentOptions(): NewDocumentOptionsValue {
   const {
-    __internal: {staticInitialValueTemplateItems},
+    __internal: {staticInitialValueTemplateItems: allStaticInitialValueTemplateItems},
   } = useSource()
+
+  const {filterInitialValueTemplates} = useDocumentCreationPolicy()
+
+  const staticInitialValueTemplateItems = useMemo(
+    () => filterInitialValueTemplates(allStaticInitialValueTemplateItems),
+    [filterInitialValueTemplates, allStaticInitialValueTemplateItems],
+  )
 
   const [permissions, loading] = useTemplatePermissions({
     templateItems: staticInitialValueTemplateItems,

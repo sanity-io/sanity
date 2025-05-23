@@ -1,7 +1,13 @@
 import {Flex} from '@sanity/ui'
 import {uniqBy} from 'lodash'
 import {memo, useCallback, useMemo} from 'react'
-import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
+import {
+  EMPTY_ARRAY,
+  EMPTY_OBJECT,
+  type InitialValueTemplateItem,
+  useDocumentCreationPolicy,
+  useTemplates,
+} from 'sanity'
 
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {
@@ -47,6 +53,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
     actionHandlers = EMPTY_OBJECT as Record<string, StructureToolPaneActionHandler>,
   } = props
 
+  const {filterInitialValueTemplates} = useDocumentCreationPolicy()
   const templates = useTemplates()
 
   const handleAction = useCallback(
@@ -143,17 +150,21 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
   const combinedInitialValueTemplates = useMemo(() => {
     // this de-dupes create actions
-    return uniqBy(
-      [...initialValueTemplateItemFromMenuItems, ...initialValueTemplateItemsFromStructure],
-      (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters]),
+    return filterInitialValueTemplates(
+      uniqBy(
+        [...initialValueTemplateItemFromMenuItems, ...initialValueTemplateItemsFromStructure],
+        (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters]),
+      ),
     )
-  }, [initialValueTemplateItemFromMenuItems, initialValueTemplateItemsFromStructure])
+  }, [
+    filterInitialValueTemplates,
+    initialValueTemplateItemFromMenuItems,
+    initialValueTemplateItemsFromStructure,
+  ])
 
   return (
     <Flex gap={1}>
-      {combinedInitialValueTemplates.length > 0 && (
-        <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
-      )}
+      <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
 
       {actionNodes.map((node) => (
         <PaneHeaderActionButton key={node.key} node={node} />
