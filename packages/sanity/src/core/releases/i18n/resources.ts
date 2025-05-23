@@ -148,6 +148,17 @@ const releasesLocaleStrings = {
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
 
+  /** Header for the dialog confirming the duplicate of a release */
+  'duplicate-dialog.confirm-duplicate-header': 'Are you sure you want to duplicate this release?',
+  /** Description for the dialog confirming the duplicate of a release with one document */
+  'duplicate-dialog.confirm-duplicate-description_one':
+    'This will duplicate the release and the 1 document version.',
+  /** Description for the dialog confirming the duplicate of a release with more than one document */
+  'duplicate-dialog.confirm-duplicate-description_other':
+    'This will duplicate the release and the {{count}} document versions.',
+  /** Label for the button to proceed with duplicating a release */
+  'duplicate-dialog.confirm-duplicate-button': 'Yes, duplicate release',
+
   /** Title text displayed for technical error details */
   'error-details-title': 'Error details',
   /** Title text when error during release update */
