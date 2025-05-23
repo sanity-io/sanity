@@ -154,7 +154,8 @@ const getActiveReleaseDocumentsObservable = ({
                   }
 
                   // remove the first stack (since we want to get the previous perspective)
-                  const [, ...updatedPerspectiveStack] = perspectiveStack
+                  const updatedPerspectiveStack =
+                    perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
 
                   const previousPerspective = updatedPerspectiveStack[0]
 
