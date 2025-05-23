@@ -1,7 +1,21 @@
-import {defineType} from '@sanity/types'
+import {defineField, defineType} from '@sanity/types'
 
 import {DataKeyCreation, DataKeySelection} from './DataKey'
 import {RowedTableComponent} from './RowedTableCompo'
+
+const createTypeName = (type: {type: string; to?: {type: string}[]}) => {
+  if (type.type === 'reference') {
+    return `${type.type}:${type.to?.[0]?.type}`
+  }
+  return type.type
+}
+
+const supportedTypes = [
+  {type: 'string'},
+  {type: 'slug'},
+  {type: 'date'},
+  {type: 'reference', to: [{type: 'author'}]},
+]
 
 export default defineType({
   name: 'rowedTable',
@@ -71,7 +85,7 @@ export default defineType({
                       name: 'dataType',
                       title: 'Data type',
                       options: {
-                        list: ['stringObject', 'slug', 'creationDate', 'author'],
+                        list: supportedTypes.map(createTypeName),
                       },
                       validation: (Rule) => Rule.required(),
                     },
@@ -102,19 +116,37 @@ export default defineType({
               options: {
                 layout: 'grid',
               },
-              of: [
-                {
+              validation: (Rule) => {
+                // DataKey could not be repeated in the same row
+                return Rule.custom((value, context) => {
+                  if (!value) {
+                    return true
+                  }
+                  if (!Array.isArray(value)) {
+                    return 'Value is not an array'
+                  }
+                  const dataTypeCounts: Record<string, number> = value.reduce((acc, cell) => {
+                    acc[cell.dataKey] = (acc[cell.dataKey] || 0) + 1
+                    return acc
+                  }, {})
+                  const repeatedDataTypes = Object.entries(dataTypeCounts).filter(
+                    ([_, count]) => count > 1,
+                  )
+                  if (repeatedDataTypes.length > 0) {
+                    return `Data type ${repeatedDataTypes.map(([type]) => type).join(', ')} is repeated`
+                  }
+                  return true
+                })
+              },
+              of: supportedTypes.map((type) =>
+                defineField({
                   type: 'object',
-                  name: 'stringObject',
-                  title: 'String',
-                  initialValue: (...context) => {
-                    console.log('Initial value context for string', context)
-                    return {}
-                  },
+                  name: `${createTypeName(type)}Cell`,
+                  title: type.type,
                   fields: [
                     {
                       name: 'value',
-                      type: 'string',
+                      ...type,
                     },
                     {
                       name: 'dataKey',
@@ -125,66 +157,8 @@ export default defineType({
                       },
                     },
                   ],
-                },
-                {
-                  type: 'object',
-                  name: 'slugObject',
-                  title: 'Slug',
-                  fields: [
-                    {
-                      name: 'value',
-                      type: 'slug',
-                    },
-                    {
-                      name: 'dataKey',
-                      type: 'string',
-                      readOnly: (context) => Boolean(context.value),
-                      components: {
-                        input: DataKeySelection,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'object',
-                  name: 'creationDate',
-                  title: 'Creation date',
-                  fields: [
-                    {
-                      name: 'value',
-                      type: 'date',
-                    },
-                    {
-                      name: 'dataKey',
-                      type: 'string',
-                      readOnly: (context) => Boolean(context.value),
-                      components: {
-                        input: DataKeySelection,
-                      },
-                    },
-                  ],
-                },
-                {
-                  type: 'object',
-                  name: 'author',
-                  title: 'Author',
-                  fields: [
-                    {
-                      name: 'value',
-                      type: 'reference',
-                      to: [{type: 'author'}],
-                    },
-                    {
-                      name: 'dataKey',
-                      type: 'string',
-                      readOnly: (context) => Boolean(context.value),
-                      components: {
-                        input: DataKeySelection,
-                      },
-                    },
-                  ],
-                },
-              ],
+                }),
+              ),
             },
           ],
         },

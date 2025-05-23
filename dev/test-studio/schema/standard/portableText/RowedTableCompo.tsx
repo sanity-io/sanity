@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import {type ArrayOfObjectsInputProps} from 'sanity'
+import {ArrayOfPrimitivesItem, type ArrayOfObjectsInputProps} from 'sanity'
 
 interface RootObject {
   _key: string
@@ -99,6 +99,11 @@ export function RowedTableComponent(props: ArrayOfObjectsInputProps<RootObject[]
                 console.log('Cell', cell)
                 return (
                   <td key={cell?._key}>
+                    {/* <ArrayOfPrimitivesItem
+                      member={props.members.find((member) => member.name === dataKey)}
+                      renderItem={props.renderItem}
+                      renderInput={props.renderInput}
+                    /> */}
                     {cell ? (
                       <Text size={1}>
                         {typeof cell === 'string'
