@@ -1,6 +1,8 @@
 import {uuid} from '@sanity/uuid'
 import {useEffect} from 'react'
-import {set, useFormValue, type StringInputProps} from 'sanity'
+import {set, type StringInputProps, useFormValue} from 'sanity'
+
+import {type DataRow, type Table} from './RenderTable'
 
 export function DataKeyCreation(props: StringInputProps) {
   const {value, onChange} = props
@@ -19,17 +21,21 @@ export function DataKeyCreation(props: StringInputProps) {
 }
 
 export function DataKeySelection(props: StringInputProps) {
-  const {value, onChange} = props
-  const parentValue = useFormValue(props.path.slice(0, 1)) as any[]
-  const headerRow = parentValue.find((row) => row._type === 'headerRow')
-  const dataKeys = headerRow?.columns?.map((column) => column.dataKey)
+  const tableValue = useFormValue(props.path.slice(0, -4)) as Table['rows']
+  const rowValue = useFormValue(props.path.slice(0, -3)) as DataRow
+  const cellValue = useFormValue(props.path.slice(0, -1)) as DataRow['cells'][number]
+  const headerDataKeys = tableValue
+    .find((row) => row._type === 'headerRow')
+    ?.columns.map((column) => column.dataKey)
+  const usedDataKeys = rowValue?.cells?.map((cell) => cell.dataKey) ?? []
+  const availableDataKeys = headerDataKeys?.filter((key) => !usedDataKeys.includes(key))
 
   return props.renderDefault({
     ...props,
     schemaType: {
       ...props.schemaType,
       options: {
-        list: dataKeys,
+        list: cellValue?.dataKey ? headerDataKeys : availableDataKeys,
       },
     },
   })
