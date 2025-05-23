@@ -56,6 +56,12 @@
   animation: wave 4s infinite linear;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .example-avatar-container:after {
+    animation: none;
+  }
+}
+
 .example-avatar {
   inline-size: 4rem;
   aspect-ratio: 1;
