@@ -1,20 +1,40 @@
 import {defineField, defineType} from '@sanity/types'
+import {styled} from 'styled-components'
 
 import {DataKeyCreation, DataKeySelection} from './DataKey'
 import {RenderTable} from './RenderTable'
 
-const createTypeName = (type: {type: string; to?: {type: string}[]}) => {
+export const createTypeName = (type: {type: string; to?: {type: string}[]}) => {
   if (type.type === 'reference') {
     return `${type.type}:${type.to?.[0]?.type}`
   }
   return type.type
 }
-
+const TableFieldWrapper = styled.div`
+  & > div > div > div[data-ui='fieldHeaderContentBox'] {
+    display: none;
+  }
+`
 const supportedTypes = [
   {type: 'string'},
   {type: 'slug'},
   {type: 'date'},
   {type: 'reference', to: [{type: 'author'}]},
+  {
+    type: 'object',
+    fields: [
+      {
+        type: 'string',
+        name: 'firstName',
+        title: 'First Name',
+      },
+      {
+        type: 'string',
+        name: 'lastName',
+        title: 'Last Name',
+      },
+    ],
+  },
 ]
 
 export default defineType({
@@ -26,7 +46,7 @@ export default defineType({
       name: 'rows',
       title: 'Rows',
       components: {
-        input: RenderTable,
+        input: (props) => <RenderTable {...props} supportedTypes={supportedTypes} />,
       },
       type: 'array',
       validation: (Rule) => {
@@ -146,6 +166,11 @@ export default defineType({
                   fields: [
                     {
                       name: 'value',
+                      components: {
+                        field: (props) => (
+                          <TableFieldWrapper>{props.renderDefault(props)}</TableFieldWrapper>
+                        ),
+                      },
                       ...type,
                     },
                     {
