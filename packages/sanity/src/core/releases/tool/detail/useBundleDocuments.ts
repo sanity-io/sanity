@@ -153,7 +153,9 @@ const getActiveReleaseDocumentsObservable = ({
                     return of(value)
                   }
 
-                  // remove the first stack (since we want to get the previous perspective)
+                  //If we don't receive a snapshot here, it means the document will be unpublished in the release.
+                  // In which case, to preview it we need its latest known version instead (e.g. one perspective stack level up)
+                  // To do this we need to remove the first item from the start of the array
                   const updatedPerspectiveStack =
                     perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
 
