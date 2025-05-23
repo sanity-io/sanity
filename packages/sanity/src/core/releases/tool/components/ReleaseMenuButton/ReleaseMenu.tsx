@@ -1,4 +1,4 @@
-import {ArchiveIcon, CloseCircleIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -13,9 +13,11 @@ import {
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
+import {useIsReleasesPlus} from '../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getReleaseDefaults} from '../../../util/util'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
@@ -38,13 +40,17 @@ export const ReleaseMenu = ({
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
   const {mode} = useReleasesUpsell()
-  const {archive, unarchive, deleteRelease, publishRelease, schedule} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease, publishRelease, schedule, createRelease} =
+    useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasArchivePermission, setHasArchivePermission] = useState<boolean | null>(null)
   const [hasUnarchivePermission, setHasUnarchivePermission] = useState<boolean | null>(null)
   const [hasDeletePermission, setHasDeletePermission] = useState<boolean | null>(null)
   const [hasPublishPermission, setHasPublishPermission] = useState<boolean | null>(null)
   const [hasSchedulePermission, setHasSchedulePermission] = useState<boolean | null>(null)
+  const [hasDuplicatePermission, setHasDuplicatePermission] = useState<boolean | null>(null)
+
+  const isReleasesPlus = useIsReleasesPlus()
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -68,6 +74,9 @@ export const ReleaseMenu = ({
             if (isMounted.current) setHasSchedulePermission(hasPermission)
           })
         }
+        checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+          if (isMounted.current) setHasDuplicatePermission(hasPermission)
+        })
       }
 
       if (release.state === 'archived' || release.state == 'published') {
@@ -92,6 +101,7 @@ export const ReleaseMenu = ({
     release.metadata.releaseType,
     publishRelease,
     schedule,
+    createRelease,
   ])
 
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -109,8 +119,9 @@ export const ReleaseMenu = ({
     if (release.state === 'archived')
       return (
         <MenuItem
+          key="unarchive"
           data-value="unarchive"
-          disabled={mode === 'disabled' || !hasUnarchivePermission}
+          disabled={releaseMenuDisabled || mode === 'disabled' || !hasUnarchivePermission}
           onClick={handleOnInitiateAction}
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
@@ -123,6 +134,7 @@ export const ReleaseMenu = ({
 
     return (
       <MenuItem
+        key="archive"
         tooltipProps={{
           disabled: hasArchivePermission
             ? !['scheduled', 'scheduling'].includes(release.state) || disabled
@@ -136,11 +148,16 @@ export const ReleaseMenu = ({
         icon={ArchiveIcon}
         text={t('action.archive')}
         data-testid="archive-release-menu-item"
-        disabled={['scheduled', 'scheduling'].includes(release.state) || !hasArchivePermission}
+        disabled={
+          releaseMenuDisabled ||
+          ['scheduled', 'scheduling'].includes(release.state) ||
+          !hasArchivePermission
+        }
       />
     )
   }, [
     release.state,
+    releaseMenuDisabled,
     mode,
     hasUnarchivePermission,
     handleOnInitiateAction,
@@ -154,6 +171,7 @@ export const ReleaseMenu = ({
 
     return (
       <MenuItem
+        key="delete"
         data-value="delete"
         onClick={handleOnInitiateAction}
         disabled={releaseMenuDisabled || !hasDeletePermission}
@@ -172,6 +190,7 @@ export const ReleaseMenu = ({
 
     return (
       <MenuItem
+        key="unschedule"
         data-value="unschedule"
         onClick={handleOnInitiateAction}
         disabled={releaseMenuDisabled}
@@ -189,6 +208,7 @@ export const ReleaseMenu = ({
 
     return (
       <ReleaseScheduleButton
+        key="schedule"
         disabled={releaseMenuDisabled || !hasSchedulePermission}
         release={release}
         documents={documents}
@@ -205,6 +225,7 @@ export const ReleaseMenu = ({
 
     return (
       <ReleasePublishAllButton
+        key="publish"
         release={release}
         documents={documents}
         disabled={releaseMenuDisabled || !hasPublishPermission}
@@ -215,30 +236,48 @@ export const ReleaseMenu = ({
     )
   }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
 
-  const ActionsOrder = useMemo(() => {
-    if (release.metadata.releaseType === 'scheduled') {
-      return (
-        <>
-          {scheduleMenuItem}
-          {publishMenuItem}
-        </>
-      )
+  const duplicateMenuItem = useMemo(() => {
+    if (!isReleasesPlus || release.state === 'published' || release.state === 'archived') {
+      return null
     }
 
     return (
-      <>
-        {publishMenuItem}
-        {scheduleMenuItem}
-      </>
+      <MenuItem
+        key="duplicate"
+        data-value="duplicate"
+        onClick={handleOnInitiateAction}
+        disabled={releaseMenuDisabled || !hasDuplicatePermission || mode === 'disabled'}
+        icon={CopyIcon}
+        text={t('action.duplicate-release')}
+        data-testid="duplicate-release-menu-item"
+        tooltipProps={{
+          content: !hasDuplicatePermission && t('permissions.error.duplicate'),
+        }}
+      />
     )
+  }, [
+    handleOnInitiateAction,
+    hasDuplicatePermission,
+    isReleasesPlus,
+    mode,
+    release.state,
+    releaseMenuDisabled,
+    t,
+  ])
+
+  const ActionsOrder = useMemo(() => {
+    if (release.metadata.releaseType === 'scheduled') {
+      return [scheduleMenuItem, publishMenuItem]
+    }
+
+    return [publishMenuItem, scheduleMenuItem]
   }, [release.metadata.releaseType, publishMenuItem, scheduleMenuItem])
 
-  return (
-    <>
-      {unscheduleMenuItem}
-      {ActionsOrder}
-      {archiveUnarchiveMenuItem}
-      {deleteMenuItem}
-    </>
-  )
+  return [
+    unscheduleMenuItem,
+    ...ActionsOrder,
+    duplicateMenuItem,
+    archiveUnarchiveMenuItem,
+    deleteMenuItem,
+  ]
 }
