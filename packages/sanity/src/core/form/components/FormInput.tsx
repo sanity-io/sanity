@@ -43,6 +43,7 @@ export const FormInput = memo(function FormInput(
       includeItem?: boolean
     },
 ) {
+  console.log('FormInput', props)
   const absolutePath = useMemo(() => {
     return hasAbsolutePath(props) ? props.absolutePath : props.path.concat(props.relativePath)
   }, [props])
