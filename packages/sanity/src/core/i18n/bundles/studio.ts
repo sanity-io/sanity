@@ -1269,6 +1269,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version.failure': 'Failed to discard version',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New release',
+  /** Explanation provided when releases can't be created because the workspace release limit has been reached */
+  'release.action.new-release.limit-reached': 'This workspace is limited to {{count}} release',
+  'release.action.new-release.limit-reached_other':
+    'This workspace is limited to {{count}} releases',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Error message for when a version is set to be unpublished */
