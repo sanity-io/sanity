@@ -20,7 +20,7 @@ export interface ConditionalPropertyProps {
  *
  * @internal Not yet a stable API
  */
-const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
+export const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
   const value = useUnique(valueProp)
   const currentUser = useCurrentUser()
@@ -34,5 +34,3 @@ const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
 
   return isPropertyTruthy
 }
-
-export {useConditionalProperty as unstable_useConditionalProperty}
