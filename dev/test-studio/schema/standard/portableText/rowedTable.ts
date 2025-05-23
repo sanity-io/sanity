@@ -1,7 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
 
 import {DataKeyCreation, DataKeySelection} from './DataKey'
-import {RowedTableComponent} from './RowedTableCompo'
+import {RenderTable} from './RenderTable'
 
 const createTypeName = (type: {type: string; to?: {type: string}[]}) => {
   if (type.type === 'reference') {
@@ -19,18 +19,18 @@ const supportedTypes = [
 
 export default defineType({
   name: 'rowedTable',
-  title: 'Rowed Table',
+  title: 'Table',
   type: 'document',
   fields: [
     {
       name: 'rows',
       title: 'Rows',
       components: {
-        input: RowedTableComponent,
+        input: RenderTable,
       },
       type: 'array',
       validation: (Rule) => {
-        return Rule.custom((value, context) => {
+        return Rule.custom((value) => {
           if (!value) {
             return true
           }
@@ -117,8 +117,8 @@ export default defineType({
                 layout: 'grid',
               },
               validation: (Rule) => {
-                // DataKey could not be repeated in the same row
-                return Rule.custom((value, context) => {
+                // DataKey should not be repeated in the same row
+                return Rule.custom((value) => {
                   if (!value) {
                     return true
                   }

@@ -115,7 +115,6 @@ import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
 import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
 import spotifyEmbed from './standard/portableText/spotifyEmbed'
-import table from './standard/portableText/table'
 import references, {referenceAlias} from './standard/references'
 import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
@@ -289,7 +288,6 @@ export function createSchemaTypes(projectId: string) {
     playlist,
     playlistTrack,
 
-    table,
     rowedTable,
     // CI documents
     allNativeInputComponents,
