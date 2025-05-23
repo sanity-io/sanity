@@ -196,6 +196,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--package-manager',
         'manual',
         '--overwrite-files',
+        '--typescript',
       ])
 
       // File should be overwritten with proper Sanity config
@@ -229,12 +230,52 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
+        '--typescript',
       ])
 
       // File should be preserved (not overwritten)
       const configContent = await fs.readFile(configPath, 'utf-8')
       expect(configContent).toContain('// Custom config content')
       expect(configContent).not.toContain(`projectId: '${cliProjectId}'`)
+    })
+
+    testConcurrent('unattended mode respects file preservation by default', async () => {
+      const version = 'v3'
+      const testRunArgs = getTestRunArgs(version)
+      const outpath = 'test-unattended-preserve-default'
+
+      await cleanOutputDirectory(outpath)
+
+      // Create existing files that would collide
+      const configPath = path.join(baseTestPath, outpath, 'sanity.cli.ts')
+      const packagePath = path.join(baseTestPath, outpath, 'package.json')
+      await fs.mkdir(path.join(baseTestPath, outpath), {recursive: true})
+      await fs.writeFile(configPath, '// Existing CLI config')
+      await fs.writeFile(packagePath, '{"name": "existing-package"}')
+
+      // Run init in unattended mode without --overwrite-files flag
+      await runSanityCmdCommand(version, [
+        'init',
+        '--y',
+        '--project',
+        cliProjectId,
+        '--dataset',
+        testRunArgs.dataset,
+        '--output-path',
+        `${baseTestPath}/${outpath}`,
+        '--package-manager',
+        'manual',
+        '--typescript',
+      ])
+
+      // Both files should be preserved (not overwritten) by default in unattended mode
+      const configContent = await fs.readFile(configPath, 'utf-8')
+      const packageContent = await fs.readFile(packagePath, 'utf-8')
+
+      expect(configContent).toContain('// Existing CLI config')
+      expect(configContent).not.toContain(`projectId: '${cliProjectId}'`)
+      expect(packageContent).toContain('"name": "existing-package"')
+      expect(packageContent).not.toContain('"sanity"')
     })
 
     testConcurrent('respects --package-manager flag in unattended mode', async () => {
@@ -656,6 +697,63 @@ describeCliTest('CLI: `sanity init v3`', () => {
         expect(envContent).toContain('NEXT_PUBLIC_SANITY_DATASET=')
       }
     })
+
+    testConcurrent(
+      'Next.js config files are preserved by default without --overwrite-files',
+      async () => {
+        const version = 'v3'
+        const testRunArgs = getTestRunArgs(version)
+        const outpath = 'test-nextjs-preserve-default'
+
+        await cleanOutputDirectory(outpath)
+
+        const cwd = path.join(baseTestPath, outpath)
+
+        // Create a Next.js project first to trigger framework detection
+        await fs.mkdir(cwd, {recursive: true})
+        await fs.writeFile(
+          path.join(cwd, 'package.json'),
+          JSON.stringify({
+            name: 'test-nextjs',
+            dependencies: {next: '^15.0.0'},
+          }),
+        )
+
+        // Create existing sanity.cli.ts and .env.local files that would collide
+        const configPath = path.join(cwd, 'sanity.cli.ts')
+        await fs.writeFile(configPath, '// Existing Next.js Sanity config')
+
+        // Initialize without overwrite flag
+        await runSanityCmdCommand(
+          version,
+          [
+            'init',
+            '--y',
+            '--project',
+            cliProjectId,
+            '--dataset',
+            testRunArgs.dataset,
+            '--output-path',
+            `studio`,
+            '--package-manager',
+            'manual',
+            '--nextjs-add-config-files',
+            '--no-nextjs-embed-studio',
+            '--nextjs-append-env',
+            '--typescript',
+          ],
+          {
+            cwd: () => cwd,
+          },
+        )
+
+        // Files should be preserved (not overwritten) by default
+        const configContent = await fs.readFile(configPath, 'utf-8')
+
+        expect(configContent).toContain('// Existing Next.js Sanity config')
+        expect(configContent).not.toContain('projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID')
+      },
+    )
 
     testConcurrent('--overwrite-files works with Next.js config files', async () => {
       const version = 'v3'
