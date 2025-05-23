@@ -1,13 +1,17 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {renderHook, waitFor} from '@testing-library/react'
 import {delay, of} from 'rxjs'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {observableCache, useDocumentVersions} from '../useDocumentVersions'
+import {
+  type DocumentPerspectiveState,
+  getOrCreateDocumentVersionsObservable,
+  useDocumentVersions,
+} from '../useDocumentVersions'
 
 vi.mock('../../../hooks/useDataset', () => ({
   useDataset: vi.fn().mockReturnValue('test'),
@@ -17,25 +21,23 @@ vi.mock('../../../hooks/useProjectId', () => ({
   useProjectId: vi.fn().mockReturnValue('test-project'),
 }))
 
-vi.mock('../../store', () => ({
-  useReleasesMetadata: vi.fn(),
-  useActiveReleases: vi.fn(),
-}))
-
-vi.mock('../../store/useReleasesIds', () => ({
-  useReleasesIds: vi.fn(),
-}))
+vi.mock('../useDocumentVersions', async () => {
+  const actual = await vi.importActual('../useDocumentVersions')
+  return {
+    ...actual,
+    getOrCreateDocumentVersionsObservable: vi.fn(),
+  }
+})
 
 vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
 }))
 
-beforeEach(() => {
-  observableCache.clear()
-})
-
 async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds: string[]}) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
+  const mockGetOrCreateDocumentVersionsObservable = getOrCreateDocumentVersionsObservable as Mock<
+    typeof getOrCreateDocumentVersionsObservable
+  >
 
   mockDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentIdSet: vi
@@ -47,6 +49,14 @@ async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds
         ),
       ),
   } as unknown as DocumentPreviewStore)
+
+  mockGetOrCreateDocumentVersionsObservable.mockImplementation(() =>
+    of({
+      data: versionIds,
+      loading: false,
+      error: null,
+    } as DocumentPerspectiveState).pipe(delay(0)),
+  )
 }
 
 describe('useDocumentVersions', () => {
