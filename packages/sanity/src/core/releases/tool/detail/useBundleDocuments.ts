@@ -26,10 +26,12 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
+import {type PerspectiveStack} from '../../../perspective/types'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getPublishedId} from '../../../util/draftUtils'
+import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -62,12 +64,14 @@ const getActiveReleaseDocumentsObservable = ({
   i18n,
   getClient,
   releaseId,
+  perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
+  perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult => {
   const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
@@ -144,6 +148,35 @@ const getActiveReleaseDocumentsObservable = ({
             return documentPreviewStore
               .observeForPreview(document, schemaType, {perspective: [releaseId]})
               .pipe(
+                switchMap((value) => {
+                  if (value.snapshot) {
+                    return of(value)
+                  }
+
+                  // remove the first stack (since we want to get the previous perspective)
+                  const [, ...updatedPerspectiveStack] = perspectiveStack
+
+                  const previousPerspective = updatedPerspectiveStack[0]
+
+                  // chosen drafts over published version since the drafts are how the document is most often known about
+                  // across the studio (for example, document lists previews)
+                  // if the previous perspective is drafts then it means that there is only one document
+                  // otherwise, we need to get the version id of the previous perspective
+                  const docId =
+                    previousPerspective === 'drafts'
+                      ? getDraftId(document._id)
+                      : getVersionId(document._id, previousPerspective)
+
+                  return documentPreviewStore.observeForPreview(
+                    {
+                      _id: docId,
+                    },
+                    schemaType,
+                    {
+                      perspective: updatedPerspectiveStack,
+                    },
+                  )
+                }),
                 map(({snapshot}) => ({
                   isLoading: false,
                   values: snapshot,
@@ -262,6 +295,7 @@ const getReleaseDocumentsObservable = ({
   releaseId,
   i18n,
   releasesState$,
+  perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -269,6 +303,7 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
+  perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult =>
   releasesState$.pipe(
     map((releasesState) =>
@@ -292,6 +327,7 @@ const getReleaseDocumentsObservable = ({
         i18n,
         getClient,
         releaseId,
+        perspectiveStack,
       })
     }),
     startWith({loading: true, results: [], error: null}),
@@ -306,6 +342,7 @@ export function useBundleDocuments(releaseId: string): {
   const {getClient, i18n} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
+  const {perspectiveStack} = usePerspective()
 
   const releaseDocumentsObservable = useMemo(
     () =>
@@ -316,8 +353,9 @@ export function useBundleDocuments(releaseId: string): {
         releaseId,
         i18n,
         releasesState$,
+        perspectiveStack,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
+    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, perspectiveStack],
   )
 
   return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
