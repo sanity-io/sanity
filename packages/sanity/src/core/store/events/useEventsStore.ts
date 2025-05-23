@@ -6,7 +6,6 @@ import {of} from 'rxjs'
 import {useClient, useSchema} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
-import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
@@ -47,12 +46,6 @@ export function useEventsStore({
 }): EventsStore {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const {state$: releases$} = useReleasesStore()
-  const workspace = useWorkspace()
-
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
   const schema = useSchema()
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const isLiveEdit = Boolean(schemaType?.liveEdit)
@@ -64,10 +57,9 @@ export function useEventsStore({
         documentId,
         documentType,
         releases$,
-        serverActionsEnabled,
         isLiveEdit,
       }),
-    [client, documentId, documentType, releases$, serverActionsEnabled, isLiveEdit],
+    [client, documentId, documentType, releases$, isLiveEdit],
   )
   const {events, loading, error, nextCursor} = useObservable(
     eventsStore.eventsObservable$,

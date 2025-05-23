@@ -15,18 +15,16 @@ export const memoizedPair: (
   client: SanityClient,
   idPair: IdPair,
   typeName: string,
-  serverActionsEnabled: Observable<boolean>,
   extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<Pair> = memoize(
   (
     client: SanityClient,
     idPair: IdPair,
     _typeName: string,
-    serverActionsEnabled: Observable<boolean>,
     pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
-      const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
+      const pair = checkoutPair(client, idPair, pairListenerOptions)
       return merge(
         of(pair),
         // merge in draft, published, and version events to makes sure they receive
