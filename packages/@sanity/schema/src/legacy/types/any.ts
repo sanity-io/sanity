@@ -1,6 +1,7 @@
 import {omit, pick} from 'lodash'
 
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -15,15 +16,21 @@ export const AnyType = {
     return ANY_CORE
   },
   extend(subTypeDef: any, extendMember: any) {
-    const parsed = Object.assign(pick(ANY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: ANY_CORE,
+    const ownProps = {
+      ...subTypeDef,
       of: subTypeDef.of.map((fieldDef: any) => {
         return {
           name: fieldDef.name,
           type: extendMember(omit(fieldDef, 'name')),
         }
       }),
+    }
+
+    const parsed = Object.assign(pick(ANY_CORE, OVERRIDABLE_FIELDS), ownProps, {
+      type: ANY_CORE,
     })
+
+    hiddenGetter(parsed, OWN_PROPS_NAME, ownProps)
 
     return subtype(parsed)
 
@@ -36,9 +43,11 @@ export const AnyType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const subOwnProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }
