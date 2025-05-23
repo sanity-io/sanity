@@ -59,6 +59,13 @@ export function ReleasesList({
 }): React.JSX.Element {
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
+  // make this a hook!
+  // useSoftReleaseLimit
+  // const {softReleaseLimit, softReleaseLimitReached} = {
+  //   softReleaseLimit: 666,
+  //   softReleaseLimitReached: true,
+  // }
+
   const {loading, data: releases} = useActiveReleases()
   const {selectedPerspectiveName} = usePerspective()
 

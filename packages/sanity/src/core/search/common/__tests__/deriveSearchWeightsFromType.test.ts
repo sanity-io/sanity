@@ -434,7 +434,7 @@ describe('deriveSearchWeightsFromType', () => {
     })
   })
 
-  it('works for schemas that branch out a lot', () => {
+  it.only('works for schemas that branch out a lot', () => {
     // schema of 60 "components" with 10 fields each
     const range = [...Array(60).keys()]
 

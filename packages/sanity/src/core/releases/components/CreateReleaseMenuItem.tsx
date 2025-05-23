@@ -39,6 +39,20 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
     'text': t('release.action.create-new'),
   }
 
+  // xxx next
+  // if (softReleaseLimitReached) {
+  //   return (
+  //     <MenuItem
+  //       {...menuItemProps}
+  //       text={`${t('release.action.create-new')} (666 of 666 used)`}
+  //       tooltipProps={{
+  //         content: 'soft limit reached',
+  //       }}
+  //       disabled
+  //     />
+  //   )
+  // }
+
   if (!hasCreatePermission || planQuotaMode === 'disabled') {
     return (
       <MenuItem
