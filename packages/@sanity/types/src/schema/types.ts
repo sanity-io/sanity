@@ -97,6 +97,17 @@ export interface Schema {
   get: (name: string) => SchemaType | undefined
   has: (name: string) => boolean
   getTypeNames: () => string[]
+
+  /**
+   * Returns the types which were explicitly defined in this schema,
+   * as opposed to the types which were inherited from the parent.
+   */
+  getLocalTypeNames: () => string[]
+
+  /**
+   * Returns the parent schema.
+   */
+  parent?: Schema
 }
 
 /** @beta */
