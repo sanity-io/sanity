@@ -1268,7 +1268,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
   /** Action message for when a new release is created off an existing version, draft or published document */
-  'release.action.new-release': 'New Release',
+  'release.action.new-release': 'New release',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Error message for when a version is set to be unpublished */
