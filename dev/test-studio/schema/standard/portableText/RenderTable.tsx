@@ -1,11 +1,18 @@
 import {Text} from '@sanity/ui'
-import {ArrayOfPrimitivesItem, type ArrayOfObjectsInputProps} from 'sanity'
+import {type ArrayOfObjectsInputProps} from 'sanity'
 
-interface RootObject {
+interface HeaderRow {
   _key: string
-  _type: string
-  columns?: Column[]
-  cells?: Cell[]
+  _type: 'headerRow'
+  columns: Column[]
+}
+export interface DataRow {
+  _key: string
+  _type: 'dataRow'
+  cells: Cell[]
+}
+export interface Table {
+  rows: (HeaderRow | DataRow)[]
 }
 
 interface Cell {
@@ -17,13 +24,13 @@ interface Cell {
 
 interface Column {
   _key: string
-  _type: string
+  _type: 'header'
   dataKey: string
   dataType: string
   title: string
 }
 
-export function RenderTable(props: ArrayOfObjectsInputProps<RootObject>) {
+export function RenderTable(props: ArrayOfObjectsInputProps<Table['rows'][number]>) {
   const headerRow = props.value?.find((row) => row._type === 'headerRow')
   const dataKeys = headerRow?.columns?.map((column) => column.dataKey)
   const dataRows = props.value?.filter((row) => row._type === 'dataRow')
@@ -100,7 +107,9 @@ export function RenderTable(props: ArrayOfObjectsInputProps<RootObject>) {
                                 : JSON.stringify(cellValue, null, 2)}
                       </Text>
                     ) : (
-                      <Text size={1}>Empty</Text>
+                      <Text size={1} muted>
+                        ---
+                      </Text>
                     )}
                   </td>
                 )
