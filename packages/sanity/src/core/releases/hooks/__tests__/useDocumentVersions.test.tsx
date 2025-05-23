@@ -6,9 +6,12 @@ import {describe, expect, it, type Mock, vi} from 'vitest'
 import {type DocumentPreviewStore} from '../../../preview'
 import {type DocumentIdSetObserverState} from '../../../preview/liveDocumentIdSet'
 import {useDocumentPreviewStore} from '../../../store'
-import {getOrCreateObservable} from '../../../util/getOrCreateObservable'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
-import {type DocumentPerspectiveState, useDocumentVersions} from '../useDocumentVersions'
+import {
+  type DocumentPerspectiveState,
+  getOrCreateDocumentVersionsObservable,
+  useDocumentVersions,
+} from '../useDocumentVersions'
 
 vi.mock('../../../hooks/useDataset', () => ({
   useDataset: vi.fn().mockReturnValue('test'),
@@ -18,9 +21,13 @@ vi.mock('../../../hooks/useProjectId', () => ({
   useProjectId: vi.fn().mockReturnValue('test-project'),
 }))
 
-vi.mock('../../../util/getOrCreateObservable', () => ({
-  getOrCreateObservable: vi.fn(),
-}))
+vi.mock('../useDocumentVersions', async () => {
+  const actual = await vi.importActual('../useDocumentVersions')
+  return {
+    ...actual,
+    getOrCreateDocumentVersionsObservable: vi.fn(),
+  }
+})
 
 vi.mock('../../../store', () => ({
   useDocumentPreviewStore: vi.fn(),
@@ -28,7 +35,9 @@ vi.mock('../../../store', () => ({
 
 async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds: string[]}) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
-  const mockGetOrCreateObservable = getOrCreateObservable as Mock<typeof getOrCreateObservable>
+  const mockGetOrCreateDocumentVersionsObservable = getOrCreateDocumentVersionsObservable as Mock<
+    typeof getOrCreateDocumentVersionsObservable
+  >
 
   mockDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentIdSet: vi
@@ -41,7 +50,7 @@ async function setupMocks({versionIds}: {releases: ReleaseDocument[]; versionIds
       ),
   } as unknown as DocumentPreviewStore)
 
-  mockGetOrCreateObservable.mockImplementation(() =>
+  mockGetOrCreateDocumentVersionsObservable.mockImplementation(() =>
     of({
       data: versionIds,
       loading: false,
