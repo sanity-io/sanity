@@ -1,5 +1,7 @@
 import {AddIcon} from '@sanity/icons'
-import {type ComponentProps, type ComponentType, useEffect, useRef, useState} from 'react'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {from} from 'rxjs'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -15,27 +17,18 @@ interface Props {
 
 export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) => {
   const {t} = useTranslation()
-  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
   const {mode: planQuotaMode} = useReleasesUpsell()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const createReleaseMetadata = useCreateReleaseMetadata()
 
-  const isMounted = useRef(false)
-
-  useEffect(() => {
-    isMounted.current = true
-
-    checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults())).then(
-      (hasPermission) => {
-        if (isMounted.current) setHasCreatePermission(hasPermission)
-      },
-    )
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
+  const hasCreatePermission = useObservable(
+    useMemo(
+      () =>
+        from(checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults()))),
+      [checkWithPermissionGuard, createRelease, createReleaseMetadata],
+    ),
+  )
 
   const menuItemProps: Pick<ComponentProps<typeof MenuItem>, 'icon' | 'onClick' | 'text'> & {
     'data-testid': string
