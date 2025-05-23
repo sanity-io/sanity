@@ -60,6 +60,7 @@ describe('getEditEvents()', () => {
       contributors: ['p8xDvUMxC'],
       releaseId: 'rkaihDvC1',
       revisionId: 'edit-tx-2',
+      documentVariantType: 'version',
       transactions: [
         {
           type: 'editTransaction',
@@ -107,6 +108,7 @@ describe('getEditEvents()', () => {
         contributors: ['p8xDvUMxC'],
         releaseId: 'rkaihDvC1',
         revisionId: 'new-tx',
+        documentVariantType: 'version',
         transactions: [
           {
             type: 'editTransaction',
@@ -176,6 +178,7 @@ describe('getEditEvents()', () => {
       timestamp: '2024-11-19T08:27:33.251404Z',
       author: 'p8xDvUMxC',
       revisionId: 'edit-tx-2',
+      documentVariantType: 'version',
     }
     it('should merge the events if they are in the time window.', () => {
       const events = getEditEvents(
@@ -206,6 +209,7 @@ describe('getEditEvents()', () => {
         id: 'new-tx',
         author: 'p8xDvUMxC',
         revisionId: 'new-tx',
+        documentVariantType: 'version',
       }
       const events = getEditEvents(
         [...editTransactions, newTransaction],

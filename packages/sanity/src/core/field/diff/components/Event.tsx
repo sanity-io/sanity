@@ -10,6 +10,7 @@ import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
   type DocumentGroupEvent,
@@ -17,7 +18,6 @@ import {
   isPublishDocumentVersionEvent,
 } from '../../../store/events/types'
 import {useUser} from '../../../store/user/hooks'
-import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,
@@ -126,8 +126,7 @@ interface TimelineItemProps {
  */
 export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const {t} = useTranslation('studio')
-  const documentVariantType = getDocumentVariantType(event.documentId)
-  const {type, timestamp} = event
+  const {type, timestamp, documentVariantType} = event
 
   const IconComponent = TIMELINE_ICON_COMPONENTS[type]
   const contributors = 'contributors' in event ? event.contributors || [] : []
@@ -157,13 +156,17 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         </div>
         <Stack space={2}>
           <Text size={1} weight="medium">
-            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type])}
+            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
                 {event.release ? (
-                  <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                    {event.release.metadata.title || t('release.placeholder-untitled-release')}
+                  <VersionInlineBadge
+                    $tone={
+                      isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
+                    }
+                  >
+                    {event.release.metadata?.title || t('release.placeholder-untitled-release')}
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">

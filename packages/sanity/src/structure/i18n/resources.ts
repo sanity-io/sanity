@@ -169,6 +169,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Please hold tight while the document is added to the release. It should not take longer than a few seconds.',
   /** Title of toast that will appear in case of latency between the user adding a document to a release and the UI reflecting it */
   'banners.release.waiting.title': 'Adding document to release…',
+  /** The text for the revision not found banner */
+  'banners.revision-not-found.description':
+    "We couldn't find the document revision selected, please select another entry from the history list.",
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
@@ -207,7 +210,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
   /** The heading for the canvas linked banner popover */
   'canvas.banner.popover-heading': 'Idea first authoring',
-
+  /** The description for the changes banner */
+  'changes.banner.description':
+    'Showing the history for the <strong>{{perspective}}</strong> version of this document.',
+  /** The tooltip for the changes banner */
+  'changes.banner.tooltip':
+    'This view shows the changes that occurred in a specific version of this document. Select a different version to see its changes',
   /** The label used in the changes inspector for the from selector */
   'changes.from.label': 'From',
   /* The label for the history tab in the changes inspector*/
@@ -593,6 +601,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'timeline-item.menu.action-collapse': 'Collapse',
   /** The text for the expand action in the timeline item menu */
   'timeline-item.menu.action-expand': 'Expand',
+
+  /** The text for the published event menu tooltip when the release is not found */
+  'timeline-item.not-found-release.tooltip': 'Release with id "{{releaseId}}" not found',
 })
 
 /**

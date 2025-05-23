@@ -161,7 +161,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   ])
 
   const revLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
         formatParams,
@@ -170,7 +170,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   // eslint-disable-next-line no-nested-ternary
   const sinceLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
         formatParams,

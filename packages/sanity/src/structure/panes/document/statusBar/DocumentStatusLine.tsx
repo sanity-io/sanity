@@ -91,7 +91,7 @@ const FallbackStatus = () => {
   const status = useMemo(() => {
     if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
       return {
-        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion,
+        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.published.createDocumentVersion,
         timestamp: editState.published._updatedAt,
       }
     }
@@ -99,8 +99,8 @@ const FallbackStatus = () => {
       return {
         translationKey:
           editState?.version?._updatedAt === editState?.version?._createdAt
-            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
-            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.version.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.version.editDocumentVersion,
         timestamp: editState.version._updatedAt,
       }
     }
@@ -108,8 +108,8 @@ const FallbackStatus = () => {
       return {
         translationKey:
           editState?.draft?._updatedAt === editState?.draft?._createdAt
-            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
-            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.draft.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.draft.editDocumentVersion,
         timestamp: editState.draft._updatedAt,
       }
     }
@@ -148,7 +148,7 @@ const EventsStatus = () => {
   return (
     <DocumentStatusButton
       author={event.author}
-      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING[event.type]}
+      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type]}
       timestamp={event.timestamp}
     />
   )

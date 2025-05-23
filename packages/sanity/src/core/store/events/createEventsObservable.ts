@@ -1,9 +1,13 @@
 import {combineLatest, map, type Observable} from 'rxjs'
 
 import {type useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getDocumentVariantType} from '../../util/getDocumentVariantType'
+import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type EventsObservableValue} from './getInitialFetchEvents'
-import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
+import {
+  type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
+  type UpdateLiveDocumentEvent,
+} from './types'
 import {
   addParentToEvents,
   sortEvents,
@@ -18,6 +22,13 @@ interface CreateEventsObservableOptions {
   events$: Observable<EventsObservableValue>
   remoteEdits$: Observable<(UpdateLiveDocumentEvent | EditDocumentVersionEvent)[]>
   expandedEvents$: Observable<EditDocumentVersionEvent[]>
+}
+
+const addDocumentVariantTypeToEvents = (
+  events: DocumentGroupEvent[],
+  documentVariantType: DocumentVariantType,
+) => {
+  return events.map((event) => ({...event, documentVariantType}))
 }
 
 export function createEventsObservable({
@@ -56,6 +67,10 @@ export function createEventsObservable({
         error: error,
       }
     }),
+    map((value) => ({
+      ...value,
+      events: addDocumentVariantTypeToEvents(value.events, documentVariantType),
+    })),
     // TODO: This is temporal - liveEditEvents will be squashed in the API
     map((value) => ({...value, events: squashLiveEditEvents(value.events)})),
   )
