@@ -58,7 +58,7 @@ function compileRegistry(schemaDef: any) {
 export class Schema {
   _original: {name: string; types: any[]; parent?: Schema}
   _registry: {[typeName: string]: any}
-  _localTypeNames: string[]
+  #localTypeNames: string[]
 
   static compile(schemaDef: any): Schema {
     return new Schema(schemaDef)
@@ -69,7 +69,7 @@ export class Schema {
 
     const {registry, localTypeNames} = compileRegistry(schemaDef)
     this._registry = registry
-    this._localTypeNames = localTypeNames
+    this.#localTypeNames = localTypeNames
   }
 
   get name(): string {
@@ -96,7 +96,7 @@ export class Schema {
   }
 
   getLocalTypeNames(): string[] {
-    return this._localTypeNames
+    return this.#localTypeNames
   }
 }
 
