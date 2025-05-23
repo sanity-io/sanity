@@ -72,7 +72,14 @@ export const RELEASE_ACTION_MAP: Record<
     telemetry: UnscheduledRelease,
   },
   duplicate: {
-    confirmDialog: false,
+    confirmDialog: {
+      dialogId: 'confirm-duplicate-dialog',
+      dialogHeaderI18nKey: 'duplicate-dialog.confirm-duplicate-header',
+      dialogDescriptionI18nKey: 'duplicate-dialog.confirm-duplicate-description',
+      dialogConfirmButtonI18nKey: 'duplicate-dialog.confirm-duplicate-button',
+      confirmButtonTone: 'primary',
+    },
+    toastSuccessI18nKey: 'toast.duplicate.success',
     toastFailureI18nKey: 'toast.duplicate.error',
     telemetry: DuplicatedRelease,
   },

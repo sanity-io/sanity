@@ -72,9 +72,13 @@ export const ReleaseMenuButton = ({
     async () =>
       guardWithReleaseLimitUpsell(() => {
         const releaseDocuments = documents?.map((document) => document.document)
-        duplicateRelease(release.metadata, releaseDocuments)
+        const duplicatedMetadata = {
+          ...release.metadata,
+          title: `${release.metadata.title} (${t('copy-suffix')})`,
+        }
+        duplicateRelease(duplicatedMetadata, releaseDocuments)
       }, true),
-    [guardWithReleaseLimitUpsell, duplicateRelease, documents, release.metadata],
+    [guardWithReleaseLimitUpsell, duplicateRelease, documents, release.metadata, t],
   )
 
   const handleAction = useCallback(
@@ -160,7 +164,7 @@ export const ReleaseMenuButton = ({
     ],
   )
 
-  /** in some instanced, immediately execute the action without requiring confirmation */
+  /** in some instances, immediately execute the action without requiring confirmation */
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
 

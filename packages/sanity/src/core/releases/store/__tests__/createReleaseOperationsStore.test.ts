@@ -14,10 +14,6 @@ import {
   type ReleaseOperationsStore,
 } from '../createReleaseOperationStore'
 
-vi.mock('../../util/createReleaseId', () => ({
-  createReleaseId: () => '_.releases.rDuplicate',
-}))
-
 describe('createReleaseOperationsStore', () => {
   let mockClient: any
 
@@ -540,13 +536,16 @@ describe('createReleaseOperationsStore', () => {
     })
 
     it('should create a new release with copied metadata and a modified title', async () => {
-      await store.duplicateRelease(activeASAPRelease.metadata)
+      const metadataWithCopySuffix = {
+        ...activeASAPRelease.metadata,
+        title: `${activeASAPRelease.metadata.title} (Copy)`,
+      }
+
+      await store.duplicateRelease(metadataWithCopySuffix)
 
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            title: `${activeASAPRelease.metadata.title} (Copy)`,
-          }),
+          metadata: metadataWithCopySuffix,
         }),
         undefined,
       )

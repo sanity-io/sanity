@@ -225,10 +225,7 @@ export function createReleaseOperationsStore(options: {
 
     await handleCreateRelease({
       _id: duplicateReleaseId,
-      metadata: {
-        ...releaseMetadata,
-        title: `${releaseMetadata.title} (Copy)`,
-      },
+      metadata: releaseMetadata,
     })
 
     if (releaseDocuments) {
