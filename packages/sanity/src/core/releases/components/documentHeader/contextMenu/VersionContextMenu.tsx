@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -10,10 +10,10 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
-import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults, isReleaseScheduledOrScheduling} from '../../../util/util'
+import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
@@ -49,7 +49,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     type,
   } = props
   const {t} = useTranslation()
-  const {mode} = useReleasesUpsell()
   const isPublished = isPublishedId(documentId) && !isVersion
   const optionsReleaseList = releases.filter((release) => !isReleaseScheduledOrScheduling(release))
 
@@ -123,12 +122,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             })}
           </ReleasesList>{' '}
           {optionsReleaseList.length > 1 && <MenuDivider />}
-          <MenuItem
-            onClick={onCreateRelease}
-            text={t('release.action.new-release')}
-            icon={AddIcon}
-            disabled={mode === 'disabled'}
-          />
+          <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
         </MenuGroup>
         {!isPublished && (
           <>
