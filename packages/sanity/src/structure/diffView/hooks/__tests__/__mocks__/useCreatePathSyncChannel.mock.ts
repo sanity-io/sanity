@@ -5,4 +5,6 @@ import {useCreatePathSyncChannel} from '../../useCreatePathSyncChannel'
 
 export const mockUseCreatePathSyncChannelReturn = new Subject()
 
-export const mockUseCreatePathSyncChannel = useCreatePathSyncChannel as Mock<typeof useCreatePathSyncChannel>
+export const mockUseCreatePathSyncChannel = useCreatePathSyncChannel as Mock<
+  typeof useCreatePathSyncChannel
+>

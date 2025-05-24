@@ -37,10 +37,7 @@ describe('useDiffViewRouter', () => {
           DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER,
           ['book', 'a'].join(DIFF_SEARCH_PARAM_DELIMITER),
         ],
-        [
-          DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER,
-          ['book', 'b'].join(DIFF_SEARCH_PARAM_DELIMITER),
-        ],
+        [DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER, ['book', 'b'].join(DIFF_SEARCH_PARAM_DELIMITER)],
       ],
     })
   })

@@ -8,6 +8,6 @@ export const usePathSyncChannelMockReturn: Mocked<ReturnType<typeof usePathSyncC
   path: new Subject(),
 }
 
-export const mockUsePathSyncChannel = (
-  usePathSyncChannelFn as unknown as Mock<typeof usePathSyncChannelFn>
-)
+export const mockUsePathSyncChannel = usePathSyncChannelFn as unknown as Mock<
+  typeof usePathSyncChannelFn
+>
