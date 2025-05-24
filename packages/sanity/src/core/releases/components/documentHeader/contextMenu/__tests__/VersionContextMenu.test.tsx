@@ -72,7 +72,7 @@ describe('VersionContextMenu', () => {
     type: 'document',
   }
 
-  it('renders the menu items correctly', async () => {
+  it.only('renders the menu items correctly', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()

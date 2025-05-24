@@ -168,6 +168,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
   const guardWithReleaseLimitUpsell = useCallback(
     async (cb: () => void, throwError: boolean = false) => {
+      const softLimit = 1
+
       const doUpsell: (count?: number) => false = (count) => {
         handleOpenDialog(count)
         if (throwError) {
@@ -175,6 +177,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         }
         return false
       }
+
+      return doUpsell(666)
 
       if (mode === 'upsell') return doUpsell()
 
