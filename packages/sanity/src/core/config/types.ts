@@ -998,7 +998,7 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
-  releases: {enabled: boolean}
+  releases: {enabled?: boolean}
 }
 
 /**
