@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 import deepCompare from 'react-fast-compare'
-import {ConnectorContext} from 'sanity/_singletons'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {EMPTY_ARRAY} from '../util'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
@@ -107,7 +107,7 @@ export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
-  const {isInteractive} = useContext(ConnectorContext)
+  const {isInteractive} = useContext(ReviewChangesContext)
 
   return (
     <ChangeBarWrapper

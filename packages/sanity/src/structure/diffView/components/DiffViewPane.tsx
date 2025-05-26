@@ -32,7 +32,7 @@ import {
   useMiddlewareComponents,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {CommentsEnabledContext, ConnectorContext} from 'sanity/_singletons'
+import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
@@ -87,7 +87,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
   })
 
   return (
-    <ConnectorContext.Provider
+    <ReviewChangesContext.Provider
       value={{
         // Render the change indicators inertly, because the diff view modal does not currently
         // provide a way to display document inspectors.
@@ -135,7 +135,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
           </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </ChangeIndicatorsTracker>
-    </ConnectorContext.Provider>
+    </ReviewChangesContext.Provider>
   )
 })
 

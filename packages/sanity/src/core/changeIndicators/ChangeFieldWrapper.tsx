@@ -9,8 +9,9 @@ import {
   useState,
 } from 'react'
 import deepCompare from 'react-fast-compare'
-import {ConnectorContext} from 'sanity/_singletons'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
+import {useZIndex} from '../components'
 import {useChangeIndicatorsReporter} from './tracker'
 
 /**
@@ -20,7 +21,8 @@ import {useChangeIndicatorsReporter} from './tracker'
  */
 export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasHover: boolean}) => {
   const {path, hasHover} = props
-  const {onSetFocus} = useContext(ConnectorContext)
+  const {onSetFocus} = useContext(ReviewChangesContext)
+  const zIndex = useZIndex()
   const [isHover, setHover] = useState(false)
 
   const onMouseEnter = useCallback(() => {
@@ -43,9 +45,10 @@ export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasH
       isChanged: true,
       hasFocus: false,
       hasHover: isHover,
+      zIndex: Array.isArray(zIndex.popover) ? zIndex.popover[0] : zIndex.popover,
       hasRevertHover: hasHover,
     }),
-    [element, isHover, hasHover, path],
+    [element, path, isHover, zIndex.popover, hasHover],
   )
   useChangeIndicatorsReporter(
     reporterId,
