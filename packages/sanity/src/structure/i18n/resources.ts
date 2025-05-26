@@ -379,6 +379,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
 
+  /** The description for the events inspector when we can't load the document so we default to compare with published */
+  'events.compare-with-published.description':
+    "We're unable to load the changes for this document, probably due to history retention policy of your plan, this shows you how the <strong>{{version}}</strong> version compares to the <strong>published</strong> version.",
+
+  /** The title for the events inspector when we can't load the document so we default to compare with published */
+  'events.compare-with-published.title': 'Comparing with published',
+
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the document */
   'events.inspect.release': 'Inspect <VersionBadge>{{releaseTitle}}</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish draft event to inspect the draft document*/

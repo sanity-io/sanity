@@ -6,6 +6,7 @@ import {
   EditIcon,
   type IconComponent,
   PublishIcon,
+  TimelineIcon,
   TrashIcon,
   UnpublishIcon,
 } from '@sanity/icons'
@@ -16,6 +17,7 @@ import {type DocumentVersionEventType} from '../../../store/events/types'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 
 export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComponent> = {
+  historyCleared: TimelineIcon,
   createDocumentVersion: AddCircleIcon,
   createLiveDocument: AddCircleIcon,
   deleteDocumentGroup: TrashIcon,
@@ -30,6 +32,7 @@ export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComp
 
 export const TIMELINE_ITEM_EVENT_TONE: Record<DocumentVersionEventType, ThemeColorAvatarColorKey> =
   {
+    historyCleared: 'orange',
     createDocumentVersion: 'green',
     createLiveDocument: 'blue',
     updateLiveDocument: 'green',
@@ -52,6 +55,7 @@ export const TIMELINE_ITEM_I18N_KEY_MAPPING: Record<
 > = {
   published: {
     createDocumentVersion: 'timeline.operation.created',
+    historyCleared: 'timeline.operation.history-cleared',
     publishDocumentVersion: 'timeline.operation.published',
     updateLiveDocument: 'timeline.operation.edited-live',
     editDocumentVersion: 'timeline.operation.edited-draft',
@@ -64,6 +68,7 @@ export const TIMELINE_ITEM_I18N_KEY_MAPPING: Record<
   },
   draft: {
     createDocumentVersion: 'timeline.operation.draft-created',
+    historyCleared: 'timeline.operation.history-cleared',
     publishDocumentVersion: 'timeline.operation.published',
     updateLiveDocument: 'timeline.operation.edited-live',
     editDocumentVersion: 'timeline.operation.edited-draft',
@@ -76,6 +81,7 @@ export const TIMELINE_ITEM_I18N_KEY_MAPPING: Record<
   },
   version: {
     createDocumentVersion: 'timeline.operation.version-created',
+    historyCleared: 'timeline.operation.history-cleared',
     publishDocumentVersion: 'timeline.operation.published',
     updateLiveDocument: 'timeline.operation.edited-live',
     editDocumentVersion: 'timeline.operation.edited-draft',
