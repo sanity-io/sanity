@@ -36,7 +36,7 @@ export function isUsingLegacyHttp(client: SanityClient): Observable<boolean | un
 
       // Typical values for protocol are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
       // We consider anything `http/0*` or `http/1*` to be non-modern.
-      return protocol.startsWith('http/0') && protocol.startsWith('http/1')
+      return protocol.startsWith('http/0') || protocol.startsWith('http/1')
     }),
   )
 }
