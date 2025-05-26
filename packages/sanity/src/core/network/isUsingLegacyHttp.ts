@@ -17,26 +17,17 @@ const checkPath = '/ping'
 const checkRequestTag = 'protocol-check'
 
 /**
- * Preferably we want to use a client, since that will have both a configured URL (the
- * user may have configured a custom API URL) and also uses the client for _requesting_
- * the URL. While this last part _shouldn't_ make a difference, there is a theoretical
- * possibility that XMLHttpRequest (potentially used by the client) uses a different
- * protocol than the fetch API.
- */
-const fallbackApiUrl = `https://api.sanity.io/v2025-03-01/ping?tag=sanity.studio.${checkRequestTag}`
-
-/**
- * Checks whether a request to the API is using a modern HTTP protocol (HTTP/2 or later).
+ * Checks whether a request to the API is using a legacy HTTP protocol (HTTP/0.9, HTTP/1.0, or HTTP/1.1).
  * Can emit `undefined` if the protocol could not be detected.
  *
  * @param client - The client to use for the request. If not provided, a fetch request
  * will be made to the fallback API URL. Prefer using a client, as it will have the
  * correct URL configured.
- * @returns An Observable that emits `true` if the API request is using a modern HTTP
- * protocol, `false` if it is not, or `undefined` if it could not be detected.
- * @public
+ * @returns An Observable that emits `true` if the API request is using a legacy HTTP
+ * protocol, `false` if it is not, or `undefined` if protocol could not be detected.
+ * @internal
  */
-export function isUsingModernHttp(client?: SanityClient): Observable<boolean | undefined> {
+export function isUsingLegacyHttp(client: SanityClient): Observable<boolean | undefined> {
   return getProtocolForApi(client).pipe(
     map((protocol) => {
       if (!protocol) {
@@ -45,7 +36,7 @@ export function isUsingModernHttp(client?: SanityClient): Observable<boolean | u
 
       // Typical values for protocol are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
       // We consider anything `http/0*` or `http/1*` to be non-modern.
-      return !protocol.startsWith('http/0') && !protocol.startsWith('http/1')
+      return protocol.startsWith('http/0') && protocol.startsWith('http/1')
     }),
   )
 }
@@ -61,7 +52,7 @@ export function isUsingModernHttp(client?: SanityClient): Observable<boolean | u
  * if it could not be detected.
  * @internal
  */
-function getProtocolForApi(client?: SanityClient): Observable<string | undefined> {
+function getProtocolForApi(client: SanityClient): Observable<string | undefined> {
   if (
     typeof PerformanceObserver === 'undefined' ||
     typeof PerformanceResourceTiming === 'undefined'
@@ -70,11 +61,7 @@ function getProtocolForApi(client?: SanityClient): Observable<string | undefined
     return of(undefined)
   }
 
-  const checkUrl = client
-    ? `${client.getUrl(checkPath)}?tag=sanity.studio.${checkRequestTag}`
-    : fallbackApiUrl
-
-  return detectProtocol(checkUrl)
+  return detectProtocol(`${client.getUrl(checkPath)}?tag=sanity.studio.${checkRequestTag}`)
 }
 
 /**
