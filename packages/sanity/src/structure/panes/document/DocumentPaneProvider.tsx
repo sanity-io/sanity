@@ -200,6 +200,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetCollapsedPath,
     onSetCollapsedFieldSet,
     openPath,
+    valueToUnpublish,
   } = useDocumentForm({
     documentType,
     documentId,
@@ -458,6 +459,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         revisionId,
         revisionNotFound,
         lastNonDeletedRevId,
+        valueToUnpublish,
       }) satisfies DocumentPaneContextValue,
     [
       actions,
@@ -518,6 +520,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       revisionId,
       revisionNotFound,
       lastNonDeletedRevId,
+      valueToUnpublish,
     ],
   )
 

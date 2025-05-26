@@ -14,9 +14,9 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 export function UnpublishedDocumentBanner() {
-  const {value} = useDocumentPane()
+  const {value, valueToUnpublish} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
-  const willBeUnpublished = isGoingToUnpublish(value)
+  const willBeUnpublished = isGoingToUnpublish(value) || valueToUnpublish
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()

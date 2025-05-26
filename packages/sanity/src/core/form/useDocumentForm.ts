@@ -117,6 +117,7 @@ interface DocumentFormValue {
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
+  valueToUnpublish: string | null
 }
 
 /**
@@ -145,7 +146,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, perspectiveStack} = usePerspective()
+  const [valueToUnpublish, setValueToUnpublish] = useState<string | null>(null)
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -188,6 +190,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [documentVersions, onlyHasVersions, selectedReleaseId, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
+  const updatedStack = perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
+  const editStatePrevious = useEditState(documentId, documentType, 'default', updatedStack[0])
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useReconnectingToast(connectionState === 'reconnecting')
@@ -204,6 +208,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
+      if (editState.version) {
+        // if it will be unpublished, then we need to do two things
+        // 1. make sure that we keep which id is the fall back so that the chip in the document header will behave appropriately
+        // 2. make sure that we keep the value of the previous state (followed by the draft and published)
+        if (isGoingToUnpublish(editState.version as SanityDocument)) {
+          setValueToUnpublish(editState?.version?._id || editState.draft?._id || null)
+          return editStatePrevious.version || editState.draft || editState.published || baseValue
+        }
+      }
+
       return editState.version || editState.draft || editState.published || baseValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
@@ -222,16 +236,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
+    initialValue?.value,
     documentId,
     documentType,
-    editState.draft,
-    editState.published,
-    editState.version,
-    initialValue,
-    liveEdit,
     releaseId,
     selectedPerspectiveName,
     onlyHasVersions,
+    editState.draft,
+    editState.published,
+    editState.version,
+    editStatePrevious.version,
+    liveEdit,
   ])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
@@ -566,5 +581,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    valueToUnpublish: valueToUnpublish,
   }
 }
