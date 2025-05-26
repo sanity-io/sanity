@@ -45,8 +45,8 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
     [onSelect, event, isSelectable],
   )
   return (
-    <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
-      <Flex gap={1}>
+    <Flex gap={1}>
+      <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
         <Card
           as={isSelectable ? 'button' : 'div'}
           onClick={handleClick}
@@ -58,12 +58,13 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
           data-chunk-timestamp={event.timestamp}
           style={{
             cursor: isSelectable ? 'pointer' : 'default',
+            width: '100%',
           }}
         >
           <Event event={event} showChangesBy="tooltip" />
         </Card>
-        {optionsMenu}
-      </Flex>
-    </Tooltip>
+      </Tooltip>
+      {optionsMenu}
+    </Flex>
   )
 }

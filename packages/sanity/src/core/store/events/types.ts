@@ -133,10 +133,12 @@
  *    - `UpdateLiveDocumentEvent`: Raw Update mutation - "Published document exists"
  */
 
+import {type ReleaseDocument} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 import {type ObjectDiff} from '../../field'
+import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 
 /**
  * Events relevant for the whole document group.
@@ -244,6 +246,10 @@ export interface BaseEvent {
   id: string
   timestamp: string
   author: string
+  /**
+   * This is added client side to enhance the UI.
+   */
+  documentVariantType: DocumentVariantType
 }
 
 /**
@@ -280,6 +286,12 @@ export interface DeleteDocumentVersionEvent extends BaseEvent {
   releaseId?: string
   versionId: string
   versionRevisionId: string
+  /**
+   * This is added client side to enhance the UI.
+   * For draft documents, it indicates the event that created this document that was later published
+   * It will be used to expand the publish view.
+   */
+  creationEvent?: CreateDocumentVersionEvent
 }
 
 /**
@@ -303,9 +315,8 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
 
   /**
    * This is added client side to enhance the UI.
-   * TODO: should be ReleaseDocument, but it's @internal and this is @beta
    */
-  release?: any
+  release?: ReleaseDocument | {_id: string; metadata?: undefined}
 
   /**
    * This is added client side to enhance the UI.
