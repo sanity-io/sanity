@@ -1185,6 +1185,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
   /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.title': "You've got your breaks on",
+
   /** Button label for "Create new document" button */
   'new-document.button': 'Create',
   /**
