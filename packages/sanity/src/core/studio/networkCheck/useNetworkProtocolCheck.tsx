@@ -28,19 +28,19 @@ export function useNetworkProtocolCheck(): undefined {
 
   const [isOnLegacyHttp, setIsOnLegacyHttp] = useState<boolean | undefined>()
 
-  const [warningDismissedAtRaw, setWarningDismissedAt] = useSessionStorageState(
-    'sanity-studio.network.check.dismiss',
+  const [warningSnoozedAtRaw, setWarningSnoozedAt] = useSessionStorageState(
+    'sanity-studio.network.check.snooze',
   )
 
   const warningDismissedAt = useMemo(
-    () => (warningDismissedAtRaw ? new Date(warningDismissedAtRaw) : undefined),
-    [warningDismissedAtRaw],
+    () => (warningSnoozedAtRaw ? new Date(warningSnoozedAtRaw) : undefined),
+    [warningSnoozedAtRaw],
   )
 
   const isWarningSnoozed = useMemo(
     () =>
       warningDismissedAt &&
-      new Date().getTime() - warningDismissedAt.getTime() > 1000 * 60 * 60 * SNOOZE_DURATION_HOURS,
+      new Date().getTime() - warningDismissedAt.getTime() < 1000 * 60 * 60 * SNOOZE_DURATION_HOURS,
     [warningDismissedAt],
   )
 
@@ -51,14 +51,13 @@ export function useNetworkProtocolCheck(): undefined {
   }, [client, isWarningSnoozed, pushToast, title, warningDismissedAt])
 
   const handleSnooze = useCallback(
-    () => setWarningDismissedAt(new Date().toISOString()),
-    [setWarningDismissedAt],
+    () => setWarningSnoozedAt(new Date().toISOString()),
+    [setWarningSnoozedAt],
   )
 
   useConditionalToast({
     id: 'network-protocol-check',
     status: 'warning',
-    onClose: handleSnooze,
     enabled: isOnLegacyHttp && !isWarningSnoozed,
     title,
     description: (
