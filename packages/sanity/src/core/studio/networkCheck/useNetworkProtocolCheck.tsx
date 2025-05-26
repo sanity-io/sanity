@@ -26,7 +26,7 @@ export function useNetworkProtocolCheck(): undefined {
   const client = useClient({apiVersion: '2025-03-01'})
   const title = t('network-check.slow-protocol-warning.title')
 
-  const [isOnModernHttp, setIsOnModernHttp] = useState<boolean | undefined>()
+  const [isOnLegacyHttp, setIsOnLegacyHttp] = useState<boolean | undefined>()
 
   const [warningDismissedAtRaw, setWarningDismissedAt] = useSessionStorageState(
     'sanity-studio.network.check.dismiss',
@@ -45,9 +45,10 @@ export function useNetworkProtocolCheck(): undefined {
   )
 
   useEffect(() => {
-    const sub = isUsingModernHttp(client).subscribe((result) => setIsOnModernHttp(result))
+    const observable = isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)
+    const sub = observable.subscribe((result) => setIsOnLegacyHttp(result))
     return () => sub.unsubscribe()
-  }, [client, pushToast, title])
+  }, [client, isWarningSnoozed, pushToast, title, warningDismissedAt])
 
   const handleSnooze = useCallback(
     () => setWarningDismissedAt(new Date().toISOString()),
