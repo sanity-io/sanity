@@ -209,13 +209,13 @@ export type RuleSpec =
   | {flag: 'either'; constraint: Rule[]}
   | {flag: 'presence'; constraint: 'optional' | 'required'}
   | {flag: 'custom'; constraint: CustomValidator}
-  | {flag: 'min'; constraint: number | string}
-  | {flag: 'max'; constraint: number | string}
-  | {flag: 'length'; constraint: number}
+  | {flag: 'min'; constraint: number | string | FieldReference}
+  | {flag: 'max'; constraint: number | string | FieldReference}
+  | {flag: 'length'; constraint: number | FieldReference}
   | {flag: 'valid'; constraint: unknown[]}
-  | {flag: 'precision'; constraint: number}
-  | {flag: 'lessThan'; constraint: number}
-  | {flag: 'greaterThan'; constraint: number}
+  | {flag: 'precision'; constraint: number | FieldReference}
+  | {flag: 'lessThan'; constraint: number | FieldReference}
+  | {flag: 'greaterThan'; constraint: number | FieldReference}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
   | {flag: 'assetRequired'; constraint: {assetType: 'asset' | 'image' | 'file'}}
   | {
@@ -320,7 +320,7 @@ export type Validator<T = any, Value = any> = (
  */
 export type Validators = Partial<{
   [P in RuleSpec['flag']]: Validator<
-    ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>
+    Exclude<ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>, FieldReference>
   >
 }>
 
