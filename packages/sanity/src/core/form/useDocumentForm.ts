@@ -190,8 +190,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [documentVersions, onlyHasVersions, selectedReleaseId, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
-  const updatedStack = perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
-  const editStatePrevious = useEditState(documentId, documentType, 'default', updatedStack[0])
+
+  // if it will be unpublished, then
+  // we need to make sure make sure that we get the right stack
+  // by fetching the previous version
+  const isTheCurrentVersionGoingToUnpublish =
+    editState.version && isGoingToUnpublish(editState.version as SanityDocument)
+  const updatedStack = isTheCurrentVersionGoingToUnpublish
+    ? perspectiveStack.length > 1
+      ? perspectiveStack.slice(1)[0]
+      : perspectiveStack[0]
+    : activeDocumentReleaseId // this accounts for drafts and for the published perspective
+  const editStatePrevious = useEditState(documentId, documentType, 'default', updatedStack)
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useReconnectingToast(connectionState === 'reconnecting')
