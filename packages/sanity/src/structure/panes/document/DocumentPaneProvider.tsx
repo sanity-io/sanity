@@ -151,7 +151,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const getComparisonValue = useCallback(
     (editState: EditStateFor) => {
-      return changesOpen ? sinceDocument : editState?.published || null
+      return changesOpen ? sinceDocument || editState?.published : editState?.published || null
     },
     [changesOpen, sinceDocument],
   )

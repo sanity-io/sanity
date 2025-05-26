@@ -18,6 +18,7 @@ import {
 import {type Annotation, type ObjectDiff} from '../../field'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {getDocumentTransactions} from './getDocumentTransactions'
+import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 import {
   type DocumentGroupEvent,
   type EventsStoreRevision,
@@ -231,6 +232,9 @@ export function getDocumentChanges({
           // For this case, we can use the remote transactions to calculate the diff.
           const viewingLatest = !to?._rev
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
+            if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
+              return of([])
+            }
             if (viewingLatest && lastResolvedSince === sinceDoc._rev) {
               // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
               return of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))
