@@ -1,15 +1,14 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons'
 import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {of} from 'rxjs'
 
 import {Button} from '../../../ui-components'
 import {useConditionalToast} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
-import {useLocale} from '../../i18n'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {intlCache} from '../../i18n/intlCache'
-import {isUsingModernHttp} from '../../network/isUsingModernHttp'
+import {isUsingLegacyHttp} from '../../network/isUsingLegacyHttp'
 
 const HTTP_HELP_URL = generateHelpUrl('http1-performance-issues')
 
@@ -33,29 +32,33 @@ export function useNetworkProtocolCheck(): undefined {
     'sanity-studio.network.check.dismiss',
   )
 
-  const warningDismissedAt = warningDismissedAtRaw ? new Date(warningDismissedAtRaw) : undefined
+  const warningDismissedAt = useMemo(
+    () => (warningDismissedAtRaw ? new Date(warningDismissedAtRaw) : undefined),
+    [warningDismissedAtRaw],
+  )
+
+  const isWarningSnoozed = useMemo(
+    () =>
+      warningDismissedAt &&
+      new Date().getTime() - warningDismissedAt.getTime() > 1000 * 60 * 60 * SNOOZE_DURATION_HOURS,
+    [warningDismissedAt],
+  )
 
   useEffect(() => {
     const sub = isUsingModernHttp(client).subscribe((result) => setIsOnModernHttp(result))
     return () => sub.unsubscribe()
   }, [client, pushToast, title])
 
-  const handleSnooze = useCallback(() => {
-    setWarningDismissedAt(new Date().toISOString())
-  }, [setWarningDismissedAt])
-  const {currentLocale} = useLocale()
-
-  intlCache.dateTimeFormat(currentLocale.id, {})
+  const handleSnooze = useCallback(
+    () => setWarningDismissedAt(new Date().toISOString()),
+    [setWarningDismissedAt],
+  )
 
   useConditionalToast({
     id: 'network-protocol-check',
     status: 'warning',
     onClose: handleSnooze,
-    enabled:
-      isOnModernHttp === false &&
-      (!warningDismissedAt ||
-        new Date().getTime() - warningDismissedAt.getTime() >
-          1000 * 60 * 60 * SNOOZE_DURATION_HOURS),
+    enabled: isOnLegacyHttp && !isWarningSnoozed,
     title,
     description: (
       <Stack space={4} paddingY={1}>
