@@ -3,6 +3,7 @@
 exports[`exports snapshot 1`] = `
 {
   ".": {
+    "ALL_SCHEMA_TYPES": "number",
     "ActiveWorkspaceMatcher": "function",
     "AddonDatasetProvider": "function",
     "ArrayOfObjectOptionsInput": "function",
@@ -120,6 +121,7 @@ exports[`exports snapshot 1`] = `
     "IntentButton": "function",
     "IsLastPaneProvider": "function",
     "LATEST": "string",
+    "LIVE_EDIT_SCHEMA_TYPES": "number",
     "LegacyLayerProvider": "function",
     "LinearProgress": "function",
     "LoadingBlock": "function",
@@ -132,6 +134,8 @@ exports[`exports snapshot 1`] = `
     "MemberFieldSet": "object",
     "MemberItemError": "function",
     "MetaInfo": "function",
+    "NON_LIVE_EDIT_SCHEMA_TYPES": "number",
+    "NO_SCHEMA_TYPES": "number",
     "NoChanges": "function",
     "NumberInput": "function",
     "ObjectInput": "object",
@@ -523,6 +527,7 @@ exports[`exports snapshot 1`] = `
     "useDidUpdate": "function",
     "useDiffAnnotationColor": "function",
     "useDocumentChange": "function",
+    "useDocumentCreationPolicy": "function",
     "useDocumentForm": "function",
     "useDocumentOperation": "function",
     "useDocumentOperationEvent": "function",

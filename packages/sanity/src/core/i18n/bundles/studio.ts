@@ -1203,6 +1203,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * when there are templates/types available for creation
    */
   'new-document.create-new-document-label': 'New document…',
+  /**
+   * Tooltip message displayed when hovering/activating the "Create new document" action,
+   * when there are templates/types available for creation and only live-edit Documents may be created
+   */
+  'new-document.create-new-live-edit-document-label': 'New live-edit document…',
+  /** Tooltip message for add document button when the selected perspective is draft and the draft model is switched off */
+  'new-document.disabled-draft.tooltip': 'You cannot create new draft documents',
   /** Tooltip message for add document button when the selected perspective is published  */
   'new-document.disabled-published.tooltip': 'You cannot create new published documents',
   /** Tooltip message for add document button when the selected perspective is for inactive release */

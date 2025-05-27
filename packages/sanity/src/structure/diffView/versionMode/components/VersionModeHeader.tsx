@@ -32,6 +32,7 @@ import {
   useDocumentVersions,
   useEditState,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
 import {styled} from 'styled-components'
 
@@ -176,6 +177,12 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   return (
     <MenuButton
       id={role}
@@ -200,7 +207,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
               documentId={documentId}
             />
           )}
-          {draft && (
+          {isDraftModelEnabled && draft && (
             <VersionMenuItem
               type="draft"
               onSelect={onSelectRelease}
