@@ -102,5 +102,5 @@ export interface DocumentPaneContextValue {
   revisionId: string | null
   revisionNotFound: boolean
   lastNonDeletedRevId: string | null
-  valueToUnpublish: string | null
+  unpublishDocId?: string | null
 }

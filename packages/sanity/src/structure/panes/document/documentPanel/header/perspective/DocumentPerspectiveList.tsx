@@ -84,7 +84,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
-  const {editState, displayed, documentType, documentId, valueToUnpublish} = useDocumentPane()
+  const {editState, displayed, documentType, documentId, unpublishDocId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
@@ -124,8 +124,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           // that means that the chip of the version to be unpublished should be selected and not the displayed (which will be the fall back version)
           // example [id, release1.id, release2.id (and this one will be unpublished)]
           // the chip selected will be release2, but the displayed will be release1
-          selected: valueToUnpublish
-            ? getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(valueToUnpublish)
+          selected: unpublishDocId
+            ? getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(unpublishDocId)
             : getReleaseIdFromReleaseDocumentId(release._id) ===
               getVersionFromId(displayed?._id || ''),
         }
@@ -135,7 +135,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
       return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
     },
-    [displayed?._id, params?.historyVersion, valueToUnpublish],
+    [displayed?._id, params?.historyVersion, unpublishDocId],
   )
 
   const isPublishSelected: boolean = useMemo(() => {
