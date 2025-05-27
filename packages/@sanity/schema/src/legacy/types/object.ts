@@ -12,8 +12,8 @@ import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {resolveSearchConfig} from '../searchConfig/resolve'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   ...DEFAULT_OVERRIDEABLE_FIELDS,
@@ -36,8 +36,9 @@ export const ObjectType = {
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
     const options = {...(subTypeDef.options || {})}
-    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
-      type: this.get(),
+
+    const ownProps = {
+      ...subTypeDef,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
@@ -57,6 +58,10 @@ export const ObjectType = {
           })
         })
       }),
+    }
+
+    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), ownProps, {
+      type: this.get(),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
@@ -68,6 +73,18 @@ export const ObjectType = {
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        fieldsets: parsed.fieldsets,
+        groups: parsed.groups,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
 
     lazyGetter(
       parsed,
@@ -100,14 +117,18 @@ export const ObjectType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }
+
+          const subOwnProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          subOwnProps.title =
+            extensionDef.title ||
+            subTypeDef.title ||
+            (subTypeDef.name ? startCase(subTypeDef.name) : 'Object')
+
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            title:
-              extensionDef.title ||
-              subTypeDef.title ||
-              (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
             type: parent,
           })
           lazyGetter(current, '__experimental_search', () => parent.__experimental_search)
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }
