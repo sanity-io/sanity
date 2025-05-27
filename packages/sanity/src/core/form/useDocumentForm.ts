@@ -226,6 +226,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         // 1. make sure that we keep which id is the fall back so that the chip in the document header will behave appropriately
         // 2. make sure that we keep the value of the previous state (followed by the draft and published)
         if (isGoingToUnpublish(editState.version as SanityDocument)) {
+          // this will be used to make sure that the right chip is being selected in the document header
           setValueToUnpublish(editState?.version?._id || editState.draft?._id || null)
           return editStatePrevious.version || editState.draft || editState.published || baseValue
         }
@@ -249,7 +250,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
-    initialValue?.value,
+    initialValue,
     documentId,
     documentType,
     releaseId,

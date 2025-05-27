@@ -122,6 +122,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         return {
           // if there is a value to unpublish then it means the current document will be unpublished
           // that means that the chip of the version to be unpublished should be selected and not the displayed (which will be the fall back version)
+          // example [id, release1.id, release2.id (and this one will be unpublished)]
+          // the chip selected will be release2, but the displayed will be release1
           selected: valueToUnpublish
             ? getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(valueToUnpublish)
             : getReleaseIdFromReleaseDocumentId(release._id) ===
