@@ -40,7 +40,6 @@ function useDocumentPreview(props: {
   const {enabled = true, ordering, schemaType, value: previewValue} = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack} = usePerspective()
-  const documentId = (previewValue as {_id?: string})?._id
 
   const observable = useMemo<Observable<State>>(() => {
     // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
@@ -51,7 +50,10 @@ function useDocumentPreview(props: {
       viewOptions: {ordering: ordering},
     }).pipe(
       switchMap((value) => {
-        if (value.snapshot) {
+        const documentId = (previewValue as {_id?: string})?._id
+
+        // if there is no documentId then, we want an untitled preview
+        if (value.snapshot || !documentId) {
           return of(value)
         }
 
@@ -69,8 +71,8 @@ function useDocumentPreview(props: {
         // otherwise, we need to get the version id of the previous perspective
         const docId =
           previousPerspective === 'drafts'
-            ? getDraftId(documentId || '')
-            : getVersionId(documentId || '', previousPerspective)
+            ? getDraftId(documentId)
+            : getVersionId(documentId, previousPerspective)
 
         return observeForPreview(
           {
@@ -85,7 +87,7 @@ function useDocumentPreview(props: {
       map((event) => ({isLoading: false, value: event.snapshot}) as State),
       catchError((error) => of({isLoading: false, error})),
     )
-  }, [enabled, previewValue, schemaType, observeForPreview, perspectiveStack, ordering, documentId])
+  }, [enabled, previewValue, schemaType, observeForPreview, perspectiveStack, ordering])
 
   return useObservable(observable, INITIAL_STATE)
 }
