@@ -5,6 +5,7 @@ import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
@@ -103,7 +104,11 @@ export function TextBlock(props: TextBlockProps) {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
   const {onChange} = useFormCallbacks()
+  const hoveredChange = useHoveredChange()
 
+  const changeHovered =
+    hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
+  console.log(hoveredChange?.path)
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
   // (which is where the user most of the time would have the presence in a text block)
@@ -332,13 +337,14 @@ export function TextBlock(props: TextBlockProps) {
                 />
               </ChangeIndicatorWrapper>
             )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+            {(reviewChangesHovered || changeHovered) && <ReviewChangesHighlightBlock />}
           </Flex>
         </TextBlockFlexWrapper>
       </Box>
     ),
     [
       blockActionsEnabled,
+      changeHovered,
       changeIndicatorVisible,
       componentProps,
       focused,
@@ -348,7 +354,8 @@ export function TextBlock(props: TextBlockProps) {
       hasMarkers,
       hasWarning,
       innerPaddingProps,
-      memberItem,
+      memberItem?.member?.item?.changed,
+      memberItem?.member?.item?.path,
       onChange,
       outerPaddingProps,
       readOnly,

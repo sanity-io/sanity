@@ -155,7 +155,7 @@ export function GroupChange(
       {isNestedInDiff || !FieldWrapper ? (
         content
       ) : (
-        <FieldWrapper hasHover={isRevertButtonHovered} path={group.path}>
+        <FieldWrapper hasHover={isRevertButtonHovered} path={diffPath}>
           {content}
         </FieldWrapper>
       )}

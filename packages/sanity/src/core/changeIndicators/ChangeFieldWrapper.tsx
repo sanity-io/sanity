@@ -12,6 +12,7 @@ import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {useZIndex} from '../components'
+import {pathToString} from '../field'
 import {useChangeIndicatorsReporter} from './tracker'
 
 /**
@@ -19,11 +20,15 @@ import {useChangeIndicatorsReporter} from './tracker'
  *
  * @internal
  */
-export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasHover: boolean}) => {
-  const {path, hasHover} = props
+export const ChangeFieldWrapper = (props: {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}) => {
+  const {path, hasRevertHover} = props
   const {onSetFocus} = useContext(ReviewChangesContext)
   const zIndex = useZIndex()
-  const [isHover, setHover] = useState(false)
+  const [hasHover, setHover] = useState(false)
 
   const onMouseEnter = useCallback(() => {
     setHover(true)
@@ -44,11 +49,11 @@ export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasH
       path,
       isChanged: true,
       hasFocus: false,
-      hasHover: isHover,
+      hasRevertHover,
+      hasHover,
       zIndex: Array.isArray(zIndex.popover) ? zIndex.popover[0] : zIndex.popover,
-      hasRevertHover: hasHover,
     }),
-    [element, path, isHover, zIndex.popover, hasHover],
+    [element, path, hasHover, zIndex.popover, hasRevertHover],
   )
   useChangeIndicatorsReporter(
     reporterId,
@@ -71,6 +76,7 @@ export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasH
       onMouseLeave={onMouseLeave}
       onMouseEnter={onMouseEnter}
     >
+      {pathToString(path)}
       {props.children}
     </div>
   )

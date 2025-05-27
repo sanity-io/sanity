@@ -66,9 +66,10 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     () => ({
       element,
       path: path,
-      isChanged: isChanged,
+      isChanged: Boolean(isChanged),
       hasFocus: hasFocus,
       hasHover: hasHover,
+      hasRevertHover: false,
       zIndex: layer.zIndex,
     }),
     [element, hasFocus, hasHover, isChanged, layer.zIndex, path],

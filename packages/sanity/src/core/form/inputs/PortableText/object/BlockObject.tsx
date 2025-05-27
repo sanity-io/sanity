@@ -14,6 +14,7 @@ import {
 } from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
@@ -106,6 +107,10 @@ export function BlockObject(props: BlockObjectProps) {
   const {onChange} = useFormCallbacks()
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
+  const hoveredChange = useHoveredChange()
+
+  const changeHovered = hoveredChange && pathToString(hoveredChange.path) === pathToString(path)
+  console.log(hoveredChange.path)
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -333,29 +338,31 @@ export function BlockObject(props: BlockObjectProps) {
                 />
               </ChangeIndicatorWrapper>
             )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+            {(reviewChangesHovered || changeHovered) && <ReviewChangesHighlightBlock />}
           </PreviewContainer>
         </Flex>
       </Box>
     ),
     [
-      blockActionsEnabled,
-      changeIndicatorVisible,
-      componentProps,
-      focused,
-      handleChangeIndicatorMouseLeave,
-      handleChangeIndicatorMouseEnter,
-      innerPaddingProps,
-      memberItem,
-      onChange,
-      renderBlock,
-      renderBlockActions,
-      reviewChangesHovered,
       setRef,
-      toolTipContent,
-      tooltipEnabled,
-      value,
+      innerPaddingProps,
       isOpen,
+      tooltipEnabled,
+      toolTipContent,
+      renderBlock,
+      componentProps,
+      blockActionsEnabled,
+      focused,
+      value,
+      onChange,
+      renderBlockActions,
+      changeIndicatorVisible,
+      memberItem?.member?.item?.changed,
+      memberItem?.member?.item?.path,
+      handleChangeIndicatorMouseEnter,
+      handleChangeIndicatorMouseLeave,
+      reviewChangesHovered,
+      changeHovered,
     ],
   )
 }

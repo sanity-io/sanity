@@ -89,7 +89,7 @@ export function FieldChange(
         <Stack space={1} as={FieldChangeContainer}>
           {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
 
-          <FieldWrapper path={fieldPath} hasHover={revertHovered}>
+          <FieldWrapper path={change.path} hasHover={revertHovered}>
             <DiffInspectWrapper
               change={change}
               as={DiffBorder}
