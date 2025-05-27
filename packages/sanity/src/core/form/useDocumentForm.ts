@@ -194,6 +194,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // if it will be unpublished, then
   // we need to make sure make sure that we get the right stack
   // by fetching the previous version
+  // for example ['release1', 'release2', 'drafts'] -> ['release2', 'drafts']
+  // or ['release1', 'drafts'] -> ['drafts']
   const isTheCurrentVersionGoingToUnpublish =
     editState.version && isGoingToUnpublish(editState.version as SanityDocument)
   const updatedStack = isTheCurrentVersionGoingToUnpublish
@@ -201,6 +203,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       ? perspectiveStack.slice(1)[0]
       : perspectiveStack[0]
     : activeDocumentReleaseId // this accounts for drafts and for the published perspective
+
   const editStatePrevious = useEditState(documentId, documentType, 'default', updatedStack)
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
