@@ -2,6 +2,7 @@ import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {useCallback, useMemo} from 'react'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types'
@@ -23,7 +24,7 @@ export function DateInput(props: DateInputProps) {
   const {readOnly, onChange, schemaType, elementProps, value, id} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
   const {t} = useTranslation()
-  const timeZoneScope = {type: 'input', id} as const
+  const timeZoneScope: TimeZoneScope = {type: 'input', id}
 
   const handleChange = useCallback(
     (nextDate: string | null) => {

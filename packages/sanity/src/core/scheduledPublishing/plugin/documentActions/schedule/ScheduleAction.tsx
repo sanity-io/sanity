@@ -9,6 +9,7 @@ import {
   type DocumentActionProps,
 } from '../../../../config/document/actions'
 import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
 import {EditScheduleForm} from '../../../components/editScheduleForm'
@@ -45,7 +46,7 @@ const debug = debugWithName('ScheduleAction')
  */
 export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {draft, id, liveEdit, onComplete, published, type} = props
-  const timeZoneScope = {type: 'scheduledPublishing'} as const
+  const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
   const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

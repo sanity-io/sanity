@@ -10,6 +10,7 @@ import TimeZoneButtonElementQuery from '../../components/timeZone/timeZoneButton
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../studio/constants'
 import {useWorkspace} from '../../studio/workspace'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import InfoCallout from '../components/infoCallout/InfoCallout'
@@ -61,7 +62,7 @@ export default function Tool() {
   // Default to first filter type ('upcoming') if no existing schedule state or
   // selected date can be inferred from current route.
   useFallbackNavigation(router, scheduleState, selectedDate)
-  const timeZoneScope = {type: 'scheduledPublishing'} as const
+  const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
   const {formatDateTz, timeZone} = useTimeZone(timeZoneScope)
 
   const schedulesContext = useMemo(

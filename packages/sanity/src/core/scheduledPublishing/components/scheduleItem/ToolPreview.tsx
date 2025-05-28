@@ -4,6 +4,7 @@ import {IntentLink} from 'sanity/router'
 
 import {Preview} from '../../../preview/components/Preview'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {getPublishedId} from '../../../util'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {usePublishedId} from '../../hooks/usePublishedId'
@@ -20,7 +21,7 @@ interface Props {
 
 const ToolPreview = (props: Props) => {
   const {previewState, schedule, schemaType} = props
-  const timeZoneScope = {type: 'scheduledPublishing'} as const
+  const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
   const visibleDocument = previewState.draft || previewState.published
   const isCompleted = schedule.state === 'succeeded'

@@ -13,6 +13,7 @@ import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -72,7 +73,7 @@ export function ReleasesOverview() {
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const timeZoneScope = {type: 'contentReleases'} as const
+  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
@@ -343,7 +344,7 @@ export function ReleasesOverview() {
             renderCalendarDay={ReleaseCalendarFilterDay}
             selectedDate={releaseFilterDate}
             onSelect={handleSelectFilterDate}
-            timeZoneScope={{type: 'contentReleases'}}
+            timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
           />
         </Card>
       </Flex>

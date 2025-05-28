@@ -14,6 +14,7 @@ import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeIn
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../../i18n'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
@@ -48,7 +49,7 @@ export const ReleaseScheduleButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   // in the releases tool we want timezone to be saved for releases
-  const timeZoneScope = useMemo(() => ({type: 'contentReleases'}) as const, [])
+  const timeZoneScope = useMemo(() => CONTENT_RELEASES_TIME_ZONE_SCOPE, [])
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
