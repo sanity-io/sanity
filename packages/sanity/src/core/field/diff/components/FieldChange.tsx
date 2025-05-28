@@ -72,11 +72,14 @@ export function FieldChange(
     () => [popoverRef.current],
   )
 
-  const isArray = change.parentSchema?.jsonType === 'array'
+  const isArray =
+    change.parentSchema?.jsonType === 'array' &&
+    // And it's not a PortableText array
+    !change.parentSchema.of.some((ofType) => ofType.type?.name === 'block')
 
   /* this condition is required in order to avoid situations where an array change has happened
    * but not necessarily an array item change. E.g. when adding one new item to an array, the changes pane
-   * would be able to identify that a new item was addded but not what array it belonged to (because the change path
+   * would be able to identify that a new item was added but not what array it belonged to (because the change path
    * is only related to the item itself, not the array)
    */
   const fieldPath = isArray ? change.path.slice(0, -1) : change.path
