@@ -1,4 +1,5 @@
 import {type Path} from '@sanity/types'
+import {Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ReactNode,
@@ -12,6 +13,8 @@ import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {useZIndex} from '../components'
+import {pathToString} from '../field'
+import {DEBUG} from './constants'
 import {useChangeIndicatorsReporter} from './tracker'
 
 /**
@@ -19,11 +22,15 @@ import {useChangeIndicatorsReporter} from './tracker'
  *
  * @internal
  */
-export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasHover: boolean}) => {
-  const {path, hasHover} = props
+export const ChangeFieldWrapper = (props: {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}) => {
+  const {path, hasRevertHover} = props
   const {onSetFocus} = useContext(ReviewChangesContext)
   const zIndex = useZIndex()
-  const [isHover, setHover] = useState(false)
+  const [hasHover, setHover] = useState(false)
 
   const onMouseEnter = useCallback(() => {
     setHover(true)
@@ -44,11 +51,11 @@ export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasH
       path,
       isChanged: true,
       hasFocus: false,
-      hasHover: isHover,
+      hasHover,
       zIndex: Array.isArray(zIndex.popover) ? zIndex.popover[0] : zIndex.popover,
-      hasRevertHover: hasHover,
+      hasRevertHover,
     }),
-    [element, path, isHover, zIndex.popover, hasHover],
+    [element, path, hasHover, zIndex.popover, hasRevertHover],
   )
   useChangeIndicatorsReporter(
     reporterId,
@@ -71,6 +78,11 @@ export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasH
       onMouseLeave={onMouseLeave}
       onMouseEnter={onMouseEnter}
     >
+      {DEBUG && (
+        <Text weight="medium" size={1}>
+          {pathToString(path)}
+        </Text>
+      )}
       {props.children}
     </div>
   )

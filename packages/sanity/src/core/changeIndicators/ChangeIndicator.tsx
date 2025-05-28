@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {useLayer} from '@sanity/ui'
+import {Text, useLayer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
@@ -15,6 +15,8 @@ import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {EMPTY_ARRAY} from '../util'
+import {pathToString} from '../validation/util/pathToString'
+import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'
 
@@ -66,9 +68,10 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     () => ({
       element,
       path: path,
-      isChanged: isChanged,
+      isChanged: Boolean(isChanged),
       hasFocus: hasFocus,
       hasHover: hasHover,
+      hasRevertHover: false,
       zIndex: layer.zIndex,
     }),
     [element, hasFocus, hasHover, isChanged, layer.zIndex, path],
@@ -88,6 +91,11 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         withHoverEffect={withHoverEffect}
         isInteractive={isInteractive}
       >
+        {DEBUG && (
+          <Text size={1} weight="medium">
+            {pathToString(path)}
+          </Text>
+        )}
         {children}
       </ElementWithChangeBar>
     </div>
