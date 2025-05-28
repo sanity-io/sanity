@@ -7,14 +7,14 @@ import {Button, Tooltip} from '../../../../ui-components'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 
-export interface ButtonTimeZoneProps {
+export interface TimeZoneButtonZoneProps {
   useElementQueries?: boolean
   timeZoneScope: TimeZoneScope
   allowTimeZoneSwitch?: boolean
   tooltipContent: ReactNode
 }
 
-export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
+export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
   const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true, tooltipContent} = props
   const {timeZone} = useTimeZone(timeZoneScope)
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
@@ -35,7 +35,7 @@ export const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
         <div>
           {/*
           If `useElementQueries` is enabled, dates will be conditionally toggled at different element
-          breakpoints - provided this `<ButtonTimeZone>` is wrapped in a `<ButtonTimeZoneElementQuery>` component.
+          breakpoints - provided this `<TimeZoneButtonZone>` is wrapped in a `<TimeZoneButtonZoneElementQuery>` component.
         */}
           {useElementQueries ? (
             <>

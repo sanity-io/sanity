@@ -13,8 +13,8 @@ import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
-import {ButtonTimeZone} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
-import ButtonTimeZoneElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
+import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
+import TimeZoneButtonElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {FormFieldHeaderText} from '../../../form/components/formField/FormFieldHeaderText'
 import {type TimeZoneScopeType, useTimeZone} from '../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../i18n'
@@ -243,8 +243,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   title={schemaType.title}
                   suffix={
                     displayTimeZone && (
-                      <ButtonTimeZoneElementQuery>
-                        <ButtonTimeZone
+                      <TimeZoneButtonElementQuery>
+                        <TimeZoneButton
                           tooltipContent={
                             <Translate
                               t={t}
@@ -260,7 +260,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                           useElementQueries
                           timeZoneScope={timeZoneScope}
                         />
-                      </ButtonTimeZoneElementQuery>
+                      </TimeZoneButtonElementQuery>
                     )
                   }
                 />

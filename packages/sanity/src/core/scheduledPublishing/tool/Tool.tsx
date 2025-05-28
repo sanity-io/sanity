@@ -5,8 +5,8 @@ import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {ButtonTimeZone} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
-import ButtonTimeZoneElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
+import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
+import TimeZoneButtonElementQuery from '../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
@@ -130,7 +130,7 @@ export default function Tool() {
           </Column>
           {/* RHS Column */}
           <Column display="flex" flex={1} overflow="hidden">
-            <ButtonTimeZoneElementQuery
+            <TimeZoneButtonElementQuery
               style={{
                 background: theme.color.card.enabled.bg,
                 position: 'sticky',
@@ -154,7 +154,7 @@ export default function Tool() {
 
                   {/* Time zone select + context menu */}
                   <Flex align="center" gap={1}>
-                    <ButtonTimeZone
+                    <TimeZoneButton
                       tooltipContent={t('time-zone.time-zone-tooltip-content-releases', {
                         alternativeName: timeZone.alternativeName,
                         offset: timeZone.offset,
@@ -166,7 +166,7 @@ export default function Tool() {
                   </Flex>
                 </Flex>
               </Flex>
-            </ButtonTimeZoneElementQuery>
+            </TimeZoneButtonElementQuery>
             <Flex direction="column" flex={1}>
               {/* Error */}
               {error && (
