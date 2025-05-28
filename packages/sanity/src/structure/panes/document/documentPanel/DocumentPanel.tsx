@@ -33,6 +33,7 @@ import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
+import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
@@ -223,6 +224,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         {!permissions?.granted && (
           <InsufficientPermissionBanner requiredPermission={requiredPermission} />
         )}
+        <RevisionNotFoundBanner />
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <CanvasLinkedBanner />

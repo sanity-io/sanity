@@ -1,8 +1,10 @@
 import {type CliConfig} from '@sanity/cli'
+import chalk from 'chalk'
 
 interface AutoUpdateSources {
   flags: {['auto-updates']?: boolean}
   cliConfig?: CliConfig
+  output?: {warn: (message: string) => void}
 }
 
 /**
@@ -11,9 +13,17 @@ interface AutoUpdateSources {
  * @returns boolean
  * @internal
  */
-export function shouldAutoUpdate({flags, cliConfig}: AutoUpdateSources): boolean {
+export function shouldAutoUpdate({flags, cliConfig, output}: AutoUpdateSources): boolean {
   // cli flags (for example, '--no-auto-updates') should take precedence
   if ('auto-updates' in flags) {
+    if (output) {
+      const flagUsed = flags['auto-updates'] ? '--auto-updates' : '--no-auto-updates'
+      output.warn(
+        chalk.yellow(
+          `The ${flagUsed} flag is deprecated for \`deploy\` and \`build\` commands. Set the \`autoUpdates\` option in \`sanity.cli.ts\` or \`sanity.cli.js\` instead.`,
+        ),
+      )
+    }
     return Boolean(flags['auto-updates'])
   }
 

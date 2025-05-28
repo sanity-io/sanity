@@ -89,7 +89,7 @@ describe('VersionContextMenu', () => {
       fireEvent.click(screen.getByText('Copy version to'))
     })
     await waitFor(() => {
-      expect(screen.getByText('New Release')).toBeInTheDocument()
+      expect(screen.getByText('New release')).toBeInTheDocument()
       expect(screen.getByText('Release 1')).toBeInTheDocument()
       expect(screen.getByText('Release 2')).toBeInTheDocument()
     })
@@ -113,7 +113,7 @@ describe('VersionContextMenu', () => {
     })
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New Release'))
+      fireEvent.click(screen.getByText('New release'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
@@ -168,7 +168,7 @@ describe('VersionContextMenu', () => {
     })
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New Release'))
+      fireEvent.click(screen.getByText('New release'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })

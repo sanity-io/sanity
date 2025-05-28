@@ -6,6 +6,12 @@ import {inferFromSchema as inferValidation} from '../validation'
 
 const isError = (problem: SchemaValidationResult) => problem.severity === 'error'
 
+const builtinSchema = SchemaBuilder.compile({
+  name: 'studio',
+  types: builtinTypes,
+})
+inferValidation(builtinSchema)
+
 /**
  * @hidden
  * @beta */
@@ -16,7 +22,8 @@ export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
 
   const compiled = SchemaBuilder.compile({
     name: schemaDef.name,
-    types: hasErrors ? [] : [...schemaDef.types, ...builtinTypes].filter(Boolean),
+    types: hasErrors ? [] : schemaDef.types.filter(Boolean),
+    parent: builtinSchema,
   })
 
   // ;(compiled as any)._source = schemaDef

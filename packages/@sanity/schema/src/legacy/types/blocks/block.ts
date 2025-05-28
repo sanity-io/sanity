@@ -1,7 +1,8 @@
 import {pick} from 'lodash'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
-import {lazyGetter} from '../utils'
+import {OWN_PROPS_NAME} from '../constants'
+import {hiddenGetter, lazyGetter} from '../utils'
 import {
   BLOCK_STYLES,
   DEFAULT_BLOCK_STYLES,
@@ -64,9 +65,10 @@ export const BlockType = {
       subTypeDef.fields || [],
     )
 
-    const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
+    const ownProps = {...rest, options}
+
+    const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), ownProps, {
       type: BLOCK_CORE,
-      options: options,
     })
 
     lazyGetter(parsed, 'fields', () => {
@@ -81,6 +83,17 @@ export const BlockType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        fields: parsed.fields,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
+
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -92,9 +105,11 @@ export const BlockType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "block"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
+          const subOwnProps = pick(extensionDef, INHERITED_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }

@@ -327,6 +327,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.loading-author': 'Loading…',
   /** Loading changes in Review Changes Pane */
   'changes.loading-changes': 'Loading changes…',
+  /** Error message shown when the document revision could not be found */
+  'changes.missing-since-document-error':
+    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. <Break/> This is probably due to history retention policy of your plan. <Break/> Please select a different <strong>From</strong> entry.",
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
@@ -375,6 +378,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
+  /** Same Revision Selected description in the Review Changes pane */
+  'changes.same-revision-selected-description':
+    'You have selected the same <strong>from</strong> and <strong>to</strong> revision, please select different revisions to compare the changes between them.',
+  /** Same Revision Selected title in the Review Changes pane */
+  'changes.same-revision-selected-title': 'Same revision selected',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
   /**The title that will be shown in the badge inside the events when the item is a draft */
@@ -435,6 +443,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
+  /** Label to show in the document footer indicating that the revision was not found */
+  'document-status.revision-not-found': 'Revision not found',
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
 
@@ -1176,6 +1186,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
+  'network-check.slow-protocol-warning.description':
+    'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
+  /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
+  'network-check.slow-protocol-warning.learn-more-button.text': 'Learn more',
+  /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
+  'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
+  /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
+  'network-check.slow-protocol-warning.title': "You've got your breaks on",
+
   /** Button label for "Create new document" button */
   'new-document.button': 'Create',
   /**
@@ -1248,7 +1268,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
   /** Action message for when a new release is created off an existing version, draft or published document */
-  'release.action.new-release': 'New Release',
+  'release.action.new-release': 'New release',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Error message for when a version is set to be unpublished */
@@ -1877,6 +1897,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.deleted': 'Deleted',
   /** Label shown in review changes timeline when a document has been deleted, with a timestamp */
   'timeline.operation.deleted_timestamp': 'Deleted: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a draft document has been created*/
+  'timeline.operation.draft-created': 'Draft created',
+  /** Label shown in review changes timeline when a draft document has been created, with a timestamp */
+  'timeline.operation.draft-created_timestamp': 'Draft created: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a draft has been discarded */
   'timeline.operation.draft-discarded': 'Discarded draft',
   /** Label shown in review changes timeline when a draft has been discarded, with a timestamp */
@@ -1889,6 +1913,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.edited-live': 'Live edited',
   /** Label shown in review changes timeline when a document has been edited live, with a timestamp */
   'timeline.operation.edited-live_timestamp': 'Live edited: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document has been created */
+  'timeline.operation.history-cleared': 'Deleted by retention policy',
   /** Label shown in review changes timeline when a document was published */
   'timeline.operation.published': 'Published',
   /** Label shown in review changes timeline when a document was published, with a timestamp */
@@ -1898,6 +1924,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label shown in review changes timeline when a document was unpublished, with a timestamp */
   'timeline.operation.unpublished_timestamp': 'Unpublished: {{timestamp, datetime}}',
 
+  /** Label shown in review changes timeline when a document version has been created */
+  'timeline.operation.version-created': 'Version created',
+  /** Label shown in review changes timeline when a document version has been created, with a timestamp */
+  'timeline.operation.version-created_timestamp': 'Version created: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document version has been discarded */
+  'timeline.operation.version-discarded': 'Version discarded',
+  /** Label shown in review changes timeline when a document version has been discarded, with a timestamp */
+  'timeline.operation.version-discarded_timestamp': 'Version discarded: {{timestamp, datetime}}',
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).

@@ -18,6 +18,7 @@ import {
 import {type Annotation, type ObjectDiff} from '../../field'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {getDocumentTransactions} from './getDocumentTransactions'
+import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 import {
   type DocumentGroupEvent,
   type EventsStoreRevision,
@@ -164,6 +165,16 @@ function removeDuplicatedTransactions(transactions: TransactionLogEventWithEffec
   })
 }
 
+export class MissingSinceDocumentError extends Error {
+  revisionId: string
+
+  constructor(revisionId: string) {
+    super(`Missing since document for revision ${revisionId}`)
+    this.name = 'MissingSinceDocumentError'
+    this.revisionId = revisionId
+  }
+}
+
 export function getDocumentChanges({
   eventsObservable$,
   documentId,
@@ -197,8 +208,22 @@ export function getDocumentChanges({
           sinceDoc = {_type: to._type, _id: to._id, _rev: to._rev} as SanityDocument
         }
       }
+
       if (!sinceDoc) {
-        return of({loading: false, diff: null, error: null})
+        return of({
+          loading: false,
+          diff: null,
+          error:
+            since && !since.loading && since.revisionId
+              ? /**
+                 * In some cases, depending on history retention, we will get documents in the events api with a revision
+                 * that may not exist anymore in the /history/documents endpoint.
+                 *
+                 * In those cases, we cannot show the comparison, because we don't have a "from" document to select, so we will show an error to the users.
+                 */
+                new MissingSinceDocumentError(since?.revisionId)
+              : null,
+        })
       }
 
       return remoteTransactions$.pipe(
@@ -207,6 +232,9 @@ export function getDocumentChanges({
           // For this case, we can use the remote transactions to calculate the diff.
           const viewingLatest = !to?._rev
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
+            if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
+              return of([])
+            }
             if (viewingLatest && lastResolvedSince === sinceDoc._rev) {
               // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
               return of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))

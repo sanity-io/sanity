@@ -1,5 +1,5 @@
 import {type CliConfig} from '@sanity/cli'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {type BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 import {shouldAutoUpdate} from '../shouldAutoUpdate'
@@ -36,5 +36,34 @@ describe('shouldAutoUpdate', () => {
     const flags: BuildSanityStudioCommandFlags = {'auto-updates': false}
     const cliConfig: CliConfig = {autoUpdates: true}
     expect(shouldAutoUpdate({flags, cliConfig})).toBe(false)
+  })
+
+  it('should show a deprecation warning with the correct flag name when --auto-updates is used', () => {
+    const mockOutput = {warn: vi.fn()}
+
+    shouldAutoUpdate({flags: {'auto-updates': true}, output: mockOutput})
+    expect(mockOutput.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'The --auto-updates flag is deprecated for `deploy` and `build` commands. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.',
+      ),
+    )
+  })
+
+  it('should show a deprecation warning with the correct flag name when --no-auto-updates is used', () => {
+    const mockOutput = {warn: vi.fn()}
+
+    shouldAutoUpdate({flags: {'auto-updates': false}, output: mockOutput})
+    expect(mockOutput.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'The --no-auto-updates flag is deprecated for `deploy` and `build` commands. Set the `autoUpdates` option in `sanity.cli.ts` or `sanity.cli.js` instead.',
+      ),
+    )
+  })
+
+  it('should not show a deprecation warning when the flag is not used', () => {
+    const mockOutput = {warn: vi.fn()}
+
+    shouldAutoUpdate({flags: {}, cliConfig: {autoUpdates: true}, output: mockOutput})
+    expect(mockOutput.warn).not.toHaveBeenCalled()
   })
 })
