@@ -20,6 +20,7 @@ vi.mock('../store', () => ({useTasksStore: vi.fn()}))
 vi.mock('../context/isLastPane/useIsLastPane', () => ({
   useIsLastPane: vi.fn().mockReturnValue(true),
 }))
+vi.mock('../../hooks/useStudioUrl')
 vi.mock('@sanity/ui', async () => {
   const actual = await vi.importActual('@sanity/ui')
   const useToastMock = vi.fn()
