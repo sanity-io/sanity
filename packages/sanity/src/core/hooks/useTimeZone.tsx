@@ -2,12 +2,14 @@ import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {startWith} from 'rxjs/operators'
 
 import ToastDescription from '../scheduledPublishing/components/toastDescription/ToastDescription'
 import {DATE_FORMAT} from '../scheduledPublishing/constants'
 import {type NormalizedTimeZone} from '../scheduledPublishing/types'
 import {debugWithName} from '../scheduledPublishing/utils/debug'
 import getErrorMessage from '../scheduledPublishing/utils/getErrorMessage'
+import {type KeyValueStoreValue, useKeyValueStore} from '../store'
 
 enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',
@@ -34,7 +36,7 @@ export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
 
-export const timeZoneLocalStorageNamespace = 'timeZone.'
+export const timeZoneLocalStorageNamespace = 'studio.timezone.'
 
 const timeZoneCache = new Map<string, NormalizedTimeZone[]>()
 const offsetCache = new Map<
@@ -137,15 +139,41 @@ function getGloballyCachedTimeZones(locale: string, relativeDate?: Date): Normal
   return computedTimeZones
 }
 
+export const TIME_ZONE_SCOPE_TYPE = {
+  scheduledPublishing: 'scheduled-publishing',
+  contentReleases: 'content-releases',
+  input: 'input',
+}
+
 export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()
+  const keyValueStore = useKeyValueStore()
   const currentLocale = navigator.language
   const {defaultTimeZone} = scope
-  const localStorageId =
+
+  // used for the key to match formatting in cellar
+  const type = TIME_ZONE_SCOPE_TYPE[scope.type]
+  const keyStoreId =
     'id' in scope
-      ? `${timeZoneLocalStorageNamespace}${scope.type}.${scope.id}`
-      : `${timeZoneLocalStorageNamespace}${scope.type}`
+      ? `${timeZoneLocalStorageNamespace}${type}.${scope.id}`
+      : `${timeZoneLocalStorageNamespace}${type}`
   const relativeDate = 'relativeDate' in scope ? scope.relativeDate : undefined
+
+  // Check for legacy localStorage key and migrate if needed
+  // fall back for old way of handling timezones
+  useEffect(() => {
+    if (scope.type === 'scheduledPublishing') {
+      const legacyKey = 'scheduled-publishing::time-zone'
+      const legacyValue = localStorage.getItem(legacyKey)
+
+      if (legacyValue) {
+        // Migrate the value to key-value store
+        keyValueStore.setKey(keyStoreId, legacyValue)
+        // Remove the legacy key
+        localStorage.removeItem(legacyKey)
+      }
+    }
+  }, [scope.type, keyValueStore, keyStoreId, currentLocale, relativeDate])
 
   const allTimeZones: NormalizedTimeZone[] = useMemo(() => {
     return getGloballyCachedTimeZones(currentLocale, relativeDate)
@@ -158,8 +186,18 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return normalizedDefaultTimezone
   }, [allTimeZones, defaultTimeZone])
 
+  const [storedTimeZone, setStoredTimeZone] = useState<KeyValueStoreValue>(null)
+
+  useEffect(() => {
+    const subscription = keyValueStore
+      .getKey(keyStoreId)
+      .pipe(startWith(null))
+      .subscribe(setStoredTimeZone)
+
+    return () => subscription.unsubscribe()
+  }, [keyValueStore, keyStoreId])
+
   const getStoredTimeZone = useCallback((): NormalizedTimeZone | undefined => {
-    const storedTimeZone = localStorage.getItem(localStorageId)
     if (!storedTimeZone) return undefined
 
     try {
@@ -174,14 +212,14 @@ export const useTimeZone = (scope: TimeZoneScope) => {
 
       const fallbackTimeZone = allTimeZones.find((tz) => tz.offset === wholeTimeZone?.offset)
       if (fallbackTimeZone) {
-        localStorage.setItem(localStorageId, fallbackTimeZone.name)
+        keyValueStore.setKey(keyStoreId, fallbackTimeZone.name)
         return fallbackTimeZone
       }
     } catch {
       return undefined
     }
     return undefined
-  }, [allTimeZones, localStorageId])
+  }, [allTimeZones, keyStoreId, keyValueStore, storedTimeZone])
 
   const getLocalTimeZone = useCallback((): NormalizedTimeZone => {
     const localTzName = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -214,7 +252,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return () => {
       window.removeEventListener(TimeZoneEvents.update, handler)
     }
-  }, [getInitialTimeZone, localStorageId])
+  }, [getInitialTimeZone, keyStoreId])
 
   const formatDateTz = useCallback(
     ({
@@ -258,7 +296,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       setTimeZone((prevTz) => {
         try {
           if (prevTz?.name !== tz.name) {
-            localStorage.setItem(localStorageId, tz.name)
+            keyValueStore.setKey(keyStoreId, tz.name)
             window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
 
@@ -288,7 +326,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         return tz
       })
     },
-    [localStorageId, toast],
+    [keyStoreId, toast, keyValueStore],
   )
 
   const utcToCurrentZoneDate = useCallback(
