@@ -6,7 +6,7 @@
  * all common cases. If you find a missing token, feel free to add it.
  *
  */
-function momentToDateFnsFormat(momentFormat: string): string {
+export function momentToDateFnsFormat(momentFormat: string): string {
   // A list of replacements from Moment tokens to date-fns tokens
   // ordered from longest to shortest to prevent partial replacements
   const formatMap: Record<string, string> = {
@@ -38,5 +38,3 @@ function momentToDateFnsFormat(momentFormat: string): string {
     momentFormat,
   )
 }
-
-export default momentToDateFnsFormat
