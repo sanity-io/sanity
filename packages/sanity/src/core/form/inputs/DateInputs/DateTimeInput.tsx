@@ -268,11 +268,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
             }
           />
         </Box>
-        <CenterAlignedBox paddingX={3} paddingY={1}>
-          <FormFieldStatus maxAvatars={1} position="top">
-            {/*<FieldPresence maxAvatars={1} presence={presence} />*/}
-          </FormFieldStatus>
-        </CenterAlignedBox>
+        <FormFieldStatus maxAvatars={1} position="top" />
         <ChangeIndicator hasFocus={Boolean(focused)} isChanged={changed} path={path}>
           <div data-testid="change-bar-wrapper">
             <div data-testid="change-bar__field-wrapper">
