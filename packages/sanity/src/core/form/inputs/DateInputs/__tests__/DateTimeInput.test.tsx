@@ -1,10 +1,10 @@
 import {defineField, type StringSchemaType} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {of} from 'rxjs'
 import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
-import {timeZoneLocalStorageNamespace} from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
 import {DateTimeInput} from '../DateTimeInput'
@@ -12,6 +12,12 @@ import {DateTimeInput} from '../DateTimeInput'
 vi.mock('sanity', () => ({
   set: vi.fn(),
 }))
+
+vi.mock('../../../../hooks/useTimeZone', () => ({
+  useKeyValueStore: vi.fn(),
+}))
+
+const useKeyValueStoreMock = vi.fn()
 
 const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
@@ -130,49 +136,44 @@ test('Make sure time is displaying in wall time when displayTimeZone is not set'
   expect(input.value).toBe('2021-06-15 05:00')
 })
 
-test('Make sure we are respecting the saved timezone in localStorage when displayTimeZone is set', async () => {
+test('Make sure we are respecting the saved timezone in keyValueStore when displayTimeZone is set', async () => {
   const documentId = 'testDoc123'
   const fieldName = 'test'
-  const localStorageKey = `${timeZoneLocalStorageNamespace}input.${documentId}.${fieldName}`
   const initialUtcValue = '2021-06-15T12:00:00.000Z'
 
-  localStorage.setItem(localStorageKey, 'Asia/Tokyo')
+  // Mock the keyValueStore to return 'Asia/Tokyo' for the timezone
+  const getKeyMock = vi.fn().mockReturnValue(of('Asia/Tokyo'))
+  const setKeyMock = vi.fn()
+  useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
 
-  try {
-    const {result} = await renderStringInput({
-      fieldDefinition: defineField({
-        type: 'datetime',
-        name: fieldName,
-        options: {
-          displayTimeZone: 'Europe/Oslo',
-          allowTimeZoneSwitch: true,
-        },
-      }),
-      props: {
-        documentValue: {_id: documentId, _type: 'datetime', [fieldName]: initialUtcValue},
-        id: fieldName,
-        value: initialUtcValue,
-        onChange: vi.fn(),
+  const {result} = await renderStringInput({
+    fieldDefinition: defineField({
+      type: 'datetime',
+      name: fieldName,
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: true,
       },
-      render: (inputProps) => (
-        <FormValueProvider value={{_id: documentId, _type: 'datetime'}}>
-          <DateTimeInput {...inputProps} />
-        </FormValueProvider>
-      ),
-    })
+    }),
+    props: {
+      documentValue: {_id: documentId, _type: 'datetime', [fieldName]: initialUtcValue},
+    },
+    render: (inputProps) => (
+      <FormValueProvider value={{_id: documentId, _type: 'datetime'}}>
+        <DateTimeInput {...inputProps} />
+      </FormValueProvider>
+    ),
+  })
 
-    const input = result.container.querySelector('input')!
+  const input = result.container.querySelector('input')!
 
-    expect(input.value).toBe('2021-06-15 21:00')
+  expect(input.value).toBe('2021-06-15 21:00')
 
-    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
-    expect(timeZoneButton).toHaveTextContent('Tokyo')
-  } finally {
-    localStorage.removeItem(localStorageKey)
-  }
+  const timeZoneButton = result.getAllByTestId('timezone-button')[0]
+  expect(timeZoneButton).toHaveTextContent('Tokyo')
 })
 
-test('Make sure that if the localStorage timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
+test('Make sure that if the keyValueStore timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
@@ -282,7 +283,9 @@ Object.entries(expected).forEach(([format, expectedValue]) => {
       render: (inputProps) => <DateTimeInputWithFormValue {...inputProps} />,
     })
     const input = result.container.querySelector('input')!
-    if (expectedValue instanceof RegExp) {
+    // added to enforce type safety and linting from screaming
+    const isRegExp = (value: unknown): value is RegExp => value instanceof RegExp
+    if (isRegExp(expectedValue)) {
       expect(input.value).toMatch(expectedValue)
     } else {
       expect(input.value).toContain(expectedValue)
