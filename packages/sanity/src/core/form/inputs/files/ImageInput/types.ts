@@ -37,6 +37,7 @@ export interface BaseImageInputProps
   assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder
+  isUploading: boolean
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
   client: SanityClient

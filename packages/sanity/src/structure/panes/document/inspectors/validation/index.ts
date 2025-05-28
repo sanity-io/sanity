@@ -7,6 +7,7 @@ import {
   type FormNodeValidation,
   isValidationError,
   isValidationWarning,
+  usePerspective,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -17,7 +18,12 @@ import {ValidationInspector} from './ValidationInspector'
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
-  const {validation: validationMarkers} = useValidationStatus(documentId, documentType)
+  const {selectedReleaseId} = usePerspective()
+  const {validation: validationMarkers} = useValidationStatus(
+    documentId,
+    documentType,
+    selectedReleaseId,
+  )
 
   const validation: FormNodeValidation[] = useMemo(
     () =>

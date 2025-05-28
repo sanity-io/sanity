@@ -1,8 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {createMemoryHistory} from 'history'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
-import {AddonDatasetContext} from 'sanity/_singletons'
+import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 
 import {
   CopyPasteProvider,
@@ -11,16 +12,19 @@ import {
   type SingleWorkspace,
   SourceProvider,
   WorkspaceProvider,
+  type WorkspaceSummary,
 } from '../../src/core'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
+import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
+import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {
-  config?: SingleWorkspace
+  config?: Partial<SingleWorkspace>
   client?: SanityClient
   resources?: LocaleResourceBundle[]
 }
@@ -49,28 +53,38 @@ export async function createTestProvider({
       <RouterProvider router={router} state={{}} onNavigate={noop}>
         <ThemeProvider theme={studioTheme}>
           <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
-            <ToastProvider>
-              <LayerProvider>
-                <WorkspaceProvider workspace={workspace}>
-                  <SourceProvider source={workspace.unstable_sources[0]}>
-                    <CopyPasteProvider>
-                      <ResourceCacheProvider>
-                        <AddonDatasetContext.Provider
-                          value={{
-                            createAddonDataset: async () => Promise.resolve(null),
-                            isCreatingDataset: false,
-                            client: null,
-                            ready: true,
-                          }}
-                        >
-                          {children}
-                        </AddonDatasetContext.Provider>
-                      </ResourceCacheProvider>
-                    </CopyPasteProvider>
-                  </SourceProvider>
-                </WorkspaceProvider>
-              </LayerProvider>
-            </ToastProvider>
+            <ResourceCacheProvider>
+              <ToastProvider>
+                <LayerProvider>
+                  <WorkspaceProvider workspace={workspace}>
+                    <SourceProvider source={workspace.unstable_sources[0]}>
+                      <ActiveWorkspaceMatcherProvider
+                        activeWorkspace={{name: 'default'} as WorkspaceSummary}
+                        setActiveWorkspace={noop}
+                        history={createMemoryHistory()}
+                      >
+                        <CopyPasteProvider>
+                          <ResourceCacheProvider>
+                            <AddonDatasetContext.Provider
+                              value={{
+                                createAddonDataset: async () => Promise.resolve(null),
+                                isCreatingDataset: false,
+                                client: null,
+                                ready: true,
+                              }}
+                            >
+                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                {children}
+                              </PerspectiveContext.Provider>
+                            </AddonDatasetContext.Provider>
+                          </ResourceCacheProvider>
+                        </CopyPasteProvider>
+                      </ActiveWorkspaceMatcherProvider>
+                    </SourceProvider>
+                  </WorkspaceProvider>
+                </LayerProvider>
+              </ToastProvider>
+            </ResourceCacheProvider>
           </LocaleProviderBase>
         </ThemeProvider>
       </RouterProvider>

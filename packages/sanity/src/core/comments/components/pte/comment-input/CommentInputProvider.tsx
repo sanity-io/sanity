@@ -73,16 +73,22 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   }, [])
 
   const openMentions = useCallback(() => {
+    if (mentionOptions?.disabled) {
+      return
+    }
     setMentionsMenuOpen(true)
     setMentionsSearchTerm('')
     setMentionsMenuOpen(true)
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
-  }, [editor])
+  }, [editor, mentionOptions?.disabled])
 
   // This function activates or deactivates the mentions menu and updates
   // the mention search term when the user types into the Portable Text Editor.
   const onBeforeInput = useCallback(
     (event: InputEvent): void => {
+      if (mentionOptions?.disabled) {
+        return
+      }
       const selection = PortableTextEditor.getSelection(editor)
       const cursorOffset = selection ? selection.focus.offset : 0
       const focusChild = PortableTextEditor.focusChild(editor)
@@ -135,7 +141,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         setMentionsSearchTerm(term)
       }
     },
-    [closeMentions, editor, mentionsSearchTerm, openMentions],
+    [closeMentions, editor, mentionsSearchTerm, openMentions, mentionOptions?.disabled],
   )
 
   const insertAtChar = useCallback(() => {

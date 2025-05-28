@@ -58,7 +58,7 @@ export const ObjectField = function ObjectField(props: {
     renderPreview,
   } = props
   const fieldActions = useDocumentFieldActions()
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<{focus: () => void}>(undefined)
   // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
   const pendingValue = useRef(member.field.value)
 

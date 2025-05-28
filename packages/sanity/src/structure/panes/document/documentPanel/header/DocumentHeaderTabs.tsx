@@ -5,8 +5,19 @@ import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
 
+/**
+ * This component will render the tabs for the document pane, following this rules:
+ *  if the view tabs are wider than 200px it collapses to a dropdown
+ *  if the header is smaller than 480px it collapses to a dropdown
+ * For this we need to first measure the pane header width and then the tabs width.
+ *
+ * Gotcha, if the tabs are wider han 200px it renders a dropdown and if then the tabs change to be smaller than 200px
+ * it will not change back to tabs, this is a limitation of the current implementation but an ok tradeoff to avoid mounting
+ * ghost elements just to measure the width.
+ */
 export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
+
   const tabPanelId = `${paneKey}tabpanel`
 
   return (

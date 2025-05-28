@@ -11,14 +11,16 @@ import {shareReplayLatest} from './utils/shareReplayLatest'
 export function createGlobalListener(client: SanityClient) {
   return client
     .listen(
-      '*[!(_id in path("_.**"))]',
+      '*',
       {},
       {
         events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,
         includePreviousRevision: false,
         includeMutations: false,
+        includeAllVersions: true,
         visibility: 'query',
+        effectFormat: 'mendoza',
         tag: 'preview.global',
       },
     )

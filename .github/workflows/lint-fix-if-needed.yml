@@ -3,7 +3,7 @@ name: ESLint --fix
 
 on:
   push:
-    branches: [next]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -18,37 +18,14 @@ jobs:
     name: Should the linter fix? 🤔
     runs-on: ubuntu-latest
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
-    if: ${{ github.ref_name == 'next' }}
+    if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
+          cache: pnpm
           node-version: lts/*
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
 
       - name: Install project dependencies
         run: pnpm install
@@ -59,14 +36,14 @@ jobs:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
       - run: "pnpm lint:fix -- --rule 'prettier/prettier: [off]'"
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         # Run even if `pnpm lint:fix` fails
         if: always()
         id: app-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7
+      - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         # Run even if `lint:fix` fails
         if: always()
         with:

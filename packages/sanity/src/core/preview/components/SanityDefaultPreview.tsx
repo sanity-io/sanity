@@ -8,7 +8,6 @@ import {
   type ElementType,
   isValidElement,
   memo,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useMemo,
@@ -39,7 +38,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
  * */
 export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   props: SanityDefaultPreviewProps,
-): ReactElement {
+): React.JSX.Element {
   const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -135,8 +134,8 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       <Tooltip
         content={tooltip}
         disabled={!tooltip}
-        fallbackPlacements={['top-end']}
-        placement="bottom-end"
+        fallbackPlacements={['top-end', 'bottom-end']}
+        placement="right"
       >
         {/* Currently tooltips won't trigger without a wrapping element */}
         <div>{children}</div>

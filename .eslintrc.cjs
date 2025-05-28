@@ -2,6 +2,46 @@
 // @ts-check
 'use strict'
 
+const noRestrictedImportPaths = [
+  {
+    name: '@sanity/ui',
+    importNames: [
+      'Button',
+      'ButtonProps',
+      'Dialog',
+      'DialogProps',
+      'ErrorBoundary',
+      'MenuButton',
+      'MenuButtonProps',
+      'MenuGroup',
+      'MenuGroupProps',
+      'MenuItem',
+      'MenuItemProps',
+      'Popover',
+      'PopoverProps',
+      'Tab',
+      'TabProps',
+      'Tooltip',
+      'TooltipProps',
+      'TooltipDelayGroupProvider',
+      'TooltipDelayGroupProviderProps',
+    ],
+    message:
+      'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
+  },
+  {
+    name: 'styled-components',
+    importNames: ['default'],
+    message: 'Please use `import {styled} from "styled-components"` instead.',
+  },
+  {
+    name: 'react',
+    importNames: ['default', 'createContext', 'createElement'],
+    message:
+      'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
+  },
+]
+
 const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
 
 /** @type {import('eslint').Linter.Config} */
@@ -92,6 +132,8 @@ const config = {
             'sortOrder',
             'status',
             'group',
+            'textWeight',
+            'showChangesBy',
           ],
         },
       },
@@ -116,6 +158,7 @@ const config = {
     'no-shadow': 'off',
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
+    'no-nested-ternary': 'off',
     'no-async-promise-executor': 'warn',
     'unicorn/prefer-string-slice': 'error',
     'unicorn/prefer-node-protocol': 'error',
@@ -184,50 +227,48 @@ const config = {
         'no-restricted-imports': [
           'error',
           {
+            paths: noRestrictedImportPaths,
+          },
+        ],
+      },
+    },
+    {
+      files: ['packages/sanity/src/core/**'],
+      excludedFiles: ['**/__workshop__/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
             paths: [
               {
-                name: '@sanity/ui',
-                importNames: [
-                  'Button',
-                  'ButtonProps',
-                  'Dialog',
-                  'DialogProps',
-                  'ErrorBoundary',
-                  'MenuButton',
-                  'MenuButtonProps',
-                  'MenuGroup',
-                  'MenuGroupProps',
-                  'MenuItem',
-                  'MenuItemProps',
-                  'Popover',
-                  'PopoverProps',
-                  'Tab',
-                  'TabProps',
-                  'Tooltip',
-                  'TooltipProps',
-                  'TooltipDelayGroupProvider',
-                  'TooltipDelayGroupProviderProps',
-                ],
+                name: 'sanity',
                 message:
-                  'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
+                  'Please import from a relative path instead (since you are inside `packages/sanity/src/core`).',
               },
+              ...noRestrictedImportPaths,
+            ],
+          },
+        ],
+      },
+    },
+    {
+      files: ['test/e2e/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
               {
-                name: 'styled-components',
-                importNames: ['default'],
-                message: 'Please use `import {styled} from "styled-components"` instead.',
-              },
-              {
-                name: 'react',
-                importNames: ['default', 'createContext', 'createElement'],
+                name: '@playwright/test',
+                importNames: ['test', 'default'],
                 message:
-                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
+                  'Please use named imports, e.g. `import {test} from "studio-test"` instead.',
               },
             ],
           },
         ],
       },
     },
-
     // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
     {
       files: ['packages/sanity/src/_singletons/**'],

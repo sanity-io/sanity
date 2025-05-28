@@ -1,12 +1,23 @@
 name: End-to-End Tests
 permissions:
   contents: read # for checkout
+  pull-requests: write # for comment
+
+env:
+  CHROMIUM_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-chromium-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
+  FIREFOX_DATASET: ${{ github.event_name == 'pull_request' && format('pr-{0}-firefox-{1}', github.event.number, github.run_id) || vars.SANITY_E2E_DATASET_STAGING }}
+
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   install:
     timeout-minutes: 30
@@ -17,188 +28,246 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
 
       - name: Store Playwright's Version
+        id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Build CLI
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
-      - name: Build E2E test studio on next
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
-        run: pnpm e2e:setup && pnpm e2e:build
-
-      - name: Build E2E test studio on PR
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: pnpm e2e:setup && pnpm e2e:build
-
-      # Caches build from either PR or next
-      - name: Cache build
-        id: cache-e2e-build
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-e2e-build
-        with:
-          path: |
-            ./*
-            !**/node_modules/**
-          # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
-
-  playwright-test:
+  dataset-setup:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
-        # Add more shards here if needed
-        shardIndex: [1, 2]
-        shardTotal: [2]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          cache: pnpm
+          node-version: lts/*
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+      - name: Echo Vercel preview URL
+        run: echo ${{ github.event.deployment_status.target_url }}
 
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Build CLI
+        if: ${{ github.event_name == 'pull_request' }}
+        # This warms up the turborepo remote cache
+        run: pnpm build:cli --output-logs=full --log-order=grouped
+
+      - name: dataset setup on PR (chromium)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+        run: |
+          echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
+          pnpm e2e:setup
+
+      - name: dataset setup on PR (firefox)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
+        run: |
+          echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
+          pnpm e2e:setup
+      # TODO: Add a dataset setup for main for each project [chromium, firefox]
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: [install]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+
+      - name: Build Project Artifacts on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+          SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
+          SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
+        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+
+      - name: Build Project Artifacts on main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
+          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
+          # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
+          # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
+          # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
+        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+          -m githubDeployment="1" \
+          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+          -m githubCommitMessage="${{ github.event.head_commit.message || github.event.pull_request.title }}" \
+          -m githubCommitOrg="${{ github.repository_owner }}" \
+          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+          -m githubCommitRepo="${{ github.event.repository.name }}" \
+          -m githubCommitSha="${{ github.sha }}" \
+          -m githubOrg="${{ github.repository_owner }}" \
+          -m githubRepo="${{ github.event.repository.name }}" \
+          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Echo the preview URL
+        run: |
+          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
+           echo "::error::Preview URL was not found. Deployment may have failed, does your PR title has double quotes? Try removing them."
+           exit 1
+          fi
+          echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
+
+      - name: Add PR Comment with preview URL
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "e2e-preview-url"
+          message: |
+            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }}) 
+
+            <details>
+            <summary> 🔑 Environment Variables for Local Testing</summary>
+
+            This is the preview URL for the E2E tests: **${{ steps.deploy.outputs.DEPLOY_URL }}**
+
+            To run the E2E tests locally, you can use the following environment variables, then run `pnpm test:e2e --ui` to open the Playwright test runner.
+
+            💬 Remember to build the project first with `pnpm build:e2e`.
+
+            ```
+              SANITY_E2E_PROJECT_ID=${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+              SANITY_E2E_BASE_URL=${{ steps.deploy.outputs.DEPLOY_URL }}
+              SANITY_E2E_DATASET="update depending the project you want to test (${{ env.CHROMIUM_DATASET }} || ${{ env.FIREFOX_DATASET }} )"
+              SANITY_E2E_DATASET_CHROMIUM=${{ env.CHROMIUM_DATASET }}
+              SANITY_E2E_DATASET_FIREFOX=${{ env.FIREFOX_DATASET }}
+            ```
+
+            </details>
+
+  playwright-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [deploy-preview, dataset-setup]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      SANITY_E2E_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
+        project: [chromium, firefox]
+        # Add more shards here if needed, but remember that the github required checks will have to be updated as well
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+      - name: Echo the base URL
+        run: echo "$SANITY_E2E_BASE_URL"
+      - name: Install project dependencies
+        run: pnpm install
+
       - name: Store Playwright's Version
+        id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
-          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ vars.PLAYWRIGHT_VERSION }}
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        id: restore-build
-        env:
-          cache-name: cache-e2e-build
-        with:
-          path: |
-            ./*
-            !**/node_modules/**
-          key: ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
-          # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
-
-      - name: Run E2E tests on next
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
+      - name: Run E2E tests on main
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
+        # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
@@ -207,102 +276,71 @@ jobs:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to main
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+          SANITY_E2E_DATASET: ${{ (matrix.project == 'chromium') && env.CHROMIUM_DATASET || env.FIREFOX_DATASET }}
+        # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
-          path: blob-report
+          name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
+          path: |
+            blob-report
+            test-results
           retention-days: 30
+
   merge-reports:
     if: always()
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ vars.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report
+          pattern: playwright-report-*
+          merge-multiple: true
+          path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./playwright-report
+        run: npx playwright merge-reports --reporter html all-blob-reports/blob-report
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v3
+        id: upload-playwright-report
+        uses: actions/upload-artifact@v4
         with:
-          name: html-report--attempt-${{ github.run_attempt }}
+          name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
 
-  cleanup:
-    permissions:
-      contents: read
-      actions: write # needed to delete the cache
-    timeout-minutes: 30
-    name: Cleanup (${{ matrix.project }})
-    runs-on: ubuntu-latest
-    needs: [playwright-test]
+      - name: Extract artifact URL
+        id: artifact-url
+        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        run: |
+          URL=$(echo "${{ steps.upload-playwright-report.outputs.artifact-url }}")
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
-        project: [chromium, firefox]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - name: Add PR Comment with Report Link
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
-          node-version: 18
+          comment_tag: "playwright-e2e-report"
+          message: |
+            ### 📊 Playwright Test Report
 
-      # Delete the cache so it is only used once
-      - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ vars.cache-name }}-${{ github.run_id }}
-        env:
-          cache-name: cache-e2e-build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            **[Download Full E2E Report](${{ steps.artifact-url.outputs.url }})**
+
+            This report contains test results, including videos of failing tests.

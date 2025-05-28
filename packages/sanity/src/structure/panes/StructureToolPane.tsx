@@ -14,7 +14,7 @@ interface StructureToolPaneProps {
   itemId: string
   pane: PaneNode
   paneKey: string
-  params: Record<string, string | undefined>
+  params: Record<string, string | undefined> & {perspective?: string}
   payload: unknown
   path: string
   selected: boolean

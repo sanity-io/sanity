@@ -1,13 +1,5 @@
 import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
-import {
-  type HTMLAttributes,
-  type ReactElement,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type HTMLAttributes, useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -33,7 +25,7 @@ export function GroupChange(
     readOnly?: boolean
     hidden?: boolean
   } & HTMLAttributes<HTMLDivElement>,
-): ReactElement | null {
+): React.JSX.Element | null {
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)

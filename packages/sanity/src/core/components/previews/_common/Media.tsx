@@ -49,13 +49,7 @@ function renderMedia(props: {
 
   if (isValidElementType(media)) {
     const MediaComponent = media
-    return (
-      <MediaComponent
-        // @ts-expect-error - @TODO fix typings
-        dimensions={dimensions}
-        layout={layout}
-      />
-    )
+    return <MediaComponent dimensions={dimensions} layout={layout} />
   }
 
   if (typeof media === 'string') {

@@ -10,7 +10,6 @@ import {
   Fragment,
   isValidElement,
   memo,
-  type ReactElement,
   useCallback,
   useEffect,
   useId,
@@ -608,7 +607,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
               disabled,
               selected,
               virtualIndex,
-            }) as ReactElement
+            }) as React.JSX.Element
 
             // @TODO can we avoid using cloneElement here?
             const clonedItem =

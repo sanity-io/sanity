@@ -1,11 +1,10 @@
-import {type ReactNode, useMemo, useState} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {useSource} from '../../studio'
 import {CreateLinkedActions} from '../components/CreateLinkedActions'
 import {CreateLinkedDocumentBannerContent} from '../components/CreateLinkedDocumentBannerContent'
-import {StartInCreateBanner} from '../components/StartInCreateBanner'
-import {createAppIdCache} from '../studio-app/appIdCache'
+import {useAppIdCache} from '../studio-app/AppIdCacheProvider'
 import {type SanityCreateConfigContextValue} from './useSanityCreateConfig'
 
 interface SanityCreateConfigProviderProps {
@@ -15,11 +14,13 @@ interface SanityCreateConfigProviderProps {
 /**
  * @internal
  */
-export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProps): JSX.Element {
+export function SanityCreateConfigProvider(
+  props: SanityCreateConfigProviderProps,
+): React.JSX.Element {
   const {children} = props
   const {beta} = useSource()
 
-  const [appIdCache] = useState(() => createAppIdCache())
+  const appIdCache = useAppIdCache()
 
   const value = useMemo((): SanityCreateConfigContextValue => {
     return {
@@ -29,7 +30,6 @@ export function SanityCreateConfigProvider(props: SanityCreateConfigProviderProp
       components: {
         documentLinkedBannerContent: CreateLinkedDocumentBannerContent,
         documentLinkedActions: CreateLinkedActions,
-        startInCreateBanner: StartInCreateBanner,
       },
     }
   }, [beta?.create, appIdCache])

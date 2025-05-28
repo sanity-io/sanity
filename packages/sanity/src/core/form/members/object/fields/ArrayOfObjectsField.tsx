@@ -76,7 +76,7 @@ export function ArrayOfObjectsField(props: {
 
   const fieldActions = useDocumentFieldActions()
 
-  const focusRef = useRef<Element & {focus: () => void}>()
+  const focusRef = useRef<Element & {focus: () => void}>(undefined)
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {

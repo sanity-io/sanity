@@ -1,3 +1,7 @@
+export {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 export * from './components'
 export * from './ConfigPropertyError'
 export * from './ConfigResolutionError'

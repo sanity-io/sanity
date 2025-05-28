@@ -10,6 +10,32 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** "Disabled" status for auto-updates in About-dialog */
+  'about-dialog.version-info.auto-updates.disabled': 'Disabled',
+  /** "Enabled" status for auto-updates in About-dialog */
+  'about-dialog.version-info.auto-updates.enabled': 'Enabled',
+  /** "Auto Updates" status header in About-dialog */
+  'about-dialog.version-info.auto-updates.header': 'Auto Updates',
+  /** "How to enable" next to Disabled state for Auto updates in about dialog */
+  'about-dialog.version-info.auto-updates.how-to-enable': 'How to enable',
+  /** Text displayed on the "Copy to clipboard"-button after clicked */
+  'about-dialog.version-info.copy-to-clipboard-button.copied-text':
+    'Copied to Clipboard. Happy pasting!',
+  /** "Copy to Clipboard" button text for copying version details from About-dialog */
+  'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
+  /** "Current version" header in about dialog  */
+  'about-dialog.version-info.current-version.header': 'Current version',
+  /** "How to upgrade" link text */
+  'about-dialog.version-info.how-to-upgrade': 'How to upgrade',
+  /** "Latest version" header in about dialog */
+  'about-dialog.version-info.latest-version.header': 'Latest version',
+  /** "Latest version" header in about dialog */
+  'about-dialog.version-info.latest-version.text': 'Latest version is {{latestVersion}}',
+  /** "Up to date" status in About-dialog */
+  'about-dialog.version-info.up-to-date': 'Up to date',
+  /** "User agent" header in About-dialog */
+  'about-dialog.version-info.user-agent.header': 'User agent',
+
   /** The text used in the tooltip shown in the dialog close button */
   'announcement.dialog.close': 'Close',
   /** Aria label to be used in the dialog close button */
@@ -69,11 +95,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown when the list of assets only include a specific set of types */
   'asset-source.dialog.accept-message':
     'Only showing assets of accepted types: <strong>{{acceptTypes}}</strong>',
+  /** Select asset dialog cancel-button */
+  'asset-source.dialog.button.cancel': 'Cancel',
+  /** Select asset dialog select-button */
+  'asset-source.dialog.button.select': 'Select',
   /** Keys shared between both image asset source and file asset source */
   /** Select asset dialog title for files */
   'asset-source.dialog.default-title_file': 'Select file',
   /** Select asset dialog title for images */
   'asset-source.dialog.default-title_image': 'Select image',
+  /** Insert asset error */
+  'asset-source.dialog.insert-asset-error':
+    'Error inserting asset. See the console for more information.',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
   /** Text shown when selecting a file but there's no files to select from */
@@ -100,6 +133,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.image.asset-list.delete-successful': 'Image was deleted',
   /** Text displayed on button or menu invoking the image asset source */
   'asset-source.image.title': 'Uploaded images',
+  /** Built in asset source usage texts */
   'asset-source.usage-list.documents-using-file_named_one':
     'One document is using file <code>{{filename}}</code>',
   'asset-source.usage-list.documents-using-file_named_other':
@@ -125,6 +159,31 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
   'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
 
+  /** Common (all) Asset Source texts. Note that all translation keys starting with 'asset-source.' is for the built in asset source. */
+  'asset-sources.common.uploader.upload-failed.description':
+    'See the console for more information.',
+  'asset-sources.common.uploader.upload-failed.title': 'Upload failed',
+
+  /** Menu Items for Dataset Asset Source (will be replaced with workspace name by default) */
+  'asset-sources.dataset.file.title': 'Workspace files',
+  'asset-sources.dataset.image.title': 'Workspace images',
+
+  /** Error messages for the Media Library Asset Source  */
+  'asset-sources.media-library.error.library-could-not-be-resolved':
+    'Something went wrong trying to resolve the Media Library for this project.',
+
+  /** Menu Items for Media Library Asset Source */
+  'asset-sources.media-library.file.title': 'Media Library',
+  'asset-sources.media-library.image.title': 'Media Library',
+
+  /** Info messages for the Media Library Asset Source  */
+  'asset-sources.media-library.info.provisioning':
+    'Please wait while we prepare your Media Library',
+
+  /** Label when a release has been deleted by a different user */
+  'banners.deleted-bundle-banner.text':
+    "The '<strong>{{title}}</strong>' release has been deleted.",
+
   /** Action message for navigating to next month */
   'calendar.action.go-to-next-month': 'Go to next month',
   /** Action message for navigating to next year */
@@ -143,10 +202,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.action.go-to-yesterday': 'Yesterday',
   /** Label for switch that controls whether or not to include time in given timestamp */
   'calendar.action.include-time-label': 'Include time',
-  /** Action message for selecting the hour */
-  'calendar.action.select-hour': 'Select hour',
-  /** Action message for selecting the minute */
-  'calendar.action.select-minute': 'Select minute',
+  /** Action message for selecting the time */
+  'calendar.action.select-time': 'Select time',
   /** Action message for setting to the current time */
   'calendar.action.set-to-current-time': 'Set to current time',
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
@@ -237,6 +294,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.error-boundary.developer-info': 'Check the developer console for more information',
   /** Text shown when a diff component crashes during rendering, triggering the error boundary */
   'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+  /* Error description when changes could not be loaded */
+  'changes.error-description': "We're unable to load the changes for this document.",
+  /** Error title when changes could not be loaded */
+  'changes.error-title': 'Something went wrong',
   /** Error message shown when the value of a field is not the expected one */
   'changes.error.incorrect-type-message':
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
@@ -266,11 +327,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.loading-author': 'Loading…',
   /** Loading changes in Review Changes Pane */
   'changes.loading-changes': 'Loading changes…',
+  /** Error message shown when the document revision could not be found */
+  'changes.missing-since-document-error':
+    "We couldn't find the document revision with id: <code>{{revisionId}}</code> you're trying to compare. <Break/> This is probably due to history retention policy of your plan. <Break/> Please select a different <strong>From</strong> entry.",
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'There are no changes',
+  /* Label for the tooltip that shows when an action is not selectable*/
+  'changes.not-selectable': 'It is not possible to select this event',
   /** Portable Text diff: An annotation was added */
   'changes.portable-text.annotation_added': 'Added annotation',
   /** Portable Text diff: An annotation was changed */
@@ -312,8 +378,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
   /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Removed',
+  /** Same Revision Selected description in the Review Changes pane */
+  'changes.same-revision-selected-description':
+    'You have selected the same <strong>from</strong> and <strong>to</strong> revision, please select different revisions to compare the changes between them.',
+  /** Same Revision Selected title in the Review Changes pane */
+  'changes.same-revision-selected-title': 'Same revision selected',
   /** Title for the Review Changes pane */
   'changes.title': 'History',
+  /**The title that will be shown in the badge inside the events when the item is a draft */
+  'changes.versions.draft': 'Draft',
 
   /** --- Common components --- */
   /** Tooltip text for context menu buttons */
@@ -327,6 +400,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
+
+  /** The title of the reconnecting toast */
+  'common.reconnecting.toast.title': 'Trying to connect…',
 
   /** --- Configuration issues --- */
 
@@ -353,6 +429,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Label to show in the document footer indicating the creation date of the document */
+  'document-status.created': 'Created {{date}}',
+
+  /** Label to show in the document status indicating the date of the status */
+  'document-status.date': '{{date}}',
   /** Label to show in the document footer indicating the last edited date of the document */
   'document-status.edited': 'Edited {{date}}',
   /** Label to show in the document footer indicating the document is not published*/
@@ -361,6 +442,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.published': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
+
+  /** Label to show in the document footer indicating that the revision was not found */
+  'document-status.revision-not-found': 'Revision not found',
+  /** Label to indicate that a document type was not found */
+  'document.type.not-found': 'Document type "{{type}}" not found',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -449,16 +535,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.contact-sales': 'Contact sales',
+
   /**
    * Label for "help and support" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.help-and-support': 'Help and support',
+
   /**
    * Label for "join our community" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
   'help-resources.action.join-our-community': 'Join our community',
+
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is {{latestVersion}}',
   /** Information for what studio version the current studio is running */
@@ -468,6 +557,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
+  /** Text for menuitem upload button default asset source */
+  'input.files.common.upload-placeholder.file-input-button.default-source.badge': 'Default',
   /** Text for file input button in upload placeholder */
   'input.files.common.upload-placeholder.file-input-button.text': 'Upload',
   /** Uploading <FileName/> */
@@ -542,12 +633,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Tooltip content when boolean input is disabled */
   'inputs.boolean.disabled': 'Disabled',
+  /** Warning label when selected datetime is in the past */
+  'inputs.dateTime.past-date-warning': 'Select a date in the future.',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */
-  'inputs.file.browse-button.text': 'Browse',
+  'inputs.file.browse-button.text': 'Select',
   /** Select file */
   'inputs.file.dialog.title': 'Select file',
   /** Unknown member kind: `{{kind}}` */
@@ -608,6 +701,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.files.common.placeholder.drop-to-upload_image': 'Drop to upload image',
   /** Read only */
   'inputs.files.common.placeholder.read-only': 'Read only',
+  /** Select asset source destination for files to upload */
+  'inputs.files.common.placeholder.select-asset-source-upload-destination': 'Upload files to:',
   /** Can't upload files here */
   'inputs.files.common.placeholder.upload-not-supported': "Can't upload files here",
   /** Clear upload */
@@ -926,7 +1021,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Search returned a type that\'s not valid for this reference: "{{returnedType}}"',
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-description':
-    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes />.',
+    'Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes/>.',
   /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
   'inputs.reference.error.invalid-type-title': 'Document of invalid type',
   /** Error description for when the user does not have permissions to read the referenced document */
@@ -943,6 +1038,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.error.nonexistent-document.clear-button-label': 'Clear',
   /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
   'inputs.reference.error.search-failed-title': 'Reference search failed',
+  /** Label for when the GDR points to an invalid type  */
+  'inputs.reference.global.invalid-type':
+    'The referenced document is of invalid type ({{typeName}})',
   /** Alternative text for the image shown in cross-dataset reference input */
   'inputs.reference.image-preview-alt-text': 'Image preview of referenced document',
   /** Description for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
@@ -1088,6 +1186,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
+  'network-check.slow-protocol-warning.description':
+    'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
+  /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
+  'network-check.slow-protocol-warning.learn-more-button.text': 'Learn more',
+  /** Text for link that takes the user to the Sanity documentation to learn more about the HTTP1 issue */
+  'network-check.slow-protocol-warning.snooze-button.text': "Don't show again for this session",
+  /** Title text for the warning dialog when browser is using HTTP1 to communicate with the Sanity API */
+  'network-check.slow-protocol-warning.title': "You've got your breaks on",
+
   /** Button label for "Create new document" button */
   'new-document.button': 'Create',
   /**
@@ -1095,6 +1203,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * when there are templates/types available for creation
    */
   'new-document.create-new-document-label': 'New document…',
+  /** Tooltip message for add document button when the selected perspective is published  */
+  'new-document.disabled-published.tooltip': 'You cannot create new published documents',
+  /** Tooltip message for add document button when the selected perspective is for inactive release */
+  'new-document.disabled-release.tooltip': 'You cannot add documents to this release',
   /** Placeholder for the "filter" input within the new document menu */
   'new-document.filter-placeholder': 'Search document types',
   /** Loading indicator text within the new document menu */
@@ -1140,6 +1252,117 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
+
+  /** Action message to add document to new release */
+  'release.action.add-to-new-release': 'Add to release',
+  /** Action message to add document to release */
+  'release.action.add-to-release': 'Add to {{title}}',
+  /** Action message for when document is already in release  */
+  'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for when you click to view all versions you can copy the current document to */
+  'release.action.copy-to': 'Copy version to',
+  /** Action message for creating new releases */
+  'release.action.create-new': 'New release',
+  /** Action message for when document is already in release  */
+  'release.action.discard-version': 'Discard version',
+  /** Description for toast when version discarding failed */
+  'release.action.discard-version.failure': 'Failed to discard version',
+  /** Action message for when a new release is created off an existing version, draft or published document */
+  'release.action.new-release': 'New release',
+  /** Explanation provided when releases can't be created because the workspace release limit has been reached */
+  'release.action.new-release.limit-reached': 'This workspace is limited to {{count}} release',
+  'release.action.new-release.limit-reached_other':
+    'This workspace is limited to {{count}} releases',
+  /** Tooltip message for not having permissions for creating new releases */
+  'release.action.permission.error': 'You do not have permission to perform this action',
+  /** Error message for when a version is set to be unpublished */
+  'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
+  /** Action message for when a version is set to be unpublished successfully */
+  'release.action.unpublish-version.success':
+    'Successfully set <strong>{{title}}</strong> to be unpublished on release',
+  /** Action message for when the view release is pressed */
+  'release.action.view-release': 'View release',
+  /** Label for banner when release is scheduled */
+  'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+  /** Label for Draft chip in document header */
+  'release.chip.draft': 'Draft',
+  /** Label for Draft chip in global header */
+  'release.chip.global.drafts': 'Drafts',
+  /** Label for Published chip in document header */
+  'release.chip.published': 'Published',
+  /** Label for tooltip in chip when document is in an archived release */
+  'release.chip.tooltip.archived': 'This release is archived and cannot be edited.',
+  /** Label for tooltip in chip with the created date */
+  'release.chip.tooltip.created-date': 'Created {{date}}',
+  /** Label for tooltip in draft chip when it's a live edit document */
+  'release.chip.tooltip.draft-disabled.live-edit':
+    'This document is in live edit mode, drafts are disabled',
+  /** Label for tooltip in chip with the lasted edited date */
+  'release.chip.tooltip.edited-date': 'Edited {{date}}',
+  /** Label for tooltip in chip when document is intended for a future release that hasn't been scheduled */
+  'release.chip.tooltip.intended-for-date': 'Intended for {{date}}',
+  /** Label for tooltip in chip when there is no recent draft edits */
+  'release.chip.tooltip.no-edits': 'No edits',
+  /** Label for tooltip in chip when document isn't published */
+  'release.chip.tooltip.not-published': 'Not published',
+  /** Label for tooltip in chip with the published date */
+  'release.chip.tooltip.published-date': 'Published {{date}}',
+  /** Label for tooltip in chip when document is in a release that has been scheduled */
+  'release.chip.tooltip.scheduled-for-date': 'Scheduled for {{date}}',
+  /** Label for tooltip in scheduled chip without a known date */
+  'release.chip.tooltip.unknown-date': 'Unknown date',
+  /** Label for tooltip on deleted release */
+  'release.deleted-tooltip': 'This release has been deleted',
+  /** Title for copying version to a new release dialog */
+  'release.dialog.copy-to-release.title': 'Copy version to new release',
+  /** Title for action create a release */
+  'release.dialog.create.confirm': 'Create release',
+  /** Title for creating releases dialog */
+  'release.dialog.create.title': 'New release',
+  /** Label for description in tooltip to explain release types */
+  'release.dialog.tooltip.description':
+    'The intended release time is used to create better previews and hints about whether documents conflict.',
+  /** Label for noting that a release time is not final */
+  'release.dialog.tooltip.note': 'You can always change it later.',
+  /** Title for tooltip to explain release time */
+  'release.dialog.tooltip.title': 'Approximate time of release',
+  /** The placeholder text when the release doesn't have a description */
+  'release.form.placeholder-describe-release': 'Describe the release…',
+  /** Tooltip for button to hide release visibility */
+  'release.layer.hide': 'Hide release',
+  /** Label for draft perspective in navbar */
+  'release.navbar.drafts': 'Drafts',
+  /** Label for published releases in navbar */
+  'release.navbar.published': 'Published',
+  /** Tooltip for releases navigation in navbar */
+  'release.navbar.tooltip': 'Releases',
+  /** The placeholder text when the release doesn't have a title */
+  'release.placeholder-untitled-release': 'Untitled release',
+  /** The toast description that will be shown when the user has a release perspective which is now archived */
+  'release.toast.archived-release.description': 'This release has been unpinned',
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
+  'release.toast.archived-release.title': "The '{{title}}' release was archived",
+  /** The toast title that will be shown the creating a release fails */
+  'release.toast.create-release-error.title': 'Failed to create release',
+  /**The toast title that will be shown when the user has a release perspective which is now deleted */
+  'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
+  /** The toast description that will be shown when the user has a release perspective which is now published */
+  'release.toast.published-release.description': 'This release has been unpinned',
+  /** The toast title that will be shown when the user has a release perspective which is now deleted */
+  'release.toast.published-release.title': "The '{{title}}' release was published",
+  /** Label for when a version of a document has already been added to the release */
+  'release.tooltip.already-added': 'A version of this document has already been added',
+  /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
+  'release.tooltip.locked':
+    'This release has been scheduled. Unsechedule it to add more documents.',
+  /** Label for the release type 'as soon as possible' */
+  'release.type.asap': 'ASAP',
+  /** Label for the release type 'at time', meaning it's a release with a scheduled date */
+  'release.type.scheduled': 'At time',
+  /** Label for the release type 'undecided' */
+  'release.type.undecided': 'Undecided',
+  /** Tooltip for the dropdown to show all versions of document */
+  'release.version-list.tooltip': 'See all document versions',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
@@ -1609,6 +1832,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-title':
     'An error occurred whilst retrieving document changes.',
+  /** Description for error when the timeline for the given document can't be loaded */
+  'timeline.error.load-document-changes-version-description':
+    'Enable the events API through the Studio config to view document history.',
+  /** Title for error when the timeline for the given version document can't be loaded */
+  'timeline.error.load-document-changes-version-title':
+    'Version documents history is only available through the Events API.',
   /** Error description for when the document doesn't have history */
   'timeline.error.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',
@@ -1630,6 +1859,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.list.aria-label': 'Document revisions',
   /** Label for loading history */
   'timeline.loading-history': 'Loading history…',
+  /* Label for when no previous since events are available*/
+  'timeline.no-previous-events': 'No previous events',
   /** Label shown in review changes timeline when a document has been created */
   'timeline.operation.created': 'Created',
   /** Label shown in review changes timeline when a document was initially created */
@@ -1642,6 +1873,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.deleted': 'Deleted',
   /** Label shown in review changes timeline when a document has been deleted, with a timestamp */
   'timeline.operation.deleted_timestamp': 'Deleted: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a draft document has been created*/
+  'timeline.operation.draft-created': 'Draft created',
+  /** Label shown in review changes timeline when a draft document has been created, with a timestamp */
+  'timeline.operation.draft-created_timestamp': 'Draft created: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a draft has been discarded */
   'timeline.operation.draft-discarded': 'Discarded draft',
   /** Label shown in review changes timeline when a draft has been discarded, with a timestamp */
@@ -1654,6 +1889,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.edited-live': 'Live edited',
   /** Label shown in review changes timeline when a document has been edited live, with a timestamp */
   'timeline.operation.edited-live_timestamp': 'Live edited: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document has been created */
+  'timeline.operation.history-cleared': 'Deleted by retention policy',
   /** Label shown in review changes timeline when a document was published */
   'timeline.operation.published': 'Published',
   /** Label shown in review changes timeline when a document was published, with a timestamp */
@@ -1662,6 +1899,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.unpublished': 'Unpublished',
   /** Label shown in review changes timeline when a document was unpublished, with a timestamp */
   'timeline.operation.unpublished_timestamp': 'Unpublished: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document version has been created */
+  'timeline.operation.version-created': 'Version created',
+  /** Label shown in review changes timeline when a document version has been created, with a timestamp */
+  'timeline.operation.version-created_timestamp': 'Version created: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document version has been discarded */
+  'timeline.operation.version-discarded': 'Version discarded',
+  /** Label shown in review changes timeline when a document version has been discarded, with a timestamp */
+  'timeline.operation.version-discarded_timestamp': 'Version discarded: {{timestamp, datetime}}',
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).

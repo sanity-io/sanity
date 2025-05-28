@@ -1,4 +1,4 @@
-import {normalizeBlock} from '@sanity/block-tools'
+import {normalizeBlock} from '@portabletext/block-tools'
 import {type PortableTextBlock} from '@sanity/types'
 
 import {insert, PatchEvent} from '../../../patch'

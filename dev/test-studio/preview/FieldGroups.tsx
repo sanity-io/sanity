@@ -2,7 +2,7 @@ import {Box, Card, Stack, Text} from '@sanity/ui'
 
 import {useQuery} from './loader'
 
-export function FieldGroups(): JSX.Element {
+export function FieldGroups(): React.JSX.Element {
   const {data, loading, error} = useQuery<
     {
       _id: string
@@ -20,7 +20,7 @@ export function FieldGroups(): JSX.Element {
       } | null
     }[]
   >(
-    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}}}`,
+    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"][0..10]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}}}`,
   )
 
   if (error) {

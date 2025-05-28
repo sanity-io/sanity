@@ -1,10 +1,11 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test.skip('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await createDraftDocument('/content/input-debug;objectsDebug')
 
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,
@@ -43,7 +44,7 @@ test.skip('basic - open and close', () => {
 test.skip('basic - main document action', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     // wait for form to be attached
-    await createDraftDocument('/test/content/input-debug;objectsDebug')
+    await createDraftDocument('/content/input-debug;objectsDebug')
 
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
       timeout: 40000,

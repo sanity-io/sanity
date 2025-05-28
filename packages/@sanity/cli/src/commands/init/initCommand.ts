@@ -101,7 +101,6 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
   description: 'Initializes a new Sanity Studio and/or project',
   helpText,
   action: async (args, context) => {
-    const {output, chalk} = context
     const [type] = args.argsWithoutOptions
 
     // `sanity init whatever`

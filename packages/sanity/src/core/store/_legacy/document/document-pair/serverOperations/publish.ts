@@ -20,7 +20,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
       throw new Error('cannot execute "publish" when draft is missing')
     }
 
-    return actionsApiClient(client).observable.action(
+    return actionsApiClient(client, idPair).observable.action(
       {
         actionType: 'sanity.action.document.publish',
         draftId: idPair.draftId,

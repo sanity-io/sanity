@@ -78,7 +78,7 @@ interface CommentMessageSerializerProps {
  * @beta
  * @hidden
  */
-export function CommentMessageSerializer(props: CommentMessageSerializerProps): JSX.Element {
+export function CommentMessageSerializer(props: CommentMessageSerializerProps): React.JSX.Element {
   const {blocks} = props
 
   return (

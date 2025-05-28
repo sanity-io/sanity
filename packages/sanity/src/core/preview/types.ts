@@ -1,5 +1,7 @@
+import {type StackablePerspective} from '@sanity/client'
 import {
   type CrossDatasetType,
+  type GlobalDocumentReferenceType,
   type PreviewValue,
   type Reference,
   type SanityDocumentLike,
@@ -16,6 +18,7 @@ export type Id = string
 export type Previewable = (
   | {_id: string}
   | {_type: string}
+  | {_system?: {delete: boolean}}
   | {_ref: string; _dataset?: string; _projectId?: string}
 ) & {
   /**
@@ -37,7 +40,7 @@ export type Previewable = (
 export type PreviewPath = FieldName[]
 
 /** @internal */
-export type Selection = [Id, FieldName[]]
+export type Selection = [id: Id, fields: FieldName[]]
 
 /**
  * @hidden
@@ -55,7 +58,7 @@ export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 /**
  * @hidden
  * @beta */
-export type PreviewableType = SchemaType | CrossDatasetType
+export type PreviewableType = SchemaType | CrossDatasetType | GlobalDocumentReferenceType
 
 /**
  * @hidden
@@ -75,7 +78,7 @@ export type DocumentAvailability =
     }
   | {
       available: false
-      reason: 'PERMISSION_DENIED' | 'NOT_FOUND'
+      reason: 'PERMISSION_DENIED' | 'NOT_FOUND' | 'VERSION_DELETED'
     }
 
 /**
@@ -91,6 +94,11 @@ export interface DraftsModelDocumentAvailability {
    * document readability for the draft document
    */
   draft: DocumentAvailability
+
+  /**
+   * document readability for the version document
+   */
+  version?: DocumentAvailability
 }
 
 /**
@@ -104,6 +112,10 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
     snapshot: T | undefined
   }
   published: {
+    availability: DocumentAvailability
+    snapshot: T | undefined
+  }
+  version?: {
     availability: DocumentAvailability
     snapshot: T | undefined
   }
@@ -132,6 +144,7 @@ export interface PreparedSnapshot {
 export type ObserveDocumentTypeFromIdFn = (
   id: string,
   apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
 ) => Observable<string | undefined>
 
 /**
@@ -142,6 +155,7 @@ export interface ObservePathsFn {
     value: Previewable,
     paths: (string | PreviewPath)[],
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
 }
 
@@ -149,5 +163,12 @@ export interface ObservePathsFn {
  * @hidden
  * @beta */
 export interface ObserveDocumentAvailabilityFn {
-  (id: string): Observable<{draft: DocumentAvailability; published: DocumentAvailability}>
+  (
+    id: string,
+    options?: {version?: string},
+  ): Observable<{
+    draft: DocumentAvailability
+    published: DocumentAvailability
+    version?: DocumentAvailability
+  }>
 }

@@ -14,6 +14,10 @@ export function createUploadEvent(patches: FormPatch[] = []): UploadProgressEven
 export const CLEANUP_EVENT = createUploadEvent([UNSET_UPLOAD_PATCH])
 
 export function createInitialUploadEvent(file: File) {
+  return createUploadEvent(createInitialUploadPatches(file))
+}
+
+export function createInitialUploadPatches(file: File) {
   const now = new Date().toISOString()
   const value = {
     progress: 2,
@@ -22,5 +26,5 @@ export function createInitialUploadEvent(file: File) {
     file: {name: file.name, type: file.type},
   }
 
-  return createUploadEvent([set(value, [UPLOAD_STATUS_KEY])])
+  return [set(value, [UPLOAD_STATUS_KEY])]
 }

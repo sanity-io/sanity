@@ -7,15 +7,18 @@ import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
-import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
+import {buildStaticFiles} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
-import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
-import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
+import {upgradePackages} from '../../util/packageManager/upgradePackages'
+import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -56,7 +59,7 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig, output})
 
   // Get the version without any tags if any
   const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
@@ -64,34 +67,57 @@ export default async function buildSanityStudio(
     throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
   }
   const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getAutoUpdateImportMap(version)
+  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    try {
-      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
 
-      // If it is in unattended mode, we don't want to prompt
-      if (result?.length && !unattendedMode) {
-        const shouldContinue = await prompt.single({
-          type: 'confirm',
-          message: chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Continue anyway?`,
-          ),
-          default: false,
-        })
+    // If it is in unattended mode, we don't want to prompt
+    if (result?.length && !unattendedMode) {
+      const choice = await prompt.single({
+        type: 'list',
+        message: chalk.yellow(
+          `The following local package versions are different from the versions currently served at runtime.\n` +
+            `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+            `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+            `Do you want to upgrade local versions before deploying?`,
+        ),
+        choices: [
+          {
+            type: 'choice',
+            value: 'upgrade-and-proceed',
+            name: `Upgrade and proceed with ${args.groupOrCommand}`,
+          },
+          {
+            type: 'choice',
+            value: 'upgrade',
+            name: `Upgrade only. You will need to run the ${args.groupOrCommand} command again`,
+          },
+          {type: 'choice', name: 'Cancel', value: 'cancel'},
+        ],
+        default: 'upgrade-and-proceed',
+      })
 
-        if (!shouldContinue) {
-          return process.exit(0)
+      if (choice === 'cancel') {
+        return {didCompile: false}
+      }
+
+      if (choice === 'upgrade' || choice === 'upgrade-and-proceed') {
+        await upgradePackages(
+          {
+            packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+            packages: result.map((res) => [res.pkg, res.remote]),
+          },
+          context,
+        )
+
+        if (choice !== 'upgrade-and-proceed') {
+          return {didCompile: false}
         }
       }
-    } catch (err) {
-      throw err
     }
   }
 
@@ -146,7 +172,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner('Build Sanity Studio').start()
+  spin = output.spinner(`Build Sanity Studio`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -175,6 +201,7 @@ export default async function buildSanityStudio(
       importMap,
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
+      entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
     })
 
     trace.log({
@@ -204,29 +231,4 @@ export default async function buildSanityStudio(
 // eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_STUDIO_'))
-}
-
-function sortModulesBySize(chunks: ChunkStats[]): ChunkModule[] {
-  return chunks
-    .flatMap((chunk) => chunk.modules)
-    .sort((modA, modB) => modB.renderedLength - modA.renderedLength)
-}
-
-function formatModuleSizes(modules: ChunkModule[]): string {
-  const lines: string[] = []
-  for (const mod of modules) {
-    lines.push(` - ${formatModuleName(mod.name)} (${formatSize(mod.renderedLength)})`)
-  }
-
-  return lines.join('\n')
-}
-
-function formatModuleName(modName: string): string {
-  const delimiter = '/node_modules/'
-  const nodeIndex = modName.lastIndexOf(delimiter)
-  return nodeIndex === -1 ? modName : modName.slice(nodeIndex + delimiter.length)
-}
-
-function formatSize(bytes: number): string {
-  return chalk.cyan(`${(bytes / 1024).toFixed()} kB`)
 }

@@ -5,6 +5,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   InsufficientPermissionsMessage,
+  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -47,12 +48,12 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published} = props
+  const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
+  const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -148,12 +149,26 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
+    if (release) {
+      // Version documents are not publishable by this action, they should be published as part of a release
+      return null
+    }
     if (liveEdit) {
+      // Live edit documents are not publishable by this action, they are published automatically
+      return null
+    }
+
+    /**
+     * When draft is null, if not a published or version document
+     * then it means the draft is yet to be saved - in this case don't disabled
+     * the publish button due to ALREADY_PUBLISHED reason
+     */
+    if (isPublishedId(value._id) && draft !== null) {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: t('action.publish.live-edit.label'),
-        title: t('action.publish.live-edit.tooltip'),
+        label: t('action.publish.label'),
+        title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
         disabled: true,
       }
     }
@@ -162,7 +177,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: 'Publish',
+        label: t('action.publish.label'),
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
@@ -202,18 +217,22 @@ export const PublishAction: DocumentActionComponent = (props) => {
       onHandle: handle,
     }
   }, [
-    currentUser,
-    editState?.transactionSyncLock?.enabled,
-    handle,
-    hasValidationErrors,
-    isPermissionsLoading,
+    release,
     liveEdit,
+    value._id,
+    draft,
+    isPermissionsLoading,
     permissions?.granted,
-    publish.disabled,
     publishScheduled,
+    editState?.transactionSyncLock?.enabled,
     publishState,
+    hasValidationErrors,
+    publish.disabled,
     t,
     title,
+    handle,
+    published?._updatedAt,
+    currentUser,
   ])
 }
 

@@ -352,6 +352,33 @@ export type DocumentInspectorsResolver = ComposableOption<
   DocumentInspectorContext
 >
 
+/**
+ * @public
+ * Config for the apps that are available in the studio.
+ */
+export type AppsOptions = {
+  canvas?: {
+    enabled: boolean
+    /**
+     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in sanity.io/manage
+     * provide a fallback origin as a string.
+     *
+     * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
+     *
+     * If the provided fallback Studio does not expose create-manifest.json "Link to canvas" will fail when using the fallback.
+     *
+     * Example: `wonderful.sanity.studio`
+     *
+     * Keep in mind that when fallback origin is used, Canvas will use the schema types and dataset in the *deployed* Studio,
+     * not from localhost.
+     *
+     * To see data synced from Canvas in your localhost Studio, you must ensure that the deployed fallback studio uses the same
+     * workspace and schemas as your local configuration.
+     *
+     */
+    fallbackStudioOrigin?: string
+  }
+}
 /** @beta */
 export interface PluginOptions {
   name: string
@@ -376,6 +403,12 @@ export interface PluginOptions {
     components?: StudioComponentsPluginOptions
   }
 
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: MediaLibraryConfig
+
   /** @beta @hidden */
   i18n?: LocalePluginOptions
   search?: {
@@ -393,7 +426,6 @@ export interface PluginOptions {
      *
      * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
      *   using the GROQ Query API.
-     * - `"textSearch"` (deprecated): Perform full text searching using the Text Search API.
      * - `"groq2024"`: (experimental) Perform full text searching using the GROQ Query API and its
      *   new `text::matchQuery` function.
      */
@@ -406,6 +438,9 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
+
+  /** @internal */
+  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
   /** Configuration for studio beta features.
    * @internal
@@ -480,12 +515,20 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  /**
+   * @internal
+   */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
+  apps?: AppsOptions
 
   /**
    * @hidden
    * @internal
    */
   __internal_serverDocumentActions?: {
+    /**
+     * @deprecated The Mutations API integration will be removed in a future release.
+     */
     enabled?: boolean
   }
 
@@ -543,9 +586,21 @@ export interface ResolveProductionUrlContext extends ConfigContext {
  * @hidden
  * @beta
  */
+
+export type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version'
+
+/**
+ * @hidden
+ * @beta
+ */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /** releaseId of the open document, it's undefined if it's published or the draft */
+  releaseId?: string
+  /** the type of the currently active document. */
+  versionType?: DocumentActionsVersionType
 }
 
 /**
@@ -588,7 +643,7 @@ export interface DocumentLayoutProps {
    * The type of the document. This is a read-only property and changing it will have no effect.
    */
   documentType: string
-  renderDefault: (props: DocumentLayoutProps) => React.ReactElement
+  renderDefault: (props: DocumentLayoutProps) => React.JSX.Element
 }
 
 interface DocumentComponents {
@@ -807,6 +862,9 @@ export interface Source {
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
+  /** @beta */
+  releases?: WorkspaceOptions['releases']
+
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
@@ -824,6 +882,11 @@ export interface Source {
   announcements?: {
     enabled: boolean
   }
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: MediaLibraryConfig
 }
 
 /** @internal */
@@ -862,7 +925,6 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       source: Observable<Source>
     }>
   }
-  __internal_serverDocumentActions: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /**
@@ -890,6 +952,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    */
   unstable_sources: Source[]
   scheduledPublishing: ScheduledPublishingPluginOptions
+  apps?: AppsOptions
 }
 
 /**
@@ -935,6 +998,29 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
+  releases: {
+    enabled?: boolean
+    /**
+     * Limit the number of releases that can be created by this workspace.
+     */
+    limit?: number
+  }
+}
+
+/**
+ * Config for the Sanity Media Library asset source integration.
+ * @beta
+ */
+export interface MediaLibraryConfig {
+  /**
+   * Whether the Media Library is enabled.
+   */
+  enabled?: boolean
+  /**
+   * The ID of the Media Library that is connected to the Studio.
+   * If not provided, the Media Library will be automatically detected.
+   */
+  libraryId?: string
 }
 
 /**
@@ -955,7 +1041,7 @@ export interface BetaFeatures {
   }
 
   /**
-   * @beta
+   * @deprecated - The Start in Create flow has been removed and will be updated in an upcoming studio release.
    */
   create?: {
     /**
@@ -989,5 +1075,16 @@ export interface BetaFeatures {
      * @see #startInCreateEnabled
      */
     fallbackStudioOrigin?: string
+  }
+  /**
+   * Config for the history events API .
+   *
+   * If enabled, it will use the new events API to fetch document history.
+   *
+   * If it is not enabled, it will continue using the legacy Timeline.
+   */
+  eventsAPI?: {
+    documents?: boolean
+    releases?: boolean
   }
 }

@@ -8,7 +8,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {render} from '@testing-library/react'
-import {type FocusEvent, type ReactElement, type RefObject} from 'react'
+import {type FocusEvent, type RefObject} from 'react'
 import {type MockInstance, vi} from 'vitest'
 
 import {
@@ -54,7 +54,7 @@ export interface TestRenderInputProps<ElementProps> {
 export type TestRenderInputCallback<ElementProps> = (
   inputProps: TestRenderInputProps<ElementProps>,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export type RenderInputResult = {
   container: Element

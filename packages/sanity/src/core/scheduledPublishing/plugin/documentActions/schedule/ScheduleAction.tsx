@@ -1,10 +1,10 @@
 import {CalendarIcon, ClockIcon} from '@sanity/icons'
-import {Box} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
-  type DocumentActionDescription,
+  type DocumentActionComponent,
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
@@ -43,7 +43,7 @@ const debug = debugWithName('ScheduleAction')
 /**
  * @beta
  */
-export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
+export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {draft, id, liveEdit, onComplete, published, type} = props
 
   const currentUser = useCurrentUser()
@@ -161,6 +161,12 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
     label: title,
     icon: CalendarIcon,
     onHandle: handleDialogOpen,
-    title: tooltip && <Box style={{maxWidth: '315px'}}>{tooltip}</Box>,
+    title: tooltip && (
+      <Box style={{maxWidth: '315px'}}>
+        <Text size={1}>{tooltip}</Text>
+      </Box>
+    ),
   }
 }
+
+ScheduleAction.action = 'schedule'

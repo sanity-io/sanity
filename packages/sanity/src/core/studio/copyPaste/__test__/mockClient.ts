@@ -1,6 +1,7 @@
 import {evaluate, parse, type ParseOptions} from 'groq-js'
-import {type FIXME} from 'sanity'
 import {vi} from 'vitest'
+
+import {type FIXME} from '../../../FIXME'
 
 export interface ClientWithFetch {
   withConfig: FIXME

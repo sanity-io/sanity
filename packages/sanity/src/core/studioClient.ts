@@ -1,3 +1,5 @@
+import {type SanityClient} from '@sanity/client'
+
 import {type SourceClientOptions} from './config'
 
 /**
@@ -10,5 +12,12 @@ import {type SourceClientOptions} from './config'
  * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  apiVersion: '2024-05-28',
+  apiVersion: '2025-02-19',
+}
+
+export const versionedClient = (client: SanityClient, apiVersion?: string): SanityClient => {
+  if (apiVersion) {
+    return client.withConfig({apiVersion})
+  }
+  return client
 }

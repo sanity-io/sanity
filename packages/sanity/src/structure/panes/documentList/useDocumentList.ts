@@ -1,20 +1,22 @@
+import {ChannelError, ClientError, type ClientPerspective, ServerError} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {concat, fromEvent, merge, of} from 'rxjs'
+import {concat, fromEvent, merge, NEVER, of, timer} from 'rxjs'
 import {
-  catchError,
   filter,
   map,
   mergeMap,
   scan,
   share,
   shareReplay,
+  switchMap,
   take,
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
 import {
+  catchWithCount,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   useClient,
   useSchema,
@@ -30,6 +32,7 @@ import {type DocumentListPaneItem, type SortOrder} from './types'
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
+  perspective?: ClientPerspective
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
@@ -39,12 +42,21 @@ interface DocumentListState {
   error: {message: string} | null
   isLoadingFullList: boolean
   isLoading: boolean
+  connected?: boolean
+  isRetrying: boolean
+  autoRetry: boolean
+  canRetry: boolean
+  retryCount: number
   fromCache?: boolean
   items: DocumentListPaneItem[]
 }
 
 const INITIAL_QUERY_STATE: DocumentListState = {
   error: null,
+  isRetrying: false,
+  retryCount: 0,
+  autoRetry: false,
+  canRetry: false,
   isLoading: true,
   isLoadingFullList: false,
   fromCache: false,
@@ -57,10 +69,38 @@ interface UseDocumentListHookValue extends DocumentListState {
 }
 
 /**
+ * Determine whether an error should be possible to retry
+ * @param error - Any caught error
+ */
+function isRetriableError(error: unknown) {
+  if (error instanceof ChannelError) {
+    // Usually indicative of a bad or malformed request
+    return false
+  }
+  if (error instanceof ServerError) {
+    // >= 500
+    return true
+  }
+  if (error instanceof ClientError) {
+    // >= 400
+    // note: 403 Forbidden makes sense to retry, because it's a potentially passing condition
+    return error.statusCode === 403
+  }
+  return true
+}
+
+/**
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookValue {
-  const {filter: searchFilter, params: paramsProp, sortOrder, searchQuery, apiVersion} = opts
+  const {
+    filter: searchFilter,
+    params: paramsProp,
+    sortOrder,
+    searchQuery,
+    perspective,
+    apiVersion,
+  } = opts
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -85,6 +125,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       limit: PARTIAL_PAGE_LIMIT,
       params: paramsProp,
       schema,
+      perspective,
       searchQuery: searchQuery || '',
       sort: sortOrder || DEFAULT_ORDERING,
       staticTypeNames: typeNameFromFilter,
@@ -125,13 +166,40 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       ),
       fullList$,
     ).pipe(
-      catchError((err: unknown, caught$) => {
-        return concat(
-          of({type: 'error' as const, error: safeError(err)}),
-          merge(fromEvent(window, 'online'), onRetry$).pipe(
-            take(1),
-            mergeMap(() => caught$),
+      catchWithCount((lastError, retryCount, caught$) => {
+        const error = safeError(lastError)
+        const isOnline = window.navigator.onLine
+        const canRetry = isOnline && isRetriableError(lastError)
+        const autoRetry = retryCount < 10
+        const retries = merge(
+          isOnline ? onRetry$ : fromEvent(window, 'online'),
+          isOnline && autoRetry ? timer(retryCount * 1_000) : NEVER,
+        ).pipe(
+          take(1),
+          switchMap(() =>
+            merge(
+              of({
+                type: 'error' as const,
+                error,
+                retrying: true,
+                autoRetry,
+                canRetry,
+                retryCount,
+              }),
+              caught$,
+            ),
           ),
+        )
+        return concat(
+          of({
+            type: 'error' as const,
+            error,
+            retrying: false,
+            autoRetry,
+            canRetry,
+            retryCount,
+          }),
+          retries,
         )
       }),
       scan((prev, event) => {
@@ -139,13 +207,19 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
           return {
             ...prev,
             error: event.error,
+            retryCount: event.retryCount,
+            isRetrying: event.retrying,
+            autoRetry: event.autoRetry,
+            canRetry: event.canRetry,
           }
         }
         if (event.type === 'result') {
           return {
             ...prev,
             error: null,
+            isRetrying: false,
             fromCache: event.result.fromCache,
+            connected: event.result.connected,
             isLoading: false,
             items: removePublishedWithDrafts(event.result.documents),
             isLoadingFullList: false,
@@ -158,7 +232,8 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
             isLoadingFullList: true,
           }
         }
-        throw new Error('Unexpected')
+        // @ts-expect-error - all cases should be covered
+        throw new Error(`Unexpected event type: ${event.type}`)
       }, INITIAL_QUERY_STATE),
     )
   }, [
@@ -166,6 +241,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     searchFilter,
     paramsProp,
     schema,
+    perspective,
     searchQuery,
     sortOrder,
     typeNameFromFilter,
@@ -175,16 +251,29 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     onRetry$,
   ])
 
-  const {error, items, isLoading, fromCache, isLoadingFullList} = useObservable(
-    queryResults$,
-    INITIAL_QUERY_STATE,
-  )
+  const {
+    error,
+    items,
+    isLoading,
+    fromCache,
+    connected,
+    canRetry,
+    isLoadingFullList,
+    isRetrying,
+    autoRetry,
+    retryCount,
+  } = useObservable(queryResults$, INITIAL_QUERY_STATE)
 
   return {
     error,
     onRetry,
     isLoading,
     items,
+    isRetrying,
+    canRetry,
+    retryCount,
+    autoRetry,
+    connected,
     fromCache,
     onLoadFullList,
     isLoadingFullList,

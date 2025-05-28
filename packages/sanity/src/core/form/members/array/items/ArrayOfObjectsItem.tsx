@@ -53,7 +53,7 @@ export interface MemberItemProps {
  * @beta
  */
 export function ArrayOfObjectsItem(props: MemberItemProps) {
-  const focusRef = useRef<{focus: () => void}>()
+  const focusRef = useRef<{focus: () => void}>(undefined)
   const {
     member,
     renderAnnotation,

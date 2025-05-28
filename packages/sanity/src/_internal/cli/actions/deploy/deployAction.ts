@@ -7,22 +7,26 @@ import tar from 'tar-fs'
 
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
-import {extractManifestSafe} from '../manifest/extractManifestAction'
+import {deploySchemasAction} from '../schema/deploySchemasAction'
+import {createManifestExtractor} from '../schema/utils/mainfestExtractor'
 import {
   checkDir,
   createDeployment,
   debug,
   dirIsEmptyOrNonExistent,
   getInstalledSanityVersion,
-  getOrCreateUserApplication,
+  getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
   type UserApplication,
 } from './helpers'
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
-  build?: boolean
+  'build'?: boolean
+  'schema-required'?: boolean
+  'verbose'?: boolean
 }
 
+// eslint-disable-next-line complexity
 export default async function deployStudioAction(
   args: CliCommandArguments<DeployStudioActionFlags>,
   context: CliCommandContext,
@@ -31,7 +35,7 @@ export default async function deployStudioAction(
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
-  const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
+  const isAutoUpdating = shouldAutoUpdate({flags, cliConfig, output})
 
   const installedSanityVersion = await getInstalledSanityVersion()
   const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
@@ -83,11 +87,7 @@ export default async function deployStudioAction(
         appHost: configStudioHost,
       })
     } else {
-      userApplication = await getOrCreateUserApplication({
-        client,
-        context,
-        spinner,
-      })
+      userApplication = await getOrCreateStudio({client, context, spinner})
     }
   } catch (err) {
     if (err.message) {
@@ -112,16 +112,17 @@ export default async function deployStudioAction(
     if (!didCompile) {
       return
     }
-
-    await extractManifestSafe(
-      {
-        ...buildArgs,
-        extOptions: {},
-        extraArguments: [],
-      },
-      context,
-    )
   }
+
+  await deploySchemasAction(
+    {
+      'extract-manifest': shouldBuild,
+      'manifest-dir': `${sourceDir}/static`,
+      'schema-required': flags['schema-required'],
+      'verbose': flags.verbose,
+    },
+    {...context, manifestExtractor: createManifestExtractor(context)},
+  )
 
   // Ensure that the directory exists, is a directory and seems to have valid content
   spinner = output.spinner('Verifying local content').start()
@@ -139,7 +140,7 @@ export default async function deployStudioAction(
   const base = path.basename(sourceDir)
   const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
 
-  spinner = output.spinner('Deploying to Sanity.Studio').start()
+  spinner = output.spinner('Deploying to sanity.studio').start()
   try {
     const {location} = await createDeployment({
       client,
@@ -156,8 +157,8 @@ export default async function deployStudioAction(
 
     if (!configStudioHost) {
       output.print(`\nAdd ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`)
-      output.print('to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts')
-      output.print('to avoid prompting for hostname on next deploy.')
+      output.print(`to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts`)
+      output.print(`to avoid prompting for hostname on next deploy.`)
     }
   } catch (err) {
     spinner.fail()

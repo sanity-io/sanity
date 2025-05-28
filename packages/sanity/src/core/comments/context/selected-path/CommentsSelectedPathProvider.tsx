@@ -8,6 +8,9 @@ interface CommentsSelectedPathProviderProps {
   children: React.ReactNode
 }
 
+/**
+ * @internal
+ */
 export const CommentsSelectedPathProvider = memo(function CommentsSelectedPathProvider(
   props: CommentsSelectedPathProviderProps,
 ) {

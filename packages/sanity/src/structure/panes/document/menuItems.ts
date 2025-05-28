@@ -1,6 +1,7 @@
-import {EarthAmericasIcon, JsonIcon, LinkIcon} from '@sanity/icons'
+import {EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
 import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
 
+import {type DocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
 
@@ -10,6 +11,7 @@ interface GetMenuItemsParams {
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
+  documentIdStack?: DocumentIdStack
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
 }
@@ -30,7 +32,7 @@ function getInspectorItems({
         action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
         group: menuItem.showAsAction ? undefined : 'inspectors',
         icon: menuItem.icon,
-        isDisabled: !hasValue,
+        disabled: !hasValue,
         selected: currentInspector?.name === inspector.name,
         shortcut: menuItem.hotkeys?.join('+'),
         showAsAction: menuItem.showAsAction,
@@ -47,8 +49,22 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
     group: 'inspectors',
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
-    isDisabled: !hasValue,
+    disabled: !hasValue,
     shortcut: 'Ctrl+Alt+I',
+  }
+}
+
+function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
+  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
+    reason: t('compare-versions.menu-item.disabled-reason'),
+  }
+
+  return {
+    action: 'compareVersions',
+    group: 'inspectors',
+    title: t('compare-versions.menu-item.title'),
+    icon: TransferIcon,
+    disabled,
   }
 }
 
@@ -69,6 +85,7 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
   const items = [
     // Get production preview item
     getProductionPreviewItem(params),
+    getCompareVersionsItem(params),
   ].filter(Boolean) as PaneMenuItem[]
 
   return [

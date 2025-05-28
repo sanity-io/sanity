@@ -1,14 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {
-  type ComponentType,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
+import {type ComponentType, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -37,7 +30,7 @@ import {Root, TooltipBox} from './Annotation.styles'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
-  children: ReactElement
+  children: React.JSX.Element
   editorNodeFocused: boolean
   floatingBoundary: HTMLElement | null
   focused: boolean
@@ -61,7 +54,7 @@ interface AnnotationProps {
   value: PortableTextObject
 }
 
-export function Annotation(props: AnnotationProps): ReactNode {
+export function Annotation(props: AnnotationProps): React.JSX.Element {
   const {
     children,
     editorNodeFocused,
@@ -248,7 +241,7 @@ export function Annotation(props: AnnotationProps): ReactNode {
   )
 }
 
-export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
+export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.JSX.Element => {
   const {
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
@@ -259,8 +252,8 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     onRemove,
     open,
     readOnly,
-    selected,
     schemaType,
+    selected,
     textElement,
     validation,
   } = props
@@ -271,6 +264,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const isReady = Boolean(children)
 
   const {t} = useTranslation()
+
   const toneKey = useMemo(() => {
     if (hasError) {
       return 'critical'
@@ -301,11 +295,11 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
         <AnnotationToolbarPopover
           annotationOpen={open}
           floatingBoundary={floatingBoundary}
-          onOpen={onOpen}
-          onRemove={onRemove}
+          onOpenAnnotation={onOpen}
+          onRemoveAnnotation={onRemove}
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
-          selected={selected}
+          annotationTextSelected={selected}
           title={
             schemaType.i18nTitleKey
               ? t(schemaType.i18nTitleKey)

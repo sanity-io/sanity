@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["lib/**", "index.js", "_internal.js"]
+      "outputs": ["lib/**"]
     }
   }
 }

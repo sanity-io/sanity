@@ -1,3 +1,10 @@
+import {type SanityDocumentLike} from '@sanity/types'
+import {type MediaLibraryConfig} from 'sanity'
+
+export const SANITY_WORKSPACE_SCHEMA_ID_PREFIX = '_.schemas'
+export const SANITY_WORKSPACE_SCHEMA_TYPE = 'system.schema'
+export const CURRENT_WORKSPACE_SCHEMA_VERSION = '2025-05-01'
+
 export type ManifestSerializable =
   | string
   | number
@@ -23,6 +30,7 @@ export interface CreateWorkspaceManifest {
   basePath: string
   dataset: string
   projectId: string
+  mediaLibrary?: MediaLibraryConfig
   schema: ManifestSchemaType[]
   tools: ManifestTool[]
   /**
@@ -97,4 +105,25 @@ export interface ManifestTool {
    */
   icon: string | null
   type: string | null
+}
+
+export type DefaultWorkspaceSchemaId = `${typeof SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${string}`
+export type PrefixedWorkspaceSchemaId = `${DefaultWorkspaceSchemaId}.${string}`
+export type WorkspaceSchemaId = DefaultWorkspaceSchemaId | PrefixedWorkspaceSchemaId
+
+export interface StoredWorkspaceSchema extends SanityDocumentLike {
+  _type: typeof SANITY_WORKSPACE_SCHEMA_TYPE
+  _id: WorkspaceSchemaId
+  /* api-like version string: date at which the format had a meaningful change */
+  version: typeof CURRENT_WORKSPACE_SCHEMA_VERSION | undefined
+  tag?: string
+  workspace: {
+    name: string
+    title?: string
+  }
+  /**
+   * The API expects JSON coming in, but will store a string to save on attribute paths.
+   * Consumers must use JSON.parse on the value, put we deploy to the API using ManifestSchemaType[]
+   */
+  schema: string | ManifestSchemaType[]
 }

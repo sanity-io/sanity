@@ -41,13 +41,22 @@ import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import extractManifestCommand from './manifest/extractManifestCommand'
 import manifestGroup from './manifest/manifestGroup'
+import createAspectCommand from './media/createAspectCommand'
+import deleteAspectCommand from './media/deleteAspectCommand'
+import deployAspectCommand from './media/deployAspectCommand'
+import exportMediaCommand from './media/exportMediaCommand'
+import importMediaCommand from './media/importMediaCommand'
+import mediaGroup from './media/mediaGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
 import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
+import deleteSchemaCommand from './schema/deleteSchemaCommand'
+import deploySchemaCommand from './schema/deploySchemaCommand'
 import extractSchemaCommand from './schema/extractSchemaCommand'
 import schemaGroup from './schema/schemaGroup'
+import fetchSchemaCommand from './schema/schemaListCommand'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
 import inviteUserCommand from './users/inviteUserCommand'
@@ -108,6 +117,15 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   execCommand,
   manifestGroup,
   extractManifestCommand,
+  mediaGroup,
+  exportMediaCommand,
+  importMediaCommand,
+  createAspectCommand,
+  deleteAspectCommand,
+  deployAspectCommand,
+  fetchSchemaCommand,
+  deploySchemaCommand,
+  deleteSchemaCommand,
 ]
 
 /**

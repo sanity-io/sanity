@@ -5,6 +5,7 @@ import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphq
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen3'
 import manySelfRefsSchema from './fixtures/many-self-refs'
 import testStudioSchema from './fixtures/test-studio'
+import unionRefsSchema from './fixtures/union-refs'
 
 describe('GraphQL - Generation 3', () => {
   beforeEach(() => {
@@ -46,6 +47,7 @@ describe('GraphQL - Generation 3', () => {
   describe.each([
     {name: 'testStudioSchema', sanitySchema: testStudioSchema},
     {name: 'manySelfRefsSchema', sanitySchema: manySelfRefsSchema},
+    {name: 'unionRefsSchema', sanitySchema: unionRefsSchema},
   ])(`Union cache: sanitySchema: $name`, ({sanitySchema}) => {
     /**
      * @jest-environment jsdom

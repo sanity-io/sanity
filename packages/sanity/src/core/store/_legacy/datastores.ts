@@ -2,28 +2,38 @@
 
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {createComlinkStore} from '../comlink/createComlinkStore'
+import {type ComlinkStore} from '../comlink/types'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
+import {createRenderingContextStore} from '../renderingContext/createRenderingContextStore'
+import {type RenderingContextStore} from '../renderingContext/types'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore} from './document'
+import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
-import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
+import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
-import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
+import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore, type ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user'
+
+/**
+ * Latencies below this value will not be logged
+ */
+const IGNORE_LATENCY_BELOW_MS = 1000
 
 /**
  * @hidden
@@ -138,17 +148,27 @@ export function useDocumentStore(): DocumentStore {
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean'
-      ? of(configFlag as boolean)
-      : fetchFeatureToggle(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS))
-  }, [getClient, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
       telemetry.log(DocumentDesynced, {errorName: error.name})
+    },
+    [telemetry],
+  )
+
+  const handleReportLatency = useCallback(
+    (event: LatencyReportEvent) => {
+      if (event.latencyMs > IGNORE_LATENCY_BELOW_MS) {
+        telemetry.log(HighListenerLatencyOccurred, {
+          latency: event.latencyMs,
+          shard: event.shard,
+          transactionId: event.transactionId,
+        })
+      }
     },
     [telemetry],
   )
@@ -167,7 +187,8 @@ export function useDocumentStore(): DocumentStore {
         schema,
         i18n,
         serverActionsEnabled,
-        pairListenerOptions: {
+        extraOptions: {
+          onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
         },
       })
@@ -189,6 +210,7 @@ export function useDocumentStore(): DocumentStore {
     workspace,
     templates,
     serverActionsEnabled,
+    handleReportLatency,
     handleSyncErrorRecovery,
   ])
 }
@@ -231,7 +253,7 @@ export function usePresenceStore(): PresenceStore {
       resourceCache.get<PresenceStore>({
         namespace: 'presenceStore',
         dependencies: [bifur, connectionStatusStore, userStore],
-      }) || __tmp_wrap_presenceStore({bifur, connectionStatusStore, userStore})
+      }) || createPresenceStore({bifur, connectionStatusStore, userStore})
 
     resourceCache.set({
       namespace: 'presenceStore',
@@ -288,4 +310,48 @@ export function useKeyValueStore(): KeyValueStore {
 
     return keyValueStore
   }, [client, resourceCache, workspace])
+}
+
+/** @internal */
+export function useRenderingContextStore(): RenderingContextStore {
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const renderingContextStore =
+      resourceCache.get<RenderingContextStore>({
+        dependencies: [],
+        namespace: 'RenderingContextStore',
+      }) || createRenderingContextStore()
+
+    resourceCache.set({
+      dependencies: [],
+      namespace: 'RenderingContextStore',
+      value: renderingContextStore,
+    })
+
+    return renderingContextStore
+  }, [resourceCache])
+}
+
+/** @internal */
+export function useComlinkStore(): ComlinkStore {
+  const resourceCache = useResourceCache()
+  const renderingContext = useRenderingContextStore()
+  const capabilities = useObservable(renderingContext.capabilities, {})
+
+  return useMemo(() => {
+    const comlinkStore =
+      resourceCache.get<ComlinkStore>({
+        dependencies: [capabilities],
+        namespace: 'ComlinkStore',
+      }) || createComlinkStore({capabilities})
+
+    resourceCache.set({
+      dependencies: [capabilities],
+      namespace: 'ComlinkStore',
+      value: comlinkStore,
+    })
+
+    return comlinkStore
+  }, [capabilities, resourceCache])
 }

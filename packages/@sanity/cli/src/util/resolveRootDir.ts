@@ -15,10 +15,10 @@ export function resolveRootDir(cwd: string): string {
   }
 }
 
-function hasStudioConfig(basePath: string): boolean {
+function hasSanityConfig(basePath: string, configName: string): boolean {
   const buildConfigs = [
-    fileExists(path.join(basePath, 'sanity.config.js')),
-    fileExists(path.join(basePath, 'sanity.config.ts')),
+    fileExists(path.join(basePath, `${configName}.js`)),
+    fileExists(path.join(basePath, `${configName}.ts`)),
     isSanityV2StudioRoot(basePath),
   ]
 
@@ -26,7 +26,8 @@ function hasStudioConfig(basePath: string): boolean {
 }
 
 function resolveProjectRoot(basePath: string, iterations = 0): string | false {
-  if (hasStudioConfig(basePath)) {
+  const configName = 'sanity.config'
+  if (hasSanityConfig(basePath, configName)) {
     return basePath
   }
 

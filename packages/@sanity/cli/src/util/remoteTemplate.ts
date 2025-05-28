@@ -4,12 +4,7 @@ import {Readable} from 'node:stream'
 import {pipeline} from 'node:stream/promises'
 import {type ReadableStream} from 'node:stream/web'
 
-import {
-  ENV_TEMPLATE_FILES,
-  getMonoRepo,
-  REQUIRED_ENV_VAR,
-  validateSanityTemplate,
-} from '@sanity/template-validator'
+import {ENV_TEMPLATE_FILES, REQUIRED_ENV_VAR} from '@sanity/template-validator'
 import {x} from 'tar'
 
 import {debug} from '../debug'
@@ -23,12 +18,17 @@ const DISALLOWED_PATHS = [
 const ENV_VAR = {
   ...REQUIRED_ENV_VAR,
   READ_TOKEN: 'SANITY_API_READ_TOKEN',
+  WRITE_TOKEN: 'SANITY_API_WRITE_TOKEN',
 } as const
+
+const API_READ_TOKEN_ROLE = 'viewer'
+const API_WRITE_TOKEN_ROLE = 'editor'
 
 type EnvData = {
   projectId: string
   dataset: string
   readToken?: string
+  writeToken?: string
 }
 
 type GithubUrlString =
@@ -42,7 +42,7 @@ export type RepoInfo = {
   filePath: string
 }
 
-function getGitHubRawContentUrl(repoInfo: RepoInfo): string {
+export function getGitHubRawContentUrl(repoInfo: RepoInfo): string {
   const {username, name, branch, filePath} = repoInfo
   return `https://raw.githubusercontent.com/${username}/${name}/${branch}/${filePath}`
 }
@@ -196,38 +196,7 @@ export async function downloadAndExtractRepo(
   )
 }
 
-/**
- * Checks if a GitHub repository is a monorepo by examining common monorepo configuration files.
- * Supports pnpm workspaces, Lerna, Rush, and npm workspaces (package.json).
- * @returns Promise that resolves to an array of package paths/names if monorepo is detected, undefined otherwise
- */
-export async function getPackages(
-  repoInfo: RepoInfo,
-  bearerToken?: string,
-): Promise<string[] | undefined> {
-  const headers: Record<string, string> = {}
-  if (bearerToken) {
-    headers.Authorization = `Bearer ${bearerToken}`
-  }
-  return getMonoRepo(getGitHubRawContentUrl(repoInfo), headers)
-}
-
-export async function validateRemoteTemplate(
-  repoInfo: RepoInfo,
-  packages: string[] = [''],
-  bearerToken?: string,
-): Promise<void> {
-  const headers: Record<string, string> = {}
-  if (bearerToken) {
-    headers.Authorization = `Bearer ${bearerToken}`
-  }
-  const result = await validateSanityTemplate(getGitHubRawContentUrl(repoInfo), packages, headers)
-  if (!result.isValid) {
-    throw new Error(result.errors.join('\n'))
-  }
-}
-
-export async function checkNeedsReadToken(root: string): Promise<boolean> {
+export async function checkIfNeedsApiToken(root: string, type: 'read' | 'write'): Promise<boolean> {
   try {
     const templatePath = await Promise.any(
       ENV_TEMPLATE_FILES.map(async (file) => {
@@ -235,9 +204,8 @@ export async function checkNeedsReadToken(root: string): Promise<boolean> {
         return file
       }),
     )
-
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    return templateContent.includes(ENV_VAR.READ_TOKEN)
+    return templateContent.includes(type === 'read' ? ENV_VAR.READ_TOKEN : ENV_VAR.WRITE_TOKEN)
   } catch {
     return false
   }
@@ -253,13 +221,15 @@ export async function applyEnvVariables(
       await access(join(root, file))
       return file
     }),
-  ).catch(() => {
-    throw new Error('Could not find .env.template, .env.example or .env.local.example file')
-  })
+  ).catch(() => undefined)
+
+  if (!templatePath) {
+    return // No template .env file found, skip
+  }
 
   try {
     const templateContent = await readFile(join(root, templatePath), 'utf8')
-    const {projectId, dataset, readToken = ''} = envData
+    const {projectId, dataset, readToken = '', writeToken = ''} = envData
 
     const findAndReplaceVariable = (
       content: string,
@@ -267,15 +237,17 @@ export async function applyEnvVariables(
       value: string,
       useQuotes: boolean,
     ) => {
-      const pattern = varRegex instanceof RegExp ? varRegex : new RegExp(`${varRegex}=.*$`, 'm')
-      const match = content.match(pattern)
-      if (!match) return content
-
-      const varName = match[0].split('=')[0]
-      return content.replace(
-        new RegExp(`${varName}=.*$`, 'm'),
-        `${varName}=${useQuotes ? `"${value}"` : value}`,
-      )
+      const varPattern = typeof varRegex === 'string' ? varRegex : varRegex.source
+      const pattern = new RegExp(`.*${varPattern}=.*$`, 'gm')
+      const matches = content.matchAll(pattern)
+      return Array.from(matches).reduce((updatedContent, match) => {
+        if (!match[0]) return updatedContent
+        const varName = match[0].split('=')[0].trim()
+        return updatedContent.replace(
+          new RegExp(`${varName}=.*$`, 'gm'),
+          `${varName}=${useQuotes ? `"${value}"` : value}`,
+        )
+      }, content)
     }
 
     let envContent = templateContent
@@ -283,6 +255,7 @@ export async function applyEnvVariables(
       {pattern: ENV_VAR.PROJECT_ID, value: projectId},
       {pattern: ENV_VAR.DATASET, value: dataset},
       {pattern: ENV_VAR.READ_TOKEN, value: readToken},
+      {pattern: ENV_VAR.WRITE_TOKEN, value: writeToken},
     ]
     const useQuotes = templateContent.includes('="')
 
@@ -310,8 +283,9 @@ export async function tryApplyPackageName(root: string, name: string): Promise<v
   }
 }
 
-export async function generateSanityApiReadToken(
+export async function generateSanityApiToken(
   label: string,
+  type: 'read' | 'write',
   projectId: string,
   apiClient: CliApiClient,
 ): Promise<string> {
@@ -321,8 +295,8 @@ export async function generateSanityApiReadToken(
       uri: `/projects/${projectId}/tokens`,
       method: 'POST',
       body: {
-        label: `${label} (${Date.now()})`, // Add timestamp to ensure uniqueness
-        roleName: 'viewer',
+        label: `${label} (${Date.now()})`,
+        roleName: type === 'read' ? API_READ_TOKEN_ROLE : API_WRITE_TOKEN_ROLE,
       },
     })
   return response.key
@@ -337,7 +311,7 @@ export async function setCorsOrigin(
     await apiClient({api: {projectId}}).request({
       method: 'POST',
       url: '/cors',
-      body: {origin: origin, allowCredentials: false},
+      body: {origin: origin, allowCredentials: true}, // allowCredentials is true to allow for embedded studios if needed
     })
   } catch (error) {
     // Silent fail, it most likely means that the origin is already set

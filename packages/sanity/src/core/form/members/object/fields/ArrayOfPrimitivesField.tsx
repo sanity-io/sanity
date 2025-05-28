@@ -159,8 +159,8 @@ export function ArrayOfPrimitivesField(props: {
   } = props
   const fieldActions = useDocumentFieldActions()
 
-  const focusRef = useRef<Element & {focus: () => void}>()
-  const uploadSubscriptions = useRef<Subscription>()
+  const focusRef = useRef<Element & {focus: () => void}>(undefined)
+  const uploadSubscriptions = useRef<Subscription>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {

@@ -1,4 +1,4 @@
-import {type CalendarLabels} from '../../../../ui-components/inputs/DateInputs/calendar/types'
+import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 
 export function isValidDate(date: Date): boolean {
   return date instanceof Date && !isNaN(date.valueOf())
@@ -20,8 +20,7 @@ export function getCalendarLabels(
     goToNextYear: t('calendar.action.go-to-next-year'),
     goToPreviousYear: t('calendar.action.go-to-previous-year'),
     setToCurrentTime: t('calendar.action.set-to-current-time'),
-    selectHour: t('calendar.action.select-hour'),
-    selectMinute: t('calendar.action.select-minute'),
+    selectTime: t('calendar.action.select-time'),
     tooltipText: t('calendar.button.tooltip-text'),
     monthNames: [
       t('calendar.month-names.january'),

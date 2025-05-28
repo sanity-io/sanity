@@ -10,15 +10,13 @@ import {type Panes} from '../../structureResolvers'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
 
-vi.mock('sanity', async () => {
-  const actual = await vi.importActual('sanity')
-  return {
-    ...actual,
-    useEditState: vi.fn(),
-    useSchema: vi.fn(),
-    unstable_useValuePreview: vi.fn(),
-  }
-})
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useEditState: vi.fn(),
+  useSchema: vi.fn(),
+  unstable_useValuePreview: vi.fn(),
+  usePerspective: vi.fn(() => ({perspective: undefined})),
+}))
 
 function createWrapperComponent(client: SANITY.SanityClient) {
   const config = SANITY.defineConfig({

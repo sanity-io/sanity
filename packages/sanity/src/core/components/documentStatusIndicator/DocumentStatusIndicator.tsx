@@ -1,53 +1,108 @@
-import {DotIcon} from '@sanity/icons'
-import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
+
+import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 interface DocumentStatusProps {
-  draft?: PreviewValue | Partial<SanityDocument> | null
-  published?: PreviewValue | Partial<SanityDocument> | null
+  draft?: VersionInfoDocumentStub | undefined
+  published?: VersionInfoDocumentStub | undefined
+  versions?: Record<string, VersionInfoDocumentStub | undefined>
 }
 
-const Root = styled(Text)`
-  &[data-status='edited'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
+const Dot = styled.div<{$index: number}>((props) => {
+  const {$index} = props
+  const tone = {
+    asap: RELEASE_TYPES_TONES.asap.tone,
+    scheduled: RELEASE_TYPES_TONES.scheduled.tone,
+    undecided: RELEASE_TYPES_TONES.undecided.tone,
   }
-  &[data-status='unpublished'] {
-    --card-icon-color: var(--card-badge-default-dot-color);
-    opacity: 0.5 !important;
-  }
-`
+
+  return css`
+    width: 5px;
+    height: 5px;
+    background-color: var(--card-icon-color);
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px var(--card-bg-color);
+    z-index: ${$index};
+    &[data-status='published'] {
+      --card-icon-color: var(--card-badge-positive-dot-color);
+    }
+    &[data-status='draft'] {
+      --card-icon-color: var(--card-badge-caution-dot-color);
+    }
+    &[data-status='asap'] {
+      --card-icon-color: var(--card-badge-${tone.asap}-dot-color);
+    }
+    &[data-status='undecided'] {
+      --card-icon-color: var(--card-badge-${tone.undecided}-dot-color);
+    }
+    &[data-status='scheduled'] {
+      --card-icon-color: var(--card-badge-${tone.scheduled}-dot-color);
+    }
+  `
+})
+
+type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 
 /**
  * Renders a dot indicating the current document status.
  *
- * - Yellow (caution) for published documents with edits
- * - Gray (default) for unpublished documents (with or without edits)
- *
- * No dot will be displayed for published documents without edits.
- *
  * @internal
  */
-export function DocumentStatusIndicator({draft, published}: DocumentStatusProps) {
-  const $draft = !!draft
-  const $published = !!published
+export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) {
+  const {data: releases} = useActiveReleases()
+  const versionsList = useMemo(
+    () =>
+      versions
+        ? Object.entries(versions).map(([versionName, snapshot]) => {
+            if (!snapshot) {
+              return undefined
+            }
+            const release = releases?.find(
+              (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
+            )
+            return release?.metadata.releaseType
+          })
+        : [],
+    [releases, versions],
+  )
 
-  const status = useMemo(() => {
-    if ($draft && !$published) return 'unpublished'
-    return 'edited'
-  }, [$draft, $published])
-
-  // Return null if the document is:
-  // - Published without edits
-  // - Neither published or without edits (this shouldn't be possible)
-  if ((!$draft && !$published) || (!$draft && $published)) {
-    return null
-  }
+  const indicators: {
+    status: Status
+    show: boolean
+  }[] = [
+    {
+      status: 'published',
+      show: Boolean(published),
+    },
+    {
+      status: 'draft',
+      show: Boolean(draft),
+    },
+    {
+      status: 'asap',
+      show: versionsList.includes('asap'),
+    },
+    {
+      status: 'scheduled',
+      show: versionsList.includes('scheduled'),
+    },
+    {
+      status: 'undecided',
+      show: versionsList.includes('undecided'),
+    },
+  ]
 
   return (
-    <Root data-status={status} size={1}>
-      <DotIcon />
-    </Root>
+    <Flex>
+      {indicators
+        .filter(({show}) => show)
+        .map(({status}, index) => (
+          <Dot key={status} data-status={status} $index={index + 1} />
+        ))}
+    </Flex>
   )
 }

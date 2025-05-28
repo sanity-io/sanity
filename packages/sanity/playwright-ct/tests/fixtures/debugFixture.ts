@@ -9,8 +9,8 @@ export const test = base.extend<{
     attributes: Record<string, string>
   }>
 }>({
-  logActiveElement: async ({page}, use) => {
-    await use(async () => {
+  logActiveElement: async ({page}, _use) => {
+    await _use(async () => {
       const activeElementInfo = await page.evaluate(() => {
         const active = document.activeElement as HTMLElement
         return {

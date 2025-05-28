@@ -1,13 +1,13 @@
-import {toString} from '@sanity/util/paths'
 import {
   type ArraySchemaType,
-  getSchemaTypeTitle,
-  getValueAtPath,
   isArrayOfObjectsSchemaType,
   type ObjectSchemaType,
   type Path,
-} from 'sanity'
+} from '@sanity/types'
+import {toString} from '@sanity/util/paths'
 
+import {getValueAtPath} from '../../../../../field/paths/helpers'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'

@@ -3,7 +3,6 @@ import {
   type FieldDefinition,
   type SchemaTypeDefinition,
 } from '@sanity/types'
-import {type ReactElement} from 'react'
 import {of} from 'rxjs'
 
 import {type ObjectInputProps} from '../../src/core'
@@ -17,7 +16,7 @@ const EMPTY_SEARCH = () => of([])
 export type TestRenderCrossDatasetReferenceInputCallback = (
   inputProps: CrossDatasetReferenceInputProps,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderCrossDatasetReferenceInput(options: {
   fieldDefinition: SchemaTypeDefinition<'reference'>

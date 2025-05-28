@@ -23,6 +23,8 @@ const LISTEN_OPTIONS: ListenOptions = {
   events: ['welcome', 'mutation', 'reconnect'],
   includeResult: true,
   visibility: 'query',
+  includeAllVersions: true,
+  tag: 'tasks-store',
 }
 
 export const SORT_FIELD = '_createdAt'

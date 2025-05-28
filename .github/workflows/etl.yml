@@ -5,9 +5,13 @@ on:
   workflow_dispatch:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
-  push:
-    branches: [current]
+  # Build on release publishes
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   etl:
@@ -17,37 +21,12 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
+          cache: pnpm
+          node-version: lts/*
 
       - name: Install project dependencies
         run: pnpm install
@@ -59,7 +38,8 @@ jobs:
 
       - name: Extract API docs
         env:
-          EXTRACT_SANITY_PROJECT_ID: "${{((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/current') && vars.EXTRACT_SANITY_PROJECT_ID || vars.DEV_EXTRACT_SANITY_PROJECT_ID}}"
-          EXTRACT_SANITY_DATASET: "${{((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/current') && vars.EXTRACT_SANITY_DATASET || vars.DEV_EXTRACT_SANITY_DATASET}}"
-          EXTRACT_SANITY_API_TOKEN: "${{((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_API_TOKEN || secrets.DEV_EXTRACT_SANITY_API_TOKEN}}"
+          # Use production environment only for release builds
+          EXTRACT_SANITY_PROJECT_ID: "${{ github.event_name == 'release' && vars.EXTRACT_SANITY_PROJECT_ID || vars.DEV_EXTRACT_SANITY_PROJECT_ID }}"
+          EXTRACT_SANITY_DATASET: "${{ github.event_name == 'release' && vars.EXTRACT_SANITY_DATASET || vars.DEV_EXTRACT_SANITY_DATASET }}"
+          EXTRACT_SANITY_API_TOKEN: "${{ github.event_name == 'release' && secrets.EXTRACT_SANITY_API_TOKEN || secrets.DEV_EXTRACT_SANITY_API_TOKEN }}"
         run: pnpm etl sanity

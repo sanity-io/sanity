@@ -50,7 +50,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   isInitialLoading: boolean
   schedules: Schedule[]
 } {
-  const {mode} = useScheduledPublishingEnabled()
+  const {mode, enabled} = useScheduledPublishingEnabled()
 
   const swrOptions = useMemo(() => {
     const SWR_OPTIONS = {
@@ -73,7 +73,8 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
 
   const fetcher = useFetcher(queryKey)
 
-  const {data, error, mutate} = useSWR(queryKey, fetcher, swrOptions)
+  // Disables SWR if scheduled publishing is not enabled by not providing a key
+  const {data, error, mutate} = useSWR(enabled ? queryKey : null, fetcher, swrOptions)
 
   // Immediately remove schedule from SWR cache and revalidate
   const handleDelete = useCallback(

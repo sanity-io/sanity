@@ -34,6 +34,8 @@ export interface StaticBuildOptions {
 
   vite?: UserViteConfig
   reactCompiler: ReactCompilerConfig | undefined
+  entry?: string
+  isApp?: boolean
 }
 
 export async function buildStaticFiles(
@@ -48,10 +50,19 @@ export async function buildStaticFiles(
     vite: extendViteConfig,
     importMap,
     reactCompiler,
+    entry,
+    isApp,
   } = options
 
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false, basePath})
+  await writeSanityRuntime({
+    cwd,
+    reactStrictMode: false,
+    watch: false,
+    basePath,
+    entry,
+    isApp,
+  })
 
   debug('Resolving vite config')
   const mode = 'production'
@@ -64,6 +75,7 @@ export async function buildStaticFiles(
     mode,
     importMap,
     reactCompiler,
+    isApp,
   })
 
   // Extend Vite configuration with user-provided config

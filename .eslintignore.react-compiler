@@ -19,7 +19,6 @@ dev/test-studio/workshop/scopes.js
 dev/design-studio/*
 dev/embedded-studio/*
 dev/starter-cra-studio/*
-dev/starter-next-studio/*
 dev/starter-studio/*
 dev/strict-studio/*
 dev/studio-e2e-studio/*

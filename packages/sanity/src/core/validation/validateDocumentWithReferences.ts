@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {
+  isGlobalDocumentReference,
   isReference,
   type SanityDocument,
   type Schema,
@@ -33,7 +34,10 @@ import {
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import shallowEquals from 'shallow-equals'
 
-import {type DocumentPreviewStore, type LocaleSource, type SourceClientOptions} from '..'
+import {type SourceClientOptions} from '../config/types'
+import {type LocaleSource} from '../i18n/types'
+import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
+import {getVersionFromId} from '../util/draftUtils'
 import {validateDocumentObservable} from './validateDocument'
 
 /**
@@ -54,7 +58,7 @@ function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
     obj,
     (acc, node) => {
-      if (isReference(node)) {
+      if (isReference(node) && !isGlobalDocumentReference(node)) {
         acc.add(node._ref)
       }
       return acc
@@ -70,8 +74,17 @@ type GetDocumentExists = NonNullable<ValidationContext['getDocumentExists']>
 const listenDocumentExists = (
   observeDocumentAvailability: DocumentPreviewStore['unstable_observeDocumentPairAvailability'],
   id: string,
+  versionId: string | undefined,
 ): Observable<boolean> =>
-  observeDocumentAvailability(id).pipe(map(({published}) => published.available))
+  observeDocumentAvailability(id, {version: versionId}).pipe(
+    map(({published, version}) => {
+      if (!version?.available && version?.reason === 'VERSION_DELETED') {
+        return false
+      }
+
+      return published.available || version?.available || false
+    }),
+  )
 
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
 const REF_UPDATE_DELAY = 1000
@@ -98,14 +111,19 @@ export function validateDocumentWithReferences(
     mergeMap((ids) => from(ids)),
   )
 
+  const versionId$ = document$.pipe(
+    map((doc) => ({versionId: getVersionFromId(doc?._id || '')})),
+    distinctUntilChanged(),
+  )
+
   // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
-  const referenceExistence$ = referenceIds$.pipe(
-    groupBy((id) => id, {duration: () => timer(1000 * 60 * 30)}),
+  const referenceExistence$ = combineLatest([versionId$, referenceIds$]).pipe(
+    groupBy(([_, id]) => id, {duration: () => timer(1000 * 60 * 30)}),
     mergeMap((id$) =>
       id$.pipe(
         distinct(),
-        mergeMap((id) =>
-          listenDocumentExists(ctx.observeDocumentPairAvailability, id).pipe(
+        mergeMap(([{versionId}, id]) =>
+          listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
             map(
               // eslint-disable-next-line max-nested-callbacks
               (result) => [id, result] as const,

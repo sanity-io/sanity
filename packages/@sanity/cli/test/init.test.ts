@@ -3,42 +3,47 @@ import path from 'node:path'
 
 import {describe, expect} from 'vitest'
 
+import {determineAppTemplate} from '../src/actions/init-project/determineAppTemplate'
 import templates from '../src/actions/init-project/templates'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {baseTestPath, cliProjectId, getTestRunArgs, runSanityCmdCommand} from './shared/environment'
 
 describeCliTest('CLI: `sanity init v3`', () => {
-  describe.each(Object.keys(templates))('for template %s', (template) => {
-    testConcurrent('adds autoUpdates: true to cli config', async () => {
-      const version = 'v3'
-      const testRunArgs = getTestRunArgs(version)
-      const outpath = `test-template-${template}-${version}`
+  // filter out non-studio apps for now, until we add things they can auto-update
+  describe.each(Object.keys(templates).filter((template) => !determineAppTemplate(template)))(
+    'for template %s',
+    (template) => {
+      testConcurrent('adds autoUpdates: true to cli config', async () => {
+        const version = 'v3'
+        const testRunArgs = getTestRunArgs(version)
+        const outpath = `test-template-${template}-${version}`
 
-      await runSanityCmdCommand(version, [
-        'init',
-        '--y',
-        '--project',
-        cliProjectId,
-        '--dataset',
-        testRunArgs.dataset,
-        '--template',
-        template,
-        '--output-path',
-        `${baseTestPath}/${outpath}`,
-        '--package-manager',
-        'manual',
-      ])
+        await runSanityCmdCommand(version, [
+          'init',
+          '--y',
+          '--project',
+          cliProjectId,
+          '--dataset',
+          testRunArgs.dataset,
+          '--template',
+          template,
+          '--output-path',
+          `${baseTestPath}/${outpath}`,
+          '--package-manager',
+          'manual',
+        ])
 
-      const cliConfig = await fs.readFile(
-        path.join(baseTestPath, outpath, 'sanity.cli.ts'),
-        'utf-8',
-      )
+        const cliConfig = await fs.readFile(
+          path.join(baseTestPath, outpath, 'sanity.cli.ts'),
+          'utf-8',
+        )
 
-      expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
-      expect(cliConfig).toContain(`dataset: '${testRunArgs.dataset}'`)
-      expect(cliConfig).toContain(`autoUpdates: true`)
-    })
-  })
+        expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
+        expect(cliConfig).toContain(`dataset: '${testRunArgs.dataset}'`)
+        expect(cliConfig).toContain(`autoUpdates: true`)
+      })
+    },
+  )
 
   testConcurrent('adds autoUpdates: true to cli config for javascript projects', async () => {
     const version = 'v3'
@@ -106,7 +111,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'sanity-io/sanity/packages/@sanity/cli/test/test-template',
+        'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -145,7 +150,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'https://github.com/sanity-io/sanity/tree/next/packages/@sanity/cli/test/test-template',
+        'https://github.com/sanity-io/sanity/tree/main/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -183,7 +188,7 @@ describeCliTest('CLI: `sanity init v3`', () => {
         '--dataset',
         testRunArgs.dataset,
         '--template',
-        'sanity-io/sanity/packages/@sanity/cli/test/test-template',
+        'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
         '--output-path',
         `${baseTestPath}/${outpath}`,
         '--package-manager',
@@ -192,8 +197,10 @@ describeCliTest('CLI: `sanity init v3`', () => {
 
       const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
 
-      expect(envContent).toContain(`SANITY_PROJECT_ID=${cliProjectId}`)
-      expect(envContent).toContain(`SANITY_DATASET=${testRunArgs.dataset}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_PROJECT_ID=${cliProjectId}`)
+      expect(envContent).toContain(`SANITY_STUDIO_PROJECT_ID=${cliProjectId}`)
+      expect(envContent).toContain(`NEXT_PUBLIC_SANITY_DATASET=${testRunArgs.dataset}`)
+      expect(envContent).toContain(`SANITY_STUDIO_DATASET=${testRunArgs.dataset}`)
     })
 
     testConcurrent('fails with invalid repository format', async () => {

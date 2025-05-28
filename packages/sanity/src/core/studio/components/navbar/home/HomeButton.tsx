@@ -1,3 +1,4 @@
+import {SanityMonogram} from '@sanity/logos'
 import {Box, Card, Flex, rem, Text} from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -5,7 +6,6 @@ import {styled} from 'styled-components'
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
-import {SanityLogo} from '../SanityLogo'
 import {WorkspacePreviewIcon} from '../workspace'
 
 const LOGO_MARK_SIZE = 25 // width and height, px
@@ -58,7 +58,7 @@ export function HomeButton() {
             {multipleWorkspaces || activeWorkspace.customIcon ? (
               <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
             ) : (
-              <SanityLogo />
+              <SanityMonogram width="100%" height="100%" />
             )}
           </Flex>
         </LogoMarkContainer>

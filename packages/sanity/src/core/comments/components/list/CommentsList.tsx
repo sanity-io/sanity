@@ -52,11 +52,17 @@ export interface CommentsListProps {
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentUpdatePayload) => void
   onNewThreadCreate: (payload: CommentBaseCreatePayload) => void
+  /**
+   * @internal
+   */
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onReply: (payload: CommentBaseCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
+  /**
+   * @internal
+   */
   selectedPath: CommentsSelectedPath | null
   status: CommentStatus
 }

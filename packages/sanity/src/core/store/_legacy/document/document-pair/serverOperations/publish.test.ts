@@ -1,4 +1,4 @@
-import {type SanityDocument} from 'sanity'
+import {type SanityDocument} from '@sanity/types'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'

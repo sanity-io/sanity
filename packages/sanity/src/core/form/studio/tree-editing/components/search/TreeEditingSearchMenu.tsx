@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -7,15 +8,12 @@ import {
 } from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {
-  CommandList,
-  getSchemaTypeTitle,
-  type Path,
-  SanityDefaultPreview,
-  supportsTouch,
-  useTranslation,
-} from 'sanity'
 
+import {CommandList} from '../../../../../components/commandList/CommandList'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
@@ -26,7 +24,7 @@ interface ResultItemProps {
   isFirst: boolean
 }
 
-function ResultItem(props: ResultItemProps): JSX.Element {
+function ResultItem(props: ResultItemProps): React.JSX.Element {
   const {item, onPathSelect, isFirst} = props
 
   const {value} = useValuePreviewWithFallback({
@@ -63,7 +61,7 @@ interface TreeEditingSearchMenuProps {
   textInputElement: HTMLInputElement | null
 }
 
-export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): JSX.Element {
+export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): React.JSX.Element {
   const {items, onPathSelect, textInputElement} = props
   const {t} = useTranslation()
 

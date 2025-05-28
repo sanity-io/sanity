@@ -1,8 +1,9 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {test} from '../../studio-test'
 
 test('media plugin should open from input', async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/content/input-standard;imagesTest')
+  await createDraftDocument('/content/input-standard;imagesTest')
 
   // wait for input to be visible
   await expect(await page.getByTestId('change-bar__field-wrapper').nth(2)).toBeVisible()
@@ -20,7 +21,7 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
 })
 
 test('open media plugin from navbar', async ({page, createDraftDocument}) => {
-  await createDraftDocument('/test/')
+  await page.goto('/')
   await expect(page.getByTestId('parent-config-studio-tool-menu')).toBeVisible()
 
   // click media plugin

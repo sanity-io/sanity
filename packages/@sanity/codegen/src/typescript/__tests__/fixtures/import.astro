@@ -1,0 +1,9 @@
+---
+import groq from 'groq'
+import { type Client } from '@sanity/client'
+
+export const query = groq`*[_type == "myType"]`
+---
+<MyComponent>
+  <div>{query}</div>
+</MyComponent>

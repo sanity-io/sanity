@@ -13,6 +13,7 @@ export const STANDARD_INPUT_TYPES = [
   'stringsTest',
   'textsTest',
   'urlsTest',
+  'globalDocumentReferenceTest',
 ]
 
 export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
@@ -55,12 +56,14 @@ export const DEBUG_INPUT_TYPES = [
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
   'focusTest',
+  'patchOnMountDebug',
   'formInputDebug',
   'initialValuesTest',
   'inspectorsTest',
   'invalidPreviews',
   'languageFilterDebug',
   'manyFieldsTest',
+  'manyViews',
   'noTitleField',
   'objectsDebug',
   'poppers',
@@ -80,6 +83,7 @@ export const DEBUG_INPUT_TYPES = [
   'scrollBug',
   'select',
   'simpleArrayOfObjects',
+  'arrayCapabilities',
   'simpleReferences',
   'thesis',
   'typeWithNoToplevelStrings',

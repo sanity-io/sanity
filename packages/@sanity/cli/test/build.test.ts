@@ -45,7 +45,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
             await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null),
           ).toBeTruthy()
           const favicons = files.filter((file) => /^favicon|^apple-touch-icon/.test(file))
-          expect(favicons).toHaveLength(5)
+          expect(favicons).toHaveLength(6)
           expect(files).toContain('manifest.webmanifest')
 
           const builtHtml = await readFile(path.join(studioPath, 'out', 'index.html'), 'utf8')

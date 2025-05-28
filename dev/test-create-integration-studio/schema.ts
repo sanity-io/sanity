@@ -1,5 +1,7 @@
 import {defineArrayMember, defineField, defineType, type FieldGroupDefinition} from 'sanity'
 
+import {Coloured, Custom} from './CustomStyle'
+
 export const mainGroup: FieldGroupDefinition = {
   name: 'main',
   title: 'Common fields',
@@ -22,6 +24,7 @@ export const schemaTypes = [
     ],
     options: {
       sanityCreate: {exclude: true},
+      canvasApp: {exclude: true},
     },
   }),
   defineType({
@@ -32,6 +35,7 @@ export const schemaTypes = [
         name: 'title',
         title: 'Documents with initial values are disabled for Create',
         type: 'string',
+        options: {canvasApp: {exclude: true}},
         initialValue: () =>
           new Promise<string>((resolve) => {
             setTimeout(() => {
@@ -45,6 +49,23 @@ export const schemaTypes = [
           'When any value resolves, the Start in Create button disappears. This is not perfect, but "good enough" for now.',
         type: 'string',
         initialValue: 'Initial value',
+      }),
+    ],
+  }),
+  defineType({
+    type: 'document',
+    liveEdit: true,
+    name: 'has-live-edit',
+    fields: [
+      defineField({
+        name: 'title',
+        type: 'string',
+        initialValue: 'Live edit',
+      }),
+      defineField({
+        name: 'description',
+        type: 'string',
+        initialValue: 'Live edit description',
       }),
     ],
   }),
@@ -63,8 +84,15 @@ export const schemaTypes = [
         group: [mainGroup.name],
       }),
       defineField({
+        name: 'liveEditRef',
+        title: 'Live edit ref',
+        type: 'reference',
+        to: [{type: 'has-live-edit'}],
+        group: [mainGroup.name],
+      }),
+      defineField({
         name: 'description',
-        title: 'Description – with initial value – Create excluded',
+        title: 'Description',
         type: 'text',
         rows: 3,
         description: 'Lede and page summary.',
@@ -191,6 +219,7 @@ export const schemaTypes = [
       {
         title: 'Block',
         type: 'block',
+        of: [{name: 'liveEditRef', type: 'reference', to: [{type: 'has-live-edit'}]}],
         styles: [
           {title: 'Normal', value: 'normal'},
           {title: 'H1', value: 'h1'},
@@ -198,6 +227,8 @@ export const schemaTypes = [
           {title: 'H3', value: 'h3'},
           {title: 'H4', value: 'h4'},
           {title: 'Quote', value: 'blockquote'},
+          {title: 'Custom', value: 'custom', component: Custom},
+          {title: 'Coloured', value: 'coloured', component: Coloured},
         ],
         marks: {
           decorators: [

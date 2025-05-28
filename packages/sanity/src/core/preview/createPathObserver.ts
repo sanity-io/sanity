@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
 import {uniq} from 'lodash'
 import {type Observable, of as observableOf} from 'rxjs'
@@ -29,6 +30,7 @@ type ObserveFieldsFn = (
   id: string,
   fields: FieldName[],
   apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
 ) => Observable<Record<string, unknown> | null>
 
 function observePaths(
@@ -36,6 +38,7 @@ function observePaths(
   paths: PreviewPath[],
   observeFields: ObserveFieldsFn,
   apiConfig?: ApiConfig,
+  perspective?: StackablePerspective[],
 ): Observable<Record<string, unknown> | null> {
   if (!value || typeof value !== 'object') {
     // Reached a leaf. Return as is
@@ -67,7 +70,7 @@ function observePaths(
       ? {projectId: value._projectId, dataset: value._dataset}
       : apiConfig
 
-    return observeFields(id, nextHeads, refApiConfig).pipe(
+    return observeFields(id, nextHeads, refApiConfig, perspective).pipe(
       switchMap((snapshot) => {
         if (snapshot === null) {
           return observableOf(null)
@@ -82,6 +85,7 @@ function observePaths(
           paths,
           observeFields,
           refApiConfig,
+          perspective,
         )
       }),
     )
@@ -102,7 +106,7 @@ function observePaths(
     if (tails.length === 0) {
       res[head] = isRecord(value) ? (value as Record<string, unknown>)[head] : undefined
     } else {
-      res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig)
+      res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig, perspective)
     }
     return res
   }, currentValue)
@@ -132,7 +136,8 @@ export function createPathObserver(options: {observeFields: ObserveFieldsFn}) {
     value: Previewable,
     paths: (FieldName | PreviewPath)[],
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<Record<string, unknown> | null> => {
-    return observePaths(value, normalizePaths(paths), observeFields, apiConfig)
+    return observePaths(value, normalizePaths(paths), observeFields, apiConfig, perspective)
   }
 }

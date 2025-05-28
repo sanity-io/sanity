@@ -1,13 +1,15 @@
 import {AddIcon} from '@sanity/icons'
-import {type Schema} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
+  isPublishedPerspective,
+  type ReleaseId,
   type Template,
   type TemplatePermissionsResult,
   useGetI18nText,
-  useSchema,
+  useIsReleaseActive,
+  usePerspective,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
@@ -28,9 +30,9 @@ const POPOVER_PROPS: PopoverProps = {
 }
 
 const getIntent = (
-  schema: Schema,
   templates: Template[],
   item: InitialValueTemplateItem,
+  version?: ReleaseId,
 ): PaneHeaderIntentProps | null => {
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
@@ -38,12 +40,14 @@ const getIntent = (
   const baseParams = {
     template: item.templateId,
     type: typeName,
+    version,
     id: item.initialDocumentId,
   }
 
   return {
     type: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
+    searchParams: version ? [['perspective', version]] : undefined,
   }
 }
 
@@ -52,10 +56,12 @@ interface PaneHeaderCreateButtonProps {
 }
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
-  const schema = useSchema()
   const templates = useTemplates()
+  const {selectedReleaseId, selectedPerspective} = usePerspective()
+  const isReleaseActive = useIsReleaseActive()
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const getI18nText = useGetI18nText([...templateItems, ...templates])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
@@ -100,11 +106,19 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     )
   }
 
+  const disabledByPerspectiveTooltipProps = {
+    content: tCore(
+      isPublishedPerspective(selectedPerspective)
+        ? 'new-document.disabled-published.tooltip'
+        : 'new-document.disabled-release.tooltip',
+    ),
+  }
+
   if (templateItems.length === 1) {
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
-    const disabled = !permissions?.granted
-    const intent = getIntent(schema, templates, firstItem)
+    const disabled = !permissions?.granted || !isReleaseActive
+    const intent = getIntent(templates, firstItem, selectedReleaseId)
     if (!intent) return null
 
     return (
@@ -120,7 +134,11 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
-          tooltipProps={disabled ? null : {content: t('pane-header.create-new-button.tooltip')}}
+          tooltipProps={
+            disabled
+              ? disabledByPerspectiveTooltipProps
+              : {content: t('pane-header.create-new-button.tooltip')}
+          }
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -132,8 +150,13 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         <Button
           icon={AddIcon}
           mode="bleed"
+          disabled={!isReleaseActive}
           data-testid="multi-action-intent-button"
-          tooltipProps={{content: t('pane-header.create-new-button.tooltip')}}
+          tooltipProps={
+            isReleaseActive
+              ? {content: t('pane-header.create-new-button.tooltip')}
+              : disabledByPerspectiveTooltipProps
+          }
         />
       }
       id="create-menu"
@@ -142,7 +165,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(schema, templates, item)
+            const intent = getIntent(templates, item, selectedReleaseId)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
@@ -154,6 +177,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                   {...linkProps}
                   intent={intent.type}
                   params={intent.params}
+                  searchParams={intent.searchParams}
                   ref={linkRef}
                 />
               ),

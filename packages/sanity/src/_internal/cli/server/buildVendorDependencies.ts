@@ -223,6 +223,7 @@ export async function buildVendorDependencies({
     define: {'process.env.NODE_ENV': JSON.stringify('production')},
 
     build: {
+      commonjsOptions: {strictRequires: 'auto'},
       minify: true,
       emptyOutDir: false, // Rely on CLI to do this
       outDir: path.join(outputDir, VENDOR_DIR),

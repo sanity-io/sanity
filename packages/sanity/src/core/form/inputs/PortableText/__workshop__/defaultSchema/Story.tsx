@@ -53,7 +53,7 @@ function TestForm() {
   const patchChannel = useMemo(() => createPatchChannel(), [])
   const [focusPath, setFocusPath] = useState<Path>([])
   const changed = false
-  const focusRef = useRef()
+  const focusRef = useRef(undefined)
   const handleAppendItem = useAction('onItemAppend')
   const handleBlur = useAction('onBlur')
   const handleFocus = useAction('onFocus')

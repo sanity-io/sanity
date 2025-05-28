@@ -10,6 +10,13 @@ export default function UploadPlaceholderStory() {
         <Card>
           <UploadPlaceholder
             accept="image/*"
+            assetSources={[
+              {
+                name: 'asset-source',
+                title: 'Asset Source',
+                component: () => 'Asset source',
+              },
+            ]}
             acceptedFiles={[{name: 'foo.jpg', type: 'image/jpeg'}]}
             browse={<Button text="Browse btn" mode="ghost" />}
             directUploads

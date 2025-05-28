@@ -6,7 +6,7 @@ import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {type BaseImageInputProps} from './types'
 
 function ImageInputAssetSourceComponent(
-  props: Pick<BaseImageInputProps, 'value' | 'schemaType' | 'observeAsset'> & {
+  props: Pick<BaseImageInputProps, 'value' | 'schemaType' | 'observeAsset' | 'isUploading'> & {
     selectedAssetSource: AssetSource | null
     handleAssetSourceClosed: () => void
     handleSelectAssetFromSource: (assetFromSource: AssetFromSource[]) => void
@@ -15,6 +15,7 @@ function ImageInputAssetSourceComponent(
   const {
     handleAssetSourceClosed,
     handleSelectAssetFromSource,
+    isUploading,
     observeAsset,
     schemaType,
     selectedAssetSource,
@@ -32,12 +33,15 @@ function ImageInputAssetSourceComponent(
       <WithReferencedAsset observeAsset={observeAsset} reference={value.asset}>
         {(imageAsset) => (
           <Component
-            selectedAssets={[imageAsset]}
-            assetType="image"
             accept={accept}
-            selectionType="single"
+            action={isUploading ? 'upload' : 'select'}
+            assetSource={selectedAssetSource}
+            assetType="image"
             onClose={handleAssetSourceClosed}
             onSelect={handleSelectAssetFromSource}
+            schemaType={schemaType}
+            selectedAssets={[imageAsset]}
+            selectionType="single"
           />
         )}
       </WithReferencedAsset>
@@ -45,12 +49,15 @@ function ImageInputAssetSourceComponent(
   }
   return (
     <Component
-      selectedAssets={[]}
-      selectionType="single"
-      assetType="image"
       accept={accept}
+      action={isUploading ? 'upload' : 'select'}
+      assetSource={selectedAssetSource}
+      assetType="image"
       onClose={handleAssetSourceClosed}
       onSelect={handleSelectAssetFromSource}
+      schemaType={schemaType}
+      selectedAssets={[]}
+      selectionType="single"
     />
   )
 }

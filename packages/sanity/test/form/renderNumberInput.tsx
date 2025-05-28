@@ -1,5 +1,4 @@
 import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
-import {type ReactElement} from 'react'
 
 import {type NumberInputProps, type PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
@@ -10,7 +9,7 @@ const noopRenderDefault = () => <></>
 export type TestRenderNumberInputCallback = (
   inputProps: NumberInputProps,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderNumberInput(options: {
   fieldDefinition: FieldDefinition<'number'>

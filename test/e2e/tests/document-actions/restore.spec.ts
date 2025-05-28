@@ -1,7 +1,10 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
+  test.slow()
   const titleA = 'Title A'
   const titleB = 'Title B'
 
@@ -19,22 +22,23 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
+  // Wait for the document to finish saving
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
+  await page.waitForTimeout(2_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()
@@ -73,7 +77,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
 
   // waits for the top most form layer to finish loading
   await page.waitForSelector('[data-testid="document-panel-scroller"]', {
@@ -81,24 +85,25 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
   })
 
   await titleInput.fill(titleA)
+  // Wait for the document to finish saving
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
   //
   // Note: This is invoked using the publish keyboard shortcut, because the publish document action
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
-  await page.waitForTimeout(1_000)
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
+  await page.waitForTimeout(2_000)
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()
@@ -146,22 +151,23 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   const previousRevisionButton = timelineItemButton.nth(1)
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
 
-  await createDraftDocument('/test/content/input-debug;removeRestoreActionTest')
+  await createDraftDocument('/content/input-debug;removeRestoreActionTest')
   await titleInput.fill(titleA)
+  // Wait for the document to finish saving
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Change the title.
   await titleInput.fill(titleB)
   await expect(titleInput).toHaveValue(titleB)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
+  await page.waitForTimeout(2_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Pick the previous revision from the revision timeline.
   await contextMenuButton.click()
@@ -184,7 +190,7 @@ test(`user defined restore actions should not appear in any other document actio
   const customRestoreButton = page.getByTestId('action-Customrestore')
   const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
 
   await actionMenuButton.click()
 

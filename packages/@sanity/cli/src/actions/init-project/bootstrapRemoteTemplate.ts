@@ -1,6 +1,7 @@
 import {mkdir} from 'node:fs/promises'
 import {join} from 'node:path'
 
+import {getMonoRepo, GitHubFileReader, validateTemplate} from '@sanity/template-validator'
 import {type Framework, frameworks} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 
@@ -9,14 +10,13 @@ import {type CliCommandContext} from '../../types'
 import {getDefaultPortForFramework} from '../../util/frameworkPort'
 import {
   applyEnvVariables,
-  checkNeedsReadToken,
+  checkIfNeedsApiToken,
   downloadAndExtractRepo,
-  generateSanityApiReadToken,
-  getPackages,
+  generateSanityApiToken,
+  getGitHubRawContentUrl,
   type RepoInfo,
   setCorsOrigin,
   tryApplyPackageName,
-  validateRemoteTemplate,
 } from '../../util/remoteTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {tryGitInit} from './git'
@@ -30,6 +30,9 @@ export interface BootstrapRemoteOptions {
   variables: GenerateConfigOptions['variables']
 }
 
+const SANITY_DEFAULT_PORT = 3333
+const READ_TOKEN_LABEL = 'Live Preview API'
+const WRITE_TOKEN_LABEL = 'App Write Token'
 const INITIAL_COMMIT_MESSAGE = 'Initial commit from Sanity CLI'
 
 export async function bootstrapRemoteTemplate(
@@ -39,11 +42,21 @@ export async function bootstrapRemoteTemplate(
   const {outputPath, repoInfo, bearerToken, variables, packageName} = opts
   const {output, apiClient} = context
   const name = [repoInfo.username, repoInfo.name, repoInfo.filePath].filter(Boolean).join('/')
+  const contentsUrl = getGitHubRawContentUrl(repoInfo)
+  const headers: Record<string, string> = {}
+  if (bearerToken) {
+    headers.Authorization = `Bearer ${bearerToken}`
+  }
   const spinner = output.spinner(`Bootstrapping files from template "${name}"`).start()
+  const corsAdded: number[] = [SANITY_DEFAULT_PORT]
 
   debug('Validating remote template')
-  const packages = await getPackages(repoInfo, bearerToken)
-  await validateRemoteTemplate(repoInfo, packages, bearerToken)
+  const fileReader = new GitHubFileReader(contentsUrl, headers)
+  const packages = await getMonoRepo(fileReader)
+  const validation = await validateTemplate(fileReader, packages)
+  if (!validation.isValid) {
+    throw new Error(validation.errors.join('\n'))
+  }
 
   debug('Create new directory "%s"', outputPath)
   await mkdir(outputPath, {recursive: true})
@@ -53,12 +66,18 @@ export async function bootstrapRemoteTemplate(
 
   debug('Checking if template needs read token')
   const needsReadToken = await Promise.all(
-    (packages ?? ['']).map((pkg) => checkNeedsReadToken(join(outputPath, pkg))),
+    (packages ?? ['']).map((pkg) => checkIfNeedsApiToken(join(outputPath, pkg), 'read')),
+  ).then((results) => results.some(Boolean))
+  const needsWriteToken = await Promise.all(
+    (packages ?? ['']).map((pkg) => checkIfNeedsApiToken(join(outputPath, pkg), 'write')),
   ).then((results) => results.some(Boolean))
 
   debug('Applying environment variables')
   const readToken = needsReadToken
-    ? await generateSanityApiReadToken('API Read Token', variables.projectId, apiClient)
+    ? await generateSanityApiToken(READ_TOKEN_LABEL, 'read', variables.projectId, apiClient)
+    : undefined
+  const writeToken = needsWriteToken
+    ? await generateSanityApiToken(WRITE_TOKEN_LABEL, 'write', variables.projectId, apiClient)
     : undefined
 
   for (const pkg of packages ?? ['']) {
@@ -67,15 +86,18 @@ export async function bootstrapRemoteTemplate(
       fs: new LocalFileSystemDetector(packagePath),
       frameworkList: frameworks as readonly Framework[],
     })
-    const port = getDefaultPortForFramework(packageFramework?.slug)
 
-    debug('Setting CORS origin to http://localhost:%d', port)
-    await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+    const port = getDefaultPortForFramework(packageFramework?.slug)
+    if (corsAdded.includes(port) === false) {
+      debug('Setting CORS origin to http://localhost:%d', port)
+      await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
+      corsAdded.push(port)
+    }
 
     debug('Applying environment variables to %s', pkg)
     // Next.js uses `.env.local` for local environment variables
     const envName = packageFramework?.slug === 'nextjs' ? '.env.local' : '.env'
-    await applyEnvVariables(packagePath, {...variables, readToken}, envName)
+    await applyEnvVariables(packagePath, {...variables, readToken, writeToken}, envName)
   }
 
   debug('Setting package name to %s', packageName)
@@ -88,4 +110,9 @@ export async function bootstrapRemoteTemplate(
   await updateInitialTemplateMetadata(apiClient, variables.projectId, `external-${name}`)
 
   spinner.succeed()
+  if (corsAdded.length) {
+    output.success(`CORS origins added (${corsAdded.map((p) => `localhost:${p}`).join(', ')})`)
+  }
+  if (readToken) output.success(`API token generated (${READ_TOKEN_LABEL})`)
+  if (writeToken) output.success(`API token generated (${WRITE_TOKEN_LABEL})`)
 }

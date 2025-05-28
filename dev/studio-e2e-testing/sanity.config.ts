@@ -3,6 +3,7 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
+import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
@@ -19,14 +20,12 @@ import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
-export default defineConfig({
+const defaultConfig = defineConfig({
   name: 'default',
   title: 'studio-e2e-testing',
 
   projectId: process.env.SANITY_E2E_PROJECT_ID!,
   dataset: process.env.SANITY_E2E_DATASET!,
-
-  basePath: '/test',
 
   schema: {
     types: schemaTypes,
@@ -69,6 +68,14 @@ export default defineConfig({
       structure,
       defaultDocumentNode,
     }),
+    presentationTool({
+      name: 'presentation',
+      title: 'Presentation',
+      previewUrl: {
+        origin: 'https://test-studio.sanity.dev',
+        preview: '/preview/index.html',
+      },
+    }),
     languageFilter({
       defaultLanguages: ['nb'],
       supportedLanguages: [
@@ -106,4 +113,29 @@ export default defineConfig({
   announcements: {
     enabled: false,
   },
+  releases: {
+    enabled: true,
+  },
+  create: {
+    startInCreateEnabled: false,
+  },
 })
+
+export default defineConfig([
+  {
+    ...defaultConfig,
+    basePath: '/chromium',
+    name: 'chromium',
+    title: 'studio-e2e-testing-chromium',
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+  },
+  {
+    ...defaultConfig,
+    basePath: '/firefox',
+    name: 'firefox',
+    title: 'studio-e2e-testing-firefox',
+    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+  },
+])

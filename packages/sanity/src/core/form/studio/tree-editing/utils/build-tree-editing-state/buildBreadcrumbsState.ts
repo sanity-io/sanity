@@ -1,6 +1,7 @@
+import {type ArraySchemaType, isReferenceSchemaType, type Path} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {type ArraySchemaType, EMPTY_ARRAY, isReferenceSchemaType, type Path} from 'sanity'
 
+import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb} from '../../types'
 

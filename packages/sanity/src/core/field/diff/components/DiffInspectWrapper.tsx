@@ -1,5 +1,5 @@
 import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
-import {type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
@@ -26,7 +26,7 @@ const Meta = styled.div`
 `
 
 /** @internal */
-export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): ReactElement {
+export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): React.JSX.Element {
   const {children, as, change, ...restProps} = props
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
@@ -62,7 +62,7 @@ const MetaLabel = ({title}: {title: string}) => (
   </Box>
 )
 
-function DiffInspector({change}: {change: FieldChangeNode}): ReactElement | null {
+function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element | null {
   const {t} = useTranslation()
   return (
     <Stack space={3}>

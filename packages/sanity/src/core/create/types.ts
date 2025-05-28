@@ -1,4 +1,4 @@
-import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 
 import {type PatchEvent} from '../form'
 
@@ -30,14 +30,4 @@ export interface CreateLinkedActionsProps {
 /** @internal */
 export interface CreateLinkedDocumentBannerContentProps {
   metadata: CreateLinkMetadata
-}
-
-/** @internal */
-export interface StartInCreateBannerProps {
-  documentId: string
-  documentType: ObjectSchemaType
-  document: SanityDocumentLike
-  isInitialValueLoading: boolean
-  documentReady: boolean
-  panelPortalElementId: string
 }

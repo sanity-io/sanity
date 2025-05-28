@@ -1,12 +1,12 @@
 import {UserIcon} from '@sanity/icons'
 import {type User} from '@sanity/types'
-import {type AvatarSize, Skeleton, Text} from '@sanity/ui'
+import {type AvatarSize, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
-import {UserAvatar} from '../../components'
+import {AvatarSkeleton, UserAvatar} from '../../components'
 import {useUser} from '../../store'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
@@ -24,16 +24,6 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
     `
   },
 )
-
-const AvatarSkeleton = styled(Skeleton)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    height: ${theme.avatar.sizes[props.$size]?.size}px;
-    width: ${theme.avatar.sizes[props.$size]?.size}px;
-    border-radius: 50%;
-  `
-})
 
 export function TasksUserAvatar(props: {
   user?: User

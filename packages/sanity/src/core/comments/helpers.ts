@@ -10,6 +10,9 @@ export function useCommentHasChanged(message: CommentMessage): boolean {
   return useMemo(() => !isEqual(prevMessage, message), [prevMessage, message])
 }
 
+/**
+ * @internal
+ */
 export function hasCommentMessageValue(value: CommentMessage): boolean {
   if (!value) return false
 
@@ -43,6 +46,7 @@ export function commentIntentIfDiffers(
 
 /**
  * A function that checks whether a comment is a text selection comment
+ * @internal
  */
 export function isTextSelectionComment(comment: CommentDocument): boolean {
   if (!comment) return false

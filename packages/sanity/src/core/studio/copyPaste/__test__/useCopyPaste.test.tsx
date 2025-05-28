@@ -1,10 +1,12 @@
+import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {act, renderHook} from '@testing-library/react'
-import {type FIXME, PatchEvent, type SanityClient} from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type FIXME} from '../../../FIXME'
+import {PatchEvent} from '../../../form/patch/PatchEvent'
 import {useCopyPaste} from '../CopyPasteProvider'
 import {type SanityClipboardItem} from '../types'
 import {getClipboardItem} from '../utils'
@@ -115,11 +117,6 @@ describe('useCopyPaste', () => {
     })
 
     expect(mockOnChange).toHaveBeenCalledWith(expect.any(PatchEvent))
-    expect(mockToast.push).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 'success',
-      }),
-    )
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining({
         patches: [
@@ -369,12 +366,6 @@ describe('useCopyPaste', () => {
       )
     })
 
-    expect(mockToast.push).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 'success',
-      }),
-    )
-
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining({
         patches: [
@@ -484,11 +475,6 @@ describe('useCopyPaste', () => {
       )
     })
 
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Best Author Friend" updated',
-    })
-
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining({
         patches: [
@@ -542,11 +528,6 @@ describe('useCopyPaste', () => {
           context: {source: 'fieldAction'},
         },
       )
-    })
-
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Best Friend" updated',
     })
 
     expect(mockOnChange).toHaveBeenCalledWith(
@@ -606,11 +587,6 @@ describe('useCopyPaste', () => {
           context: {source: 'fieldAction'},
         },
       )
-    })
-
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Array of references to editors" updated',
     })
 
     expect(mockOnChange).toHaveBeenCalledWith(
@@ -683,11 +659,6 @@ describe('useCopyPaste', () => {
       )
     })
 
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Array of references to editors" updated',
-    })
-
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining({
         patches: [
@@ -758,11 +729,6 @@ describe('useCopyPaste', () => {
       )
     })
 
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Array of references to editors" updated',
-    })
-
     expect(mockOnChange).toHaveBeenCalledWith(
       expect.objectContaining({
         patches: [
@@ -830,11 +796,6 @@ describe('useCopyPaste', () => {
           context: {source: 'fieldAction'},
         },
       )
-    })
-
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Array of predefined options" updated',
     })
 
     expect(mockOnChange).toHaveBeenCalledWith(
@@ -1009,11 +970,6 @@ describe('useCopyPaste', () => {
       )
     })
 
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Item "String" copied',
-    })
-
     expect(await getClipboardItem()).toEqual({
       patchType: 'append',
       type: 'sanityClipboardItem',
@@ -1059,11 +1015,6 @@ describe('useCopyPaste', () => {
           context: {source: 'fieldAction'},
         },
       )
-    })
-
-    expect(mockToast.push).toHaveBeenCalledWith({
-      status: 'success',
-      title: 'Field "Favorite Strings" updated',
     })
 
     expect(mockOnChange).toHaveBeenCalledWith(

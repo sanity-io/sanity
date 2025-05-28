@@ -5,7 +5,6 @@
     "rootDir": "..",
     "baseUrl": "..",
     "paths": {
-      "@sanity/block-tools": ["./packages/@sanity/block-tools/src/index.ts"],
       "@sanity/diff": ["./packages/@sanity/diff/src/index.ts"],
       "@sanity/cli": ["./packages/@sanity/cli/src/index.ts"],
       "@sanity/codegen": ["./packages/@sanity/codegen/src/_exports/index.ts"],

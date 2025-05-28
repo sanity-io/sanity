@@ -1,7 +1,7 @@
 import {type ValidationMarker, type Validators} from '@sanity/types'
 
 import {type LocaleSource} from '../../i18n'
-import {deepEquals} from '../util/deepEquals'
+import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {typeString} from '../util/typeString'
@@ -84,7 +84,7 @@ export const genericValidators: Validators = {
     const value = (valueType === 'number' || valueType === 'string') && `${actual}`
     const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
 
-    return allowedValues.some((expected) => deepEquals(expected, actual))
+    return allowedValues.some((expected) => deepEqualsIgnoreKey(expected, actual))
       ? true
       : message ||
           i18n.t(

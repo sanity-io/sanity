@@ -1,7 +1,13 @@
 import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
-import {type ConfigContext, type InitialValueTemplateItem, type Source} from 'sanity'
+import {
+  type ConfigContext,
+  type InitialValueTemplateItem,
+  type PerspectiveStack,
+  type Source,
+} from 'sanity'
 
 import {type ComponentBuilder, type ComponentInput} from './Component'
+import {type DividerBuilder} from './Divider'
 import {type DocumentBuilder, type PartialDocumentNode} from './Document'
 import {type DocumentListBuilder, type DocumentListInput} from './DocumentList'
 import {type DocumentListItemBuilder, type DocumentListItemInput} from './DocumentListItem'
@@ -82,6 +88,13 @@ export interface StructureContext extends Source {
    * @returns a structure builder. See {@link StructureBuilder}
    */
   getStructureBuilder: () => StructureBuilder
+  /**
+   * The stacked array of perspective ids ordered chronologically to represent the state of documents at the given point in time.
+   * It can be used as the perspective param in the client to get the correct view of the documents.
+   * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+   * See {@link PerspectiveStack}
+   */
+  perspectiveStack: PerspectiveStack
 }
 
 /**
@@ -150,9 +163,9 @@ export interface StructureBuilder {
    */
   defaults: () => ListBuilder
   /** Get a structure Divider
-   * @returns a Divider. See {@link Divider}
+   * @returns a DividerBuilder. See {@link DividerBuilder}
    */
-  divider: () => Divider
+  divider: (spec?: Divider) => DividerBuilder
   /** By giving a partial Document Node receive the respective Document Builder
    * @param spec - a partial document node. See {@link PartialDocumentNode}
    * @returns a Document builder. See {@link DocumentBuilder}

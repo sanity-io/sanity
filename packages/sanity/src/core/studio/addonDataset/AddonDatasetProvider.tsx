@@ -41,7 +41,6 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
         projectId,
         requestTagPrefix: 'sanity.studio',
         useCdn: false,
-        withCredentials: true,
       })
 
       return client

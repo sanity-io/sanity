@@ -24,7 +24,6 @@ async function getDatasetGrants(
   const grants: Grant[] = await client.request({
     uri: `/projects/${projectId}/datasets/${dataset}/acl`,
     tag: 'acl.get',
-    withCredentials: true,
   })
 
   return grants

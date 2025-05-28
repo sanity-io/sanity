@@ -1,10 +1,13 @@
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './types'
 
 export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
   execute: ({client, schema, idPair, typeName}) => {
-    const tx = client.observable.transaction().delete(idPair.publishedId)
+    const tx = operationsApiClient(client, idPair)
+      .observable.transaction()
+      .delete(idPair.publishedId)
 
     if (isLiveEditEnabled(schema, typeName)) {
       return tx.commit({tag: 'document.delete'})

@@ -1,5 +1,4 @@
 import {type I18nTextRecord, type InitialValueProperty, type SchemaType} from '@sanity/types'
-import {type ElementType, type ReactElement} from 'react'
 
 /**
  * An initial value template is a template that can be used to create a new documents.
@@ -179,7 +178,7 @@ export interface TemplateItem {
    * React icon for the item, if any.
    * Defaults to the icon for the associated template.
    */
-  icon?: ElementType | ReactElement
+  icon?: React.ElementType | React.JSX.Element
 
   /**
    * Experimental: not fully supported yet

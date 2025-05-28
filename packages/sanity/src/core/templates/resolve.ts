@@ -11,6 +11,7 @@ import {
 } from '@sanity/types'
 import {isDeepEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
 
+import {postTask} from '../util/postTask'
 import {type Template} from './types'
 import deepAssign from './util/deepAssign'
 import {isRecord} from './util/isRecord'
@@ -229,11 +230,11 @@ export const resolveInitialValueForType = memoizeResolveInitialValueForType(
     }
 
     if (isObjectSchemaType(type)) {
-      return resolveInitialObjectValue(type, params, maxDepth, context, options)
+      return postTask(() => resolveInitialObjectValue(type, params, maxDepth, context, options))
     }
 
     if (isArraySchemaType(type)) {
-      return resolveInitialArrayValue(type, params, maxDepth, context, options)
+      return postTask(() => resolveInitialArrayValue(type, params, maxDepth, context, options))
     }
 
     return resolveValue(type.initialValue, params, context, options)

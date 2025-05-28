@@ -14,7 +14,7 @@ export const discardChanges: OperationImpl<[], DisabledReason> = {
     return false
   },
   execute: ({client, idPair}) => {
-    return actionsApiClient(client).observable.action(
+    return actionsApiClient(client, idPair).observable.action(
       {
         actionType: 'sanity.action.document.discard',
         draftId: idPair.draftId,

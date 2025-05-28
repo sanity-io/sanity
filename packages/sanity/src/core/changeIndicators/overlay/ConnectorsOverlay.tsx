@@ -3,7 +3,7 @@ import {sortBy} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
-import {ScrollMonitor} from '../../components/scroll'
+import {useOnScroll} from '../../components/scroll'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
@@ -121,27 +121,26 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   }, [byId, allReportedValues, hovered, rootElement])
 
   useResizeObserver(rootElement, handleScrollOrResize)
+  useOnScroll(handleScrollOrResize)
 
   return (
-    <ScrollMonitor onScroll={handleScrollOrResize}>
-      <SvgWrapper style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}>
-        {visibleConnectors.map(({field, change}) => {
-          if (!change) {
-            return null
-          }
+    <SvgWrapper style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}>
+      {visibleConnectors.map(({field, change}) => {
+        if (!change) {
+          return null
+        }
 
-          return (
-            <ConnectorGroup
-              field={field}
-              change={change}
-              key={field.id}
-              onSetFocus={onSetFocus}
-              setHovered={setHovered}
-            />
-          )
-        })}
-      </SvgWrapper>
-    </ScrollMonitor>
+        return (
+          <ConnectorGroup
+            field={field}
+            change={change}
+            key={field.id}
+            onSetFocus={onSetFocus}
+            setHovered={setHovered}
+          />
+        )
+      })}
+    </SvgWrapper>
   )
 }
 

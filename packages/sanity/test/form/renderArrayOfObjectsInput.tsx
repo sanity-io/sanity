@@ -1,5 +1,4 @@
 import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
-import {type ReactElement} from 'react'
 import {vi} from 'vitest'
 
 import {
@@ -22,7 +21,7 @@ const noopRenderDefault = () => <></>
 
 export type TestRenderArrayOfObjectInputCallback = (
   inputProps: ArrayOfObjectsInputProps,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderArrayOfObjectsInput(options: {
   fieldDefinition: FieldDefinition<'array'>

@@ -5,8 +5,8 @@ import {
   type HTMLProps,
   type ReactNode,
   useCallback,
-  useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -89,7 +89,7 @@ export const Pane = forwardRef(function Pane(
     ref.current = refValue
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!rootElement) return undefined
     return mount(rootElement, {
       currentMinWidth: currentMinWidthProp,

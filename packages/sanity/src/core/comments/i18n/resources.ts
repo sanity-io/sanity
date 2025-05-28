@@ -33,8 +33,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** The inspector text when error copying link */
   'copy-link-error-message': 'Unable to copy link to clipboard',
-  /** The inspector successfully copied link text */
-  'copy-link-success-message': 'Copied link to clipboard',
 
   /** The delete dialog body for a comment */
   'delete-comment.body': 'Once deleted, a comment cannot be recovered.',

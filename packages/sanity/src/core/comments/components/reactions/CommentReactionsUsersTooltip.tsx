@@ -89,7 +89,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
    * not special case on _comma_ per se, but rather by the presence of a non-whitespace character.
    */
   const parts = listFormat.formatToParts(userIds)
-  const elements: JSX.Element[] = []
+  const elements: React.JSX.Element[] = []
   for (let i = 0; i < parts.length; i++) {
     const item = parts[i]
 

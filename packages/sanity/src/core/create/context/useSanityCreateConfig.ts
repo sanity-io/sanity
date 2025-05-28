@@ -2,11 +2,7 @@ import {type ComponentType, useContext} from 'react'
 import {SanityCreateConfigContext} from 'sanity/_singletons'
 
 import {type AppIdCache} from '../studio-app/appIdCache'
-import {
-  type CreateLinkedActionsProps,
-  type CreateLinkedDocumentBannerContentProps,
-  type StartInCreateBannerProps,
-} from '../types'
+import {type CreateLinkedActionsProps, type CreateLinkedDocumentBannerContentProps} from '../types'
 
 /**
  * @internal
@@ -24,7 +20,6 @@ export interface SanityCreateConfigContextValue {
   components?: {
     documentLinkedBannerContent: ComponentType<CreateLinkedDocumentBannerContentProps> | undefined
     documentLinkedActions: ComponentType<CreateLinkedActionsProps> | undefined
-    startInCreateBanner: ComponentType<StartInCreateBannerProps> | undefined
   }
 }
 

@@ -1,14 +1,19 @@
 import {Card, Flex} from '@sanity/ui'
-import {type Ref, useCallback, useState} from 'react'
+import {motion} from 'framer-motion'
+import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   type CreateLinkMetadata,
+  isPublishedPerspective,
+  isReleaseDocument,
   isSanityCreateLinked,
+  usePerspective,
   useSanityCreateConfig,
-  useTimelineSelector,
 } from 'sanity'
 
+import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'
 import {DocumentBadges} from './DocumentBadges'
@@ -24,16 +29,18 @@ export interface DocumentStatusBarProps {
 
 const CONTAINER_BREAKPOINT = 480 // px
 
+const AnimatedCard = motion.create(Card)
+
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef, createLinkMetadata} = props
-  const {editState, timelineStore, onChange: onDocumentChange} = useDocumentPane()
+  const {editState, onChange: onDocumentChange, revisionNotFound} = useDocumentPane()
+  const {params = EMPTY_PARAMS} = usePaneRouter()
+  const {selectedPerspective} = usePerspective()
   const {title} = useDocumentTitle()
 
   const CreateLinkedActions = useSanityCreateConfig().components?.documentLinkedActions
 
-  // Subscribe to external timeline state changes
-  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-
+  const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
@@ -43,9 +50,20 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   useResizeObserver({element: rootElement, onResize: handleResize})
 
-  const shouldRender = editState?.ready && typeof collapsed === 'boolean'
+  const shouldRender = useMemo(() => {
+    const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
+    if (selectedPerspective) {
+      if (isPublishedPerspective(selectedPerspective)) {
+        return isReady && Boolean(editState?.published)
+      }
+      if (isReleaseDocument(selectedPerspective)) {
+        return isReady && Boolean(editState?.version)
+      }
+    }
+    return isReady
+  }, [collapsed, editState?.published, editState?.ready, editState?.version, selectedPerspective])
 
-  let actions: JSX.Element | null = null
+  let actions: React.JSX.Element | null = null
   if (createLinkMetadata && isSanityCreateLinked(createLinkMetadata) && CreateLinkedActions) {
     actions = (
       <CreateLinkedActions
@@ -61,42 +79,48 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     actions = <DocumentStatusBarActions />
   }
 
-  return (
-    <Card tone={showingRevision ? 'caution' : undefined}>
-      <Flex direction="column" ref={setRootElement} sizing="border">
-        {shouldRender && (
-          <Flex
-            align="stretch"
-            gap={1}
-            justify="space-between"
-            paddingY={2}
-            paddingLeft={showingRevision ? 3 : 4}
-            paddingRight={showingRevision ? 2 : 3}
-          >
-            <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
-              <Flex align="center">
-                {showingRevision ? (
-                  <RevisionStatusLine />
-                ) : (
-                  <DocumentStatusLine singleLine={!collapsed} />
-                )}
-                <SpacerButton size="large" />
-              </Flex>
-              <DocumentBadges />
-            </Flex>
+  if (showingRevision && revisionNotFound) {
+    return null
+  }
 
-            <Flex
-              align="flex-start"
-              justify="flex-end"
-              ref={actionsBoxRef}
-              style={{flexShrink: 0, marginLeft: 'auto'}}
-            >
-              <SpacerButton size="large" />
-              {actions}
+  return (
+    <AnimatedCard
+      key={showingRevision ? 'revision' : 'published'}
+      initial={{opacity: 0.2}}
+      animate={{opacity: 1, transition: {duration: 0.3}}}
+      tone={showingRevision ? 'caution' : undefined}
+      radius={3}
+      ref={setRootElement}
+      sizing="border"
+      padding={2}
+    >
+      {shouldRender && (
+        <Flex
+          align="stretch"
+          gap={1}
+          justify="space-between"
+          paddingLeft={showingRevision ? 0 : 1}
+          paddingRight={showingRevision ? 0 : 1}
+        >
+          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
+            <Flex align="center">
+              {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+              <SpacerButton />
             </Flex>
+            <DocumentBadges />
           </Flex>
-        )}
-      </Flex>
-    </Card>
+
+          <Flex
+            align="flex-start"
+            justify="flex-end"
+            ref={actionsBoxRef}
+            style={{flexShrink: 0, marginLeft: 'auto'}}
+          >
+            <SpacerButton />
+            {actions}
+          </Flex>
+        </Flex>
+      )}
+    </AnimatedCard>
   )
 }

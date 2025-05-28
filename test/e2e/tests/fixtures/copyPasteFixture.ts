@@ -1,4 +1,5 @@
-import {test as base} from '@sanity/test'
+/* eslint-disable react-hooks/rules-of-hooks */
+import {test as base} from '../../studio-test'
 
 export const test = base.extend<{
   getClipboardItemByMimeTypeAsText: (mimeType: string) => Promise<string | null>

@@ -10,10 +10,18 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 /** @internal */
-export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
-  const {restore} = useDocumentOperation(id, type)
+export const HistoryRestoreAction: DocumentActionComponent = ({
+  id,
+  type,
+  revision,
+  onComplete,
+  release,
+}) => {
+  const {restore} = useDocumentOperation(id, type, release)
+  const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
@@ -60,7 +68,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   const isRevisionLatest = revision === undefined // undefined means latest revision
 
   return useMemo(() => {
-    if (isRevisionLatest) {
+    if (isRevisionLatest || revisionNotFound) {
       return null
     }
 
@@ -77,7 +85,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
       dialog,
       disabled: isRevisionInitial,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, t])
+  }, [dialog, handle, isRevisionInitial, isRevisionLatest, revisionNotFound, t])
 }
 
 HistoryRestoreAction.action = 'restore'

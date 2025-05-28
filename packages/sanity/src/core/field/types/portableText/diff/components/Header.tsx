@@ -24,6 +24,6 @@ const StyledHeading = styled(Heading)`
   }
 `
 
-export function Header({style, children}: {style: string; children: ReactNode}): JSX.Element {
+export function Header({style, children}: {style: string; children: ReactNode}): React.JSX.Element {
   return <StyledHeading size={headingSizes[style]}>{children}</StyledHeading>
 }

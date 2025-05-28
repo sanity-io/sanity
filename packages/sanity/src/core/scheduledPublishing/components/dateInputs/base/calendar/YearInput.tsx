@@ -1,6 +1,6 @@
 import {type ChangeEvent, type ComponentProps, type FocusEvent, useCallback} from 'react'
 
-import {LazyTextInput} from '../../../../../../ui-components/inputs/DateInputs/LazyTextInput'
+import {LazyTextInput} from '../../../../../components/inputs/DateInputs/LazyTextInput'
 
 type Props = Omit<ComponentProps<typeof LazyTextInput>, 'onChange' | 'value'> & {
   value?: number
@@ -18,5 +18,12 @@ export const YearInput = ({onChange, ...props}: Props) => {
     [onChange],
   )
 
-  return <LazyTextInput {...props} onChange={handleChange} inputMode="numeric" />
+  return (
+    <LazyTextInput
+      data-testid="date-input"
+      {...props}
+      onChange={handleChange}
+      inputMode="numeric"
+    />
+  )
 }

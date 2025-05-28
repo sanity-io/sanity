@@ -5,7 +5,11 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   cli-test:
@@ -21,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [18, 20]
+        node: [18, 20, 22]
         experimental: [false]
         # include:
         #   - os: windows-latest
@@ -29,48 +33,41 @@ jobs:
         #     experimental: true
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check if this is a release PR or commit
+        # Provide a way to skip running cli tests on release PRs or when the release PR is merged because
+        # the CLI tests will attempt to install the not-yet-released packages from npm
+        id: check_release
+        run: |
+          SKIP="false"
+          if [[ "$MESSAGE" == chore:\ release* ]]; then
+            SKIP="true"
+          fi
+          echo "skip=$SKIP" >> $GITHUB_OUTPUT
+        env:
+          MESSAGE: ${{ (github.event_name == 'pull_request' && github.event.pull_request.title) ||  (github.event_name == 'push' && github.event.head_commit.message)  }}
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+        if: steps.check_release.outputs.skip != 'true'
+      - uses: pnpm/action-setup@v4
+        if: steps.check_release.outputs.skip != 'true'
+      - uses: actions/setup-node@v4
+        if: steps.check_release.outputs.skip != 'true'
         with:
+          cache: pnpm
           node-version: ${{ matrix.node }}
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
-
       - name: Install project dependencies
+        if: steps.check_release.outputs.skip != 'true'
         run: pnpm install
 
       - name: Build CLI
+        if: steps.check_release.outputs.skip != 'true'
         run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
+        if: steps.check_release.outputs.skip != 'true'
         id: test
-        run: pnpm test:vitest --silent --project=@sanity/cli
+        run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:
-          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
+          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to main
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}

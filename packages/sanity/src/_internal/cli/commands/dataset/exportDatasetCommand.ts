@@ -88,7 +88,10 @@ function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
   return flags
 }
 
-interface ProgressEvent {
+/**
+ * @internal
+ */
+export interface ProgressEvent {
   step: string
   update?: boolean
   current: number
@@ -99,7 +102,8 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
   name: 'export',
   group: 'dataset',
   signature: '[NAME] [DESTINATION]',
-  description: 'Export dataset to local filesystem as a gzipped tarball',
+  description: `Export dataset to local filesystem as a gzipped tarball.
+      Assets failing with HTTP status codes 401, 403 and 404 upon download are ignored and excluded from export.`,
   helpText,
   action: async (args, context) => {
     const {apiClient, output, chalk, workDir, prompt} = context

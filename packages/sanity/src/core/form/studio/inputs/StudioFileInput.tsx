@@ -1,8 +1,7 @@
 import {type SchemaType} from '@sanity/types'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 
 import {useClient} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
 import {useDocumentPreviewStore} from '../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {BaseFileInput, type BaseFileInputProps} from '../../inputs/files/FileInput'
@@ -27,7 +26,6 @@ export function StudioFileInput(props: FileInputProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const {t} = useTranslation()
 
   const resolveUploader = useCallback(
     (type: SchemaType, file: FileLike) => {
@@ -38,12 +36,8 @@ export function StudioFileInput(props: FileInputProps) {
     },
     [fileConfig.directUploads],
   )
-  // NOTE: type.options.sources may be an empty array and in that case we're
-  // disabling selecting images from asset source  (it's a feature, not a bug)
-  const assetSources = useMemo(
-    () => sourcesFromSchema || fileConfig.assetSources,
-    [fileConfig, sourcesFromSchema],
-  )
+
+  const assetSources = sourcesFromSchema || fileConfig.assetSources
 
   const observeAsset = useCallback(
     (id: string) => observeFileAsset(documentPreviewStore, id),
@@ -53,7 +47,6 @@ export function StudioFileInput(props: FileInputProps) {
   return (
     <BaseFileInput
       {...props}
-      t={t}
       client={client}
       assetSources={assetSources}
       directUploads={fileConfig.directUploads}

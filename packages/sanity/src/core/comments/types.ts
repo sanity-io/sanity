@@ -215,6 +215,7 @@ export interface CommentDocument {
     path?: CommentPath
 
     documentRevisionId?: string
+    documentVersionId?: string
     documentType: string
     document:
       | {

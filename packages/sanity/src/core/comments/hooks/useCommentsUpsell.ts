@@ -3,10 +3,6 @@ import {CommentsUpsellContext} from 'sanity/_singletons'
 
 import {type CommentsUpsellContextValue} from '../context/upsell/types'
 
-/**
- * @beta
- * @hidden
- */
 export function useCommentsUpsell(): CommentsUpsellContextValue {
   const value = useContext(CommentsUpsellContext)
 

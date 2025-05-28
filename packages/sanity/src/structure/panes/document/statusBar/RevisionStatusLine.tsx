@@ -16,8 +16,8 @@ export const StatusText = styled(Text)`
   }
 `
 
-export function RevisionStatusLine(): JSX.Element {
-  const {displayed} = useDocumentPane()
+export function RevisionStatusLine(): React.JSX.Element {
+  const {displayed, revisionNotFound} = useDocumentPane()
   const {t} = useTranslation()
   const date = displayed?._updatedAt || displayed?._createdAt
 
@@ -45,7 +45,11 @@ export function RevisionStatusLine(): JSX.Element {
         </Box>
         <Box flex={1}>
           <StatusText size={1} textOverflow="ellipsis">
-            {message.text}
+            {revisionNotFound ? (
+              <Translate t={t} i18nKey="document-status.revision-not-found" />
+            ) : (
+              message.text
+            )}
           </StatusText>
         </Box>
       </Flex>

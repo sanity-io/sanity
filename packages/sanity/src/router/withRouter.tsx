@@ -1,4 +1,4 @@
-import {type ComponentType, type FunctionComponent, type ReactElement} from 'react'
+import {type ComponentType, type FunctionComponent} from 'react'
 
 import {type RouterContextValue} from './types'
 import {useRouter} from './useRouter'
@@ -50,7 +50,7 @@ export interface WithRouterProps {
   /**
    * A function that renders the wrapped component with the `router` object as a parameter.
    */
-  children: (router: RouterContextValue) => ReactElement
+  children: (router: RouterContextValue) => React.JSX.Element
 }
 
 /**

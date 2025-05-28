@@ -3,6 +3,7 @@
   // All environment variables that should invalidate a cached build needs to be declared here
   "globalEnv": [
     "CI",
+    "GITHUB_ACTIONS",
     "DEBUG",
     "NODE_ENV",
     "PKG_FORMAT",
@@ -13,6 +14,8 @@
     "SANITY_STUDIO_DEBUG_TELEMETRY",
     "SANITY_STUDIO_MODE",
     "SANITY_STUDIO_PROJECT_ID",
+    "SANITY_E2E_PROJECT_ID",
+    "SANITY_E2E_DATASET",
     "EXTRACT_SANITY_PROJECT_ID",
     "EXTRACT_SANITY_DATASET",
     "EXTRACT_SANITY_API_TOKEN"
@@ -26,7 +29,8 @@
     // these is for the perf/efps perf suite and should not be cached
     "VITE_PERF_EFPS_PROJECT_ID",
     "VITE_PERF_EFPS_DATASET",
-    "PERF_EFPS_SANITY_TOKEN"
+    "PERF_EFPS_SANITY_TOKEN",
+    "SANITY_E2E_SESSION_TOKEN"
   ],
   "globalDependencies": [
     ".npmrc",

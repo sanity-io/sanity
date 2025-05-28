@@ -10,15 +10,10 @@ import {
 } from '@sanity/types'
 import {memoize} from 'lodash'
 
-const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getPublishedId} from '../../util/draftUtils'
 
-function getDocumentIds(id: string) {
-  const isDraft = id.indexOf('drafts.') === 0
-  return {
-    published: isDraft ? id.slice('drafts.'.length) : id,
-    draft: isDraft ? id : `drafts.${id}`,
-  }
-}
+const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
 function serializePath(path: Path): string {
   return path.reduce<string>((target, part, i) => {
@@ -42,7 +37,6 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   }
 
   const disableArrayWarning = schemaOptions?.disableArrayWarning || false
-  const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
 
@@ -52,20 +46,21 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
 
   const constraints = [
     '_type == $docType',
-    `!(_id in [$draft, $published])`,
+    `!sanity::versionOf($published)`,
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient({apiVersion: '2023-11-13'}).fetch<boolean>(
-    `!defined(*[${constraints}][0]._id)`,
-    {
-      docType,
-      draft,
-      published,
-      slug,
-    },
-    {tag: 'validation.slug-is-unique'},
-  )
+  return getClient({apiVersion: DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion})
+    .withConfig({perspective: 'raw'})
+    .fetch<boolean>(
+      `!defined(*[${constraints}][0]._id)`,
+      {
+        docType,
+        published: getPublishedId(document._id),
+        slug,
+      },
+      {tag: 'validation.slug-is-unique'},
+    )
 }
 
 function warnOnArraySlug(serializedPath: string) {

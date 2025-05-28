@@ -1660,6 +1660,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -1684,6 +1688,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -1697,6 +1706,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -1835,6 +1848,84 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -2115,6 +2206,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -2149,6 +2244,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -2170,6 +2270,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",

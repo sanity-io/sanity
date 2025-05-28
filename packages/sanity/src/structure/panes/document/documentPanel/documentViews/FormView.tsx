@@ -11,17 +11,19 @@ import {
   fromMutationPatches,
   type PatchMsg,
   PresenceOverlay,
+  useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
+  usePerspective,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {FormHeader} from './FormHeader'
-import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
   hidden: boolean
@@ -54,6 +56,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetActiveFieldGroup,
     openPath,
   } = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
@@ -82,7 +85,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType)
+      .documentEvents(documentId, documentType, selectedReleaseId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -99,23 +102,25 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel])
+  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
 
   const hasRev = Boolean(value?._rev)
+  const handleInitialValue = useEffectEvent(() => {
+    // this is a workaround for an issue that caused the document pushed to withDocument to get
+    // stuck at the first initial value.
+    // This effect is triggered only when the document goes from not having a revision, to getting one
+    // so it will kick in as soon as the document is received from the backend
+    patchChannel.publish({
+      type: 'mutation',
+      patches: [],
+      snapshot: value,
+    })
+  })
   useEffect(() => {
     if (hasRev) {
-      // this is a workaround for an issue that caused the document pushed to withDocument to get
-      // stuck at the first initial value.
-      // This effect is triggered only when the document goes from not having a revision, to getting one
-      // so it will kick in as soon as the document is received from the backend
-      patchChannel.publish({
-        type: 'mutation',
-        patches: [],
-        snapshot: value,
-      })
+      handleInitialValue()
     }
     // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
@@ -143,16 +148,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     [ref],
   )
 
-  // const after = useMemo(
-  //   () =>
-  //     Array.isArray(afterEditorComponents) &&
-  //     afterEditorComponents.map(
-  //       (AfterEditorComponent: ComponentType<{documentId: string}>, idx: number) => (
-  //         <AfterEditorComponent key={String(idx)} documentId={documentId} />
-  //       )
-  //     ),
-  //   [documentId]
-  // )
+  const isReadOnly = connectionState === 'reconnecting' || formState?.readOnly || !editState?.ready
 
   return (
     <Container
@@ -164,7 +160,13 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <Box as="form" onSubmit={preventDefault} ref={setRef}>
+        <Box
+          as="form"
+          onSubmit={preventDefault}
+          ref={setRef}
+          data-testid="form-view"
+          data-read-only={isReadOnly ? 'true' : undefined}
+        >
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
@@ -204,9 +206,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 presence={presence}
-                readOnly={
-                  connectionState === 'reconnecting' || formState.readOnly || !editState?.ready
-                }
+                readOnly={isReadOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
                 value={

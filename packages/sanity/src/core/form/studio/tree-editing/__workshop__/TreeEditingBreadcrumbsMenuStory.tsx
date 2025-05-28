@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
+import {type Path} from '@sanity/types'
 import {Container, Flex} from '@sanity/ui'
 import {useState} from 'react'
-import {type Path} from 'sanity'
 
 import {TreeEditingBreadcrumbsMenu} from '../components'
 import {type TreeEditingBreadcrumb} from '../types'
@@ -55,7 +55,7 @@ const items: TreeEditingBreadcrumb[] = [
   },
 ]
 
-export default function TreeEditingBreadcrumbsMenuStory(): JSX.Element {
+export default function TreeEditingBreadcrumbsMenuStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['second-item'])
 
   return (

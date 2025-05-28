@@ -17,6 +17,7 @@ import {
   SearchResultItemPreview,
   useWorkspace,
 } from '../../../../studio'
+import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
@@ -98,12 +99,15 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const CardLink = useMemo(
     () =>
       forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+        const versionId = getVersionFromId(documentId)
+
         return (
           <StyledIntentLink
             {...linkProps}
             intent="edit"
-            params={{id: documentId, type: documentType}}
+            params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
+            searchParams={versionId ? [['perspective', versionId]] : undefined}
           />
         )
       }),
@@ -118,6 +122,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
       <Flex gap={1} align={'center'} justify={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
+            documentType={documentType}
             documentId={value.document._ref}
             layout={'compact'}
             presence={documentPresence}
@@ -193,43 +198,45 @@ export function TargetField(
       <FieldWrapperRoot>
         <LayerProvider zOffset={100}>
           <CurrentWorkspaceProvider>
-            <Stack space={2}>
-              {mode === 'create' && (
-                <Box data-ui="fieldHeaderContentBox">
-                  <FormFieldHeaderText
-                    description={props.description}
-                    inputId={props.inputId}
-                    title={props.title}
-                    validation={props.validation}
-                    deprecated={undefined}
-                  />
-                </Box>
-              )}
-
-              {value ? (
-                <Preview value={value} handleRemove={handleRemove} />
-              ) : (
-                <EmptyReferenceRoot
-                  border
-                  radius={2}
-                  paddingX={2}
-                  paddingY={3}
-                  onClick={handleOpenSearch}
-                  onKeyDown={handleKeyDown}
-                  tabIndex={0}
-                >
-                  <Flex gap={1} justify={'flex-start'} align={'center'}>
-                    <Box paddingX={1}>
-                      <Text size={1}>
-                        <DocumentIcon />
-                      </Text>
-                    </Box>
-                    <Placeholder size={1}>{t('form.input.target.search.placeholder')}</Placeholder>
-                  </Flex>
-                </EmptyReferenceRoot>
-              )}
-            </Stack>
             <SearchProvider>
+              <Stack space={2}>
+                {mode === 'create' && (
+                  <Box data-ui="fieldHeaderContentBox">
+                    <FormFieldHeaderText
+                      description={props.description}
+                      inputId={props.inputId}
+                      title={props.title}
+                      validation={props.validation}
+                      deprecated={undefined}
+                    />
+                  </Box>
+                )}
+
+                {value ? (
+                  <Preview value={value} handleRemove={handleRemove} />
+                ) : (
+                  <EmptyReferenceRoot
+                    border
+                    radius={2}
+                    paddingX={2}
+                    paddingY={3}
+                    onClick={handleOpenSearch}
+                    onKeyDown={handleKeyDown}
+                    tabIndex={0}
+                  >
+                    <Flex gap={1} justify={'flex-start'} align={'center'}>
+                      <Box paddingX={1}>
+                        <Text size={1}>
+                          <DocumentIcon />
+                        </Text>
+                      </Box>
+                      <Placeholder size={1}>
+                        {t('form.input.target.search.placeholder')}
+                      </Placeholder>
+                    </Flex>
+                  </EmptyReferenceRoot>
+                )}
+              </Stack>
               <SearchPopover
                 open={open}
                 onClose={handleCloseSearch}

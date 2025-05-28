@@ -1,5 +1,5 @@
 import {useMemo, useState} from 'react'
-import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
 import {type RouterHistory} from '../router'
 import {type WorkspacesContextValue} from '../workspaces'

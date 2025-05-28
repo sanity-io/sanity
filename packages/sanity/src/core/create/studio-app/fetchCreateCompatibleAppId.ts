@@ -1,4 +1,4 @@
-import {type SanityClient} from 'sanity'
+import {type SanityClient} from '@sanity/client'
 
 import {checkStudioManifestExists} from './checkStudioManifestExists'
 

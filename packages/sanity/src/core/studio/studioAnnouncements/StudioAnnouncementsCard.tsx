@@ -5,10 +5,10 @@ import {Box, Card, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useEffect} from 'react'
-import {useTranslation} from 'sanity'
 import {css, keyframes, styled} from 'styled-components'
 
 import {Button, Popover} from '../../../ui-components'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
 

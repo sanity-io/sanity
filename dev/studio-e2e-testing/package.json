@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.68.0",
+  "version": "3.90.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -10,25 +10,24 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3339",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "preview": "sanity preview --port 3339",
     "start": "sanity preview --port 3339"
   },
   "dependencies": {
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
-    "@sanity/icons": "^3.5.3",
-    "@sanity/ui": "^2.10.11",
-    "@sanity/vision": "3.68.0",
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
-    "react": "^18.3.1",
-    "react-compiler-runtime": "19.0.0-beta-201e55d-20241215",
-    "react-dom": "^18.3.1",
+    "@sanity/icons": "^3.7.0",
+    "@sanity/ui": "^2.15.18",
+    "@sanity/vision": "workspace:*",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "sanity": "workspace:*",
     "sanity-plugin-markdown": "^5.0.0",
-    "sanity-plugin-media": "^2.3.1",
-    "sanity-plugin-mux-input": "^2.2.1",
+    "sanity-plugin-media": "^3.0.0",
+    "sanity-plugin-mux-input": "^2.5.0",
     "sanity-test-studio": "workspace:*",
-    "styled-components": "^6.1.0"
+    "styled-components": "^6.1.15"
   }
 }

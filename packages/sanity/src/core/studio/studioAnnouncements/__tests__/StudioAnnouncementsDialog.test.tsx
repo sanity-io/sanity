@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {defineConfig} from 'sanity'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../config/defineConfig'
 import {
   ProductAnnouncementLinkClicked,
   ProductAnnouncementViewed,

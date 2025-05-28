@@ -99,14 +99,19 @@ export function PaneRouterProvider(props: {
   )
 
   const handleEditReference: PaneRouterContextValue['handleEditReference'] = useCallback(
-    ({id, parentRefPath, type, template}) => {
+    ({id, parentRefPath, type, template, version}) => {
       navigate({
         panes: [
           ...routerPaneGroups.slice(0, groupIndex + 1),
           [
             {
               id,
-              params: {template: template.id, parentRefPath: pathToString(parentRefPath), type},
+              params: {
+                template: template.id,
+                parentRefPath: pathToString(parentRefPath),
+                type,
+                version,
+              },
               payload: template.params,
             },
           ],

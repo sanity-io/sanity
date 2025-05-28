@@ -1,11 +1,14 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
+  type DocumentActionProps,
   Hotkeys,
-  useTimelineSelector,
+  usePerspective,
+  useSource,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -26,7 +29,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks} = useDocumentPane()
+  const {__internal_tasks} = useSource()
+  const {editState} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -50,11 +55,16 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
+  const showFirstActionButton = firstActionState && !selectedReleaseId && !editState?.liveEdit
+
+  const sideMenuItems = useMemo(() => {
+    return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
+  }, [showFirstActionButton, firstActionState, menuActionStates])
 
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {firstActionState && (
+      {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
@@ -65,7 +75,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
-                size="large"
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
@@ -73,8 +82,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
-        <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
+      {/* if it's in version we always only want to show the items on the side menu and not on the main action */}
+      {((showMenu && menuActionStates.length > 0) || selectedReleaseId) && (
+        <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
@@ -84,7 +94,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions: allActions, connectionState, documentId, editState} = useDocumentPane()
+  const {
+    actions: allActions,
+    connectionState,
+    documentId,
+    editState,
+    isInitialValueLoading,
+  } = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -95,6 +111,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   const actions = useMemo(
     () => (allActions ?? []).filter((action) => !isRestoreAction(action)),
     [allActions],
+  )
+  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
+    () => (editState ? {...editState, initialValueResolved: !isInitialValueLoading} : null),
+    [editState, isInitialValueLoading],
   )
 
   const renderDocumentStatusBarActions = useCallback<
@@ -115,7 +135,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
     [actions.length, connectionState, documentId],
   )
 
-  if (actions.length === 0 || !editState) {
+  if (actions.length === 0 || !actionProps) {
     return null
   }
 
@@ -124,7 +144,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
       // component={}
       // onActionComplete={handleActionComplete}
       actions={actions}
-      actionProps={editState}
+      actionProps={actionProps}
       group="default"
     >
       {renderDocumentStatusBarActions}
@@ -133,14 +153,26 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {actions, connectionState, editState, timelineStore} = useDocumentPane()
+  const {
+    actions,
+    connectionState,
+    editState,
+    revisionId: revision,
+    isInitialValueLoading,
+  } = useDocumentPane()
 
-  // Subscribe to external timeline state changes
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
-
-  const revision = revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
+  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
+    () =>
+      editState
+        ? {
+            ...editState,
+            revision: revision || undefined,
+            initialValueResolved: !isInitialValueLoading,
+          }
+        : null,
+    [editState, revision, isInitialValueLoading],
+  )
 
   // If multiple `restore` actions are defined, ensure only the final one is used.
   const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])
@@ -157,13 +189,11 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
     ),
     [connectionState, disabled],
   )
-
+  if (!actionProps) {
+    return null
+  }
   return (
-    <RenderActionCollectionState
-      actions={historyActions}
-      actionProps={actionProps as any}
-      group="default"
-    >
+    <RenderActionCollectionState actions={historyActions} actionProps={actionProps} group="default">
       {renderDocumentStatusBarActions}
     </RenderActionCollectionState>
   )

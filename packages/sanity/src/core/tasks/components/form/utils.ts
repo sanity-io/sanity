@@ -16,7 +16,7 @@ export function getTargetValue({
   projectId,
 }: GetTargetValueOptions): TaskTarget {
   return {
-    documentType: documentType,
+    documentType,
     document: {
       _ref: getPublishedId(documentId),
       _type: 'crossDatasetReference',

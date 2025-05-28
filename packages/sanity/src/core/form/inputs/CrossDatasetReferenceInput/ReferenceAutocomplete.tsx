@@ -3,7 +3,6 @@ import {
   type ComponentProps,
   type ForwardedRef,
   forwardRef,
-  type ReactElement,
   type Ref,
   type RefObject,
   useCallback,
@@ -30,7 +29,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     referenceElement: HTMLDivElement | null
     searchString?: string
-    portalRef?: RefObject<HTMLDivElement>
+    portalRef?: RefObject<HTMLDivElement | null>
   },
   ref: ForwardedRef<HTMLInputElement>,
 ) {
@@ -46,7 +45,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         onMouseEnter,
         onMouseLeave,
       }: {
-        content: ReactElement | null
+        content: React.JSX.Element | null
         hidden: boolean
         inputElement: HTMLInputElement | null
         onMouseEnter: () => void

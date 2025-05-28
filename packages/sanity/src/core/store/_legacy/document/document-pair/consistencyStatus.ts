@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
-import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizedPair} from './memoizedPair'
@@ -15,16 +15,16 @@ export const consistencyStatus: (
   idPair: IdPair,
   typeName: string,
   serverActionsEnabled: Observable<boolean>,
-  pairListenerOptions?: PairListenerOptions,
+  extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<boolean> = memoize(
   (
     client: SanityClient,
     idPair: IdPair,
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
-    pairListenerOptions?: PairListenerOptions,
+    extraOptions?: DocumentStoreExtraOptions,
   ) => {
-    return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
+    return memoizedPair(client, idPair, typeName, serverActionsEnabled, extraOptions).pipe(
       switchMap(({draft, published}) =>
         combineLatest([draft.consistency$, published.consistency$]),
       ),

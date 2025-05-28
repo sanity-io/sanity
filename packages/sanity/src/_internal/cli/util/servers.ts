@@ -39,7 +39,7 @@ export function getSharedServerConfig({
   workDir,
   cliConfig,
 }: {
-  flags: {host?: string; port?: string}
+  flags: {host?: string; port?: string | number}
   workDir: string
   cliConfig?: CliConfig
 }): {
@@ -48,6 +48,8 @@ export function getSharedServerConfig({
   httpHost: string
   basePath: string
   vite: CliConfig['vite']
+  entry?: string
+  isApp?: boolean
 } {
   // Order of preference: CLI flags, environment variables, user build config, default config
   const env = process.env // eslint-disable-line no-process-env
@@ -64,12 +66,17 @@ export function getSharedServerConfig({
     env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/'),
   )
 
+  const isApp = cliConfig && 'app' in cliConfig
+  const entry = cliConfig?.app?.entry
+
   return {
     cwd: workDir,
     httpPort,
     httpHost,
     basePath,
     vite: cliConfig?.vite,
+    entry,
+    isApp,
   }
 }
 

@@ -112,7 +112,7 @@ interface UserPresenceCursorProps {
   user: User
 }
 
-export function UserPresenceCursor(props: UserPresenceCursorProps): JSX.Element {
+export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.Element {
   const {children, user} = props
   const {tints} = useUserColor(user.id)
   const [hovered, setHovered] = useState<boolean>(false)

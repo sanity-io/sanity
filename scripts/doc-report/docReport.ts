@@ -128,7 +128,7 @@ combineLatest([
     <table>
       <tr>
         <th>This branch</th>
-        <th>Next branch</th>
+        <th>Main branch</th>
       </tr>
       <tr>
         <td>${r.branchDocumented} documented</td>

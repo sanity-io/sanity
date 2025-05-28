@@ -1,8 +1,8 @@
 import {type ConditionalPropertyCallbackContext, type TypedObject} from '@sanity/types'
 import {omit} from 'lodash'
-import {createSchema} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
+import {createSchema} from '../../../schema/createSchema'
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
 import {transferValue} from '../transferValue'
 import {createMockClient} from './mockClient'
@@ -525,6 +525,54 @@ describe('transferValue', () => {
         },
       ])
       expect(transferValueResult?.targetValue).toEqual(undefined)
+    })
+
+    test('will properly preserve _weak and _strengthenOnPublish when copying a whole document with references', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'doc1',
+        reference: {
+          _type: 'reference',
+          _ref: 'yyy',
+          _weak: true,
+          _strengthenOnPublish: {
+            type: 'editor',
+          },
+        },
+      }
+      const targetRootValue = {
+        _type: 'referencesDocument',
+        _id: 'doc2',
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: [],
+        targetRootValue,
+        targetRootPath: [],
+        currentUser,
+        options: {
+          validateReferences: true,
+          client: createMockClient([{_type: 'editor', _id: 'yyy', name: 'John Doe'}]),
+        },
+      })
+
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toMatchObject({
+        _type: 'referencesDocument',
+        reference: {
+          _type: 'reference',
+          _ref: 'yyy',
+          _weak: true,
+          _strengthenOnPublish: {
+            type: 'editor',
+          },
+        },
+      })
     })
   })
 

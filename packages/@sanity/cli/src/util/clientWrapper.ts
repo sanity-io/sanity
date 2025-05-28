@@ -15,7 +15,7 @@ import {getUserConfig} from './getUserConfig'
 
 const apiHosts: Record<string, string | undefined> = {
   staging: 'https://api.sanity.work',
-  development: 'http://api.sanity.wtf',
+  development: 'http://api.sanity.local',
 }
 
 /**

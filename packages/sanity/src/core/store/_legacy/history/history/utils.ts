@@ -3,7 +3,7 @@ import {type CombinedDocument} from './types'
 
 export function isSameAnnotation(a: Annotation, b: Annotation): boolean {
   if (a && b) {
-    return a.author === b.author && a.chunk === b.chunk
+    return a.author === b.author && a.timestamp === b.timestamp
   }
 
   if (!a && !b) {

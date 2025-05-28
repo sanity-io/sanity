@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from 'sanity'
+import {type CurrentUser} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createUserStore} from '../userStore'
@@ -114,7 +114,6 @@ describe('userStore', () => {
       expect(client.request).toHaveBeenLastCalledWith({
         uri: `/users/${lastBatch.join(',')}`,
         tag: 'users.get',
-        withCredentials: true,
       })
     })
   })

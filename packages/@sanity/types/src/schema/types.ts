@@ -97,6 +97,17 @@ export interface Schema {
   get: (name: string) => SchemaType | undefined
   has: (name: string) => boolean
   getTypeNames: () => string[]
+
+  /**
+   * Returns the types which were explicitly defined in this schema,
+   * as opposed to the types which were inherited from the parent.
+   */
+  getLocalTypeNames: () => string[]
+
+  /**
+   * Returns the parent schema.
+   */
+  parent?: Schema
 }
 
 /** @beta */
@@ -408,7 +419,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   // string/number array in the schema normalization/compilation step
   // a path segment is a number when specified like array.0.prop in preview config.
   /** @deprecated Unused. Use the new field-level search config. */
-  __experimental_search: {path: (string | number)[]; weight: number; mapWith?: string}[]
+  __experimental_search?: {path: (string | number)[]; weight: number; mapWith?: string}[]
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
   /** @alpha */
@@ -489,7 +500,7 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: FileOptions
 }
 
-/** @internal */
+/** @public */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
 }

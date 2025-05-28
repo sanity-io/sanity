@@ -1,4 +1,4 @@
-import {type ReactElement, type ReactNode, useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {type ReviewChangesContextValue} from './types'
@@ -9,7 +9,7 @@ import {type ReviewChangesContextValue} from './types'
 export function ReviewChangesContextProvider(props: {
   children?: ReactNode
   changesOpen: boolean
-}): ReactElement {
+}): React.JSX.Element {
   const {children, changesOpen} = props
   const contextValue: ReviewChangesContextValue = useMemo(() => ({changesOpen}), [changesOpen])
 

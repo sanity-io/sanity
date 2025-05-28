@@ -13,14 +13,19 @@ export type ErrorBoundaryProps = UIErrorBoundaryProps
  * ErrorBoundary component that catches errors and uses onUncaughtError config property
  * It also calls the onCatch prop if it exists.
  */
-export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): JSX.Element {
+export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): React.JSX.Element {
   // Use context, because source could be undefined and we don't want to throw in that case
   const source = useContext(SourceContext)
 
   const handleCatch = useCallback(
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
       // Send the error to the source if it has an onUncaughtError method
-      source?.onUncaughtError?.(caughtError, caughtInfo)
+      try {
+        source?.onUncaughtError?.(caughtError, caughtInfo)
+      } catch (e) {
+        e.message = `Encountered an additional error when calling custom "onUncaughtError()": ${e.message}`
+        console.error(e)
+      }
 
       // Call the onCatch prop if it exists
       onCatch?.({error: caughtError, info: caughtInfo})

@@ -3,7 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["SANITY_E2E_PROJECT_ID", "SANITY_E2E_DATASET"],
+      "env": [
+        "SANITY_E2E_PROJECT_ID",
+        "SANITY_E2E_DATASET",
+        "SANITY_E2E_DATASET_CHROMIUM",
+        "SANITY_E2E_DATASET_FIREFOX"
+      ],
       "outputs": [".sanity/**", "dist/**"]
     }
   }

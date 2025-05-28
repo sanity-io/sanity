@@ -10,12 +10,12 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {
   createHookFromObservableFactory,
   getDraftId,
+  getIdPair,
   getPublishedId,
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {type PairListenerOptions, snapshotPair} from '../document'
-import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
+import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -32,6 +32,7 @@ interface PairPermissionsOptions {
   grantsStore: GrantsStore
   permission: DocumentPermission
   draft: SanityDocument | null
+  version: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
 }
@@ -40,6 +41,7 @@ function getPairPermissions({
   grantsStore,
   permission,
   draft,
+  version,
   published,
   liveEdit,
 }: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
@@ -50,8 +52,10 @@ function getPairPermissions({
   //
   // note: this should _not_ be used if the draft and published versions should
   // be considered separately/explicitly in the permissions.
-  const effectiveVersion = draft || published
-  const effectiveVersionType = effectiveVersion === draft ? 'draft' : 'published'
+  const effectiveVersion = version || draft || published
+  const effectiveVersionType =
+    // eslint-disable-next-line no-nested-ternary
+    effectiveVersion === version ? version : effectiveVersion === draft ? 'draft' : 'published'
 
   const {checkDocumentPermission} = grantsStore
 
@@ -73,6 +77,12 @@ function getPairPermissions({
       if (liveEdit) return []
 
       return [['delete draft document', checkDocumentPermission('update', draft)]]
+    }
+
+    case 'discardVersion': {
+      if (liveEdit) return []
+
+      return [['delete version', checkDocumentPermission('update', version || null)]]
     }
 
     case 'publish': {
@@ -156,6 +166,7 @@ function getPairPermissions({
 export type DocumentPermission =
   | 'delete'
   | 'discardDraft'
+  | 'discardVersion'
   | 'publish'
   | 'unpublish'
   | 'update'
@@ -168,9 +179,10 @@ export interface DocumentPairPermissionsOptions {
   grantsStore: GrantsStore
   id: string
   type: string
+  version?: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
-  pairListenerOptions?: PairListenerOptions
+  pairListenerOptions?: DocumentStoreExtraOptions
 }
 
 /**
@@ -188,6 +200,7 @@ export function getDocumentPairPermissions({
   permission,
   type,
   serverActionsEnabled,
+  version: v,
   pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
@@ -203,25 +216,28 @@ export function getDocumentPairPermissions({
 
   return snapshotPair(
     client,
-    {draftId: getDraftId(id), publishedId: getPublishedId(id)},
+    getIdPair(id, {version: v}),
     type,
     serverActionsEnabled,
     pairListenerOptions,
   ).pipe(
     switchMap((pair) =>
-      combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
-        map(([draft, published]) => ({draft, published})),
-      ),
+      combineLatest([
+        pair.draft.snapshots$,
+        pair.published.snapshots$,
+        pair.version?.snapshots$ || of(null),
+      ]).pipe(map(([draft, published, version]) => ({draft, published, version}))),
     ),
-    switchMap(({draft, published}) => {
+    switchMap(({draft, published, version}) => {
       const pairPermissions = getPairPermissions({
         grantsStore,
         permission,
         draft,
+        version,
         published,
         liveEdit,
-      }).map(([label, permissionCheck$]) =>
-        permissionCheck$.pipe(
+      }).map(([label, observable]) =>
+        observable.pipe(
           map(({granted, reason}) => ({
             granted,
             reason: granted ? '' : `not allowed to ${label}: ${reason}`,
@@ -282,6 +298,7 @@ export const useDocumentPairPermissionsFromHookFactory = createHookFromObservabl
 export function useDocumentPairPermissions({
   id,
   type,
+  version,
   permission,
   client: overrideClient,
   schema: overrideSchema,
@@ -304,9 +321,8 @@ export function useDocumentPairPermissions({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
@@ -319,6 +335,7 @@ export function useDocumentPairPermissions({
         type,
         serverActionsEnabled,
         pairListenerOptions,
+        version,
       }),
       [
         client,
@@ -329,6 +346,7 @@ export function useDocumentPairPermissions({
         type,
         serverActionsEnabled,
         pairListenerOptions,
+        version,
       ],
     ),
   )

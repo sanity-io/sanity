@@ -1,4 +1,4 @@
-import {type Path, type PathSegment} from 'sanity'
+import {type Path, type PathSegment} from '@sanity/types'
 
 /**
  * Check if the item is selected

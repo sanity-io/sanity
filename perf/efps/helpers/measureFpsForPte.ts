@@ -65,8 +65,8 @@ export async function measureFpsForPte({
 
   const inputEvents: {character: string; timestamp: number}[] = []
 
-  const startingMarker = '__START__|'
-  const endingMarker = '__END__'
+  const startingMarker = '___START___|'
+  const endingMarker = '___END___'
 
   await contentEditable.pressSequentially(endingMarker)
   await new Promise((resolve) => setTimeout(resolve, 500))

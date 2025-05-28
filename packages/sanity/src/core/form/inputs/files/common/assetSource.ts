@@ -13,7 +13,7 @@ import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
 type DOMFile = globalThis.File
 
 interface Props {
-  assetFromSource: AssetFromSource[]
+  assetsFromSource: AssetFromSource[]
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   type: FileSchemaType
   resolveUploader: UploaderResolver
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export function handleSelectAssetFromSource({
-  assetFromSource,
+  assetsFromSource,
   onChange,
   type,
   resolveUploader,
@@ -30,28 +30,43 @@ export function handleSelectAssetFromSource({
   isImage,
 }: Props): void {
   // const {onChange, type, resolveUploader} = this.props
-  if (!assetFromSource) {
+  if (!assetsFromSource) {
     throw new Error('No asset given')
   }
-  if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
+  if (!Array.isArray(assetsFromSource) || assetsFromSource.length === 0) {
     throw new Error('Returned value must be an array with at least one item (asset)')
   }
-  const firstAsset = assetFromSource[0]
+  const firstAsset = assetsFromSource[0]
   const assetProps = firstAsset.assetDocumentProps
+  const mediaLibraryProps = firstAsset.mediaLibraryProps
   const originalFilename = assetProps?.originalFilename
   const label = assetProps?.label
   const title = assetProps?.title
   const description = assetProps?.description
   const creditLine = assetProps?.creditLine
   const source = assetProps?.source
-  const imagePatches = isImage ? [unset(['hotspot']), unset(['crop'])] : []
+  const assetPatches: FormPatch[] = isImage
+    ? [unset(['hotspot']), unset(['crop']), unset(['media'])]
+    : [unset(['media'])]
+
+  // If the asset is from an media library, we need to set the media reference,
+  // so that the Media Library can backtrack the usage of that asset.
+  if (mediaLibraryProps) {
+    const assetContainerRef = {
+      _type: 'globalDocumentReference',
+      _ref: `media-library:${mediaLibraryProps.mediaLibraryId}:${mediaLibraryProps.assetId}`,
+      _weak: true,
+    }
+    assetPatches.push(set(assetContainerRef, ['media']))
+  }
+
   switch (firstAsset.kind) {
     case 'assetDocumentId':
       onChange([
         setIfMissing({
           _type: type.name,
         }),
-        ...imagePatches,
+        ...assetPatches,
         set(
           {
             _type: 'reference',

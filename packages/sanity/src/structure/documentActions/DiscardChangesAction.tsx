@@ -6,6 +6,7 @@ import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
   InsufficientPermissionsMessage,
+  isPublishedId,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -13,6 +14,7 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NO_CHANGES: 'action.discard-changes.disabled.no-change',
@@ -27,17 +29,21 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   published,
   liveEdit,
   onComplete,
+  release,
 }) => {
-  const {discardChanges} = useDocumentOperation(id, type)
+  const {discardChanges} = useDocumentOperation(id, type, release)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
+    version: release,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
+  const {displayed} = useDocumentPane()
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const isPublished = displayed?._id && isPublishedId(displayed?._id)
 
   const handleConfirm = useCallback(() => {
     discardChanges.execute()
@@ -61,7 +67,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   )
 
   return useMemo(() => {
-    if (!published || liveEdit) {
+    if (!published || liveEdit || isPublished) {
       return null
     }
 
@@ -81,7 +87,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       tone: 'critical',
       icon: ResetIcon,
       disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
-      title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
+      title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
       dialog,
@@ -92,6 +98,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     discardChanges.disabled,
     handle,
     isPermissionsLoading,
+    isPublished,
     liveEdit,
     permissions?.granted,
     published,

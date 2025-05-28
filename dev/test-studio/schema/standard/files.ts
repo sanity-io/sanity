@@ -102,5 +102,11 @@ export default defineType({
         accept: 'image/png, image/jpeg',
       },
     },
+    {
+      name: 'noAssetSource',
+      type: 'file',
+      title: 'No asset source',
+      options: {sources: []},
+    },
   ],
 })

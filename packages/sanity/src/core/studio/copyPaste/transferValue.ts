@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
 import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-utils'
+import {type SanityClient} from '@sanity/client'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -26,24 +27,21 @@ import {
   isTypedObject,
   type NumberSchemaType,
   type ObjectSchemaType,
+  type Path,
   type SanityDocument,
+  type SchemaType,
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
 import {last} from 'lodash'
-import {
-  type FIXME,
-  getIdPair,
-  isRecord,
-  type Path,
-  resolveConditionalProperty,
-  type SanityClient,
-  type SchemaType,
-} from 'sanity'
 
 import {getValueAtPath} from '../../field/paths/helpers'
+import {type FIXME} from '../../FIXME'
+import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
 import {accepts} from '../../form/studio/uploads/accepts'
 import {randomKey} from '../../form/utils/randomKey'
+import {getIdPair} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
 import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {isEmptyValue} from './utils'
@@ -796,9 +794,13 @@ async function collateObjectValue({
     })
   }
 
-  // Special handling for weak references
-  if (isReferenceSchemaType(targetSchemaType) && targetSchemaType.weak) {
-    resultingValue._weak = true
+  // Special handling to avoid reference strength mismatches
+  if (isReferenceSchemaType(targetSchemaType)) {
+    if (targetSchemaType.weak) {
+      resultingValue._weak = true
+    } else {
+      delete resultingValue._weak
+    }
   }
 
   // Special handling for weak references that will be strengthened on publish
@@ -1036,7 +1038,7 @@ function collatePrimitiveValue({
 }
 
 function cleanObjectKeys(obj: TypedObject): TypedObject {
-  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev', '_weak']
+  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev']
   return Object.keys(obj).reduce((acc, key) => {
     if (disallowedKeys.includes(key)) {
       return acc

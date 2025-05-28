@@ -4,7 +4,13 @@
  * Makeshift code to reproduce a specific bug.
  */
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {
+  expectCreatedStatus,
+  expectEditedStatus,
+  expectPublishedStatus,
+} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 const kanji = `
 速ヒマヤレ誌相ルなあね日諸せ変評ホ真攻同潔ク作先た員勝どそ際接レゅ自17浅ッ実情スヤ籍認ス重力務鳥の。8平はートご多乗12青國暮整ル通国うれけこ能新ロコラハ元横ミ休探ミソ梓批ざょにね薬展むい本隣ば禁抗ワアミ部真えくト提知週むすほ。査ル人形ルおじつ政謙減セヲモ読見れレぞえ録精てざ定第ぐゆとス務接産ヤ写馬エモス聞氏サヘマ有午ごね客岡ヘロ修彩枝雨父のけリド。
@@ -16,66 +22,67 @@ test.describe('inputs: text', () => {
   test.slow() // Because of waiting for mutations, remote values etc
 
   test('correctly applies kanji edits', async ({page, sanityClient, createDraftDocument}) => {
-    const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
+    const documentId = await createDraftDocument('/content/input-ci;textsTest')
 
-    function getRemoteValue() {
-      return sanityClient
-        .getDocument(`drafts.${documentId}`)
-        .then((doc) => (doc ? doc.simple : null))
+    // Function to get the remote document value from Sanity
+    async function getRemoteValue() {
+      const doc = await sanityClient.getDocument(`drafts.${documentId}`)
+      return doc ? doc.simple : null
     }
 
-    await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
+    await expect(page.getByTestId('field-simple')).toBeVisible({timeout: 30_000})
     const field = page.getByTestId('field-simple').getByRole('textbox')
+    const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
 
     // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/sanity.studio.document.commit/)
     await field.fill(kanji)
-    await response
+    await expect.poll(getRemoteValue, {timeout: 30_000}).toBe(kanji)
 
     // Expect the document to now have the base value
     let currentExpectedValue = kanji
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
     let nextExpectedValue = `${p1Prefix}${kanji}`
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    // Wait for the document to finish saving
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = `${p1Prefix}${kanji}`
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Now move to the end of the paragraph and add a suffix
     const p1Suffix = ' (end of paragraph 1)'
     nextExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
 
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
     nextExpectedValue = `${currentExpectedValue}${p2Suffix}`
     await field.fill(nextExpectedValue)
-    await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
+    await expect(paneFooterDocumentStatusPulse).toBeHidden({timeout: 30_000})
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
-    expect(await field.inputValue()).toBe(currentExpectedValue)
-    expect(await getRemoteValue()).toBe(currentExpectedValue)
+    await expect(field).toHaveValue(currentExpectedValue)
+    await expect.poll(getRemoteValue, {timeout: 10_000}).toBe(currentExpectedValue)
   })
 
   test(`value can be changed after the document has been published`, async ({
     page,
     createDraftDocument,
   }) => {
-    await createDraftDocument('/test/content/book')
+    await createDraftDocument('/content/book')
 
     const titleInput = page.getByTestId('field-title').getByTestId('string-input')
     const paneFooter = page.getByTestId('pane-footer-document-status')
@@ -85,21 +92,22 @@ test.describe('inputs: text', () => {
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
     await titleInput.fill('Title A')
-
-    // generally waiting for timeouts is not a good idea but for this specific instance
-    // since we are using `.fill` and `.click` they can cause the draft creation and publish to happen at the same exact time.
-    // We are waiting for 1s to make sure the draft actually gets created and click action is not too eager
-    await page.waitForTimeout(1000)
+    // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
+    await expectCreatedStatus(paneFooter)
+    await titleInput.fill('Title A updated')
+    // A subsequent edit will show that the document was edited just now.
+    await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
-    expect(await paneFooter.textContent()).toMatch(/published/i)
+    await expectPublishedStatus(paneFooter)
 
     // Change the title.
     await titleInput.fill('Title B')
+    await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
-    expect(await paneFooter.textContent()).toMatch(/published/i)
+    await expectPublishedStatus(paneFooter)
   })
 })

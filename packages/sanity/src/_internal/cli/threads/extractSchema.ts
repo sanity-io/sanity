@@ -19,14 +19,14 @@ export interface ExtractSchemaWorkerResult {
   schema: ReturnType<typeof extractSchema>
 }
 
-if (isMainThread || !parentPort) {
-  throw new Error('This module must be run as a worker thread')
-}
-
-const opts = _workerData as ExtractSchemaWorkerData
-const cleanup = mockBrowserEnvironment(opts.workDir)
-
 async function main() {
+  if (isMainThread || !parentPort) {
+    throw new Error('This module must be run as a worker thread')
+  }
+
+  const opts = _workerData as ExtractSchemaWorkerData
+  const cleanup = mockBrowserEnvironment(opts.workDir)
+
   try {
     if (opts.format !== 'groq-type-nodes') {
       throw new Error(`Unsupported format: "${opts.format}"`)
@@ -48,7 +48,7 @@ async function main() {
   }
 }
 
-main()
+main().then(() => process.exit())
 
 function getWorkspace({
   workspaces,

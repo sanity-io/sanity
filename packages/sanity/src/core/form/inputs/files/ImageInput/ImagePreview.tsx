@@ -79,10 +79,10 @@ function getHoverTextTranslationKey({
   readOnly?: boolean
 }) {
   if (isRejected) {
-    return 'inputs.image.drag-overlay.this-field-is-read-only'
+    return 'inputs.image.drag-overlay.cannot-upload-here'
   }
   return readOnly
-    ? 'inputs.image.drag-overlay.cannot-upload-here'
+    ? 'inputs.image.drag-overlay.this-field-is-read-only'
     : 'inputs.image.drag-overlay.drop-to-upload-image'
 }
 

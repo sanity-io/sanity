@@ -16,6 +16,9 @@ interface BuildSelectionFromFragmentProps {
   selection: EditorSelection
 }
 
+/**
+ * @internal
+ */
 export function buildTextSelectionFromFragment(
   props: BuildSelectionFromFragmentProps,
 ): CommentTextSelection {

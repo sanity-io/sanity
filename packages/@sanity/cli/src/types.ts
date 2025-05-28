@@ -24,6 +24,7 @@ export interface SanityModuleInternal {
 export interface PackageJson {
   name: string
   version: string
+  scripts?: Record<string, string>
 
   description?: string
   author?: string
@@ -310,6 +311,15 @@ export interface ReactCompilerConfig {
   compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all'
 }
 
+interface AppConfig {
+  organizationId: string
+  /**
+   * Defaults to './src/App'
+   */
+  entry?: string
+  id?: string
+}
+
 export interface CliConfig {
   api?: CliApiConfig
 
@@ -344,6 +354,23 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   studioHost?: string
+
+  /**
+   * Parameter used to configure other kinds of applications.
+   * Signals to `sanity` commands that this is not a studio.
+   */
+  app?: AppConfig
+
+  /**
+   * Configuration for Sanity media libraries.
+   */
+  mediaLibrary?: {
+    /**
+     * The path to the Media Library aspects directory. When using the CLI to manage aspects, this
+     * is the directory they will be read from and written to.
+     */
+    aspectsPath: string
+  }
 }
 
 export type UserViteConfig =

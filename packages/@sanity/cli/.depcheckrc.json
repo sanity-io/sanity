@@ -13,6 +13,8 @@
     "@portabletext/types",
     "slug",
     "@sanity/asset-utils",
+    "@sanity/sdk",
+    "@sanity/sdk-react",
     "styled-components",
     "sanity-plugin-hotspot-array",
     "react-icons",

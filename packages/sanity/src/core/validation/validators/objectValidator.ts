@@ -1,5 +1,6 @@
 import {isReference, type Validators} from '@sanity/types'
 
+import {getPublishedId} from '../../util'
 import {genericValidators} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
@@ -26,7 +27,7 @@ export const objectValidators: Validators = {
       return true
     }
 
-    const {type, getDocumentExists, i18n} = context
+    const {type, document, getDocumentExists, i18n} = context
 
     if (!isReference(value)) {
       return message || i18n.t('validation:object.not-reference')
@@ -44,6 +45,11 @@ export const objectValidators: Validators = {
       throw new Error(`\`getDocumentExists\` was not provided in validation context`)
     }
 
+    const documentId = document?._id
+    if (documentId && value._ref == getPublishedId(documentId)) {
+      // a document should be able to reference itself without first being published
+      return true
+    }
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
       return i18n.t('validation:object.reference-not-published', {documentId: value._ref})

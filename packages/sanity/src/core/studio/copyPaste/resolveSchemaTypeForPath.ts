@@ -9,9 +9,10 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {fromString, toString} from '@sanity/util/paths'
-import {type FormDocumentValue, getValueAtPath} from 'sanity'
 
+import {getValueAtPath} from '../../field/paths/helpers'
 import {getItemType} from '../../form/store/utils/getItemType'
+import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 
 export function getSchemaField(
   schemaType: SchemaType,

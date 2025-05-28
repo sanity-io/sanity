@@ -8,15 +8,17 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
+import {TEMPLATE_OPTIONS} from '../constants'
 import {transformBlocks} from './helpers'
 
-interface DescriptionSerializerProps {
-  blocks: PortableTextBlock[]
-}
+/** @internal */
+export type InterpolationProp = {[key: string]: string | number}
+
 const Divider = styled(Box)`
   height: 1px;
   background: var(--card-border-color);
@@ -176,127 +178,156 @@ function ImageBlock(
   )
 }
 
+const interpolateChildrenText = (interpolation?: InterpolationProp) => (children: ReactNode) => {
+  if (!children || !interpolation) return children
+
+  const childrenArray = Array.isArray(children) ? children : [children]
+
+  return childrenArray.map((child) => {
+    if (typeof child === 'string') {
+      const childTemplate = template(child, TEMPLATE_OPTIONS)
+      return childTemplate(interpolation)
+    }
+
+    return child
+  })
+}
+
 const createComponents = ({
   onLinkClick,
+  interpolation,
 }: {
   onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
-}): PortableTextComponents => ({
-  block: {
-    normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    h2: ({children}) => <H2Block>{children}</H2Block>,
-    h3: ({children}) => <H3Block>{children}</H3Block>,
-  },
-  list: {
-    bullet: ({children}) => <ul>{children}</ul>,
-    number: ({children}) => <ol>{children}</ol>,
-    checkmarks: ({children}) => <>{children}</>,
-  },
-  listItem: {
-    bullet: ({children}) => (
-      <Text
-        as="li"
-        size={1}
-        muted
-        style={{
-          display: 'list-item',
-          padding: '0.5rem 0',
-        }}
-      >
-        {children}
-      </Text>
-    ),
-    number: ({children}) => (
-      <Text
-        as="li"
-        size={1}
-        muted
-        style={{
-          display: 'list-item',
-          padding: '0.5rem 0',
-        }}
-      >
-        {children}
-      </Text>
-    ),
-    checkmarks: ({children}) => <Text>{children}</Text>,
-  },
+  interpolation?: InterpolationProp
+}): PortableTextComponents => {
+  const interpolateChildren = interpolateChildrenText(interpolation)
 
-  marks: {
-    strong: ({children}) => <strong>{children}</strong>,
-    semibold: ({children}) => <SemiboldSpan>{children}</SemiboldSpan>,
-    link: (props) => (
-      <Link
-        href={props.value.href}
-        rel="noopener noreferrer"
-        target="_blank"
-        $useTextColor={props.value.useTextColor}
-        // eslint-disable-next-line react/jsx-no-bind
-        onClick={
-          onLinkClick
-            ? () =>
-                onLinkClick({
-                  url: props.value.href,
-                  linkTitle: props.text,
-                })
-            : undefined
-        }
-      >
-        {props.children}
-        {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
-      </Link>
-    ),
-    accent: (props) => <AccentSpan>{props.children}</AccentSpan>,
-  },
-  types: {
-    inlineIcon: (props) => {
-      return (
-        <ConditionalWrapper condition={props.value.accent} wrapper={accentSpanWrapper}>
-          {props.value.sanityIcon ? (
-            <InlineIcon
-              symbol={props.value.sanityIcon}
-              $hasTextLeft={props.value.hasTextLeft}
-              $hasTextRight={props.value.hasTextRight}
-            />
-          ) : (
-            <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
-          )}
-        </ConditionalWrapper>
-      )
+  return {
+    block: {
+      normal: ({children}) => <NormalBlock>{interpolateChildren(children)}</NormalBlock>,
+      h2: ({children}) => <H2Block>{interpolateChildren(children)}</H2Block>,
+      h3: ({children}) => <H3Block>{interpolateChildren(children)}</H3Block>,
     },
-    divider: () => (
-      <Box marginY={3}>
-        <Box paddingY={3}>
-          <Divider />
-        </Box>
-      </Box>
-    ),
-    iconAndText: (props) => (
-      <Flex align="flex-start" paddingX={2} paddingTop={1} paddingBottom={2} marginTop={2} gap={2}>
-        <Flex gap={2} style={{flexShrink: 0}}>
-          <IconTextContainer size={1} accent={props.value.accent}>
+    list: {
+      bullet: ({children}) => <ul>{interpolateChildren(children)}</ul>,
+      number: ({children}) => <ol>{interpolateChildren(children)}</ol>,
+      checkmarks: ({children}) => <>{interpolateChildren(children)}</>,
+    },
+    listItem: {
+      bullet: ({children}) => (
+        <Text
+          as="li"
+          size={1}
+          muted
+          style={{
+            display: 'list-item',
+            padding: '0.5rem 0',
+          }}
+        >
+          {interpolateChildren(children)}
+        </Text>
+      ),
+      number: ({children}) => (
+        <Text
+          as="li"
+          size={1}
+          muted
+          style={{
+            display: 'list-item',
+            padding: '0.5rem 0',
+          }}
+        >
+          {interpolateChildren(children)}
+        </Text>
+      ),
+      checkmarks: ({children}) => <Text>{children}</Text>,
+    },
+
+    marks: {
+      strong: ({children}) => <strong>{interpolateChildren(children)}</strong>,
+      semibold: ({children}) => <SemiboldSpan>{interpolateChildren(children)}</SemiboldSpan>,
+      link: (props) => (
+        <Link
+          href={props.value.href}
+          rel="noopener noreferrer"
+          target="_blank"
+          $useTextColor={props.value.useTextColor}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={
+            onLinkClick
+              ? () =>
+                  onLinkClick({
+                    url: props.value.href,
+                    linkTitle: props.text,
+                  })
+              : undefined
+          }
+        >
+          {props.children}
+          {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
+        </Link>
+      ),
+      accent: ({children}) => <AccentSpan>{interpolateChildren(children)}</AccentSpan>,
+    },
+    types: {
+      inlineIcon: (props) => {
+        return (
+          <ConditionalWrapper condition={props.value.accent} wrapper={accentSpanWrapper}>
             {props.value.sanityIcon ? (
-              <Icon symbol={props.value.sanityIcon} />
+              <InlineIcon
+                symbol={props.value.sanityIcon}
+                $hasTextLeft={props.value.hasTextLeft}
+                $hasTextRight={props.value.hasTextRight}
+              />
             ) : (
-              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
+              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
             )}
-          </IconTextContainer>
-          <Text size={1} weight="semibold" accent={props.value.accent}>
-            {props.value.title}
+          </ConditionalWrapper>
+        )
+      },
+      divider: () => (
+        <Box marginY={3}>
+          <Box paddingY={3}>
+            <Divider />
+          </Box>
+        </Box>
+      ),
+      iconAndText: (props) => (
+        <Flex
+          align="flex-start"
+          paddingX={2}
+          paddingTop={1}
+          paddingBottom={2}
+          marginTop={2}
+          gap={2}
+        >
+          <Flex gap={2} style={{flexShrink: 0}}>
+            <IconTextContainer size={1} accent={props.value.accent}>
+              {props.value.sanityIcon ? (
+                <Icon symbol={props.value.sanityIcon} />
+              ) : (
+                <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
+              )}
+            </IconTextContainer>
+            <Text size={1} weight="semibold" accent={props.value.accent}>
+              {interpolateChildren(props.value.title)}
+            </Text>
+          </Flex>
+
+          <Text size={1} muted accent={props.value.accent}>
+            {interpolateChildren(props.value.text)}
           </Text>
         </Flex>
-
-        <Text size={1} muted accent={props.value.accent}>
-          {props.value.text}
-        </Text>
-      </Flex>
-    ),
-    imageBlock: (props) => <ImageBlock {...props} />,
-  },
-})
+      ),
+      imageBlock: (props) => <ImageBlock {...props} />,
+    },
+  }
+}
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
   onLinkClick?: ({url, linkTitle}: {url: string; linkTitle: string}) => void
+  interpolation?: InterpolationProp
 }
 
 /**
@@ -305,10 +336,13 @@ interface DescriptionSerializerProps {
  * @internal
  */
 export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
-  const {blocks, onLinkClick} = props
+  const {blocks, onLinkClick, interpolation} = props
 
   const value = useMemo(() => transformBlocks(blocks), [blocks])
-  const components = useMemo(() => createComponents({onLinkClick: onLinkClick}), [onLinkClick])
+  const components = useMemo(
+    () => createComponents({onLinkClick, interpolation}),
+    [onLinkClick, interpolation],
+  )
 
   return (
     <Card tone="default">

@@ -9,6 +9,6 @@ const StyledParagraph = styled.div`
   margin: 0;
 `
 
-export function Paragraph({children}: {children: ReactNode}): JSX.Element {
+export function Paragraph({children}: {children: ReactNode}): React.JSX.Element {
   return <StyledParagraph>{children}</StyledParagraph>
 }

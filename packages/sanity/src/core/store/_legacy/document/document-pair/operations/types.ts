@@ -46,8 +46,13 @@ export interface OperationArgs {
   schema: Schema
   typeName: string
   idPair: IdPair
-  snapshots: {draft: null | SanityDocument; published: null | SanityDocument}
+  snapshots: {
+    draft: null | SanityDocument
+    published: null | SanityDocument
+    version?: null | SanityDocument
+  }
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
+  version?: DocumentVersionSnapshots
   serverActionsEnabled: boolean
 }

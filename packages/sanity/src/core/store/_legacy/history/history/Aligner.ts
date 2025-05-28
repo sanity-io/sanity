@@ -101,6 +101,10 @@ export class Aligner {
   }
 
   appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent): void {
+    if (evt.version === 'version') {
+      return
+    }
+
     const state = this._states[evt.version]
 
     if (evt.type === 'snapshot') {

@@ -1,6 +1,6 @@
 {
   "name": "sanity-strict-studio",
-  "version": "3.68.0",
+  "version": "3.90.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -8,13 +8,13 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev",
-    "lint": "eslint .",
+    "lint": "eslint --cache .",
     "start": "../.bin/sanity start"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.0"
+    "styled-components": "^6.1.15"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.68.0",
+  "version": "3.90.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -25,6 +25,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -35,7 +36,7 @@
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.esm.js",
+  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
@@ -62,21 +63,24 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.0",
-    "@sanity/icons": "^3.5.3",
-    "@sanity/ui": "^2.10.11",
-    "@uiw/react-codemirror": "^4.11.4",
+    "@sanity/icons": "^3.7.0",
+    "@sanity/ui": "^2.15.18",
+    "@sanity/uuid": "^3.0.2",
+    "@uiw/react-codemirror": "^4.23.8",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.0.0-beta-201e55d-20241215"
+    "react-compiler-runtime": "19.1.0-rc.2",
+    "react-fast-compare": "^3.2.2",
+    "rxjs": "^7.8.0",
+    "use-effect-event": "^1.0.2"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*",
-    "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.24.1",
+    "@sanity/client": "^7.3.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
@@ -85,13 +89,13 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "babel-plugin-react-compiler": "19.0.0-beta-201e55d-20241215",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.18"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
-    "styled-components": "^6.1"
+    "styled-components": "^6.1.15"
   }
 }

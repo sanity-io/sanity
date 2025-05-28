@@ -100,7 +100,7 @@ export interface DocumentActionShortcutsProps {
 export const DocumentActionShortcuts = memo(
   (props: DocumentActionShortcutsProps & Omit<HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
-    const {actions, editState} = useDocumentPane()
+    const {actions, editState, isInitialValueLoading, revisionId} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)
 
     const onActionStart = useCallback((idx: number) => {
@@ -115,10 +115,10 @@ export const DocumentActionShortcuts = memo(
           // @todo: what to call here?
           onComplete: () => undefined,
 
-          // @todo: get revision string
-          revision: undefined,
+          revision: revisionId || undefined,
+          initialValueResolved: !isInitialValueLoading,
         },
-      [editState],
+      [editState, isInitialValueLoading, revisionId],
     )
 
     const renderDocumentActionShortcuts = useCallback<

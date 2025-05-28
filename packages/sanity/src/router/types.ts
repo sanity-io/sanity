@@ -165,11 +165,110 @@ export type MatchResult = MatchError | MatchOk
 /**
  * @public
  */
-export interface NavigateOptions {
-  /**
-   * Indicates whether to replace the current state.
-   */
+export interface NavigateBaseOptions {
   replace?: boolean
+}
+
+/**
+ * @public
+ */
+export interface NavigateOptions extends NavigateBaseOptions {
+  stickyParams?: Record<string, string | undefined | null>
+}
+
+/**
+ * @public
+ */
+export interface NavigateOptionsWithState extends NavigateOptions {
+  state?: RouterState | null
+}
+
+/**
+ * @public
+ */
+export interface RouterContextValue {
+  /**
+   * Resolves the path from the given router state. See {@link RouterState}
+   *
+   * When state is null, it will resolve the path from the current state
+   * and navigate to the root path.
+   */
+  resolvePathFromState: (state: RouterState | null) => string
+
+  /**
+   * Resolves the intent link for the given intent name and parameters.
+   * See {@link IntentParameters}
+   */
+  resolveIntentLink: (
+    intentName: string,
+    params?: IntentParameters,
+    searchParams?: SearchParam[],
+  ) => string
+
+  /**
+   * Navigates to the given URL.
+   * The function requires an object that has a path and an optional replace property.
+   */
+  navigateUrl: (opts: {path: string; replace?: boolean}) => void
+
+  /**
+   * @deprecated Use `navigate({stickyParams: params, ...options})` instead
+   */
+  navigateStickyParams: (
+    params: NavigateOptions['stickyParams'],
+    options?: NavigateBaseOptions,
+  ) => void
+
+  /**
+   * Updates the router state and navigates to a new path.
+   * Allows specifying new state values and optionally merging sticky parameters.
+   *
+   * See {@link RouterState} and {@link NavigateOptions}
+   *
+   * @public
+   *
+   * @example Navigate with sticky params only, staying on the current path
+   * ```tsx
+   * router.navigate({stickyParams: {baz: 'qux'}})
+   * ```
+   * @remarks `null` sticky parameter value will remove the sticky parameter from the url
+   *
+   * @example Navigate with state and sticky params
+   * ```tsx
+   * router.navigate({stickyParams: {baz: 'qux'}, state: {foo: 'bar'}})
+   * ```
+   *
+   * @example Navigate to root path
+   * ```tsx
+   * router.navigate({stickyParams: {baz: 'qux'}, state: null})
+   * ```
+   */
+  navigate: {
+    // legacy, state-first version - for when you want to navigate to a new state
+    (nextState: RouterState, options?: NavigateOptions): void
+    // Options version - for staying where you are (omit state) or going to root (state: null)
+    (options: NavigateOptions & {state?: RouterState | null}): void
+  }
+
+  /**
+   * Navigates to the given intent.
+   * See {@link RouterState} and {@link NavigateBaseOptions}
+   */
+  navigateIntent: (
+    intentName: string,
+    params?: IntentParameters,
+    options?: NavigateBaseOptions,
+  ) => void
+
+  /**
+   * The current router state. See {@link RouterState}
+   */
+  state: RouterState
+
+  /**
+   * The current router state. See {@link RouterState}
+   */
+  stickyParams: Record<string, string | undefined | null>
 }
 
 /**
@@ -239,45 +338,38 @@ export type SearchParam = [key: string, value: string]
  */
 export type RouterState = Record<string, unknown> & {_searchParams?: SearchParam[]}
 
-/**
- * @public
- */
-export interface RouterContextValue {
-  /**
-   * Resolves the path from the given router state. See {@link RouterState}
-   */
-  resolvePathFromState: (nextState: RouterState) => string
+export const isNavigateOptions = (
+  maybeNavigateOptions: unknown,
+): maybeNavigateOptions is NavigateOptions & {state?: RouterState | null} => {
+  if (
+    typeof maybeNavigateOptions !== 'object' ||
+    maybeNavigateOptions === null ||
+    Array.isArray(maybeNavigateOptions)
+  ) {
+    return false
+  }
 
-  /**
-   * Resolves the intent link for the given intent name and parameters.
-   * See {@link IntentParameters}
-   */
-  resolveIntentLink: (
-    intentName: string,
-    params?: IntentParameters,
-    searchParams?: SearchParam[],
-  ) => string
+  const hasNavigationProps =
+    'replace' in maybeNavigateOptions ||
+    'stickyParams' in maybeNavigateOptions ||
+    'state' in maybeNavigateOptions
 
-  /**
-   * Navigates to the given URL.
-   * The function requires an object that has a path and an optional replace property.
-   */
-  navigateUrl: (opts: {path: string; replace?: boolean}) => void
+  if (!hasNavigationProps) {
+    return false
+  }
 
-  /**
-   * Navigates to the given router state.
-   * See {@link RouterState} and {@link NavigateOptions}
-   */
-  navigate: (nextState: RouterState, options?: NavigateOptions) => void
+  // if state exists then it should be of RouterState type
+  if ('state' in maybeNavigateOptions) {
+    const {state} = maybeNavigateOptions as {state: unknown}
+    // allow null or undefined or RouterState (including empty object)
+    return state === null || state === undefined || typeof state === 'object'
+  }
 
-  /**
-   * Navigates to the given intent.
-   * See {@link RouterState} and {@link NavigateOptions}
-   */
-  navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
-
-  /**
-   * The current router state. See {@link RouterState}
-   */
-  state: RouterState
+  return true
 }
+
+/**
+ * Type representing either a new router state or navigation options with an optional state.
+ * @internal
+ */
+export type NextStateOrOptions = RouterState | (NavigateOptions & {state?: RouterState | null})

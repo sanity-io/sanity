@@ -66,6 +66,9 @@ interface CommentInlineHighlightSpanProps {
   isNested?: boolean
 }
 
+/**
+ * @internal
+ */
 export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighlightSpan(
   props: CommentInlineHighlightSpanProps & React.HTMLProps<HTMLSpanElement>,
   ref: React.Ref<HTMLSpanElement>,

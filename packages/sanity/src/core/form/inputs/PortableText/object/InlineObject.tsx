@@ -6,7 +6,7 @@ import {
   type PortableTextChild,
 } from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths'
@@ -56,7 +56,7 @@ interface InlineObjectProps {
   value: PortableTextChild
 }
 
-export const InlineObject = (props: InlineObjectProps) => {
+export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   const {
     floatingBoundary,
     focused,
@@ -107,7 +107,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, onItemOpen, memberItem])
+  }, [onItemOpen, editor, memberItem])
 
   const onClose = useCallback(() => {
     onItemClose()
@@ -236,7 +236,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   )
 }
 
-export const DefaultInlineObjectComponent = (props: BlockProps) => {
+export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Element => {
   const {
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
@@ -257,25 +257,9 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
   } = props
   const {t} = useTranslation()
   const hasMarkers = markers.length > 0
-  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
-
-  const openItem = useCallback((): void => {
-    setPopoverOpen(false)
-    onOpen()
-  }, [onOpen])
-
-  useEffect(() => {
-    if (open) {
-      setPopoverOpen(false)
-    } else if (focused) {
-      setPopoverOpen(true)
-    } else {
-      setPopoverOpen(false)
-    }
-  }, [focused, open])
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -292,10 +276,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     return undefined
   }, [focused, hasError, hasWarning, selected])
 
-  const onClosePopover = useCallback(() => {
-    setPopoverOpen(false)
-  }, [])
-
   return (
     <>
       <Root
@@ -307,8 +287,8 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
         data-selected={selected || undefined}
         data-warning={hasWarning || undefined}
         forwardedAs="span"
-        onClick={readOnly ? openItem : undefined}
-        onDoubleClick={openItem}
+        onClick={readOnly ? onOpen : undefined}
+        onDoubleClick={onOpen}
         tone={tone}
       >
         <PreviewSpan>
@@ -324,10 +304,10 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
       {referenceElement && (
         <InlineObjectToolbarPopover
           floatingBoundary={floatingBoundary}
-          onClosePopover={onClosePopover}
-          onDelete={onRemove}
-          onEdit={openItem}
-          open={popoverOpen}
+          inlineObjectFocused={focused}
+          inlineObjectOpen={open}
+          onOpenInlineObject={onOpen}
+          onRemoveInlineObject={onRemove}
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
           title={popoverTitle}
@@ -335,10 +315,10 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
       )}
       {open && (
         <ObjectEditModal
+          autoFocus
           defaultType="popover"
-          onClose={onClose}
-          autoFocus={focused}
           floatingBoundary={floatingBoundary}
+          onClose={onClose}
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
           schemaType={schemaType}

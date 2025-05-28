@@ -21,6 +21,7 @@ interface CreateOperationProps {
   documentId: string
   documentRevisionId?: string
   documentType: string
+  documentVersionId?: string
   getComment?: (id: string) => CommentDocument | undefined
   getIntent?: CommentIntentGetter
   getNotificationValue: (comment: {commentId: string}) => CommentContext['notification']
@@ -42,6 +43,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     documentId,
     documentRevisionId,
     documentType,
+    documentVersionId,
     getIntent,
     getNotificationValue,
     getThreadLength,
@@ -90,6 +92,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           _type: 'reference',
           _weak: true,
         },
+        documentVersionId,
         documentType,
       },
     }
@@ -154,6 +157,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           _weak: true,
         },
         documentType,
+        documentVersionId,
       },
     }
   }

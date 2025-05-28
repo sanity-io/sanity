@@ -10,7 +10,7 @@ interface NormalBlockProps {
   children: ReactNode
 }
 
-export function NormalBlock(props: NormalBlockProps): JSX.Element {
+export function NormalBlock(props: NormalBlockProps): React.JSX.Element {
   const {children} = props
 
   return <NormalText size={1}>{children}</NormalText>

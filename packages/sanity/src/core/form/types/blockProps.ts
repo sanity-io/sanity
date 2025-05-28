@@ -11,7 +11,7 @@ import {
   type PortableTextTextBlock,
   type SchemaType,
 } from '@sanity/types'
-import {type ReactElement, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 
 import {type PortableTextMarker} from '../..'
 import {type FormNodePresence} from '../../presence'
@@ -34,7 +34,7 @@ export interface BlockDecoratorProps {
   /**
    * The span node as rendered without the decorator.
    */
-  children: ReactElement
+  children: React.JSX.Element
   /**
    * If the span node currently is focused by the user.
    */
@@ -43,7 +43,7 @@ export interface BlockDecoratorProps {
    * The default render function for this decorator,
    * some decorators are proved by default and has a default rendering.
    */
-  renderDefault: (props: BlockDecoratorProps) => ReactElement
+  renderDefault: (props: BlockDecoratorProps) => React.JSX.Element
   /**
    * The decorator schema type. Icon can be found here.
    */
@@ -76,7 +76,7 @@ export interface BlockStyleProps {
   /**
    * The block as rendered without this style.
    */
-  children: ReactElement
+  children: React.JSX.Element
   /**
    * If the block currently has focus in the text editor.
    */
@@ -84,7 +84,7 @@ export interface BlockStyleProps {
   /**
    * The default rendering function for this style.
    */
-  renderDefault: (props: BlockStyleProps) => ReactElement
+  renderDefault: (props: BlockStyleProps) => React.JSX.Element
   /**
    * The schema type for this style.
    */
@@ -116,7 +116,7 @@ export interface BlockListItemProps {
   /**
    * The block rendered without the list style.
    */
-  children: ReactElement
+  children: React.JSX.Element
   /**
    * If the block currently is focused by the user.
    */
@@ -129,7 +129,7 @@ export interface BlockListItemProps {
    * The default function for rendering this as a list item. Some list types are built in and
    * will have a default rendering.
    */
-  renderDefault: (props: BlockListItemProps) => ReactElement
+  renderDefault: (props: BlockListItemProps) => React.JSX.Element
   /**
    * The schema type for this list type. Icon can be found here.
    */
@@ -273,7 +273,7 @@ export interface BlockAnnotationProps {
   /**
    * Plugin chain render callback.
    */
-  renderDefault: (props: BlockAnnotationProps) => ReactElement
+  renderDefault: (props: BlockAnnotationProps) => React.JSX.Element
   /**
    * Plugin chain render callback.
    */
@@ -305,7 +305,7 @@ export interface BlockAnnotationProps {
   /**
    * React element of the text that is being annotated.
    */
-  textElement: ReactElement
+  textElement: React.JSX.Element
   /**
    * Form validation for the annotation object.
    */
@@ -397,7 +397,7 @@ export interface BlockProps {
   /**
    * Plugin chain render callback (default rendering function of the block).
    */
-  renderDefault: (props: BlockProps) => ReactElement
+  renderDefault: (props: BlockProps) => React.JSX.Element
   /**
    * Plugin chain render callback.
    */

@@ -14,7 +14,7 @@ const VARIANTS: Variants = {
 const TRANSITION: Transition = {duration: 0.2}
 
 const FULLSCREEN_MEDIA_INDEX = 1
-const POSITION_ABSOLUTE_MEDIA_INDEX = 2
+const POSITION_ABSOLUTE_MEDIA_INDEX = 3
 
 const RootFlex = styled(Flex)(({theme}) => {
   const media = theme.sanity.media

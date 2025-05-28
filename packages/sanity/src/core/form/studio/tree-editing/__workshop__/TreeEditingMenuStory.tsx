@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
+import {type Path} from '@sanity/types'
 import {Container} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {type Path} from 'sanity'
 
 import {TreeEditingMenu} from '../components'
 import {buildTreeEditingState, type TreeEditingState} from '../utils'
@@ -118,7 +118,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeEditingMenuStory(): JSX.Element {
+export default function TreeEditingMenuStory(): React.JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(['myArrayOfObjects', {_key: 'first-item'}])
 
   const {menuItems} = useMemo((): TreeEditingState => {

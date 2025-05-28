@@ -11,7 +11,7 @@ import {
   timer,
 } from 'rxjs'
 import {buffer, publish, takeWhile} from 'rxjs/operators'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
@@ -21,7 +21,7 @@ import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
 // Mock `./editState`
-const mockEditState = editState as vi.Mock<typeof editState>
+const mockEditState = editState as Mock<typeof editState>
 vi.mock('./editState', () => ({editState: vi.fn()}))
 
 const schema = createSchema({

@@ -531,11 +531,16 @@ describe('generateQueryMap', () => {
         typeNode: {type: 'unknown'} satisfies TypeNode,
         query: '*[_type == "foo"]',
       },
+      {
+        typeNode: {type: 'unknown'} satisfies TypeNode,
+        query: '*[_type == "foo"]',
+      },
     ]
 
     const typeGenerator = new TypeGenerator(schema)
     typeGenerator.generateTypeNodeTypes('Foo', queries[0].typeNode)
     typeGenerator.generateTypeNodeTypes('Bar', queries[1].typeNode)
+    typeGenerator.generateTypeNodeTypes('Foo', queries[2].typeNode)
 
     const actualOutput = typeGenerator.generateQueryMap(queries)
 
@@ -543,9 +548,43 @@ describe('generateQueryMap', () => {
       "import "@sanity/client";
       declare module "@sanity/client" {
         interface SanityQueries {
-          "*[_type == \\"foo\\"]": Foo | Bar;
+          "*[_type == \\"foo\\"]": Foo | Bar | Foo_2;
         }
       }"
     `)
+  })
+
+  test('should handle duplicate type names', () => {
+    const typeGenerator = new TypeGenerator([
+      {
+        name: 'myType',
+        type: 'type',
+        value: {type: 'string'},
+      },
+      {
+        name: 'my.Type',
+        type: 'type',
+        value: {type: 'number'},
+      },
+    ])
+
+    expect(typeGenerator.generateSchemaTypes()).toMatchInlineSnapshot(`
+      "export type MyType = string;
+
+      export type MyType_2 = number;
+
+      export type AllSanitySchemaTypes = MyType | MyType_2;"
+    `)
+
+    // first one should be MyType_2, since it's the second type with the same name
+    expect(
+      typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'my.Type'}),
+    ).toEqual('export type Inline = MyType_2;')
+
+    // second one should only be MyType, since it's the first type with the same name.
+    // However the generated name should be `Inline_2` since `Inline` is already generated
+    expect(typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'myType'})).toEqual(
+      'export type Inline_2 = MyType;',
+    )
   })
 })

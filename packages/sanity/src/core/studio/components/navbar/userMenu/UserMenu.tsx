@@ -51,6 +51,7 @@ export function UserMenu() {
       preventOverflow: true,
       scheme: scheme,
       constrainSize: true,
+      tone: 'default',
     }),
     [scheme],
   )

@@ -1,4 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
+import {type Path, type PreviewValue} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Custom button needed, support for children
@@ -8,15 +9,11 @@ import {
 } from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
-import {
-  CommandList,
-  type Path,
-  type PreviewValue,
-  SanityDefaultPreview,
-  supportsTouch,
-  useTranslation,
-} from 'sanity'
 
+import {CommandList} from '../../../../../components/commandList/CommandList'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT} from './constants'
@@ -26,10 +23,10 @@ interface BreadcrumbsItemProps {
   selected: boolean
   isFirst: boolean
   onPathSelect: (path: Path) => void
-  renderMenuItemTitle: (value: PreviewValue) => JSX.Element
+  renderMenuItemTitle: (value: PreviewValue) => React.JSX.Element
 }
 
-function BreadcrumbsItem(props: BreadcrumbsItemProps): JSX.Element {
+function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
   const {item, onPathSelect, selected, isFirst, renderMenuItemTitle} = props
 
   const {value} = useValuePreviewWithFallback({
@@ -70,7 +67,9 @@ interface TreeEditingBreadcrumbsMenuProps {
   selectedPath: Path
 }
 
-export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
+export function TreeEditingBreadcrumbsMenu(
+  props: TreeEditingBreadcrumbsMenuProps,
+): React.JSX.Element {
   const {items, onPathSelect, selectedPath, collapsed = false} = props
   const {t} = useTranslation()
 

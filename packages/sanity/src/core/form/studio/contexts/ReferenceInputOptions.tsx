@@ -2,6 +2,7 @@ import {type Path} from '@sanity/types'
 import {type ComponentType, type HTMLProps, type ReactNode, useContext, useMemo} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {type TemplatePermissionsResult} from '../../../store'
 
 /** @internal */
@@ -18,6 +19,7 @@ export interface EditReferenceOptions {
   type: string
   parentRefPath: Path
   template: TemplateOption
+  version?: ReleaseId
 }
 
 /** @internal */
@@ -52,6 +54,11 @@ export interface ReferenceInputOptions {
    * Similar to `EditReferenceChildLink` expect without the wrapping component
    */
   onEditReference?: (options: EditReferenceOptions) => void
+
+  /**
+   * Prevent creation of documents from reference fields.
+   */
+  disableNew?: boolean
 }
 
 /**
@@ -73,6 +80,7 @@ export function ReferenceInputOptionsProvider(
     EditReferenceLinkComponent,
     onEditReference,
     initialValueTemplateItems,
+    disableNew,
   } = props
 
   const contextValue = useMemo(
@@ -81,8 +89,15 @@ export function ReferenceInputOptionsProvider(
       EditReferenceLinkComponent,
       onEditReference,
       initialValueTemplateItems,
+      disableNew,
     }),
-    [activePath, EditReferenceLinkComponent, onEditReference, initialValueTemplateItems],
+    [
+      activePath,
+      EditReferenceLinkComponent,
+      onEditReference,
+      initialValueTemplateItems,
+      disableNew,
+    ],
   )
 
   return (

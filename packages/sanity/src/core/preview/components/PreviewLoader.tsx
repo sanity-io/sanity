@@ -1,4 +1,4 @@
-import {type ComponentType, type CSSProperties, type ReactElement, useMemo, useState} from 'react'
+import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
@@ -20,7 +20,7 @@ export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
   },
-): ReactElement {
+): React.JSX.Element {
   const {
     layout,
     value,

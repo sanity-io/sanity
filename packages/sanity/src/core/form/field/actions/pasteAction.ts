@@ -1,10 +1,11 @@
 import {ClipboardIcon} from '@sanity/icons'
 import {useCallback} from 'react'
-import {type FormDocumentValue, useGetFormValue} from 'sanity'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
 import {useTranslation} from '../../../i18n'
 import {useCopyPaste} from '../../../studio'
+import {useGetFormValue} from '../../contexts/GetFormValue'
+import {type FormDocumentValue} from '../../types/formDocumentValue'
 import {defineActionItem} from './define'
 
 export const pasteAction = defineDocumentFieldAction({

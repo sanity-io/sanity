@@ -4,6 +4,7 @@ import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
+import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
@@ -22,15 +23,35 @@ import {initialSearchState, searchReducer} from './reducer'
 interface SearchProviderProps {
   children?: ReactNode
   fullscreen?: boolean
+  /**
+   * list of perspective ids
+   * if provided, then it means that the search is being done using a specific list of perspectives
+   */
+
+  /**
+   * list of document ids that should be be disabled in the search
+   * if they are found to exist in the search results
+   * if provided, then ids should be checked against this list
+   */
+  disabledDocumentIds?: string[]
+  /**
+   * If true, the search action (such as adding a document to a release list, for example) should be allowed to disable under the right conditions
+   */
+  canDisableAction?: boolean
 }
 
 /**
  * @internal
  */
-export function SearchProvider({children, fullscreen}: SearchProviderProps) {
+export function SearchProvider({
+  children,
+  fullscreen,
+  disabledDocumentIds,
+  canDisableAction,
+}: SearchProviderProps) {
   const [onClose, setOnClose] = useState<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
-
+  const {data: releases} = useActiveReleases()
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
@@ -134,6 +155,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
+          perspective: 'raw',
         },
         terms: {
           ...terms,
@@ -162,6 +184,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     terms,
     cursor,
     strategy,
+    releases,
   ])
 
   /**
@@ -187,9 +210,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       state: {
         ...state,
         fullscreen,
+        disabledDocumentIds,
+        canDisableAction,
       },
     }),
-    [fullscreen, onClose, searchCommandList, state],
+    [fullscreen, disabledDocumentIds, canDisableAction, onClose, searchCommandList, state],
   )
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>

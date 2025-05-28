@@ -3,7 +3,7 @@ import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
+import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {useClient} from '../../../../hooks'
@@ -43,7 +43,8 @@ const ImageWrapper = styled.div`
 
   /* Ideally the checkerboard component currently in the form builder should be made available and used here */
   background-color: ${hues.gray[100].hex};
-  background-image: linear-gradient(45deg, ${hues.gray[50].hex} 25%, transparent 25%),
+  background-image:
+    linear-gradient(45deg, ${hues.gray[50].hex} 25%, transparent 25%),
     linear-gradient(-45deg, ${hues.gray[50].hex} 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, ${hues.gray[50].hex} 75%),
     linear-gradient(-45deg, transparent 75%, ${hues.gray[50].hex} 75%);
@@ -95,7 +96,7 @@ const HotspotDiff = styled.div`
   }
 `
 
-export function ImagePreview(props: ImagePreviewProps): ReactElement {
+export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

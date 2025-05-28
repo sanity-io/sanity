@@ -17,8 +17,8 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useCurrentUser} from '../../store'
 import {type CommentDocument} from '../types'
 import {
+  buildCommentRangeDecorations,
   buildCommentThreadItems,
-  buildRangeDecorations,
   buildTextSelectionFromFragment,
 } from '../utils'
 
@@ -149,7 +149,7 @@ export default function CommentInlineHighlightDebugStory() {
 
   const buildRangeDecorationsCallback = useCallback(
     () =>
-      buildRangeDecorations({
+      buildCommentRangeDecorations({
         comments: comments.map((c) => c.parentComment),
         value,
         onDecorationHoverStart: setCurrentHoveredCommentId,

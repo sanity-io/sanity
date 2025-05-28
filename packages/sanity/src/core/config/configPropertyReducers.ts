@@ -228,6 +228,29 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   )
 }
 
+export const directUploadsReducer = (opts: {
+  config: PluginOptions
+  schemaTypeName: 'file' | 'image'
+}): boolean => {
+  const {config, schemaTypeName} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.form?.[schemaTypeName]?.directUploads
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`form.${schemaTypeName}.directUploads\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, true)
+
+  return result
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
@@ -364,6 +387,106 @@ export const internalTasksReducer = (opts: {
   return result
 }
 
+export const eventsAPIReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+  key: 'releases' | 'documents'
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    // @ts-expect-error enabled is a legacy option we want to warn beta testers in case they have enabled it.
+    if (innerConfig.beta?.eventsAPI?.enabled) {
+      throw new Error(
+        `The \`beta.eventsAPI.enabled\` option has been removed. Use \`beta.eventsAPI.${opts.key}\` instead.`,
+      )
+    }
+
+    const enabled = innerConfig.beta?.eventsAPI?.[opts.key]
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`beta.eventsAPI.${opts.key}\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.enabled\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryLibraryIdReducer = (opts: {
+  config: PluginOptions
+  initialValue: string | undefined
+}): string | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.libraryId
+
+    if (!resolver && typeof resolver !== 'string') return acc
+    if (typeof resolver === 'string') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const serverDocumentActionsReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean | undefined
+}): boolean | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean | undefined, {config: innerConfig}) => {
+    const enabled = innerConfig.__internal_serverDocumentActions?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`__internal_serverDocumentActions\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const partialIndexingEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
@@ -404,7 +527,7 @@ export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigCo
  * `enableLegacySearch` option.
  *
  * If the project currently enables the Text Search API search strategy by setting
- * `enableLegacySearch` to `false`, this is mapped to the `textSearch` strategy.
+ * `enableLegacySearch` to `false`, this is mapped to the `groq2024` strategy.
  *
  * Any explicitly defined `strategy` value will take precedence over the value inferred from
  * `enableLegacySearch`.
@@ -442,7 +565,7 @@ export const searchStrategyReducer = ({
 
       // The strategy has been implicitly defined.
       if (typeof enableLegacySearch === 'boolean') {
-        return [enableLegacySearch ? 'groqLegacy' : 'textSearch', currentExplicit]
+        return [enableLegacySearch ? 'groqLegacy' : 'groq2024', currentExplicit]
       }
 
       return [currentImplicit, currentExplicit]
@@ -451,51 +574,6 @@ export const searchStrategyReducer = ({
   )
 
   return explicit ?? implicit ?? initialValue
-}
-
-export const startInCreateEnabledReducer = (opts: {
-  config: PluginOptions
-  initialValue: boolean
-}): boolean => {
-  const {config, initialValue} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.beta?.create?.startInCreateEnabled
-
-    if (!resolver && typeof resolver !== 'boolean') return acc
-    if (typeof resolver === 'boolean') return resolver
-
-    throw new Error(
-      `Expected \`beta.create.startInCreateEnabled\` to be a boolean, but received ${getPrintableType(
-        resolver,
-      )}`,
-    )
-  }, initialValue)
-
-  return result
-}
-
-export const createFallbackOriginReducer = (config: PluginOptions): string | undefined => {
-  const flattenedConfig = flattenConfig(config, [])
-
-  const result = flattenedConfig.reduce(
-    (acc, {config: innerConfig}) => {
-      const resolver = innerConfig.beta?.create?.fallbackStudioOrigin
-
-      if (!resolver) return acc
-      if (typeof resolver === 'string') return resolver
-
-      throw new Error(
-        `Expected \`beta.create.fallbackStudioOrigin\` to be a string, but received ${getPrintableType(
-          resolver,
-        )}`,
-      )
-    },
-    undefined as string | undefined,
-  )
-
-  return result
 }
 
 export const announcementsEnabledReducer = (opts: {

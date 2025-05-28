@@ -9,15 +9,15 @@ export interface ExtractManifestWorkerData {
   workDir: string
 }
 
-if (isMainThread || !parentPort) {
-  throw new Error('This module must be run as a worker thread')
-}
-
-const opts = _workerData as ExtractManifestWorkerData
-
-const cleanup = mockBrowserEnvironment(opts.workDir)
-
 async function main() {
+  if (isMainThread || !parentPort) {
+    throw new Error('This module must be run as a worker thread')
+  }
+
+  const opts = _workerData as ExtractManifestWorkerData
+
+  const cleanup = mockBrowserEnvironment(opts.workDir)
+
   try {
     const workspaces = await getStudioWorkspaces({basePath: opts.workDir})
 
@@ -30,4 +30,4 @@ async function main() {
   }
 }
 
-main()
+main().then(() => process.exit())

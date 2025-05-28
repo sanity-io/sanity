@@ -21,7 +21,6 @@ import {getLocalVersion} from '../../util/getLocalVersion'
 const PACKAGES_TO_EXCLUDE = [
   '@sanity/block-content-to-html',
   '@sanity/block-content-to-react',
-  '@sanity/block-tools',
   '@sanity/client',
 ]
 

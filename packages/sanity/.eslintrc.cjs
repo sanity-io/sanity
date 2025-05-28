@@ -183,6 +183,10 @@ module.exports = {
                 message: 'Use relative type imports instead',
               },
               {
+                name: 'sanity/presentation',
+                message: 'Use relative type imports instead',
+              },
+              {
                 name: 'sanity/structure',
                 message: 'Use relative type imports instead',
               },

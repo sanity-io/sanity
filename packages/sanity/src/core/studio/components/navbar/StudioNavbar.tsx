@@ -16,9 +16,13 @@ import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
+import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -53,7 +57,7 @@ const RootCard = styled(Card)`
 
 const NavGrid = styled(Grid)`
   grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[3]}px`}) {
+  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4]}px`}) {
     grid-template-columns: 1fr auto 1fr;
   }
 `
@@ -82,6 +86,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchFullscreenPortalEl,
     searchOpen,
   } = useContext(NavbarContext)
+
+  const {selectedPerspective, perspectiveStack} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -164,6 +170,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     return actions
       ?.filter((v) => v.location === 'topbar')
       ?.map((action) => {
+        const {render: ActionComponent} = action
+
+        if (ActionComponent) return <ActionComponent key={action.name} />
+
         return (
           <Button
             iconRight={action?.icon}
@@ -181,6 +191,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
+          tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
           data-ui="Navbar"
@@ -237,51 +248,48 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Right flex */}
             <TooltipDelayGroupProvider>
               <Flex align="center" gap={1} justify="flex-end">
-                <Flex gap={1}>
-                  {/* Search */}
-                  <LayerProvider>
-                    <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                      <BoundaryElementProvider element={document.body}>
-                        {shouldRender.searchFullscreen ? (
-                          <PortalProvider element={searchFullscreenPortalEl}>
-                            <SearchDialog
-                              onClose={handleCloseSearchFullscreen}
-                              onOpen={handleOpenSearchFullscreen}
-                              open={searchFullscreenOpen}
-                            />
-                          </PortalProvider>
-                        ) : (
-                          <SearchPopover
-                            onClose={handleCloseSearch}
-                            onOpen={handleOpenSearch}
-                            open={searchOpen}
+                {/* Search */}
+                <LayerProvider>
+                  <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                    <BoundaryElementProvider element={document.body}>
+                      {shouldRender.searchFullscreen ? (
+                        <PortalProvider element={searchFullscreenPortalEl}>
+                          <SearchDialog
+                            onClose={handleCloseSearchFullscreen}
+                            onOpen={handleOpenSearchFullscreen}
+                            open={searchFullscreenOpen}
                           />
-                        )}
-                      </BoundaryElementProvider>
-                    </SearchProvider>
-                  </LayerProvider>
+                        </PortalProvider>
+                      ) : (
+                        <SearchPopover
+                          onClose={handleCloseSearch}
+                          onOpen={handleOpenSearch}
+                          open={searchOpen}
+                          previewPerspective={perspectiveStack}
+                        />
+                      )}
+                    </BoundaryElementProvider>
+                  </SearchProvider>
+                </LayerProvider>
 
-                  {shouldRender.tools && <FreeTrial type="topbar" />}
-                  {shouldRender.configIssues && <ConfigIssuesButton />}
-                  {shouldRender.resources && <ResourcesButton />}
+                <ReleasesNav />
+                {actionNodes}
+                {shouldRender.tools && <FreeTrial type="topbar" />}
+                <PresenceMenu />
+                {shouldRender.configIssues && <ConfigIssuesButton />}
+                {shouldRender.resources && <ResourcesButton />}
 
-                  <PresenceMenu />
-
-                  {/* Search button (mobile) */}
-                  {shouldRender.searchFullscreen && (
-                    <SearchButton
-                      onClick={handleOpenSearchFullscreen}
-                      ref={setSearchOpenButtonEl}
-                    />
-                  )}
-
-                  {actionNodes}
-                </Flex>
+                {/* Search button (mobile) */}
+                {shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+                )}
 
                 {shouldRender.tools && (
-                  <Box flex="none" marginLeft={1}>
-                    <UserMenu />
-                  </Box>
+                  <CapabilityGate capability="globalUserMenu">
+                    <Box flex="none" marginLeft={1}>
+                      <UserMenu />
+                    </Box>
+                  </CapabilityGate>
                 )}
               </Flex>
             </TooltipDelayGroupProvider>

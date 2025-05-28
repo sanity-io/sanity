@@ -1,5 +1,6 @@
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Custom button needed, special children support required
@@ -14,10 +15,11 @@ import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {getSchemaTypeTitle, type Path, SanityDefaultPreview} from 'sanity'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
 import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
@@ -114,7 +116,7 @@ interface TreeEditingMenuItemProps {
   siblingHasChildren?: boolean
 }
 
-export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): JSX.Element {
+export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.Element {
   const {item, onPathSelect, selectedPath, siblingHasChildren} = props
   const {children} = item
   const hasChildren = children && children.length > 0

@@ -126,22 +126,13 @@ function CommentsInspectorInner(
     if (!getCommentLink) return undefined
 
     const copyLink = (id: string) => {
-      navigator.clipboard
-        .writeText(getCommentLink(id))
-        .then(() => {
-          pushToast({
-            closable: true,
-            status: 'info',
-            title: t('copy-link-success-message'),
-          })
+      navigator.clipboard.writeText(getCommentLink(id)).catch(() => {
+        pushToast({
+          closable: true,
+          status: 'error',
+          title: t('copy-link-error-message'),
         })
-        .catch(() => {
-          pushToast({
-            closable: true,
-            status: 'error',
-            title: t('copy-link-error-message'),
-          })
-        })
+      })
 
       telemetry.commentLinkCopied()
     }

@@ -8,6 +8,7 @@ import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Button} from '../../../../ui-components'
 import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -52,16 +53,19 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
+    version,
     renderPreview,
     path,
     elementProps,
     focusPath,
   } = props
+  const {selectedReleaseId} = usePerspective()
 
   const {getReferenceInfo} = useReferenceInput({
     path,
     schemaType,
     value,
+    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -70,22 +74,49 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (option: CreateReferenceOption) => {
       const newDocumentId = uuid()
 
+      // The strengthen-on-publish process is not necessary for documents inside a release, and in
+      // fact must be skipped in order for release preflight checks to function.
+      //
+      // Strengthen-on-publish is still necessary for drafts, and for documents in a bundle
+      // *that isn't a release* (this isn't a scenario Studio supports today, but it may need to in
+      // the future).
+      const shouldStrengthenOnPublish = typeof selectedReleaseId === 'undefined'
+      const strengthenOnPublishPatches = shouldStrengthenOnPublish ? [set(true, ['_weak'])] : []
+
+      // The `_strengthenOnPublish` field is always set, regardless of whether the
+      // strengthen-on-publish process should be used. This is because the field is used to
+      // store details such as the non-existing document's type, which Studio uses to render
+      // reference previews.
+      //
+      // Content Lake will only strengthen the reference if **both** `_strengthenOnPublish` and
+      // `_weak` are truthy.
+      //
+      // Yes, this is confusing.
+      const createInPlaceMetadataPatches = [
+        set({type: option.type, weak: schemaType.weak, template: option.template}, [
+          '_strengthenOnPublish',
+        ]),
+      ]
+
       const patches = [
         setIfMissing({}),
         set(schemaType.name, ['_type']),
         set(newDocumentId, ['_ref']),
-        set(true, ['_weak']),
-        set({type: option.type, weak: schemaType.weak, template: option.template}, [
-          '_strengthenOnPublish',
-        ]),
-      ].filter(isNonNullable)
+      ]
+        .concat(strengthenOnPublishPatches, createInPlaceMetadataPatches)
+        .filter(isNonNullable)
 
       onChange(patches)
 
-      onEditReference({id: newDocumentId, type: option.type, template: option.template})
+      onEditReference({
+        id: newDocumentId,
+        type: option.type,
+        template: option.template,
+        version: selectedReleaseId,
+      })
       onPathFocus([])
     },
-    [onChange, onEditReference, onPathFocus, schemaType],
+    [onChange, onEditReference, onPathFocus, schemaType.name, schemaType.weak, selectedReleaseId],
   )
 
   const handleChange = useCallback(
@@ -205,14 +236,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   const renderValue = useCallback(() => {
-    return (
-      loadableReferenceInfo.result?.preview.draft?.title ||
-      loadableReferenceInfo.result?.preview.published?.title ||
-      ''
-    )
+    return (loadableReferenceInfo.result?.preview?.snapshot?.title ||
+      loadableReferenceInfo.result?.preview?.original?.title ||
+      '') as string
   }, [
-    loadableReferenceInfo.result?.preview.draft?.title,
-    loadableReferenceInfo.result?.preview.published?.title,
+    loadableReferenceInfo.result?.preview?.original?.title,
+    loadableReferenceInfo.result?.preview?.snapshot?.title,
   ])
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])

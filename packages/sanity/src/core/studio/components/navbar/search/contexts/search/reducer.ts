@@ -1,7 +1,7 @@
 import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
 
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
-import {getPublishedId} from '../../../../../../util'
+import {removeDupes} from '../../../../../../util/draftUtils'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
@@ -41,6 +41,8 @@ export type SearchReducerState = PaginationState & {
   result: SearchResult
   terms: RecentSearch | SearchTerms
   strategy?: SearchStrategy
+  disabledDocumentIds?: string[]
+  canDisableAction?: boolean
 }
 
 export interface SearchDefinitions {
@@ -225,7 +227,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           error: null,
           hasLocal: true,
           hits: state.result.hasLocal
-            ? deduplicate([...state.result.hits, ...action.hits], state)
+            ? removeDupes([...state.result.hits, ...action.hits].map(({hit}) => hit)).map(
+                (hit) => ({hit}),
+              )
             : action.hits,
           loaded: true,
           loading: false,
@@ -589,27 +593,4 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
     return rest
   }
   return terms
-}
-
-/**
- * At page boundaries, the Text Search API may sometimes produce duplicate results. This function
- * deduplicates an array of results based on their ids.
- *
- * Note that should any result appear again in subsequent pages, its first instance will be removed.
- */
-function deduplicate(hits: SearchHit[], {strategy}: {strategy?: SearchStrategy}): SearchHit[] {
-  if (strategy !== 'textSearch') {
-    return hits
-  }
-
-  const hitsById = hits.reduce((map, hit) => {
-    const id = getPublishedId(hit.hit._id)
-
-    return {
-      ...map,
-      [id]: hit,
-    }
-  }, {})
-
-  return Object.values(hitsById)
 }

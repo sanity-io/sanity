@@ -86,20 +86,14 @@ export function TemplatePreview(props: TemplatePreviewProps) {
         <Stack flex={1} space={2}>
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
-              <Title
-                // @ts-expect-error - @todo fix typings
-                layout="default"
-              />
+              <Title layout="default" />
             </Text>
           )}
           {isValidElement(Title) && <Text textOverflow="ellipsis">{Title}</Text>}
 
           {isValidElementType(Subtitle) && (
             <Text muted size={1} textOverflow="ellipsis">
-              <Subtitle
-                // @ts-expect-error - @todo fix typings
-                layout="default"
-              />
+              <Subtitle layout="default" />
             </Text>
           )}
           {isValidElement(Subtitle) && (

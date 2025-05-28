@@ -6,7 +6,7 @@ export const test = base.extend<{
   getClipboardItems: () => Promise<ClipboardItem[]>
   getClipboardItemsAsText: () => Promise<string>
 }>({
-  page: async ({page}, use) => {
+  page: async ({page}, _use) => {
     const setupClipboardMocks = async () => {
       await page.addInitScript(() => {
         const mockClipboard = {
@@ -45,23 +45,23 @@ export const test = base.extend<{
       await setupClipboardMocks()
     })
 
-    await use(page)
+    await _use(page)
   },
 
-  setClipboardItems: async ({page}, use) => {
-    await use(async (items: ClipboardItem[]) => {
+  setClipboardItems: async ({page}, _use) => {
+    await _use(async (items: ClipboardItem[]) => {
       ;(window as any).__clipboardItems = items
     })
   },
 
-  getClipboardItems: async ({page}, use) => {
-    await use(() => {
+  getClipboardItems: async ({page}, _use) => {
+    await _use(() => {
       return page.evaluate(() => navigator.clipboard.read())
     })
   },
 
-  getClipboardItemsAsText: async ({page}, use) => {
-    await use(async () => {
+  getClipboardItemsAsText: async ({page}, _use) => {
+    await _use(async () => {
       return page.evaluate(async () => {
         const items = await navigator.clipboard.read()
         const textItem = items.find((item) => item.types.includes('text/plain'))
@@ -73,8 +73,8 @@ export const test = base.extend<{
     })
   },
 
-  getClipboardItemByMimeTypeAsText: async ({page}, use) => {
-    await use(async (mimeType: string) => {
+  getClipboardItemByMimeTypeAsText: async ({page}, _use) => {
+    await _use(async (mimeType: string) => {
       return page.evaluate(async (mime) => {
         const items = await navigator.clipboard.read()
         const textItem = items.find((item) => item.types.includes(mime))

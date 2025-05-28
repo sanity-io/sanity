@@ -16,7 +16,7 @@ interface PaneData {
   itemId: string
   key: string
   pane: PaneNode | typeof LOADING_PANE
-  params: Record<string, string | undefined>
+  params: Record<string, string | undefined> & {perspective?: string}
   path: string
   payload: unknown
   selected: boolean

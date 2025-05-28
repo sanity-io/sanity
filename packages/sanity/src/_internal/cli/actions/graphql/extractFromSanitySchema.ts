@@ -41,21 +41,34 @@ export const internal = Symbol('internal')
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
   if (typeName === 'crossDatasetReference') {
     return Schema.compile({
-      types: (baseSchema._original?.types || []).concat([
+      types: [
         {
           name: `__placeholder__`,
           type: 'crossDatasetReference',
           // Just needs _something_ to refer to, doesn't matter what
           to: [{type: 'sanity.imageAsset'}],
         },
-      ]),
+      ],
+      parent: baseSchema,
+    }).get('__placeholder__')
+  }
+  if (typeName === 'globalDocumentReference') {
+    return Schema.compile({
+      types: [
+        {
+          name: `__placeholder__`,
+          type: 'globalDocumentReference',
+          // Just needs _something_ to refer to, doesn't matter what
+          to: [{type: 'sanity.imageAsset'}],
+        },
+      ],
+      parent: baseSchema,
     }).get('__placeholder__')
   }
 
   return Schema.compile({
-    types: (baseSchema._original?.types || []).concat([
-      {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
-    ]),
+    types: [{name: `__placeholder__`, type: typeName, options: {hotspot: true}}],
+    parent: baseSchema,
   }).get('__placeholder__')
 }
 
@@ -393,8 +406,23 @@ export function extractFromSanitySchema(
       return {type: getTypeName(candidates[0].type.name), ...base}
     }
 
-    const unionDefinition = getUnionDefinition(candidates, def, {grandParent: parent})
-    return {...unionDefinition, ...base}
+    const allTypeNames = candidates.map((c) => getTypeName(c.type.name))
+    const targetTypes = [...new Set(allTypeNames)].sort()
+    const name = targetTypes.join('Or')
+
+    // Register the union type if we haven't seen it before
+    if (!unionTypes.some((item) => item.name === name)) {
+      unionTypes.push({
+        kind: 'Union',
+        name,
+        types: targetTypes,
+      })
+    }
+
+    return {
+      type: name,
+      ...base,
+    }
   }
 
   function getArrayDefinition(

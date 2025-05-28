@@ -110,8 +110,11 @@ export const ChangeBarMarker = styled.div((props) => {
   `
 })
 
-export const ChangeBarButton = styled.button<{$withHoverEffect?: boolean}>((props) => {
-  const {$withHoverEffect} = props
+export const ChangeBarButton = styled.button<{
+  $withHoverEffect?: boolean
+  $isInteractive?: boolean
+}>((props) => {
+  const {$withHoverEffect, $isInteractive} = props
 
   return css`
     appearance: none;
@@ -123,8 +126,13 @@ export const ChangeBarButton = styled.button<{$withHoverEffect?: boolean}>((prop
     opacity: 0;
     position: absolute;
     height: 100%;
-    cursor: pointer;
-    pointer-events: all;
+
+    ${$isInteractive &&
+    css`
+      cursor: pointer;
+      pointer-events: all;
+    `}
+
     left: calc(-0.25rem + var(--change-bar-offset));
     width: calc(1rem - 1px);
     transition: opacity ${animationSpeed}ms;

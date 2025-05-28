@@ -1,5 +1,11 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {
+  expectCreatedStatus,
+  expectPublishedStatus,
+  expectUnpublishedStatus,
+} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`should be able to unpublish a published document`, async ({page, createDraftDocument}) => {
   /** publish initial action */
@@ -17,22 +23,26 @@ test(`should be able to unpublish a published document`, async ({page, createDra
     .filter({hasText: 'Unpublish document?Are you'})
     .nth(1)
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
+  // Wait for the document to finish saving
+  await expectCreatedStatus(documentStatus)
 
   // Wait for the document to be published.
-  await page.waitForTimeout(1_000)
   await publishButton.click()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   await contextFooterMenu.click()
   await expect(unpublishButton).toBeVisible()
   await unpublishButton.click()
 
-  await page.waitForTimeout(1_000)
-
-  await expect(unpublishModal).toBeVisible()
+  await expect(unpublishModal).toBeVisible({timeout: 4_000})
   await page.getByTestId('confirm-button').click()
 
-  await expect(documentStatus).toContainText('Not published')
+  const documentPerspectiveList = page.getByTestId('document-perspective-list')
+  const button = documentPerspectiveList.getByRole('button', {name: 'Published', exact: true})
+
+  // Check the published button is disabled that is the reference to determine the published document doesn't exist.
+  await expect(button).toBeDisabled()
+  await expectUnpublishedStatus(documentStatus)
 })

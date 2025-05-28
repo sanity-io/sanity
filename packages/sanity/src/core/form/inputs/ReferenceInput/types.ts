@@ -8,7 +8,9 @@ import {
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {type DocumentAvailability} from '../../../preview'
+import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -20,11 +22,9 @@ export type PreviewDocumentValue = PreviewValue & {
 export interface ReferenceInfo {
   id: string
   type: string | undefined
+  isPublished: boolean | null
   availability: DocumentAvailability
-  preview: {
-    draft: PreviewDocumentValue | undefined
-    published: PreviewDocumentValue | undefined
-  }
+  preview: PreviewState
 }
 
 export interface ReferenceTemplate {
@@ -36,6 +36,7 @@ export interface EditReferenceEvent {
   id: string
   type: string
   template: ReferenceTemplate
+  version?: ReleaseId
 }
 
 export interface CreateReferenceOption {
@@ -82,4 +83,5 @@ export interface ReferenceInputProps<Value = Reference>
 
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
+  version?: string
 }

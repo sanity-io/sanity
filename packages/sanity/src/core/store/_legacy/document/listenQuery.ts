@@ -44,6 +44,7 @@ const listen = (
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
       visibility: 'query',
+      includeAllVersions: true,
       tag: options.tag,
     }),
   ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>

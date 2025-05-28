@@ -1,6 +1,5 @@
 import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
 import {TextSkeleton} from '@sanity/ui'
-import {type ReactElement} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -105,8 +104,8 @@ function TargetContentChange({target}: {target: TaskTarget}) {
 
 export function getChangeDetails(activity: FieldChange): {
   text: string
-  icon: ReactElement
-  changeTo?: ReactElement
+  icon: React.JSX.Element
+  changeTo?: React.JSX.Element
 } {
   switch (activity.field) {
     case 'status': {

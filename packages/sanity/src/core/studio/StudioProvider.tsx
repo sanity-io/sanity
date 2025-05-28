@@ -8,14 +8,16 @@ import jsx from 'refractor/lang/jsx.js'
 import typescript from 'refractor/lang/typescript.js'
 
 import {LoadingBlock} from '../components/loadingBlock'
-import {ErrorLogger} from '../error/ErrorLogger'
+import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
+import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
@@ -28,8 +30,9 @@ import {
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
-import {StudioTelemetryProvider} from './StudioTelemetryProvider'
+import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
+import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 
@@ -71,7 +74,12 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <StudioAnnouncementsProvider>{children}</StudioAnnouncementsProvider>
+                <AppIdCacheProvider>
+                  <ComlinkRouteHandler />
+                  <StudioAnnouncementsProvider>
+                    <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                  </StudioAnnouncementsProvider>
+                </AppIdCacheProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>
@@ -84,31 +92,32 @@ export function StudioProvider({
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <ErrorLogger />
         <StudioErrorBoundary>
-          <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
-            <ActiveWorkspaceMatcher
-              unstable_history={history}
-              NotFoundComponent={NotFoundScreen}
-              LoadingComponent={LoadingBlock}
-            >
-              <StudioThemeProvider>
-                <UserColorManagerProvider>
-                  {noAuthBoundary ? (
-                    _children
-                  ) : (
-                    <AuthBoundary
-                      LoadingComponent={LoadingBlock}
-                      AuthenticateComponent={AuthenticateScreen}
-                      NotAuthenticatedComponent={NotAuthenticatedScreen}
-                    >
-                      {_children}
-                    </AuthBoundary>
-                  )}
-                </UserColorManagerProvider>
-              </StudioThemeProvider>
-            </ActiveWorkspaceMatcher>
-          </WorkspacesProvider>
+          <StudioRootErrorHandler>
+            <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
+              <ActiveWorkspaceMatcher
+                unstable_history={history}
+                NotFoundComponent={NotFoundScreen}
+                LoadingComponent={LoadingBlock}
+              >
+                <StudioThemeProvider>
+                  <UserColorManagerProvider>
+                    {noAuthBoundary ? (
+                      _children
+                    ) : (
+                      <AuthBoundary
+                        LoadingComponent={LoadingBlock}
+                        AuthenticateComponent={AuthenticateScreen}
+                        NotAuthenticatedComponent={NotAuthenticatedScreen}
+                      >
+                        {_children}
+                      </AuthBoundary>
+                    )}
+                  </UserColorManagerProvider>
+                </StudioThemeProvider>
+              </ActiveWorkspaceMatcher>
+            </WorkspacesProvider>
+          </StudioRootErrorHandler>
         </StudioErrorBoundary>
       </ToastProvider>
     </ColorSchemeProvider>

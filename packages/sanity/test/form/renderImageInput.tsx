@@ -4,7 +4,6 @@ import {
   type ImageSchemaType,
   type SchemaTypeDefinition,
 } from '@sanity/types'
-import {type ReactElement} from 'react'
 import {EMPTY} from 'rxjs'
 
 import {type ImageUrlBuilder, type ObjectInputProps} from '../../src/core'
@@ -16,7 +15,7 @@ import {type TestRenderProps} from './types'
 export type TestRenderImageInputCallback = (
   inputProps: BaseImageInputProps,
   context: TestRenderInputContext,
-) => ReactElement
+) => React.JSX.Element
 
 export async function renderImageInput(options: {
   fieldDefinition: SchemaTypeDefinition<'image'>

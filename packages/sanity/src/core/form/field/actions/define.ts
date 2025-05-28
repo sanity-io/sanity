@@ -1,4 +1,7 @@
-import {type DocumentFieldActionGroup, type DocumentFieldActionItem} from 'sanity'
+import {
+  type DocumentFieldActionGroup,
+  type DocumentFieldActionItem,
+} from '../../../config/document/fieldActions/types'
 
 export function defineActionItem(node: DocumentFieldActionItem): DocumentFieldActionItem {
   return node

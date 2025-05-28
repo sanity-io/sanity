@@ -13,7 +13,8 @@ import {
   createDeployment,
   deleteUserApplication,
   dirIsEmptyOrNonExistent,
-  getOrCreateUserApplication,
+  getOrCreateApplication,
+  getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
 } from '../helpers'
 
@@ -35,6 +36,7 @@ const mockOutput = {
   error: vi.fn(),
   warn: vi.fn(),
   spinner: vi.fn(),
+  success: vi.fn(),
 } as CliCommandContext['output']
 const mockPrompt = {
   single: vi.fn(),
@@ -50,7 +52,7 @@ global.fetch = mockFetch
 
 const context = {output: mockOutput, prompt: mockPrompt}
 
-describe('getOrCreateUserApplication', () => {
+describe('getOrCreateStudio', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -60,7 +62,7 @@ describe('getOrCreateUserApplication', () => {
       id: 'default-app',
     })
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       spinner: mockSpinner,
       context,
@@ -90,7 +92,7 @@ describe('getOrCreateUserApplication', () => {
     )
     mockClientRequest.mockResolvedValueOnce(newApp)
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       context,
       spinner: mockSpinner,
@@ -117,7 +119,7 @@ describe('getOrCreateUserApplication', () => {
       return Promise.resolve(choices[2].value)
     })
 
-    const result = await getOrCreateUserApplication({
+    const result = await getOrCreateStudio({
       client: mockClient,
       context,
       spinner: mockSpinner,
@@ -186,7 +188,8 @@ describe('getOrCreateUserApplicationFromConfig', () => {
     expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
       uri: '/user-applications',
       method: 'POST',
-      body: {appHost: 'newhost', urlType: 'internal'},
+      body: {appHost: 'newhost', urlType: 'internal', type: 'studio'},
+      query: {appType: 'studio'},
     })
     expect(result).toEqual(newApp)
   })
@@ -291,11 +294,15 @@ describe('deleteUserApplication', () => {
     await deleteUserApplication({
       client: mockClient,
       applicationId: 'app-id',
+      appType: 'studio',
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 
@@ -304,12 +311,19 @@ describe('deleteUserApplication', () => {
     mockClientRequest.mockRejectedValueOnce(new Error(errorMessage))
 
     await expect(
-      deleteUserApplication({client: mockClient, applicationId: 'app-id'}),
+      deleteUserApplication({
+        client: mockClient,
+        applicationId: 'app-id',
+        appType: 'studio',
+      }),
     ).rejects.toThrow(errorMessage)
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 })
@@ -388,5 +402,218 @@ describe('checkDir', () => {
     await expect(checkDir('missingIndex')).rejects.toThrow(
       '"missingIndex/index.html" does not exist - [SOURCE_DIR] must be a directory containing a Sanity studio built using "sanity build"',
     )
+  })
+})
+
+describe('getOrCreateApplication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  const mockContext = {
+    output: mockOutput,
+    prompt: mockPrompt,
+    cliConfig: {
+      app: {
+        organizationId: 'test-org',
+      },
+    },
+  }
+
+  it('returns an existing application when selected from the list', async () => {
+    const existingApp = {
+      id: 'app-1',
+      appHost: 'test-org-abc123',
+      title: 'Existing App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce([existingApp]) // getUserApplications response
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
+      // Simulate selecting the existing app
+      return Promise.resolve(choices[2].value)
+    })
+
+    const result = await getOrCreateApplication({
+      client: mockClient,
+      context: mockContext,
+      spinner: mockSpinner,
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications',
+      query: {organizationId: 'test-org', appType: 'coreApp'},
+    })
+    expect(mockPrompt.single).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Select an existing deployed application',
+        choices: expect.arrayContaining([
+          expect.objectContaining({name: 'Create new deployed application'}),
+          expect.anything(), // Separator
+          expect.objectContaining({name: 'Existing App'}),
+        ]),
+      }),
+    )
+    expect(result).toEqual(existingApp)
+  })
+
+  it('creates a new application when no existing apps are found', async () => {
+    const newApp = {
+      id: 'new-app',
+      appHost: 'test-org-xyz789',
+      title: 'New App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce([]) // getUserApplications returns empty array
+
+    // Mock the title prompt
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
+      return Promise.resolve('New App')
+    })
+
+    // Mock the creation request
+    mockClientRequest.mockImplementationOnce(async ({body, query}) => {
+      expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
+      expect(body).toMatchObject({
+        title: 'New App',
+        type: 'coreApp',
+        urlType: 'internal',
+      })
+      expect(body.appHost).toMatch(/^[a-z0-9]{12}$/) // nanoid format
+      return newApp
+    })
+
+    const result = await getOrCreateApplication({
+      client: mockClient,
+      context: mockContext,
+      spinner: mockSpinner,
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Enter a title for your application:',
+        validate: expect.any(Function),
+      }),
+    )
+    expect(result).toEqual(newApp)
+  })
+
+  it('creates a new application when selected from the list', async () => {
+    const existingApp = {
+      id: 'app-1',
+      appHost: 'test-org-abc123',
+      title: 'Existing App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+    const newApp = {
+      id: 'new-app',
+      appHost: 'test-org-xyz789',
+      title: 'New App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce([existingApp]) // getUserApplications response
+
+    // Mock selecting "Create new"
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
+      return Promise.resolve('new')
+    })
+
+    // Mock the title prompt
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
+      return Promise.resolve('New App')
+    })
+
+    // Mock the creation request
+    mockClientRequest.mockImplementationOnce(async ({body, query}) => {
+      expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
+      expect(body).toMatchObject({
+        title: 'New App',
+        type: 'coreApp',
+        urlType: 'internal',
+      })
+      expect(body.appHost).toMatch(/^[a-z0-9]{12}$/) // nanoid format
+      return newApp
+    })
+
+    const result = await getOrCreateApplication({
+      client: mockClient,
+      context: mockContext,
+      spinner: mockSpinner,
+    })
+
+    expect(result).toEqual(newApp)
+  })
+
+  it('retries with a new appHost if creation fails with 409', async () => {
+    const newApp = {
+      id: 'new-app',
+      appHost: 'test-org-xyz789',
+      title: 'New App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce([]) // getUserApplications returns empty array
+
+    // Mock the title prompt
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
+      return Promise.resolve('New App')
+    })
+
+    // Mock first creation attempt failing
+    mockClientRequest.mockRejectedValueOnce({
+      statusCode: 409,
+      response: {body: {message: 'App host already exists'}},
+    })
+
+    // Mock second creation attempt succeeding
+    mockClientRequest.mockResolvedValueOnce(newApp)
+
+    const result = await getOrCreateApplication({
+      client: mockClient,
+      context: mockContext,
+      spinner: mockSpinner,
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledTimes(3) // getUserApplications + 2 creation attempts
+    expect(result).toEqual(newApp)
+  })
+
+  it('validates that the title is not empty', async () => {
+    mockClientRequest.mockResolvedValueOnce([]) // getUserApplications returns empty array
+
+    // Mock the title prompt with validation
+    const mockValidate = vi.fn()
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({validate}: any) => {
+      mockValidate.mockImplementation(validate)
+      expect(mockValidate('')).toBe('Title is required')
+      expect(mockValidate('Valid Title')).toBe(true)
+      return Promise.resolve('Valid Title')
+    })
+
+    // Mock the creation request
+    mockClientRequest.mockImplementationOnce(() =>
+      Promise.resolve({
+        id: 'new-app',
+        appHost: 'test-org-xyz789',
+        title: 'Valid Title',
+        type: 'coreApp',
+        urlType: 'internal',
+      }),
+    )
+
+    await getOrCreateApplication({
+      client: mockClient,
+      context: mockContext,
+      spinner: mockSpinner,
+    })
+
+    expect(mockValidate).toHaveBeenCalled()
   })
 })

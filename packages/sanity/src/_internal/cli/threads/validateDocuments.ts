@@ -117,8 +117,8 @@ const idRegex = /^[^-][A-Z0-9._-]*$/i
 // during testing, the `doc` endpoint 502'ed if given an invalid ID
 const isValidId = (id: unknown) => typeof id === 'string' && idRegex.test(id)
 const shouldIncludeDocument = (document: SanityDocument) => {
-  // Filter out system documents
-  return !document._type.startsWith('system.')
+  // Filter out system documents and sanity documents
+  return !document._type.startsWith('system.') && !document._type.startsWith('sanity.')
 }
 
 async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array>) {
@@ -129,7 +129,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
   }
 }
 
-validateDocuments()
+main().then(() => process.exit())
 
 async function loadWorkspace() {
   const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})
@@ -302,7 +302,7 @@ async function checkReferenceExistence({
   return {existingIds}
 }
 
-async function validateDocuments() {
+async function main() {
   // note: this is dynamically imported because this module is ESM only and this
   // file gets compiled to CJS at this time
   const {default: pMap} = await import('p-map')

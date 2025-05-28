@@ -1,9 +1,10 @@
+import {type SanityClient} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
-import {type SanityClient, type Workspace} from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {type Workspace} from '../../config/types'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
 
 vi.mock('../router/RouterHistoryContext', () => ({
@@ -11,6 +12,7 @@ vi.mock('../router/RouterHistoryContext', () => ({
     location: {pathname: '/'},
     listen: vi.fn(),
   }),
+  RouterHistoryProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
 }))
 
 vi.mock('../router', () => ({
@@ -21,7 +23,8 @@ vi.mock('../router', () => ({
   }),
 }))
 
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   RouterProvider: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
   IntentLink: () => <div>IntentLink</div>,
 }))
@@ -69,6 +72,7 @@ describe('WorkspaceRouterProvider', () => {
     expect(screen.getByText('Children')).toBeInTheDocument()
   })
 
+  // TODO: This test has been broken by the addition of `ActiveWorkspaceMatcherProvider` to `TestProvider`.
   it('calls onUncaughtError when an error is caught', async () => {
     const onUncaughtError = vi.fn()
 

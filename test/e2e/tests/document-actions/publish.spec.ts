@@ -1,5 +1,7 @@
 import {expect} from '@playwright/test'
-import {test} from '@sanity/test'
+
+import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {test} from '../../studio-test'
 
 test(`document panel displays correct title for published document`, async ({
   page,
@@ -7,7 +9,7 @@ test(`document panel displays correct title for published document`, async ({
 }) => {
   const title = 'Test Title'
 
-  await createDraftDocument('/test/content/book')
+  await createDraftDocument('/content/book')
   await page.getByTestId('field-title').getByTestId('string-input').fill(title)
 
   // Ensure the correct title is displayed before publishing.
@@ -29,7 +31,7 @@ test(`document panel displays correct title for published document`, async ({
 
   // Wait for the document to be published.
   page.getByTestId('action-publish').click()
-  await expect(page.getByText('Published just now')).toBeVisible()
+  await expectPublishedStatus(page.getByTestId('pane-footer-document-status'))
 
   // Ensure the correct title is displayed after publishing.
   expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
@@ -45,18 +47,21 @@ test(`custom publish action can patch document before publication`, async ({
   const documentStatus = page.getByTestId('pane-footer-document-status')
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   const publishedAtInput = page.getByTestId('field-publishedAt').getByTestId('date-input')
+  const paneFooter = page.getByTestId('pane-footer-document-status')
 
-  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+  await createDraftDocument('/content/input-debug;documentActionsTest')
   await titleInput.fill(title)
+
+  // Wait for the document to save before publishing.
+  await expectCreatedStatus(paneFooter)
 
   // Wait for the document to be published.
   //
   // Note: This is invoked using the publish keyboard shortcut, because the publish document action
   // has been overridden for the `documentActionsTest` type, and is not visible without opening the
   // document actions menu.
-  await page.waitForTimeout(1_000)
   await publishKeypress()
-  await expect(documentStatus).toContainText('Published just now')
+  await expectPublishedStatus(documentStatus)
 
   // Ensure the custom publish action succeeded in setting the `publishedAt` field.
   await expect(publishedAtInput).toHaveValue(/.*/)

@@ -18,7 +18,7 @@ interface Props
   extends Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'width' | 'type' | 'ref'> {
   id: string
   createOptions: CreateReferenceOption[]
-  menuRef?: RefObject<HTMLDivElement>
+  menuRef?: RefObject<HTMLDivElement | null>
   onCreate: (option: CreateReferenceOption) => void
   readOnly?: boolean
 }
@@ -120,6 +120,7 @@ export function CreateButton(props: Props) {
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
       size="large"
+      data-testid={`create-new-document-select-${id}`}
     />
   )
 }

@@ -2,8 +2,10 @@ import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
-import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
+
+export type TabsType = 'default' | 'dropdown'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.
@@ -18,6 +20,7 @@ export interface PaneHeaderProps {
   tabIndex?: number
   tabs?: ReactNode
   title: ReactNode
+  appendTitle?: ReactNode
 }
 
 /**
@@ -29,8 +32,18 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {actions, backButton, border, contentAfter, loading, subActions, tabs, tabIndex, title} =
-    props
+  const {
+    actions,
+    backButton,
+    border,
+    contentAfter,
+    loading,
+    subActions,
+    tabs,
+    tabIndex,
+    title,
+    appendTitle,
+  } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -64,56 +77,58 @@ export const PaneHeader = forwardRef(function PaneHeader(
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              gap={1}
+              direction="column"
+              gap={3}
               onClick={handleLayoutClick}
               padding={3}
-              paddingBottom={collapsed || !showTabsOrSubActions ? 3 : 2}
               sizing="border"
               style={layoutStyle}
             >
-              {backButton && <Box flex="none">{backButton}</Box>}
+              <Flex align="flex-start" gap={3}>
+                {backButton && <Box flex="none">{backButton}</Box>}
 
-              <TitleCard
-                __unstable_focusRing
-                flex={1}
-                forwardedAs="button"
-                onClick={handleTitleClick}
-                paddingLeft={backButton ? 1 : 2}
-                padding={2}
-                tabIndex={tabIndex}
-              >
-                {loading && <TitleTextSkeleton animated radius={1} size={1} />}
-                {!loading && (
-                  <TitleText size={1} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
+                <TitleCard
+                  __unstable_focusRing
+                  flex={1}
+                  onClick={handleTitleClick}
+                  paddingLeft={backButton ? 1 : 2}
+                  padding={2}
+                  tabIndex={tabIndex}
+                >
+                  {loading && (
+                    <Box>
+                      <TitleTextSkeleton animated radius={1} size={1} />
+                    </Box>
+                  )}
+                  {!loading && (
+                    <Flex align="center" gap={1}>
+                      <TitleText size={1} textOverflow="ellipsis" weight="semibold">
+                        {title}
+                      </TitleText>
+                      {appendTitle}
+                    </Flex>
+                  )}
+                </TitleCard>
+
+                {actions && (
+                  <Box hidden={collapsed}>
+                    <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
+                  </Box>
                 )}
-              </TitleCard>
+              </Flex>
 
-              {actions && (
-                <Flex align="center" hidden={collapsed}>
-                  <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
+              {showTabsOrSubActions && (
+                <Flex align="center" hidden={collapsed} overflow="auto">
+                  <Box flex={1} marginRight={subActions ? 3 : 0}>
+                    {tabs}
+                  </Box>
+
+                  {subActions}
                 </Flex>
               )}
             </Layout>
 
-            {showTabsOrSubActions && (
-              <Flex
-                align="center"
-                hidden={collapsed}
-                overflow="auto"
-                paddingBottom={3}
-                paddingX={3}
-              >
-                <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                  {tabs}
-                </TabsBox>
-
-                {subActions && subActions}
-              </Flex>
-            )}
-
-            {!collapsed && contentAfter && contentAfter}
+            {!collapsed && contentAfter}
           </Card>
         </LegacyLayerProvider>
       </Root>

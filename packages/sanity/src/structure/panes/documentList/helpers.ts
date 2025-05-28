@@ -20,11 +20,13 @@ export function getDocumentKey(value: DocumentListPaneItem, index: number): stri
 
 export function removePublishedWithDrafts(documents: SanityDocumentLike[]): DocumentListPaneItem[] {
   return collate(documents).map((entry) => {
-    const doc = entry.draft || entry.published
+    const doc = entry.draft || entry.published || entry.versions[0]
+    const hasDraft = Boolean(entry.draft)
+
     return {
       ...doc,
       hasPublished: !!entry.published,
-      hasDraft: !!entry.draft,
+      hasDraft,
     }
   }) as any
 }

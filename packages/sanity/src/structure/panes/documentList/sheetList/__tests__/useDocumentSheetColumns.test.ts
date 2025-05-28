@@ -4,8 +4,8 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
 
-vi.mock('sanity', () => ({
-  ...(vi.importActual('sanity') || {}),
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentPreviewStore: vi.fn().mockReturnValue({}),
 }))
 

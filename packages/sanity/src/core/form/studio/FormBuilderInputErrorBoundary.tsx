@@ -22,7 +22,7 @@ interface FormBuilderInputErrorBoundaryProps {
  */
 export function FormBuilderInputErrorBoundary(
   props: FormBuilderInputErrorBoundaryProps,
-): JSX.Element {
+): React.JSX.Element {
   const {children} = props
   const [{error, info}, setError] = useState<{error: unknown; info: React.ErrorInfo}>({
     error: null,

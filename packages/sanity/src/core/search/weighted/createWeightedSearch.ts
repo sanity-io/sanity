@@ -2,6 +2,11 @@ import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@
 import {sortBy} from 'lodash'
 import {map, tap} from 'rxjs/operators'
 
+import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+} from '../../releases/util/releasesClient'
+import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
 import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
 import {applyWeights} from './applyWeights'
@@ -38,15 +43,21 @@ export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResults> 
       ...searchOptions,
     })
 
-    return client.observable.fetch<SanityDocumentLike[]>(query, params, options).pipe(
-      factoryOptions.unique ? map(removeDupes) : tap(),
-      // Assign weighting and scores based on current search terms.
-      // No scores will be assigned when terms are empty.
-      map((hits) => applyWeights(searchSpec, hits, terms)),
-      // Optionally skip client-side score sorting.
-      // This can be relevant when ordering results by specific fields, especially dates.
-      searchOptions?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
-      map((hits) => ({type: 'weighted', hits})),
-    )
+    const apiVersion = isReleasePerspective(options?.perspective as string | string[] | undefined)
+      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+      : undefined
+
+    return versionedClient(client, apiVersion)
+      .observable.fetch<SanityDocumentLike[]>(query, params, options)
+      .pipe(
+        factoryOptions.unique ? map(removeDupes) : tap(),
+        // Assign weighting and scores based on current search terms.
+        // No scores will be assigned when terms are empty.
+        map((hits) => applyWeights(searchSpec, hits, terms)),
+        // Optionally skip client-side score sorting.
+        // This can be relevant when ordering results by specific fields, especially dates.
+        searchOptions?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
+        map((hits) => ({type: 'weighted', hits})),
+      )
   }
 }

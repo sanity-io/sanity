@@ -3,13 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {
-  isDraftId,
-  type ObjectSchemaType,
-  Translate,
-  useDocumentOperation,
-  useTranslation,
-} from 'sanity'
+import {type ObjectSchemaType, Translate, useDocumentOperation, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -26,7 +20,7 @@ export function DraftLiveEditBanner({
   displayed,
   documentId,
   schemaType,
-}: DraftLiveEditBannerProps): JSX.Element | null {
+}: DraftLiveEditBannerProps): React.JSX.Element | null {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
@@ -53,14 +47,10 @@ export function DraftLiveEditBanner({
     }
   })
 
-  if (displayed && displayed._id && !isDraftId(displayed._id)) {
-    return null
-  }
-
   return (
     <Banner
       content={
-        <Flex align="center" justify="space-between" gap={1}>
+        <Flex align="center" justify="space-between" gap={2}>
           <Text size={1} weight="medium">
             <Translate
               t={t}
@@ -68,6 +58,7 @@ export function DraftLiveEditBanner({
               values={{schemaType: schemaType.title}}
             />
           </Text>
+
           <Button
             onClick={handlePublish}
             text={t('action.publish.live-edit.label')}

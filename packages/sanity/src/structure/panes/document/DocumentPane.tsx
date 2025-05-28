@@ -8,6 +8,7 @@ import {
   SourceProvider,
   Translate,
   useDocumentType,
+  usePerspective,
   useSource,
   useTemplatePermissions,
   useTemplates,
@@ -15,14 +16,16 @@ import {
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
+import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
+import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -44,10 +47,11 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   const {resolveNewDocumentOptions} = useSource().document
+  const {selectedPerspectiveName} = usePerspective()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
-
+  useResetHistoryParams()
   const DocumentLayout = useDocumentLayoutComponent()
 
   // The templates that should be creatable from inside this document pane.
@@ -127,10 +131,10 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <DocumentPaneProvider
+    <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}`}
+      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}
@@ -142,15 +146,20 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CommentsWrapper documentId={options.id} documentType={options.type}>
-          <DocumentLayout documentId={options.id} documentType={options.type} />
-        </CommentsWrapper>
+        <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
+          <CommentsWrapper documentId={options.id} documentType={options.type}>
+            <DocumentLayout documentId={options.id} documentType={options.type} />
+          </CommentsWrapper>
+        </DiffViewDocumentLayout>
       </ReferenceInputOptionsProvider>
-    </DocumentPaneProvider>
+    </DocumentPaneProviderWrapper>
   )
 }
 
-function usePaneOptions(
+/**
+ * @internal
+ */
+export function usePaneOptions(
   options: DocumentPaneOptions,
   params: Record<string, string | undefined> = {},
 ): DocumentPaneOptions {

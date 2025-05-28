@@ -20,7 +20,7 @@ export const endpoints = {
       global: false,
       method: 'GET',
       path: `/query/${dataset}`,
-      searchParams: [],
+      searchParams: [['perspective', 'raw']],
     }),
     export: (dataset: string, documentTypes?: string[]): Endpoint => ({
       global: false,

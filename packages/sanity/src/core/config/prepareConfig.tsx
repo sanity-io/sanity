@@ -8,7 +8,14 @@ import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} fr
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {FileSource, ImageSource} from '../form/studio/assetSource'
+import {
+  createDatasetFileAssetSource,
+  createDatasetImageAssetSource,
+} from '../form/studio/assetSourceDataset'
+import {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
@@ -20,12 +27,13 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   announcementsEnabledReducer,
-  createFallbackOriginReducer,
+  directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
@@ -33,13 +41,15 @@ import {
   initialLanguageFilter,
   internalTasksReducer,
   legacySearchEnabledReducer,
+  mediaLibraryEnabledReducer,
+  mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
-  startInCreateEnabledReducer,
+  serverDocumentActionsReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -53,6 +63,7 @@ import {
   type Config,
   type ConfigContext,
   type MissingConfigFile,
+  type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
   type Source,
@@ -70,13 +81,49 @@ function normalizeIcon(
   Icon: ComponentType | ElementType | undefined,
   title: string,
   subtitle = '',
-): JSX.Element {
+): React.JSX.Element {
   if (isValidElementType(Icon)) return <Icon />
   if (isValidElement(Icon)) return Icon
   return createDefaultIcon(title, subtitle)
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
+// Create media library sources with configuration
+const createMediaLibraryAssetSources = (config: PluginOptions) => {
+  const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
+  const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
+
+  // Only create sources if media library is enabled
+  if (!enabled) {
+    return {fileSource: null, imageSource: null}
+  }
+
+  const fileSource = createSanityMediaLibraryFileSource({
+    libraryId: libraryId || null,
+  })
+
+  const imageSource = createSanityMediaLibraryImageSource({
+    libraryId: libraryId || null,
+  })
+
+  return {fileSource, imageSource}
+}
+
+// Create default asset sources with configuration
+const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) => {
+  const fileSource = createDatasetFileAssetSource({
+    client,
+    title: config.title || config.name,
+  })
+
+  const imageSource = createDatasetImageAssetSource({
+    client,
+    title: config.title || config.name,
+  })
+
+  return {fileSource, imageSource}
+}
 
 /**
  * Takes in a config (created from the `defineConfig` function) and returns
@@ -103,7 +150,7 @@ export function prepareConfig(
   const rootPath = getRootPath(options?.basePath)
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
-    : [config]
+    : [{...config, name: config.name ?? 'default'}]
 
   try {
     validateWorkspaces({workspaces: workspaceOptions})
@@ -125,7 +172,26 @@ export function prepareConfig(
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
       return {
         ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
+          /*
+           * @FIXME: with the introduction of global references, @sanity/assist broke
+           * As a quickfix the plugins was released with a know property on the plugin definition.
+           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
+           * This ensures auto updating studios can start, albeit without assist, it it is old.
+           */
+          .filter((plugin) => {
+            const validPlugin =
+              plugin.name !== '@sanity/assist' ||
+              (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
+            if (!validPlugin) {
+              console.warn(
+                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
+                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+              )
+            }
+
+            return validPlugin
+          }),
       }
     })
 
@@ -209,8 +275,6 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      // eslint-disable-next-line camelcase
-      __internal_serverDocumentActions: rawWorkspace.__internal_serverDocumentActions,
       ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
@@ -307,6 +371,9 @@ function resolveSource({
   ) as any as SanityClient
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
+
+  const defaultAssetSources = createDatasetAssetSources(config, context.client)
+  const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
   let templates!: Source['templates']
   try {
@@ -568,27 +635,25 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [FileSource],
+          initialValue: mediaLibraryAssetSources.fileSource
+            ? [mediaLibraryAssetSources.fileSource, defaultAssetSources.fileSource]
+            : [defaultAssetSources.fileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'file'}),
       },
       image: {
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [ImageSource],
+          initialValue: mediaLibraryAssetSources.imageSource
+            ? [mediaLibraryAssetSources.imageSource, defaultAssetSources.imageSource]
+            : [defaultAssetSources.imageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.image?.directUploads === undefined ? true : config.form.image.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'image'}),
       },
     },
 
@@ -646,18 +711,31 @@ function resolveSource({
     },
 
     beta: {
+      eventsAPI: {
+        documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
+        releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
+      },
       treeArrayEditing: {
         // This beta feature is no longer available.
         enabled: false,
       },
       create: {
-        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
-        fallbackStudioOrigin: createFallbackOriginReducer(config),
+        startInCreateEnabled: false,
+        fallbackStudioOrigin: undefined,
       },
+    },
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {
+      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
     },
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
+    },
+
+    mediaLibrary: {
+      enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
+      libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
     },
   }
 

@@ -70,7 +70,7 @@ const emptyStyle: BlockStyleItem = {
 
 export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps,
-): JSX.Element {
+): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()

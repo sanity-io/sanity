@@ -23,33 +23,65 @@ export interface AuthStoreOptions extends AuthConfig {
   dataset: string
 }
 
-const getStorageKey = (projectId: string) => {
+const getStorageKey = (projectId: string): string => {
   // Project ID is part of the localStorage key so that different projects can
   // store their separate tokens, and it's easier to do book keeping.
   if (!projectId) throw new Error('Invalid project id')
   return `__studio_auth_token_${projectId}`
 }
 
-const getToken = (projectId: string): string | null => {
+const getHashToken = (): string | null => {
+  if (typeof window === 'undefined' || typeof window.location !== 'object') {
+    return null
+  }
+
+  // Token pattern used for extracting tokens from URL hash
+  const tokenPattern = /token=([^&]{32,})&?/
+  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
+  if (!tokenParam) {
+    return null
+  }
+
+  // Remove the token from URL for security
+  const newHash = window.location.hash.replace(tokenPattern, '')
+  const newUrl = new URL(window.location.href)
+  newUrl.hash = newHash.length > 1 ? newHash : ''
+  history.replaceState(null, '', newUrl)
+
+  return tokenParam
+}
+
+const getStoredToken = (projectId: string): string | null => {
   try {
     const item = storage.getItem(getStorageKey(projectId))
-    if (item) {
-      const {token} = JSON.parse(item) as {token: string}
-      if (token && typeof token === 'string') {
-        return token
-      }
-    }
+    if (!item) return null
+
+    const {token} = JSON.parse(item) as {token: string}
+    return token && typeof token === 'string' ? token : null
   } catch (err) {
     console.error(err)
+    return null
   }
-  return null
+}
+
+const getToken = (projectId: string): string | null => {
+  const storedToken = getStoredToken(projectId)
+  const hashToken = getHashToken()
+
+  // Prefer hash token over stored token when available and different
+  if (hashToken && (!storedToken || hashToken !== storedToken)) {
+    saveToken({token: hashToken, projectId})
+    return hashToken
+  }
+
+  return storedToken || null
 }
 
 const clearToken = (projectId: string): void => {
   try {
     storage.removeItem(getStorageKey(projectId))
   } catch (err) {
-    console.error(err)
+    console.error('Failed to clear auth token from storage:', err)
   }
 }
 
@@ -60,7 +92,7 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
       JSON.stringify({token, time: new Date().toISOString()}),
     )
   } catch (err) {
-    console.error(err)
+    console.error('Failed to save auth token to storage:', err)
   }
 }
 
@@ -71,7 +103,6 @@ const getCurrentUser = async (
   try {
     const user = await client.request({
       uri: '/users/me',
-      withCredentials: true,
       tag: 'users.get-current',
     })
 
@@ -159,8 +190,8 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...(token && {token}),
-        withCredentials: true,
+        ...(token ? {token} : {withCredentials: true}),
+        perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
@@ -237,12 +268,12 @@ export function _createAuthStore({
   }
 
   async function logout() {
+    const token = getToken(projectId)
     const requestClient = clientFactory({
       projectId,
       dataset,
       useCdn: true,
-      withCredentials: true,
-      token: getToken(projectId) ?? undefined,
+      ...(token ? {token} : {withCredentials: true}),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       ...hostOptions,

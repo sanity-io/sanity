@@ -6,11 +6,12 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {createSWR, getDraftId, getPublishedId, isRecord} from '../util'
+import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
   AVAILABILITY_READABLE,
+  AVAILABILITY_VERSION_DELETED,
 } from './constants'
 import {
   type AvailabilityResponse,
@@ -84,10 +85,17 @@ export function createPreviewAvailabilityObserver(
    */
   function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
     // check for existence
-    return observePaths({_ref: id}, [['_rev']]).pipe(
-      map((res) => isRecord(res) && Boolean('_rev' in res && res?._rev)),
+    return observePaths({_ref: id}, [['_rev'], ['_system']]).pipe(
+      map((res) => ({
+        hasRev: isRecord(res) && Boolean('_rev' in res && res?._rev),
+        isDeleted: isRecord(res) && res._system?.delete === true,
+      })),
       distinctUntilChanged(),
-      switchMap((hasRev) => {
+      switchMap(({hasRev, isDeleted}) => {
+        if (isDeleted) {
+          return of(AVAILABILITY_VERSION_DELETED)
+        }
+
         return hasRev
           ? // short circuit: if we can read the _rev field we know it both exists and is readable
             of(AVAILABILITY_READABLE)
@@ -146,18 +154,26 @@ export function createPreviewAvailabilityObserver(
    */
   return function observeDocumentPairAvailability(
     id: string,
+    {version}: {version?: string} = {},
   ): Observable<DraftsModelDocumentAvailability> {
     const draftId = getDraftId(id)
     const publishedId = getPublishedId(id)
+    const versionId = version ? getVersionId(id, version) : undefined
     return combineLatest([
       observeDocumentAvailability(draftId),
       observeDocumentAvailability(publishedId),
+      ...(versionId ? [observeDocumentAvailability(versionId)] : []),
     ]).pipe(
       distinctUntilChanged(shallowEquals),
-      map(([draftReadability, publishedReadability]) => {
+      map(([draftReadability, publishedReadability, versionReadability]) => {
         return {
           draft: draftReadability,
           published: publishedReadability,
+          ...(versionReadability
+            ? {
+                version: versionReadability,
+              }
+            : {}),
         }
       }),
     )

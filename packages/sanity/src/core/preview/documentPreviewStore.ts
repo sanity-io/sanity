@@ -1,14 +1,22 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {
+  type MutationEvent,
+  type QueryParams,
+  type SanityClient,
+  type StackablePerspective,
+  type WelcomeEvent,
+} from '@sanity/client'
 import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
+import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
 import {createPreviewAvailabilityObserver} from './availability'
 import {createGlobalListener} from './createGlobalListener'
+import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
+import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
@@ -27,7 +35,11 @@ import {
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
-  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig},
+  options?: {
+    viewOptions?: PrepareViewOptions
+    perspective?: StackablePerspective[]
+    apiConfig?: ApiConfig
+  },
 ) => Observable<PreparedSnapshot>
 
 /**
@@ -50,12 +62,59 @@ export interface DocumentPreviewStore {
    */
   unstable_observeDocumentPairAvailability: (
     id: string,
+    options?: {version?: string},
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
     paths: PreviewPath[],
+    options?: {version?: string},
   ) => Observable<DraftsModelDocument<T>>
+
+  /**
+   * Observes a set of document IDs that matches the given groq-filter. The document ids are returned in ascending order and will update in real-time
+   * Whenever a document appears or disappears from the set, a new array with the updated set of IDs will be pushed to subscribers.
+   * The query is performed once, initially, and thereafter the set of ids are patched based on the `appear` and `disappear`
+   * transitions on the received listener events.
+   * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want to subscribe to a set of documents ids
+   * that matches a particular filter.
+   * @hidden
+   * @beta
+   * @param filter - A groq filter to use for the document set
+   * @param params - Parameters to use with the groq filter
+   * @param options - Options for the observer
+   * @param apiVersion - Specify the API version to use for the query
+   */
+  unstable_observeDocumentIdSet: (
+    filter: string,
+    params?: QueryParams,
+    options?: {
+      /**
+       * Where to insert new items into the set. Defaults to 'sorted' which is based on the lexicographic order of the id
+       */
+      insert?: 'sorted' | 'prepend' | 'append'
+      apiVersion?: string
+    },
+  ) => Observable<DocumentIdSetObserverState>
+
+  /**
+   * Observe a complete document with the given ID
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocument: (
+    id: string,
+    clientConfig?: ObserveDocumentAPIConfig,
+  ) => Observable<SanityDocument | undefined>
+  /**
+   * Observe a list of complete documents with the given IDs
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocuments: (
+    ids: string[],
+    clientConfig?: ObserveDocumentAPIConfig,
+  ) => Observable<(SanityDocument | undefined)[]>
 }
 
 /** @internal */
@@ -67,7 +126,7 @@ export interface DocumentPreviewStoreOptions {
 export function createDocumentPreviewStore({
   client,
 }: DocumentPreviewStoreOptions): DocumentPreviewStore {
-  const versionedClient = client.withConfig({apiVersion: '1'})
+  const versionedClient = client.withConfig({apiVersion: '2025-02-19'})
   const globalListener = createGlobalListener(versionedClient).pipe(
     filter(
       (event): event is MutationEvent | WelcomeEvent =>
@@ -79,18 +138,22 @@ export function createDocumentPreviewStore({
     map((event) => (event.type === 'welcome' ? {type: 'connected' as const} : event)),
   )
 
+  const observeDocument = createObserveDocument({client, mutationChannel: globalListener})
   const observeFields = createObserveFields({client: versionedClient, invalidationChannel})
   const observePaths = createPathObserver({observeFields})
 
   function observeDocumentTypeFromId(
     id: string,
     apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
+    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )
   }
+
+  const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(
@@ -110,6 +173,10 @@ export function createDocumentPreviewStore({
     observeForPreview,
     observeDocumentTypeFromId,
 
+    unstable_observeDocumentIdSet: observeDocumentIdSet,
+    unstable_observeDocument: observeDocument,
+    unstable_observeDocuments: (ids: string[]) =>
+      combineLatest(ids.map((id) => observeDocument(id))),
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
     unstable_observePathsDocumentPair: observePathsDocumentPair,
   }

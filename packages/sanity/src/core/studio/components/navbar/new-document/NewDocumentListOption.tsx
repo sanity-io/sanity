@@ -6,6 +6,7 @@ import {useIntentLink} from 'sanity/router'
 import {Tooltip} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useI18nText} from '../../../../i18n'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 
 // This value is used to calculate the max-height of the popover and for the virtual list item size.
@@ -23,9 +24,10 @@ interface NewDocumentListOptionProps {
 
 export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
+  const {selectedReleaseId} = usePerspective()
   const params = useMemo(
-    () => ({template: option.templateId, type: option.schemaType}),
-    [option.schemaType, option.templateId],
+    () => ({template: option.templateId, type: option.schemaType, version: selectedReleaseId}),
+    [option.schemaType, option.templateId, selectedReleaseId],
   )
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'create',

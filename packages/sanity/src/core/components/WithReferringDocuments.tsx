@@ -1,5 +1,4 @@
 import {type SanityDocument} from '@sanity/types'
-import {type ReactElement} from 'react'
 
 import {useReferringDocuments} from '../hooks/useReferringDocuments'
 import {type DocumentStore} from '../store'
@@ -14,7 +13,7 @@ export function WithReferringDocuments({
   children,
   id,
 }: {
-  children: (props: {isLoading: boolean; referringDocuments: SanityDocument[]}) => ReactElement
+  children: (props: {isLoading: boolean; referringDocuments: SanityDocument[]}) => React.JSX.Element
   /**
    * @deprecated - no longer required
    */

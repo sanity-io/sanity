@@ -157,7 +157,9 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     'aria-selected': !!cellState,
     'data-testid': cellId,
     'id': cellId,
-    'ref': (ref: InputRef) => (inputRef.current = ref),
+    'ref': (ref: InputRef) => {
+      inputRef.current = ref
+    },
   }
 
   if (fieldType.name === 'boolean') {

@@ -4,6 +4,7 @@ export {
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
+export {builtinTypes} from '../sanity/builtinTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {
@@ -16,4 +17,5 @@ export {
   type TypeWithProblems,
   type SchemaValidationResult as ValidationResult,
 } from '../sanity/typedefs'
+export {validateMediaLibraryAssetAspect} from '../sanity/validateMediaLibraryAssetAspect'
 export {validateSchema} from '../sanity/validateSchema'

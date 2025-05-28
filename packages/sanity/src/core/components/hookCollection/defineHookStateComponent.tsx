@@ -31,7 +31,11 @@ export function defineHookStateComponent<Args, State>({
     })
 
     useEffect(() => {
-      handleNext(id, hookState)
+      if (hookState) {
+        handleNext(id, {...hookState, action: useHook.action})
+      } else {
+        handleNext(id, hookState)
+      }
       return () => {
         handleNext(id, null)
       }

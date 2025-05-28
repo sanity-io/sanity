@@ -1,4 +1,4 @@
-import {type Role} from 'sanity'
+import {type Role} from '@sanity/types'
 import {satisfies} from 'semver'
 
 import {type AudienceRole, audienceRoles, type StudioAnnouncementDocument} from './types'

@@ -8,9 +8,11 @@ import {type Subscription} from 'rxjs'
 import {useTranslation} from '../../../../i18n'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {setIfMissing, unset} from '../../../patch'
+import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
+import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
@@ -26,7 +28,7 @@ import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from 
 
 export {BaseImageInputProps, BaseImageInputValue}
 
-function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
+function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element {
   const {
     assetSources,
     client,
@@ -67,12 +69,17 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
+  const uploaderRef = useRef<{
+    unsubscribe: () => void
+    uploader: AssetSource['uploader']
+  } | null>(null)
+
   const getFileTone = useCallback(() => {
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || !directUploads) {
+      if (rejectedFilesCount > 0 || directUploads === false) {
         return 'critical'
       }
     }
@@ -95,10 +102,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     value?._upload,
     value?.asset,
   ])
-  const isImageToolEnabled = useCallback(
-    () => get(schemaType, 'options.hotspot') === true,
-    [schemaType],
-  )
+  const isImageToolEnabled = useCallback(() => {
+    const hotspotOptions = get(schemaType, 'options.hotspot')
+    return typeof hotspotOptions === 'object' || hotspotOptions === true
+  }, [schemaType])
   const valueIsArrayElement = useCallback(() => {
     const parentPathSegment = path.slice(-1)[0]
 
@@ -112,12 +119,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       onChange(unset(['_upload']))
     }
   }, [onChange, value?._upload])
+
   const cancelUpload = useCallback(() => {
     if (uploadSubscription.current) {
       uploadSubscription.current.unsubscribe()
       clearUploadStatus()
     }
   }, [clearUploadStatus])
+
   const uploadWith = useCallback(
     (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
       const {label, title, description, creditLine, source} = assetDocumentProps
@@ -152,34 +161,18 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
           clearUploadStatus()
         },
         complete: () => {
-          onChange([unset(['hotspot']), unset(['crop'])])
+          onChange([unset(['hotspot']), unset(['crop']), unset(['media'])])
           setIsUploading(false)
-          // push({
-          //   status: 'success',
-          //   title: 'Upload completed',
-          // })
         },
       })
     },
     [cancelUpload, clearUploadStatus, client, onChange, push, schemaType, t],
   )
-  const uploadFirstAccepted = useCallback(
-    (files: File[]) => {
-      const match = files
-        .map((file) => ({file, uploader: resolveUploader(schemaType, file)}))
-        .find((result) => result.uploader)
-
-      if (match) {
-        uploadWith(match.uploader!, match.file)
-      }
-      setMenuOpen(false)
-    },
-    [resolveUploader, schemaType, uploadWith],
-  )
 
   const handleClearField = useCallback(() => {
-    onChange([unset(['asset']), unset(['crop']), unset(['hotspot'])])
+    onChange([unset(['asset']), unset(['crop']), unset(['hotspot']), unset(['media'])])
   }, [onChange])
+
   const handleRemoveButtonClick = useCallback(() => {
     // When removing the image, we should also remove any crop and hotspot
     // _type and _key are "meta"-properties and are not significant unless
@@ -190,29 +183,31 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     // the array logic will check for an "empty" value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key),
+      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot', 'media'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
-    const removeKeys = ['asset']
+    const removeKeys = ['asset', 'media']
       .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
       .map((key) => unset([key]))
 
     onChange(isEmpty && !valueIsArrayElement() ? unset() : removeKeys)
   }, [onChange, value, valueIsArrayElement])
+
   const handleOpenDialog = useCallback(() => {
     onPathFocus(['hotspot'])
   }, [onPathFocus])
+
   const handleCloseDialog = useCallback(() => {
     onPathFocus([])
-
     // Set focus on hotspot button in `ImageActionsMenu` when closing the dialog
     hotspotButtonElement?.focus()
   }, [hotspotButtonElement, onPathFocus])
+
   const handleSelectAssetFromSource = useCallback(
-    (assetFromSource: AssetFromSource[]) => {
+    (assetsFromSource: AssetFromSource[]) => {
       _handleSelectAssetFromSource({
-        assetFromSource,
+        assetsFromSource,
         onChange,
         type: schemaType,
         resolveUploader,
@@ -239,35 +234,83 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     },
     [elementProps],
   )
-  const handleFilesOver = useCallback((nextHoveringFiles: FileInfo[]) => {
-    setHoveringFiles(nextHoveringFiles.filter((file) => file.kind !== 'string'))
-  }, [])
-  const handleFilesOut = useCallback(() => {
-    setHoveringFiles([])
-  }, [])
+
   const handleCancelUpload = useCallback(() => {
     cancelUpload()
   }, [cancelUpload])
+
   const handleClearUploadState = useCallback(() => {
     setIsStale(false)
     clearUploadStatus()
   }, [clearUploadStatus])
+
   const handleStaleUpload = useCallback(() => {
     setIsStale(true)
   }, [])
-  const handleSelectFiles = useCallback(
-    (files: File[]) => {
-      if (directUploads && !readOnly) {
-        uploadFirstAccepted(files)
-      } else if (hoveringFiles.length > 0) {
-        handleFilesOut()
+
+  const handleSelectFilesToUpload = useCallback(
+    (assetSource: AssetSource, files: File[]) => {
+      setSelectedAssetSource(assetSource)
+      const uploader = assetSource.uploader
+      if (uploader) {
+        try {
+          uploaderRef.current = {
+            unsubscribe: uploader.subscribe((event) => {
+              switch (event.type) {
+                case 'progress':
+                  onChange(
+                    PatchEvent.from([
+                      set(Math.max(2, event.progress), [UPLOAD_STATUS_KEY, 'progress']),
+                      set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updatedAt']),
+                    ]),
+                  )
+                  break
+                case 'error':
+                  event.files.forEach((file) => {
+                    console.error(file.error)
+                  })
+                  push({
+                    status: 'error',
+                    description: t('asset-sources.common.uploader.upload-failed.description'),
+                    title: t('asset-sources.common.uploader.upload-failed.title'),
+                  })
+                  break
+                case 'all-complete':
+                  onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
+                  setSelectedAssetSource(null)
+                  setIsUploading(false)
+                  setMenuOpen(false)
+                  uploaderRef.current = null
+                  break
+                default:
+              }
+            }),
+            uploader: assetSource.uploader,
+          }
+          setIsUploading(true)
+          onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
+          uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
+        } catch (err) {
+          onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
+          setIsUploading(false)
+          setSelectedAssetSource(null)
+          uploaderRef.current = null
+          push({
+            status: 'error',
+            description: t('asset-sources.common.uploader.upload-failed.description'),
+            title: t('asset-sources.common.uploader.upload-failed.title'),
+          })
+          console.error(err)
+        }
       }
     },
-    [directUploads, handleFilesOut, hoveringFiles.length, readOnly, uploadFirstAccepted],
+    [onChange, push, schemaType, t],
   )
+
   const handleSelectImageFromAssetSource = useCallback((source: AssetSource) => {
     setSelectedAssetSource(source)
   }, [])
+
   const handleAssetSourceClosed = useCallback(() => {
     setSelectedAssetSource(null)
 
@@ -275,7 +318,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
-  const renderPreview = useCallback<() => JSX.Element>(() => {
+  const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
       return <></>
     }
@@ -308,7 +351,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
-        handleSelectFiles={handleSelectFiles}
+        onSelectFiles={handleSelectFilesToUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
         isImageToolEnabled={isImageToolEnabled()}
@@ -327,7 +370,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFiles,
+    handleSelectFilesToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -337,23 +380,25 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     schemaType,
     value,
   ])
+
   const renderBrowser = useCallback(() => {
     return (
       <ImageInputBrowser
         assetSources={assetSources}
         readOnly={readOnly}
-        directUploads={directUploads}
         id={id}
         setMenuOpen={setMenuOpen}
+        schemaType={schemaType}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
       />
     )
-  }, [assetSources, directUploads, handleSelectImageFromAssetSource, id, readOnly])
+  }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
+        assetSources={assetSources}
         directUploads={directUploads}
-        handleSelectFiles={handleSelectFiles}
+        onSelectFiles={handleSelectFilesToUpload}
         hoveringFiles={hoveringFiles}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
@@ -362,8 +407,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       />
     )
   }, [
+    assetSources,
     directUploads,
-    handleSelectFiles,
+    handleSelectFilesToUpload,
     hoveringFiles,
     readOnly,
     renderBrowser,
@@ -391,34 +437,37 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     // eslint-disable-next-line react/display-name
     return (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <ImageInputAsset
+        assetSources={assetSources}
+        directUploads={directUploads !== false}
         elementProps={elementProps}
         handleClearUploadState={handleClearUploadState}
-        handleFilesOut={handleFilesOut}
-        handleFilesOver={handleFilesOver}
         handleFileTargetFocus={handleFileTargetFocus}
-        handleSelectFiles={handleSelectFiles}
         hoveringFiles={hoveringFiles}
+        imageUrlBuilder={imageUrlBuilder}
         inputProps={inputProps}
         isStale={isStale}
+        onSelectFiles={handleSelectFilesToUpload}
         readOnly={readOnly}
         renderAssetMenu={renderAssetMenu}
         renderPreview={renderPreview}
         renderUploadPlaceholder={renderUploadPlaceholder}
         renderUploadState={renderUploadState}
+        schemaType={schemaType}
+        setHoveringFiles={setHoveringFiles}
+        selectedAssetSource={selectedAssetSource}
         tone={getFileTone()}
         value={value}
-        imageUrlBuilder={imageUrlBuilder}
       />
     )
   }, [
+    assetSources,
+    directUploads,
     elementProps,
     getFileTone,
     handleClearField,
     handleClearUploadState,
     handleFileTargetFocus,
-    handleFilesOut,
-    handleFilesOver,
-    handleSelectFiles,
+    handleSelectFilesToUpload,
     hoveringFiles,
     imageUrlBuilder,
     isStale,
@@ -427,6 +476,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
     renderPreview,
     renderUploadPlaceholder,
     renderUploadState,
+    schemaType,
+    selectedAssetSource,
     value,
   ])
   const renderHotspotInput = useCallback(
@@ -447,6 +498,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
       <ImageInputAssetSource
         handleAssetSourceClosed={handleAssetSourceClosed}
         handleSelectAssetFromSource={handleSelectAssetFromSource}
+        isUploading={isUploading}
         observeAsset={observeAsset}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
@@ -456,6 +508,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): JSX.Element {
   }, [
     handleAssetSourceClosed,
     handleSelectAssetFromSource,
+    isUploading,
     observeAsset,
     schemaType,
     selectedAssetSource,

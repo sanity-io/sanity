@@ -1,10 +1,10 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
 import {useEffect} from 'react'
-import {type FormDocumentValue} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {isFileTargetElement} from '../form/inputs/common/fileTarget/fileTarget'
+import {type FormDocumentValue} from '../form/types/formDocumentValue'
 import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
 
@@ -69,5 +69,5 @@ export function useGlobalCopyPasteElementHandler({
     return () => {
       element?.removeEventListener('keydown', handleKeydown)
     }
-  }, [element, handleKeydown, onPaste])
+  }, [element, onPaste])
 }

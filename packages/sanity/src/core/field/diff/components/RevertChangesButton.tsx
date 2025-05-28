@@ -1,5 +1,5 @@
 import {RevertIcon} from '@sanity/icons'
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactElement} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
@@ -31,7 +31,7 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
   props: Omit<ButtonProps, 'tooltipProps'> &
     Omit<HTMLProps<HTMLButtonElement>, 'ref'> & {changeCount: number},
   ref: ForwardedRef<HTMLButtonElement>,
-): ReactElement {
+): React.JSX.Element {
   const {selected, changeCount, ...restProps} = props
   const {t} = useTranslation()
 

@@ -1,8 +1,10 @@
-import {expect, test} from '@playwright/test'
+import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Studio Components API:', () => {
   test('studio.components.layout', async ({page}) => {
-    page.goto('/test/content')
+    page.goto('/content')
     await expect(
       page
         .getByTestId('child-parent-config-studio-layout')
@@ -12,7 +14,7 @@ test.describe('Studio Components API:', () => {
   })
 
   test('studio.components.navbar', async ({page}) => {
-    page.goto('/test/content')
+    page.goto('/content')
     await expect(
       page
         .getByTestId('child-parent-config-studio-navbar')
@@ -22,7 +24,7 @@ test.describe('Studio Components API:', () => {
   })
 
   test('studio.components.toolMenu', async ({page}) => {
-    page.goto('/test/content')
+    page.goto('/content')
     await expect(
       page
         .getByTestId('child-parent-config-studio-tool-menu')

@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useRef, useState} from 'react'
@@ -28,6 +29,7 @@ export interface SearchPopoverProps {
   disableIntentLink?: boolean
   onClose: () => void
   onItemSelect?: ItemSelectHandler
+  previewPerspective?: StackablePerspective[]
   /**
    * If provided, will trigger to open the search popover when user types hotkey + k
    */
@@ -83,6 +85,7 @@ export function SearchPopover({
   onClose,
   onItemSelect,
   onOpen,
+  previewPerspective,
   open,
 }: SearchPopoverProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
@@ -143,6 +146,7 @@ export function SearchPopover({
                     inputElement={inputElement}
                     onItemSelect={onItemSelect}
                     disableIntentLink={disableIntentLink}
+                    previewPerspective={previewPerspective}
                   />
                 ) : (
                   <RecentSearches inputElement={inputElement} />

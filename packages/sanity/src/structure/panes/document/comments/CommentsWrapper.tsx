@@ -4,6 +4,8 @@ import {
   CommentsEnabledProvider,
   CommentsProvider,
   useCommentsEnabled,
+  usePerspective,
+  useStudioUrl,
 } from 'sanity'
 
 import {usePaneRouter} from '../../../components'
@@ -37,7 +39,9 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const {params, setParams, createPathWithParams} = usePaneRouter()
+  const {studioUrl} = useStudioUrl(window.location.origin)
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -57,9 +61,9 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         comment: commentId,
         inspect: COMMENTS_INSPECTOR_NAME,
       })
-      return `${window.location.origin}${path}`
+      return `${studioUrl}${path}`
     },
-    [createPathWithParams],
+    [createPathWithParams, studioUrl],
   )
 
   const handleClearSelectedComment = useCallback(() => {
@@ -90,6 +94,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
       selectedCommentId={selectedCommentId}
       sortOrder="desc"
       type="field"
+      releaseId={selectedReleaseId}
     >
       {children}
     </CommentsProvider>

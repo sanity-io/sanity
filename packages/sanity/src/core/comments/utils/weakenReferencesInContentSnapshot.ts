@@ -31,6 +31,9 @@ function weakenReferences(node: unknown): unknown | undefined {
   return node
 }
 
+/**
+ * @internal
+ */
 export function weakenReferencesInContentSnapshot(
   snapshot: CommentDocument['contentSnapshot'],
 ): CommentDocument['contentSnapshot'] {

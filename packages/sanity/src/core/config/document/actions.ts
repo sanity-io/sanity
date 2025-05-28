@@ -19,6 +19,10 @@ export interface ActionComponent<ActionProps> {
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
   onComplete: () => void
+  /**
+   * Whether the initial value has been resolved.
+   */
+  initialValueResolved: boolean
 }
 
 /**
@@ -43,7 +47,17 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * })
    * ```
    */
-  action?: 'delete' | 'discardChanges' | 'duplicate' | 'restore' | 'publish' | 'unpublish'
+  action?:
+    | 'delete'
+    | 'discardChanges'
+    | 'duplicate'
+    | 'restore'
+    | 'publish'
+    | 'unpublish'
+    | 'linkToCanvas'
+    | 'editInCanvas'
+    | 'unlinkFromCanvas'
+    | 'schedule'
   /**
    * For debugging purposes
    */

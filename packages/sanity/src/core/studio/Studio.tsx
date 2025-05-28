@@ -1,6 +1,5 @@
 /* eslint-disable simple-import-sort/imports */
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
-import {type ReactElement} from 'react'
 import {type Config} from '../config'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'
@@ -93,7 +92,7 @@ export interface StudioProps {
 /**
  * @hidden
  * @beta */
-export function Studio(props: StudioProps): ReactElement {
+export function Studio(props: StudioProps): React.JSX.Element {
   const {
     basePath,
     config,
