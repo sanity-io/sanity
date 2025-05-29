@@ -15,9 +15,11 @@ import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {
   type DocumentLocation,
-  type DocumentLocationsState,
+  type DocumentLocationResolver,
+  type DocumentLocationResolvers,
   type PresentationPluginOptions,
 } from '../types'
+import {useDocumentLocations} from '../useDocumentLocations'
 import {useCurrentPresentationToolName} from './useCurrentPresentationToolName'
 
 const TONE_ICONS: Record<'positive' | 'caution' | 'critical', ComponentType> = {
@@ -28,31 +30,42 @@ const TONE_ICONS: Record<'positive' | 'caution' | 'critical', ComponentType> = {
 
 export function LocationsBanner(props: {
   documentId: string
-  isResolving: boolean
   options: PresentationPluginOptions
+  resolvers?: DocumentLocationResolver | DocumentLocationResolvers
   schemaType: ObjectSchemaType
   showPresentationTitle: boolean
-  state: DocumentLocationsState
+  version: string | undefined
 }): ReactNode {
-  const {documentId, isResolving, options, schemaType, showPresentationTitle} = props
-  const {locations, message, tone} = props.state
-  const len = locations?.length || 0
+  const {documentId, options, resolvers, schemaType, showPresentationTitle, version} = props
+
+  const {state, status} = useDocumentLocations({
+    id: documentId,
+    version,
+    resolvers,
+    type: schemaType,
+  })
+
+  const isResolving = status === 'resolving'
+
+  const {locations, message, tone} = state
+  const locationsCount = locations?.length || 0
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const presentation = useContext(PresentationContext)
   const presentationName = presentation?.name
   const [expanded, setExpanded] = useState(false)
   const toggle = useCallback(() => {
-    if (!len) return
+    if (!locationsCount) return
     setExpanded((v) => !v)
-  }, [len])
+  }, [locationsCount])
 
   const title = isResolving
     ? t('locations-banner.resolving.text')
-    : message || t('locations-banner.locations-count', {count: len})
+    : message || t('locations-banner.locations-count', {count: locationsCount})
 
   const ToneIcon = tone ? TONE_ICONS[tone] : undefined
 
+  if (!resolvers) return null
   return (
     <Card padding={1} radius={2} border tone={tone}>
       <div style={{margin: -1}}>
@@ -76,7 +89,7 @@ export function LocationsBanner(props: {
         {locations && (
           <>
             <Card
-              as={len ? 'button' : undefined}
+              as={locationsCount ? 'button' : undefined}
               onClick={toggle}
               padding={3}
               radius={1}
@@ -88,7 +101,7 @@ export function LocationsBanner(props: {
                     <Spinner size={1} />
                   ) : (
                     <Text size={1}>
-                      {len === 0 ? (
+                      {locationsCount === 0 ? (
                         <InfoOutlineIcon />
                       ) : (
                         <ChevronRightIcon
