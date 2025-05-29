@@ -17,6 +17,7 @@ export type UploadBody = File | Blob | Buffer | NodeJS.ReadableStream
 export interface MockClientLog {
   listen: {query: string; params?: any}[]
   observable: {
+    create: any[]
     fetch: {query: string; params?: any}[]
     getDocuments: {ids: string[]}[]
     listen: {query: string; params?: any}[]
@@ -95,6 +96,7 @@ export function createMockSanityClient(
   const $log: MockClientLog = {
     listen: [],
     observable: {
+      create: [],
       fetch: [],
       getDocuments: [],
       listen: [],
@@ -148,6 +150,10 @@ export function createMockSanityClient(
     observable: {
       action: (actions: any[], opts: {transctionId: string; tag: string}) => {
         $log.observable.action.push({actions, options: opts})
+        return of({})
+      },
+      create: (...args: any[]) => {
+        $log.observable.create.push(args)
         return of({})
       },
       fetch: (query: string, params?: any): Observable<any> => {
