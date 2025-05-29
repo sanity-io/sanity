@@ -4,7 +4,7 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor} from '../../store/_legacy'
+import {type EditStateFor, type MapDocument} from '../../store/_legacy'
 
 /**
  * @hidden
@@ -63,6 +63,22 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    */
   displayName?: string
 }
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface DuplicateActionProps extends DocumentActionProps {
+  mapDocument?: MapDocument
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface DuplicateDocumentActionComponent
+  extends ActionComponent<DuplicateActionProps>,
+    Pick<DocumentActionComponent, 'action' | 'displayName'> {}
 
 /**
  * @hidden

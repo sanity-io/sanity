@@ -1,5 +1,6 @@
 import {type DocumentActionsResolver} from 'sanity'
 
+import {createCustomDuplicateAction} from './actions/createCustomDuplicateAction'
 import {
   createCustomPublishAction,
   createNoopPatchPublishAction,
@@ -24,6 +25,9 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
       }
       if (action.action === 'publish') {
         return [createCustomPublishAction(action), createNoopPatchPublishAction(action)]
+      }
+      if (action.action === 'duplicate') {
+        return createCustomDuplicateAction(action)
       }
       return action
     })

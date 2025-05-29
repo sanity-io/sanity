@@ -96,4 +96,42 @@ describe('duplicate', () => {
       expect(creation[0]).not.toHaveProperty('_updatedAt')
     })
   })
+
+  it('applies the `mapDocument` function to the created document', () => {
+    const client = createMockSanityClient()
+
+    duplicate.execute(
+      {
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+        },
+        snapshots: {
+          draft: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'exampleRev',
+            _id: 'drafts.my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+            newValue: 'hey',
+          },
+        },
+      } as unknown as OperationArgs,
+      'my-duplicate-id',
+      {
+        mapDocument: (document) => ({
+          ...document,
+          appendValue: 'appended',
+        }),
+      },
+    )
+
+    const creation = client.$log.observable.create.find(
+      ([document]) => document._id === 'drafts.my-duplicate-id',
+    )
+
+    expect(client.$log).toMatchSnapshot()
+    expect(creation[0].appendValue).toBe('appended')
+  })
 })
