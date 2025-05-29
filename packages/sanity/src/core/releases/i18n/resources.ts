@@ -377,7 +377,9 @@ const releasesLocaleStrings = {
   /** Description for toast when release duplication failed */
   'toast.duplicate.error': "Failed to duplicate '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release is successfully duplicated */
-  'toast.duplicate.success': "The '<strong>{{title}}</strong>' release was duplicated",
+  'toast.duplicate.success': "The '<strong>{{title}}</strong>' release was duplicated. <Link/>",
+  /** Link text for toast link to the duplicated release */
+  'toast.duplicate.success-link': 'View duplicated release',
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to schedule */

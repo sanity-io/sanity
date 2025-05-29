@@ -10,8 +10,8 @@ import {
 
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
-import {createReleaseId, getReleaseIdFromReleaseDocumentId} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
 
@@ -37,6 +37,7 @@ export interface ReleaseOperationsStore {
     revertType: 'staged' | 'immediate',
   ) => Promise<void>
   duplicateRelease: (
+    releaseId: string,
     releaseMetadata: ReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => Promise<void>
@@ -218,18 +219,17 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleDuplicateRelease = async (
+    releaseId: string,
     releaseMetadata: ReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => {
-    const duplicateReleaseId = createReleaseId()
-
     await handleCreateRelease({
-      _id: duplicateReleaseId,
+      _id: releaseId,
       metadata: releaseMetadata,
     })
 
     if (releaseDocuments) {
-      const versionId = getReleaseIdFromReleaseDocumentId(duplicateReleaseId)
+      const versionId = getReleaseIdFromReleaseDocumentId(releaseId)
       const duplicateVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
         (releaseDocument) => ({
           actionType: 'sanity.action.document.version.create',
