@@ -3,7 +3,6 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useTimeZoneMockReturn} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -12,20 +11,30 @@ import {
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
-import {
-  mockUseReleaseOperations,
-  useReleaseOperationsMockReturn,
-} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {ReleaseTypePicker} from '../ReleaseTypePicker'
 
+// Declare mock functions before vi.mock() calls to avoid hoisting issues
+const mockUseReleaseOperations = vi.fn()
+const mockUpdateRelease = vi.fn()
+
 vi.mock('../../../store/useReleaseOperations', () => ({
-  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
+  useReleaseOperations: mockUseReleaseOperations,
 }))
 
 vi.mock('../../../../scheduledPublishing/hooks/useTimeZone', async (importOriginal) => ({
   ...(await importOriginal()),
-  useTimeZone: vi.fn(() => useTimeZoneMockReturn),
+  useTimeZone: vi.fn(() => ({
+    timeZone: 'UTC',
+    formattedTime: '3:00:00 AM',
+  })),
 }))
+
+const defaultReleaseOperationsReturn = {
+  updateRelease: vi.fn().mockResolvedValue({}),
+  createRelease: vi.fn(),
+  deleteRelease: vi.fn(),
+  publishRelease: vi.fn(),
+}
 
 const renderComponent = async (release = activeASAPRelease) => {
   const wrapper = await createTestProvider({
@@ -39,13 +48,11 @@ const renderComponent = async (release = activeASAPRelease) => {
   })
 }
 
-const mockUpdateRelease = vi.fn()
-
 describe('ReleaseTypePicker', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseReleaseOperations.mockReturnValue({
-      ...useReleaseOperationsMockReturn,
+      ...defaultReleaseOperationsReturn,
       updateRelease: mockUpdateRelease.mockResolvedValue({}),
     })
   })
@@ -265,7 +272,7 @@ describe('ReleaseTypePicker', () => {
     it('shows a spinner when updating the release', async () => {
       // keep promise pending
       mockUseReleaseOperations.mockReturnValue({
-        ...useReleaseOperationsMockReturn,
+        ...defaultReleaseOperationsReturn,
         updateRelease: vi.fn().mockImplementation(() => {
           return new Promise(() => {})
         }),

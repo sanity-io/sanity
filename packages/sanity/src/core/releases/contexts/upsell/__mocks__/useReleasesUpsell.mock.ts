@@ -1,4 +1,4 @@
-import {type Mocked, vi} from 'vitest'
+import {type Mock, type Mocked, vi} from 'vitest'
 
 import {type useReleasesUpsell} from '../useReleasesUpsell'
 
@@ -16,3 +16,5 @@ export const useReleasesUpsellMockReturn: Mocked<ReturnType<typeof useReleasesUp
     panelSecondaryClicked: vi.fn(),
   },
 }
+
+export const useReleasesUpsell = vi.fn(() => useReleasesUpsellMockReturn) as Mock<typeof useReleasesUpsell>

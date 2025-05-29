@@ -10,17 +10,24 @@ import {
 } from '../../__fixtures__/release.fixture'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useOnlyHasVersions} from '../useOnlyHasVersions'
-import {
-  mockUseDocumentVersions,
-  useDocumentVersionsReturn,
-} from './__mocks__/useDocumentVersions.mock'
+
+// Declare mock functions before vi.mock() calls to avoid hoisting issues
+const mockUseDocumentVersions = vi.fn()
 
 vi.mock('../useDocumentVersions', () => ({
-  useDocumentVersions: vi.fn(() => useDocumentVersionsReturn),
+  useDocumentVersions: mockUseDocumentVersions,
 }))
+
+const defaultDocumentVersionsReturn = {
+  data: [],
+  error: null,
+  loading: false,
+}
 
 describe('useOnlyHasVersions', () => {
   it('should return initial state', async () => {
+    mockUseDocumentVersions.mockReturnValue(defaultDocumentVersionsReturn)
+
     const wrapper = await createTestProvider()
 
     const {result} = renderHook(() => useOnlyHasVersions({documentId: 'test'}), {
@@ -31,7 +38,7 @@ describe('useOnlyHasVersions', () => {
   })
 
   it('should return an empty array if no versions are found', async () => {
-    mockUseDocumentVersions.mockReturnValue({...useDocumentVersionsReturn, data: []})
+    mockUseDocumentVersions.mockReturnValue({...defaultDocumentVersionsReturn, data: []})
 
     const wrapper = await createTestProvider()
     const {result} = renderHook(() => useOnlyHasVersions({documentId: 'test'}), {
@@ -44,7 +51,7 @@ describe('useOnlyHasVersions', () => {
   describe('when versions are found', () => {
     it('should return onlyVersions true if only versions exist', async () => {
       mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
+        ...defaultDocumentVersionsReturn,
         data: [
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
@@ -62,7 +69,7 @@ describe('useOnlyHasVersions', () => {
 
     it('should return onlyVersions false if draft exists', async () => {
       mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
+        ...defaultDocumentVersionsReturn,
         data: [
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
@@ -81,7 +88,7 @@ describe('useOnlyHasVersions', () => {
 
     it('should return onlyVersions false if published exists', async () => {
       mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
+        ...defaultDocumentVersionsReturn,
         data: [
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),

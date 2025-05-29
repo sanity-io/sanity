@@ -1,10 +1,6 @@
 import {type ReleaseId} from '@sanity/client'
-import {type Mock, type Mocked, vi} from 'vitest'
+import {type Mock, vi} from 'vitest'
 
-import {useSetPerspective} from '../useSetPerspective'
+export const useSetPerspectiveMockReturn = vi.fn()
 
-export const useSetPerspectiveMockReturn: Mocked<
-  (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => void
-> = vi.fn()
-
-export const mockUseSetPerspective = useSetPerspective as Mock<typeof useSetPerspective>
+export const useSetPerspective = vi.fn(() => useSetPerspectiveMockReturn) as Mock<() => (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => void>

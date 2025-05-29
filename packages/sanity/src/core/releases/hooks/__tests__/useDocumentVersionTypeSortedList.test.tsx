@@ -8,27 +8,45 @@ import {
   activeScheduledRelease,
   activeUndecidedRelease,
 } from '../../__fixtures__/release.fixture'
-import {
-  mockUseActiveReleases,
-  useActiveReleasesMockReturn,
-} from '../../store/__tests__/__mocks/useActiveReleases.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useDocumentVersionTypeSortedList} from '../useDocumentVersionTypeSortedList'
-import {
-  mockUseDocumentVersions,
-  useDocumentVersionsReturn,
-} from './__mocks__/useDocumentVersions.mock'
 
 vi.mock('../../store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    error: null,
+    loading: false,
+  })),
 }))
 
 vi.mock('../useDocumentVersions', () => ({
-  useDocumentVersions: vi.fn(() => useDocumentVersionsReturn),
+  useDocumentVersions: vi.fn(() => ({
+    data: [],
+    error: null,
+    loading: false,
+  })),
 }))
+
+const defaultActiveReleasesReturn = {
+  data: [],
+  error: null,
+  loading: false,
+}
+
+const defaultDocumentVersionsReturn = {
+  data: [],
+  error: null,
+  loading: false,
+}
 
 describe('useDocumentVersionTypeSortedList', () => {
   it('should return initial state', async () => {
+    const {useActiveReleases} = await import('../../store/useActiveReleases')
+    const {useDocumentVersions} = await import('../useDocumentVersions')
+    
+    vi.mocked(useActiveReleases).mockReturnValue(defaultActiveReleasesReturn)
+    vi.mocked(useDocumentVersions).mockReturnValue(defaultDocumentVersionsReturn)
+
     const wrapper = await createTestProvider()
 
     const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
@@ -39,7 +57,11 @@ describe('useDocumentVersionTypeSortedList', () => {
   })
 
   it('should return an empty array if no versions are found', async () => {
-    mockUseDocumentVersions.mockReturnValue({...useDocumentVersionsReturn, data: []})
+    const {useActiveReleases} = await import('../../store/useActiveReleases')
+    const {useDocumentVersions} = await import('../useDocumentVersions')
+    
+    vi.mocked(useActiveReleases).mockReturnValue(defaultActiveReleasesReturn)
+    vi.mocked(useDocumentVersions).mockReturnValue({...defaultDocumentVersionsReturn, data: []})
 
     const wrapper = await createTestProvider()
     const {result} = renderHook(() => useDocumentVersionTypeSortedList({documentId: 'test'}), {
@@ -51,13 +73,16 @@ describe('useDocumentVersionTypeSortedList', () => {
 
   describe('when versions are found', () => {
     it('should return the sorted releases (asap, timed, undecided) if versions are found', async () => {
-      mockUseActiveReleases.mockReturnValue({
-        ...useActiveReleasesMockReturn,
+      const {useActiveReleases} = await import('../../store/useActiveReleases')
+      const {useDocumentVersions} = await import('../useDocumentVersions')
+      
+      vi.mocked(useActiveReleases).mockReturnValue({
+        ...defaultActiveReleasesReturn,
         data: [activeUndecidedRelease, activeScheduledRelease, activeASAPRelease],
       })
 
-      mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        ...defaultDocumentVersionsReturn,
         data: [
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeUndecidedRelease._id)),
@@ -78,6 +103,9 @@ describe('useDocumentVersionTypeSortedList', () => {
     })
 
     it('when multiple timed releases exist, should return them in the expected order', async () => {
+      const {useActiveReleases} = await import('../../store/useActiveReleases')
+      const {useDocumentVersions} = await import('../useDocumentVersions')
+      
       const scheduledLaterRelease = {
         ...activeScheduledRelease,
         _id: '_.releases.rScheduled2',
@@ -89,13 +117,13 @@ describe('useDocumentVersionTypeSortedList', () => {
         },
       }
 
-      mockUseActiveReleases.mockReturnValue({
-        ...useActiveReleasesMockReturn,
+      vi.mocked(useActiveReleases).mockReturnValue({
+        ...defaultActiveReleasesReturn,
         data: [scheduledLaterRelease, activeScheduledRelease],
       })
 
-      mockUseDocumentVersions.mockReturnValue({
-        ...useDocumentVersionsReturn,
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        ...defaultDocumentVersionsReturn,
         data: [
           getVersionId('test', getReleaseIdFromReleaseDocumentId(scheduledLaterRelease._id)),
           getVersionId('test', getReleaseIdFromReleaseDocumentId(activeScheduledRelease._id)),

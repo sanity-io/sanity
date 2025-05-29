@@ -1,6 +1,6 @@
-import {type Mock, type Mocked} from 'vitest'
+import {type Mock, vi} from 'vitest'
 
-import {type DocumentInRelease, useBundleDocuments} from '../../useBundleDocuments'
+import {type DocumentInRelease} from '../useBundleDocuments'
 
 export const documentsInRelease: DocumentInRelease = {
   memoKey: 'a',
@@ -23,16 +23,16 @@ export const documentsInRelease: DocumentInRelease = {
   },
 }
 
-export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {
+export const useBundleDocumentsMockReturn = {
   loading: false,
   results: [],
+  error: null,
 }
 
-export const useBundleDocumentsMockReturnWithResults: Mocked<
-  ReturnType<typeof useBundleDocuments>
-> = {
+export const useBundleDocumentsMockReturnWithResults = {
   loading: false,
   results: [documentsInRelease],
+  error: null,
 }
 
-export const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
+export const useBundleDocuments = vi.fn(() => useBundleDocumentsMockReturn) as Mock<() => typeof useBundleDocumentsMockReturn> 

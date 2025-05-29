@@ -19,6 +19,7 @@ import {
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesNav} from '../ReleasesNav'
 
+// Mock release-related hooks
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
@@ -27,6 +28,11 @@ vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
 }))
 
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
+}))
+
+// Mock perspective-related hooks
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
@@ -35,18 +41,19 @@ vi.mock('../../../perspective/useExcludedPerspective', () => ({
   useExcludedPerspective: vi.fn(() => useExcludedPerspectiveMockReturn),
 }))
 
-const mockedSetPerspective = vi.fn()
+const mockSetPerspective = vi.fn()
 vi.mock('../../../perspective/useSetPerspective', () => ({
-  useSetPerspective: vi.fn(() => mockedSetPerspective),
+  useSetPerspective: vi.fn(() => mockSetPerspective),
 }))
 
-vi.mock('../../../releases/store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
-}))
-
-const mockedUseWorkspace = vi.fn()
+// Mock workspace and router
+const mockUseWorkspace = vi.fn()
 vi.mock('../../../studio/useWorkspace', () => ({
-  useWorkspace: vi.fn(() => mockedUseWorkspace),
+  useWorkspace: vi.fn(() => mockUseWorkspace),
+}))
+
+vi.mock('../../../releases/hooks/useReleasesToolAvailable', () => ({
+  useReleasesToolAvailable: vi.fn(() => true),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -71,7 +78,12 @@ describe('ReleasesNav', () => {
     vi.clearAllMocks()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    mockUseWorkspace.mockReturnValue({
+      releases: {enabled: true},
+      tools: [{name: 'releases', title: 'Releases', component: vi.fn()}],
+    })
   })
+
   it('should have link to releases tool', async () => {
     await renderTest()
 
@@ -136,7 +148,7 @@ describe('ReleasesNav', () => {
 
         fireEvent.click(screen.getByText('Published'))
 
-        expect(mockedSetPerspective).toHaveBeenCalledWith('published')
+        expect(mockSetPerspective).toHaveBeenCalledWith('published')
       })
 
       it('should list all the releases', async () => {
@@ -223,7 +235,7 @@ describe('ReleasesNav', () => {
         })
 
         it('should set a given perspective from the menu', async () => {
-          expect(mockedSetPerspective).toHaveBeenCalledWith('rScheduled2')
+          expect(mockSetPerspective).toHaveBeenCalledWith('rScheduled2')
         })
 
         it('should allow for hiding of any deeper layered releases', async () => {
@@ -320,11 +332,15 @@ describe('ReleasesNav', () => {
       })
 
       describe('when releases are disabled', () => {
-        beforeEach(() => {
-          mockedUseWorkspace.mockReturnValue({releases: {enabled: false}})
+        beforeEach(async () => {
+          const {useReleasesToolAvailable} = await import(
+            '../../../releases/hooks/useReleasesToolAvailable'
+          )
+          vi.mocked(useReleasesToolAvailable).mockReturnValue(false)
         })
 
         it('should hide calendar icon', async () => {
+          await renderTest()
           expect(screen.queryByTestId('releases-tool-link')).toBeNull()
         })
       })

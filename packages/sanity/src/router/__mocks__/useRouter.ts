@@ -1,4 +1,4 @@
-import {type RouterContextValue, useRouter} from 'sanity/router'
+import {type RouterContextValue} from '../types'
 import {type Mock, type Mocked, vi} from 'vitest'
 
 export const mockUseRouterReturn: Mocked<RouterContextValue> = {
@@ -14,4 +14,4 @@ export const mockUseRouterReturn: Mocked<RouterContextValue> = {
   stickyParams: {},
 }
 
-export const mockUseRouter = useRouter as Mock<typeof useRouter>
+export const useRouter = vi.fn(() => mockUseRouterReturn) as Mock<() => RouterContextValue> 
