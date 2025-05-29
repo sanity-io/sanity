@@ -110,6 +110,11 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
         const client = handleCreateClient(addonDatasetName)
         setAddonDatasetClient(client)
       })
+      .catch((err) => {
+        // If the addon dataset does not exist or we don't have permission to access it,
+        // We can ignore this error.
+        // TODO: Surface error to the user when they try to use the comments feature.
+      })
       .finally(() => {
         setReady(true)
       })
