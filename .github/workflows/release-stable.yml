@@ -27,13 +27,7 @@ jobs:
 
       - name: Validate and normalise version
         run: |
-          # TEMPORARY: Use dummy version for push events (debugging only) - REMOVE before merging to main
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            VERSION="3.90.0"
-            echo "Using dummy version for push trigger: $VERSION"
-          else
-            VERSION="${{ inputs.version }}"
-          fi
+          VERSION="${{ inputs.version }}"
 
           if [[ ! "$VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Error: Version must be in semver format with optional 'v' prefix (e.g., 3.2.1 or v3.2.1)"
@@ -43,3 +37,48 @@ jobs:
           # Normalise to v-prefixed format
           [[ "$VERSION" =~ ^v ]] && NORMALISED_VERSION="$VERSION" || NORMALISED_VERSION="v$VERSION"
           echo "NORMALISED_VERSION=$NORMALISED_VERSION" >> $GITHUB_ENV
+
+      - name: Validate git tag and release
+        run: |
+          TAG="$NORMALISED_VERSION"
+          VERSION_NUMBER="${TAG#v}"
+          echo "Validating git tag '$TAG' and corresponding release..."
+
+          # 1. Check if git tag exists in repository
+          if ! git tag -l | grep -q "^${TAG}$"; then
+            echo "Error: Git tag '$TAG' does not exist in the repository"
+            echo "Available tags:"
+            git tag -l | sort -V | tail -10
+            exit 1
+          fi
+          echo "✓ Git tag '$TAG' found in repository"
+
+          # 2. Check if tag corresponds to a valid published release
+          if ! npm view sanity@$VERSION_NUMBER version &>/dev/null; then
+            echo "Error: No NPM package 'sanity' found with version '$VERSION_NUMBER'"
+            echo "This suggests the tag '$TAG' does not correspond to a published release"
+            exit 1
+          fi
+          echo "✓ NPM package 'sanity@$VERSION_NUMBER' exists (valid published release)"
+
+          echo "All validations passed for tag '$TAG'"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
+
+      - name: Checkout specific git tag
+        run: |
+          TAG="$TAG"
+          echo "Checking out git tag '$TAG'..."
+
+          git checkout "$TAG"
+
+          # Verify we're on the correct tag
+          CURRENT_TAG=$(git describe --tags --exact-match HEAD 2>/dev/null || echo "none")
+          if [[ "$CURRENT_TAG" != "$TAG" ]]; then
+            echo "Error: Failed to checkout tag '$TAG'. Currently on: $CURRENT_TAG"
+            exit 1
+          fi
+
+          echo "✓ Successfully checked out git tag '$TAG'"
+          echo "✓ Current HEAD is at: $(git rev-parse --short HEAD)"
+
