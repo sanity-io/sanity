@@ -219,46 +219,23 @@ jobs:
           while read -r package_version; do
             [[ -z "$package_version" ]] && continue
             
-            package_name=$(echo "$package_version" | cut -d'@' -f1)
-            version=$(echo "$package_version" | cut -d'@' -f2)
-            
             echo ""
-            echo "🔍 Processing: $package_name@$version"
+            echo "🔍 Processing: $package_version"
             
             # Check if package@version exists in registry
-            echo "  Checking if $package_name@$version exists in registry..."
-            if ! npm view "$package_name@$version" version &>/dev/null; then
-              echo "  ❌ $package_name@$version not found in registry, skipping"
+            echo "  Checking if $package_version exists in registry..."
+            if ! npm view "$package_version" version &>/dev/null; then
+              echo "  ❌ $package_version not found in registry, skipping"
               continue
             fi
-            echo "  ✅ $package_name@$version exists in registry"
+            echo "  ✅ $package_version exists in registry"
             
-            # Get current dist-tags for this package
-            echo "  Fetching current dist-tags for $package_name..."
-            CURRENT_TAGS=$(npm view "$package_name" dist-tags --json 2>/dev/null || echo '{}')
-            echo "  Current dist-tags: $CURRENT_TAGS"
-            
-            # Check if stable tag already points to this version
-            STABLE_VERSION=$(echo "$CURRENT_TAGS" | jq -r '.stable // empty')
-            if [[ "$STABLE_VERSION" == "$version" ]]; then
-              echo "  ✅ $package_name@$version already has stable dist-tag pointing to correct version"
-              continue
-            fi
-            
-            # Add stable dist-tag
-            echo "  🔧 Adding stable dist-tag to $package_name@$version..."
-            if npm dist-tag add "$package_name@$version" stable; then
-              echo "  ✅ Successfully added stable dist-tag to $package_name@$version"
-              
-              # Verify it was set correctly
-              NEW_STABLE=$(npm view "$package_name" dist-tags.stable 2>/dev/null || echo "")
-              if [[ "$NEW_STABLE" == "$version" ]]; then
-                echo "  ✅ Verified: stable tag now points to $version"
-              else
-                echo "  ❌ Verification failed: stable tag points to '$NEW_STABLE', expected '$version'"
-              fi
+            # Add stable dist-tag directly
+            echo "  🔧 Adding stable dist-tag: npm dist-tag add $package_version stable"
+            if npm dist-tag add "$package_version" stable; then
+              echo "  ✅ Successfully added stable dist-tag to $package_version"
             else
-              echo "  ❌ Failed to add stable dist-tag to $package_name@$version"
+              echo "  ❌ Failed to add stable dist-tag to $package_version"
               exit 1
             fi
           done <<< "$PACKAGE_VERSIONS"
@@ -280,18 +257,18 @@ jobs:
             [[ -z "$package_version" ]] && continue
             
             package_name=$(echo "$package_version" | cut -d'@' -f1)
-            version=$(echo "$package_version" | cut -d'@' -f2)
+            expected_version=$(echo "$package_version" | cut -d'@' -f2)
             
             echo ""
-            echo "🔍 Verifying: $package_name@$version"
+            echo "🔍 Verifying: $package_version"
             
             # Get the version that stable tag points to
             STABLE_VERSION=$(npm view "$package_name" dist-tags.stable 2>/dev/null || echo "")
             
-            if [[ "$STABLE_VERSION" == "$version" ]]; then
-              echo "  ✅ $package_name stable tag correctly points to $version"
+            if [[ "$STABLE_VERSION" == "$expected_version" ]]; then
+              echo "  ✅ $package_name stable tag correctly points to $expected_version"
             else
-              echo "  ❌ $package_name stable tag points to '$STABLE_VERSION', expected '$version'"
+              echo "  ❌ $package_name stable tag points to '$STABLE_VERSION', expected '$expected_version'"
               FAILED=1
             fi
           done <<< "$PACKAGE_VERSIONS"
