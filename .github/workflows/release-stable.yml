@@ -25,9 +25,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set version based on trigger
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # TEMPORARY: Use fixed version for push trigger - REMOVE before merging to main
+            VERSION="3.90.0"
+            echo "Using fixed version for push trigger: $VERSION"
+          else
+            # Use input version for workflow_dispatch
+            VERSION="${{ inputs.version }}"
+            echo "Using input version for manual trigger: $VERSION"
+          fi
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Validate and normalise version
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="$VERSION"
 
           if [[ ! "$VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Error: Version must be in semver format with optional 'v' prefix (e.g., 3.2.1 or v3.2.1)"
@@ -81,4 +95,3 @@ jobs:
 
           echo "✓ Successfully checked out git tag '$TAG'"
           echo "✓ Current HEAD is at: $(git rev-parse --short HEAD)"
-
