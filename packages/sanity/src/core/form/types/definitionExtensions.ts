@@ -16,6 +16,7 @@ import {
   type BlockListItemProps,
   type BlockProps,
   type BlockStyleProps,
+  type PtePluginsProps,
 } from './blockProps'
 import {
   type ArrayFieldProps,
@@ -51,6 +52,7 @@ declare module '@sanity/types' {
     input?: ComponentType<ArrayOfObjectsInputProps>
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
+    pte?: {plugins: ComponentType<PtePluginsProps>}
   }
 
   /**
