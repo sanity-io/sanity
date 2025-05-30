@@ -11,6 +11,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
   useCopyPaste,
@@ -162,9 +163,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
       const seeingHistoryDocument = Boolean(params.rev)
-      return seeingHistoryDocument || isDeleting || isDeleted
+      return (
+        seeingHistoryDocument ||
+        isDeleting ||
+        isDeleted ||
+        !isPerspectiveWriteable({
+          selectedPerspective: perspective.selectedPerspective,
+          schemaType,
+        }).result
+      )
     },
-    [getIsDeleted, isDeleting, params.rev],
+    [getIsDeleted, isDeleting, params.rev, perspective.selectedPerspective, schemaType],
   )
 
   const getDisplayed = useCallback(
