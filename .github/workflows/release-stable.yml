@@ -15,9 +15,15 @@ on:
 jobs:
   tag-stable:
     runs-on: ubuntu-latest
+    environment:
+      name: npm-production
     permissions:
       contents: read
       packages: write
+      id-token: write
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_CONFIG_PROVENANCE: true
 
     steps:
       - name: Checkout
@@ -29,7 +35,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             # TEMPORARY: Use fixed version for push trigger - REMOVE before merging to main
-            VERSION="3.90.0"
+            VERSION="3.88.0"
             echo "Using fixed version for push trigger: $VERSION"
           else
             # Use input version for workflow_dispatch
@@ -95,3 +101,132 @@ jobs:
 
           echo "✓ Successfully checked out git tag '$TAG'"
           echo "✓ Current HEAD is at: $(git rev-parse --short HEAD)"
+
+      - name: Read Lerna configuration from git tag
+        run: |
+          echo "Reading Lerna configuration from checked out git tag '$TAG'..."
+
+          # Verify lerna.json exists
+          if [[ ! -f "lerna.json" ]]; then
+            echo "Error: lerna.json not found in git tag '$TAG'"
+            exit 1
+          fi
+
+          # Parse Lerna configuration
+          LERNA_PACKAGES=$(node -p "JSON.stringify(require('./lerna.json').packages)")
+          LERNA_NPM_CLIENT=$(node -p "require('./lerna.json').npmClient || 'npm'")
+
+          echo "✓ Lerna configuration loaded:"
+          echo "  NPM Client: $LERNA_NPM_CLIENT"
+          echo "  Package patterns: $LERNA_PACKAGES"
+
+          # Export variables for subsequent steps
+          echo "LERNA_PACKAGES=$LERNA_PACKAGES" >> $GITHUB_ENV
+          echo "LERNA_NPM_CLIENT=$LERNA_NPM_CLIENT" >> $GITHUB_ENV
+
+      - name: Discover core bundle packages from git tag
+        run: |
+          echo "Identifying core bundle packages from checked out git tag '$TAG'..."
+
+          # Define the core packages that require bundle builds
+          CORE_PACKAGES="sanity @sanity/vision"
+          CORE_PACKAGE_PATHS="packages/sanity packages/@sanity/vision"
+
+          echo "✓ Core bundle packages: $CORE_PACKAGES"
+          echo "✓ Package paths: $CORE_PACKAGE_PATHS"
+
+          # Export for subsequent steps
+          echo "CORE_PACKAGES=$CORE_PACKAGES" >> $GITHUB_ENV
+          echo "CORE_PACKAGE_PATHS=$CORE_PACKAGE_PATHS" >> $GITHUB_ENV
+
+      - name: Setup Node.js and pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies from git tag
+        run: |
+          echo "Installing dependencies from checked out git tag '$TAG'..."
+
+          # Install dependencies using pnpm (this repository always uses pnpm)
+          pnpm install --frozen-lockfile
+
+          echo "✓ Dependencies installed successfully from git tag '$TAG'"
+
+      - name: Build all packages from git tag source
+        run: |
+          echo "Building all packages from checked out git tag '$TAG'..."
+
+          # Build all packages using the standard build script with proper logging
+          # This filters to all packages in ./packages/* and ./packages/@sanity/*
+          pnpm build --output-logs=full --log-order=grouped
+
+          echo "✓ All packages built successfully from git tag '$TAG'"
+
+      - name: Pre-flight checks
+        run: |
+          echo "Running pre-flight checks for stable release..."
+
+          # Check if NODE_AUTH_TOKEN is working
+          npm whoami
+
+          # Configure git (same as release.yml)
+          # https://github.com/actions/checkout/pull/1184
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config --global advice.skippedCherryPicks false
+
+          echo "✓ NPM authentication verified successfully"
+          echo "✓ Git configuration completed"
+
+      - name: Publish packages with stable dist-tag
+        run: |
+          echo "Publishing all packages with 'stable' dist-tag from git tag '$TAG'..."
+
+          # List packages that will be published (non-private packages from Lerna config)
+          echo "Discovering packages to publish from Lerna configuration..."
+          echo "Lerna package patterns: $LERNA_PACKAGES"
+
+          # Show which packages Lerna will attempt to publish
+          echo "Packages discovered by Lerna:"
+          lerna list --all --json | jq -r '.[] | select(.private == false) | .name' | sort
+
+          echo "Publishing packages in batch using Lerna..."
+
+          # Use Lerna to publish all packages from the current state
+          # --from-package: publish packages where the current version isn't present in the registry
+          # --dist-tag stable: publish to the 'stable' tag instead of 'latest'
+          # --force-publish: publish all packages regardless of changes
+          # --exact: use exact versions (no caret ranges)
+          # --yes: skip confirmation prompts
+          lerna publish from-package \
+            --dist-tag stable        \
+            --force-publish          \
+            --exact                  \
+            --yes
+
+          echo "✓ All packages published successfully with 'stable' dist-tag"
+
+      - name: Verify batch publishing results
+        run: |
+          echo "Verifying that all packages were published with 'stable' dist-tag..."
+
+          # Get list of published packages and verify they have the stable tag
+          PUBLISHED_PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
+
+          echo "Verifying stable tag for published packages:"
+          for package in $PUBLISHED_PACKAGES; do
+            if npm view "$package@$VERSION_NUMBER" dist-tags.stable &>/dev/null; then
+              echo "✓ $package@$VERSION_NUMBER has 'stable' dist-tag"
+            else
+              echo "✗ Failed to verify 'stable' dist-tag for $package@$VERSION_NUMBER"
+              exit 1
+            fi
+          done
+
+          echo "✓ All packages successfully published with 'stable' dist-tag verified"
