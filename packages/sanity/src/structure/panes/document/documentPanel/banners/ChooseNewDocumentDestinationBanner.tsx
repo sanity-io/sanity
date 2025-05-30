@@ -64,6 +64,8 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
           <Text size={1}>
             {reason === 'PUBLISHED_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-published-document')}
+            {reason === 'DRAFTS_NOT_WRITEABLE' &&
+              t('banners.choose-new-document-destination.cannot-create-draft-document')}
             {reason === 'RELEASE_NOT_ACTIVE' && isReleaseDocument(selectedPerspective) && (
               <Translate
                 t={t}
