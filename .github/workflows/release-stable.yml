@@ -1,0 +1,45 @@
+name: Release Stable Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version to tag as stable (e.g., 3.2.1 or v3.2.1)"
+        required: true
+        type: string
+  # TEMPORARY: Push trigger for testing - REMOVE before merging to main
+  push:
+    branches:
+      - feat/sapp-2742-stable-tag-release
+
+jobs:
+  tag-stable:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate and normalise version
+        run: |
+          # TEMPORARY: Use dummy version for push events (debugging only) - REMOVE before merging to main
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            VERSION="3.90.0"
+            echo "Using dummy version for push trigger: $VERSION"
+          else
+            VERSION="${{ inputs.version }}"
+          fi
+
+          if [[ ! "$VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be in semver format with optional 'v' prefix (e.g., 3.2.1 or v3.2.1)"
+            exit 1
+          fi
+
+          # Normalise to v-prefixed format
+          [[ "$VERSION" =~ ^v ]] && NORMALISED_VERSION="$VERSION" || NORMALISED_VERSION="v$VERSION"
+          echo "NORMALISED_VERSION=$NORMALISED_VERSION" >> $GITHUB_ENV
