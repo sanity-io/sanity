@@ -1,5 +1,13 @@
 import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
-import {type HTMLAttributes, useCallback, useContext, useMemo, useRef, useState} from 'react'
+import {
+  Fragment,
+  type HTMLAttributes,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -29,7 +37,13 @@ export function GroupChange(
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
-  const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
+  const {
+    documentId,
+    schemaType,
+    FieldWrapper = Fragment,
+    rootDiff,
+    isComparingCurrent,
+  } = useDocumentChange()
   const {t} = useTranslation()
 
   const isPortableText = changes.every(
@@ -149,13 +163,17 @@ export function GroupChange(
     ],
   )
 
+  const isPortableTextGroupArray =
+    group.schemaType?.jsonType === 'array' &&
+    group.schemaType.of.some((ofType) => ofType.name === 'block')
+
   return hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
-      {isNestedInDiff || !FieldWrapper ? (
+      {isNestedInDiff || isPortableTextGroupArray ? (
         content
       ) : (
-        <FieldWrapper hasHover={isRevertButtonHovered} path={diffPath}>
+        <FieldWrapper hasHover={isRevertButtonHovered} path={groupPath}>
           {content}
         </FieldWrapper>
       )}
