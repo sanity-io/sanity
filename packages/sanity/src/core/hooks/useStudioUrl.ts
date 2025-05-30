@@ -49,7 +49,7 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
     isCoreUi,
     isLoading,
     organizationId,
-    studioApp.appId,
+    studioApp?.appId,
   ])
 
   const buildStudioUrl = useCallback(
