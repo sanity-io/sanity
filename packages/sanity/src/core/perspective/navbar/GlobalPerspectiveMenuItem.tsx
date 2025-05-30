@@ -22,6 +22,7 @@ import {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -86,6 +87,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
+    menuItemProps?: ReleasesNavMenuItemPropsGetter
   }
 >((props, ref) => {
   const {release, rangePosition} = props
@@ -144,6 +146,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         padding={1}
         pressed={active}
         data-testid={`release-${releaseId}`}
+        {...props.menuItemProps?.({perspective: release})}
       >
         <Flex align="flex-start" gap={1}>
           <Box

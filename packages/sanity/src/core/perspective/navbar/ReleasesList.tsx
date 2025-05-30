@@ -8,6 +8,7 @@ import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsel
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {usePerspective} from '../usePerspective'
 import {
   getRangePosition,
@@ -48,6 +49,7 @@ export function ReleasesList({
   selectedReleaseId,
   setCreateBundleDialogOpen,
   scrollElementRef,
+  menuItemProps,
 }: {
   areReleasesEnabled: boolean
   setScrollContainer: (el: HTMLDivElement) => void
@@ -56,6 +58,7 @@ export function ReleasesList({
   selectedReleaseId: string | undefined
   setCreateBundleDialogOpen: (open: boolean) => void
   scrollElementRef: RefObject<ScrollElement>
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
@@ -132,10 +135,12 @@ export function ReleasesList({
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
+            menuItemProps={menuItemProps}
           />
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
             release={LATEST}
+            menuItemProps={menuItemProps}
           />
         </StyledPublishedBox>
         {areReleasesEnabled && (
@@ -147,6 +152,7 @@ export function ReleasesList({
                 releases={sortedReleaseTypeReleases[releaseType]}
                 range={range}
                 currentGlobalBundleMenuItemRef={scrollElementRef}
+                menuItemProps={menuItemProps}
               />
             ))}
           </>

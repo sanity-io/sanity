@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {MenuButton} from '../../../ui-components'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {oversizedButtonStyle} from '../styles'
-import {type ReleaseId} from '../types'
+import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
@@ -22,9 +22,11 @@ const OversizedButton = styled(Button)`
 export function GlobalPerspectiveMenu({
   selectedReleaseId,
   areReleasesEnabled = true,
+  menuItemProps,
 }: {
   selectedReleaseId: ReleaseId | undefined
   areReleasesEnabled: boolean
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const styledMenuRef = useRef<HTMLDivElement>(null)
@@ -60,6 +62,7 @@ export function GlobalPerspectiveMenu({
               scrollElementRef={scrollElementRef}
               selectedReleaseId={selectedReleaseId}
               setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+              menuItemProps={menuItemProps}
             />
           </StyledMenu>
         }
