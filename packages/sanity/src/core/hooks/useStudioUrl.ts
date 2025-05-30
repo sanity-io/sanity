@@ -40,8 +40,17 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
       organizationId,
       appId: studioApp.appId,
       workspaceName: activeWorkspace.name,
+      basePath: activeWorkspace.basePath,
     })
-  }, [activeWorkspace.name, defaultUrl, isCoreUi, isLoading, organizationId, studioApp?.appId])
+  }, [
+    activeWorkspace.basePath,
+    activeWorkspace.name,
+    defaultUrl,
+    isCoreUi,
+    isLoading,
+    organizationId,
+    studioApp?.appId,
+  ])
 
   const buildStudioUrl = useCallback(
     ({coreUi, studio}: StudioUrlModifier) => {
