@@ -136,7 +136,7 @@ function DebugDiffField(props: {children?: ReactNode; path: Path}) {
   const handleMouseLeave = useCallback(() => setHovered(false), [])
 
   return (
-    <ChangeFieldWrapper hasHover={hovered} path={path}>
+    <ChangeFieldWrapper hasRevertHover={hovered} path={path}>
       <Card borderLeft padding={3} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {children}
       </Card>

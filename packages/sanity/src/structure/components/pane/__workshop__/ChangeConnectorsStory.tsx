@@ -276,7 +276,7 @@ function DebugDiffField(props: {children?: ReactNode; path: Path}) {
       <Text size={1} weight="medium">
         String
       </Text>
-      <ChangeFieldWrapper hasHover={hovered} path={path}>
+      <ChangeFieldWrapper hasRevertHover={hovered} path={path}>
         <Card
           borderLeft
           onClick={handleClick}

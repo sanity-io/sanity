@@ -9,7 +9,7 @@ import {
 import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {ConnectorContext, DiffContext} from 'sanity/_singletons'
+import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
@@ -83,7 +83,7 @@ function InlineObjectWithDiff({
   ...restProps
 }: InlineObjectWithDiffProps) {
   const {path: fullPath} = useContext(DiffContext)
-  const {onSetFocus} = useContext(ConnectorContext)
+  const {onSetFocus} = useContext(ReviewChangesContext)
   const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(

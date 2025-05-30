@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {type ReactNode, useMemo, useState} from 'react'
-import {ConnectorContext} from 'sanity/_singletons'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {ScrollContainer} from '../../components/scroll'
 import {ChangeIndicatorsTracker} from '../tracker'
@@ -36,13 +36,13 @@ export function ChangeConnectorRoot({
   )
 
   return (
-    <ConnectorContext.Provider value={contextValue}>
+    <ReviewChangesContext.Provider value={contextValue}>
       <ChangeIndicatorsTracker>
         <ScrollContainer {...restProps} ref={setRootElement} className={className}>
           {children}
           {rootElement && <ConnectorsOverlay rootElement={rootElement} onSetFocus={onSetFocus} />}
         </ScrollContainer>
       </ChangeIndicatorsTracker>
-    </ConnectorContext.Provider>
+    </ReviewChangesContext.Provider>
   )
 }

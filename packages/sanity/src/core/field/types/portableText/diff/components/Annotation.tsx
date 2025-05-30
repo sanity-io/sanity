@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {ConnectorContext, DiffContext} from 'sanity/_singletons'
+import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
@@ -104,7 +104,7 @@ function AnnnotationWithDiff({
   path,
   ...restProps
 }: AnnnotationWithDiffProps) {
-  const {onSetFocus} = useContext(ConnectorContext)
+  const {onSetFocus} = useContext(ReviewChangesContext)
   const {path: fullPath} = useContext(DiffContext)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()

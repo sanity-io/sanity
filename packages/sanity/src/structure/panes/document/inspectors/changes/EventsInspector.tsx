@@ -135,7 +135,12 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     return {
       documentId,
       schemaType,
-      FieldWrapper: ChangeFieldWrapper,
+      FieldWrapper: (props) =>
+        props.path.length > 0 ? (
+          <ChangeFieldWrapper {...props} hasRevertHover={props.hasHover} />
+        ) : (
+          props.children
+        ),
       rootDiff: diff,
       isComparingCurrent: isComparingCurrent && !formState?.readOnly,
       value,

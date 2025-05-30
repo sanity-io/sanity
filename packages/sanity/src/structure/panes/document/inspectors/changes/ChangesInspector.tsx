@@ -59,7 +59,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
     () => ({
       documentId,
       schemaType,
-      FieldWrapper: ChangeFieldWrapper,
+      FieldWrapper: (props) => <ChangeFieldWrapper {...props} hasRevertHover={false} />,
       rootDiff: diff,
       isComparingCurrent,
       value,

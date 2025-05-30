@@ -110,6 +110,9 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
                 data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
                 readOnly={isReadOnly || change?.readOnly}
                 hidden={change?.hidden}
+                // If the path of the nested change is more than two levels deep, we want to add a wrapper
+                // with the parent path, for the change indicator to be shown.
+                addParentWrapper={change.path.length > 1}
               />
             </div>
           ))}

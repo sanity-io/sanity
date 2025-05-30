@@ -1,7 +1,7 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback, useContext} from 'react'
-import {ConnectorContext, DiffContext} from 'sanity/_singletons'
+import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
@@ -21,7 +21,7 @@ export function Block(props: {
   const {diff, block, children} = props
   const color = useDiffAnnotationColor(diff, EMPTY_PATH)
   const {path: fullPath} = useContext(DiffContext)
-  const {onSetFocus} = useContext(ConnectorContext)
+  const {onSetFocus} = useContext(ReviewChangesContext)
   const {t} = useTranslation()
   const isRemoved = diff.action === 'removed'
   let returned = children

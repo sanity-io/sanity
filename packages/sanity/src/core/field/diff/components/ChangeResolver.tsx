@@ -1,5 +1,6 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
+import {Fragment} from 'react'
 
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
@@ -12,12 +13,13 @@ export interface ChangeResolverProps {
   change: ChangeNode
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
+  addParentWrapper?: boolean
 }
 
 /** @internal */
 export function ChangeResolver(props: ChangeResolverProps) {
   const {change, hidden, readOnly} = props
-  const {value} = useDocumentChange()
+  const {value = Fragment} = useDocumentChange()
 
   const isHidden = useConditionalProperty({
     // @todo: is parent missing here?
@@ -38,7 +40,13 @@ export function ChangeResolver(props: ChangeResolverProps) {
   if (isHidden) return null
 
   if (change.type === 'field') {
-    return <FieldChange change={change} readOnly={isReadOnly} />
+    return (
+      <FieldChange
+        change={change}
+        readOnly={isReadOnly}
+        addParentWrapper={props.addParentWrapper}
+      />
+    )
   }
 
   if (change.type === 'group') {

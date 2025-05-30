@@ -5,6 +5,7 @@ import {Box, Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
+import {DEBUG} from '../../../../changeIndicators/constants'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 
@@ -166,6 +167,10 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       padding-left: ${space[1]}px;
       padding-right: ${space[2]}px;
       user-select: none;
+      ${DEBUG &&
+      css`
+        border: 1px solid red;
+      `}
 
       ${!$hasChanges &&
       css`
