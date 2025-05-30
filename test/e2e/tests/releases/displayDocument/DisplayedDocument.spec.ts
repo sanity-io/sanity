@@ -457,6 +457,11 @@ test.describe('displayedDocument', () => {
       const documentId = _testContext.getUniqueDocumentId()
       const versionId = `versions.${asapReleaseId}.${documentId}`
 
+      const customPublished = await createDocument(sanityClient, {
+        ...speciesDocumentNamePublished,
+        _id: documentId,
+      })
+
       // Create a document with a version that has _system.delete set to true
       await createDocument(sanityClient, {
         ...speciesDocumentNameASAP,
@@ -480,11 +485,13 @@ test.describe('displayedDocument', () => {
       )
       await expect(asapChip).toHaveAttribute('data-selected')
 
+      await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
       // Check that the name field shows the version name
-      await expect(page.getByTestId('document-panel-document-title')).toHaveText('ASAP A')
+      await expect(page.getByTestId('document-panel-document-title')).toHaveText('(ASAP A)')
 
       // Clean up
       await sanityClient.delete(versionId)
+      await sanityClient.delete(customPublished._id)
     })
   })
 })
