@@ -1,23 +1,26 @@
 import {defineField, type StringSchemaType} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {of} from 'rxjs'
 import {expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
+import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
 import {DateTimeInput} from '../DateTimeInput'
+import {
+  mockUseTimeZoneDefault,
+  mockUseTimeZoneWithOslo,
+  mockUseTimeZoneWithTokyo,
+} from './__mocks__/timezoneMocks'
 
 vi.mock('sanity', () => ({
   set: vi.fn(),
 }))
 
 vi.mock('../../../../hooks/useTimeZone', () => ({
-  useKeyValueStore: vi.fn(),
+  useTimeZone: () => mockUseTimeZoneDefault(),
 }))
-
-const useKeyValueStoreMock = vi.fn()
 
 const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
@@ -90,6 +93,8 @@ test('formatting of deserialized value', async () => {
 })
 
 test('time is shown in the display time zone if specified (utc+1 winter)', async () => {
+  const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
+
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
@@ -103,9 +108,13 @@ test('time is shown in the display time zone if specified (utc+1 winter)', async
   const input = result.container.querySelector('input')!
 
   expect(input.value).toBe('2021-01-15 13:00')
+
+  spy.mockRestore()
 })
 
 test('time is shown in the display time zone if specified (utc+2 summer)', async () => {
+  const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
+
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
@@ -119,6 +128,8 @@ test('time is shown in the display time zone if specified (utc+2 summer)', async
   const input = result.container.querySelector('input')!
 
   expect(input.value).toBe('2021-06-15 14:00')
+
+  spy.mockRestore()
 })
 
 test('Make sure time is displaying in wall time when displayTimeZone is not set', async () => {
@@ -136,44 +147,47 @@ test('Make sure time is displaying in wall time when displayTimeZone is not set'
   expect(input.value).toBe('2021-06-15 05:00')
 })
 
-test('Make sure we are respecting the saved timezone in keyValueStore when displayTimeZone is set', async () => {
-  const documentId = 'testDoc123'
-  const fieldName = 'test'
-  const initialUtcValue = '2021-06-15T12:00:00.000Z'
+test('Make sure we are respecting the saved timezone in hook when displayTimeZone is set', async () => {
+  const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithTokyo)
 
-  // Mock the keyValueStore to return 'Asia/Tokyo' for the timezone
-  const getKeyMock = vi.fn().mockReturnValue(of('Asia/Tokyo'))
-  const setKeyMock = vi.fn()
-  useKeyValueStoreMock.mockReturnValue({getKey: getKeyMock, setKey: setKeyMock})
+  try {
+    const documentId = 'testDoc123'
+    const fieldName = 'test'
+    const initialUtcValue = '2021-06-15T12:00:00.000Z'
 
-  const {result} = await renderStringInput({
-    fieldDefinition: defineField({
-      type: 'datetime',
-      name: fieldName,
-      options: {
-        displayTimeZone: 'Europe/Oslo',
-        allowTimeZoneSwitch: true,
+    const {result} = await renderStringInput({
+      fieldDefinition: defineField({
+        type: 'datetime',
+        name: fieldName,
+        options: {
+          displayTimeZone: 'Europe/Oslo',
+          allowTimeZoneSwitch: true,
+        },
+      }),
+      props: {
+        documentValue: {_id: documentId, _type: 'datetime', [fieldName]: initialUtcValue},
       },
-    }),
-    props: {
-      documentValue: {_id: documentId, _type: 'datetime', [fieldName]: initialUtcValue},
-    },
-    render: (inputProps) => (
-      <FormValueProvider value={{_id: documentId, _type: 'datetime'}}>
-        <DateTimeInput {...inputProps} />
-      </FormValueProvider>
-    ),
-  })
+      render: (inputProps) => (
+        <FormValueProvider value={{_id: documentId, _type: 'datetime'}}>
+          <DateTimeInput {...inputProps} />
+        </FormValueProvider>
+      ),
+    })
 
-  const input = result.container.querySelector('input')!
+    const input = result.container.querySelector('input')!
 
-  expect(input.value).toBe('2021-06-15 21:00')
+    expect(input.value).toBe('2021-06-15 21:00')
 
-  const timeZoneButton = result.getAllByTestId('timezone-button')[0]
-  expect(timeZoneButton).toHaveTextContent('Tokyo')
+    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
+    expect(timeZoneButton).toHaveTextContent('Tokyo')
+  } finally {
+    spy.mockRestore()
+  }
 })
 
-test('Make sure that if the keyValueStore timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
+test('Make sure that if the hook timezone is set but the allowTimeZoneSwitch is false, that we respect the displayTimeZone', async () => {
+  const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
+
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
@@ -187,9 +201,13 @@ test('Make sure that if the keyValueStore timezone is set but the allowTimeZoneS
   const input = result.container.querySelector('input')!
   // should be 2 hours ahead for Oslo in Summer
   expect(input.value).toBe('2021-06-15 14:00')
+
+  spy.mockRestore()
 })
 
 test('the time zone can not be changed by the user if not allowed', async () => {
+  const spy = vi.spyOn(useTimeZoneModule, 'useTimeZone').mockReturnValue(mockUseTimeZoneWithOslo)
+
   const {result} = await renderStringInput({
     fieldDefinition: defineField({
       type: 'datetime',
@@ -205,7 +223,10 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   userEvent.click(timeZoneButton)
   // ensure the dialog shows
   expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
+
+  spy.mockRestore()
 })
+
 // utc timestamp
 const TEST_DATE_ISO = '2021-03-28T17:23:00.000Z'
 
