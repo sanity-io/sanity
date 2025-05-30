@@ -4,6 +4,7 @@ import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
   isNewDocument,
+  isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinked,
@@ -30,6 +31,7 @@ import {
 } from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
+import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
@@ -179,6 +181,21 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         displayed?._id &&
         getVersionFromId(displayed?._id) === selectedReleaseId,
     )
+
+    const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
+      selectedPerspective,
+      schemaType,
+    })
+
+    if (!isSelectedPerspectiveWriteable.result && isNewDocument(editState)) {
+      return (
+        <ChooseNewDocumentDestinationBanner
+          schemaType={schemaType}
+          selectedPerspective={selectedPerspective}
+          reason={isSelectedPerspectiveWriteable.reason}
+        />
+      )
+    }
 
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
