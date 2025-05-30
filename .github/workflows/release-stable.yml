@@ -35,7 +35,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             # TEMPORARY: Use fixed version for push trigger - REMOVE before merging to main
-            VERSION="3.88.0"
+            VERSION="3.22.3"
             echo "Using fixed version for push trigger: $VERSION"
           else
             # Use input version for workflow_dispatch
@@ -184,73 +184,45 @@ jobs:
           echo "✓ NPM authentication verified successfully"
           echo "✓ Git configuration completed"
 
-      - name: Show current dist-tags for debugging
-        run: |
-          echo "Showing current dist-tags for all packages (for debugging)..."
-
-          # Get list of packages from Lerna
-          PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
-
-          echo "Current dist-tags for each package:"
-          for package in $PACKAGES; do
-            echo "📦 $package:"
-            if npm view "$package" dist-tags --json 2>/dev/null | jq -r 'to_entries[] | "  \(.key): \(.value)"' 2>/dev/null; then
-              true  # jq succeeded
-            else
-              echo "  (unable to fetch dist-tags for $package)"
-            fi
-            echo ""
-          done
-
       - name: Add stable dist-tag to packages
         run: |
           echo "Adding 'stable' dist-tag to existing published packages from git tag '$TAG'..."
 
-          # Get list of packages and their versions
-          echo "Discovering packages to tag from Lerna configuration..."
+          # Get list of packages in package@version format
           PACKAGE_VERSIONS=$(lerna list --all --json | jq -r '.[] | select(.private == false) | "\(.name)@\(.version)"')
 
           echo "Packages to tag:"
           echo "$PACKAGE_VERSIONS"
 
-          echo "Adding stable dist-tag to all packages..."
-
-          # Process each package individually with detailed debugging
+          # Add stable dist-tag to each package
           while read -r package_version; do
             [[ -z "$package_version" ]] && continue
             
-            echo ""
-            echo "🔍 Processing: $package_version"
+            echo "Adding stable dist-tag to $package_version..."
             
             # Check if package@version exists in registry
-            echo "  Checking if $package_version exists in registry..."
             if ! npm view "$package_version" version &>/dev/null; then
-              echo "  ❌ $package_version not found in registry, skipping"
+              echo "  ✗ $package_version not found in registry, skipping"
               continue
             fi
-            echo "  ✅ $package_version exists in registry"
             
-            # Add stable dist-tag directly
-            echo "  🔧 Adding stable dist-tag: npm dist-tag add $package_version stable"
+            # Add stable dist-tag
             if npm dist-tag add "$package_version" stable; then
-              echo "  ✅ Successfully added stable dist-tag to $package_version"
+              echo "  ✓ Successfully added stable dist-tag to $package_version"
             else
-              echo "  ❌ Failed to add stable dist-tag to $package_version"
+              echo "  ✗ Failed to add stable dist-tag to $package_version"
               exit 1
             fi
           done <<< "$PACKAGE_VERSIONS"
 
-          echo ""
-          echo "✅ Batch dist-tag operation completed"
+          echo "✓ All packages successfully tagged with stable dist-tag"
 
-      - name: Verify dist-tag addition results
+      - name: Verify stable dist-tags
         run: |
-          echo "Verifying that all packages were successfully tagged with 'stable' dist-tag..."
+          echo "Verifying stable dist-tags were set correctly..."
 
           # Get list of package@version combinations
           PACKAGE_VERSIONS=$(lerna list --all --json | jq -r '.[] | select(.private == false) | "\(.name)@\(.version)"')
-
-          echo "Verifying stable tags:"
 
           FAILED=0
           while read -r package_version; do
@@ -259,43 +231,20 @@ jobs:
             package_name=$(echo "$package_version" | cut -d'@' -f1)
             expected_version=$(echo "$package_version" | cut -d'@' -f2)
             
-            echo ""
-            echo "🔍 Verifying: $package_version"
-            
             # Get the version that stable tag points to
             STABLE_VERSION=$(npm view "$package_name" dist-tags.stable 2>/dev/null || echo "")
             
             if [[ "$STABLE_VERSION" == "$expected_version" ]]; then
-              echo "  ✅ $package_name stable tag correctly points to $expected_version"
+              echo "✓ $package_name stable tag points to $expected_version"
             else
-              echo "  ❌ $package_name stable tag points to '$STABLE_VERSION', expected '$expected_version'"
+              echo "✗ $package_name stable tag points to '$STABLE_VERSION', expected '$expected_version'"
               FAILED=1
             fi
           done <<< "$PACKAGE_VERSIONS"
 
           if [[ $FAILED -eq 1 ]]; then
-            echo ""
-            echo "❌ Some packages failed verification"
+            echo "Some packages failed verification"
             exit 1
           fi
 
-          echo ""
-          echo "✅ All packages successfully verified with stable dist-tag"
-
-      - name: Show final dist-tags for debugging
-        run: |
-          echo "Showing final dist-tags for all packages (for debugging)..."
-
-          # Get list of packages from Lerna
-          PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
-
-          echo "Final dist-tags for each package:"
-          for package in $PACKAGES; do
-            echo "📦 $package:"
-            if npm view "$package" dist-tags --json 2>/dev/null | jq -r 'to_entries[] | "  \(.key): \(.value)"' 2>/dev/null; then
-              true  # jq succeeded
-            else
-              echo "  (unable to fetch dist-tags for $package)"
-            fi
-            echo ""
-          done
+          echo "✓ All packages verified with stable dist-tag"
