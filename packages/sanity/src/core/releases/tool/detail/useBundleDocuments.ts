@@ -31,7 +31,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
+import {getDraftId, getVersionId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -73,9 +73,6 @@ const getActiveReleaseDocumentsObservable = ({
   releaseId: string
   perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult => {
-  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const observableClient = client.observable
-
   const groqFilter = `sanity::partOfRelease($releaseId)`
 
   return documentPreviewStore
@@ -104,22 +101,14 @@ const getActiveReleaseDocumentsObservable = ({
           })
           .pipe(
             filter(Boolean),
-            switchMap((doc) =>
-              observableClient
-                .fetch(
-                  `*[_id in path("${getPublishedId(doc._id)}")]{_id}`,
-                  {},
-                  {tag: 'release-documents.check-existing'},
-                )
-                .pipe(
-                  switchMap((publishedDocumentExists) =>
-                    of({
-                      ...doc,
-                      publishedDocumentExists: !!publishedDocumentExists.length,
-                    }),
-                  ),
-                ),
-            ),
+            switchMap((doc) => {
+              return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
+                map((availability) => ({
+                  ...doc,
+                  publishedDocumentExists: availability.published.available,
+                })),
+              )
+            }),
           )
         const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
           map((validationStatus) => ({
