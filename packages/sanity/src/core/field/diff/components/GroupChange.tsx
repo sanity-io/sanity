@@ -98,6 +98,9 @@ export function GroupChange(
                 change={change}
                 readOnly={readOnly}
                 hidden={hidden}
+                // If the path of the nested change is more than two levels deep, we want to add a wrapper
+                // with the parent path, for the change indicator to be shown.
+                addParentWrapper={change.path.length - group.path.length > 1}
               />
             ))}
           </Stack>
@@ -149,6 +152,7 @@ export function GroupChange(
       closeRevertChangesConfirmDialog,
       confirmRevertOpen,
       group.fieldsetName,
+      group.path.length,
       handleRevertChanges,
       handleRevertChangesConfirm,
       hidden,
