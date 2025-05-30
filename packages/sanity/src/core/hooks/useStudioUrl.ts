@@ -36,19 +36,20 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
       return defaultUrl || window.location.toString()
     }
 
-    return `${getDashboardPath({
+    return getDashboardPath({
       organizationId,
       appId: studioApp.appId,
       workspaceName: activeWorkspace.name,
-    })}/${activeWorkspace.dataset}`
+      basePath: activeWorkspace.basePath,
+    })
   }, [
-    activeWorkspace.dataset,
+    activeWorkspace.basePath,
     activeWorkspace.name,
     defaultUrl,
     isCoreUi,
     isLoading,
     organizationId,
-    studioApp?.appId,
+    studioApp.appId,
   ])
 
   const buildStudioUrl = useCallback(
