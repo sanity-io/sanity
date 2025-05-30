@@ -87,6 +87,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    unpublishDocId,
   } = useDocumentPane()
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
   const showCreateBanner = isSanityCreateLinked(createLinkMetadata)
@@ -188,7 +189,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
-      !isPinnedDraftOrPublish
+      !isPinnedDraftOrPublish &&
+      !unpublishDocId
     ) {
       return (
         <DocumentNotInReleaseBanner
@@ -242,6 +244,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     displayed,
     selectedReleaseId,
     ready,
+    unpublishDocId,
     activeView.type,
     isLiveEdit,
     editState?.draft?._id,

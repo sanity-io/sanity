@@ -445,7 +445,7 @@ test.describe('displayedDocument', () => {
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
 
-    test('no draft, no publish, one version with _system.delete shows version name', async ({
+    test('no draft, publish, one version with _system.delete shows draft name', async ({
       page,
       sanityClient,
       _testContext,

@@ -117,6 +117,7 @@ interface DocumentFormValue {
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
+  unpublishDocId: string | null
 }
 
 /**
@@ -145,7 +146,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, perspectiveStack} = usePerspective()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -189,6 +190,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
+  // if it will be unpublished, then
+  // we need to make sure make sure that we get the right stack
+  // by fetching the previous version
+  // for example ['release1', 'release2', 'drafts'] -> ['release2', 'drafts']
+  // or ['release1', 'drafts'] -> ['drafts']
+  const isTheCurrentVersionGoingToUnpublish =
+    editState.version && isGoingToUnpublish(editState.version as SanityDocument)
+  const updatedStackReleaseId = isTheCurrentVersionGoingToUnpublish
+    ? perspectiveStack.length > 1
+      ? perspectiveStack.slice(1)[0]
+      : perspectiveStack[0]
+    : activeDocumentReleaseId // this accounts for drafts and for the published perspective
+
+  const editStatePrevious = useEditState(documentId, documentType, 'default', updatedStackReleaseId)
+
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useReconnectingToast(connectionState === 'reconnecting')
 
@@ -204,6 +220,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
+      if (editState.version) {
+        // if it will be unpublished, then we need to do two things
+        // 1. make sure that we keep which id is the fall back so that the chip in the document header will behave appropriately
+        // 2. make sure that we keep the value of the previous state (followed by the draft and published)
+        if (isGoingToUnpublish(editState.version as SanityDocument)) {
+          return editStatePrevious.version || editState.draft || editState.published || baseValue
+        }
+      }
+
       return editState.version || editState.draft || editState.published || baseValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
@@ -222,16 +247,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
+    initialValue,
     documentId,
     documentType,
-    editState.draft,
-    editState.published,
-    editState.version,
-    initialValue,
-    liveEdit,
     releaseId,
     selectedPerspectiveName,
     onlyHasVersions,
+    editState.draft,
+    editState.published,
+    editState.version,
+    editStatePrevious.version,
+    liveEdit,
   ])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
@@ -542,6 +568,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     },
     [onFocusPath, handleSetOpenPath],
   )
+
+  const unpublishDocId = useMemo(() => {
+    if (editState.version && isGoingToUnpublish(editState.version as SanityDocument)) {
+      return editState?.version?._id || editState.draft?._id || null
+    }
+    return null
+  }, [editState.version, editState.draft?._id])
+
   return {
     editState,
     connectionState,
@@ -566,5 +600,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    unpublishDocId,
   }
 }
