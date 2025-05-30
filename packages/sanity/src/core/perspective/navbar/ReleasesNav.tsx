@@ -37,6 +37,10 @@ const ReleasesNavContainer = styled(Card)`
 interface Props {
   withReleasesToolButton?: boolean
 }
+
+/**
+ * @internal
+ */
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {selectedPerspective, selectedReleaseId} = usePerspective()
