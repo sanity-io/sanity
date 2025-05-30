@@ -12,6 +12,7 @@ import {
   type SelectedPerspective,
   Translate,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -37,14 +38,21 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const menuItemProps = useCallback<ReleasesNavMenuItemPropsGetter>(
     ({perspective}) => ({
       disabled: !isPerspectiveWriteable({
         selectedPerspective: perspective,
+        isDraftModelEnabled,
         schemaType,
       }).result,
     }),
-    [schemaType],
+    [isDraftModelEnabled, schemaType],
   )
 
   return (
