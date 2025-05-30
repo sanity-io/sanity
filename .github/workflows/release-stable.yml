@@ -184,49 +184,100 @@ jobs:
           echo "✓ NPM authentication verified successfully"
           echo "✓ Git configuration completed"
 
-      - name: Publish packages with stable dist-tag
+      - name: Show current dist-tags for debugging
         run: |
-          echo "Publishing all packages with 'stable' dist-tag from git tag '$TAG'..."
+          echo "Showing current dist-tags for all packages (for debugging)..."
 
-          # List packages that will be published (non-private packages from Lerna config)
-          echo "Discovering packages to publish from Lerna configuration..."
-          echo "Lerna package patterns: $LERNA_PACKAGES"
+          # Get list of packages from Lerna
+          PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
 
-          # Show which packages Lerna will attempt to publish
-          echo "Packages discovered by Lerna:"
-          lerna list --all --json | jq -r '.[] | select(.private == false) | .name' | sort
-
-          echo "Publishing packages in batch using Lerna..."
-
-          # Use Lerna to publish all packages from the current state
-          # --from-package: publish packages where the current version isn't present in the registry
-          # --dist-tag stable: publish to the 'stable' tag instead of 'latest'
-          # --force-publish: publish all packages regardless of changes
-          # --exact: use exact versions (no caret ranges)
-          # --yes: skip confirmation prompts
-          lerna publish from-package \
-            --dist-tag stable        \
-            --force-publish          \
-            --exact                  \
-            --yes
-
-          echo "✓ All packages published successfully with 'stable' dist-tag"
-
-      - name: Verify batch publishing results
-        run: |
-          echo "Verifying that all packages were published with 'stable' dist-tag..."
-
-          # Get list of published packages and verify they have the stable tag
-          PUBLISHED_PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
-
-          echo "Verifying stable tag for published packages:"
-          for package in $PUBLISHED_PACKAGES; do
-            if npm view "$package@$VERSION_NUMBER" dist-tags.stable &>/dev/null; then
-              echo "✓ $package@$VERSION_NUMBER has 'stable' dist-tag"
+          echo "Current dist-tags for each package:"
+          for package in $PACKAGES; do
+            echo "📦 $package:"
+            if npm view "$package" dist-tags --json 2>/dev/null | jq -r 'to_entries[] | "  \(.key): \(.value)"' 2>/dev/null; then
+              true  # jq succeeded
             else
-              echo "✗ Failed to verify 'stable' dist-tag for $package@$VERSION_NUMBER"
-              exit 1
+              echo "  (unable to fetch dist-tags for $package)"
             fi
+            echo ""
           done
 
-          echo "✓ All packages successfully published with 'stable' dist-tag verified"
+      - name: Add stable dist-tag to packages
+        run: |
+          echo "Adding 'stable' dist-tag to existing published packages from git tag '$TAG'..."
+
+          # Get list of packages and their versions
+          echo "Discovering packages to tag from Lerna configuration..."
+          PACKAGE_VERSIONS=$(lerna list --all --json | jq -r '.[] | select(.private == false) | "\(.name)@\(.version)"')
+
+          echo "Packages to tag:"
+          echo "$PACKAGE_VERSIONS"
+
+          echo "Adding stable dist-tag to all packages in batch..."
+
+          # Use xargs to run npm dist-tag add in parallel for all packages
+          echo "$PACKAGE_VERSIONS" | xargs -I {} -P 10 bash -c '
+            package_version="{}"
+            echo "Adding stable dist-tag to $package_version..."
+            
+            # Check if version exists in registry
+            if npm view "$package_version" version &>/dev/null; then
+              # Check if already has stable tag
+              if npm view "$package_version" dist-tags.stable &>/dev/null; then
+                echo "  ✓ $package_version already has stable dist-tag"
+              else
+                npm dist-tag add "$package_version" stable
+                echo "  ✓ Added stable dist-tag to $package_version"
+              fi
+            else
+              echo "  ✗ $package_version not found in registry"
+            fi
+          '
+
+          echo "✓ Batch dist-tag operation completed"
+
+      - name: Verify dist-tag addition results
+        run: |
+          echo "Verifying that all packages were successfully tagged with 'stable' dist-tag..."
+
+          # Get list of package@version combinations
+          PACKAGE_VERSIONS=$(lerna list --all --json | jq -r '.[] | select(.private == false) | "\(.name)@\(.version)"')
+
+          echo "Verifying stable tags:"
+
+          # Use xargs for batch verification
+          FAILED=0
+          echo "$PACKAGE_VERSIONS" | xargs -I {} bash -c '
+            package_version="{}"
+            if npm view "$package_version" dist-tags.stable &>/dev/null; then
+              echo "✓ $package_version has stable dist-tag"
+            else
+              echo "✗ $package_version missing stable dist-tag"
+              exit 1
+            fi
+          ' || FAILED=1
+
+          if [[ $FAILED -eq 1 ]]; then
+            echo "✗ Some packages failed verification"
+            exit 1
+          fi
+
+          echo "✓ All packages successfully verified with stable dist-tag"
+
+      - name: Show final dist-tags for debugging
+        run: |
+          echo "Showing final dist-tags for all packages (for debugging)..."
+
+          # Get list of packages from Lerna
+          PACKAGES=$(lerna list --all --json | jq -r '.[] | select(.private == false) | .name')
+
+          echo "Final dist-tags for each package:"
+          for package in $PACKAGES; do
+            echo "📦 $package:"
+            if npm view "$package" dist-tags --json 2>/dev/null | jq -r 'to_entries[] | "  \(.key): \(.value)"' 2>/dev/null; then
+              true  # jq succeeded
+            else
+              echo "  (unable to fetch dist-tags for $package)"
+            fi
+            echo ""
+          done
