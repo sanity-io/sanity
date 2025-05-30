@@ -17,6 +17,7 @@ export {
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
+  type ReleasesNavMenuItemPropsGetter,
   type SelectedPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
