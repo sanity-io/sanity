@@ -1,5 +1,26 @@
 /* eslint-disable no-console */
-import {SANITY_E2E_PROJECT_ID, SANITY_E2E_SESSION_TOKEN} from '../env'
+/* eslint-disable no-process-env */
+/* eslint-disable no-process-exit */
+
+import {loadEnvFiles} from '../../../scripts/utils/loadEnvFiles'
+
+loadEnvFiles()
+
+const SANITY_E2E_SESSION_TOKEN = process.env.SANITY_E2E_SESSION_TOKEN!
+const SANITY_E2E_PROJECT_ID = process.env.SANITY_E2E_PROJECT_ID!
+const SANITY_E2E_DATASET_STAGING = process.env.SANITY_E2E_DATASET_STAGING!
+
+function validateEnvVar(name: string, value: string | undefined): void {
+  if (!value) {
+    console.error(`Missing \`${name}\` environment variable.`)
+    console.error('See `test/e2e/README.md` for details.')
+    process.exit(1)
+  }
+}
+
+validateEnvVar('SANITY_E2E_SESSION_TOKEN', SANITY_E2E_SESSION_TOKEN)
+validateEnvVar('SANITY_E2E_PROJECT_ID', SANITY_E2E_PROJECT_ID)
+validateEnvVar('SANITY_E2E_DATASET_STAGING', SANITY_E2E_DATASET_STAGING)
 
 const API_BASE_URL = `https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2025-05-22`
 
@@ -9,8 +30,8 @@ interface Dataset {
   addonFor: string | null
 }
 
-// If the dataset is older than this, delete it
-const DATASET_MAX_AGE = 1000 * 60 * 60
+// If the dataset is older than 14 days, delete it
+const DATASET_MAX_AGE = 1000 * 60 * 60 * 24 * 14
 
 // Fetch a list of all datasets for the project
 async function listDatasets(): Promise<Dataset[]> {
@@ -38,7 +59,8 @@ async function run() {
     if (
       new Date().getTime() - createdAt.getTime() > DATASET_MAX_AGE &&
       dataset.name.startsWith('pr-') &&
-      !dataset.name.endsWith('-comments')
+      !dataset.name.endsWith('-comments') &&
+      dataset.name !== SANITY_E2E_DATASET_STAGING
     ) {
       toDelete.push(dataset)
     }
