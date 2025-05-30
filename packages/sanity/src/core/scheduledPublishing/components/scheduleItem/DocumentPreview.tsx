@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useDocumentActionProps} from '../../contexts/documentActionProps'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {type Schedule} from '../../types'
@@ -15,8 +16,12 @@ interface Props {
 
 const DocumentPreview = (props: Props) => {
   const {schedule, schemaType} = props
+  const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
-  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(schedule)
+  const {DialogScheduleEdit, dialogProps, dialogScheduleEditShow} = useDialogScheduleEdit(
+    schedule,
+    timeZoneScope,
+  )
   const {onComplete} = useDocumentActionProps()
   const publishedId = useMemo(() => getScheduledDocumentId(schedule), [schedule])
 

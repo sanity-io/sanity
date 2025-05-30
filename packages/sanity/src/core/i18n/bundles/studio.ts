@@ -1824,6 +1824,34 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'sheet-list.select-fields': 'Select up to 5 field types',
   /** Accessibility label for the navbar status button */
   'status-button.aria-label': 'Configuration status',
+
+  /* Time zone handling */
+  'time-zone.action.search-for-timezone-placeholder': 'Search for a city or time zone',
+  /* Label for the local time zone button */
+  'time-zone.action.select-local-time-zone': 'Select local time zone',
+  /* Dialog info for the time zone dialog */
+  'time-zone.dialog-info.content-releases':
+    'The selected time zone will change how dates are represented in content releases.',
+  /* Dialog info for the time zone dialog */
+  'time-zone.dialog-info.input':
+    'The selected time zone will change how dates are represented only for this input in this document.',
+  /* Dialog info for the time zone dialog */
+  'time-zone.dialog-info.scheduled-publishing':
+    'The selected time zone will change how dates are represented in schedules.',
+  /* Label for the local time zone button */
+  'time-zone.local-time': 'local time',
+  /* Label for the time zone button */
+  'time-zone.time-zone': 'Time zone',
+  /* Tooltip content for the time zone dialog */
+  'time-zone.time-zone-tooltip-content-releases':
+    'Displaying releases in {{alternativeName}} GMT{{offset}}',
+  /* Tooltip content for the time zone dialog */
+  'time-zone.time-zone-tooltip-input':
+    'Displaying <em>{{title}}</em> in {{alternativeName}} GMT{{offset}}',
+  /* Tooltip content for the time zone dialog */
+  'time-zone.time-zone-tooltip-scheduled-publishing':
+    'Displaying schedules in {{alternativeName}} GMT{{offset}}',
+
   /** Title for the changes tooltip in the history inspector*/
   'timeline.changes.title': 'Changes by',
   /** Description for error when the timeline for the given document can't be loaded */
@@ -1899,6 +1927,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.unpublished': 'Unpublished',
   /** Label shown in review changes timeline when a document was unpublished, with a timestamp */
   'timeline.operation.unpublished_timestamp': 'Unpublished: {{timestamp, datetime}}',
+
   /** Label shown in review changes timeline when a document version has been created */
   'timeline.operation.version-created': 'Version created',
   /** Label shown in review changes timeline when a document version has been created, with a timestamp */
@@ -1914,8 +1943,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': '{{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
+
   /** Aria label for the action buttons in the PTE toolbar */
   'toolbar.portable-text.action-button-aria-label': '{{action}}',
+
   /** Accessibility label for the breadcrumb menu */
   'tree-editing-dialog.breadcrumbs.menu': 'Breadcrumb menu',
   /** Title placeholder for search input in array of objects */
