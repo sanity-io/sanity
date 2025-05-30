@@ -5,6 +5,7 @@ import {styled} from 'styled-components'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
 import {ReleasesToolLink} from '../ReleasesToolLink'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
@@ -36,12 +37,13 @@ const ReleasesNavContainer = styled(Card)`
 
 interface Props {
   withReleasesToolButton?: boolean
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
 }
 
 /**
  * @internal
  */
-export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton}) => {
+export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
@@ -52,6 +54,7 @@ export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton}) => {
       <GlobalPerspectiveMenu
         selectedReleaseId={selectedReleaseId}
         areReleasesEnabled={releasesToolAvailable}
+        menuItemProps={menuItemProps}
       />
     </ReleasesNavContainer>
   )
