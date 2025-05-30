@@ -4,6 +4,7 @@ import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
   isNewDocument,
+  isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinked,
@@ -18,6 +19,7 @@ import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
+import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
@@ -30,6 +32,7 @@ import {
 } from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
+import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
@@ -179,6 +182,28 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         displayed?._id &&
         getVersionFromId(displayed?._id) === selectedReleaseId,
     )
+
+    const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
+      selectedPerspective,
+      schemaType,
+    })
+
+    if (
+      mustChooseNewDocumentDestination({
+        isSelectedPerspectiveWriteable,
+        editState,
+      })
+    ) {
+      return (
+        !isSelectedPerspectiveWriteable.result && (
+          <ChooseNewDocumentDestinationBanner
+            schemaType={schemaType}
+            selectedPerspective={selectedPerspective}
+            reason={isSelectedPerspectiveWriteable.reason}
+          />
+        )
+      )
+    }
 
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
