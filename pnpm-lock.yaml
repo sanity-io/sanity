@@ -1108,6 +1108,9 @@ importers:
 
   packages/@sanity/schema:
     dependencies:
+      '@sanity/descriptors':
+        specifier: 0.1.1
+        version: 0.1.1
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -4597,6 +4600,10 @@ packages:
   '@sanity/core-loader@1.8.0':
     resolution: {integrity: sha512-SBKXLxNBO7YrWFaFt8FyV+G8ky+ZKgrhWkHHM2fxQXkF9W2JJV3SnfnzkG9XgVXM+VMu65WQcW5qlj9oWUlQig==}
     engines: {node: '>=18'}
+
+  '@sanity/descriptors@0.1.1':
+    resolution: {integrity: sha512-Hm/JF2G4HRl7+VfyukrVSln0aPNvkOovQ6ayLvOagVEehO6Wjm5H3whVemdmeSPptowXiPTovbNjOwAOYPSlDQ==}
+    engines: {node: '>=18.0.0'}
 
   '@sanity/diff-match-patch@3.2.0':
     resolution: {integrity: sha512-4hPADs0qUThFZkBK/crnfKKHg71qkRowfktBljH2UIxGHHTxIzt8g8fBiXItyCjxkuNy+zpYOdRMifQNv8+Yww==}
@@ -10886,6 +10893,9 @@ packages:
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
+  sha256-uint8array@0.10.7:
+    resolution: {integrity: sha512-1Q6JQU4tX9NqsDGodej6pkrUVQVNapLZnvkwIhddH/JqzBZF1fSaxSWNY6sziXBE8aEa2twtGkXUrwzGeZCMpQ==}
+
   shallow-clone@3.0.1:
     resolution: {integrity: sha512-/6KqX+GVUdqPuPPd2LxDDxzX6CAbjJehAAOKlNpqqUpAqPM6HeL8f+o3a+JsyGjn2lv0WY8UsTgUJjU9Ok55NA==}
     engines: {node: '>=8'}
@@ -15236,6 +15246,10 @@ snapshots:
       - '@sanity/types'
       - debug
       - typescript
+
+  '@sanity/descriptors@0.1.1':
+    dependencies:
+      sha256-uint8array: 0.10.7
 
   '@sanity/diff-match-patch@3.2.0': {}
 
@@ -23060,6 +23074,8 @@ snapshots:
       split-string: 3.1.0
 
   setprototypeof@1.2.0: {}
+
+  sha256-uint8array@0.10.7: {}
 
   shallow-clone@3.0.1:
     dependencies:
