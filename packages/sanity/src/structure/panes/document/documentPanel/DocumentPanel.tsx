@@ -13,6 +13,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   usePerspective,
+  useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
@@ -104,6 +105,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
   const activeView = useMemo(
@@ -185,6 +192,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
       selectedPerspective,
+      isDraftModelEnabled,
       schemaType,
     })
 
@@ -268,6 +276,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    isDraftModelEnabled,
     editState,
     ready,
     activeView.type,
