@@ -1,6 +1,12 @@
 import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
-import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
+import {
+  Rule,
+  SchemaValidationValue,
+  type CurrentUser,
+  type Schema,
+  type SchemaValidationProblem,
+} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
@@ -73,7 +79,25 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
-import {getDescriptorSynchronization} from '@sanity/schema/_internal'
+import {DescriptorConverter} from '@sanity/schema/_internal'
+import {Rule as RuleClass} from '../validation'
+
+const DESC_CONVERTER = new DescriptorConverter({
+  ruleClass: RuleClass,
+  validationExtractor: normalizeValidationValue,
+})
+
+function normalizeValidationValue(validation: SchemaValidationValue): Rule[] {
+  if (!validation) return []
+
+  if (Array.isArray(validation)) {
+    return validation.flatMap((inner) => normalizeValidationValue(inner))
+  } else if (typeof validation === 'object') {
+    return [validation]
+  } else {
+    return normalizeValidationValue(validation(new RuleClass()))
+  }
+}
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -222,7 +246,7 @@ export function prepareConfig(
       })
 
       if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
-        const sync = getDescriptorSynchronization(schema)
+        const sync = DESC_CONVERTER.get(schema)
         debug('Built schema for synchronization', {sync})
       }
 

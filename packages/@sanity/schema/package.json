@@ -63,9 +63,9 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@sanity/descriptors": "0.1.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
-    "@sanity/descriptors": "0.1.0",
     "arrify": "^2.0.1",
     "groq-js": "^1.17.0",
     "humanize-list": "^1.0.1",

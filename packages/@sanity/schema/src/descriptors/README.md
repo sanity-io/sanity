@@ -44,16 +44,16 @@ Look at this:
   type: 'sanity.schema.namedType',
   name: 'blogPost',
   typeDef: {
-    subtypeOf: 'document',
+    extends: 'document',
     fields: [
       {
         name: 'title',
-        typeDef: { subtypeOf: 'string' },
+        typeDef: { extends: 'string' },
       },
       {
         name: 'description',
         typeDef: {
-          subtypeOf: 'string',
+          extends: 'string',
           description: 'Hello!'
         },
       }
@@ -64,7 +64,7 @@ Look at this:
 
 When you're writing `fields: [{name: 'title', type: 'string'}]` in your Studio schema definition you're actually _not_ declaring that that `title` is of type `string`.
 You're _actually_ declaring a completely new type, inheriting from `string`, and it just happen to not override any of its properties.
-This is why in the descriptor language we've changed `type: …` into `subtypeOf: …` to make this more explicit.
+This is why in the descriptor language we've changed `type: …` into `extends: …` to make this more explicit.
 
 However, for references, when declaring the `to` types the descriptor language uses explicitly named types:
 
@@ -73,12 +73,12 @@ However, for references, when declaring the `to` types the descriptor language u
   type: 'sanity.schema.namedType'
   name: 'blogPost',
   typeDef: {
-    subtypeOf: 'document',
+    extends: 'document',
     fields: [
       {
         name: 'author',
         typeDef: {
-          subtypeOf: 'reference'
+          extends: 'reference'
           to: ['author']
         },
       }

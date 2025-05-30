@@ -355,7 +355,7 @@ export const Rule: RuleClass = class Rule implements IRule {
   }
 
   fields(rules: FieldRules): Rule {
-    if (this._type !== 'Object') {
+    if (this._type && this._type !== 'Object') {
       throw new Error('fields() can only be called on an object type')
     }
 
