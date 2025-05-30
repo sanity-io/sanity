@@ -1109,8 +1109,8 @@ importers:
   packages/@sanity/schema:
     dependencies:
       '@sanity/descriptors':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -4601,8 +4601,8 @@ packages:
     resolution: {integrity: sha512-SBKXLxNBO7YrWFaFt8FyV+G8ky+ZKgrhWkHHM2fxQXkF9W2JJV3SnfnzkG9XgVXM+VMu65WQcW5qlj9oWUlQig==}
     engines: {node: '>=18'}
 
-  '@sanity/descriptors@0.1.0':
-    resolution: {integrity: sha512-6+BHOusddFZOUZSR77zkmKBMyYAd+Cmvkf7V6IXe03Cc4yHUnGSvj0OTFrM5gPGIV8BV8VEFr56IepIbNm/W2w==}
+  '@sanity/descriptors@0.1.1':
+    resolution: {integrity: sha512-Hm/JF2G4HRl7+VfyukrVSln0aPNvkOovQ6ayLvOagVEehO6Wjm5H3whVemdmeSPptowXiPTovbNjOwAOYPSlDQ==}
     engines: {node: '>=18.0.0'}
 
   '@sanity/diff-match-patch@3.2.0':
@@ -15247,7 +15247,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/descriptors@0.1.0':
+  '@sanity/descriptors@0.1.1':
     dependencies:
       sha256-uint8array: 0.10.7
 
