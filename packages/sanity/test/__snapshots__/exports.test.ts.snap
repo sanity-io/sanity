@@ -390,6 +390,7 @@ exports[`exports snapshot 1`] = `
     "isIndexTuple": "function",
     "isKeySegment": "function",
     "isKeyedObject": "function",
+    "isNewDocument": "function",
     "isNonNullable": "function",
     "isNumberInputProps": "function",
     "isNumberSchemaType": "function",
