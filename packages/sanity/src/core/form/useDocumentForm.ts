@@ -48,6 +48,7 @@ import {
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
+import {isNewDocument} from '../store/_legacy/document/isNewDocument'
 import {
   EMPTY_ARRAY,
   getDraftId,
@@ -321,7 +322,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       !editState.draft &&
       !editState.published &&
       onlyHasVersions &&
-      selectedPerspectiveName !== getVersionFromId(editState.version._id)
+      selectedPerspectiveName !== getVersionFromId(editState.version._id) &&
+      isNewDocument(editState) === false
     ) {
       return true
     }
@@ -334,8 +336,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       return true
     }
 
-    // If a release is selected, validate that the document id matches the selected release id
-    if (releaseId && getVersionFromId(value._id) !== releaseId) {
+    // If a release is selected, validate that the document id matches the selected release id.
+    //
+    // If the user is viewing a new document (a document that exists locally, but has not yet been
+    // created in the dataset), they are permitted to edit it, regardless of which perspective was
+    // selected when they created it. This will cause it to be created in the dataset, attached to
+    // the currently selected perspective.
+    if (
+      releaseId &&
+      getVersionFromId(value._id) !== releaseId &&
+      isNewDocument(editState) === false
+    ) {
       return true
     }
 

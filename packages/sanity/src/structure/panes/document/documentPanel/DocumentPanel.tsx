@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isNewDocument,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinked,
@@ -188,7 +189,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
-      !isPinnedDraftOrPublish
+      !isPinnedDraftOrPublish &&
+      isNewDocument(editState) === false
     ) {
       return (
         <DocumentNotInReleaseBanner
@@ -241,10 +243,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    editState,
     ready,
     activeView.type,
     isLiveEdit,
-    editState?.draft?._id,
     isPermissionsLoading,
     showCreateBanner,
     permissions?.granted,
