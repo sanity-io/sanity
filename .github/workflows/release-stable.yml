@@ -213,28 +213,58 @@ jobs:
           echo "Packages to tag:"
           echo "$PACKAGE_VERSIONS"
 
-          echo "Adding stable dist-tag to all packages in batch..."
+          echo "Adding stable dist-tag to all packages..."
 
-          # Use xargs to run npm dist-tag add in parallel for all packages
-          echo "$PACKAGE_VERSIONS" | xargs -I {} -P 10 bash -c '
-            package_version="{}"
-            echo "Adding stable dist-tag to $package_version..."
+          # Process each package individually with detailed debugging
+          while read -r package_version; do
+            [[ -z "$package_version" ]] && continue
             
-            # Check if version exists in registry
-            if npm view "$package_version" version &>/dev/null; then
-              # Check if already has stable tag
-              if npm view "$package_version" dist-tags.stable &>/dev/null; then
-                echo "  ✓ $package_version already has stable dist-tag"
+            package_name=$(echo "$package_version" | cut -d'@' -f1)
+            version=$(echo "$package_version" | cut -d'@' -f2)
+            
+            echo ""
+            echo "🔍 Processing: $package_name@$version"
+            
+            # Check if package@version exists in registry
+            echo "  Checking if $package_name@$version exists in registry..."
+            if ! npm view "$package_name@$version" version &>/dev/null; then
+              echo "  ❌ $package_name@$version not found in registry, skipping"
+              continue
+            fi
+            echo "  ✅ $package_name@$version exists in registry"
+            
+            # Get current dist-tags for this package
+            echo "  Fetching current dist-tags for $package_name..."
+            CURRENT_TAGS=$(npm view "$package_name" dist-tags --json 2>/dev/null || echo '{}')
+            echo "  Current dist-tags: $CURRENT_TAGS"
+            
+            # Check if stable tag already points to this version
+            STABLE_VERSION=$(echo "$CURRENT_TAGS" | jq -r '.stable // empty')
+            if [[ "$STABLE_VERSION" == "$version" ]]; then
+              echo "  ✅ $package_name@$version already has stable dist-tag pointing to correct version"
+              continue
+            fi
+            
+            # Add stable dist-tag
+            echo "  🔧 Adding stable dist-tag to $package_name@$version..."
+            if npm dist-tag add "$package_name@$version" stable; then
+              echo "  ✅ Successfully added stable dist-tag to $package_name@$version"
+              
+              # Verify it was set correctly
+              NEW_STABLE=$(npm view "$package_name" dist-tags.stable 2>/dev/null || echo "")
+              if [[ "$NEW_STABLE" == "$version" ]]; then
+                echo "  ✅ Verified: stable tag now points to $version"
               else
-                npm dist-tag add "$package_version" stable
-                echo "  ✓ Added stable dist-tag to $package_version"
+                echo "  ❌ Verification failed: stable tag points to '$NEW_STABLE', expected '$version'"
               fi
             else
-              echo "  ✗ $package_version not found in registry"
+              echo "  ❌ Failed to add stable dist-tag to $package_name@$version"
+              exit 1
             fi
-          '
+          done <<< "$PACKAGE_VERSIONS"
 
-          echo "✓ Batch dist-tag operation completed"
+          echo ""
+          echo "✅ Batch dist-tag operation completed"
 
       - name: Verify dist-tag addition results
         run: |
@@ -245,24 +275,35 @@ jobs:
 
           echo "Verifying stable tags:"
 
-          # Use xargs for batch verification
           FAILED=0
-          echo "$PACKAGE_VERSIONS" | xargs -I {} bash -c '
-            package_version="{}"
-            if npm view "$package_version" dist-tags.stable &>/dev/null; then
-              echo "✓ $package_version has stable dist-tag"
+          while read -r package_version; do
+            [[ -z "$package_version" ]] && continue
+            
+            package_name=$(echo "$package_version" | cut -d'@' -f1)
+            version=$(echo "$package_version" | cut -d'@' -f2)
+            
+            echo ""
+            echo "🔍 Verifying: $package_name@$version"
+            
+            # Get the version that stable tag points to
+            STABLE_VERSION=$(npm view "$package_name" dist-tags.stable 2>/dev/null || echo "")
+            
+            if [[ "$STABLE_VERSION" == "$version" ]]; then
+              echo "  ✅ $package_name stable tag correctly points to $version"
             else
-              echo "✗ $package_version missing stable dist-tag"
-              exit 1
+              echo "  ❌ $package_name stable tag points to '$STABLE_VERSION', expected '$version'"
+              FAILED=1
             fi
-          ' || FAILED=1
+          done <<< "$PACKAGE_VERSIONS"
 
           if [[ $FAILED -eq 1 ]]; then
-            echo "✗ Some packages failed verification"
+            echo ""
+            echo "❌ Some packages failed verification"
             exit 1
           fi
 
-          echo "✓ All packages successfully verified with stable dist-tag"
+          echo ""
+          echo "✅ All packages successfully verified with stable dist-tag"
 
       - name: Show final dist-tags for debugging
         run: |
