@@ -1,7 +1,8 @@
-import {SetBuilder, SetSynchronization} from '@sanity/descriptors'
-import {Schema} from '@sanity/types'
-import {RegistryType} from './types'
-import {convertTypeDef, Options} from './convert'
+import {SetBuilder, type SetSynchronization} from '@sanity/descriptors'
+import {type Schema} from '@sanity/types'
+
+import {convertTypeDef, type Options} from './convert'
+import {type RegistryType} from './types'
 
 const CACHE = new WeakMap<Schema, SetSynchronization<RegistryType>>()
 

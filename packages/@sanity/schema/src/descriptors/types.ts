@@ -1,4 +1,9 @@
-import {type EncodedSet, type Encoded, EncodableObject, EncodableValue} from '@sanity/descriptors'
+import {
+  type EncodableObject,
+  type EncodableValue,
+  type Encoded,
+  type EncodedSet,
+} from '@sanity/descriptors'
 
 export type RegistryType = 'sanity.schema.registry'
 export type EncodedRegistry = EncodedSet<'sanity.schema.registry'>

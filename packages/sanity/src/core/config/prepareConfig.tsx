@@ -1,19 +1,13 @@
 import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
-import {
-  Rule,
-  SchemaValidationValue,
-  type CurrentUser,
-  type Schema,
-  type SchemaValidationProblem,
-} from '@sanity/types'
+import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
+import debugit from 'debug'
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
-import debugit from 'debug'
 
 import {
   createDatasetFileAssetSource,
@@ -25,7 +19,7 @@ import {
 } from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
+import {createSchema, DESCRIPTOR_CONVERTER} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -79,25 +73,6 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
-import {DescriptorConverter} from '@sanity/schema/_internal'
-import {Rule as RuleClass} from '../validation'
-
-const DESC_CONVERTER = new DescriptorConverter({
-  ruleClass: RuleClass,
-  validationExtractor: normalizeValidationValue,
-})
-
-function normalizeValidationValue(validation: SchemaValidationValue): Rule[] {
-  if (!validation) return []
-
-  if (Array.isArray(validation)) {
-    return validation.flatMap((inner) => normalizeValidationValue(inner))
-  } else if (typeof validation === 'object') {
-    return [validation]
-  } else {
-    return normalizeValidationValue(validation(new RuleClass()))
-  }
-}
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -246,7 +221,7 @@ export function prepareConfig(
       })
 
       if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
-        const sync = DESC_CONVERTER.get(schema)
+        const sync = DESCRIPTOR_CONVERTER.get(schema)
         debug('Built schema for synchronization', {sync})
       }
 

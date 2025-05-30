@@ -1,26 +1,27 @@
 import {
-  ArraySchemaType,
-  FieldReference as SchemaFieldReference,
-  ReferenceSchemaType,
-  RuleClass,
-  RuleSpec,
-  Rule as SchemaRule,
-  SchemaType,
-  SchemaValidationValue,
-  ObjectSchemaType,
+  type ArraySchemaType,
+  type FieldReference as SchemaFieldReference,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type Rule as SchemaRule,
+  type RuleClass,
+  type RuleSpec,
+  type SchemaType,
+  type SchemaValidationValue,
 } from '@sanity/types'
-import {
-  ArrayTypeDef,
-  CommonTypeDef,
-  CoreTypeDef,
-  ReferenceTypeDef,
-  SubtypeDef,
-  TypeDef,
-  Rule,
-  FieldReference,
-  ObjectField,
-} from './types'
+
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
+import {
+  type ArrayTypeDef,
+  type CommonTypeDef,
+  type CoreTypeDef,
+  type FieldReference,
+  type ObjectField,
+  type ReferenceTypeDef,
+  type Rule,
+  type SubtypeDef,
+  type TypeDef,
+} from './types'
 
 function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonTypeDef {
   // Note that OWN_PROPS_NAME is only set on subtypes, not the core types.
@@ -110,7 +111,7 @@ export function convertTypeDef(schemaType: SchemaType, opts: Options): TypeDef {
   }
 }
 
-function convertRuleSpec(rule: SchemaRule, spec: RuleSpec, opts: Options): Rule | undefined {
+function convertRuleSpec(schemaRule: SchemaRule, spec: RuleSpec, opts: Options): Rule | undefined {
   switch (spec.flag) {
     case 'all': {
       const rule: Rule = {type: 'allOf', children: []}
@@ -137,7 +138,7 @@ function convertRuleSpec(rule: SchemaRule, spec: RuleSpec, opts: Options): Rule 
     case 'unique':
       return {type: 'uniqueItems'}
     case 'custom':
-      return {type: 'custom', optional: rule._required === 'optional' || undefined}
+      return {type: 'custom', optional: schemaRule._required === 'optional' || undefined}
     case 'stringCasing':
       return {type: spec.constraint}
     case 'integer':
@@ -178,6 +179,8 @@ function convertRuleSpec(rule: SchemaRule, spec: RuleSpec, opts: Options): Rule 
       if (spec.constraint === 'Date') return {type: 'datetime'}
       // The other types should be represented through JSON type.
       return undefined
+    default:
+      return undefined
   }
 }
 
@@ -190,9 +193,9 @@ function convertFieldRef<T extends string | number>(
       type: 'fieldReference',
       path: typeof val.path === 'string' ? [val.path] : val.path,
     }
-  } else {
-    return val.toString()
   }
+
+  return val.toString()
 }
 
 function convertSchemaRuleToRuleSet(schemaRule: SchemaRule, opts: Options): Rule[] {
