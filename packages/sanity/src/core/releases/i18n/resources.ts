@@ -16,6 +16,8 @@ const releasesLocaleStrings = {
   'action.create-revert-release': 'Stage in new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
+  /** Action text for duplicating a release */
+  'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
@@ -92,6 +94,8 @@ const releasesLocaleStrings = {
   'changes-published-docs.title': 'Changes to published documents',
   /** Text for when a release / document was created */
   'created': 'Created <RelativeTime/>',
+  /** Suffix for when a release is a copy of another release */
+  'copy-suffix': 'Copy',
 
   /** Text for the releases detail screen when a release was published ASAP */
   'dashboard.details.published-asap': 'Published',
@@ -143,6 +147,17 @@ const releasesLocaleStrings = {
 
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
+
+  /** Header for the dialog confirming the duplicate of a release */
+  'duplicate-dialog.confirm-duplicate-header': 'Are you sure you want to duplicate this release?',
+  /** Description for the dialog confirming the duplicate of a release with one document */
+  'duplicate-dialog.confirm-duplicate-description_one':
+    'This will duplicate the release and the 1 document version.',
+  /** Description for the dialog confirming the duplicate of a release with more than one document */
+  'duplicate-dialog.confirm-duplicate-description_other':
+    'This will duplicate the release and the {{count}} document versions.',
+  /** Label for the button to proceed with duplicating a release */
+  'duplicate-dialog.confirm-duplicate-button': 'Yes, duplicate release',
 
   /** Title text displayed for technical error details */
   'error-details-title': 'Error details',
@@ -213,6 +228,8 @@ const releasesLocaleStrings = {
   'permissions.error.archive': 'You do not have permission to archive this release',
   /** Tooltip label when the user doesn't have permission to delete release */
   'permissions.error.delete': 'You do not have permission to delete this release',
+  /** Tooltip label when the user doesn't have permission to duplicate release */
+  'permissions.error.duplicate': 'You do not have permission to duplicate this release',
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
 
@@ -357,6 +374,12 @@ const releasesLocaleStrings = {
   'toast.delete.error': "Failed to delete '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when release is successfully deleted */
   'toast.delete.success': "The '<strong>{{title}}</strong>' release was successfully deleted",
+  /** Description for toast when release duplication failed */
+  'toast.duplicate.error': "Failed to duplicate '<strong>{{title}}</strong>': {{error}}",
+  /** Description for toast when release is successfully duplicated */
+  'toast.duplicate.success': "The '<strong>{{title}}</strong>' release was duplicated. <Link/>",
+  /** Link text for toast link to the duplicated release */
+  'toast.duplicate.success-link': 'View duplicated release',
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to schedule */

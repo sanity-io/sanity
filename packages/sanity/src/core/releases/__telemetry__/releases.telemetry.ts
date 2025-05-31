@@ -98,3 +98,10 @@ export const RevertRelease = defineEvent<RevertInfo>({
   version: 1,
   description: 'User reverted a release',
 })
+
+/** When a release is successfully duplicated */
+export const DuplicatedRelease = defineEvent({
+  name: 'Release Duplicated',
+  version: 1,
+  description: 'User duplicated a release',
+})
