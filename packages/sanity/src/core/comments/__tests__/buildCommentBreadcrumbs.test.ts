@@ -92,6 +92,58 @@ const arrayWithAnonymousObjectFieldWithHiddenCallback = defineField({
   ],
 })
 
+const arrayWithNestedObjectField = defineField({
+  name: 'myArrayWithNestedObject',
+  title: 'My array with nested object title',
+  type: 'array',
+  of: [
+    {
+      type: 'object',
+      fields: [
+        {
+          name: 'nestedObject',
+          type: 'object',
+          fields: [
+            {
+              name: 'nestedObjectTitle',
+              type: 'string',
+              title: 'Nested object title',
+            },
+            {
+              name: 'nestedObjectDescription',
+              type: 'string',
+              title: 'Nested object description',
+            },
+            {
+              name: 'nestedObjectHiddenCallback',
+              type: 'string',
+              title: 'Nested object hidden callback',
+              hidden: () => true,
+            },
+            {
+              type: 'array',
+              name: 'nestedObjectArray',
+              title: 'Nested object array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'nestedObjectArrayTitle',
+                      type: 'string',
+                      title: 'Nested object array title',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
 const schema = Schema.compile({
   name: 'default',
   types: [
@@ -108,6 +160,7 @@ const schema = Schema.compile({
         nestedArrayOfObjectsField,
         arrayWithAnonymousObjectField,
         arrayWithAnonymousObjectFieldWithHiddenCallback,
+        arrayWithNestedObjectField,
       ],
     },
   ],
@@ -381,6 +434,86 @@ describe('comments: buildCommentBreadcrumbs', () => {
       },
       {invalid: false, isArrayItem: true, title: '#2'},
       {invalid: true, isArrayItem: false, title: 'Anonymous string with hidden callback title'},
+    ])
+  })
+  test('should resolve the crumb if the field is part of an array with a nested object', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithNestedObject: [
+          {
+            _key: 'key1',
+            nestedObject: {
+              nestedObjectTitle: 'Hello world',
+            },
+          },
+        ],
+      },
+      fieldPath: 'myArrayWithNestedObject[_key=="key1"].nestedObject.nestedObjectTitle',
+      schemaType: schema.get('testDocument'),
+    })
+    expect(crumbs).toEqual([
+      {
+        invalid: false,
+        isArrayItem: false,
+        title: 'My array with nested object title',
+      },
+      {invalid: false, isArrayItem: true, title: '#1'},
+      {invalid: false, isArrayItem: false, title: 'Nested Object'},
+      {invalid: false, isArrayItem: false, title: 'Nested object title'},
+    ])
+  })
+  test('should invalidate the crumb if the field is part of an array with a nested object in a hidden field', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithNestedObject: [
+          {
+            _key: 'key1',
+            nestedObject: {
+              nestedObjectTitle: 'Hello world',
+            },
+          },
+        ],
+      },
+      fieldPath: 'myArrayWithNestedObject[_key=="key1"].nestedObject.nestedObjectHiddenCallback',
+      schemaType: schema.get('testDocument'),
+    })
+    expect(crumbs).toEqual([
+      {
+        invalid: false,
+        isArrayItem: false,
+        title: 'My array with nested object title',
+      },
+      {invalid: false, isArrayItem: true, title: '#1'},
+      {invalid: false, isArrayItem: false, title: 'Nested Object'},
+      {invalid: true, isArrayItem: false, title: 'Nested object hidden callback'},
+    ])
+  })
+  test('should resolve the crumb if the field is part of an array with a nested object in a nested array', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithNestedObject: [
+          {
+            _key: 'key1',
+            nestedObject: {
+              nestedObjectArray: [{_key: 'key2', nestedObjectArrayTitle: 'Hello world'}],
+            },
+          },
+        ],
+      },
+      fieldPath:
+        'myArrayWithNestedObject[_key=="key1"].nestedObject.nestedObjectArray[_key=="key2"].nestedObjectArrayTitle',
+      schemaType: schema.get('testDocument'),
+    })
+    expect(crumbs).toEqual([
+      {invalid: false, isArrayItem: false, title: 'My array with nested object title'},
+      {invalid: false, isArrayItem: true, title: '#1'},
+      {invalid: false, isArrayItem: false, title: 'Nested Object'},
+      {invalid: false, isArrayItem: false, title: 'Nested object array'},
+      {invalid: false, isArrayItem: true, title: '#1'},
+      {invalid: false, isArrayItem: false, title: 'Nested object array title'},
     ])
   })
 })

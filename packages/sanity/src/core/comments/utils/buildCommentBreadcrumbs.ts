@@ -76,13 +76,13 @@ export function buildCommentBreadcrumbs(
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentListBreadcrumbs = []
 
-  let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> | null = null
+  let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> = schemaType
 
   paths.forEach((seg, index) => {
     const currentPath = paths.slice(0, index + 1)
     const previousPath = paths.slice(0, index)
+    const field = getSchemaField(currentSchemaType, PathUtils.toString([seg]))
 
-    const field = getSchemaField(schemaType, PathUtils.toString(currentPath))
     const isKeySegment = seg.hasOwnProperty('_key')
 
     const parentValue = getValueAtPath(documentValue, previousPath)
@@ -101,7 +101,6 @@ export function buildCommentBreadcrumbs(
     // This can happen if the array item has been removed from the document value.
     if (isKeySegment && Array.isArray(parentValue)) {
       const arrayItemIndex = findArrayItemIndex(parentValue, seg)
-
       const isNumber = typeof arrayItemIndex === 'number'
 
       fieldPaths.push({
