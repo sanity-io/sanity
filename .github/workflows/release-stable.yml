@@ -62,45 +62,23 @@ jobs:
         run: |
           TAG="$NORMALISED_VERSION"
           VERSION_NUMBER="${TAG#v}"
-          echo "Validating git tag '$TAG' and corresponding release..."
+          echo "Validating git tag '$TAG'..."
 
-          # 1. Check if git tag exists in repository
+          # Check if git tag exists in repository
           if ! git tag -l | grep -q "^${TAG}$"; then
             echo "Error: Git tag '$TAG' does not exist in the repository"
-            echo "Available tags:"
-            git tag -l | sort -V | tail -10
             exit 1
           fi
-          echo "✓ Git tag '$TAG' found in repository"
+          echo "✓ Git tag '$TAG' found"
 
-          # 2. Check if tag corresponds to a valid published release
-          if ! npm view sanity@$VERSION_NUMBER version &>/dev/null; then
-            echo "Error: No NPM package 'sanity' found with version '$VERSION_NUMBER'"
-            echo "This suggests the tag '$TAG' does not correspond to a published release"
-            exit 1
-          fi
-          echo "✓ NPM package 'sanity@$VERSION_NUMBER' exists (valid published release)"
-
-          echo "All validations passed for tag '$TAG'"
           echo "TAG=$TAG" >> $GITHUB_ENV
           echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
 
       - name: Checkout specific git tag
         run: |
-          TAG="$TAG"
           echo "Checking out git tag '$TAG'..."
-
           git checkout "$TAG"
-
-          # Verify we're on the correct tag
-          CURRENT_TAG=$(git describe --tags --exact-match HEAD 2>/dev/null || echo "none")
-          if [[ "$CURRENT_TAG" != "$TAG" ]]; then
-            echo "Error: Failed to checkout tag '$TAG'. Currently on: $CURRENT_TAG"
-            exit 1
-          fi
-
-          echo "✓ Successfully checked out git tag '$TAG'"
-          echo "✓ Current HEAD is at: $(git rev-parse --short HEAD)"
+          echo "✓ Checked out git tag '$TAG'"
 
       - name: Read Lerna configuration from git tag
         run: |
@@ -112,32 +90,7 @@ jobs:
             exit 1
           fi
 
-          # Parse Lerna configuration
-          LERNA_PACKAGES=$(node -p "JSON.stringify(require('./lerna.json').packages)")
-          LERNA_NPM_CLIENT=$(node -p "require('./lerna.json').npmClient || 'npm'")
-
-          echo "✓ Lerna configuration loaded:"
-          echo "  NPM Client: $LERNA_NPM_CLIENT"
-          echo "  Package patterns: $LERNA_PACKAGES"
-
-          # Export variables for subsequent steps
-          echo "LERNA_PACKAGES=$LERNA_PACKAGES" >> $GITHUB_ENV
-          echo "LERNA_NPM_CLIENT=$LERNA_NPM_CLIENT" >> $GITHUB_ENV
-
-      - name: Discover core bundle packages from git tag
-        run: |
-          echo "Identifying core bundle packages from checked out git tag '$TAG'..."
-
-          # Define the core packages that require bundle builds
-          CORE_PACKAGES="sanity @sanity/vision"
-          CORE_PACKAGE_PATHS="packages/sanity packages/@sanity/vision"
-
-          echo "✓ Core bundle packages: $CORE_PACKAGES"
-          echo "✓ Package paths: $CORE_PACKAGE_PATHS"
-
-          # Export for subsequent steps
-          echo "CORE_PACKAGES=$CORE_PACKAGES" >> $GITHUB_ENV
-          echo "CORE_PACKAGE_PATHS=$CORE_PACKAGE_PATHS" >> $GITHUB_ENV
+          echo "✓ Lerna configuration loaded"
 
       - name: Setup Node.js and pnpm
         uses: pnpm/action-setup@v4
@@ -152,41 +105,24 @@ jobs:
       - name: Install dependencies from git tag
         run: |
           echo "Installing dependencies from checked out git tag '$TAG'..."
-
-          # Install dependencies using pnpm (this repository always uses pnpm)
           pnpm install --frozen-lockfile
-
-          echo "✓ Dependencies installed successfully from git tag '$TAG'"
+          echo "✓ Dependencies installed successfully"
 
       - name: Build all packages from git tag source
         run: |
           echo "Building all packages from checked out git tag '$TAG'..."
-
-          # Build all packages using the standard build script with proper logging
-          # This filters to all packages in ./packages/* and ./packages/@sanity/*
           pnpm build --output-logs=full --log-order=grouped
-
-          echo "✓ All packages built successfully from git tag '$TAG'"
+          echo "✓ All packages built successfully"
 
       - name: Pre-flight checks
         run: |
-          echo "Running pre-flight checks for stable release..."
-
-          # Check if NODE_AUTH_TOKEN is working
+          echo "Running pre-flight checks..."
           npm whoami
-
-          # Configure git (same as release.yml)
-          # https://github.com/actions/checkout/pull/1184
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git config --global advice.skippedCherryPicks false
-
-          echo "✓ NPM authentication verified successfully"
-          echo "✓ Git configuration completed"
+          echo "✓ NPM authentication verified"
 
       - name: Add stable dist-tag to packages
         run: |
-          echo "Adding 'stable' dist-tag to existing published packages from git tag '$TAG'..."
+          echo "Adding 'stable' dist-tag to packages from git tag '$TAG'..."
 
           # Get list of packages in package@version format
           PACKAGE_VERSIONS=$(lerna list --all --json | jq -r '.[] | select(.private == false) | "\(.name)@\(.version)"')
@@ -200,22 +136,15 @@ jobs:
             
             echo "Adding stable dist-tag to $package_version..."
             
-            # Check if package@version exists in registry
-            if ! npm view "$package_version" version &>/dev/null; then
-              echo "  ✗ $package_version not found in registry, skipping"
-              continue
-            fi
-            
-            # Add stable dist-tag
             if npm dist-tag add "$package_version" stable; then
-              echo "  ✓ Successfully added stable dist-tag to $package_version"
+              echo "  ✓ Success"
             else
-              echo "  ✗ Failed to add stable dist-tag to $package_version"
+              echo "  ✗ Failed"
               exit 1
             fi
           done <<< "$PACKAGE_VERSIONS"
 
-          echo "✓ All packages successfully tagged with stable dist-tag"
+          echo "✓ All packages tagged with stable dist-tag"
 
       - name: Verify stable dist-tags
         run: |
