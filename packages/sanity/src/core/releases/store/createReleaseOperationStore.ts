@@ -37,7 +37,7 @@ export interface ReleaseOperationsStore {
     revertType: 'staged' | 'immediate',
   ) => Promise<void>
   duplicateRelease: (
-    releaseId: string,
+    releaseDocumentId: string,
     releaseMetadata: ReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => Promise<void>
@@ -219,17 +219,17 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleDuplicateRelease = async (
-    releaseId: string,
+    releaseDocumentId: string,
     releaseMetadata: ReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => {
     await handleCreateRelease({
-      _id: releaseId,
+      _id: releaseDocumentId,
       metadata: releaseMetadata,
     })
 
     if (releaseDocuments) {
-      const versionId = getReleaseIdFromReleaseDocumentId(releaseId)
+      const versionId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
       const duplicateVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
         (releaseDocument) => ({
           actionType: 'sanity.action.document.version.create',

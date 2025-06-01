@@ -137,7 +137,7 @@ export const ReleaseMenuButton = ({
             status: 'success',
             title: (
               // toast children need access to the router
-              <RouterContext value={router}>
+              <RouterContext.Provider value={router}>
                 <Text muted size={1}>
                   <Translate
                     t={t}
@@ -146,7 +146,7 @@ export const ReleaseMenuButton = ({
                     values={{title: releaseTitle}}
                   />
                 </Text>
-              </RouterContext>
+              </RouterContext.Provider>
             ),
           })
         }
