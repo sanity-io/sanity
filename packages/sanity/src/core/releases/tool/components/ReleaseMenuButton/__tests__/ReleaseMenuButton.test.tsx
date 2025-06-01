@@ -12,6 +12,7 @@ import {
   publishedASAPRelease,
   scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
+import {useReleasesUpsellMockReturn} from '../../../../contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {
   mockUseReleaseOperations,
@@ -31,6 +32,11 @@ import {
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
+// hoisted so that mockUseIsReleasesPlus can be set to false for tests also
+const {mockUseIsReleasesPlus} = vi.hoisted(() => ({
+  mockUseIsReleasesPlus: vi.fn(() => true),
+}))
+
 vi.mock('../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
@@ -41,6 +47,14 @@ vi.mock('../../../../store/useReleasePermissions', () => ({
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+}))
+
+vi.mock('../../../../hooks/useIsReleasesPlus', () => ({
+  useIsReleasesPlus: mockUseIsReleasesPlus,
+}))
+
+vi.mock('../../../../contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
 }))
 
 vi.mock('sanity/router', async (importOriginal) => ({
@@ -69,13 +83,19 @@ const renderTest = async ({
 }
 
 describe('ReleaseMenuButton', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    mockUseBundleDocuments.mockRestore()
+
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    mockUseIsReleasesPlus.mockReturnValue(true)
+  })
+
   describe('when permission is provided', () => {
     beforeEach(() => {
-      vi.clearAllMocks()
-
-      mockUseBundleDocuments.mockRestore()
-
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+      mockUseIsReleasesPlus.mockReturnValue(true)
     })
 
     describe('archive release', () => {
@@ -511,6 +531,101 @@ describe('ReleaseMenuButton', () => {
 
       expect(screen.queryByTestId('unschedule-release-menu-item')).not.toBeInTheDocument()
     })
+
+    describe('duplicate release', () => {
+      const duplicateReleaseMock = vi.fn()
+
+      beforeEach(() => {
+        duplicateReleaseMock.mockReset().mockResolvedValue({releaseId: 'new-duplicated-release-id'})
+        mockUseReleaseOperations.mockReturnValue({
+          ...useReleaseOperationsMockReturn,
+          duplicateRelease: duplicateReleaseMock,
+        })
+      })
+
+      test.each([
+        {name: 'active scheduled', release: activeScheduledRelease},
+        {name: 'active ASAP', release: activeASAPRelease},
+        {name: 'active undecided', release: activeUndecidedRelease},
+      ])('allows duplicating an $name release', async ({release}) => {
+        await renderTest({release, documentsCount: 1, documents: []})
+
+        await waitFor(() => screen.getByTestId('release-menu-button'))
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+
+        await waitFor(() => {
+          expect(duplicateMenuItem).not.toBeDisabled()
+        })
+
+        await act(() => {
+          fireEvent.click(duplicateMenuItem)
+        })
+
+        screen.getByTestId('confirm-duplicate-dialog')
+
+        await act(() => {
+          fireEvent.click(screen.getByTestId('confirm-button'))
+        })
+
+        expect(duplicateReleaseMock).toHaveBeenCalled()
+      })
+
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('does not allow for duplicating of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await waitFor(() => screen.getByTestId('release-menu-button'))
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
+      })
+
+      test('does not show duplicate menu item when useIsReleasesPlus returns false', async () => {
+        mockUseIsReleasesPlus.mockReturnValue(false)
+
+        await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
+
+        await waitFor(() => screen.getByTestId('release-menu-button'))
+        fireEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
+      })
+
+      describe('when duplication fails', () => {
+        beforeEach(() => {
+          duplicateReleaseMock.mockRejectedValue(new Error('some duplication error'))
+        })
+
+        test('handles failure when trying to duplicate an active release', async () => {
+          await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
+
+          await waitFor(() => screen.getByTestId('release-menu-button'))
+          fireEvent.click(screen.getByTestId('release-menu-button'))
+
+          const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+
+          await waitFor(() => {
+            expect(duplicateMenuItem).not.toBeDisabled()
+          })
+
+          await act(() => {
+            fireEvent.click(duplicateMenuItem)
+          })
+
+          screen.getByTestId('confirm-duplicate-dialog')
+
+          await act(() => {
+            fireEvent.click(screen.getByTestId('confirm-button'))
+          })
+
+          expect(duplicateReleaseMock).toHaveBeenCalled()
+        })
+      })
+    })
   })
 
   describe('when permission is not provided', () => {
@@ -520,6 +635,7 @@ describe('ReleaseMenuButton', () => {
       mockUseBundleDocuments.mockRestore()
 
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
+      mockUseIsReleasesPlus.mockReturnValue(true)
     })
 
     test('will disable archive menu', async () => {
@@ -556,6 +672,15 @@ describe('ReleaseMenuButton', () => {
       fireEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.getByTestId('unarchive-release-menu-item')).toBeDisabled()
+    })
+
+    test('will disable duplicate menu', async () => {
+      await renderTest({release: activeScheduledRelease, documentsCount: 1})
+
+      await waitFor(() => screen.getByTestId('release-menu-button'))
+      fireEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.getByTestId('duplicate-release-menu-item')).toBeDisabled()
     })
   })
 })
