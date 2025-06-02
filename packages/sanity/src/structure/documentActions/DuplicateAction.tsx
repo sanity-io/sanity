@@ -3,7 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
-  type DocumentActionComponent,
+  type DuplicateDocumentActionComponent,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -21,7 +21,13 @@ const DISABLED_REASON_KEY = {
 }
 
 /** @internal */
-export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, release}) => {
+export const DuplicateAction: DuplicateDocumentActionComponent = ({
+  id,
+  type,
+  onComplete,
+  release,
+  mapDocument,
+}) => {
   const documentStore = useDocumentStore()
   const {duplicate} = useDocumentOperation(id, type, release)
   const {navigateIntent} = useRouter()
@@ -49,14 +55,14 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, 
         .operationEvents(id, type)
         .pipe(filter((e) => e.op === 'duplicate' && e.type === 'success')),
     )
-    duplicate.execute(dupeId)
+    duplicate.execute(dupeId, {mapDocument})
 
     // only navigate to the duplicated document when the operation is successful
     await duplicateSuccess
     navigateIntent('edit', {id: dupeId, type})
 
     onComplete()
-  }, [documentStore.pair, duplicate, id, navigateIntent, onComplete, type])
+  }, [documentStore.pair, duplicate, id, mapDocument, navigateIntent, onComplete, type])
 
   return useMemo(() => {
     if (!isPermissionsLoading && !permissions?.granted) {
