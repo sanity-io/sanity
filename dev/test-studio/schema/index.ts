@@ -49,6 +49,7 @@ import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {languageFilterDebugType} from './debug/languageFilter'
+import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
 import manyFieldsTest from './debug/manyFieldsTest'
@@ -222,6 +223,7 @@ export function createSchemaTypes(projectId: string) {
     inspectorsTestType,
     invalidPreviews,
     languageFilterDebugType,
+    lazyComponents,
     liveEdit,
     localeString,
     manyFieldsTest,
