@@ -1,0 +1,66 @@
+name: Release @next
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release-next:
+    permissions:
+      contents: read # for checkout
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      # Publish packages to npm under the `next` tag on new commits to main.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: install deps & build
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Publish packages to npm
+        # Note: ubuntu-latest ships with lerna installed on the system
+        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
+        # It's important that we call lerna using npx in the command below so we get the
+        # locally installed lerna instead of the one installed on the system
+        run: |
+          npx lerna publish \
+          --canary \
+          --no-git-tag-version \
+          --force-publish \
+          --conventional-commits \
+          --conventional-prerelease \
+          --dist-tag=next \
+          --preid=next \
+          --exact \
+          --yes
+        env:
+          NPM_CONFIG_PROVENANCE: true
