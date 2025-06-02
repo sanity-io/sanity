@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable max-statements */
 import path from 'node:path'
 
@@ -177,6 +178,13 @@ export default async function startSanityDevServer(
 
     // mismatch between local and auto-updating dependencies
     if (result?.length) {
+      console.log('--------------------------------')
+      console.log('Is interactive', isInteractive)
+      console.log(' process.stdout.isTTY ', process.stdout.isTTY)
+      console.log(' process.env.TERM ', process.env.TERM)
+      console.log('CI in process.env', 'CI' in process.env)
+      console.log('--------------------------------')
+
       if (isInteractive) {
         const shouldUpgrade = await prompt.single({
           type: 'confirm',
