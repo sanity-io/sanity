@@ -1,5 +1,3 @@
-import * as PathUtils from '@sanity/util/paths'
-
 import {useChangeIndicatorsReportedValues} from './tracker'
 
 export function useHoveredChange() {
@@ -9,7 +7,7 @@ export function useHoveredChange() {
     .filter(([key, change]) => change.hasHover)
     .sort((a, b) => {
       // return the one with the longest path.
-      return PathUtils.toString(b[1].path).length - PathUtils.toString(a[1].path).length
+      return b[1].path.length - a[1].path.length
     })[0]
 
   if (hoveredEntry) {
