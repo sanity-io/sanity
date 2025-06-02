@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'node:path'
 
 import {
@@ -19,6 +20,7 @@ import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
 import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {isInteractive} from '../../util/isInteractive'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
@@ -171,23 +173,34 @@ export default async function startSanityDevServer(
 
     // mismatch between local and auto-updating dependencies
     if (result?.length) {
-      const shouldUpgrade = await prompt.single({
-        type: 'confirm',
-        message: chalk.yellow(
-          `The following local package versions are different from the versions currently served at runtime.\n` +
-            `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-            `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-            `Do you want to upgrade local versions?`,
-        ),
-        default: true,
-      })
-      if (shouldUpgrade) {
-        await upgradePackages(
-          {
-            packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
-            packages: result.map((res) => [res.pkg, res.remote]),
-          },
-          context,
+      if (isInteractive) {
+        const shouldUpgrade = await prompt.single({
+          type: 'confirm',
+          message: chalk.yellow(
+            `The following local package versions are different from the versions currently served at runtime.\n` +
+              `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
+              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+              `Do you want to upgrade local versions?`,
+          ),
+          default: true,
+        })
+        if (shouldUpgrade) {
+          await upgradePackages(
+            {
+              packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+              packages: result.map((res) => [res.pkg, res.remote]),
+            },
+            context,
+          )
+        }
+      } else {
+        // In this case we warn the user but we don't ask them if they want to upgrade because it's not interactive.
+        output.print(
+          chalk.yellow(
+            `The following local package versions are different from the versions currently served at runtime.\n` +
+              `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
+              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`,
+          ),
         )
       }
     }
