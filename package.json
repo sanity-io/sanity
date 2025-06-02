@@ -206,5 +206,8 @@
       "vitest": "$vitest"
     }
   },
-  "isSanityMonorepo": true
+  "isSanityMonorepo": true,
+  "dependencies": {
+    "conventional-changelog-conventionalcommits": "^9.0.0"
+  }
 }
