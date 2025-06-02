@@ -58,6 +58,7 @@ jobs:
           npx lerna version \
           --force-publish \
           --no-push \
+          --sync-workspace-lock \
           --conventional-commits \
           --yes
         env:
