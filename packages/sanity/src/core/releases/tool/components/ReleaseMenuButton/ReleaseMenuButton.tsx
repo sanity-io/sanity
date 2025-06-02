@@ -1,23 +1,41 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useRouter} from 'sanity/router'
+import {RouterContext, useRouter} from 'sanity/router'
 
 import {Button, Dialog, Popover} from '../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {createReleaseId} from '../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
+
+export type ActionResult =
+  | false
+  | void
+  | SingleActionResult
+  | {
+      releaseId: string
+    }
+
+const toastActionComponents: Partial<
+  Record<ReleaseAction, (actionResult: ActionResult) => TranslateComponentMap>
+> = {
+  duplicate: (actionResult) => ({
+    Link: () => <DuplicateReleaseToastLink actionResult={actionResult} />,
+  }),
+}
 
 export type ReleaseMenuButtonProps = {
   /** defaults to false
@@ -38,7 +56,7 @@ export const ReleaseMenuButton = ({
 }: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
-  const {archive, unarchive, deleteRelease, unschedule} = useReleaseOperations()
+  const {archive, unarchive, deleteRelease, unschedule, duplicateRelease} = useReleaseOperations()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
@@ -68,6 +86,21 @@ export const ReleaseMenuButton = ({
     return guardWithReleaseLimitUpsell(() => unarchive(release._id), true)
   }, [guardWithReleaseLimitUpsell, release._id, unarchive])
 
+  const handleDuplicate = useCallback(async () => {
+    const duplicateReleaseId = createReleaseId()
+
+    await guardWithReleaseLimitUpsell(async () => {
+      const releaseDocuments = documents?.map((document) => document.document)
+      const duplicatedMetadata = {
+        ...release.metadata,
+        title: `${release.metadata.title} (${t('copy-suffix')})`,
+      }
+      return duplicateRelease(duplicateReleaseId, duplicatedMetadata, releaseDocuments)
+    }, true)
+
+    return {releaseId: duplicateReleaseId}
+  }, [guardWithReleaseLimitUpsell, duplicateRelease, documents, release.metadata, t])
+
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
       if (action === 'publish' || action === 'schedule') return
@@ -78,6 +111,7 @@ export const ReleaseMenuButton = ({
         archive,
         unarchive: handleUnarchive,
         unschedule,
+        duplicate: handleDuplicate,
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
@@ -91,22 +125,28 @@ export const ReleaseMenuButton = ({
           setPerspective('drafts')
         }
         setIsPerformingOperation(true)
-        await actionLookup[action](release._id)
+        const actionResult = await actionLookup[action](release._id)
 
         telemetry.log(actionValues.telemetry)
 
         if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
+          const toastComponents = toastActionComponents[action]?.(actionResult)
+
           toast.push({
             closable: true,
             status: 'success',
             title: (
-              <Text muted size={1}>
-                <Translate
-                  t={t}
-                  i18nKey={actionValues.toastSuccessI18nKey}
-                  values={{title: releaseTitle}}
-                />
-              </Text>
+              // toast children need access to the router
+              <RouterContext.Provider value={router}>
+                <Text muted size={1}>
+                  <Translate
+                    t={t}
+                    components={toastComponents}
+                    i18nKey={actionValues.toastSuccessI18nKey}
+                    values={{title: releaseTitle}}
+                  />
+                </Text>
+              </RouterContext.Provider>
             ),
           })
         }
@@ -139,17 +179,19 @@ export const ReleaseMenuButton = ({
       archive,
       handleUnarchive,
       unschedule,
+      handleDuplicate,
+      selectedReleaseId,
+      release._id,
       telemetry,
+      setPerspective,
+      router,
       toast,
       t,
       releaseTitle,
-      selectedReleaseId,
-      setPerspective,
-      release._id,
     ],
   )
 
-  /** in some instanced, immediately execute the action without requiring confirmation */
+  /** in some instances, immediately execute the action without requiring confirmation */
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
 
