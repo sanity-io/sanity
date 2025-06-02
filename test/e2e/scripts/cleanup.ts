@@ -1,4 +1,11 @@
 /* eslint-disable no-console */
+/**
+ * Deletes old datasets from the e2e project that was created longer than DATASET_MAX_AGE ago
+ * Run this via `npx tsx --env-file=<.env file> ./scripts/e2e/cleanupOldDatasets"`
+ * Note for the future: ideally, this should be rewritten to check against open PRs on github
+ * and only delete datasets for PRs that has been closed or merged
+ */
+
 import {readEnv} from '../envVars'
 
 const SANITY_E2E_PROJECT_ID = readEnv('SANITY_E2E_PROJECT_ID')
@@ -13,7 +20,7 @@ interface Dataset {
 }
 
 // If the dataset is older than this, delete it
-const DATASET_MAX_AGE = 1000 * 60 * 60
+const DATASET_MAX_AGE = 1000 * 60 * 60 * 24
 
 // Fetch a list of all datasets for the project
 async function listDatasets(): Promise<Dataset[]> {
