@@ -12,5 +12,13 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.90.0"
+  "version": "3.90.0",
+  "command": {
+    "version": {
+      "changelogPreset": "conventionalcommits",
+      "message": "chore(release): publish %s",
+      "changelogIncludeCommitsClientLogin": " by %a (%e)",
+      "remoteClient": "github"
+    }
+  }
 }
