@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {type ComponentType, Fragment, useMemo} from 'react'
+import {Skeleton} from '@sanity/ui'
+import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
 
 import {useSource} from '../../studio'
 import {flattenConfig} from '..'
@@ -25,13 +26,17 @@ function _createMiddlewareComponent<T extends {}>(
       next = (props) => <Middleware {...props} renderDefault={renderDefault} />
     }
 
-    return next({
-      ...outerProps,
-      // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
-      // NOTE: it's important that the default component does not use `renderDefault`, since it will
-      // get the `emptyRender` callback will be passed when the middleware stack is empty.
-      renderDefault: emptyRender,
-    })
+    return (
+      <Suspense fallback={<Skeleton padding={3} radius={1} animated />}>
+        {next({
+          ...outerProps,
+          // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
+          // NOTE: it's important that the default component does not use `renderDefault`, since it will
+          // get the `emptyRender` callback will be passed when the middleware stack is empty.
+          renderDefault: emptyRender,
+        })}
+      </Suspense>
+    )
   }
   return MiddlewareComponent
 }
