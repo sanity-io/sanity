@@ -444,5 +444,54 @@ test.describe('displayedDocument', () => {
 
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
+
+    test('no draft, no publish, one version with _system.delete shows version name', async ({
+      page,
+      sanityClient,
+      _testContext,
+      browserName,
+    }) => {
+      test.slow()
+      skipIfBrowser(browserName)
+
+      const documentId = _testContext.getUniqueDocumentId()
+      const versionId = `versions.${asapReleaseId}.${documentId}`
+
+      const customPublished = await createDocument(sanityClient, {
+        ...speciesDocumentNamePublished,
+        _id: documentId,
+      })
+
+      // Create a document with a version that has _system.delete set to true
+      await createDocument(sanityClient, {
+        ...speciesDocumentNameASAP,
+        _id: versionId,
+        _system: {
+          delete: true,
+        },
+      })
+
+      await page.goto(`/content/species;${documentId}?perspective=${asapReleaseId}`)
+
+      // Wait for document to load
+      await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
+      const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
+      await expect(asapChip).toBeVisible()
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+
+      // Check that the version chip is selected
+      await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
+        'data-selected',
+      )
+      await expect(asapChip).toHaveAttribute('data-selected')
+
+      await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
+      // Check that the name field shows the version name
+      await expect(page.getByTestId('document-panel-document-title')).toHaveText('(ASAP A)')
+
+      // Clean up
+      await sanityClient.delete(versionId)
+      await sanityClient.delete(customPublished._id)
+    })
   })
 })

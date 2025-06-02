@@ -1,5 +1,6 @@
 import {
   type CustomValidator,
+  type FieldReference,
   type FieldRules,
   type LocalizedValidationMessages,
   type Rule as IRule,
@@ -236,15 +237,15 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
-  min(len: number | string): Rule {
+  min(len: number | string | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'min', constraint: len}])
   }
 
-  max(len: number | string): Rule {
+  max(len: number | string | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'max', constraint: len}])
   }
 
-  length(len: number): Rule {
+  length(len: number | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'length', constraint: len}])
   }
 
@@ -258,7 +259,7 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'integer'}])
   }
 
-  precision(limit: number): Rule {
+  precision(limit: number | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'precision', constraint: limit}])
   }
 
@@ -270,11 +271,11 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'lessThan', constraint: 0}])
   }
 
-  greaterThan(num: number): Rule {
+  greaterThan(num: number | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'greaterThan', constraint: num}])
   }
 
-  lessThan(num: number): Rule {
+  lessThan(num: number | FieldReference): Rule {
     return this.cloneWithRules([{flag: 'lessThan', constraint: num}])
   }
 

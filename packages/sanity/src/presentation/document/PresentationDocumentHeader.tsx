@@ -5,7 +5,6 @@ import {PresentationDocumentContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {type PresentationPluginOptions} from '../types'
-import {useDocumentLocations} from '../useDocumentLocations'
 import {LocationsBanner} from './LocationsBanner'
 
 const LocationStack = styled(Stack)`
@@ -24,39 +23,29 @@ export function PresentationDocumentHeader(props: {
 }): ReactNode {
   const {documentId, options, schemaType, version} = props
   const context = useContext(PresentationDocumentContext)
-  const {state, status} = useDocumentLocations({
-    id: documentId,
-    version,
-    resolvers: options.resolve?.locations || options.locate,
-    type: schemaType.name,
-  })
-
-  if ((context && context.options[0] !== options) || status === 'empty') {
-    return null
-  }
 
   const contextOptions = context?.options || []
+  const resolvers = contextOptions.map((o) => o.resolve?.locations || o.locate)
+  const hasResolvers = resolvers.some(Boolean)
+
+  if ((context && context.options[0] !== options) || !hasResolvers) {
+    return null
+  }
 
   return (
     <LocationStack marginBottom={5} space={5}>
       <Stack space={2}>
-        {contextOptions.map(
-          (
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            options,
-            idx,
-          ) => (
-            <LocationsBanner
-              documentId={documentId}
-              isResolving={status === 'resolving'}
-              key={idx}
-              options={options}
-              schemaType={schemaType}
-              showPresentationTitle={contextOptions.length > 1}
-              state={state}
-            />
-          ),
-        )}
+        {contextOptions.map((_options, idx) => (
+          <LocationsBanner
+            key={idx}
+            documentId={documentId}
+            options={_options}
+            resolvers={resolvers[idx]}
+            schemaType={schemaType}
+            showPresentationTitle={contextOptions.length > 1}
+            version={version}
+          />
+        ))}
       </Stack>
     </LocationStack>
   )

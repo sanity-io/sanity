@@ -1,10 +1,10 @@
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 
 import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
-import {type OperationImpl} from './types'
+import {type MapDocument, type OperationImpl} from './types'
 
 const omitProps = ['_createdAt', '_updatedAt']
 
@@ -31,13 +31,27 @@ const getDocumentToDuplicateId = ({
   return getDraftId(dupeId)
 }
 
-export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPLICATE'> = {
+const mapDocumentNoop: MapDocument = (document) => document
+
+export const duplicate: OperationImpl<
+  [
+    baseDocumentId: string,
+    options?: {
+      mapDocument?: MapDocument
+    },
+  ],
+  'NOTHING_TO_DUPLICATE'
+> = {
   disabled: ({snapshots}) => {
     return snapshots.published || snapshots.draft || snapshots.version
       ? false
       : 'NOTHING_TO_DUPLICATE'
   },
-  execute: ({schema, client, snapshots, typeName, idPair}, dupeId) => {
+  execute: (
+    {schema, client, snapshots, typeName, idPair},
+    dupeId,
+    {mapDocument = mapDocumentNoop} = {},
+  ) => {
     const source = snapshots.version || snapshots.draft || snapshots.published
 
     if (!source) {
@@ -51,11 +65,16 @@ export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPL
     })
 
     return operationsApiClient(client, idPair).observable.create(
-      {
-        ...omit(source, omitProps),
-        _id,
-        _type: source._type,
-      },
+      omit(
+        mapDocument({
+          ...source,
+          _id,
+          _type: source._type,
+        }),
+        omitProps,
+        // Performing `Omit` on a type that has an index signature causes the known properties to
+        // be lost.
+      ) as SanityDocumentLike,
       {
         tag: 'document.duplicate',
       },
