@@ -1,6 +1,7 @@
 import {useCallback} from 'react'
 
 import {Dialog} from '../../../../ui-components'
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
@@ -14,7 +15,7 @@ export interface DialogScheduleEditProps {
 
 const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
   const {onClose, schedule} = props
-  const timeZoneScope = {type: 'scheduledPublishing'} as const
+  const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
   const {updateSchedule} = useScheduleOperation()
   const {formData, isDirty, onFormChange} = useScheduleForm(schedule)

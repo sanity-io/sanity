@@ -13,6 +13,7 @@ import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -40,7 +41,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
   const toast = useToast()
-  const timeZoneScope = {type: 'contentReleases'} as const
+  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const getReleaseTime = useReleaseTime()
 

@@ -25,6 +25,7 @@ import {
 import {MenuButton, Tooltip} from '../../../../ui-components'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {isReleaseType} from '../../store/types'
 import {RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
@@ -39,7 +40,7 @@ export function ReleaseForm(props: {
   const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
-  const timeZoneScope = {type: 'contentReleases'} as const
+  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
