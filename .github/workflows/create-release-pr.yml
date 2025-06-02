@@ -3,8 +3,7 @@ name: Create Release PR
 on:
   push:
     branches:
-      # todo: change to main before merge
-      - release-automation-test/main
+      - main
 
 permissions:
   contents: read
@@ -27,8 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # todo: change to main before merge
-          ref: release-automation-test/main
+          ref: main
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -81,15 +79,11 @@ jobs:
           body: "I have created a release.\n\n Merging this PR will release v${{steps.release-as.outputs.version}} 🚀"
           branch: ci/release-main
           sign-commits: true
-          # todo: change to main before merge
-          base: release-automation-test/main
-          # todo: uncomment before merge
-          # team-reviewers: @sanity-io/studio
+          base: main
+          team-reviewers: "@sanity-io/studio"
           draft: false
 
       - name: Enable automerge on Pull Request
-        # todo: enable before merge
-        if: false
         run: gh pr merge --squash --auto "${{ steps.create-pull-request.outputs.pull-request-number }}"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

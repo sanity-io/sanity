@@ -3,8 +3,7 @@ name: Release @latest
 on:
   push:
     branches:
-      # todo: change to main before merge
-      - release-automation-test/main
+      - main
 
 permissions:
   contents: write
@@ -12,7 +11,7 @@ permissions:
 jobs:
   release-latest:
     if: >
-      startsWith(github.event.head_commit.message, 'chore(release): publish')
+      startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -49,13 +48,11 @@ jobs:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
       - name: Publish packages to npm
-        # todo: remove --dry-run before merge
         run: |
           npx lerna publish \
           --force-publish \
           --git-tag-version \
           --exact \
-          --dry-run \
           --yes \
           from-package
         env:
@@ -65,8 +62,7 @@ jobs:
       - name: Push tags and create release
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
-          # todo: uncomment before merge
-          # git push origin --tags
+          git push origin --tags
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
