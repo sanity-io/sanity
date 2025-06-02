@@ -2,11 +2,11 @@ import {loadEnvFiles} from '../../scripts/utils/loadEnvFiles'
 
 loadEnvFiles()
 
-type KnownEnvVar =
-  | 'SANITY_E2E_PROJECT_ID'
+export type KnownEnvVar =
   | 'SANITY_E2E_DATASET'
-  | 'SANITY_E2E_SESSION_TOKEN'
+  | 'SANITY_E2E_PROJECT_ID'
   | 'PR_NUMBER'
+  | 'SANITY_E2E_SESSION_TOKEN'
 
 export function readEnv(name: KnownEnvVar): string {
   const val = process.env[name]
