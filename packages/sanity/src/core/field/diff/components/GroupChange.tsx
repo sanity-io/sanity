@@ -177,7 +177,7 @@ export function GroupChange(
       {isNestedInDiff || isPortableTextGroupArray ? (
         content
       ) : (
-        <FieldWrapper hasHover={isRevertButtonHovered} path={groupPath}>
+        <FieldWrapper hasRevertHover={isRevertButtonHovered} path={groupPath}>
           {content}
         </FieldWrapper>
       )}

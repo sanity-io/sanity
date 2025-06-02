@@ -21,18 +21,18 @@ import {ValueError} from './ValueError'
 const ParentWrapper = ({
   children,
   path,
-  hasHover,
+  hasRevertHover,
   wrap,
 }: {
   children: React.ReactNode
   path: Path
-  hasHover: boolean
+  hasRevertHover: boolean
   wrap: boolean
 }) => {
   const {FieldWrapper = Fragment} = useDocumentChange()
   if (wrap) {
     return (
-      <FieldWrapper path={path.slice(0, -1)} hasHover={hasHover}>
+      <FieldWrapper path={path.slice(0, -1)} hasRevertHover={hasRevertHover}>
         {children}
       </FieldWrapper>
     )
@@ -114,8 +114,12 @@ export function FieldChange(
       hidden ? null : (
         <Stack space={1} as={FieldChangeContainer}>
           {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-          <ParentWrapper path={fieldPath} hasHover={revertHovered} wrap={Boolean(addParentWrapper)}>
-            <FieldWrapper path={fieldPath} hasHover={revertHovered}>
+          <ParentWrapper
+            path={fieldPath}
+            hasRevertHover={revertHovered}
+            wrap={Boolean(addParentWrapper)}
+          >
+            <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
               <DiffInspectWrapper
                 change={change}
                 as={DiffBorder}
