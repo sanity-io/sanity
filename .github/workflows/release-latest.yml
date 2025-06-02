@@ -45,12 +45,12 @@ jobs:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
       - name: Publish packages to npm
+        # todo: remove --dry-run before merge
         run: |
           npx lerna publish \
           --force-publish \
           --git-tag-version \
           --exact \
-          # todo: remove before merge \
           --dry-run \
           --yes \
           from-package
@@ -61,7 +61,8 @@ jobs:
       - name: Push tags and create release
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
-          git push origin --tags
+          # todo: uncomment before merge
+          # git push origin --tags
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
