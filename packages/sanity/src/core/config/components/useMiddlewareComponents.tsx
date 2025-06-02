@@ -11,7 +11,7 @@ function _createMiddlewareComponent<T extends {}>(
   DefaultComponent: ComponentType<T>,
   middlewareComponents: ComponentType<T>[],
 ): ComponentType<T> {
-  return (outerProps: T) => {
+  function MiddlewareComponent(outerProps: T) {
     // This is the inner "layer" of the middleware chain
     // Here we render the _default_ component (typically Sanity's component)
     let next = (props: T) => <DefaultComponent {...props} />
@@ -33,6 +33,7 @@ function _createMiddlewareComponent<T extends {}>(
       renderDefault: emptyRender,
     })
   }
+  return MiddlewareComponent
 }
 
 /**
