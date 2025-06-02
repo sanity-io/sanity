@@ -170,18 +170,17 @@ export default async function startSanityDevServer(
     output.print(`${info} Running with auto-updates enabled`)
     // Check the versions
     const result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    const message =
+      `The following local package versions are different from the versions currently served at runtime.\n` +
+      `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
+      `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
 
     // mismatch between local and auto-updating dependencies
     if (result?.length) {
       if (isInteractive) {
         const shouldUpgrade = await prompt.single({
           type: 'confirm',
-          message: chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Do you want to upgrade local versions?`,
-          ),
+          message: chalk.yellow(`${message}Do you want to upgrade local versions?`),
           default: true,
         })
         if (shouldUpgrade) {
@@ -195,13 +194,7 @@ export default async function startSanityDevServer(
         }
       } else {
         // In this case we warn the user but we don't ask them if they want to upgrade because it's not interactive.
-        output.print(
-          chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`,
-          ),
-        )
+        output.print(chalk.yellow(message))
       }
     }
   }
