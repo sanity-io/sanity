@@ -741,8 +741,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^7.3.2
-        version: 7.5.0(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.8.0)
+        specifier: ^7.6.5
+        version: 7.6.5(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.8.0)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.0)
@@ -3596,15 +3596,6 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/core@10.1.11':
-    resolution: {integrity: sha512-BXwI/MCqdtAhzNQlBEFE7CEflhPkl/BqvAuV/aK6lW3DClIfYVDWPP/kXuXHtBWC7/EEbNqd/1BGq2BGBBnuxw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/node': ^22.10.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
   '@inquirer/core@10.1.13':
     resolution: {integrity: sha512-1viSxebkYN2nJULlzCxES6G9/stgHSepZ9LqqfdIGPHj5OHhiBUXVS0a6R0bEC2A+VL4D9w6QB66ebCr6HGllA==}
     engines: {node: '>=18'}
@@ -3631,10 +3622,6 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
-
-  '@inquirer/figures@1.0.11':
-    resolution: {integrity: sha512-eOg92lvrn/aRUqbxRyvpEWnrvRuTYRifixHkYVpJiygTgVSBIHDqLh0SrMQXkafvULg3ck11V7xvR+zcgvpHFw==}
-    engines: {node: '>=18'}
 
   '@inquirer/figures@1.0.12':
     resolution: {integrity: sha512-MJttijd8rMFcKJC8NYmprWr6hD3r9Gd9qUC0XwPNwoEPWSMVJwA2MlXxF+nhZZNMY+HXsWa+o7KY2emWYIn0jQ==}
@@ -3696,15 +3683,6 @@ packages:
 
   '@inquirer/select@4.2.3':
     resolution: {integrity: sha512-OAGhXU0Cvh0PhLz9xTF/kx6g6x+sP+PcyTiLvCrewI99P3BBeexD+VbuwkNDvqGkk3y2h5ZiWLeRP7BFlhkUDg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/node': ^22.10.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
-  '@inquirer/type@3.0.6':
-    resolution: {integrity: sha512-/mKVCtVpyBu3IDarv0G+59KC4stsD5mDsGpYh+GKs1NZT88Jh52+cuoA1AtLk2Q0r/quNl+1cSUyLRHBFeD0XA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': ^22.10.0
@@ -4848,8 +4826,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@7.5.0':
-    resolution: {integrity: sha512-G/iUIOn3UfJRj6yCvKN1x1d6Cq51VPQ84Mc/rSDN0ifaS6x0GQ+9BBHkG4YnDu/hCkDmQborPVBc4vY0DyRriQ==}
+  '@sanity/runtime-cli@7.6.5':
+    resolution: {integrity: sha512-9wASjIokchkdeg00/9CbKBLdQz/ZfpcaEYDKP8qbIgVaImYno2Z+pKe2Zi30ZNrccQ6ct1EGT0J4KEQsBVPWpw==}
     engines: {node: '>=18.20.0'}
     hasBin: true
 
@@ -12257,6 +12235,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.18.2:
+    resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xdg-basedir@4.0.0:
     resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}
     engines: {node: '>=8'}
@@ -13967,7 +13957,7 @@ snapshots:
   '@inquirer/checkbox@4.1.6(@types/node@22.13.1)':
     dependencies:
       '@inquirer/core': 10.1.13(@types/node@22.13.1)
-      '@inquirer/figures': 1.0.11
+      '@inquirer/figures': 1.0.12
       '@inquirer/type': 3.0.7(@types/node@22.13.1)
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
@@ -13978,19 +13968,6 @@ snapshots:
     dependencies:
       '@inquirer/core': 10.1.13(@types/node@22.13.1)
       '@inquirer/type': 3.0.7(@types/node@22.13.1)
-    optionalDependencies:
-      '@types/node': 22.13.1
-
-  '@inquirer/core@10.1.11(@types/node@22.13.1)':
-    dependencies:
-      '@inquirer/figures': 1.0.11
-      '@inquirer/type': 3.0.6(@types/node@22.13.1)
-      ansi-escapes: 4.3.2
-      cli-width: 4.1.0
-      mute-stream: 2.0.0
-      signal-exit: 4.1.0
-      wrap-ansi: 6.2.0
-      yoctocolors-cjs: 2.1.2
     optionalDependencies:
       '@types/node': 22.13.1
 
@@ -14022,8 +13999,6 @@ snapshots:
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
       '@types/node': 22.13.1
-
-  '@inquirer/figures@1.0.11': {}
 
   '@inquirer/figures@1.0.12': {}
 
@@ -14075,7 +14050,7 @@ snapshots:
   '@inquirer/search@3.0.13(@types/node@22.13.1)':
     dependencies:
       '@inquirer/core': 10.1.13(@types/node@22.13.1)
-      '@inquirer/figures': 1.0.11
+      '@inquirer/figures': 1.0.12
       '@inquirer/type': 3.0.7(@types/node@22.13.1)
       yoctocolors-cjs: 2.1.2
     optionalDependencies:
@@ -14088,10 +14063,6 @@ snapshots:
       '@inquirer/type': 3.0.7(@types/node@22.13.1)
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
-    optionalDependencies:
-      '@types/node': 22.13.1
-
-  '@inquirer/type@3.0.6(@types/node@22.13.1)':
     optionalDependencies:
       '@types/node': 22.13.1
 
@@ -14890,7 +14861,7 @@ snapshots:
       is-wsl: 2.2.0
       lilconfig: 3.1.3
       minimatch: 9.0.5
-      semver: 7.7.1
+      semver: 7.7.2
       string-width: 4.2.3
       supports-color: 8.1.1
       widest-line: 3.1.0
@@ -16005,7 +15976,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@7.5.0(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.8.0)':
+  '@sanity/runtime-cli@7.6.5(@types/node@22.13.1)(terser@5.38.2)(typescript@5.8.3)(yaml@2.8.0)':
     dependencies:
       '@oclif/core': 4.3.0
       '@oclif/plugin-help': 6.2.28
@@ -16015,14 +15986,17 @@ snapshots:
       color-json: 3.0.5
       eventsource: 4.0.0
       find-up: 7.0.0
+      groq-js: 1.17.0
       inquirer: 12.6.1(@types/node@22.13.1)
       mime-types: 3.0.1
       ora: 8.2.0
       vite: 6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.8.0)
       vite-tsconfig-paths: 5.1.4(typescript@5.8.3)(vite@6.2.4(@types/node@22.13.1)(terser@5.38.2)(yaml@2.8.0))
+      ws: 8.18.2
       xdg-basedir: 5.1.0
     transitivePeerDependencies:
       - '@types/node'
+      - bufferutil
       - jiti
       - less
       - lightningcss
@@ -16034,6 +16008,7 @@ snapshots:
       - terser
       - tsx
       - typescript
+      - utf-8-validate
       - yaml
 
   '@sanity/sdk@0.0.0-alpha.25(@types/react@19.1.3)(debug@4.4.1)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))':
@@ -20329,9 +20304,9 @@ snapshots:
 
   inquirer@12.6.1(@types/node@22.13.1):
     dependencies:
-      '@inquirer/core': 10.1.11(@types/node@22.13.1)
+      '@inquirer/core': 10.1.13(@types/node@22.13.1)
       '@inquirer/prompts': 7.5.1(@types/node@22.13.1)
-      '@inquirer/type': 3.0.6(@types/node@22.13.1)
+      '@inquirer/type': 3.0.7(@types/node@22.13.1)
       ansi-escapes: 4.3.2
       mute-stream: 2.0.0
       run-async: 3.0.0
@@ -24718,6 +24693,8 @@ snapshots:
   ws@8.17.1: {}
 
   ws@8.18.0: {}
+
+  ws@8.18.2: {}
 
   xdg-basedir@4.0.0: {}
 
