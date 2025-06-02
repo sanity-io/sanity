@@ -1,7 +1,8 @@
 import {startTimer} from '../../../scripts/utils/startTimer'
-import {SANITY_E2E_DATASET} from '../env'
+import {readEnv} from '../envVars'
 import {createE2EClient} from './e2eClient'
 
+const SANITY_E2E_DATASET = readEnv('SANITY_E2E_DATASET')
 const studioE2EClient = createE2EClient(SANITY_E2E_DATASET)
 
 const datasetName = SANITY_E2E_DATASET

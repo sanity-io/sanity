@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
-import {SANITY_E2E_PROJECT_ID, SANITY_E2E_SESSION_TOKEN} from '../env'
+import {readEnv} from '../envVars'
+
+const SANITY_E2E_PROJECT_ID = readEnv('SANITY_E2E_PROJECT_ID')
+const SANITY_E2E_SESSION_TOKEN = readEnv('SANITY_E2E_SESSION_TOKEN')
 
 const API_BASE_URL = `https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2025-05-22`
 
