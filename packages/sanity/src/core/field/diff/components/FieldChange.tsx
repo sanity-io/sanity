@@ -30,9 +30,17 @@ const ParentWrapper = ({
   wrap: boolean
 }) => {
   const {FieldWrapper = Fragment} = useDocumentChange()
+
   if (wrap) {
+    let lastArrayIndex = 0
+    for (let i = 0; i < path.length; i++) {
+      if (typeof path[i] !== 'string') {
+        lastArrayIndex = i
+      }
+    }
+
     return (
-      <FieldWrapper path={path.slice(0, -1)} hasRevertHover={hasRevertHover}>
+      <FieldWrapper path={path.slice(0, lastArrayIndex + 1)} hasRevertHover={hasRevertHover}>
         {children}
       </FieldWrapper>
     )
