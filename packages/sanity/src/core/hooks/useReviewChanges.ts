@@ -4,8 +4,8 @@ import {ReviewChangesContext} from 'sanity/_singletons'
 import {type ConnectorContextValue} from '../changeIndicators/ConnectorContext'
 
 interface ReviewChangesContextValue extends ConnectorContextValue {
-  /*
-   * @deprecated use `isReviewChangesOpen` instead
+  /**
+   * @deprecated use `isReviewChangesOpen` instead, this will be removed in the next major version
    */
   changesOpen?: boolean
 }
@@ -19,7 +19,6 @@ export function useReviewChanges(): ReviewChangesContextValue {
   return useMemo(() => {
     return {
       ...context,
-      // @deprecated use `isReviewChangesOpen` instead
       changesOpen: context.isReviewChangesOpen,
     }
   }, [context])
