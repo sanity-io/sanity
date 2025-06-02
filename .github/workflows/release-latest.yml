@@ -1,0 +1,67 @@
+name: Release @latest
+
+on:
+  push:
+    branches:
+      # todo: change to main before merge
+      - release-automation-test/main
+
+permissions:
+  contents: write
+
+jobs:
+  release-latest:
+    if: >
+      startsWith(github.event.head_commit.message, 'chore(release): publish')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install deps & build
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Get version
+        id: release-as
+        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Publish packages to npm
+        run: |
+          npx lerna publish \
+          --force-publish \
+          --git-tag-version \
+          --exact \
+          # todo: remove before merge \
+          --dry-run \
+          --yes \
+          from-package
+        env:
+          NPM_CONFIG_PROVENANCE: true
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Push tags and create release
+        run: |
+          git tag v$RELEASE_AS -m v$RELEASE_AS
+          git push origin --tags
+        env:
+          RELEASE_AS: ${{steps.release-as.outputs.version}}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
