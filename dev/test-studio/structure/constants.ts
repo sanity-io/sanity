@@ -62,6 +62,7 @@ export const DEBUG_INPUT_TYPES = [
   'inspectorsTest',
   'invalidPreviews',
   'languageFilterDebug',
+  'lazyComponents',
   'manyFieldsTest',
   'manyViews',
   'noTitleField',
