@@ -3,6 +3,7 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {useOnScroll} from '../../components/scroll'
+import {useReviewChanges} from '../../hooks/useReviewChanges'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
@@ -13,7 +14,6 @@ import {Connector} from './Connector'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
-import {useReviewChanges} from 'sanity'
 
 export interface Rect {
   height: number
