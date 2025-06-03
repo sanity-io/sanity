@@ -181,9 +181,7 @@ export function FormBuilder(props: FormBuilderProps) {
     ),
     [Annotation],
   )
-  useEffect(() => {
-    console.log('members', members)
-  }, [])
+
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
     return {
       focusPath,

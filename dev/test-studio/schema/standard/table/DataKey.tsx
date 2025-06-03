@@ -2,7 +2,7 @@ import {uuid} from '@sanity/uuid'
 import {useEffect} from 'react'
 import {set, type StringInputProps, useFormValue} from 'sanity'
 
-import {type DataRow, type Table} from './RenderTable'
+import {type DataRow, type Table} from './types'
 
 export function DataKeyCreation(props: StringInputProps) {
   const {value, onChange} = props
@@ -20,6 +20,9 @@ export function DataKeyCreation(props: StringInputProps) {
   return props.renderDefault(props)
 }
 
+/**
+ * Dynamically injects the data key into the input
+ */
 export function DataKeySelection(props: StringInputProps) {
   const tableValue = useFormValue(props.path.slice(0, -4)) as Table['rows']
   const rowValue = useFormValue(props.path.slice(0, -3)) as DataRow

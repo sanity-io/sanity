@@ -9,7 +9,6 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {table} from '@sanity/table'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -116,7 +115,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
     },
     plugins: [
-      table(),
       structureTool({
         icon: BookIcon,
         structure,
