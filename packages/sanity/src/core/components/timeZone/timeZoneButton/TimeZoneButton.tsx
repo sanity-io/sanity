@@ -27,7 +27,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
       <Tooltip
         content={
           <Box flex={1} padding={1}>
-            {tooltipContent}
+            <Text size={1}>{tooltipContent}</Text>
           </Box>
         }
         portal
