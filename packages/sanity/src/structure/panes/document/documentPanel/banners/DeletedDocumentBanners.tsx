@@ -36,11 +36,9 @@ function DeletedDocumentBanner() {
   const {navigateIntent} = useRouter()
 
   const handleRestore = useCallback(() => {
-    if (lastNonDeletedRevId) {
-      restore.execute(lastNonDeletedRevId)
-      navigateIntent('edit', {id: documentId, type: documentType})
-    }
-  }, [documentId, documentType, navigateIntent, restore, lastNonDeletedRevId])
+    restore.execute('lastRevision')
+    navigateIntent('edit', {id: documentId, type: documentType})
+  }, [documentId, documentType, navigateIntent, restore])
 
   const {t} = useTranslation(structureLocaleNamespace)
 
