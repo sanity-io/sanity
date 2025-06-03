@@ -72,6 +72,11 @@
     {
       "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
       "matchPackageNames": [
+        "@lerna-lite/changed",
+        "@lerna-lite/cli",
+        "@lerna-lite/publish",
+        "@lerna-lite/run",
+        "@lerna-lite/version",
         "@portabletext/block-tools",
         "@portabletext/editor",
         "@sanity/bifur-client",
@@ -93,7 +98,6 @@
         "esbuild",
         "get-it",
         "groq-js",
-        "lerna",
         "react-dom",
         "react-is",
         "react-rx",

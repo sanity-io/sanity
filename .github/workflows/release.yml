@@ -77,9 +77,13 @@ jobs:
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Publish
+        # Note: ubuntu-latest ships with lerna installed on the system
+        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
+        # It's important that we call lerna using npx in the command below so we get the
+        # locally installed lerna instead of the one installed on the system
         run: |
           # Re-run lerna version and push since the build was successful
-          lerna version           \
+          npx lerna version           \
             --force-git-tag       \
             --force-publish       \
             --exact               \
@@ -87,7 +91,7 @@ jobs:
             ${{ inputs.version }}
 
           # https://github.com/lerna/lerna/tree/v8.1.2/libs/commands/publish#bump-from-package
-          lerna publish           \
+          npx lerna publish           \
             --force-publish       \
             --exact               \
             --yes                 \

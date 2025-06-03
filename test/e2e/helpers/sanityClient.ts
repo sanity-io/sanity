@@ -1,7 +1,7 @@
 import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
-import {SANITY_E2E_DATASET, SANITY_E2E_PROJECT_ID, SANITY_E2E_SESSION_TOKEN} from '../env'
+import {readEnv} from './envVars'
 
 export class TestContext {
   client: SanityClient
@@ -27,9 +27,9 @@ export class TestContext {
 }
 
 const testSanityClient = createClient({
-  projectId: SANITY_E2E_PROJECT_ID,
-  dataset: SANITY_E2E_DATASET,
-  token: SANITY_E2E_SESSION_TOKEN,
+  projectId: readEnv('SANITY_E2E_PROJECT_ID'),
+  dataset: readEnv('SANITY_E2E_DATASET'),
+  token: readEnv('SANITY_E2E_SESSION_TOKEN'),
   useCdn: false,
   apiVersion: '2021-08-31',
   apiHost: 'https://api.sanity.work',
