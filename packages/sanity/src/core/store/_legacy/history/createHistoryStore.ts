@@ -110,7 +110,7 @@ const getDocumentAtRevision = (
   }`
 
   const entry = client
-    .request<{documents?: SanityDocument[]}>({url, tag: 'look-here'})
+    .request<{documents?: SanityDocument[]}>({url, tag: 'history-revision'})
     .then((result) => {
       const documents = result.documents || []
       const published = documents.find((res) => res._id === publishedId)
