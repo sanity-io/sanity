@@ -15,6 +15,22 @@ export function findMostSpecificTarget(
     return values.get(exactId) as TrackedChange
   }
 
+  // No exact match found, let's see if we can find a more specific path that matches part of the path
+  if (path.length > 0) {
+    /* Path is of the type array, example ["text",{"_key": "134981febb30"},"title"] like this.
+     * We start by removing the last element of the path and see if we can find a match.
+     * If we don't find a match, we remove the next element and try again.
+     * If no more path elements are left, continue with the next step.
+     */
+    for (let i = path.length - 1; i >= 0; i--) {
+      const lessSpecificPath = path.slice(0, i)
+      const lessSpecificExactId = `${targetType}-${PathUtils.toString(lessSpecificPath)}`
+      if (values.has(lessSpecificExactId)) {
+        return values.get(lessSpecificExactId) as TrackedChange
+      }
+    }
+  }
+
   let mostSpecific: TrackedChange | undefined
   for (const [targetId, target] of values) {
     if (!('path' in target) || !targetId.startsWith(targetType)) {

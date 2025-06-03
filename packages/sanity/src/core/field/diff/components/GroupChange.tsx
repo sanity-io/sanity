@@ -1,5 +1,13 @@
 import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
-import {type HTMLAttributes, useCallback, useContext, useMemo, useRef, useState} from 'react'
+import {
+  Fragment,
+  type HTMLAttributes,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
@@ -29,7 +37,13 @@ export function GroupChange(
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
-  const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
+  const {
+    documentId,
+    schemaType,
+    FieldWrapper = Fragment,
+    rootDiff,
+    isComparingCurrent,
+  } = useDocumentChange()
   const {t} = useTranslation()
 
   const isPortableText = changes.every(
@@ -84,6 +98,9 @@ export function GroupChange(
                 change={change}
                 readOnly={readOnly}
                 hidden={hidden}
+                // If the path of the nested change is more than two levels deep, we want to add a wrapper
+                // with the parent path, for the change indicator to be shown.
+                addParentWrapper={change.path.length - group.path.length > 1}
               />
             ))}
           </Stack>
@@ -135,6 +152,7 @@ export function GroupChange(
       closeRevertChangesConfirmDialog,
       confirmRevertOpen,
       group.fieldsetName,
+      group.path.length,
       handleRevertChanges,
       handleRevertChangesConfirm,
       hidden,
@@ -149,13 +167,17 @@ export function GroupChange(
     ],
   )
 
+  const isPortableTextGroupArray =
+    group.schemaType?.jsonType === 'array' &&
+    group.schemaType.of.some((ofType) => ofType.name === 'block')
+
   return hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
-      {isNestedInDiff || !FieldWrapper ? (
+      {isNestedInDiff || isPortableTextGroupArray ? (
         content
       ) : (
-        <FieldWrapper hasHover={isRevertButtonHovered} path={group.path}>
+        <FieldWrapper hasRevertHover={isRevertButtonHovered} path={groupPath}>
           {content}
         </FieldWrapper>
       )}
