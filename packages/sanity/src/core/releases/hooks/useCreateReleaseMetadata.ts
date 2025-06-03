@@ -5,8 +5,7 @@ import {useTimeZone} from '../../hooks/useTimeZone'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
 
 export const useCreateReleaseMetadata = () => {
-  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
-  const {zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
 
   const createReleaseMetadata = useCallback(
     (release: EditableReleaseDocument) => {

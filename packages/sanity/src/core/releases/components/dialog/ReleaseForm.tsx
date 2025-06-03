@@ -40,8 +40,7 @@ export function ReleaseForm(props: {
   const {onChange, value} = props
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
-  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
+  const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
 
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
@@ -185,7 +184,7 @@ export function ReleaseForm(props: {
                 <ScheduleDatePicker
                   initialValue={intendedPublishAt || new Date()}
                   onChange={handleBundlePublishAtCalendarChange}
-                  timeZoneScope={timeZoneScope}
+                  timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
                 />
               </TabPanel>
             )}

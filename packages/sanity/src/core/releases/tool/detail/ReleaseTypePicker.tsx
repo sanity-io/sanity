@@ -41,8 +41,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
   const toast = useToast()
-  const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
-  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const getReleaseTime = useReleaseTime()
 
   const [open, setOpen] = useState(false)
@@ -231,7 +230,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
               onChange={handlePublishAtCalendarChange}
               isPastDisabled
               showTimeZone
-              timeZoneScope={timeZoneScope}
+              timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
           </>
         )}

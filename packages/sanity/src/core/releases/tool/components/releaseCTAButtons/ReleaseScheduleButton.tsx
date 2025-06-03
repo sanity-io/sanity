@@ -49,8 +49,7 @@ export const ReleaseScheduleButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   // in the releases tool we want timezone to be saved for releases
-  const timeZoneScope = useMemo(() => CONTENT_RELEASES_TIME_ZONE_SCOPE, [])
-  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
   /**
@@ -252,7 +251,7 @@ export const ReleaseScheduleButton = ({
                 }
                 constrainSize={false}
                 isPastDisabled
-                timeZoneScope={timeZoneScope}
+                timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
               />
             </Stack>
           </label>
@@ -281,7 +280,6 @@ export const ReleaseScheduleButton = ({
     handleBundleInputChange,
     timeZoneAdjustedPublishAt,
     calendarLabels,
-    timeZoneScope,
     release.metadata.title,
     tCore,
   ])
