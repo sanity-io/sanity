@@ -90,13 +90,14 @@ export const Calendar = forwardRef(function Calendar(
 
   const {timeZone} = useTimeZone(timeZoneScope)
 
-  const getDisplayMonth = useCallback(() => {
-    return Number(format(focusedDate, 'MM', {timeZone: timeZone.name})) - 1 // month is 0-indexed
+  const [displayMonth, displayYear] = useMemo(() => {
+    return [
+      // month is 0-indexed
+      Number(format(focusedDate, 'MM', {timeZone: timeZone.name})) - 1,
+      Number(format(focusedDate, 'YYYY', {timeZone: timeZone.name})),
+    ]
   }, [focusedDate, timeZone.name])
 
-  const getDisplayYear = useCallback(() => {
-    return Number(format(focusedDate, 'YYYY', {timeZone: timeZone.name}))
-  }, [focusedDate, timeZone.name])
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
   const setFocusedDate = useCallback(
@@ -217,9 +218,6 @@ export const Calendar = forwardRef(function Calendar(
     () => handleDateChange(addDays(new Date(), 1)),
     [handleDateChange],
   )
-
-  const displayMonth = getDisplayMonth()
-  const displayYear = getDisplayYear()
 
   const monthPicker = useMemo(() => {
     if (monthPickerVariant === 'carousel') {
