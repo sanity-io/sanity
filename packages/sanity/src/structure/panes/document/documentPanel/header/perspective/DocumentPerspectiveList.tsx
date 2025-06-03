@@ -11,6 +11,7 @@ import {
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
+  type SanityDocumentLike,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
@@ -120,9 +121,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion)
         return {
-          selected:
-            getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(displayed?._id || ''),
+          selected: Boolean(
+            editState?.version &&
+              getReleaseIdFromReleaseDocumentId(release._id) ===
+                getVersionFromId((editState?.version as SanityDocumentLike)?._id),
+          ),
         }
 
       const isReleaseHistoryMatch =
@@ -130,7 +133,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
       return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
     },
-    [displayed?._id, params?.historyVersion],
+    [editState?.version, params?.historyVersion],
   )
 
   const isPublishSelected: boolean = useMemo(() => {

@@ -31,7 +31,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getDraftId, getVersionId} from '../../../util/draftUtils'
+import {getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -148,26 +148,49 @@ const getActiveReleaseDocumentsObservable = ({
                   const updatedPerspectiveStack =
                     perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
 
-                  const previousPerspective = updatedPerspectiveStack[0]
+                  const getDocumentFromPerspective = (
+                    stack: string[],
+                  ): Observable<{snapshot: PreviewValue | null | undefined}> => {
+                    if (stack.length === 0) {
+                      return of(value)
+                    }
 
-                  // chosen drafts over published version since the drafts are how the document is most often known about
-                  // across the studio (for example, document lists previews)
-                  // if the previous perspective is drafts then it means that there is only one document
-                  // otherwise, we need to get the version id of the previous perspective
-                  const docId =
-                    previousPerspective === 'drafts'
-                      ? getDraftId(document._id)
-                      : getVersionId(document._id, previousPerspective)
+                    const currentPerspective = stack[0]
 
-                  return documentPreviewStore.observeForPreview(
-                    {
-                      _id: docId,
-                    },
-                    schemaType,
-                    {
-                      perspective: updatedPerspectiveStack,
-                    },
-                  )
+                    // if there is only drafts then it means that it should show the published document
+                    const docId =
+                      currentPerspective === 'drafts'
+                        ? getPublishedId(document._id)
+                        : getVersionId(document._id, currentPerspective)
+
+                    return documentPreviewStore
+                      .observeForPreview(
+                        {
+                          _id: docId,
+                        },
+                        schemaType,
+                        {
+                          perspective: [],
+                        },
+                      )
+                      .pipe(
+                        // eslint-disable-next-line max-nested-callbacks
+                        map((result) => ({snapshot: result?.snapshot ?? null})),
+                        // eslint-disable-next-line max-nested-callbacks
+                        switchMap((result) => {
+                          if (result.snapshot) {
+                            return of(result)
+                          }
+                          // needs to be recursive since there are releases in stack that can be skipped if versions don't exist
+                          // [drafts, 'release1', 'release2', 'release3'] but only have a version for release1 and release 3.
+                          return getDocumentFromPerspective(stack.slice(1))
+                        }),
+                      )
+                  }
+
+                  // needs to be recursive since there are releases in stack that can be skipped if versions don't exist
+                  // [drafts, 'release1', 'release2', 'release3'] but only have a version for release1 and release 3.
+                  return getDocumentFromPerspective(updatedPerspectiveStack)
                 }),
                 map(({snapshot}) => ({
                   isLoading: false,
