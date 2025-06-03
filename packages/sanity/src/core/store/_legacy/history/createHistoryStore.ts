@@ -92,7 +92,6 @@ const getDocumentAtRevision = (
   client: SanityClient,
   documentId: string,
   revision: DocumentRevision,
-  preferPublished: boolean,
 ): Promise<SanityDocument | undefined> => {
   const publishedId = getPublishedId(documentId)
   const draftId = getDraftId(documentId)
@@ -116,7 +115,6 @@ const getDocumentAtRevision = (
       const published = documents.find((res) => res._id === publishedId)
       const draft = documents.find((res) => res._id === draftId)
       return draft || published
-      // return preferPublished ? published : draft || published
     })
 
   documentRevisionCache[cacheKey] = entry
@@ -212,7 +210,7 @@ function restore(
   rev: DocumentRevision,
   options?: RestoreOptions,
 ): Observable<void> {
-  return from(getDocumentAtRevision(client, documentId, rev, true)).pipe(
+  return from(getDocumentAtRevision(client, documentId, rev)).pipe(
     mergeMap((documentAtRevision) => {
       if (!documentAtRevision) {
         throw new Error(`Unable to find document with ID ${documentId} at revision ${rev}`)
@@ -271,8 +269,8 @@ export interface HistoryStoreOptions {
 /** @internal */
 export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore {
   return {
-    getDocumentAtRevision: (documentId, revision, preferPublished = false) =>
-      getDocumentAtRevision(client, documentId, revision, preferPublished),
+    getDocumentAtRevision: (documentId, revision) =>
+      getDocumentAtRevision(client, documentId, revision),
 
     getHistory: (documentIds, options) => getHistory(client, documentIds, options),
 
