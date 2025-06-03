@@ -2913,12 +2913,12 @@ const article: Omit<Article, '_id' | '_createdAt' | '_updatedAt' | '_rev'> = {
   categories: [
     {
       _key: '1ac46ad21f72',
-      _ref: '9cb3d2c9-e4bd-46f0-8a8a-f6018cc293bc',
+      _ref: 'category-0',
       _type: 'reference',
     },
     {
       _key: '7c6ba89fa465',
-      _ref: '643e60de-db8a-49d5-b9e1-ed7fbec30885',
+      _ref: 'category-1',
       _type: 'reference',
     },
   ],
