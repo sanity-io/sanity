@@ -32,10 +32,6 @@ const Root = styled(Card)`
   line-height: 1;
 `
 
-const CenterAlignedBox = styled(Box)`
-  align-self: center;
-`
-
 interface ParsedOptions {
   dateFormat: string
   timeFormat: string
@@ -176,7 +172,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const deserialize = useMemo(() => getDeserializer(timeZone.name), [timeZone.name])
-  const memoizedSerialize = useMemo(() => serialize, [])
 
   const parseInputValue = useCallback(
     (inputValue: string): ParseResult =>
@@ -193,7 +188,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       onChange: handleChange,
       parseInputValue,
       placeholder: schemaType.placeholder,
-      serialize: memoizedSerialize,
+      serialize,
       timeZone: timeZone.name,
       timeStep,
       selectTime: true,
@@ -208,7 +203,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
       handleChange,
       parseInputValue,
       schemaType.placeholder,
-      memoizedSerialize,
       timeZone,
       timeStep,
       value,
