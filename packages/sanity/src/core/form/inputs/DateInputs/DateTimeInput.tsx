@@ -179,37 +179,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
     [dateFormat, timeFormat, timeZone],
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
-  const commonProps = useMemo(
-    () => ({
-      ...elementProps,
-      calendarLabels,
-      deserialize,
-      formatInputValue,
-      onChange: handleChange,
-      parseInputValue,
-      placeholder: schemaType.placeholder,
-      serialize,
-      timeZone: timeZone.name,
-      timeStep,
-      selectTime: true,
-      value,
-      timeZoneScope,
-    }),
-    [
-      elementProps,
-      calendarLabels,
-      deserialize,
-      formatInputValue,
-      handleChange,
-      parseInputValue,
-      schemaType.placeholder,
-      timeZone,
-      timeStep,
-      value,
-      timeZoneScope,
-    ],
-  )
-
   return (
     <Root
       onMouseEnter={onMouseEnter}
@@ -266,7 +235,20 @@ export function DateTimeInput(props: DateTimeInputProps) {
         <ChangeIndicator hasFocus={Boolean(focused)} isChanged={changed} path={path}>
           <div data-testid="change-bar-wrapper">
             <div data-testid="change-bar__field-wrapper">
-              <CommonDateTimeInput {...commonProps} />
+              <CommonDateTimeInput
+                {...elementProps}
+                calendarLabels={calendarLabels}
+                deserialize={deserialize}
+                formatInputValue={formatInputValue}
+                onChange={handleChange}
+                parseInputValue={parseInputValue}
+                placeholder={schemaType.placeholder}
+                serialize={serialize}
+                timeStep={timeStep}
+                selectTime
+                value={value}
+                timeZoneScope={timeZoneScope}
+              />
             </div>
           </div>
         </ChangeIndicator>
