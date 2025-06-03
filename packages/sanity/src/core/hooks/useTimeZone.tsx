@@ -2,6 +2,7 @@ import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
 import ToastDescription from '../scheduledPublishing/components/toastDescription/ToastDescription'
@@ -9,7 +10,7 @@ import {DATE_FORMAT} from '../scheduledPublishing/constants'
 import {type NormalizedTimeZone} from '../scheduledPublishing/types'
 import {debugWithName} from '../scheduledPublishing/utils/debug'
 import getErrorMessage from '../scheduledPublishing/utils/getErrorMessage'
-import {type KeyValueStoreValue, useKeyValueStore} from '../store'
+import {useKeyValueStore} from '../store'
 
 enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',
@@ -188,16 +189,12 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return normalizedDefaultTimezone
   }, [allTimeZones, defaultTimeZone])
 
-  const [storedTimeZone, setStoredTimeZone] = useState<KeyValueStoreValue>(null)
+  const keyValueTimeZone$ = useMemo(
+    () => keyValueStore.getKey(keyStoreId).pipe(startWith(null)),
+    [keyValueStore, keyStoreId],
+  )
 
-  useEffect(() => {
-    const subscription = keyValueStore
-      .getKey(keyStoreId)
-      .pipe(startWith(null))
-      .subscribe(setStoredTimeZone)
-
-    return () => subscription.unsubscribe()
-  }, [keyValueStore, keyStoreId])
+  const storedTimeZone = useObservable(keyValueTimeZone$, null)
 
   const getStoredTimeZone = useCallback((): NormalizedTimeZone | undefined => {
     if (!storedTimeZone) return undefined
@@ -254,7 +251,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     return () => {
       window.removeEventListener(TimeZoneEvents.update, handler)
     }
-  }, [getInitialTimeZone, keyStoreId])
+  }, [getInitialTimeZone])
 
   const formatDateTz = useCallback(
     ({
