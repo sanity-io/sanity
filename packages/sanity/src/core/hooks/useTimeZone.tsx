@@ -164,11 +164,13 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   useEffect(() => {
     if (scope.type === 'scheduledPublishing') {
       const legacyKey = 'scheduled-publishing::time-zone'
+      // the original value was kept as an object with the name
       const legacyValue = localStorage.getItem(legacyKey)
 
       if (legacyValue) {
         // Migrate the value to key-value store
-        keyValueStore.setKey(keyStoreId, legacyValue)
+        const scheduledPublishingValue = JSON.parse(legacyValue)
+        keyValueStore.setKey(keyStoreId, scheduledPublishingValue.name)
         // Remove the legacy key
         localStorage.removeItem(legacyKey)
       }
