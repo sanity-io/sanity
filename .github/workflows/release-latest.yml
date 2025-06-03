@@ -13,6 +13,9 @@ jobs:
     if: >
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write # to enable use of OIDC for npm provenance
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
