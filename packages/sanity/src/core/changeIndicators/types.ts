@@ -17,4 +17,4 @@ export interface TrackedArea {
 }
 
 /** @internal */
-export type ChangeIndicatorTrackerContextValue = TrackedChange | TrackedArea
+export type ChangeIndicatorTrackerContextValue = TrackedChange

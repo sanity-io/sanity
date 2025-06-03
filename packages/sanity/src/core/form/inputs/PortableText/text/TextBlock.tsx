@@ -5,6 +5,7 @@ import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
@@ -97,12 +98,15 @@ export function TextBlock(props: TextBlockProps) {
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
-  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
   const {onChange} = useFormCallbacks()
+  const hoveredChange = useHoveredChange()
+
+  const changeHovered =
+    hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
 
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
@@ -114,9 +118,6 @@ export function TextBlock(props: TextBlockProps) {
         (p.path.slice(-3)[1] === 'children' && p.path.length - path.length === 2),
     )
   }, [path, presence])
-
-  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
-  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
 
@@ -321,8 +322,6 @@ export function TextBlock(props: TextBlockProps) {
               <ChangeIndicatorWrapper
                 $hasChanges={memberItem.member.item.changed}
                 contentEditable={false}
-                onMouseEnter={handleChangeIndicatorMouseEnter}
-                onMouseLeave={handleChangeIndicatorMouseLeave}
               >
                 <StyledChangeIndicatorWithProvidedFullPath
                   hasFocus={focused}
@@ -332,7 +331,7 @@ export function TextBlock(props: TextBlockProps) {
                 />
               </ChangeIndicatorWrapper>
             )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+            {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
           </Flex>
         </TextBlockFlexWrapper>
       </Box>
@@ -342,19 +341,19 @@ export function TextBlock(props: TextBlockProps) {
       changeIndicatorVisible,
       componentProps,
       focused,
-      handleChangeIndicatorMouseEnter,
-      handleChangeIndicatorMouseLeave,
       hasError,
       hasMarkers,
       hasWarning,
       innerPaddingProps,
-      memberItem,
+      memberItem?.member.item.changed,
+      memberItem?.member.item.path,
+      isFullscreen,
       onChange,
       outerPaddingProps,
       readOnly,
       renderBlock,
       renderBlockActions,
-      reviewChangesHovered,
+      changeHovered,
       setRef,
       spellCheck,
       toolTipContent,

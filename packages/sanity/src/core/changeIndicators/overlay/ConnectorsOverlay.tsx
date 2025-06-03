@@ -1,9 +1,9 @@
 import {type Path} from '@sanity/types'
-import {sortBy} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {useOnScroll} from '../../components/scroll'
+import {useReviewChanges} from '../../hooks/useReviewChanges'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'
@@ -102,6 +102,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const {rootElement, onSetFocus} = props
   const [hovered, setHovered] = useState<string | null>(null)
   const allReportedValues = useChangeIndicatorsReportedValues()
+  const {isReviewChangesOpen} = useReviewChanges()
   const byId: Map<string, TrackedChange | TrackedArea> = useMemo(
     () => new Map(allReportedValues),
     [allReportedValues],
@@ -111,35 +112,35 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     getState(allReportedValues, hovered, byId, rootElement),
   )
 
-  const visibleConnectors = useMemo(
-    () => sortBy(connectors, (c) => 0 - c.field.path.length).slice(0, 1),
+  const visibleConnector = useMemo(
+    () =>
+      // Get the connector with longest path, it will be the one that is most specific
+      connectors.sort((a, b) => b.field.id.length - a.field.id.length)[0],
     [connectors],
   )
 
   const handleScrollOrResize = useCallback(() => {
-    setState(getState(allReportedValues, hovered, byId, rootElement))
-  }, [byId, allReportedValues, hovered, rootElement])
+    // Only update the state if the review changes panel is open
+    // Otherwise we don't need to show the connectors.
+    if (isReviewChangesOpen) {
+      setState(getState(allReportedValues, hovered, byId, rootElement))
+    }
+  }, [byId, allReportedValues, hovered, rootElement, isReviewChangesOpen])
 
   useResizeObserver(rootElement, handleScrollOrResize)
   useOnScroll(handleScrollOrResize)
 
   return (
-    <SvgWrapper style={{zIndex: visibleConnectors[0] && visibleConnectors[0].field.zIndex}}>
-      {visibleConnectors.map(({field, change}) => {
-        if (!change) {
-          return null
-        }
-
-        return (
-          <ConnectorGroup
-            field={field}
-            change={change}
-            key={field.id}
-            onSetFocus={onSetFocus}
-            setHovered={setHovered}
-          />
-        )
-      })}
+    <SvgWrapper style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}>
+      {visibleConnector?.change && (
+        <ConnectorGroup
+          field={visibleConnector.field}
+          change={visibleConnector.change}
+          key={visibleConnector.field.id}
+          onSetFocus={onSetFocus}
+          setHovered={setHovered}
+        />
+      )}
     </SvgWrapper>
   )
 }

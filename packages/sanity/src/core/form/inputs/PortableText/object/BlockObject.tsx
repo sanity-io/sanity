@@ -14,6 +14,7 @@ import {
 } from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
@@ -105,7 +106,10 @@ export function BlockObject(props: BlockObjectProps) {
   } = props
   const {onChange} = useFormCallbacks()
   const {Markers} = useFormBuilder().__internal.components
-  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
+  const hoveredChange = useHoveredChange()
+  const changeHovered =
+    hoveredChange && pathToString(hoveredChange.path).startsWith(pathToString(path))
+
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -119,9 +123,6 @@ export function BlockObject(props: BlockObjectProps) {
     }),
     [relativePath],
   )
-
-  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
-  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
@@ -322,8 +323,6 @@ export function BlockObject(props: BlockObjectProps) {
               <ChangeIndicatorWrapper
                 $hasChanges={memberItem.member.item.changed}
                 contentEditable={false}
-                onMouseEnter={handleChangeIndicatorMouseEnter}
-                onMouseLeave={handleChangeIndicatorMouseLeave}
               >
                 <StyledChangeIndicatorWithProvidedFullPath
                   hasFocus={focused}
@@ -333,7 +332,7 @@ export function BlockObject(props: BlockObjectProps) {
                 />
               </ChangeIndicatorWrapper>
             )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+            {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
           </PreviewContainer>
         </Flex>
       </Box>
@@ -343,14 +342,14 @@ export function BlockObject(props: BlockObjectProps) {
       changeIndicatorVisible,
       componentProps,
       focused,
-      handleChangeIndicatorMouseLeave,
-      handleChangeIndicatorMouseEnter,
       innerPaddingProps,
-      memberItem,
+      memberItem?.member?.item?.changed,
+      memberItem?.member?.item?.path,
       onChange,
       renderBlock,
       renderBlockActions,
-      reviewChangesHovered,
+      changeHovered,
+      isFullscreen,
       setRef,
       toolTipContent,
       tooltipEnabled,

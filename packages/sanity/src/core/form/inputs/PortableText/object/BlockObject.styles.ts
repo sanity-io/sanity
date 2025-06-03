@@ -2,6 +2,8 @@ import {hues} from '@sanity/color'
 import {Box, Card, Flex, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
+import {DEBUG} from '../../../../changeIndicators/constants'
+
 export const Root = styled(Card)((props: {theme: Theme}) => {
   const {color, radius, space} = props.theme.sanity
 
@@ -91,6 +93,10 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       padding-left: ${space[1]}px;
       padding-right: ${space[2]}px;
       user-select: none;
+      ${DEBUG &&
+      css`
+        border: 1px solid red;
+      `}
 
       ${!$hasChanges &&
       css`
