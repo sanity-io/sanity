@@ -1,18 +1,20 @@
-import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
 import {del as serverDel} from '../serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from '../serverOperations/discardChanges'
 import {patch as serverPatch} from '../serverOperations/patch'
 import {publish as serverPublish} from '../serverOperations/publish'
-import {restore as serverRestore} from '../serverOperations/restore'
+import {
+  restoreDocument as serverRestoreDocument,
+  restoreRevision as serverRestoreRevision,
+} from '../serverOperations/restore'
 import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
 import {patch} from './patch'
-import {restore} from './restore'
+import {restoreDocument, restoreRevision} from './restore'
 import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
 import {unpublish} from './unpublish'
 
@@ -37,23 +39,20 @@ export const GUARDED: OperationsAPI = {
   discardChanges: createOperationGuard('discardChanges'),
   unpublish: createOperationGuard('unpublish'),
   duplicate: createOperationGuard('duplicate'),
-  restore: createOperationGuard('restore'),
+  restoreRevision: createOperationGuard('restoreRevision'),
+  restoreDocument: createOperationGuard('restoreDocument'),
 }
-const createEmitter =
-  (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
-  (...executeArgs: any[]) =>
-    emitOperation(operationName, idPair, typeName, executeArgs)
 
-function wrap<ExtraArgs extends any[], DisabledReason extends string>(
-  opName: keyof OperationsAPI,
-  op: OperationImpl<ExtraArgs, DisabledReason>,
-  operationArgs: OperationArgs,
-): Operation<ExtraArgs, DisabledReason> {
-  const disabled = op.disabled(operationArgs)
+function wrap<T extends keyof OperationsAPI>(
+  operationName: T,
+  operation: OperationImpl<any>,
+  operationArguments: OperationArgs,
+): OperationsAPI[T] {
   return {
-    disabled,
-    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName),
-  }
+    disabled: operation.disabled(operationArguments),
+    execute: (...args: any[]) =>
+      emitOperation(operationName, operationArguments.idPair, operationArguments.typeName, args),
+  } as OperationsAPI[T]
 }
 
 export function createOperationsAPI(args: OperationArgs): OperationsAPI {
@@ -66,7 +65,8 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     discardChanges: wrap('discardChanges', discardChanges, args),
     unpublish: wrap('unpublish', unpublish, args),
     duplicate: wrap('duplicate', duplicate, args),
-    restore: wrap('restore', restore, args),
+    restoreRevision: wrap('restoreRevision', restoreRevision, args),
+    restoreDocument: wrap('restoreDocument', restoreDocument, args),
   }
 
   //as we add server operations one by one, we can add them here
@@ -80,7 +80,8 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
       patch: wrap('patch', serverPatch, args),
       publish: wrap('publish', serverPublish, args),
       unpublish: wrap('unpublish', serverUnpublish, args),
-      restore: wrap('restore', serverRestore, args),
+      restoreRevision: wrap('restoreRevision', serverRestoreRevision, args),
+      restoreDocument: wrap('restoreDocument', serverRestoreDocument, args),
     }
   }
   return operationsAPI
