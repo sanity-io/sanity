@@ -13,7 +13,7 @@ jobs:
     # this runs in main, and we want to skip running it when release PRs are merged
     # format of the commit message is specified in lerna.json
     if: >
-      !startsWith(github.event.head-commit.message, 'chore(release): publish')
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -62,11 +62,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-      - name: Get commit message
-        # get the commit message created by npx lerna version above (determined by lerna.json)
-        id: head-commit
-        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
-
       - name: Get version
         id: release-as
         run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
@@ -75,7 +70,7 @@ jobs:
         id: create-pull-request
         with:
           token: ${{ steps.app-token.outputs.token }}
-          title: "${{steps.head-commit.outputs.message}}"
+          title: "${{github.event.head_commit.message}}"
           body: "🤖 I have created a release **squib** **squob**\n\n Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀"
           branch: ci/release-main
           sign-commits: true
