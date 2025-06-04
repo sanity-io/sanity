@@ -6,7 +6,7 @@ import {
   type TransactionLogEventWithMutations,
 } from '@sanity/types'
 import {reduce as jsonReduce} from 'json-reduce'
-import {from, type Observable} from 'rxjs'
+import {from, type Observable, of} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../../environment'
@@ -39,10 +39,17 @@ export interface HistoryStore {
 
   getTransactions: (documentIds: string[]) => Promise<TransactionLogEventWithMutations[]>
 
-  restore: (
+  restoreRevision: (
     id: string,
     targetId: string,
     rev: DocumentRevision,
+    options?: RestoreOptions,
+  ) => Observable<void>
+
+  restoreDocument: (
+    documentId: string,
+    targetId: string,
+    document: SanityDocument,
     options?: RestoreOptions,
   ) => Observable<void>
 
@@ -210,31 +217,34 @@ export const removeMissingReferences = (
     return documentExists ? refNode : undefined
   })
 
-function restore(
+/**
+ * Core restoration logic that handles reference checking and document creation
+ */
+function performRestore(
   client: SanityClient,
   documentId: string,
   targetDocumentId: string,
-  rev: DocumentRevision,
+  document: SanityDocument,
   options?: RestoreOptions,
 ): Observable<void> {
-  return from(getDocumentAtRevision(client, documentId, rev)).pipe(
-    mergeMap((documentAtRevision) => {
-      if (!documentAtRevision) {
-        throw new Error(`Unable to find document with ID ${documentId} at revision ${rev}`)
-      }
-
-      const existingIdsQuery = getAllRefIds(documentAtRevision)
+  return from(Promise.resolve(document)).pipe(
+    mergeMap((documentToRestore) => {
+      const existingIdsQuery = getAllRefIds(documentToRestore)
         .map((refId) => `"${refId}": defined(*[_id=="${refId}"]._id)`)
         .join(',')
 
-      return client.observable
-        .fetch<Record<string, boolean | undefined>>(`{${existingIdsQuery}}`)
-        .pipe(map((existingIds) => removeMissingReferences(documentAtRevision, existingIds)))
+      if (existingIdsQuery) {
+        return client.observable
+          .fetch<Record<string, boolean | undefined>>(`{${existingIdsQuery}}`)
+          .pipe(map((existingIds) => removeMissingReferences(documentToRestore, existingIds)))
+      }
+
+      return of(documentToRestore)
     }),
-    map((documentAtRevision) => {
+    map((documentToRestore) => {
       // Remove _updatedAt
-      const {_updatedAt, ...document} = documentAtRevision
-      return {...document, _id: targetDocumentId}
+      const {_updatedAt, ...cleanedDocument} = documentToRestore
+      return {...cleanedDocument, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
@@ -268,6 +278,34 @@ function restore(
   )
 }
 
+function restoreRevision(
+  client: SanityClient,
+  documentId: string,
+  targetDocumentId: string,
+  rev: DocumentRevision,
+  options?: RestoreOptions,
+): Observable<void> {
+  return from(getDocumentAtRevision(client, documentId, rev)).pipe(
+    mergeMap((documentAtRevision) => {
+      if (!documentAtRevision) {
+        throw new Error(`Unable to find document with ID ${documentId} at revision ${rev}`)
+      }
+
+      return performRestore(client, documentId, targetDocumentId, documentAtRevision, options)
+    }),
+  )
+}
+
+function restoreDocument(
+  client: SanityClient,
+  documentId: string,
+  targetDocumentId: string,
+  document: SanityDocument,
+  options?: RestoreOptions,
+): Observable<void> {
+  return performRestore(client, documentId, targetDocumentId, document, options)
+}
+
 /** @internal */
 export interface HistoryStoreOptions {
   client: SanityClient
@@ -283,7 +321,11 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     getTransactions: (documentIds) => getTransactions(client, documentIds),
 
-    restore: (id, targetId, rev, options) => restore(client, id, targetId, rev, options),
+    restoreRevision: (id, targetId, rev, options) =>
+      restoreRevision(client, id, targetId, rev, options),
+
+    restoreDocument: (id, targetId, document, options) =>
+      restoreDocument(client, id, targetId, document, options),
 
     getTimelineController,
   }

@@ -31,13 +31,16 @@ import {discardChanges} from './operations/discardChanges'
 import {duplicate} from './operations/duplicate'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
-import {restore} from './operations/restore'
+import {restoreDocument, restoreRevision} from './operations/restore'
 import {unpublish} from './operations/unpublish'
 import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
 import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
-import {restore as serverRestore} from './serverOperations/restore'
+import {
+  restoreDocument as serverRestoreDocument,
+  restoreRevision as serverRestoreRevision,
+} from './serverOperations/restore'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
 
 interface ExecuteArgs {
@@ -60,7 +63,8 @@ const operationImpls = {
   discardChanges,
   unpublish,
   duplicate,
-  restore,
+  restoreRevision,
+  restoreDocument,
 } as const
 
 //as we add server operations one by one, we can add them here
@@ -73,7 +77,8 @@ const serverOperationImpls = {
   patch: serverPatch,
   publish: serverPublish,
   unpublish: serverUnpublish,
-  restore: serverRestore,
+  restoreRevision: serverRestoreRevision,
+  restoreDocument: serverRestoreDocument,
 }
 
 const execute = (

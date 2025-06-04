@@ -11,10 +11,8 @@ import {
   isDeleteDocumentVersionEvent,
   PerspectiveProvider,
   useArchivedReleases,
-  useClient,
   useEditState,
   useEventsStore,
-  useHistoryStore,
   usePerspective,
   useSchema,
 } from 'sanity'
@@ -24,63 +22,6 @@ import {EMPTY_PARAMS} from './constants'
 import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
-
-// Debugging function to inspect documents at each event revision
-/* eslint-disable no-console */
-async function debugEventsAndRevisions(events: any[], documentId: string, client: any) {
-  console.log('=== DEBUG: Events and Revisions ===')
-  console.log(`Total events: ${events.length}`)
-
-  for (let i = 0; i < events.length; i++) {
-    const event = events[i]
-    console.log(`\n--- Event ${i + 1}/${events.length} ---`)
-    console.log('Event ID:', event.id)
-    console.log('Event Type:', event.type)
-    console.log('Event:', event)
-
-    // Check if this is a delete event
-    const isDeleteEvent = isDeleteDocumentGroupEvent(event) || isDeleteDocumentVersionEvent(event)
-    console.log('Is Delete Event:', isDeleteEvent)
-
-    if (event.id) {
-      try {
-        // Hardcoded dataset and project info - adjust as needed
-        const dataset = client.config().dataset || 'test'
-        const publishedId = getPublishedId(documentId)
-        const draftId = getDraftId(documentId)
-
-        const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${event.id}`
-        console.log('API URL:', url)
-
-        const result = await client.request({url})
-        console.log('Documents at revision:', result.documents)
-
-        if (result.documents && result.documents.length > 0) {
-          result.documents.forEach((doc: any, docIndex: number) => {
-            console.log(`  Document ${docIndex + 1}:`, {
-              _id: doc._id,
-              _type: doc._type,
-              _rev: doc._rev,
-              _createdAt: doc._createdAt,
-              _updatedAt: doc._updatedAt,
-              title: doc.title || 'No title field',
-            })
-          })
-        } else {
-          console.log('  No documents found at this revision')
-        }
-      } catch (error) {
-        console.error(`  Error fetching revision ${event.id}:`, error)
-      }
-    }
-
-    // Add a small delay to avoid overwhelming the API
-    await new Promise((resolve) => setTimeout(resolve, 100))
-  }
-
-  console.log('\n=== END DEBUG ===')
-}
-/* eslint-enable no-console */
 
 export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS} = usePaneRouter()
@@ -136,17 +77,6 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   ])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})
-  const historyStore = useHistoryStore()
-  const client = useClient()
-
-  // Trigger debug function when events are loaded
-  useMemo(() => {
-    if (eventsStore.events.length > 0 && !eventsStore.loading) {
-      debugEventsAndRevisions(eventsStore.events, documentId, client)
-      // eslint-disable-next-line no-console
-      console.log(eventsStore.events)
-    }
-  }, [client, documentId, eventsStore.events, eventsStore.loading])
 
   const historyStoreProps = useMemo(
     () => ({
