@@ -20,9 +20,8 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
-import {type Observable, of} from 'rxjs'
-import {catchError, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
+import {useDocumentIdStack} from '../../structure/hooks/useDocumentIdStack'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
@@ -34,7 +33,7 @@ import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
-import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
+import {useObserveDocument} from '../preview/useObserveDocument'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
@@ -42,14 +41,12 @@ import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {
   type DocumentPresence,
   type EditStateFor,
   type InitialValueState,
   type PermissionCheckResult,
-  useDocumentPreviewStore,
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
@@ -60,6 +57,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isDraftId,
   useUnique,
 } from '../util'
 import {
@@ -123,6 +121,7 @@ interface DocumentFormValue {
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
+  fallbackValue: SanityDocumentLike | null
 }
 
 /**
@@ -150,8 +149,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedReleaseId, perspectiveStack} = usePerspective()
+  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+    documentId,
+  })
+  const {selectedReleaseId} = usePerspective()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -296,57 +297,19 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const isNonExistent = !value?._id
   const isCreateLinked = isSanityCreateLinkedDocument(value)
 
-  const documentPreviewStore = useDocumentPreviewStore()
-
-  const [previousVersion, setPreviousVersion] = useState<SanityDocumentLike | null>(null)
-  const [isLoadingVersion, setIsLoadingVersion] = useState(true)
-
-  type LoadingState = {
-    isLoading: boolean
-    value: SanityDocumentLike | null
-  }
-
-  const documentVersions$ = useMemo(
-    () =>
-      fetchDocumentVersionsRecursively(value._id, perspectiveStack, documentPreviewStore).pipe(
-        map(
-          (result: SanityDocumentLike | null): LoadingState => ({isLoading: false, value: result}),
-        ),
-        startWith<LoadingState>({isLoading: true, value: null}),
-        catchError(() => of<LoadingState>({isLoading: false, value: null})),
-        shareReplay(1),
-      ),
-    [value._id, perspectiveStack, documentPreviewStore],
+  const {previousId} = useDocumentIdStack({documentId, editState, displayed: value})
+  const {document, loading: previousLoading} = useObserveDocument(
+    isDraftId(previousId || '') ? getPublishedId(previousId || '') : previousId || '',
   )
-
-  useEffect(() => {
-    if (!isGoingToUnpublish(value)) {
-      setPreviousVersion(null)
-      setIsLoadingVersion(false)
-      return undefined
-    }
-
-    const subscription = documentVersions$.subscribe((state: LoadingState) => {
-      if (!state.isLoading && state.value) {
-        setPreviousVersion(state.value)
-        setIsLoadingVersion(false)
-      }
-    })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [documentVersions$, value])
-
   const formDocumentValue = useMemo(() => {
-    if (getFormDocumentValue) return getFormDocumentValue(previousVersion || value)
-    return value
-  }, [getFormDocumentValue, previousVersion, value])
+    if (value._system?.delete && document) {
+      return getFormDocumentValue ? getFormDocumentValue(document) : value
+    }
+    return getFormDocumentValue ? getFormDocumentValue(value) : value
+  }, [getFormDocumentValue, value, document])
 
   const ready =
-    connectionState === 'connected' &&
-    editState.ready &&
-    !initialValue?.loading &&
-    !isLoadingVersion
+    connectionState === 'connected' && editState.ready && !initialValue?.loading && !previousLoading
 
   const selectedPerspective = useMemo(() => {
     return getSelectedPerspective(selectedPerspectiveName, releases)
@@ -627,50 +590,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    fallbackValue: value._system?.delete ? document : null,
   }
-}
-
-/**
- * Recursively fetches the last available document version through the perspective stack
- * @param documentId - The document ID to fetch versions for
- * @param perspectiveStack - The stack of perspectives to traverse
- * @param documentPreviewStore - The store used to observe document versions
- * @returns An observable that emits the last available document version
- */
-function fetchDocumentVersionsRecursively(
-  documentId: string,
-  perspectiveStack: string[],
-  documentPreviewStore: DocumentPreviewStore,
-): Observable<SanityDocumentLike | null> {
-  if (perspectiveStack.length === 0) {
-    return of(null)
-  }
-
-  const getDocumentFromPerspective = (stack: string[]): Observable<SanityDocumentLike | null> => {
-    if (stack.length === 0) {
-      return of(null)
-    }
-
-    const currentPerspective = stack[0]
-    const docId =
-      currentPerspective === 'drafts'
-        ? getPublishedId(documentId)
-        : getVersionId(documentId, currentPerspective)
-
-    return documentPreviewStore
-      .unstable_observeDocument(docId, {
-        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-      })
-      .pipe(
-        switchMap((state) => {
-          if (state && !isGoingToUnpublish(state as SanityDocument)) {
-            return of(state as SanityDocumentLike)
-          }
-          // If no version found in current perspective, try the next one
-          return getDocumentFromPerspective(stack.slice(1))
-        }),
-      )
-  }
-
-  return getDocumentFromPerspective(perspectiveStack)
 }
