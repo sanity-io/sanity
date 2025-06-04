@@ -85,7 +85,12 @@ export function useCommentOperations(
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
-  const {getNotificationValue} = useNotificationTarget({documentId, documentType, getCommentLink})
+  const {getNotificationValue} = useNotificationTarget({
+    documentId,
+    documentType,
+    getCommentLink,
+    documentVersionId,
+  })
 
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
