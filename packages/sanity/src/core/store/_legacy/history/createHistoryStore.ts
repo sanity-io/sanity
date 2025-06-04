@@ -97,10 +97,13 @@ const getDocumentAtRevision = (
   const draftId = getDraftId(documentId)
 
   const isLastRevision = revision === 'lastRevision'
-  const cacheKey = `${publishedId}@${isLastRevision ? 'lastRevision' : revision}`
-  const cached = documentRevisionCache[cacheKey]
-  if (cached) {
-    return cached
+
+  if (!isLastRevision) {
+    const cacheKey = `${publishedId}@${revision}`
+    const cached = documentRevisionCache[cacheKey]
+    if (cached) {
+      return cached
+    }
   }
 
   const dataset = client.config().dataset
@@ -117,7 +120,11 @@ const getDocumentAtRevision = (
       return draft || published
     })
 
-  documentRevisionCache[cacheKey] = entry
+  if (!isLastRevision) {
+    const cacheKey = `${publishedId}@${revision}`
+    documentRevisionCache[cacheKey] = entry
+  }
+
   return entry
 }
 

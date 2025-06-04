@@ -31,7 +31,7 @@ export function DeletedDocumentBanners() {
 }
 
 function DeletedDocumentBanner() {
-  const {documentId, documentType, lastNonDeletedRevId} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPane()
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
 
@@ -44,14 +44,10 @@ function DeletedDocumentBanner() {
 
   return (
     <Banner
-      action={
-        lastNonDeletedRevId
-          ? {
-              onClick: handleRestore,
-              text: t('banners.deleted-document-banner.restore-button.text'),
-            }
-          : undefined
-      }
+      action={{
+        onClick: handleRestore,
+        text: t('banners.deleted-document-banner.restore-button.text'),
+      }}
       content={
         <Text size={1} weight="medium">
           {t('banners.deleted-document-banner.text')}
