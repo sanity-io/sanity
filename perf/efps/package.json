@@ -22,7 +22,7 @@
     "@types/react-dom": "^19.1.1",
     "@types/serve-handler": "^6.1.4",
     "@types/yargs": "^17.0.7",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.5.1",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
@@ -36,7 +36,7 @@
     "sanity": "workspace:*",
     "serve-handler": "^6.1.5",
     "source-map": "^0.7.4",
-    "vite": "^6.2.4",
+    "vite": "^6.3.5",
     "yargs": "17.3.0"
   }
 }
