@@ -11,7 +11,6 @@ permissions:
 jobs:
   release-next:
     permissions:
-      contents: read # for checkout
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
     env:
@@ -51,6 +50,7 @@ jobs:
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
         # It's important that we call lerna using npx in the command below so we get the
         # locally installed lerna instead of the one installed on the system
+        # Note: --no-git-reset is required for the bundle uploading step later on
         run: |
           npx lerna publish \
           --canary \
@@ -59,8 +59,28 @@ jobs:
           --conventional-commits \
           --conventional-prerelease \
           --dist-tag=next \
+          --no-git-reset \
           --preid=next \
           --exact \
           --yes
         env:
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Build bundle
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next
+
+      - name: Upload bundles to production bucket
+        # todo: enable
+        if: ${{ false }}
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next
