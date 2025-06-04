@@ -69,3 +69,22 @@ jobs:
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Build bundle
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=latest
+
+      - name: Upload bundles to production bucket
+        # todo: enable
+        if: ${{ false }}
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: pnpm bundle-manager publish --tag=latest
