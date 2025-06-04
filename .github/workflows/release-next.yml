@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - upload-bundles #todo: remove before merge
 
 permissions:
   contents: read # for checkout
