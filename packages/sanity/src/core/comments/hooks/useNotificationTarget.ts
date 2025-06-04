@@ -12,6 +12,7 @@ interface NotificationTargetHookOptions {
   documentId: string
   documentType: string
   getCommentLink?: (commentId: string) => string
+  documentVersionId?: string
 }
 
 interface NotificationTargetHookValue {
@@ -31,7 +32,7 @@ interface NotificationTargetHookValue {
 export function useNotificationTarget(
   opts: NotificationTargetHookOptions,
 ): NotificationTargetHookValue {
-  const {documentId, documentType, getCommentLink} = opts || {}
+  const {documentId, documentType, getCommentLink, documentVersionId} = opts || {}
   const schemaType = useSchema().get(documentType)
   const {title: workspaceTitle} = useWorkspace()
 
@@ -39,8 +40,9 @@ export function useNotificationTarget(
 
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
-  }, [documentId, documentPreviewStore, schemaType])
+    const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
+  }, [documentId, documentPreviewStore, schemaType, documentVersionId])
   const previewState = useObservable(previewStateObservable)
 
   const {snapshot, original} = previewState || {}
