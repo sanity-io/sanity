@@ -1,0 +1,40 @@
+name: Build and upload bundles
+on:
+  # triggered by release-next and release-latest workflows
+  repository_dispatch:
+    types: [npm-publish]
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Build bundle
+        run: pnpm run build:bundle
+
+      - name: Upload to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm run bundle:upload
+
+      # todo: enable
+      #- name: Upload to production bucket
+      #  env:
+      #    GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+      #    GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+      #    GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+      #  run: pnpm run bundle:upload
