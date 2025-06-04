@@ -132,7 +132,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.5.1",
-    "@vitest/coverage-v8": "^3.1.1",
+    "@vitest/coverage-v8": "^3.2.1",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "conventional-changelog-conventionalcommits": "^9.0.0",
@@ -178,7 +178,7 @@
     "typescript": "5.8.3",
     "vite": "^6.3.5",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "3.1.1",
+    "vitest": "3.2.1",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
