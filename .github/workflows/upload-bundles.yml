@@ -3,6 +3,16 @@ on:
   # triggered by release-next and release-latest workflows
   repository_dispatch:
     types: [npm-publish]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "npm version that was released"
+        required: true
+        type: string
+      tag:
+        description: "npm tag, e.g. 'latest', 'next' or 'stable'"
+        required: true
+        type: string
 
 jobs:
   build-and-upload:
