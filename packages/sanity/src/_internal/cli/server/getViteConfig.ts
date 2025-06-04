@@ -111,6 +111,16 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       host: server?.host,
       port: server?.port || 3333,
       strictPort: true,
+      /**
+       * Significantly speed up startup time,
+       * and most importantly eliminates the `new dependencies optimized: foobar. optimized dependencies changed. reloading`
+       * types of initial reload loops that otherwise happen as vite discovers deps that need to be optimized.
+       * This option starts the traversal up front, and warms up the dep tree required to render the userland sanity.config.ts file,
+       * and thus avoids frustrating reload loops.
+       */
+      warmup: {
+        clientFiles: ['./.sanity/runtime/app.js'],
+      },
     },
     configFile: false,
     mode,
