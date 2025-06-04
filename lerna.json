@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
   "npmClient": "pnpm",
+  "loglevel": "debug",
   "packages": [
     "dev/*",
     "perf/tests",
