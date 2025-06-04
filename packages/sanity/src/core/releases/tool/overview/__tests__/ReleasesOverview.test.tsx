@@ -236,7 +236,9 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return render(<TestComponent />, {wrapper})
+      return act(() => {
+        return render(<TestComponent />, {wrapper})
+      })
     }
 
     beforeEach(async () => {
@@ -331,10 +333,12 @@ describe('ReleasesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('allows for pinning perspectives', () => {
-      fireEvent.click(
-        within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
-      )
+    it('allows for pinning perspectives', async () => {
+      await act(async () => {
+        fireEvent.click(
+          within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
+        )
+      })
 
       expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
     })
@@ -346,8 +350,9 @@ describe('ReleasesOverview', () => {
         selectedReleaseId: 'rASAP',
       })
 
-      // re-render to apply the update to global bundle id
-      await rerender()
+      await act(async () => {
+        await rerender()
+      })
 
       const releaseRows = screen.getAllByTestId('table-row')
       const pinnedReleaseRow = releaseRows[0]
@@ -369,11 +374,13 @@ describe('ReleasesOverview', () => {
       })
 
       describe('selecting a release date', () => {
-        beforeEach(() => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
-          fireEvent.click(todayTile)
+        beforeEach(async () => {
+          await act(async () => {
+            const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+              'day-tile-today',
+            )
+            fireEvent.click(todayTile)
+          })
         })
 
         it('does not show open and archive filter group buttons', () => {
@@ -389,9 +396,11 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the selected date', async () => {
-          // not ideal, but the easiest way of finding the now selected date
           const todayTile = getCalendar().querySelector('[data-selected]')
-          fireEvent.click(todayTile!)
+
+          await act(async () => {
+            fireEvent.click(todayTile!)
+          })
 
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(5)
@@ -399,7 +408,9 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the date filter button', async () => {
-          fireEvent.click(screen.getByTestId('selected-date-filter'))
+          await act(async () => {
+            fireEvent.click(screen.getByTestId('selected-date-filter'))
+          })
 
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(5)
@@ -413,15 +424,17 @@ describe('ReleasesOverview', () => {
         screen.getByText('SCT (Sanity/Oslo)')
       })
 
-      it('opens the timezone selector', () => {
-        fireEvent.click(screen.getByText('SCT (Sanity/Oslo)'))
+      it('opens the timezone selector', async () => {
+        await act(async () => {
+          fireEvent.click(screen.getByText('SCT (Sanity/Oslo)'))
+        })
 
         within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
       })
 
       it('shows dates with timezone abbreviation when it is not the locale', async () => {
         mockGetLocaleTimeZone.mockReturnValue({
-          abbreviation: 'NST', // Not Sanity Time
+          abbreviation: 'NST',
           namePretty: 'Not Sanity Time',
           offset: '+00:00',
           name: 'NST',
@@ -430,7 +443,9 @@ describe('ReleasesOverview', () => {
           value: 'Not Sanity Time',
         })
 
-        await rerender()
+        await act(async () => {
+          await rerender()
+        })
 
         const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
 
@@ -439,11 +454,12 @@ describe('ReleasesOverview', () => {
       })
 
       describe('when a different timezone is selected', () => {
-        beforeEach(() => {
-          mockUseTimeZone.mockReturnValue({
-            ...useTimeZoneMockReturn,
-            // spoof a timezone that is 8 hours ahead of UTC
-            zoneDateToUtc: vi.fn((date) => set(date, {hours: new Date(date).getHours() - 8})),
+        beforeEach(async () => {
+          await act(async () => {
+            mockUseTimeZone.mockReturnValue({
+              ...useTimeZoneMockReturn,
+              zoneDateToUtc: vi.fn((date) => set(date, {hours: new Date(date).getHours() - 8})),
+            })
           })
         })
 
@@ -454,11 +470,13 @@ describe('ReleasesOverview', () => {
           expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
         })
 
-        it('shows no releases when filtered by today', () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
-          fireEvent.click(todayTile)
+        it('shows no releases when filtered by today', async () => {
+          await act(async () => {
+            const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
+              'day-tile-today',
+            )
+            fireEvent.click(todayTile)
+          })
 
           expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
         })
@@ -466,8 +484,10 @@ describe('ReleasesOverview', () => {
     })
 
     describe('archived releases', () => {
-      beforeEach(() => {
-        fireEvent.click(screen.getByText('Archived'))
+      beforeEach(async () => {
+        await act(async () => {
+          fireEvent.click(screen.getByText('Archived'))
+        })
       })
 
       it('shows published releases', async () => {
@@ -488,7 +508,7 @@ describe('ReleasesOverview', () => {
       })
     })
 
-    it('sorts the list of releases', () => {
+    it('sorts the list of releases', async () => {
       const [
         unsortedFirstRelease,
         unsortedSecondRelease,
@@ -497,23 +517,21 @@ describe('ReleasesOverview', () => {
         unsortedFifthRelease,
       ] = screen.getAllByTestId('table-row')
 
-      // default sort asap, then scheduled by publish asc
       within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
       within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
       within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
       within(unsortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
-      // sort by asc publish at
-      fireEvent.click(screen.getByText('Time'))
+      await act(async () => {
+        fireEvent.click(screen.getByText('Time'))
+      })
+
       const [
         descPublishSortedFirstRelease,
         descPublishSortedSecondRelease,
         descPublishSortedThirdRelease,
-      ] = screen
-        .getAllByTestId('table-row')
-        // first two releases are undecided
-        .slice(2)
+      ] = screen.getAllByTestId('table-row').slice(2)
 
       within(descPublishSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
       within(descPublishSortedSecondRelease).getByText(scheduledRelease.metadata.title)
@@ -522,7 +540,10 @@ describe('ReleasesOverview', () => {
 
     it('should navigate to release when row clicked', async () => {
       const releaseRow = screen.getAllByTestId('table-row')[0]
-      fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
+
+      await act(async () => {
+        fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
+      })
 
       expect(useRouter().navigate).toHaveBeenCalledWith({
         releaseId: 'rASAP',
