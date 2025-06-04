@@ -29,6 +29,18 @@ export default defineType({
           },
         ],
       },
+      {
+        type: 'array',
+        name: 'arrayCell',
+        title: 'Array',
+        of: [
+          {
+            type: 'string',
+            name: 'stringItem',
+            title: 'String Item',
+          },
+        ],
+      },
     ]),
   ],
 })

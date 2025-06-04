@@ -1,54 +1,23 @@
-/* eslint-disable react/jsx-no-bind */
-import {AddIcon} from '@sanity/icons'
 import {Box, Button, Code, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {useState} from 'react'
-import {
-  type ArrayOfObjectsInputProps,
-  type FieldDefinition,
-  FormInput,
-  type FormPatch,
-  insert,
-} from 'sanity'
+import {type ArrayOfObjectsInputProps, type FieldDefinition, FormInput, insert} from 'sanity'
 
-import {type Column, type HeaderRow, type Table} from './types'
+import {HeaderCell} from './HeaderCell'
+import {RowCell} from './RowCell'
+import {getInsertTablePatch} from './tablePatches'
+import {type Cell, type Table} from './types'
+import {getTableDataRows, getTableHeaderRow} from './utils'
 
 const DEBUG = false
-function getInsertTablePatch(
-  headerRow: HeaderRow | undefined,
-  cellType: FieldDefinition,
-): FormPatch[] {
-  const headerRowKey = headerRow?._key || uuid()
-
-  const patches: FormPatch[] = [
-    insert(
-      [
-        {
-          _type: 'header',
-          _key: uuid(),
-          dataKey: `${cellType.type}-${uuid().slice(0, 4)}`,
-          dataType: cellType.name,
-          title: `${cellType.title || cellType.name}`,
-        } satisfies Column,
-      ],
-      'after',
-      [{_key: headerRowKey}, 'columns', -1],
-    ),
-  ]
-  if (!headerRow) {
-    patches.unshift(insert([{_type: 'headerRow', _key: headerRowKey, columns: []}], 'after', [-1]))
-  }
-
-  return patches
-}
 
 export function RenderTable(
   props: ArrayOfObjectsInputProps<Table['rows'][number]> & {supportedTypes: FieldDefinition[]},
 ) {
   const [mode, setMode] = useState<'array' | 'table'>('table')
   const {onChange} = props
-  const headerRow = props.value?.find((row) => row._type === 'headerRow')
-  const dataRows = props.value?.filter((row) => row._type === 'dataRow')
+  const headerRow = getTableHeaderRow({rows: props.value} as Table)
+  const dataRows = getTableDataRows({rows: props.value} as Table)
 
   return (
     <>
@@ -76,14 +45,6 @@ export function RenderTable(
             }
             popover={{portal: true, placement: 'bottom-start', tone: 'default'}}
           />
-          <Button
-            text="Add row"
-            mode="ghost"
-            disabled={!headerRow} // Before adding a data row we need to create the header row
-            onClick={() => {
-              onChange(insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', [-1]))
-            }}
-          />
 
           <table
             style={{
@@ -97,22 +58,16 @@ export function RenderTable(
               <tr>
                 {headerRow?.columns?.map((column) => {
                   return (
-                    <th
+                    <HeaderCell
                       key={column._key}
-                      style={{
-                        padding: '12px',
-                        textAlign: 'left',
-                        backgroundColor: '#f8fafc',
-                        borderBottom: '2px solid #e2e8f0',
-                        borderRight: '1px solid #e2e8f0',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap',
-                      }}
+                      column={column}
+                      headerRow={headerRow}
+                      onChange={onChange}
                     >
                       {/* @ts-expect-error - fix this */}
                       <FormInput
                         {...props}
-                        includeField
+                        includeField={false}
                         relativePath={[
                           {_key: headerRow?._key},
                           'columns',
@@ -120,7 +75,7 @@ export function RenderTable(
                           'title',
                         ]}
                       />
-                    </th>
+                    </HeaderCell>
                   )
                 })}
               </tr>
@@ -135,86 +90,55 @@ export function RenderTable(
                 >
                   {headerRow?.columns?.map((column) => {
                     const {dataKey, dataType} = column
-                    const cell = row.cells?.find((c) => c.dataKey === dataKey)
+                    const cell = row.cells?.find((c) => c.dataKey === dataKey) as Cell | undefined
                     const cellType = props.supportedTypes.find((t) => t.name === dataType)
 
                     return (
-                      <td
+                      <RowCell
                         key={cell?._key || dataKey}
-                        style={{
-                          padding: '12px',
-                          borderBottom: '1px solid #e2e8f0',
-                          borderRight: '1px solid #e2e8f0',
-                        }}
+                        dataRow={row}
+                        onChange={onChange}
+                        cell={cell}
+                        cellType={cellType}
+                        column={column}
                       >
-                        {cellType ? (
-                          <>
-                            {cell ? (
-                              // @ts-expect-error - fix this
-                              <FormInput
-                                {...props}
-                                includeField
-                                relativePath={[
-                                  {_key: row._key},
-                                  'cells',
-                                  {_key: cell?._key},
-                                  'value',
-                                ]}
-                              />
-                            ) : (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  height: '100%',
-                                }}
-                              >
-                                <Button
-                                  icon={AddIcon}
-                                  mode="bleed"
-                                  padding={2}
-                                  onClick={() => {
-                                    onChange(
-                                      insert(
-                                        [
-                                          {
-                                            _key: uuid(),
-                                            _type: cellType?.name,
-                                            dataKey: dataKey,
-                                          },
-                                        ],
-                                        'after',
-                                        [{_key: row._key}, 'cells', -1],
-                                      ),
-                                    )
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <Box key={cell?._key}>
-                            <Text>No cell type found</Text>
-                          </Box>
+                        {cell && (
+                          // @ts-expect-error - fix this
+                          <FormInput
+                            {...props}
+                            includeField
+                            relativePath={[{_key: row._key}, 'cells', {_key: cell?._key}, 'value']}
+                          />
                         )}
-                      </td>
+                      </RowCell>
                     )
                   })}
                 </tr>
               ))}
             </tbody>
           </table>
+          <Box marginTop={2}>
+            <Button
+              text="Add row"
+              width="fill"
+              mode="ghost"
+              disabled={!headerRow} // Before adding a data row we need to create the header row
+              onClick={() => {
+                onChange(insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', [-1]))
+              }}
+            />
+          </Box>
         </div>
       )}
-      <Button
-        padding={2}
-        text="Change mode"
-        mode="ghost"
-        onClick={() => setMode(mode === 'array' ? 'table' : 'array')}
-      />
+
       {DEBUG && (
         <>
+          <Button
+            padding={2}
+            text="Change mode"
+            mode="ghost"
+            onClick={() => setMode(mode === 'array' ? 'table' : 'array')}
+          />
           <Text size={1}> Value:</Text>
           <Code size={1}>{JSON.stringify(props.value, null, 2)}</Code>
         </>
