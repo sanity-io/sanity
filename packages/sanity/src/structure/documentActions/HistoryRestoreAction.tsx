@@ -20,8 +20,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   onComplete,
   release,
 }) => {
-  const {restore} = useDocumentOperation(id, type, release)
-  const {revisionNotFound} = useDocumentPane()
+  const {restore, patch} = useDocumentOperation(id, type, release)
+  const {revisionNotFound, displayed} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
@@ -29,9 +29,15 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
-    restore.execute(revision!)
+    const nextDocument = {
+      ...displayed,
+      _type: type,
+      _id: id,
+    }
+    console.log({nextDocument})
+    patch.execute([{set: nextDocument}], nextDocument)
     onComplete()
-  }, [restore, revision, onComplete])
+  }, [displayed, id, patch, type, onComplete])
 
   /**
    * If the restore operation is successful, navigate to the document edit view
