@@ -62,6 +62,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
+      - name: Get version commit message
+        # get the commit message created by npx lerna version above (determined by lerna.json)
+        id: version-commit
+        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
       - name: Get version
         id: release-as
         run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
@@ -70,7 +75,7 @@ jobs:
         id: create-pull-request
         with:
           token: ${{ steps.app-token.outputs.token }}
-          title: "${{github.event.head_commit.message}}"
+          title: "${{steps.version-commit.outputs.message}}"
           body: "🤖 I have created a release **squib** **squob**\n\n Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀"
           branch: ci/release-main
           sign-commits: true
