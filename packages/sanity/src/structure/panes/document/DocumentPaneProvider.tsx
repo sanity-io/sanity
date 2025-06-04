@@ -409,7 +409,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed: fallbackValue || displayed,
+        displayed: ready ? fallbackValue || displayed : null,
         documentId,
         documentIdRaw,
         documentType,
