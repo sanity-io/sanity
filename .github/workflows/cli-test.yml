@@ -39,7 +39,7 @@ jobs:
         id: check_release
         run: |
           SKIP="false"
-          if [[ "$MESSAGE" == chore:\ release* ]]; then
+          if [[ $MESSAGE =~ ^chore\(release\):\ publish\  ]]; then
             SKIP="true"
           fi
           echo "skip=$SKIP" >> $GITHUB_OUTPUT

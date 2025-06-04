@@ -1917,7 +1917,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.edited-live': 'Live edited',
   /** Label shown in review changes timeline when a document has been edited live, with a timestamp */
   'timeline.operation.edited-live_timestamp': 'Live edited: {{timestamp, datetime}}',
-  /** Label shown in review changes timeline when a document has been created */
+  /** Label shown in review changes timeline event when transactions have been deleted by retention policy */
   'timeline.operation.history-cleared': 'Deleted by retention policy',
   /** Label shown in review changes timeline when a document was published */
   'timeline.operation.published': 'Published',

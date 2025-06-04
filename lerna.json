@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
   "npmClient": "pnpm",
+  "loglevel": "debug",
   "packages": [
     "dev/*",
     "perf/tests",
@@ -12,5 +13,13 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.90.0"
+  "version": "3.91.0",
+  "command": {
+    "version": {
+      "changelogPreset": "conventionalcommits",
+      "message": "chore(release): publish %s",
+      "changelogIncludeCommitsGitAuthor": " by %a (%e)",
+      "remoteClient": "github"
+    }
+  }
 }
