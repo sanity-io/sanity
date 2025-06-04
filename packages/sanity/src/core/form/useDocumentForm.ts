@@ -148,7 +148,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+  const {data: documentVersions} = useDocumentVersions({
     documentId,
   })
   const {selectedReleaseId} = usePerspective()
@@ -301,8 +301,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isDraftId(previousId || '') ? getPublishedId(previousId || '') : previousId || '',
   )
   const formDocumentValue = useMemo(() => {
-    if (value._system?.delete && document) {
-      return getFormDocumentValue ? getFormDocumentValue(document) : value
+    if (value._system?.delete) {
+      if (document) return getFormDocumentValue ? getFormDocumentValue(document) : value
+
+      return {}
     }
     return getFormDocumentValue ? getFormDocumentValue(value) : value
   }, [getFormDocumentValue, value, document])
