@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@conventional-changelog/git-client': 2.4.0
   '@npmcli/arborist': ^7.5.4
   '@sanity/ui@2': ^2.15.18
   '@types/node': ^22.10.0
@@ -2780,8 +2781,8 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@conventional-changelog/git-client@2.5.0':
-    resolution: {integrity: sha512-77Fvjxb24SVcezc/Bryvma5dUaoWf7ydbmrfgP0C45v7cTJd55BvGAwatICAYbW03MSD1+ZjGbaEALpsoYIQBQ==}
+  '@conventional-changelog/git-client@2.4.0':
+    resolution: {integrity: sha512-FRn7d1XCGKuS5DrXL/Mxz+vfkokfG4QNzP4DvU6p06Whp9gPzDmcb8t1Nha5eSLnceBmif25V1jXPoSzQ8x+Cg==}
     engines: {node: '>=18'}
     peerDependencies:
       conventional-commits-filter: ^5.0.0
@@ -5026,14 +5027,6 @@ packages:
   '@sigstore/verify@2.1.1':
     resolution: {integrity: sha512-hVJD77oT67aowHxwT4+M6PGOp+E2LtLdTK3+FC0lBO9T7sYwItDMXZ7Z07IDCvR1M717a4axbIWckrW67KMP/w==}
     engines: {node: ^18.17.0 || >=20.5.0}
-
-  '@simple-libs/child-process-utils@1.0.0':
-    resolution: {integrity: sha512-yUjZwZS8An/un6iyC0/HJMbWyEvp8y3RSW5DnxgfVXdDs9OLdulWMPs2EQLZkulsxCm3JohkB3JbyVsfeondkg==}
-    engines: {node: '>=18'}
-
-  '@simple-libs/stream-utils@1.1.0':
-    resolution: {integrity: sha512-6rsHTjodIn/t90lv5snQjRPVtOosM7Vp0AKdrObymq45ojlgVwnpAqdc+0OBBrpEiy31zZ6/TKeIVqV1HwvnuQ==}
-    engines: {node: '>=18'}
 
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
@@ -13382,10 +13375,8 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@conventional-changelog/git-client@2.5.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)':
+  '@conventional-changelog/git-client@2.4.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)':
     dependencies:
-      '@simple-libs/child-process-utils': 1.0.0
-      '@simple-libs/stream-utils': 1.1.0
       semver: 7.7.2
     optionalDependencies:
       conventional-commits-filter: 5.0.0
@@ -14309,7 +14300,7 @@ snapshots:
 
   '@lerna-lite/version@4.3.0(@lerna-lite/publish@4.3.0)(@lerna-lite/run@4.3.0)(@types/node@22.13.1)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)':
     dependencies:
-      '@conventional-changelog/git-client': 2.5.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
+      '@conventional-changelog/git-client': 2.4.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
       '@lerna-lite/cli': 4.3.0(@lerna-lite/list@4.3.0(@lerna-lite/publish@4.3.0)(@lerna-lite/run@4.3.0)(@lerna-lite/version@4.3.0)(@types/node@22.13.1)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.3.0)(@lerna-lite/run@4.3.0)(@lerna-lite/version@4.3.0)(@types/node@22.13.1)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
       '@lerna-lite/core': 4.3.0(@types/node@22.13.1)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
       '@lerna-lite/npmlog': 4.1.2
@@ -16478,15 +16469,6 @@ snapshots:
       '@sigstore/core': 2.0.0
       '@sigstore/protobuf-specs': 0.4.2
 
-  '@simple-libs/child-process-utils@1.0.0':
-    dependencies:
-      '@simple-libs/stream-utils': 1.1.0
-      '@types/node': 22.13.1
-
-  '@simple-libs/stream-utils@1.1.0':
-    dependencies:
-      '@types/node': 22.13.1
-
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@socket.io/component-emitter@3.1.2': {}
@@ -18187,7 +18169,7 @@ snapshots:
 
   conventional-changelog@7.0.2(conventional-commits-filter@5.0.0):
     dependencies:
-      '@conventional-changelog/git-client': 2.5.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
+      '@conventional-changelog/git-client': 2.4.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
       '@types/normalize-package-data': 2.4.4
       conventional-changelog-preset-loader: 5.0.0
       conventional-changelog-writer: 8.1.0
@@ -18206,7 +18188,7 @@ snapshots:
 
   conventional-recommended-bump@11.1.0:
     dependencies:
-      '@conventional-changelog/git-client': 2.5.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
+      '@conventional-changelog/git-client': 2.4.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)
       conventional-changelog-preset-loader: 5.0.0
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.1.0

@@ -194,6 +194,7 @@
       ]
     },
     "overrides": {
+      "@conventional-changelog/git-client": "2.4.0",
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
       "@types/node": "$@types/node",
