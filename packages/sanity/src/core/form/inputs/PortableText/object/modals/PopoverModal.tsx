@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {Fragment, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -90,7 +90,7 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <FocusLock autoFocus as={Fragment} whiteList={handleFocusLockWhiteList}>
+      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
         <Flex ref={containerElement} direction="column" height="fill">
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
