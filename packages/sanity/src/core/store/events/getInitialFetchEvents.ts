@@ -94,7 +94,8 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
           documentId,
           false,
         )
-        const needsHistoryClearedEvent = events.length === 0 && transactions.length > 0
+        const needsHistoryClearedEvent =
+          events.length === 0 && transactions.length > 0 && editEvents.length > 0
         if (needsHistoryClearedEvent) {
           const clearedEventTimestamp =
             new Date(editEvents[editEvents.length - 1].timestamp).getTime() - 1
