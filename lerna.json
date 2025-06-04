@@ -17,7 +17,7 @@
     "version": {
       "changelogPreset": "conventionalcommits",
       "message": "chore(release): publish %s",
-      "changelogIncludeCommitsClientLogin": " by %a (%e)",
+      "changelogIncludeCommitsGitAuthor": " by %a (%e)",
       "remoteClient": "github"
     }
   }
