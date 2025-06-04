@@ -15,12 +15,12 @@
   "dependencies": {
     "@sanity/sdk": "^0.0.0-rc",
     "@sanity/sdk-react": "^0.0.0-rc",
-    "react": "^19",
-    "react-dom": "^19"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.1",
-    "@types/react": "^18.3.20",
+    "@types/react": "^18.3.23",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",
     "sanity": "^3",
