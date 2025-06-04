@@ -69,3 +69,13 @@ jobs:
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Dispatch npm-publish event
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: npm-publish
+          client-payload: |-
+            {
+              "tag": "latest",
+              "version": "${{steps.release-as.outputs.version}}"
+            }

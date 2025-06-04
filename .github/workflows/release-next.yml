@@ -11,7 +11,7 @@ permissions:
 jobs:
   release-next:
     permissions:
-      contents: read # for checkout
+      contents: write # required by repository-dispatch
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
     env:
@@ -64,3 +64,19 @@ jobs:
           --yes
         env:
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Get version
+        id: release-as
+        # TODO: do we need --no-git-reset for this to work?
+        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Dispatch npm-publish event
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: "${{ github.token }}"
+          event-type: npm-publish
+          client-payload: |-
+            {
+              "tag": "latest",
+              "version": "${{steps.release-as.outputs.version}}"
+            }
