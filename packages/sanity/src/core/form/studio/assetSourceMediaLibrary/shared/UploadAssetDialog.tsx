@@ -10,7 +10,7 @@ import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibrary} from '../hooks/useMediaLibrary'
+import {useMediaLibraryId} from '../hooks/useMediaLibraryId'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
@@ -32,7 +32,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   props: UploadAssetsDialogProps,
 ): ReactNode {
   const theme = useTheme()
-  const {mediaLibraryId: libraryId} = useMediaLibrary()
+  const libraryId = useMediaLibraryId()
   const {dark} = theme.sanity.color
   const {schemaType} = props
 

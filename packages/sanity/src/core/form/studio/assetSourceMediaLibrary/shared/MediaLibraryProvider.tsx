@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {createContext} from 'sanity/_createContext'
+import {MediaLibraryIdContext} from 'sanity/_singletons'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -9,18 +9,6 @@ import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 
 // Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
 const fetchedLibraryIdCache = new Map<string, string>()
-
-export type MediaLibraryContextValue = {
-  mediaLibraryId?: string
-}
-
-/** @internal */
-export const MediaLibraryContext = createContext<MediaLibraryContextValue>(
-  'sanity/_singletons/context/media-library',
-  {
-    mediaLibraryId: undefined,
-  } as MediaLibraryContextValue,
-)
 
 /** @internal */
 export function MediaLibraryProvider({
@@ -77,18 +65,15 @@ export function MediaLibraryProvider({
     )
   }
 
-  const ctxValue = {
-    mediaLibraryId: mediaLibraryId || undefined,
-  } satisfies MediaLibraryContextValue
-
   return (
-    <MediaLibraryContext.Provider value={ctxValue}>
+    <MediaLibraryIdContext.Provider value={mediaLibraryId}>
       <ErrorBoundary onCatch={handleUnexpectedMediaLibraryError}>
-        {mediaLibraryId && children}
-        {!mediaLibraryId && (
+        {mediaLibraryId ? (
+          children
+        ) : (
           <EnsureMediaLibrary projectId={projectId} onSetMediaLibraryId={handleSetMediaLibraryId} />
         )}
       </ErrorBoundary>
-    </MediaLibraryContext.Provider>
+    </MediaLibraryIdContext.Provider>
   )
 }
