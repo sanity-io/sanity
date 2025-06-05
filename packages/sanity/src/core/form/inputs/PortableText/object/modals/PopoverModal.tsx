@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {Fragment, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -22,6 +22,16 @@ interface PopoverEditDialogProps {
   title: string | ReactNode
   width?: ModalWidth
 }
+
+/**
+ * Wrapper for focus lock that maintains scroll on the popover
+ * Unlike Fragment (on some react versions) this does not absorb the ref prop
+ */
+const NoopContainer = ({children, ...props}: PropsWithChildren) => (
+  <div {...props} style={{maxHeight: '60vh'}}>
+    {children}
+  </div>
+)
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -90,8 +100,8 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <FocusLock autoFocus as={Fragment} whiteList={handleFocusLockWhiteList}>
-        <Flex ref={containerElement} direction="column" height="fill">
+      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>
