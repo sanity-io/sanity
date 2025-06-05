@@ -29,7 +29,7 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        pte: {
+        portableText: {
           plugins: (props) => {
             return (
               <>
@@ -68,7 +68,7 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        pte: {
+        portableText: {
           plugins: (props) => {
             return props.renderDefault({
               ...props,
@@ -101,7 +101,7 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        pte: {
+        portableText: {
           plugins: (props) => {
             return (
               <>
@@ -174,7 +174,7 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        pte: {
+        portableText: {
           plugins: (props) => {
             return null
           },
@@ -199,7 +199,7 @@ export const customPlugins = defineType({
         },
       ],
       components: {
-        pte: {
+        portableText: {
           plugins: (props) => {
             return (
               <>

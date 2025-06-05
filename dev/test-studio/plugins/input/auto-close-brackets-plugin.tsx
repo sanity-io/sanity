@@ -86,7 +86,7 @@ export const autoCloseBrackets = definePlugin({
   name: 'auto-close brackets',
   form: {
     components: {
-      pte: {
+      portableText: {
         plugins: (props) => {
           return (
             <>

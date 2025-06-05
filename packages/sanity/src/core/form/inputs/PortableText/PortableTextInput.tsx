@@ -46,7 +46,7 @@ import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import {PTEPlugins} from './object/Plugins'
+import {PortableTextEditorPlugins} from './object/Plugins'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
@@ -389,7 +389,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
               <UpdateValuePlugin value={value} />
-              <PTEPlugins schemaType={schemaType} />
+              <PortableTextEditorPlugins schemaType={schemaType} />
               <Compositor
                 {...props}
                 elementRef={elementRef}

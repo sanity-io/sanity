@@ -62,7 +62,7 @@ export const wave = definePlugin({
   name: 'wave',
   form: {
     components: {
-      pte: {
+      portableText: {
         plugins: (props) => {
           return (
             <>

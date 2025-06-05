@@ -3,8 +3,8 @@ import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
-import {pickPTEPluginsComponent} from '../../../form-components-hooks/picks'
-import {type PtePluginsProps} from '../../../types/blockProps'
+import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
+import {type PortableTextPluginProps} from '../../../types/blockProps'
 
 const markdownConfig: MarkdownPluginConfig = {
   boldDecorator: ({schema}) =>
@@ -23,17 +23,19 @@ const markdownConfig: MarkdownPluginConfig = {
   unorderedListStyle: ({schema}) => schema.lists.find((list) => list.name === 'bullet')?.name,
 }
 
-export const PTEPlugins = (props: {schemaType: ArraySchemaType<PortableTextBlock>}) => {
+export const PortableTextEditorPlugins = (props: {
+  schemaType: ArraySchemaType<PortableTextBlock>
+}) => {
   const componentProps = useMemo(
-    (): PtePluginsProps => ({
+    (): PortableTextPluginProps => ({
       markdownPluginProps: {config: markdownConfig},
       renderDefault: RenderDefault,
     }),
     [],
   )
 
-  const CustomComponent = props.schemaType.components?.pte?.plugins as
-    | ComponentType<PtePluginsProps>
+  const CustomComponent = props.schemaType.components?.portableText?.plugins as
+    | ComponentType<PortableTextPluginProps>
     | undefined
 
   return CustomComponent ? (
@@ -43,14 +45,16 @@ export const PTEPlugins = (props: {schemaType: ArraySchemaType<PortableTextBlock
   )
 }
 
-export const DefaultPTEPlugins = (props: Omit<PtePluginsProps, 'renderDefault'>) => {
+export const DefaultPortableTextEditorPlugins = (
+  props: Omit<PortableTextPluginProps, 'renderDefault'>,
+) => {
   return <MarkdownPlugin config={props.markdownPluginProps.config} />
 }
 
-export const RenderDefault = (props: Omit<PtePluginsProps, 'renderDefault'>) => {
+export const RenderDefault = (props: Omit<PortableTextPluginProps, 'renderDefault'>) => {
   const RenderPlugins = useMiddlewareComponents({
-    defaultComponent: DefaultPTEPlugins,
-    pick: pickPTEPluginsComponent,
+    defaultComponent: DefaultPortableTextEditorPlugins,
+    pick: pickPortableTextEditorPluginsComponent,
   })
   return <RenderPlugins {...props} />
 }

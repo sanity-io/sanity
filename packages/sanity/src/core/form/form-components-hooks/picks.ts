@@ -8,7 +8,7 @@ import {
   type FieldProps,
   type InputProps,
   type ItemProps,
-  type PtePluginsProps,
+  type PortableTextPluginProps,
 } from '../types'
 
 export function pickInputComponent(
@@ -55,10 +55,10 @@ export function pickAnnotationComponent(
   >
 }
 
-export function pickPTEPluginsComponent(
+export function pickPortableTextEditorPluginsComponent(
   plugin: PluginOptions,
-): ComponentType<Omit<PtePluginsProps, 'renderDefault'>> {
-  return plugin.form?.components?.pte?.plugins as ComponentType<
-    Omit<PtePluginsProps, 'renderDefault'>
+): ComponentType<Omit<PortableTextPluginProps, 'renderDefault'>> {
+  return plugin.form?.components?.portableText?.plugins as ComponentType<
+    Omit<PortableTextPluginProps, 'renderDefault'>
   >
 }

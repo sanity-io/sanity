@@ -227,7 +227,7 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
     input?: ComponentType<any>
     item?: ComponentType<any>
     preview?: ComponentType<any>
-    pte?: {
+    portableText?: {
       plugins?: ComponentType<any>
     }
   }
