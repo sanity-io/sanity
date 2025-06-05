@@ -213,14 +213,10 @@ describe('server restore operations', () => {
 
         restoreDocument.execute(args, document)
 
-        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'live-doc',
-          document,
-          {
-            fromDeleted: false,
-            useServerDocumentActions: true,
-          },
-        )
+        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith('live-doc', document, {
+          fromDeleted: false,
+          useServerDocumentActions: true,
+        })
       })
     })
   })

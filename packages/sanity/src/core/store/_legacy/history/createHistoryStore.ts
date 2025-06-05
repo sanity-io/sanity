@@ -241,10 +241,9 @@ function performRestore(
 
       return of(documentToRestore)
     }),
-    map((documentToRestore) => {
+    map(({_updatedAt, ...documentToRestore}) => {
       // Remove _updatedAt
-      const {_updatedAt, ...cleanedDocument} = documentToRestore
-      return {...cleanedDocument, _id: targetDocumentId}
+      return {...documentToRestore, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
