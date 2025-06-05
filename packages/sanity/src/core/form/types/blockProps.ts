@@ -442,7 +442,7 @@ export interface BlockProps {
  *
  * @beta
  */
-export interface PortableTextPluginProps {
-  renderDefault: (props: PortableTextPluginProps) => React.JSX.Element
+export interface PortableTextPluginsProps {
+  renderDefault: (props: PortableTextPluginsProps) => React.JSX.Element
   plugins: {markdown: {config: MarkdownPluginConfig}}
 }

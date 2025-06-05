@@ -4,7 +4,7 @@ import {type ComponentType, useMemo} from 'react'
 
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
-import {type PortableTextPluginProps} from '../../../types/blockProps'
+import {type PortableTextPluginsProps} from '../../../types/blockProps'
 
 const markdownConfig: MarkdownPluginConfig = {
   boldDecorator: ({schema}) =>
@@ -27,7 +27,7 @@ export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
   const componentProps = useMemo(
-    (): PortableTextPluginProps => ({
+    (): PortableTextPluginsProps => ({
       plugins: {markdown: {config: markdownConfig}},
       renderDefault: RenderDefault,
     }),
@@ -35,7 +35,7 @@ export const PortableTextEditorPlugins = (props: {
   )
 
   const CustomComponent = props.schemaType.components?.portableText?.plugins as
-    | ComponentType<PortableTextPluginProps>
+    | ComponentType<PortableTextPluginsProps>
     | undefined
 
   return CustomComponent ? (
@@ -46,12 +46,12 @@ export const PortableTextEditorPlugins = (props: {
 }
 
 export const DefaultPortableTextEditorPlugins = (
-  props: Omit<PortableTextPluginProps, 'renderDefault'>,
+  props: Omit<PortableTextPluginsProps, 'renderDefault'>,
 ) => {
   return <MarkdownPlugin config={props.plugins.markdown.config} />
 }
 
-export const RenderDefault = (props: Omit<PortableTextPluginProps, 'renderDefault'>) => {
+export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
   const RenderPlugins = useMiddlewareComponents({
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
