@@ -58,6 +58,28 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   </Inline>
                 )}
               </Box>
+              <Box className="button-large">
+                {allowTimeZoneSwitch ? (
+                  <Button
+                    data-testid="timezone-button"
+                    icon={EarthAmericasIcon}
+                    mode="bleed"
+                    readOnly={!allowTimeZoneSwitch}
+                    onClick={allowTimeZoneSwitch ? dialogTimeZoneShow : noop}
+                    text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
+                  />
+                ) : (
+                  <Inline space={2} padding={2}>
+                    <Text weight={'medium'} size={1}>
+                      <EarthAmericasIcon />
+                    </Text>
+                    <Text
+                      weight={'medium'}
+                      size={1}
+                    >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
+                  </Inline>
+                )}
+              </Box>
             </>
           ) : (
             <>
