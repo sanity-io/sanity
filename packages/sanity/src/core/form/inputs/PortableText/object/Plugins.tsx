@@ -28,7 +28,7 @@ export const PortableTextEditorPlugins = (props: {
 }) => {
   const componentProps = useMemo(
     (): PortableTextPluginProps => ({
-      markdownPluginProps: {config: markdownConfig},
+      plugins: {markdown: {config: markdownConfig}},
       renderDefault: RenderDefault,
     }),
     [],
@@ -48,7 +48,7 @@ export const PortableTextEditorPlugins = (props: {
 export const DefaultPortableTextEditorPlugins = (
   props: Omit<PortableTextPluginProps, 'renderDefault'>,
 ) => {
-  return <MarkdownPlugin config={props.markdownPluginProps.config} />
+  return <MarkdownPlugin config={props.plugins.markdown.config} />
 }
 
 export const RenderDefault = (props: Omit<PortableTextPluginProps, 'renderDefault'>) => {

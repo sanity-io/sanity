@@ -72,10 +72,12 @@ export const customPlugins = defineType({
           plugins: (props) => {
             return props.renderDefault({
               ...props,
-              markdownPluginProps: {
-                config: {
-                  boldDecorator: ({schema}) =>
-                    schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+              plugins: {
+                markdown: {
+                  config: {
+                    boldDecorator: ({schema}) =>
+                      schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+                  },
                 },
               },
             })
@@ -107,11 +109,13 @@ export const customPlugins = defineType({
               <>
                 {props.renderDefault({
                   ...props,
-                  markdownPluginProps: {
-                    config: {
-                      ...props.markdownPluginProps.config,
-                      boldDecorator: undefined,
-                      italicDecorator: undefined,
+                  plugins: {
+                    markdown: {
+                      config: {
+                        ...props.plugins.markdown.config,
+                        boldDecorator: undefined,
+                        italicDecorator: undefined,
+                      },
                     },
                   },
                 })}

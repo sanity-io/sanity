@@ -444,5 +444,5 @@ export interface BlockProps {
  */
 export interface PortableTextPluginProps {
   renderDefault: (props: PortableTextPluginProps) => React.JSX.Element
-  markdownPluginProps: {config: MarkdownPluginConfig}
+  plugins: {markdown: {config: MarkdownPluginConfig}}
 }
