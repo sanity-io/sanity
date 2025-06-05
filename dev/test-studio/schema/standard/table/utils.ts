@@ -1,10 +1,12 @@
 import {type DataRow, type HeaderRow, type Table} from './types'
 
-export function getTableHeaderRow(table: Table): HeaderRow | undefined {
+export function getTableHeaderRow(table: Table | undefined): HeaderRow | undefined {
+  if (!table) return undefined
   return table.rows.find((row) => row._type === 'headerRow')
 }
 
-export function getTableDataRows(table: Table): DataRow[] {
+export function getTableDataRows(table: Table | undefined): DataRow[] {
+  if (!table) return []
   return table.rows.filter((row) => row._type === 'dataRow')
 }
 

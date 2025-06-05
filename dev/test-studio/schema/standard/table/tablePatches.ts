@@ -21,11 +21,13 @@ export function getInsertTablePatch(
         } satisfies Column,
       ],
       'after',
-      [{_key: headerRowKey}, 'columns', -1],
+      ['rows', {_key: headerRowKey}, 'columns', -1],
     ),
   ]
   if (!headerRow) {
-    patches.unshift(insert([{_type: 'headerRow', _key: headerRowKey, columns: []}], 'after', [-1]))
+    patches.unshift(
+      insert([{_type: 'headerRow', _key: headerRowKey, columns: []}], 'after', ['rows', -1]),
+    )
   }
 
   return patches
@@ -33,11 +35,11 @@ export function getInsertTablePatch(
 
 export function getRemoveColumnPatch(headerRow: HeaderRow, column: Column): FormPatch {
   // TODO: Find all the rows cells that have this column and remove them
-  return unset([{_key: headerRow._key}, 'columns', {_key: column._key}])
+  return unset(['rows', {_key: headerRow._key}, 'columns', {_key: column._key}])
 }
 
 export function getRemoveCellPatch(dataRow: DataRow, cell: Cell): FormPatch {
-  return unset([{_key: dataRow._key}, 'cells', {_key: cell._key}])
+  return unset(['rows', {_key: dataRow._key}, 'cells', {_key: cell._key}])
 }
 
 export function getInsertCellPatch(
@@ -54,6 +56,6 @@ export function getInsertCellPatch(
       },
     ],
     'after',
-    [{_key: row._key}, 'cells', -1],
+    ['rows', {_key: row._key}, 'cells', -1],
   )
 }

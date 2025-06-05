@@ -1,4 +1,9 @@
-import {type ArrayOfObjectsInputProps, defineField, type FieldDefinition} from 'sanity'
+import {
+  defineField,
+  type FieldDefinition,
+  type ObjectInputProps,
+  type ObjectSchemaType,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {DataKeyCreation, DataKeySelection} from './DataKey'
@@ -15,15 +20,19 @@ export function defineTable(supportedFields: FieldDefinition[]) {
   return defineField({
     name: 'table',
     type: 'object',
+    components: {
+      input: (props: ObjectInputProps<Record<string, any>, ObjectSchemaType>) => (
+        <RenderTable
+          {...props}
+          supportedTypes={supportedFields}
+          value={props.value as Table | undefined}
+        />
+      ),
+    },
     fields: [
       {
         name: 'rows',
         title: 'Rows',
-        components: {
-          input: (props: ArrayOfObjectsInputProps<Table['rows'][number]>) => (
-            <RenderTable {...props} supportedTypes={supportedFields} />
-          ),
-        },
         type: 'array',
         validation: (Rule) => {
           return Rule.custom((value) => {

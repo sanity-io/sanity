@@ -1,7 +1,15 @@
 import {Box, Button, Code, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {useState} from 'react'
-import {type ArrayOfObjectsInputProps, type FieldDefinition, FormInput, insert} from 'sanity'
+import {useMemo, useState} from 'react'
+import {
+  type ArraySchemaType,
+  type FieldDefinition,
+  FormInput,
+  insert,
+  type ObjectField,
+  type ObjectInputProps,
+  type ObjectSchemaType,
+} from 'sanity'
 
 import {HeaderCell} from './HeaderCell'
 import {RowCell} from './RowCell'
@@ -12,17 +20,26 @@ import {getTableDataRows, getTableHeaderRow} from './utils'
 const DEBUG = false
 
 export function RenderTable(
-  props: ArrayOfObjectsInputProps<Table['rows'][number]> & {supportedTypes: FieldDefinition[]},
+  props: ObjectInputProps<Table, ObjectSchemaType> & {supportedTypes: FieldDefinition[]},
 ) {
   const [mode, setMode] = useState<'array' | 'table'>('table')
   const {onChange} = props
-  const headerRow = getTableHeaderRow({rows: props.value} as Table)
-  const dataRows = getTableDataRows({rows: props.value} as Table)
+  const headerRow = getTableHeaderRow(props.value)
+  const dataRows = getTableDataRows(props.value)
+
+  const dataRowSchemaType = useMemo(() => {
+    const rows = props.schemaType.fields.find(
+      (f) => f.name === 'rows',
+    ) as ObjectField<ArraySchemaType>
+    const dataRow = rows?.type.of.find((t) => t.name === 'dataRow') as ObjectSchemaType | undefined
+    return dataRow?.fields?.find((f) => f.name === 'cells')?.type as
+      | ArraySchemaType<ObjectSchemaType>
+      | undefined
+  }, [props.schemaType])
 
   return (
     <>
       {mode === 'array' ? (
-        // @ts-expect-error - fix this
         props.renderDefault(props)
       ) : (
         <div>
@@ -64,11 +81,11 @@ export function RenderTable(
                       headerRow={headerRow}
                       onChange={onChange}
                     >
-                      {/* @ts-expect-error - fix this */}
                       <FormInput
                         {...props}
                         includeField={false}
                         relativePath={[
+                          'rows',
                           {_key: headerRow?._key},
                           'columns',
                           {_key: column._key},
@@ -93,6 +110,13 @@ export function RenderTable(
                     const cell = row.cells?.find((c) => c.dataKey === dataKey) as Cell | undefined
                     const cellType = props.supportedTypes.find((t) => t.name === dataType)
 
+                    const arrayCellSchemaType = dataRowSchemaType?.of?.find(
+                      (f) => f.name === dataType,
+                    ) as ObjectSchemaType | undefined
+
+                    const fieldValueSchemaType = arrayCellSchemaType?.fields.find(
+                      (f) => f.name === 'value',
+                    )
                     return (
                       <RowCell
                         key={cell?._key || dataKey}
@@ -100,17 +124,22 @@ export function RenderTable(
                         onChange={onChange}
                         cell={cell}
                         cellType={cellType}
+                        fieldValueSchemaType={fieldValueSchemaType}
                         column={column}
-                      >
-                        {cell && (
-                          // @ts-expect-error - fix this
+                        input={
                           <FormInput
                             {...props}
                             includeField
-                            relativePath={[{_key: row._key}, 'cells', {_key: cell?._key}, 'value']}
+                            relativePath={[
+                              'rows',
+                              {_key: row._key},
+                              'cells',
+                              {_key: cell?._key || ''},
+                              'value',
+                            ]}
                           />
-                        )}
-                      </RowCell>
+                        }
+                      />
                     )
                   })}
                 </tr>
@@ -124,7 +153,9 @@ export function RenderTable(
               mode="ghost"
               disabled={!headerRow} // Before adding a data row we need to create the header row
               onClick={() => {
-                onChange(insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', [-1]))
+                onChange(
+                  insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', ['rows', -1]),
+                )
               }}
             />
           </Box>
