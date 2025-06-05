@@ -1,5 +1,5 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
@@ -8,13 +8,14 @@ import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs'
+import {type TimeZoneScope, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import useDialogTimeZone from '../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone from '../../scheduledPublishing/hooks/useTimeZone'
 
 interface ScheduleDatePickerProps {
   initialValue: Date
   onChange: (date: Date) => void
+  timeZoneScope: TimeZoneScope
 }
 
 const inputDateFormat = 'PP HH:mm'
@@ -22,12 +23,13 @@ const inputDateFormat = 'PP HH:mm'
 export const ScheduleDatePicker = ({
   initialValue: inputValue,
   onChange,
+  timeZoneScope,
 }: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
-  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone()
+  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone(timeZoneScope)
 
-  const timezoneAdjustedValue = utcToCurrentZoneDate(inputValue)
+  const timeZoneAdjustedValue = utcToCurrentZoneDate(inputValue)
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
@@ -48,21 +50,21 @@ export const ScheduleDatePicker = ({
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   return (
-    <Flex gap={3}>
-      <Box flex={1}>
-        <DateTimeInput
-          selectTime
-          monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-          onChange={handlePublishAtCalendarChange}
-          onInputChange={handlePublishAtInputChange}
-          calendarLabels={calendarLabels}
-          value={timezoneAdjustedValue}
-          inputValue={format(timezoneAdjustedValue, inputDateFormat)}
-          constrainSize={false}
-          padding={0}
-          isPastDisabled
-        />
-      </Box>
+    <Flex flex={1} justify="space-between">
+      <DateTimeInput
+        selectTime
+        monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+        onChange={handlePublishAtCalendarChange}
+        onInputChange={handlePublishAtInputChange}
+        calendarLabels={calendarLabels}
+        value={timeZoneAdjustedValue}
+        inputValue={format(timeZoneAdjustedValue, inputDateFormat)}
+        constrainSize={false}
+        padding={0}
+        isPastDisabled
+        timeZoneScope={timeZoneScope}
+      />
+
       <Button
         icon={EarthGlobeIcon}
         mode="bleed"

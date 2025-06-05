@@ -2,8 +2,8 @@ import {Text} from '@sanity/ui'
 import {formatDistance} from 'date-fns'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {DATE_FORMAT} from '../../../constants'
-import useTimeZone from '../../../hooks/useTimeZone'
 
 interface Props {
   date: Date // local date in UTC
@@ -17,7 +17,7 @@ interface Props {
 const DateWithTooltip = (props: Props) => {
   const {date, useElementQueries} = props
 
-  const {formatDateTz} = useTimeZone()
+  const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
 
   // Get distance between both dates
   const distance = formatDistance(date, new Date(), {

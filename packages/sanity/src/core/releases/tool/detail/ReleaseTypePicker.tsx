@@ -11,8 +11,9 @@ import {type CalendarLabels} from '../../../components/inputs/DateInputs/calenda
 import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
 import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import useTimeZone from '../../../scheduledPublishing/hooks/useTimeZone'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -40,7 +41,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const {t} = useTranslation()
   const {updateRelease} = useReleaseOperations()
   const toast = useToast()
-  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
+  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const getReleaseTime = useReleaseTime()
 
   const [open, setOpen] = useState(false)
@@ -228,7 +229,8 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
               value={intendedPublishAtTimezoneAdjusted}
               onChange={handlePublishAtCalendarChange}
               isPastDisabled
-              showTimezone
+              showTimeZone
+              timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
           </>
         )}

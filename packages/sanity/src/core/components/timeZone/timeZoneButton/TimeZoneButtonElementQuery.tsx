@@ -1,7 +1,7 @@
 import {ElementQuery} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-const ButtonTimeZoneElementQuery = styled(ElementQuery)`
+const TimeZoneButtonElementQuery = styled(ElementQuery)`
   .button-small {
     display: block;
   }
@@ -19,4 +19,4 @@ const ButtonTimeZoneElementQuery = styled(ElementQuery)`
   }
 `
 
-export default ButtonTimeZoneElementQuery
+export default TimeZoneButtonElementQuery
