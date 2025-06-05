@@ -301,8 +301,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    */
   const ready = formReady && (!params.rev || timelineReady || !!timelineError)
 
-  const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => getDisplayed(value),
+  let displayed: Partial<SanityDocument> | null = useMemo(
+    () => getDisplayed(value) || null,
     [getDisplayed, value],
   )
 
@@ -406,6 +406,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 
+  displayed = useMemo(
+    () => (value?._system?.delete && fallbackValue ? fallbackValue : displayed) || null,
+    [fallbackValue, displayed, value?._system?.delete],
+  )
+
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
@@ -418,7 +423,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed: ready ? fallbackValue || displayed : null,
+        displayed,
         documentId,
         documentIdRaw,
         documentType,
@@ -479,7 +484,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      fallbackValue,
       displayed,
       documentId,
       documentIdRaw,
