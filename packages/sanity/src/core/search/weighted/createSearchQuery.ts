@@ -2,6 +2,7 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
+import {MAX_SEARCH_PATHS_LIMIT} from '../../studio/components/navbar/search/constants'
 import {
   deriveSearchWeightsFromType,
   isPerspectiveRaw,
@@ -107,6 +108,55 @@ function toOrderClause(orderBy: SearchSort[]): string {
     .join(',')
 }
 
+interface SearchPathWithType extends SearchPath {
+  typeName: string
+  userProvided?: boolean
+}
+
+
+function limitSearchPaths(specs: SearchSpec[], maxPaths: number): SearchSpec[] {
+  if (maxPaths <= 0) return specs
+
+  const allPaths: SearchPathWithType[] = specs.flatMap((spec) =>
+    (spec.paths || []).map((path) => ({
+      ...path,
+      typeName: spec.typeName,
+      userProvided: path.weight > 1,
+    })),
+  )
+
+  const uniquePaths = allPaths.reduce<Record<string, SearchPathWithType>>((acc, path) => {
+    const key = `${path.path}:${path.mapWith || ''}`
+    if (!acc[key] || acc[key].weight < path.weight) {
+      acc[key] = path
+    }
+    return acc
+  }, {})
+
+  const sortedPaths = Object.values(uniquePaths).sort((a, b) => {
+    if (a.userProvided && !b.userProvided) return -1
+    if (!a.userProvided && b.userProvided) return 1
+
+    if (a.weight !== b.weight) return b.weight - a.weight
+
+    const aLength = a.path.split('.').length
+    const bLength = b.path.split('.').length
+    if (aLength !== bLength) return aLength - bLength
+
+    return a.path.localeCompare(b.path)
+  })
+
+  const limitedPaths = sortedPaths.slice(0, maxPaths)
+  const allowedPathKeys = new Set(limitedPaths.map((p) => `${p.path}:${p.mapWith || ''}`))
+
+  return specs.map((spec) => ({
+    ...spec,
+    paths: (spec.paths || []).filter((path) =>
+      allowedPathKeys.has(`${path.path}:${path.mapWith || ''}`),
+    ),
+  }))
+}
+
 /**
  * @internal
  */
@@ -116,7 +166,7 @@ export function createSearchQuery(
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 
-  const specs = searchTerms.types
+  const rawSpecs = searchTerms.types
     .map((schemaType) =>
       deriveSearchWeightsFromType({
         schemaType,
@@ -126,12 +176,13 @@ export function createSearchQuery(
     )
     .filter(({paths}) => paths.length)
 
+  const specs = limitSearchPaths(rawSpecs, MAX_SEARCH_PATHS_LIMIT)
+
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
   const {perspective} = searchOpts
   const isRaw = isPerspectiveRaw(perspective)
 
-  // Construct search filters used in this GROQ query
   const filters = [
     '_type in $__types',
     searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
@@ -188,7 +239,7 @@ export function createSearchQuery(
     query: updatedQuery,
     params: {
       ...toGroqParams(terms),
-      __types: specs.map((spec) => spec.typeName),
+      __types: rawSpecs.map((spec) => spec.typeName),
       __limit: limit,
       ...params,
     },
