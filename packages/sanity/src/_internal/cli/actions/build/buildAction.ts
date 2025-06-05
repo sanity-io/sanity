@@ -19,6 +19,7 @@ import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
+import {isInteractive} from '../../util/isInteractive'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -75,48 +76,55 @@ export default async function buildSanityStudio(
     // Check the versions
     const result = await compareDependencyVersions(autoUpdatesImports, workDir)
 
-    // If it is in unattended mode, we don't want to prompt
-    if (result?.length && !unattendedMode) {
-      const choice = await prompt.single({
-        type: 'list',
-        message: chalk.yellow(
-          `The following local package versions are different from the versions currently served at runtime.\n` +
-            `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-            `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-            `Do you want to upgrade local versions before deploying?`,
-        ),
-        choices: [
-          {
-            type: 'choice',
-            value: 'upgrade-and-proceed',
-            name: `Upgrade and proceed with ${args.groupOrCommand}`,
-          },
-          {
-            type: 'choice',
-            value: 'upgrade',
-            name: `Upgrade only. You will need to run the ${args.groupOrCommand} command again`,
-          },
-          {type: 'choice', name: 'Cancel', value: 'cancel'},
-        ],
-        default: 'upgrade-and-proceed',
-      })
+    if (result?.length) {
+      const warning =
+        `The following local package versions are different from the versions currently served at runtime.\n` +
+        `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
 
-      if (choice === 'cancel') {
-        return {didCompile: false}
-      }
+      // If it is non-interactive or in unattended mode, we don't want to prompt
+      if (isInteractive && !unattendedMode) {
+        const choice = await prompt.single({
+          type: 'list',
+          message: chalk.yellow(
+            `${warning}\n\nDo you want to upgrade local versions before deploying?`,
+          ),
+          choices: [
+            {
+              type: 'choice',
+              value: 'upgrade',
+              name: `Upgrade local versions (recommended). You will need to run the ${args.groupOrCommand} command again`,
+            },
+            {
+              type: 'choice',
+              value: 'upgrade-and-proceed',
+              name: `Upgrade and proceed with ${args.groupOrCommand}`,
+            },
+            {type: 'choice', name: 'Cancel', value: 'cancel'},
+          ],
+          default: 'upgrade-and-proceed',
+        })
 
-      if (choice === 'upgrade' || choice === 'upgrade-and-proceed') {
-        await upgradePackages(
-          {
-            packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
-            packages: result.map((res) => [res.pkg, res.remote]),
-          },
-          context,
-        )
-
-        if (choice !== 'upgrade-and-proceed') {
+        if (choice === 'cancel') {
           return {didCompile: false}
         }
+
+        if (choice === 'upgrade' || choice === 'upgrade-and-proceed') {
+          await upgradePackages(
+            {
+              packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+              packages: result.map((res) => [res.pkg, res.remote]),
+            },
+            context,
+          )
+
+          if (choice !== 'upgrade-and-proceed') {
+            return {didCompile: false}
+          }
+        }
+      } else {
+        // if non-interactive or unattended, just show the warning
+        console.warn(`WARNING: ${warning}`)
       }
     }
   }
