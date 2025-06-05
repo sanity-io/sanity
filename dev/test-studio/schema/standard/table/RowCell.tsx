@@ -2,8 +2,9 @@ import {AddIcon, TrashIcon} from '@sanity/icons'
 import {Box, Button, Text, type Theme} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
+  EditPortal,
   type FieldDefinition,
   type FormPatch,
   isPrimitiveSchemaType,
@@ -18,8 +19,8 @@ import {type Cell, type Column, type DataRow} from './types'
 const FloatingButtons = styled.div`
   position: absolute;
   top: 50%;
-  right: -12px;
-  transform: translateY(-50%);
+  right: 4px;
+  top: 4px;
   z-index: 100;
   display: none;
   gap: 4px;
@@ -107,7 +108,27 @@ export function RowCell(props: {
           <Button icon={AddIcon} mode="bleed" padding={2} onClick={handleInsertCell} />
         )}
       </FloatingButtons>
-      {cell ? <>{renderInline ? input : <div>Not inline</div>}</> : null}
+      {cell ? <>{renderInline ? input : <NotInlineInputs input={input} />}</> : null}
     </RowCellContainer>
+  )
+}
+
+const NotInlineInputs = ({input}: {input: React.ReactNode}) => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+      <Button mode="bleed" onClick={() => setIsOpen(true)} text="Edit cell" padding={2} />
+      {isOpen && (
+        <EditPortal
+          type="dialog"
+          header="Edit table cell"
+          width={1}
+          onClose={() => setIsOpen(false)}
+        >
+          <Box padding={4}>{input}</Box>
+        </EditPortal>
+      )}
+    </div>
   )
 }
