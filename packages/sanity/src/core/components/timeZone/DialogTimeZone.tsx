@@ -142,6 +142,13 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             openButton
             options={allTimeZones}
             padding={4}
+            filterOption={(query: string, option: NormalizedTimeZone) => {
+              if (query === '') return true
+              return `${option.city} (GMT
+            ${option.offset}) ${option.alternativeName}`
+                ?.toLowerCase()
+                ?.includes(query?.toLowerCase())
+            }}
             placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
               boundaryElement:
