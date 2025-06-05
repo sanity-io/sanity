@@ -10,7 +10,7 @@ const appSanityUiTemplate: ProjectTemplate = {
     'styled-components': '^6.1.17',
   },
   devDependencies: {
-    '@types/react': '^18.0.25',
+    '@types/react': '^19',
     'sanity': '^3',
     'typescript': '^5.1.6',
   },
