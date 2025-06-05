@@ -1,3 +1,4 @@
+import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
 import {del as serverDel} from '../serverOperations/delete'
@@ -43,15 +44,24 @@ export const GUARDED: OperationsAPI = {
   restoreDocument: createOperationGuard('restoreDocument'),
 }
 
-function wrap<T extends keyof OperationsAPI>(
+const createEmitter =
+  (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string) =>
+  (...executeArgs: any[]) =>
+    emitOperation(operationName, idPair, typeName, executeArgs)
+
+function wrap<
+  T extends keyof OperationsAPI,
+  ExtraArgs extends any[],
+  DisabledReason extends string,
+>(
   operationName: T,
-  operation: OperationImpl<any>,
-  operationArguments: OperationArgs,
+  op: OperationImpl<ExtraArgs, DisabledReason>,
+  operationArgs: OperationArgs,
 ): OperationsAPI[T] {
+  const disabled = op.disabled(operationArgs)
   return {
-    disabled: operation.disabled(operationArguments),
-    execute: (...args: any[]) =>
-      emitOperation(operationName, operationArguments.idPair, operationArguments.typeName, args),
+    disabled,
+    execute: createEmitter(operationName, operationArgs.idPair, operationArgs.typeName),
   } as OperationsAPI[T]
 }
 
