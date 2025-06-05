@@ -100,6 +100,11 @@ export default async function buildSanityStudio(
               value: 'upgrade-and-proceed',
               name: `Upgrade and proceed with ${args.groupOrCommand}`,
             },
+            {
+              type: 'choice',
+              value: 'continue',
+              name: `Continue anyway`,
+            },
             {type: 'choice', name: 'Cancel', value: 'cancel'},
           ],
           default: 'upgrade-and-proceed',
