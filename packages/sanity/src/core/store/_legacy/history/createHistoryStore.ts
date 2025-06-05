@@ -47,7 +47,6 @@ export interface HistoryStore {
   ) => Observable<void>
 
   restoreDocument: (
-    documentId: string,
     targetId: string,
     document: SanityDocument,
     options?: RestoreOptions,
@@ -222,11 +221,12 @@ export const removeMissingReferences = (
  */
 function performRestore(
   client: SanityClient,
-  documentId: string,
   targetDocumentId: string,
   document: SanityDocument,
   options?: RestoreOptions,
 ): Observable<void> {
+  const documentId = getPublishedId(targetDocumentId)
+
   return from(Promise.resolve(document)).pipe(
     mergeMap((documentToRestore) => {
       const existingIdsQuery = getAllRefIds(documentToRestore)
@@ -291,19 +291,18 @@ function restoreRevision(
         throw new Error(`Unable to find document with ID ${documentId} at revision ${rev}`)
       }
 
-      return performRestore(client, documentId, targetDocumentId, documentAtRevision, options)
+      return performRestore(client, targetDocumentId, documentAtRevision, options)
     }),
   )
 }
 
 function restoreDocument(
   client: SanityClient,
-  documentId: string,
   targetDocumentId: string,
   document: SanityDocument,
   options?: RestoreOptions,
 ): Observable<void> {
-  return performRestore(client, documentId, targetDocumentId, document, options)
+  return performRestore(client, targetDocumentId, document, options)
 }
 
 /** @internal */
@@ -324,8 +323,8 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
     restoreRevision: (id, targetId, rev, options) =>
       restoreRevision(client, id, targetId, rev, options),
 
-    restoreDocument: (id, targetId, document, options) =>
-      restoreDocument(client, id, targetId, document, options),
+    restoreDocument: (targetId, document, options) =>
+      restoreDocument(client, targetId, document, options),
 
     getTimelineController,
   }

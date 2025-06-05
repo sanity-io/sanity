@@ -117,7 +117,7 @@ describe('restore operations', () => {
 
         restoreDocument.execute(args, document)
 
-        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith('pub-id', 'pub-id', document)
+        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith('pub-id', document)
       })
 
       it('calls historyStore.restoreDocument with draft ID for regular documents', () => {
@@ -141,7 +141,6 @@ describe('restore operations', () => {
         restoreDocument.execute(args, document)
 
         expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'pub-id',
           'drafts.pub-id',
           document,
         )

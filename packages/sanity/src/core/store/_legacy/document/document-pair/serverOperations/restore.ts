@@ -22,7 +22,7 @@ export const restoreDocument: OperationImpl<[document: SanityDocument]> = {
   disabled: (): false => false,
   execute: ({snapshots, historyStore, schema, idPair, typeName}, document: SanityDocument) => {
     const targetId = isLiveEditEnabled(schema, typeName) ? idPair.publishedId : idPair.draftId
-    return historyStore.restoreDocument(idPair.publishedId, targetId, document, {
+    return historyStore.restoreDocument(targetId, document, {
       fromDeleted: !snapshots.draft && !snapshots.published,
       useServerDocumentActions: true,
     })

@@ -239,7 +239,7 @@ describe('createHistoryStore', () => {
       const historyStore = createHistoryStore({client: mockClient})
 
       const result = await lastValueFrom(
-        historyStore.restoreDocument('source-doc', 'target-doc', testDocument),
+        historyStore.restoreDocument('target-doc', testDocument),
       )
 
       expect(mockClient.observable.createOrReplace).toHaveBeenCalledTimes(1)
@@ -265,7 +265,7 @@ describe('createHistoryStore', () => {
       const historyStore = createHistoryStore({client: mockClient})
 
       await lastValueFrom(
-        historyStore.restoreDocument('source-doc', 'target-doc', testDocument, {
+        historyStore.restoreDocument('target-doc', testDocument, {
           useServerDocumentActions: true,
           fromDeleted: false,
         }),
@@ -284,7 +284,7 @@ describe('createHistoryStore', () => {
       const historyStore = createHistoryStore({client: mockClient})
 
       await lastValueFrom(
-        historyStore.restoreDocument('source-doc', 'target-doc', testDocument, {
+        historyStore.restoreDocument('target-doc', testDocument, {
           useServerDocumentActions: true,
           fromDeleted: true,
         }),
@@ -305,7 +305,7 @@ describe('createHistoryStore', () => {
       const historyStore = createHistoryStore({client: mockClient})
 
       await lastValueFrom(
-        historyStore.restoreDocument('source-doc', 'new-target-id', sourceDocument),
+        historyStore.restoreDocument('new-target-id', sourceDocument),
       )
 
       expect(mockClient.observable.createOrReplace).toHaveBeenCalledWith(
