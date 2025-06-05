@@ -8,7 +8,7 @@ const appTemplate: ProjectTemplate = {
     'react-dom': '^19',
   },
   devDependencies: {
-    '@types/react': '^18.0.25',
+    '@types/react': '^19',
     'sanity': '^3',
     'typescript': '^5.1.6',
   },
