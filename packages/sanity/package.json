@@ -193,7 +193,7 @@
     "@types/use-sync-external-store": "^1.5.0",
     "@types/which": "^3.0.4",
     "@vitejs/plugin-react": "^4.5.1",
-    "@xstate/react": "^5.0.3",
+    "@xstate/react": "^5.0.5",
     "archiver": "^7.0.0",
     "arrify": "^2.0.1",
     "async-mutex": "^0.4.1",
@@ -279,7 +279,7 @@
     "uuid": "^11.0.5",
     "vite": "^6.3.5",
     "which": "^5.0.0",
-    "xstate": "^5.19.2",
+    "xstate": "^5.19.4",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
