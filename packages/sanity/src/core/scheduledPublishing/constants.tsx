@@ -6,8 +6,6 @@ import {
   type ScheduleState,
 } from './types'
 
-export const LOCAL_STORAGE_TZ_KEY = 'scheduled-publishing::time-zone'
-
 export const SCHEDULE_ACTION_DICTIONARY: Record<
   ScheduleAction,
   {

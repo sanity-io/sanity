@@ -15,8 +15,8 @@ import {
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import useTimeZone from '../../../../scheduledPublishing/hooks/useTimeZone'
 import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
 import {type CalendarDayProps} from './CalendarDay'
 import {CalendarMonth} from './CalendarMonth'
@@ -28,6 +28,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectedDate?: Date
   renderCalendarDay?: (props: CalendarDayProps) => React.ReactNode
   disabled?: boolean
+  timeZoneScope: TimeZoneScope
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -55,11 +56,12 @@ export const CalendarFilter = forwardRef(function Calendar(
     onSelect,
     selectedDate,
     renderCalendarDay,
+    timeZoneScope,
     ...restProps
   } = props
   const [_focusedDate, _setFocusedDate] = useState<Date>(new Date())
   const {t: tCore} = useTranslation()
-  const {zoneDateToUtc} = useTimeZone()
+  const {zoneDateToUtc} = useTimeZone(timeZoneScope)
 
   const focusedDate = providedFocusedDate || _focusedDate
 
@@ -219,6 +221,7 @@ export const CalendarFilter = forwardRef(function Calendar(
             selected={selectedDate}
             renderCalendarDay={renderCalendarDay}
             disabled={restProps.disabled}
+            timeZoneScope={timeZoneScope}
           />
           {PRESERVE_FOCUS_ELEMENT}
         </Box>

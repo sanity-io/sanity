@@ -1207,20 +1207,26 @@ importers:
 
   packages/@sanity/util:
     dependencies:
+      '@date-fns/tz':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@date-fns/utc':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@sanity/client':
         specifier: ^7.4.1
         version: 7.4.1(debug@4.4.1)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
-      moment:
-        specifier: ^2.30.1
-        version: 2.30.1
       rxjs:
-        specifier: ^7.8.1
+        specifier: ^7.8.2
         version: 7.8.2
     devDependencies:
       '@repo/package.config':
@@ -1726,7 +1732,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       rxjs:
-        specifier: ^7.8.0
+        specifier: ^7.8.2
         version: 7.8.2
       rxjs-exhaustmap-with-trailing:
         specifier: ^2.1.1
@@ -1885,9 +1891,6 @@ importers:
       '@vitest/expect':
         specifier: 3.2.1
         version: 3.2.1
-      '@vvo/tzdb':
-        specifier: 6.137.0
-        version: 6.137.0
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
@@ -2824,6 +2827,12 @@ packages:
   '@csstools/css-tokenizer@3.0.3':
     resolution: {integrity: sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==}
     engines: {node: '>=18'}
+
+  '@date-fns/tz@1.2.0':
+    resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@date-fns/utc@2.1.0':
+    resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
 
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
@@ -5722,9 +5731,6 @@ packages:
 
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
-
-  '@vvo/tzdb@6.137.0':
-    resolution: {integrity: sha512-er8kaywRTjBTlaBgYynd3Fe/OPUfL3GuRMJOyWRlZ3V7EX4A6pryXTf42FL1ZXjOkDPz+/exAUe03kmb02MLOA==}
 
   '@xstate/fsm@1.6.5':
     resolution: {integrity: sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==}
@@ -13406,6 +13412,10 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.3': {}
 
+  '@date-fns/tz@1.2.0': {}
+
+  '@date-fns/utc@2.1.0': {}
+
   '@dnd-kit/accessibility@3.1.1(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -17217,8 +17227,6 @@ snapshots:
       '@vue/shared': 3.5.13
 
   '@vue/shared@3.5.13': {}
-
-  '@vvo/tzdb@6.137.0': {}
 
   '@xstate/fsm@1.6.5': {}
 
