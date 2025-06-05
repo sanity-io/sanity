@@ -264,6 +264,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={props.presence}
           description={props.description}
+          inputId={inputId}
           level={props.level}
           title={props.title}
           validation={props.validation}

@@ -15,12 +15,21 @@ import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient
 import {Timeline, TimelineController} from './history'
 
 /**
+ * Represents a document revision identifier.
+ * Can be either a specific revision string
+ * or 'lastRevision' to get the most recent revision.
+ *
+ * @beta
+ */
+export type DocumentRevision = string | 'lastRevision'
+
+/**
  * @hidden
  * @beta */
 export interface HistoryStore {
   getDocumentAtRevision: (
     documentId: string,
-    revision: string,
+    revision: DocumentRevision,
   ) => Promise<SanityDocument | undefined>
 
   getHistory: (
@@ -30,7 +39,12 @@ export interface HistoryStore {
 
   getTransactions: (documentIds: string[]) => Promise<TransactionLogEventWithMutations[]>
 
-  restore: (id: string, targetId: string, rev: string, options?: RestoreOptions) => Observable<void>
+  restore: (
+    id: string,
+    targetId: string,
+    rev: DocumentRevision,
+    options?: RestoreOptions,
+  ) => Observable<void>
 
   /** @internal */
   getTimelineController: (options: {
@@ -77,27 +91,40 @@ const getHistory = (
 const getDocumentAtRevision = (
   client: SanityClient,
   documentId: string,
-  revision: string,
+  revision: DocumentRevision,
 ): Promise<SanityDocument | undefined> => {
   const publishedId = getPublishedId(documentId)
   const draftId = getDraftId(documentId)
-  const cacheKey = `${publishedId}@${revision}`
-  const cached = documentRevisionCache[cacheKey]
-  if (cached) {
-    return cached
+
+  const isLastRevision = revision === 'lastRevision'
+
+  if (!isLastRevision) {
+    const cacheKey = `${publishedId}@${revision}`
+    const cached = documentRevisionCache[cacheKey]
+    if (cached) {
+      return cached
+    }
   }
 
   const dataset = client.config().dataset
-  const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
+  const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?${
+    isLastRevision ? 'lastRevision=true' : `revision=${revision}`
+  }`
 
-  const entry = client.request<{documents?: SanityDocument[]}>({url}).then((result) => {
-    const documents = result.documents || []
-    const published = documents.find((res) => res._id === publishedId)
-    const draft = documents.find((res) => res._id === draftId)
-    return draft || published
-  })
+  const entry = client
+    .request<{documents?: SanityDocument[]}>({url, tag: 'history-revision'})
+    .then((result) => {
+      const documents = result.documents || []
+      const published = documents.find((res) => res._id === publishedId)
+      const draft = documents.find((res) => res._id === draftId)
+      return draft || published
+    })
 
-  documentRevisionCache[cacheKey] = entry
+  if (!isLastRevision) {
+    const cacheKey = `${publishedId}@${revision}`
+    documentRevisionCache[cacheKey] = entry
+  }
+
   return entry
 }
 
@@ -187,7 +214,7 @@ function restore(
   client: SanityClient,
   documentId: string,
   targetDocumentId: string,
-  rev: string,
+  rev: DocumentRevision,
   options?: RestoreOptions,
 ): Observable<void> {
   return from(getDocumentAtRevision(client, documentId, rev)).pipe(

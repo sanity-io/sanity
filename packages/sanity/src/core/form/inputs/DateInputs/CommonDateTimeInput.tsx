@@ -13,6 +13,7 @@ import {
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../components/inputs/DateInputs/DateTimeInput'
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type ParseResult} from './types'
 
@@ -29,6 +30,7 @@ export interface CommonDateTimeInputProps {
   timeStep?: number
   value: string | undefined
   calendarLabels: CalendarLabels
+  timeZoneScope: TimeZoneScope
 }
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
@@ -48,6 +50,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     selectTime,
     serialize,
     timeStep,
+    timeZoneScope,
     value,
     ...restProps
   } = props
@@ -95,7 +98,6 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     forwardedRef,
     () => ref.current,
   )
-
   const parseResult = localValue ? parseInputValue(localValue) : value ? deserialize(value) : null
 
   const inputValue = localValue
@@ -111,6 +113,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       id={id}
       selectTime={selectTime}
       timeStep={timeStep}
+      timeZoneScope={timeZoneScope}
       placeholder={
         placeholder ||
         t('inputs.datetime.placeholder', {

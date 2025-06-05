@@ -32,7 +32,8 @@ export function createServerStorage({client: _client}: ServerStorageOptions): Se
         return Array(keys.length).fill(null)
       })
 
-    const keyValuePairs = value.reduce(
+    // there are instances where the valeu might be null
+    const keyValuePairs = (value || []).reduce(
       (acc, next) => {
         if (next?.key) {
           acc[next.key] = next.value

@@ -888,7 +888,7 @@ export default async function initSanity(
 
       return createProject(apiClient, {
         displayName: projectName,
-        organizationId: await getOrganizationId(organizations),
+        organizationId: cliFlags.organization || (await getOrganizationId(organizations)),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -924,7 +924,7 @@ export default async function initSanity(
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
-        organizationId: await getOrganizationId(organizations),
+        organizationId: cliFlags.organization || (await getOrganizationId(organizations)),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -1237,13 +1237,29 @@ export default async function initSanity(
           '`--project <id>` or `--create-project <name>` must be specified in unattended mode',
         )
       }
+
+      if (createProjectName && !cliFlags.organization) {
+        throw new Error(
+          '--create-project is not supported in unattended mode without an organization, please specify an organization with `--organization <id>`',
+        )
+      }
     }
 
     if (createProjectName) {
       debug('--create-project specified, creating a new project')
+
+      let orgForCreateProjectFlag = cliFlags.organization
+      if (!orgForCreateProjectFlag) {
+        debug('no organization specified, selecting one')
+        const client = apiClient({requireUser: true, requireProject: false})
+        const organizations = await client.request({uri: '/organizations'})
+        orgForCreateProjectFlag = await getOrganizationId(organizations)
+      }
+
+      debug('creating a new project')
       const createdProject = await createProject(apiClient, {
         displayName: createProjectName.trim(),
-        organizationId: cliFlags.organization || undefined,
+        organizationId: orgForCreateProjectFlag,
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
         metadata: {coupon: intendedCoupon},
       })
@@ -1335,13 +1351,6 @@ export default async function initSanity(
   }
 
   async function getOrganizationId(organizations: ProjectOrganization[]) {
-    // In unattended mode, if the user hasn't specified an organization, sending null as
-    // organization ID to the API will create a new organization for the user with their
-    // user name. If they _have_ specified an organization, we'll use that.
-    if (unattended || flags.organization) {
-      return flags.organization || undefined
-    }
-
     // If the user has no organizations, prompt them to create one with the same name as
     // their user, but allow them to customize it if they want
     if (organizations.length === 0) {
