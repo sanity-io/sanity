@@ -146,7 +146,6 @@ describe('server restore operations', () => {
         restoreDocument.execute(args, document)
 
         expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'deleted-doc',
           'drafts.deleted-doc',
           document,
           {
@@ -181,7 +180,6 @@ describe('server restore operations', () => {
         restoreDocument.execute(args, document)
 
         expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'existing-doc',
           'drafts.existing-doc',
           document,
           {
@@ -216,7 +214,6 @@ describe('server restore operations', () => {
         restoreDocument.execute(args, document)
 
         expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'live-doc',
           'live-doc',
           document,
           {
