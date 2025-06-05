@@ -88,7 +88,7 @@ yalc.lock
 ## Documentation Report
 scripts/docs-report.md
 
-# Temporary data collected by Million Lint
+# Temporary data collected by Million Lint, it's still being ignored even though these files are no longer generated, to prevent poor souls from accidentally committing them to the repo
 **/.million/store.json
 dev/test-studio/.react-compiler-bailout-report.json
 
