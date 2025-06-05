@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
 
-import {type HistoryStore} from '../../../history'
+import {type DocumentRevision, type HistoryStore} from '../../../history'
 import {type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
 
@@ -49,7 +49,7 @@ export interface OperationsAPI {
         'NOTHING_TO_DUPLICATE'
       >
     | GuardedOperation
-  restore: Operation<[revision: string]> | GuardedOperation
+  restore: Operation<[revision: DocumentRevision]> | GuardedOperation
 }
 
 /** @internal */
