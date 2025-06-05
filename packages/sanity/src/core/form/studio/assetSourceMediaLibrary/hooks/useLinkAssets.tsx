@@ -11,10 +11,10 @@ import {useCallback} from 'react'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
-import {useMediaLibrary} from './useMediaLibrary'
+import {useMediaLibraryId} from './useMediaLibraryId'
 
 export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | FileSchemaType}) {
-  const {mediaLibraryId: libraryId} = useMediaLibrary()
+  const libraryId = useMediaLibraryId()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
 
   const handleLinkAssets = useCallback(
