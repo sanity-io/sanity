@@ -14,6 +14,8 @@ export const DEBUG_MODE = false
 // current limitations with studio search config
 export const SEARCH_LIMIT = 1000
 
+export const MAX_SEARCH_PATHS_LIMIT = 1000
+
 export const GLOBAL_SEARCH_KEY = 'k'
 export const GLOBAL_SEARCH_KEY_MODIFIER = IS_MAC ? 'Cmd' : 'Ctrl'
 
