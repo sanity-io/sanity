@@ -1,5 +1,5 @@
 import {AddIcon, TrashIcon} from '@sanity/icons'
-import {Box, Button, Text, type Theme} from '@sanity/ui'
+import {Box, Button, Card, Text, type Theme} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useState} from 'react'
@@ -18,23 +18,25 @@ import {type Cell, type Column, type DataRow} from './types'
 
 const FloatingButtons = styled.div`
   position: absolute;
-  top: 50%;
-  right: 4px;
   top: 4px;
+  right: 4px;
   z-index: 100;
   display: none;
   gap: 4px;
 `
 
-const RowCellContainer = styled.td((props) => {
-  const {color} = getTheme_v2(props.theme as Theme)
-
+const RowCellContainer = styled.td<{theme: Theme}>((props) => {
+  const theme = getTheme_v2(props.theme)
   return css`
-    padding: 8px 4px;
+    padding: ${props.theme.sanity.space[2]}px ${props.theme.sanity.space[1]}px;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
-    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid ${theme.color.border};
+    border-right: 1px solid ${theme.color.border};
     position: relative;
+    background: ${theme.color.bg};
+    vertical-align: bottom;
+    min-width: 180px;
+    max-width: 300px;
 
     &:hover {
       ${FloatingButtons} {
@@ -44,7 +46,11 @@ const RowCellContainer = styled.td((props) => {
 
     &:has(button[data-ui='remove-cell']:hover) {
       transition: box-shadow 0.2s ease-in-out;
-      box-shadow: inset 0 0 0 2px ${color.button.ghost.critical.hovered.border};
+      box-shadow: inset 0 0 0 2px ${theme.color.button.ghost.critical.hovered.border};
+    }
+
+    &:first-child {
+      border-left: 1px solid ${theme.color.border};
     }
   `
 })
@@ -85,9 +91,9 @@ export function RowCell(props: {
   if (!cellType) {
     return (
       <RowCellContainer>
-        <Box key={cell?._key}>
-          <Text>No cell type found</Text>
-        </Box>
+        <Card tone="critical" padding={2} key={cell?._key}>
+          <Text muted>No cell type found</Text>
+        </Card>
       </RowCellContainer>
     )
   }

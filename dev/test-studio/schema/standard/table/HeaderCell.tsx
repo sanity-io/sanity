@@ -1,8 +1,10 @@
 import {TrashIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
+import {Button, type Theme} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {type FormPatch} from 'sanity'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {getRemoveColumnPatch} from './tablePatches'
 import {type Column, type HeaderRow} from './types'
@@ -16,28 +18,39 @@ const FloatingButtons = styled.div`
   gap: 4px;
 `
 
-export const Header = styled.th`
-  padding: 4px 0;
-  text-align: left;
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
-  white-space: nowrap;
-  & span[data-border] {
-    box-shadow: none !important;
-    background: #f8fafc !important;
-  }
-  position: relative;
+export const Header = styled.th<{theme: Theme}>((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    padding: ${theme.space[1]}px ${theme.space[0]}px;
+    text-align: left;
+    border-bottom: 1px solid ${theme.color.border};
+    border-right: 1px solid ${theme.color.border};
+    white-space: nowrap;
+    position: relative;
+    font-family: ${theme.font.text.family};
+    font-size: ${theme.font.text.sizes[0].fontSize}px;
+    line-height: ${theme.font.text.sizes[0].lineHeight}px;
+    font-weight: ${theme.font.text.weights.medium};
+    color: ${theme.color.fg};
+    min-width: 180px;
+    background: ${theme.color.selectable.neutral.hovered.bg};
 
-  &:hover {
-    ${FloatingButtons} {
-      display: flex;
+    & span[data-border] {
+      box-shadow: none !important;
+      background: ${theme.color.selectable.neutral.hovered.bg} !important;
     }
-  }
-`
-const DragHandleButton = styled(Button)`
-  cursor: move;
-`
+
+    &:hover {
+      ${FloatingButtons} {
+        display: flex;
+      }
+    }
+
+    &:first-child {
+      border-left: 1px solid ${theme.color.border};
+    }
+  `
+})
 
 export function HeaderCell(props: {
   column: Column
@@ -53,7 +66,6 @@ export function HeaderCell(props: {
   return (
     <Header>
       <FloatingButtons>
-        {/* <DragHandleButton mode="ghost" icon={DragHandleIcon} space={2} padding={2} /> */}
         <Button
           mode="ghost"
           iconRight={TrashIcon}
