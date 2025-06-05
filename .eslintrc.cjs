@@ -40,6 +40,13 @@ const noRestrictedImportPaths = [
     message:
       'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.\nPlease place "context" in _singletons\nPlease use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`',
   },
+  // It's only allowed to call createContext from a singleton file, otherwise it defeats the purpose of the singleton (it may get duplicated during bundling)
+  {
+    name: 'sanity',
+    importNames: ['createContext'],
+    message:
+      "It's only allowed to call createContext from a file in src/_singletons, otherwise it defeats the purpose of the singleton (it may get duplicated during bundling)",
+  },
 ]
 
 const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']

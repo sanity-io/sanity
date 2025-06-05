@@ -6,7 +6,7 @@ import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibrary} from '../hooks/useMediaLibrary'
+import {useMediaLibraryId} from '../hooks/useMediaLibraryId'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
@@ -29,7 +29,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
-  const {mediaLibraryId: libraryId} = useMediaLibrary()
+  const libraryId = useMediaLibraryId()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
 
