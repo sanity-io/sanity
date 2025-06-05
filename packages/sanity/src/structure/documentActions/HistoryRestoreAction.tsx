@@ -78,7 +78,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   }, [handleConfirm, isConfirmDialogOpen, onComplete, t])
 
   const isRevisionInitial = revision === '@initial'
-  const isRevisionLatest = revision === undefined
+  const isRevisionLatest = revision === undefined // undefined means latest revision
 
   return useMemo(() => {
     if (isRevisionLatest || revisionNotFound) {

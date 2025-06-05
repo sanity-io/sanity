@@ -88,10 +88,9 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       ready: !eventsStore.loading,
       isPristine: Boolean(eventsStore.events.length === 0),
       lastNonDeletedRevId:
-        eventsStore.events
-          .reverse()
-          .find((e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e))?.id ||
-        null,
+        eventsStore.events.find(
+          (e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e),
+        )?.id || null,
     }),
     [eventsStore, rev],
   )

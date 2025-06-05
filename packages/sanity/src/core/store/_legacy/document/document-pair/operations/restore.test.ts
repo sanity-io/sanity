@@ -140,10 +140,7 @@ describe('restore operations', () => {
 
         restoreDocument.execute(args, document)
 
-        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith(
-          'drafts.pub-id',
-          document,
-        )
+        expect(mockHistoryStore.restoreDocument).toHaveBeenCalledWith('drafts.pub-id', document)
       })
     })
   })
