@@ -2,7 +2,7 @@ import {pick} from 'lodash'
 
 import primitivePreview from '../preview/primitivePreview'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
-import {hiddenGetter} from './utils'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -12,6 +12,16 @@ const EMAIL_CORE = {
   type: null,
   jsonType: 'string',
 }
+
+lazyGetter(
+  EMAIL_CORE,
+  OWN_PROPS_NAME,
+  () => ({
+    ...EMAIL_CORE,
+    validation: (Rule: any) => Rule.email(),
+  }),
+  {enumerable: false},
+)
 
 export const EmailType = {
   get() {

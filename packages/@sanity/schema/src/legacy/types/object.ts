@@ -79,8 +79,6 @@ export const ObjectType = {
       OWN_PROPS_NAME,
       () => ({
         ...ownProps,
-        fieldsets: parsed.fieldsets,
-        groups: parsed.groups,
         preview: parsed.preview,
       }),
       {enumerable: false, writable: false},
