@@ -30,6 +30,7 @@ export interface BootstrapLocalOptions {
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
+  overwriteFiles?: boolean
 }
 
 export async function bootstrapLocalTemplate(
@@ -184,6 +185,13 @@ export async function bootstrapLocalTemplate(
 
   async function writeFileIfNotExists(fileName: string, content: string): Promise<void> {
     const filePath = path.join(outputPath, fileName)
+
+    if (opts.overwriteFiles) {
+      // If overwrite is enabled, just write the file
+      await fs.writeFile(filePath, content)
+      return
+    }
+
     try {
       await fs.writeFile(filePath, content, {flag: 'wx'})
     } catch (err) {

@@ -1,6 +1,6 @@
 import {type CliPrompter} from '../../../types'
 
-export function promptForEmbeddedStudio(prompt: CliPrompter): Promise<string> {
+export function promptForEmbeddedStudio(prompt: CliPrompter): Promise<boolean> {
   return prompt.single({
     type: 'confirm',
     message: `Would you like an embedded Sanity Studio?`,
@@ -50,7 +50,7 @@ export function promptForNextTemplate(prompt: CliPrompter): Promise<'clean' | 'b
   })
 }
 
-export function promptForAppendEnv(prompt: CliPrompter, envFilename: string): Promise<string> {
+export function promptForAppendEnv(prompt: CliPrompter, envFilename: string): Promise<boolean> {
   return prompt.single({
     type: 'confirm',
     message: `Would you like to add the project ID and dataset to your ${envFilename} file?`,
