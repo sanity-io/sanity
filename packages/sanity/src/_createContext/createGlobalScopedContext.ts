@@ -27,7 +27,9 @@ export function createGlobalScopedContext<ContextType, const T extends ContextTy
       typeof window.navigator !== 'undefined' &&
       window.navigator.userAgent.includes('jsdom'))
   ) {
-    return createContext<ContextType>(defaultValue)
+    const context = createContext<ContextType>(defaultValue)
+    context.displayName = key
+    return context
   }
 
   if (!globalScope[symbol]) {
