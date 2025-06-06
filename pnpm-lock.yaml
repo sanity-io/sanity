@@ -1431,6 +1431,9 @@ importers:
       '@sanity/comlink':
         specifier: ^3.0.5
         version: 3.0.5
+      '@sanity/css-in-js':
+        specifier: 6.1.18-31
+        version: 6.1.18-31(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/diff':
         specifier: workspace:*
         version: link:../@sanity/diff
@@ -4695,6 +4698,13 @@ packages:
     resolution: {integrity: sha512-SBKXLxNBO7YrWFaFt8FyV+G8ky+ZKgrhWkHHM2fxQXkF9W2JJV3SnfnzkG9XgVXM+VMu65WQcW5qlj9oWUlQig==}
     engines: {node: '>=18'}
 
+  '@sanity/css-in-js@6.1.18-31':
+    resolution: {integrity: sha512-nkUTT0Dtx4sXAkUBEfZnDpyiAq1lH9AScUMp0bHNAbyZeTRhIiRuATJAwlJSFl9k2GCJ8rGCGcSeF5RrouCUZQ==}
+    engines: {node: '>= 22'}
+    peerDependencies:
+      react: ^19.1
+      react-dom: ^19.1
+
   '@sanity/diff-match-patch@3.2.0':
     resolution: {integrity: sha512-4hPADs0qUThFZkBK/crnfKKHg71qkRowfktBljH2UIxGHHTxIzt8g8fBiXItyCjxkuNy+zpYOdRMifQNv8+Yww==}
     engines: {node: '>=18.18'}
@@ -5431,6 +5441,9 @@ packages:
 
   '@types/stylis@4.2.5':
     resolution: {integrity: sha512-1Xve+NMN7FWjY14vLoY5tL3BVEQ/n42YLwaqJIPYhotZ9uBHt87VceMwWQpzmdEt2TNXIorIFG+YeCUUW7RInw==}
+
+  '@types/stylis@4.2.7':
+    resolution: {integrity: sha512-VgDNokpBoKF+wrdvhAAfS55OMQpL6QRglwTwNC3kIgBrzZxA4WsFj+2eLfEA/uMUDzBcEhYmjSbwQakn/i3ajA==}
 
   '@types/tar-fs@2.0.4':
     resolution: {integrity: sha512-ipPec0CjTmVDWE+QKr9cTmIIoTl7dFG/yARCM5MqK8i6CNLIG1P8x4kwDsOQY1ChZOZjH0wO9nvfgBvWl4R3kA==}
@@ -11317,6 +11330,9 @@ packages:
   stylis@4.3.2:
     resolution: {integrity: sha512-bhtUjWd/z6ltJiQwg0dUfxEJ+W+jdqQd8TbWLWyeIJHlnsqmGLRFFd8e5mA0AZi/zx90smXRlN66YMTcaSFifg==}
 
+  stylis@4.3.6:
+    resolution: {integrity: sha512-yQ3rwFWRfwNUY7H5vpU0wfdkNSnvnJinhF9830Swlaxl03zsOjCfmX0ugac+3LtK0lYSgwL/KXc8oYL3mG4YFQ==}
+
   subarg@1.0.0:
     resolution: {integrity: sha512-RIrIdRY0X1xojthNcVtgT9sjpOGagEUKpZdgBUi054OEPFo282yg+zE+t1Rj3+RqKq2xStL7uUHhY+AjbC4BXg==}
 
@@ -15522,6 +15538,17 @@ snapshots:
       - debug
       - typescript
 
+  '@sanity/css-in-js@6.1.18-31(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@emotion/is-prop-valid': 1.3.1
+      '@emotion/unitless': 0.10.0
+      '@types/stylis': 4.2.7
+      csstype: 3.1.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      shallowequal: 1.1.0
+      stylis: 4.3.6
+
   '@sanity/diff-match-patch@3.2.0': {}
 
   '@sanity/diff-patch@5.0.0':
@@ -16862,6 +16889,8 @@ snapshots:
   '@types/speakingurl@13.0.6': {}
 
   '@types/stylis@4.2.5': {}
+
+  '@types/stylis@4.2.7': {}
 
   '@types/tar-fs@2.0.4':
     dependencies:
@@ -23716,6 +23745,8 @@ snapshots:
   stylis@4.2.0: {}
 
   stylis@4.3.2: {}
+
+  stylis@4.3.6: {}
 
   subarg@1.0.0:
     dependencies:

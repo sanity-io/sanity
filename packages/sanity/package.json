@@ -160,6 +160,7 @@
     "@sanity/client": "^7.4.1",
     "@sanity/color": "^3.0.0",
     "@sanity/comlink": "^3.0.5",
+    "@sanity/css-in-js": "6.1.18-31",
     "@sanity/diff": "workspace:*",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/diff-patch": "^5.0.0",
